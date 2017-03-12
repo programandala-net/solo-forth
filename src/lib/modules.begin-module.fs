@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Implementation of named and unnamed modules.
@@ -18,28 +19,22 @@
   \ modules make it possible to use the private words of the
   \ module, if needed.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Credit
 
   \ Code adapted and modified from Galope.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-11-09: First version, adapted from Galope.
-  \ 2016-12-06: Comment name clashes with `package`.
 
 ( begin-module: begin-module public private end-module )
 
@@ -151,5 +146,12 @@ set-current
   \ }doc
 
 set-order
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-11-09: First version, adapted from Galope.
+  \
+  \ 2016-12-06: Comment name clashes with `package`.
 
   \ vim: filetype=soloforth

@@ -4,48 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703062115
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Code common to any DOS.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2017-02-08: Start. First version of `set-block-drives` and
-  \ related words.
-  \
-  \ 2017-02-09: Fix `(>block-drive`: `drive` is not needed,
-  \ because `(block-drives` contains the actual identifiers,
-  \ not the ordinal numbers. Fix and factor the check of drives
-  \ number in `set-block-drives`.  Update `last-locatable` in
-  \ `set-block-drives`.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-03-04: Document `set-block-drives` and all related
-  \ words.
-  \
-  \ 2017-03-06: Rename `block-drives` to `#block-drives`;
-  \ rename `(block-drives` to `block-drives`.  Reorganize the
-  \ code to make `get-block-drives` independent from
-  \ `set-block-drives`. Remove `>block-drive`. Improve
-  \ documentation. Remove the default configuration of
-  \ `block-drives` that was set when `set-block-drives` was
-  \ compiled.
 
 ( drive ?drive# ?block-drive block-drives )
 
@@ -315,5 +291,30 @@ need block-drive@
   \ See also: `-block-drives`, `#block-drives`, `block-drive!`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2017-02-08: Start. First version of `set-block-drives` and
+  \ related words.
+  \
+  \ 2017-02-09: Fix `(>block-drive`: `drive` is not needed,
+  \ because `(block-drives` contains the actual identifiers,
+  \ not the ordinal numbers. Fix and factor the check of drives
+  \ number in `set-block-drives`.  Update `last-locatable` in
+  \ `set-block-drives`.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-04: Document `set-block-drives` and all related
+  \ words.
+  \
+  \ 2017-03-06: Rename `block-drives` to `#block-drives`;
+  \ rename `(block-drives` to `block-drives`.  Reorganize the
+  \ code to make `get-block-drives` independent from
+  \ `set-block-drives`. Remove `>block-drive`. Improve
+  \ documentation. Remove the default configuration of
+  \ `block-drives` that was set when `set-block-drives` was
+  \ compiled.
 
   \ vim: filetype=soloforth

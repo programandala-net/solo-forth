@@ -4,37 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702272341
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Versions of the `assert` debugging tool.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-11-14: Improve documentation.
-  \
-  \ 2016-12-30: Compact the code, saving one block.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-02-27: Improve documentation.
 
 ( assert assert= assert( )
 
@@ -232,5 +219,19 @@ variable assert-level ( -- a ) 1 assert-level !
   \ See: `assert(`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-11-14: Improve documentation.
+  \
+  \ 2016-12-30: Compact the code, saving one block.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-27: Improve documentation.
 
   \ vim: filetype=soloforth

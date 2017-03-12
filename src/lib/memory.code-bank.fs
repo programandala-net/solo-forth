@@ -6,33 +6,26 @@
   \ XXX UNDER DEVELOPMENT
 
   \ Last modified: 201702221359
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Tool to use a 16-KiB memory bank to store binary code,
   \ Forth words or data.  The intent is to use it mainly for
   \ binary modules, saving dictionary space.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-03-19: First version.
-  \
-  \ 2016-06-01: Update: `there` was moved from the kernel to
-  \ the library.
 
 ( code-bank )
 
@@ -68,5 +61,13 @@ variable code-bank#  3 code-bank# !
   \ routine at _a_, in the code bank.
 
 ?bank
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-03-19: First version.
+  \
+  \ 2016-06-01: Update: `there` was moved from the kernel to
+  \ the library.
 
   \ vim: filetype=soloforth

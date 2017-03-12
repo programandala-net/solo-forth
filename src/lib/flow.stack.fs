@@ -4,31 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words to manipulate the control flow stack.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2017-01-19: Make `cs-pick`, `cs-roll`, `cs-swap` and
-  \ `cs-drop` individually accessible to `need`.  Remove
-  \ alternative unfinished implementations, ported from
-  \ DX-Forth and hForth.
 
 ( cs-pick cs-roll cs-swap cs-drop )
 
@@ -43,5 +36,13 @@
 
 [unneeded] cs-drop
 ?\ need alias ' drop alias cs-drop
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2017-01-19: Make `cs-pick`, `cs-roll`, `cs-swap` and
+  \ `cs-drop` individually accessible to `need`.  Remove
+  \ alternative unfinished implementations, ported from
+  \ DX-Forth and hForth.
 
   \ vim: filetype=soloforth

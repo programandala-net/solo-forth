@@ -6,8 +6,9 @@
   \ XXX UNDER DEVELOPMENT
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Bernd Paysan, 1995.
@@ -15,7 +16,7 @@
   \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
   \ 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ This is the simple block editor included with Gforth
@@ -24,7 +25,7 @@
   \ Word descriptions and stack comments have been added after
   \ the original source.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Usage
 
   \ m   mark current position
@@ -43,28 +44,6 @@
   \ l   list current screen
   \ s   search until a given screen
   \ y   yank deleted string
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-11-19: Start. Adapt layout and requirements. Add
-  \ comments. Remove `hi`.
-  \
-  \ 2016-11-20: Rename `l` to `g`; rename `v` to `l`, after the
-  \ classic fig-Forth editor. Rename `b` to `p`.  Rename `bx`
-  \ to `px`. Add comments. Try the original code with Gforth.
-  \
-  \ 2016-11-21: Improve, try and document. Adapt quick index
-  \ and highlighting of marked area. Move quick index to
-  \ <tool.list.blocks.fsb>.
-  \
-  \ 2016-11-22: Move `r#` to <editor.common.fsb>` and get `top`
-  \ from it.
-  \
-  \ 2016-11-26: Need `catch`, which has been moved to the
-  \ library.
-  \
-  \ 2017-03-12: Update mentions to the `stringer`.
 
 ( blocked )
 
@@ -211,5 +190,27 @@ create fbuf $100 allot
   \ `break-key?` to stop.
 
 forth definitions
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-11-19: Start. Adapt layout and requirements. Add
+  \ comments. Remove `hi`.
+  \
+  \ 2016-11-20: Rename `l` to `g`; rename `v` to `l`, after the
+  \ classic fig-Forth editor. Rename `b` to `p`.  Rename `bx`
+  \ to `px`. Add comments. Try the original code with Gforth.
+  \
+  \ 2016-11-21: Improve, try and document. Adapt quick index
+  \ and highlighting of marked area. Move quick index to
+  \ <tool.list.blocks.fsb>.
+  \
+  \ 2016-11-22: Move `r#` to <editor.common.fsb>` and get `top`
+  \ from it.
+  \
+  \ 2016-11-26: Need `catch`, which has been moved to the
+  \ library.
+  \
+  \ 2017-03-12: Update mentions to the `stringer`.
 
   \ vim: filetype=soloforth

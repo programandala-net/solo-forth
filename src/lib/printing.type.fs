@@ -4,59 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702252003
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Versions of `type`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-04-27: Move `ascii-type` from module "tool.dump.fsb"
-  \ and rename it to `type-ascii`.
-  \
-  \ 2016-04-27: Start `type-center`, `type-left` and
-  \ `type-right`.
-  \
-  \ 2016-04-28: First working versions of `type-center`,
-  \ `type-left` and `type-right`.
-  \
-  \ 2016-11-26: Move `fartype` from the kernel. Move
-  \ `fartype-ascii` from the far memory module.
-  \
-  \ 2016-12-03: Factor `>printable-ascii-char` from
-  \ `type-ascii` and `fartype-ascii`.
-  \
-  \ 2017-01-10: Fix `fartype`.
-  \
-  \ 2017-01-18: Improve `type-center` and `type-right` with
-  \ `array>`, which makes them a bit faster. Improve
-  \ documentation.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-02-04: Rename `type-left`, `type-right` and
-  \ `type-center` with the "field" suffix, because they erase
-  \ the field with padding spaces, and there will be a parallel
-  \ set of words that don't. Improve documentation.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-02-25: Improve documentation.
 
 ( fartype type-ascii fartype-ascii )
 
@@ -263,5 +228,41 @@ constant type-center-field-cases
   \ `type-right-field`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-27: Move `ascii-type` from module "tool.dump.fsb"
+  \ and rename it to `type-ascii`.
+  \
+  \ 2016-04-27: Start `type-center`, `type-left` and
+  \ `type-right`.
+  \
+  \ 2016-04-28: First working versions of `type-center`,
+  \ `type-left` and `type-right`.
+  \
+  \ 2016-11-26: Move `fartype` from the kernel. Move
+  \ `fartype-ascii` from the far memory module.
+  \
+  \ 2016-12-03: Factor `>printable-ascii-char` from
+  \ `type-ascii` and `fartype-ascii`.
+  \
+  \ 2017-01-10: Fix `fartype`.
+  \
+  \ 2017-01-18: Improve `type-center` and `type-right` with
+  \ `array>`, which makes them a bit faster. Improve
+  \ documentation.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-02-04: Rename `type-left`, `type-right` and
+  \ `type-center` with the "field" suffix, because they erase
+  \ the field with padding spaces, and there will be a parallel
+  \ set of words that don't. Improve documentation.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-25: Improve documentation.
 
   \ vim: filetype=soloforth

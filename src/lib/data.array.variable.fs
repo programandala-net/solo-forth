@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words to create and manage 1-dimension single-cell,
@@ -23,37 +24,17 @@
     \ 1 3 bar +!
     \ 3 bar @ .
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-11-22: First version.
-  \
-  \ 2016-12-19: Fix requirement of `2avariable`.
-  \
-  \ 2016-12-20: Fix and improve documentation.
-  \
-  \ 2017-01-07: Fix typo.
-  \
-  \ 2017-01-18: Fix and update documentation. Improve
-  \ `2avariable` with `cliteral`.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-02-17: Fix markup in documentation.  Update cross
-  \ references.
 
 ( avariable 2avariable cavariable )
 
@@ -127,6 +108,26 @@
   \ See also: `avariable`, `2avariable`, `farcavariable`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-11-22: First version.
+  \
+  \ 2016-12-19: Fix requirement of `2avariable`.
+  \
+  \ 2016-12-20: Fix and improve documentation.
+  \
+  \ 2017-01-07: Fix typo.
+  \
+  \ 2017-01-18: Fix and update documentation. Improve
+  \ `2avariable` with `cliteral`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-02-17: Fix markup in documentation.  Update cross
+  \ references.
 
   \ vim: filetype=soloforth
 

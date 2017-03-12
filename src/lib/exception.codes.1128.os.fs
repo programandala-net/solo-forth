@@ -6,17 +6,13 @@
   \ XXX UNDER DEVELOPMENT
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ The Forth system error codes (range -4095..-256) used for
   \ ZX Spectrum OS (range -1154..-1128).
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-05-18: Modify format of messages.
 
 ( OS error codes #-1128..#-1142 )
 
@@ -60,6 +56,11 @@
 #-1152 \ OS: FN without DEF
 #-1153 \ OS: Parameter error
 #-1154 \ OS: Tape loading error
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-05-18: Modify format of messages.
 
   \ vim: filetype=soloforth
   \

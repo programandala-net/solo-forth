@@ -4,120 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703111635
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ G+DOS support.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015..2016: Main development.
-  \
-  \ 2016-04-11: Start `plusd-in`, plusd-out`, `plusd-in,`,
-  \ plusd-out,`.
-  \
-  \ 2016-04-26: Remove `char`.
-  \
-  \ 2016-08-04: Remove obsolete words `dosior>error` and
-  \ `?dos-error`. Update and fix comments. Fix `(cat)`: the
-  \ border was not restored.
-  \
-  \ 2016-08-10: Move `dosior>ior` to the DOS module of the
-  \ kernel.
-  \
-  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
-  \ in the kernel.
-  \
-  \ 2017-01-04: Review the words to page in and page out the
-  \ Plus D interface: Use the port to page in, not the hook;
-  \ use Z80 opcodes, not `z80-asm`.
-  \
-  \ 2017-01-04: Compact the code, saving one block.
-  \
-  \ 2017-01-04: Convert `get-drive` and `set-drive` from
-  \ `z80-asm` to `z80-asm,`; make them independent to `need`;
-  \ improve their documentation.
-  \
-  \ 2017-01-05: Convert all assembly words from `z80-asm` to
-  \ `z80-asm,`: `(delete-file)`, `(>file)`, `(<file)`,
-  \ `(file>screen)`, `(<file-as-is)`, `(file?)`, `(cat)`,
-  \ `@dos`, `c@dos`, `c!dos`, `!dos`, `@dosvar`, `c@dosvar`,
-  \ `!dosvar`, `c!dosvar`.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
-  \
-  \ 2017-02-05: Fix needing of `set-drive`.
-  \
-  \ 2017-02-07: Use `cconstant` for byte constants
-  \
-  \ 2017-02-08: Update and complete the paging tests `g.100h`
-  \ and `g.100i`. Make hook codes individually accessible to
-  \ `need`. Improve `set-drive` to return an error result and
-  \ move it to the kernel.
-  \
-  \ 2017-02-09: Improve all the Plus D memory fetch and store
-  \ words: smaller and faster. Compact the code, saving 4
-  \ blocks.
-  \
-  \ 2017-02-10: Rename `<file` to `file>`, and `<file-as-is` to
-  \ `file-as-is>`.  The new names are consistent with the
-  \ convention used in Forth.  Non-standard file words are
-  \ being unified in G+DOS, TR-DOS and +3DOS. Add `ufia1` and
-  \ `ufia2`.
-  \
-  \ 2017-02-11: Improve `file>` to support any useful
-  \ combination of implicit or explicit parameters (address and
-  \ length). Remove `file-as-is>`, which is not needed anymore.
-  \ Improve documentation.
-  \
-  \ 2017-02-12: Add `file-status`. Replace old versions of
-  \ `file?` with simpler `file-exists?`.  Add `file-start`,
-  \ `file-length`, `file-type`, `file-dir`. Rename `>ufia` to
-  \ `set-code-file`. Rename `filename!` to `set-filename`.
-  \
-  \ 2017-02-13: Make low-level factor words return an _ior_
-  \ instead of a _dosior_. It's more useful and saves one byte
-  \ per word pair. Rename `file-dir` to `file-dirdesc` and add
-  \ `file-dir#`. Improve documentation of `cat` words.  Move
-  \ the UFIA drive setting from `set-code-file` to lower
-  \ `set-filename`; this fixes `file-status`.  Rewrite `(cat`
-  \ to return an error result.
-  \
-  \ 2017-02-14: Add `find-file`.
-  \
-  \ 2017-02-15: Fix typo.
-  \
-  \ 2017-02-17: Fix markup in documentation.  Update cross
-  \ references.  Change markup of inline code that is not a
-  \ cross reference.
-  \
-  \ 2017-03-05: Remove old `need patch`. Fix documentation.
-  \
-  \ 2017-03-06: Prepare alternative implementation of `cat`.
-  \
-  \ 2017-03-07: Add `>ufia1`, `>ufia2`, `>ufiax`. Improve
-  \ documentation. Rename "plusd-in/out" to "dos-in/out", after
-  \ the notation used for +3DOS. Replace `cat` and related word
-  \ with a new, simpler implementation which uses the `pcat`
-  \ command code. Add `back-from-dos-error_` and `rename-file`.
-  \
-  \ 2017-03-10: Improve documentation.
-  \
-  \ 2017-03-11: Improve documentation.
 
 ( dos-in dos-out dos-in, dos-out, )
 
@@ -1415,5 +1319,102 @@ code (rename-file ( -- ior )
   \ Origin: Forth-94 (FILE EXT), Forth-2012 (FILE EXT).
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015..2016: Main development.
+  \
+  \ 2016-04-11: Start `plusd-in`, plusd-out`, `plusd-in,`,
+  \ plusd-out,`.
+  \
+  \ 2016-04-26: Remove `char`.
+  \
+  \ 2016-08-04: Remove obsolete words `dosior>error` and
+  \ `?dos-error`. Update and fix comments. Fix `(cat)`: the
+  \ border was not restored.
+  \
+  \ 2016-08-10: Move `dosior>ior` to the DOS module of the
+  \ kernel.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
+  \
+  \ 2017-01-04: Review the words to page in and page out the
+  \ Plus D interface: Use the port to page in, not the hook;
+  \ use Z80 opcodes, not `z80-asm`.
+  \
+  \ 2017-01-04: Compact the code, saving one block.
+  \
+  \ 2017-01-04: Convert `get-drive` and `set-drive` from
+  \ `z80-asm` to `z80-asm,`; make them independent to `need`;
+  \ improve their documentation.
+  \
+  \ 2017-01-05: Convert all assembly words from `z80-asm` to
+  \ `z80-asm,`: `(delete-file)`, `(>file)`, `(<file)`,
+  \ `(file>screen)`, `(<file-as-is)`, `(file?)`, `(cat)`,
+  \ `@dos`, `c@dos`, `c!dos`, `!dos`, `@dosvar`, `c@dosvar`,
+  \ `!dosvar`, `c!dosvar`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-02-05: Fix needing of `set-drive`.
+  \
+  \ 2017-02-07: Use `cconstant` for byte constants
+  \
+  \ 2017-02-08: Update and complete the paging tests `g.100h`
+  \ and `g.100i`. Make hook codes individually accessible to
+  \ `need`. Improve `set-drive` to return an error result and
+  \ move it to the kernel.
+  \
+  \ 2017-02-09: Improve all the Plus D memory fetch and store
+  \ words: smaller and faster. Compact the code, saving 4
+  \ blocks.
+  \
+  \ 2017-02-10: Rename `<file` to `file>`, and `<file-as-is` to
+  \ `file-as-is>`.  The new names are consistent with the
+  \ convention used in Forth.  Non-standard file words are
+  \ being unified in G+DOS, TR-DOS and +3DOS. Add `ufia1` and
+  \ `ufia2`.
+  \
+  \ 2017-02-11: Improve `file>` to support any useful
+  \ combination of implicit or explicit parameters (address and
+  \ length). Remove `file-as-is>`, which is not needed anymore.
+  \ Improve documentation.
+  \
+  \ 2017-02-12: Add `file-status`. Replace old versions of
+  \ `file?` with simpler `file-exists?`.  Add `file-start`,
+  \ `file-length`, `file-type`, `file-dir`. Rename `>ufia` to
+  \ `set-code-file`. Rename `filename!` to `set-filename`.
+  \
+  \ 2017-02-13: Make low-level factor words return an _ior_
+  \ instead of a _dosior_. It's more useful and saves one byte
+  \ per word pair. Rename `file-dir` to `file-dirdesc` and add
+  \ `file-dir#`. Improve documentation of `cat` words.  Move
+  \ the UFIA drive setting from `set-code-file` to lower
+  \ `set-filename`; this fixes `file-status`.  Rewrite `(cat`
+  \ to return an error result.
+  \
+  \ 2017-02-14: Add `find-file`.
+  \
+  \ 2017-02-15: Fix typo.
+  \
+  \ 2017-02-17: Fix markup in documentation.  Update cross
+  \ references.  Change markup of inline code that is not a
+  \ cross reference.
+  \
+  \ 2017-03-05: Remove old `need patch`. Fix documentation.
+  \
+  \ 2017-03-06: Prepare alternative implementation of `cat`.
+  \
+  \ 2017-03-07: Add `>ufia1`, `>ufia2`, `>ufiax`. Improve
+  \ documentation. Rename "plusd-in/out" to "dos-in/out", after
+  \ the notation used for +3DOS. Replace `cat` and related word
+  \ with a new, simpler implementation which uses the `pcat`
+  \ command code. Add `back-from-dos-error_` and `rename-file`.
+  \
+  \ 2017-03-10: Improve documentation.
+  \
+  \ 2017-03-11: Improve documentation.
 
   \ vim: filetype=soloforth

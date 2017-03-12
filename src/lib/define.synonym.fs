@@ -4,41 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ An implementation of Forth-2012 `synonym`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-10-25: First version of `synonym`, using `create
-  \ does>`.
-  \
-  \ 2015-12-23: New improved version, using `alias`. Keep the
-  \ first version, just in case.
-  \
-  \ 2016-04-18: Removed the old first version.
-  \
-  \ 2016-04-24: Add `need nextname`, because `nextname` has been
-  \ moved from the kernel to the library.
-  \
-  \ 2016-11-18: Improve documentation.
-  \
-  \ 2017-02-17: Update cross references.
 
 ( synonym )
 
@@ -74,5 +57,23 @@ need alias need nextname
   \ Origin: Forth-2012 (TOOLS EXT).
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-10-25: First version of `synonym`, using `create
+  \ does>`.
+  \
+  \ 2015-12-23: New improved version, using `alias`. Keep the
+  \ first version, just in case.
+  \
+  \ 2016-04-18: Removed the old first version.
+  \
+  \ 2016-04-24: Add `need nextname`, because `nextname` has been
+  \ moved from the kernel to the library.
+  \
+  \ 2016-11-18: Improve documentation.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

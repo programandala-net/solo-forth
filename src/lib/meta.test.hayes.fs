@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ this program tests the core words of an ans forth system.
@@ -15,7 +16,7 @@
   \ figured out how to test key, quit, abort, or abort"...  i
   \ also haven't thought of a way to test environment?...
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ John Hayes S1I, 1995-11-27.
@@ -23,7 +24,7 @@
   \ Marcos Cruz (programandala.net) adapted it to Solo Forth,
   \ 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ Original version:
@@ -37,24 +38,6 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-05-09: Start.
-  \
-  \ 2016-05-10: First working version.
-  \
-  \ 2016-05-14: Update: `evaluate` has been moved to the
-  \ library.
-  \
-  \ 2016-05-17: Need `>body`, which has been moved to the
-  \ library.
-  \
-  \ 2016-11-26: Remove `warnings off`, because now warnings are
-  \ deactivated by default.
-  \
-  \ 2017-02-19: Need `do`, which has been moved to the library.
 
 ( hayes-test )
 
@@ -882,5 +865,23 @@ testing( dictionary search rules)
 { : gdx  123 ; : gdx  gdx 234 ; -> } { gdx -> 123 234 }
 
 decimal cr .( Test passed) cr
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-05-09: Start.
+  \
+  \ 2016-05-10: First working version.
+  \
+  \ 2016-05-14: Update: `evaluate` has been moved to the
+  \ library.
+  \
+  \ 2016-05-17: Need `>body`, which has been moved to the
+  \ library.
+  \
+  \ 2016-11-26: Remove `warnings off`, because now warnings are
+  \ deactivated by default.
+  \
+  \ 2017-02-19: Need `do`, which has been moved to the library.
 
   \ vim: filetype=soloforth

@@ -4,57 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Tool words to list word lists.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015..2016: Main development.
-  \
-  \ 2016-04-11: Documented.
-  \
-  \ 2016-05-01: Update.
-  \
-  \ 2016-05-02: Join two blocks to save space.
-  \
-  \ 2016-05-05: Remove unnecessary `space` from `.wid`.
-  \
-  \ 2016-05-06: Improve printing of nameless word lists.
-  \
-  \ 2016-11-17: Use `?(` instead of `[if]`.
-  \
-  \ 2017-01-06: Make all words independent to `need`. Fix and
-  \ finish `wordlists`.
-  \
-  \ 2017-01-07: Update `wid>name` to `wordlist>name @`,
-  \ `wid>link` to `wordlist>link`,  and `wid>vocabulary` to
-  \ `wordlist>vocabulary`, after the changes in the word-list
-  \ interface words. Rename `.wid` to `.wordlist`.  Rename
-  \ `named-wid` to `latest>wordlist` in documentation.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Remove remaining `exit` at the end of
-  \ conditional interpretation.
-  \
-  \ 2017-02-17: Update cross references.
 
 ( .current .context .wordlist )
 
@@ -148,5 +115,39 @@
   \ See also: `.context`, `.current`, `.wordlist`, `set-order`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015..2016: Main development.
+  \
+  \ 2016-04-11: Documented.
+  \
+  \ 2016-05-01: Update.
+  \
+  \ 2016-05-02: Join two blocks to save space.
+  \
+  \ 2016-05-05: Remove unnecessary `space` from `.wid`.
+  \
+  \ 2016-05-06: Improve printing of nameless word lists.
+  \
+  \ 2016-11-17: Use `?(` instead of `[if]`.
+  \
+  \ 2017-01-06: Make all words independent to `need`. Fix and
+  \ finish `wordlists`.
+  \
+  \ 2017-01-07: Update `wid>name` to `wordlist>name @`,
+  \ `wid>link` to `wordlist>link`,  and `wid>vocabulary` to
+  \ `wordlist>vocabulary`, after the changes in the word-list
+  \ interface words. Rename `.wid` to `.wordlist`.  Rename
+  \ `named-wid` to `latest>wordlist` in documentation.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

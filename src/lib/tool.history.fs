@@ -6,35 +6,24 @@
   \ XXX UNDER DEVELOPMENT
 
   \ Last modified: 201703121646
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ The command line history tool.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-05-05: Update `s=` to `str=`.
-  \
-  \ 2016-05-07: Make block titles compatible with `indexer`.
-  \
-  \ 2017-01-05: Update from old system bank to far memory.
-  \
-  \ 2017-03-12: Update the names of `stringer` words and
-  \ mentions to it.
 
 ( history )
 
@@ -377,5 +366,17 @@ variable history
         repeat  drop ;
 
 \ history-on
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-05-05: Update `s=` to `str=`.
+  \
+  \ 2016-05-07: Make block titles compatible with `indexer`.
+  \
+  \ 2017-01-05: Update from old system bank to far memory.
+  \
+  \ 2017-03-12: Update the names of `stringer` words and
+  \ mentions to it.
 
   \ vim: filetype=soloforth

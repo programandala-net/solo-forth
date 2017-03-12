@@ -4,42 +4,25 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Several implementations of the standard Eaker's `case`
   \ structure and some variants of `of`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-04-24: Add `need pick`, because `pick` has been moved
-  \ from the kernel to the library.
-  \
-  \ 2016-05-06: Replace two remaining `[compile]` with
-  \ `postpone`.
-  \
-  \ 2016-08-05: Compact the code to save some blocks.
-  \
-  \ 2016-11-16: Update the space used by every version. Make
-  \ the default version of `case` use `alias` if it's already
-  \ defined.
-  \
-  \ 2017-01-19: Remove `exit` at the end of conditional
-  \ interpretation.
 
 ( case )
 
@@ -339,5 +322,23 @@ need between
   \     2 3 or-of  ." two or three"  endof
   \     4 of  ." four"  endof
   \   endcase ;
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-24: Add `need pick`, because `pick` has been moved
+  \ from the kernel to the library.
+  \
+  \ 2016-05-06: Replace two remaining `[compile]` with
+  \ `postpone`.
+  \
+  \ 2016-08-05: Compact the code to save some blocks.
+  \
+  \ 2016-11-16: Update the space used by every version. Make
+  \ the default version of `case` use `alias` if it's already
+  \ defined.
+  \
+  \ 2017-01-19: Remove `exit` at the end of conditional
+  \ interpretation.
 
   \ vim: filetype=soloforth

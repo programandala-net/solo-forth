@@ -4,28 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Tool to print left justified texts.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2017-02-03: Compact the code, saving two blocks.
 
 ( print )
 
@@ -118,5 +114,10 @@ variable print-width
   \ 4 value indentation
   \ : paragraph ( ca len -- )
   \   print-cr indentation print-indentation print ;
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2017-02-03: Compact the code, saving two blocks.
 
   \ vim: filetype=soloforth

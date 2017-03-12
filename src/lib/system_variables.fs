@@ -4,41 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Constants for the system variables.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-04-23: Fix: graphic coordinates variables were not
-  \ included in the block title.
-  \
-  \ 2016-05-01: Add `os-attr-p`, `os-mask-p`, `os-attr-t`,
-  \ `os-mask-t`
-  \
-  \ 2017-01-10: Document all words.
-  \
-  \ 2017-01-18: Improve documentation of `os-frames`.
-  \
-  \ 2017-01-31: Add the decimal prefix to addresses, in case
-  \ `base` is not decimal.
-  \
-  \ 2017-02-17: Update cross references.
 
 ( os-chars os-chans os-flags2 os-seed os-frames os-udg )
 
@@ -242,5 +225,23 @@
   \ printing.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-23: Fix: graphic coordinates variables were not
+  \ included in the block title.
+  \
+  \ 2016-05-01: Add `os-attr-p`, `os-mask-p`, `os-attr-t`,
+  \ `os-mask-t`
+  \
+  \ 2017-01-10: Document all words.
+  \
+  \ 2017-01-18: Improve documentation of `os-frames`.
+  \
+  \ 2017-01-31: Add the decimal prefix to addresses, in case
+  \ `base` is not decimal.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

@@ -7,12 +7,12 @@
 
   \ Last modified: 201702220028
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Z80 assembler tools, independent from the actual assembler.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Original code by Frank Sergeant, for Pygmy Forth.
@@ -20,7 +20,7 @@
   \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
   \ 2015, 2016.
 
-  \ -------------------------------------------------------------
+  \ ===========================================================--
   \ License
 
   \ You may do whatever you want with this work, so long as you

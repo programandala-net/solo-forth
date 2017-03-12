@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702280017
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ A standard implemention of `value`, `2value` and `to`.
@@ -16,31 +17,17 @@
   \ "data.value.default.fsb", which uses the non-standard word
   \ `2to`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2015-09-25: Benchmark.
-  \
-  \ 2016-05-10: Improve `2value`.
-  \
-  \ 2016-05-11: Document.
-  \
-  \ 2016-05-17: Need `>body`, which has been moved to the
-  \ library.
-  \
-  \ 2017-02-27: Improve documentation.
 
 ( value 2value to )
 
@@ -111,5 +98,19 @@ need >body
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-09-25: Benchmark.
+  \
+  \ 2016-05-10: Improve `2value`.
+  \
+  \ 2016-05-11: Document.
+  \
+  \ 2016-05-17: Need `>body`, which has been moved to the
+  \ library.
+  \
+  \ 2017-02-27: Improve documentation.
 
   \ vim: filetype=soloforth

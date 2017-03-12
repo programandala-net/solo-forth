@@ -6,13 +6,14 @@
   \ XXX UNDER DEVELOPMENT
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Towers of Hanoi puzzle.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Raul Deluth Miller, original algorithm, published on
@@ -26,26 +27,12 @@
   \ Marcos Cruz (programandala.net), version for Solo Forth,
   \ 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015..2016: Start.
-  \
-  \ 2016-04-17: Added the requisite of `recurse`, which is not
-  \ in the kernel anymore. Updated the file headers.
-  \
-  \ 2016-04-24: Remove `[char]`, which has been moved to the
-  \ library.
-  \
-  \ 2017-02-19: Replace `do`, which has been moved to the
-  \ library, with `?do`.
 
 ( hanoi )
 
@@ -152,5 +139,19 @@ mode64 page
   .( Type 'n run' to play where) cr
   .( 'n' is the number of disks.) cr
   \  <-------------------------->
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015..2016: Start.
+  \
+  \ 2016-04-17: Added the requisite of `recurse`, which is not
+  \ in the kernel anymore. Updated the file headers.
+  \
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
+  \
+  \ 2017-02-19: Replace `do`, which has been moved to the
+  \ library, with `?do`.
 
   \ vim: filetype=soloforth

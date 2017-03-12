@@ -6,47 +6,26 @@
   \ XXX UNDER DEVELOPMENT
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ ROM calculator support.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-09-23: Start. Main development, as part of the
-  \ floating-point module.
-  \
-  \ 2016-04-11: Revision. Code reorganized. Improvements.
-  \
-  \ 2016-04-13: Fixes and improvements. First usable version.
-  \
-  \ 2016-04-18: Extracted the code from the floating-point
-  \ module, in order to reuse it. Much improved. Added `if then
-  \ else`. Added `int`.
-  \
-  \ 2016-04-20: Improved `2dup`. Commented out `=`, `<>`, `<`,
-  \ `<=`, `>` and `>=`, which can not be used yet.
-  \
-  \ 2016-10-28: Fix block title that caused `>=` and other
-  \ calculator operators be found by `need` instead of the
-  \ integer ones, because this module comes before the integer
-  \ operators in the library disk.
-
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ To-do
 
   \ XXX TODO -- Move the stack and make it configurable. The
@@ -343,3 +322,27 @@ get-current  calculator-wordlist set-current
 
 set-current  previous
   \ restore the current word list and the search order
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-09-23: Start. Main development, as part of the
+  \ floating-point module.
+  \
+  \ 2016-04-11: Revision. Code reorganized. Improvements.
+  \
+  \ 2016-04-13: Fixes and improvements. First usable version.
+  \
+  \ 2016-04-18: Extracted the code from the floating-point
+  \ module, in order to reuse it. Much improved. Added `if then
+  \ else`. Added `int`.
+  \
+  \ 2016-04-20: Improved `2dup`. Commented out `=`, `<>`, `<`,
+  \ `<=`, `>` and `>=`, which can not be used yet.
+  \
+  \ 2016-10-28: Fix block title that caused `>=` and other
+  \ calculator operators be found by `need` instead of the
+  \ integer ones, because this module comes before the integer
+  \ operators in the library disk.
+
+  \ vim: filetype=soloforth

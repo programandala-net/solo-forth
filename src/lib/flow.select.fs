@@ -4,33 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ `select`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-04-24: Remove `char`, which has been moved to the
-  \ library.
-  \
-  \ 2016-12-30: Compact the code, saving one block.
-  \
-  \ 2017-01-23: Move `select-test` to the tests module.
 
 ( select )
 
@@ -113,5 +104,15 @@
   \ ( Compilation: -- orig )
   \ ( Run-time: x0 x1 x2 -- x0 f )
   postpone (range)  postpone if ; immediate  -->
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-24: Remove `char`, which has been moved to the
+  \ library.
+  \
+  \ 2016-12-30: Compact the code, saving one block.
+  \
+  \ 2017-01-23: Move `select-test` to the tests module.
 
   \ vim: filetype=soloforth

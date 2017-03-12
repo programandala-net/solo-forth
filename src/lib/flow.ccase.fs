@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702280008
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ `ccase` is a positional control structure that uses the
@@ -20,33 +21,22 @@
   \ `?ccase` is a simpler variant of `ccase` with no default
   \ option.  Data space used (without requirements): 34 bytes.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Credit
 
   \ `?ccase` was inspired by MMSFORTH's `acase`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-04-28: Write `?ccase`, `ccase0`.
-  \
-  \ 2016-11-26: Improve `(ccase)`.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-02-27: Fix and improve documentation.
 
 ( ?ccase )
 
@@ -278,5 +268,16 @@ need char-position?
   \ See also: `ccase0`, `?ccase`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-28: Write `?ccase`, `ccase0`.
+  \
+  \ 2016-11-26: Improve `(ccase)`.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-27: Fix and improve documentation.
 
   \ vim: filetype=soloforth

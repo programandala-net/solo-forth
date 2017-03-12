@@ -4,115 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702282329
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Development tests.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-04-24: Remove `[char]` and `char`, which have been
-  \ moved to the library.
-  \
-  \ 2016-04-28: Move the tests of `type-center`, `type-left`
-  \ and `type-right` from the module "printing.type.fsb".  Add
-  \ `?ccase-test`, `ccase0-test`. Add `jk-test`.
-  \
-  \ 2016-05-01: Add `color-test`.
-  \
-  \ 2016-05-05: Add `search-test`.
-  \
-  \ 2016-05-07: Add `need-test`, `?(-test`.
-  \
-  \ 2016-05-17: Need `>body`, which has been moved to the
-  \ library.
-  \
-  \ 2016-08-05: Move `begincase-test` from
-  \ <lib/flow.begincase.fsb>.
-  \
-  \ 2016-10-26: Add `a>e-test`.
-  \
-  \ 2016-11-13: Update the names of far-memory words.
-  \
-  \ 2016-11-25: Move `:switch-test` and `[switch-test` from
-  \ <flow.bracket-switch.fsb>. Add tests for `[:`.
-  \
-  \ 2016-11-26: Need `catch`, which has been moved to the
-  \ library.
-  \
-  \ 2016-11-27: Move `doer-test` from the `doer` module.
-  \
-  \ 2016-12-03: Add `nest-need-test`.
-  \
-  \ 2016-12-07: Add `transient-test`.
-  \
-  \ 2016-12-07: Add `transient-asm-test`.
-  \
-  \ 2016-12-08: Rename the module filename with uppercase
-  \ "MISC" after the new convention.
-  \
-  \ 2016-12-15: Move `associative-list-test` from the
-  \ `associative-list` module.
-  \
-  \ 2016-12-16: Add `sconstants-test` and `/sconstants-test`.
-  \
-  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
-  \ in the kernel.
-  \
-  \ 2016-12-24: Add `window-test`.
-  \
-  \ 2016-12-29: Move `transient-test` from block 1.
-  \
-  \ 2017-01-02: Use `z80-asm,` in `transient-asm-test`.
-  \
-  \ 2017-01-05: Remove the tests of the old `z80-asm`
-  \ assembler.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
-  \
-  \ 2017-01-06: Update `voc-link` to `latest-wordlist`.
-  \
-  \ 2017-01-20: Add `>name-test`.
-  \
-  \ 2017-01-22: Add `substitute-test`.
-  \
-  \ 2017-01-23: Move `select-test` from <flow.select.fsb>; move
-  \ `fzx-text` from <screen_mode.fzx.fsb>; move
-  \ `edit-sound-test` from <sound.128.editor.fsb>.
-  \
-  \ 2017-02-01: Replace `upper` with `lower`, because `upper`
-  \ has been moved to the library.
-  \
-  \ 2017-02-08: Update the usage of `set-drive`, which now
-  \ returns an error result. Move `.tape` from the tape module.
-  \
-  \ 2017-02-17: Update notation "behaviour" to "action".
-  \
-  \ 2017-02-19: Add `-do-test`.  Replace `do`, which has been
-  \ moved to the library, with `?do`.
-  \
-  \ 2017-02-21: Add `bank-test`.
-  \
-  \ 2017-02-24: Add `udg-row[-test`.
-  \
-  \ 2017-02-26: Update "hp" notation to "np", after the changes
-  \ in the kernel.
-  \
-  \ 2017-02-28: Add `zx7s-test`.
 
 ( zx7s-test )
 
@@ -1043,5 +952,97 @@ blk @ 1+ blk @ 2+ thru
 : hello ( -- )
 
  ;
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-24: Remove `[char]` and `char`, which have been
+  \ moved to the library.
+  \
+  \ 2016-04-28: Move the tests of `type-center`, `type-left`
+  \ and `type-right` from the module "printing.type.fsb".  Add
+  \ `?ccase-test`, `ccase0-test`. Add `jk-test`.
+  \
+  \ 2016-05-01: Add `color-test`.
+  \
+  \ 2016-05-05: Add `search-test`.
+  \
+  \ 2016-05-07: Add `need-test`, `?(-test`.
+  \
+  \ 2016-05-17: Need `>body`, which has been moved to the
+  \ library.
+  \
+  \ 2016-08-05: Move `begincase-test` from
+  \ <lib/flow.begincase.fsb>.
+  \
+  \ 2016-10-26: Add `a>e-test`.
+  \
+  \ 2016-11-13: Update the names of far-memory words.
+  \
+  \ 2016-11-25: Move `:switch-test` and `[switch-test` from
+  \ <flow.bracket-switch.fsb>. Add tests for `[:`.
+  \
+  \ 2016-11-26: Need `catch`, which has been moved to the
+  \ library.
+  \
+  \ 2016-11-27: Move `doer-test` from the `doer` module.
+  \
+  \ 2016-12-03: Add `nest-need-test`.
+  \
+  \ 2016-12-07: Add `transient-test`.
+  \
+  \ 2016-12-07: Add `transient-asm-test`.
+  \
+  \ 2016-12-08: Rename the module filename with uppercase
+  \ "MISC" after the new convention.
+  \
+  \ 2016-12-15: Move `associative-list-test` from the
+  \ `associative-list` module.
+  \
+  \ 2016-12-16: Add `sconstants-test` and `/sconstants-test`.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
+  \
+  \ 2016-12-24: Add `window-test`.
+  \
+  \ 2016-12-29: Move `transient-test` from block 1.
+  \
+  \ 2017-01-02: Use `z80-asm,` in `transient-asm-test`.
+  \
+  \ 2017-01-05: Remove the tests of the old `z80-asm`
+  \ assembler.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-06: Update `voc-link` to `latest-wordlist`.
+  \
+  \ 2017-01-20: Add `>name-test`.
+  \
+  \ 2017-01-22: Add `substitute-test`.
+  \
+  \ 2017-01-23: Move `select-test` from <flow.select.fsb>; move
+  \ `fzx-text` from <screen_mode.fzx.fsb>; move
+  \ `edit-sound-test` from <sound.128.editor.fsb>.
+  \
+  \ 2017-02-01: Replace `upper` with `lower`, because `upper`
+  \ has been moved to the library.
+  \
+  \ 2017-02-08: Update the usage of `set-drive`, which now
+  \ returns an error result. Move `.tape` from the tape module.
+  \
+  \ 2017-02-17: Update notation "behaviour" to "action".
+  \
+  \ 2017-02-19: Add `-do-test`.  Replace `do`, which has been
+  \ moved to the library, with `?do`.
+  \
+  \ 2017-02-21: Add `bank-test`.
+  \
+  \ 2017-02-24: Add `udg-row[-test`.
+  \
+  \ 2017-02-26: Update "hp" notation to "np", after the changes
+  \ in the kernel.
+  \
+  \ 2017-02-28: Add `zx7s-test`.
 
   \ vim: filetype=soloforth

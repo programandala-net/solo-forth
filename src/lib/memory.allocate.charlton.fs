@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ A standard implementation of the memory-allocation word
@@ -57,7 +58,7 @@
   \ of the size field to mark "in-use" nodes so that they are
   \ disregarded without a separate test.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Copyright Gordon Charlton, 1994-09-12.
@@ -65,7 +66,7 @@
   \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
   \ 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ Solo Forth version of the code:
@@ -82,17 +83,6 @@
   \ as to its fitness for any purpose. Tell me about any bugs.
   \ Tell me how much you like it.  <gordon at charlton dot
   \ demon dot co dot uk>
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-05-18: Need `vocabulary`, which has been moved to the
-  \ library.
-  \
-  \ 2016-11-26: Improve `>prev`.
-  \
-  \ 2016-12-30: Compact the code, saving three blocks. Change
-  \ the stack notation after the convention used in Solo Forth.
 
 ( heap )
 
@@ -572,5 +562,16 @@ forth-wordlist set-current
   \ ior is zero. As this is a standard word it takes an
   \ unsigned size argument, but excessive requests fail
   \ automatically, as with `allocate`.
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-05-18: Need `vocabulary`, which has been moved to the
+  \ library.
+  \
+  \ 2016-11-26: Improve `>prev`.
+  \
+  \ 2016-12-30: Compact the code, saving three blocks. Change
+  \ the stack notation after the convention used in Solo Forth.
 
   \ vim: filetype=soloforth

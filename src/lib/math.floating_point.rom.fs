@@ -6,65 +6,27 @@
   \ XXX UNDER DEVELOPMENT
 
   \ Last modified: 201702221608
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ A floating point implementation that uses the ROM
   \ calculator.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-09-23: Start. Main development.
-  \
-  \ 2016-04-11: Revision. Code reorganized. First improvements.
-  \
-  \ 2016-04-12: Started `f.` and `f,`.
-  \
-  \ 2016-04-13: Fixes and improvements. First usable version.
-  \
-  \ 2016-04-18: Made `f.` immune to the ROM bug. Fixed
-  \ `ftrunc`. Moved the ROM calculator to its own file.
-  \ Improved. Added `floor`.
-  \
-  \ 2016-04-20: Added `fnip`, `ftuck`, `f2dup`, `f2drop`.
-  \ Wrote `calculator-command>flag` and rewrote `f=`, `f<>`,
-  \ `f<`, `f<=`, `f>` and `f>=` after it, because calling the
-  \ equivalents command of the ROM calculator directly always
-  \ returned a true flag; the details of the debugging are
-  \ noted in the ROM calculator module. Fixed `fmax` and
-  \ `fmin`.
-  \
-  \ 2016-04-21: Added `fround`, `f~`, `f~abs`, `f~rel`,
-  \ `f~relabs`, `f==`, `flnp1`, `?fln`, `'?flnp1`.
-  \
-  \ 2016-05-05: Update `s=` to `str=`.
-  \
-  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
-  \ to `jpnext,`, after the change in the kernel.
-  \
-  \ 2017-01-02: Convert `f!` and `f@` from `z80-asm` to
-  \ `z80-asm,`.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
-  \ Update `also assembler` to `assembler-wordlist >order`.
-  \
-  \ 2017-02-17: Update cross references.
-
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ To-do
 
   \ XXX TODO -- Write `fliteral`, `ffield:`, `fvalue`,
@@ -795,5 +757,44 @@ need alias
 
 ' noop alias dfalign   ( -- )       immediate
 ' noop alias dfaligned ( a -- dfa ) immediate
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-09-23: Start. Main development.
+  \
+  \ 2016-04-11: Revision. Code reorganized. First improvements.
+  \
+  \ 2016-04-12: Started `f.` and `f,`.
+  \
+  \ 2016-04-13: Fixes and improvements. First usable version.
+  \
+  \ 2016-04-18: Made `f.` immune to the ROM bug. Fixed
+  \ `ftrunc`. Moved the ROM calculator to its own file.
+  \ Improved. Added `floor`.
+  \
+  \ 2016-04-20: Added `fnip`, `ftuck`, `f2dup`, `f2drop`.
+  \ Wrote `calculator-command>flag` and rewrote `f=`, `f<>`,
+  \ `f<`, `f<=`, `f>` and `f>=` after it, because calling the
+  \ equivalents command of the ROM calculator directly always
+  \ returned a true flag; the details of the debugging are
+  \ noted in the ROM calculator module. Fixed `fmax` and
+  \ `fmin`.
+  \
+  \ 2016-04-21: Added `fround`, `f~`, `f~abs`, `f~rel`,
+  \ `f~relabs`, `f==`, `flnp1`, `?fln`, `'?flnp1`.
+  \
+  \ 2016-05-05: Update `s=` to `str=`.
+  \
+  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
+  \ to `jpnext,`, after the change in the kernel.
+  \
+  \ 2017-01-02: Convert `f!` and `f@` from `z80-asm` to
+  \ `z80-asm,`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \ Update `also assembler` to `assembler-wordlist >order`.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

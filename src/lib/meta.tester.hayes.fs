@@ -4,13 +4,14 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Development tests.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ John Hayes S1I, 1995-11-27.
@@ -18,7 +19,7 @@
   \ Marcos Cruz (programandala.net) adapted it to Solo Forth,
   \ 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ Original version:
@@ -32,13 +33,6 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-05-09: First version.
-  \
-  \ 2017-02-19: Need `do`, which has been moved to the library.
 
 ( hayes-tester )
 
@@ -92,5 +86,12 @@ create actual-results $20 cells allot
   then ;
   \ Compare stack (expected) contents with saved (actual)
   \ contents.
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-05-09: First version.
+  \
+  \ 2017-02-19: Need `do`, which has been moved to the library.
 
   \ vim: filetype=soloforth

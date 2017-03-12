@@ -4,48 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words that make filter effects to the whole screen.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
-  \ in the kernel.
-  \
-  \ 2016-12-30: Compact the code, saving one block.
-  \
-  \ 2017-01-02: Convert `inverted` from `z80-asm` to `z80-asm,`
-  \ and fix it.
-  \
-  \ 2017-01-05: Convert `water` from `z80-asm` to `z80-asm,`.
-  \ Improve documentation.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-30: Add `blackout`.
-  \
-  \ 2017-02-03: Improve documentation.
-  \
-  \ 2017-02-17: Update cross references.
 
 ( fade )
 
@@ -158,5 +134,30 @@ code blackout ( -- )
   \ See also: `fade`, `cls`, `attr-cls`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
+  \
+  \ 2016-12-30: Compact the code, saving one block.
+  \
+  \ 2017-01-02: Convert `inverted` from `z80-asm` to `z80-asm,`
+  \ and fix it.
+  \
+  \ 2017-01-05: Convert `water` from `z80-asm` to `z80-asm,`.
+  \ Improve documentation.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-30: Add `blackout`.
+  \
+  \ 2017-02-03: Improve documentation.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

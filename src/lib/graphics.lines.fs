@@ -4,48 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words to draw lines.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-05-07: Make block titles compatible with `indexer`.
-  \
-  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
-  \ in the kernel.
-  \
-  \ 2016-12-25: Rename `rdraw` to `rdraw176`, and `adraw` to
-  \ `adraw176`. Improve documentation. Convert `rdraw176` to
-  \ the `z80-asm,` assembler. First steps to write `rdraw` with
-  \ a modified version of the ROM routine.
-  \
-  \ 2016-12-26: Add `aline176`.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
-  \
-  \ 2017-01-12: Fix and improve documentation.
-  \
-  \ 2017-01-28: Improve documentation.
-  \
-  \ 2017-02-03: Compact the code, saving one block.
-  \
-  \ 2017-02-17: Update cross references.
 
 ( rdraw176 x1 incx y1 incy y )
 
@@ -368,5 +344,30 @@ need x1 need incx need y1 need incy
   \ See also: `rdraw176`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-05-07: Make block titles compatible with `indexer`.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
+  \
+  \ 2016-12-25: Rename `rdraw` to `rdraw176`, and `adraw` to
+  \ `adraw176`. Improve documentation. Convert `rdraw176` to
+  \ the `z80-asm,` assembler. First steps to write `rdraw` with
+  \ a modified version of the ROM routine.
+  \
+  \ 2016-12-26: Add `aline176`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-12: Fix and improve documentation.
+  \
+  \ 2017-01-28: Improve documentation.
+  \
+  \ 2017-02-03: Compact the code, saving one block.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

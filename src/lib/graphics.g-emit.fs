@@ -4,61 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703041851
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words to print characters at high resolution coordinates.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-09-03: First version.
-  \
-  \ 2016-04-23: Rename "hires-" prefix to "g-". Rename
-  \ `g-emit-udg` to `g-emit-0udg`, because zero-index is used,
-  \ instead of the default UDG char codes 128..255. Add
-  \ `g-emit-udg` for codes 128..255. Improve documentation.
-  \ First versions of `g-emitted` and `g-cr`.
-  \
-  \ 2016-10-11: Add `first-udg`.
-  \
-  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
-  \ in the kernel.
-  \
-  \ 2017-01-02: Convert all assembler words from `z80-asm` to
-  \ `z80-asm,`.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
-  \
-  \ 2017-02-01: Compact the code. Make words individually
-  \ accessible to `need`.  Finish `g-cr` and `g-emitted`.
-  \ Improve documentation. Fix `g-emit-routine` (a bug
-  \ introduced during the assembly conversion one month ago).
-  \
-  \ 2017-02-03: Fix `g-cr` and improve it with scroll.
-  \
-  \ 2017-02-04: Adapt to 0-index-only UDG, after the changes in
-  \ the kernel: Remove `g-emit-udg`; rename `g-emit-0udg` to
-  \ `g-emit-udg`. Compact the code, saving one block.
-  \
-  \ 2017-02-17: Update cross references.  Change markup of
-  \ inline code that is not a cross reference.
-  \
-  \ 2017-03-04: Update naming convention of Z80 routines, after
-  \ the changes in the kernel.
 
 ( (g-emit g-emit g-type )
 
@@ -237,5 +200,43 @@ create g-emit_ ( -- a ) asm
   \ See also: `g-emit`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-09-03: First version.
+  \
+  \ 2016-04-23: Rename "hires-" prefix to "g-". Rename
+  \ `g-emit-udg` to `g-emit-0udg`, because zero-index is used,
+  \ instead of the default UDG char codes 128..255. Add
+  \ `g-emit-udg` for codes 128..255. Improve documentation.
+  \ First versions of `g-emitted` and `g-cr`.
+  \
+  \ 2016-10-11: Add `first-udg`.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
+  \
+  \ 2017-01-02: Convert all assembler words from `z80-asm` to
+  \ `z80-asm,`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-02-01: Compact the code. Make words individually
+  \ accessible to `need`.  Finish `g-cr` and `g-emitted`.
+  \ Improve documentation. Fix `g-emit-routine` (a bug
+  \ introduced during the assembly conversion one month ago).
+  \
+  \ 2017-02-03: Fix `g-cr` and improve it with scroll.
+  \
+  \ 2017-02-04: Adapt to 0-index-only UDG, after the changes in
+  \ the kernel: Remove `g-emit-udg`; rename `g-emit-0udg` to
+  \ `g-emit-udg`. Compact the code, saving one block.
+  \
+  \ 2017-02-17: Update cross references.  Change markup of
+  \ inline code that is not a cross reference.
+  \
+  \ 2017-03-04: Update naming convention of Z80 routines, after
+  \ the changes in the kernel.
 
   \ vim: filetype=soloforth

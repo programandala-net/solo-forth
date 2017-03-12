@@ -6,44 +6,32 @@
   \ XXX UNDER DEVELOPMENT
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ An alternative implementation of the
   \ common heap based on code written by Javier Gil.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Credit
 
   \ Based on "Gestor de memoria dinámica (version 1)" by Javier
   \ Gil, from his book _Introducción a Forth_ (2007-01),
   \ <http://disc.ua.es/~gil/#forth>.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-11-18: Start.
-  \
-  \ 2015-11-21: Changes.
-  \
-  \ 2016-04-24: Remove `[char]`, which has been moved to the
-  \ library.
-  \
-  \ 2017-02-19: Replace `do`, which has been moved to the
-  \ library, with `?do`.
 
 ( create-heap )
 
@@ -194,6 +182,19 @@ need reserve need alias
 
   \ Print the map of the current heap. Occupied chunks are
   \ marked with a "x"; free chunks are marked with a "-".
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-11-18: Start.
+  \
+  \ 2015-11-21: Changes.
+  \
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
+  \
+  \ 2017-02-19: Replace `do`, which has been moved to the
+  \ library, with `?do`.
 
   \ vim: filetype=soloforth
 

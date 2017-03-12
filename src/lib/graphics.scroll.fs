@@ -4,47 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words to scroll and pan the screen.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
-  \ in the kernel.
-  \
-  \ 2017-01-04: Convert `scroll-1px-up` and `(scroll-1px-up)`
-  \ from `z80-asm` to `z80-asm,`. Improve documentation. Fix:
-  \ add missing `ret,` to `(scroll-1px-up)`.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
-  \
-  \ 2017-02-02: Make words individually accessible to `need`.
-  \ Improve documentation. Add `scroll-#px-up`.
-  \
-  \ 2017-02-03: Rename `scroll-1px-right` to `pixel-pan-right`;
-  \ `scroll-1px-up` to `pixel-scroll-up`; `scroll-#px-up` to
-  \ `pixels-scroll-up`. Add `pixels-pan-right`. Factor
-  \ `(pixel-pan-right` from `pixel-pan-right`. Improve
-  \ documentation. Fix `(pixel-scroll-up` to erase the last
-  \ pixel row of the screen.
-  \
-  \ 2017-02-17: Update cross references.
 
 ( (pixel-pan-right pixel-pan-right pixels-pan-right )
 
@@ -186,5 +163,29 @@ code pixel-scroll-up ( -- )
   \ See also: `pixel-scroll-up`, `pixels-pan-right`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
+  \
+  \ 2017-01-04: Convert `scroll-1px-up` and `(scroll-1px-up)`
+  \ from `z80-asm` to `z80-asm,`. Improve documentation. Fix:
+  \ add missing `ret,` to `(scroll-1px-up)`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-02-02: Make words individually accessible to `need`.
+  \ Improve documentation. Add `scroll-#px-up`.
+  \
+  \ 2017-02-03: Rename `scroll-1px-right` to `pixel-pan-right`;
+  \ `scroll-1px-up` to `pixel-scroll-up`; `scroll-#px-up` to
+  \ `pixels-scroll-up`. Add `pixels-pan-right`. Factor
+  \ `(pixel-pan-right` from `pixel-pan-right`. Improve
+  \ documentation. Fix `(pixel-scroll-up` to erase the last
+  \ pixel row of the screen.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

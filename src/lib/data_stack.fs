@@ -4,78 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703112300
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words that manipulate the data stack.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-06-22: Add `2nip`.
-  \
-  \ 2015-10-16: Move `roll` from the kernel.
-  \
-  \ 2015-11-09: Add `swapped`.
-  \
-  \ 2015-11-22: Add `3drop`, `4drop`.
-  \
-  \ 2015-12-16: Add `nup`, `drup`, `dip`.
-  \
-  \ 2015-12-22: Move `3dup` from the assembler and rewrite in
-  \ Z80.
-  \
-  \ 2016-02-26: Add `ndrop`, `2ndrop`.
-  \
-  \ 2016-04-24: Move `pick` from the kernel.
-  \
-  \ 2016-05-02: Join several blocks to save space.
-  \
-  \ 2016-11-17: Use `?(` instead of `[if]`.
-  \
-  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
-  \ to `jpnext,`, after the change in the kernel.
-  \
-  \ 2017-01-01: Convert `roll` from `z80-asm` to `z80-asm,` and
-  \ fix its needing.
-  \
-  \ 2017-01-02: Convert `ndrop` and 2ndrop` from `z80-asm` to
-  \ Z80 opcodes.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
-  \
-  \ 2017-01-07: Add `>true`, `2>true`, `>false`, `2>false`.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-31: Improve documentation of `swapped`.
-  \
-  \ 2017-02-16: Fix typo in documentation of `2ndrop`.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-02-21: Need `unresolved`, which now is optional, not
-  \ part of the assembler.
-  \
-  \ 2017-02-22: Compact the code, saving one block. Fix needing
-  \ of `ndrop`.
-  \
-  \ 2017-03-11: Need `>mark`, which now is optional, not
-  \ included in the assembler by default.
 
 ( 2nip pick roll )
 
@@ -459,5 +405,60 @@ code >false ( x -- false ) E1 c, ' false jp, end-code ?)
   \ See also: `>true`, `2>false`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-06-22: Add `2nip`.
+  \
+  \ 2015-10-16: Move `roll` from the kernel.
+  \
+  \ 2015-11-09: Add `swapped`.
+  \
+  \ 2015-11-22: Add `3drop`, `4drop`.
+  \
+  \ 2015-12-16: Add `nup`, `drup`, `dip`.
+  \
+  \ 2015-12-22: Move `3dup` from the assembler and rewrite in
+  \ Z80.
+  \
+  \ 2016-02-26: Add `ndrop`, `2ndrop`.
+  \
+  \ 2016-04-24: Move `pick` from the kernel.
+  \
+  \ 2016-05-02: Join several blocks to save space.
+  \
+  \ 2016-11-17: Use `?(` instead of `[if]`.
+  \
+  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
+  \ to `jpnext,`, after the change in the kernel.
+  \
+  \ 2017-01-01: Convert `roll` from `z80-asm` to `z80-asm,` and
+  \ fix its needing.
+  \
+  \ 2017-01-02: Convert `ndrop` and 2ndrop` from `z80-asm` to
+  \ Z80 opcodes.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-07: Add `>true`, `2>true`, `>false`, `2>false`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-31: Improve documentation of `swapped`.
+  \
+  \ 2017-02-16: Fix typo in documentation of `2ndrop`.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-21: Need `unresolved`, which now is optional, not
+  \ part of the assembler.
+  \
+  \ 2017-02-22: Compact the code, saving one block. Fix needing
+  \ of `ndrop`.
+  \
+  \ 2017-03-11: Need `>mark`, which now is optional, not
+  \ included in the assembler by default.
 
   \ vim: filetype=soloforth

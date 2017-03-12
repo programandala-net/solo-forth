@@ -4,106 +4,26 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703112330
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Misc benchmarks written during the development of Solo
   \ Forth in order to choose from different implementation
   \ options.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-04-24: Remove `[char]`, which has been moved to the
-  \ library.
-  \
-  \ 2016-04-29: Add benchmark of two versions of `u<=` and
-  \ `u>=`.  Fix benchmark of `u<`.
-  \
-  \ 2016-05-01: Add benchmark for comparing `3 clshift` and `8
-  \ *`.
-  \
-  \ 2016-05-05: Add benchmark for `search`.
-  \
-  \ 2016-05-06: Add benchmarks for `<` and `=`.
-  \
-  \ 2016-05-13: Add benchmark for `?throw`.
-  \
-  \ 2016-05-17: Need `>body`, which has been moved to the
-  \ library.
-  \
-  \ 2016-05-31: Add new benchmarks for `cliteral`, `literal`,
-  \ `2literal`, `2constant`, `constant`, `cconstant` and code
-  \ constants (like `true` and the new versions of `0`, `1` and
-  \ `2`). Combine previous code.
-  \
-  \ 2016-08-05: Combine some blocks in order to save space.
-  \
-  \ 2016-10-14: Add new benchmarks for fetching variables and
-  \ double variables.
-  \
-  \ 2016-10-15: Add `fetch-bench`, `set-pixel-bench`,
-  \ `pixels-bench`.
-  \
-  \ 2016-10-16: Add `store-bench`.
-  \
-  \ 2016-11-26: Add `2cells+-bench`.  Remove `warnings off`,
-  \ because now warnings are deactivated by default.
-  \
-  \ 2016-11-28: Add `+field-bench`.
-  \
-  \ 2016-12-08: Rename the module filename with uppercase
-  \ "MISC" after the new convention.
-  \
-  \ 2016-12-26: Add `aline176-bench`.
-  \
-  \ 2017-01-09: Add `at-xy-display-0udg-bench`. Fix stack
-  \ notation of all benchmarks.
-  \
-  \ 2017-01-11: Add `dot-quote-bench`.
-  \
-  \ 2017-01-13: Add `m*-bench`.
-  \
-  \ 2017-01-20: Add `>name-bench`.
-  \
-  \ 2017-01-21: Update the documentation of `rshift-bench` and
-  \ `lshift-bench`.
-  \
-  \ 2017-01-22: Add `substitute-bench`.
-  \
-  \ 2017-01-23: Add `1/string-bench`, `hz>bleep-bench`.
-  \
-  \ 2017-01-24: Fix `hz>bleep2` in `hz>bleep-bench` (the result
-  \ of the benchmark is not affected). Add `-beep>note-bench`.
-  \
-  \ 2017-01-27: Add `mask+attr!-bench`.
-  \
-  \ 2017-01-30: Add `circle-bench`.
-  \
-  \ 2017-01-31: Add `paper-bench`, `ink-bench`.
-  \
-  \ 2017-02-01: Revise `um*-bench` and `um/mod-bench`.
-  \
-  \ 2017-02-19: Replace `do`, which has been moved to the
-  \ library, with `?do`.
-  \
-  \ 2017-02-26: Update "hp" notation to "np", after the changes
-  \ in the kernel.
-  \
-  \ 2017-03-11: Fix typo.
 
 ( ink-bench )
 
@@ -1421,7 +1341,7 @@ defer num?
 
   \ Benchmark: interpretation of many source blocks from disk.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Date       Condition             Bytes free   Frames (=20ms)
   \ ---------- --------------------- ------------ --------------
   \ 2015-11-04 512-byte buffer       33742        20960 (1.00)
@@ -1432,7 +1352,7 @@ defer num?
   \ of the time is wasted locating the blocks. That's why
   \ both methods are equally fast:
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Date       Condition             Bytes free   Frames (=20ms)
   \ ---------- --------------------- ------------ --------------
   \ 2015-11-17 `next-name` (1)       32807        40530
@@ -1475,7 +1395,7 @@ need bench{ bench{ : w ; : w ; : w ; : w ;
 
   \ Benchmark: interpretation of many source blocks from disk.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Date       Condition             Bytes free   Frames (=20ms)
   \ ---------- --------------------- ------------ --------------
   \ 2015-11-17 `next-name` (1)       32807        490 (9 s)
@@ -1520,7 +1440,7 @@ b load b load b load b load b load b load b load b load }bench.
 
   \ Benchmark: interpretation of many source blocks from disk.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Date       Condition             Bytes free   Frames (=20ms)
   \ ---------- --------------------- ------------ --------------
   \ 2015-11-17 `next-name` (1)       32807        40530
@@ -2520,5 +2440,86 @@ need slow-pixels need fast-pixels
 
   \ Notes:
   \ (1) Version 0.10.0-pre.81+20161015.
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
+  \
+  \ 2016-04-29: Add benchmark of two versions of `u<=` and
+  \ `u>=`.  Fix benchmark of `u<`.
+  \
+  \ 2016-05-01: Add benchmark for comparing `3 clshift` and `8
+  \ *`.
+  \
+  \ 2016-05-05: Add benchmark for `search`.
+  \
+  \ 2016-05-06: Add benchmarks for `<` and `=`.
+  \
+  \ 2016-05-13: Add benchmark for `?throw`.
+  \
+  \ 2016-05-17: Need `>body`, which has been moved to the
+  \ library.
+  \
+  \ 2016-05-31: Add new benchmarks for `cliteral`, `literal`,
+  \ `2literal`, `2constant`, `constant`, `cconstant` and code
+  \ constants (like `true` and the new versions of `0`, `1` and
+  \ `2`). Combine previous code.
+  \
+  \ 2016-08-05: Combine some blocks in order to save space.
+  \
+  \ 2016-10-14: Add new benchmarks for fetching variables and
+  \ double variables.
+  \
+  \ 2016-10-15: Add `fetch-bench`, `set-pixel-bench`,
+  \ `pixels-bench`.
+  \
+  \ 2016-10-16: Add `store-bench`.
+  \
+  \ 2016-11-26: Add `2cells+-bench`.  Remove `warnings off`,
+  \ because now warnings are deactivated by default.
+  \
+  \ 2016-11-28: Add `+field-bench`.
+  \
+  \ 2016-12-08: Rename the module filename with uppercase
+  \ "MISC" after the new convention.
+  \
+  \ 2016-12-26: Add `aline176-bench`.
+  \
+  \ 2017-01-09: Add `at-xy-display-0udg-bench`. Fix stack
+  \ notation of all benchmarks.
+  \
+  \ 2017-01-11: Add `dot-quote-bench`.
+  \
+  \ 2017-01-13: Add `m*-bench`.
+  \
+  \ 2017-01-20: Add `>name-bench`.
+  \
+  \ 2017-01-21: Update the documentation of `rshift-bench` and
+  \ `lshift-bench`.
+  \
+  \ 2017-01-22: Add `substitute-bench`.
+  \
+  \ 2017-01-23: Add `1/string-bench`, `hz>bleep-bench`.
+  \
+  \ 2017-01-24: Fix `hz>bleep2` in `hz>bleep-bench` (the result
+  \ of the benchmark is not affected). Add `-beep>note-bench`.
+  \
+  \ 2017-01-27: Add `mask+attr!-bench`.
+  \
+  \ 2017-01-30: Add `circle-bench`.
+  \
+  \ 2017-01-31: Add `paper-bench`, `ink-bench`.
+  \
+  \ 2017-02-01: Revise `um*-bench` and `um/mod-bench`.
+  \
+  \ 2017-02-19: Replace `do`, which has been moved to the
+  \ library, with `?do`.
+  \
+  \ 2017-02-26: Update "hp" notation to "np", after the changes
+  \ in the kernel.
+  \
+  \ 2017-03-11: Fix typo.
 
   \ vim: filetype=soloforth

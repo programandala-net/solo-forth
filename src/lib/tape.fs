@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703062241
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Tape files support. The only supported filetype is "code".
@@ -26,46 +27,19 @@
   \ future, though it's not useful with emulators, without
   \ actual tapes.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-12-04: Started adapting the tape words from the Afera
-  \ library.
-  \
-  \ 2015-12-23: Changes.
-  \
-  \ 2016-04-10: Fixed. First working version.
-  \
-  \ 2016-04-10: Improved: no "Start tape" message.
-  \
-  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
-  \ in the kernel.
-  \
-  \ 2017-02-08: Use `cconstant` for byte constants. Compact the
-  \ code, saving one block. Make `read-tape-file` and
-  \ `write-tape-file` independent` for `need`. Improve
-  \ documentation. Move `.tape` to the tests module.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-03-06: Rename the four main words after their disk
-  \ file equivalents and update the order of the parameters
-  \ accordingly. Improve the documentation. Compact the code to
-  \ save one block.
-
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Development documentation
 
   \ The information was guessed from from Don Thomasson's book
@@ -371,5 +345,32 @@ code (>tape-file) ( -- )
   \ See also: `tape-file>`, `(>tape-file)`, `>file`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-12-04: Started adapting the tape words from the Afera
+  \ library.
+  \
+  \ 2015-12-23: Changes.
+  \
+  \ 2016-04-10: Fixed. First working version.
+  \
+  \ 2016-04-10: Improved: no "Start tape" message.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
+  \
+  \ 2017-02-08: Use `cconstant` for byte constants. Compact the
+  \ code, saving one block. Make `read-tape-file` and
+  \ `write-tape-file` independent` for `need`. Improve
+  \ documentation. Move `.tape` to the tests module.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-06: Rename the four main words after their disk
+  \ file equivalents and update the order of the parameters
+  \ accordingly. Improve the documentation. Compact the code to
+  \ save one block.
 
   \ vim: filetype=soloforth

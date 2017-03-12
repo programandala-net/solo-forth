@@ -4,82 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703121646
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words to list blocks.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-11-20: Factor `list-lines` from `list`. Improve
-  \ documentation of all words. Compact the code to save one
-  \ block. Add conditional compilation to `list`, `list-lines`,
-  \ `index`, `.index`.
-  \
-  \ 2016-11-21: Modify title of listed screen, to avoid
-  \ confusion when the radix is other than decimal. Move the
-  \ `blocked` editor's quick index here, improve it and
-  \ document it. Write `/line#` and `.line#`, useful factors of
-  \ `list-lines`. Move `contains` to <strings.misc.fsb>.  Move
-  \ `.line` from <blocks.fsb>. Compact the code, saving one
-  \ block. Add `/block#` and `.block#`, for clarity.
-  \
-  \ 2016-11-22: Make the quick index work with any screen mode.
-  \ Move `lt`, `lm` and `lb` from the `blocked` editor.
-  \
-  \ 2016-11-24: Factor `list-line` from `list-lines`.
-  \
-  \ 2016-11-26: Need `?leave`, which has been moved to the
-  \ library.  Rename `blocks` to `blk/disk` after the fix in
-  \ the kernel.
-  \
-  \ 2017-01-11: Add `view`.
-  \
-  \ 2017-01-17: Fix and improve documentation of `list`, `lt`,
-  \ `lm` and `lb`.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Remove remaining `exit` at the end of
-  \ conditional interpretation.
-  \
-  \ 2017-01-26: Change title of `list-lines` to "Block" and
-  \ print its number as unsigned (no practical difference when
-  \ using floppy disks, but block numbers are unsigned).
-  \
-  \ 2017-02-01: Add `need uppers`, because `uppers` has been
-  \ moved to the library.
-  \
-  \ 2017-02-17: Update cross references.  Change markup of
-  \ inline code that is not a cross reference.
-  \
-  \ 2017-03-06: Make `list` check the block number.  Block
-  \ numbers beyond the current limit were managed properly by
-  \ G+DOS, which throws error #-1004 (sector error); but +3DOS
-  \ throws #-1004 (no data) and then any further attempt to
-  \ access the disk throws error #-1000 (drive not ready; and
-  \ TR-DOS exists to BASIC with "Disc error Trk X sec X
-  \ Retry,Abort,Ignore?"... Beside, the heading of the block
-  \ was shown anyway before the error. The check prevents all
-  \ this.
-  \
-  \ 2017-03-12: Update the names of `stringer` words and
-  \ mentions to it.
 
 ( /line# .line# .line list-line list-lines list )
 
@@ -469,5 +411,64 @@ need list-lines
   \ See also: `lt`, `lm`, `list`, `list-lines`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-11-20: Factor `list-lines` from `list`. Improve
+  \ documentation of all words. Compact the code to save one
+  \ block. Add conditional compilation to `list`, `list-lines`,
+  \ `index`, `.index`.
+  \
+  \ 2016-11-21: Modify title of listed screen, to avoid
+  \ confusion when the radix is other than decimal. Move the
+  \ `blocked` editor's quick index here, improve it and
+  \ document it. Write `/line#` and `.line#`, useful factors of
+  \ `list-lines`. Move `contains` to <strings.misc.fsb>.  Move
+  \ `.line` from <blocks.fsb>. Compact the code, saving one
+  \ block. Add `/block#` and `.block#`, for clarity.
+  \
+  \ 2016-11-22: Make the quick index work with any screen mode.
+  \ Move `lt`, `lm` and `lb` from the `blocked` editor.
+  \
+  \ 2016-11-24: Factor `list-line` from `list-lines`.
+  \
+  \ 2016-11-26: Need `?leave`, which has been moved to the
+  \ library.  Rename `blocks` to `blk/disk` after the fix in
+  \ the kernel.
+  \
+  \ 2017-01-11: Add `view`.
+  \
+  \ 2017-01-17: Fix and improve documentation of `list`, `lt`,
+  \ `lm` and `lb`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
+  \
+  \ 2017-01-26: Change title of `list-lines` to "Block" and
+  \ print its number as unsigned (no practical difference when
+  \ using floppy disks, but block numbers are unsigned).
+  \
+  \ 2017-02-01: Add `need uppers`, because `uppers` has been
+  \ moved to the library.
+  \
+  \ 2017-02-17: Update cross references.  Change markup of
+  \ inline code that is not a cross reference.
+  \
+  \ 2017-03-06: Make `list` check the block number.  Block
+  \ numbers beyond the current limit were managed properly by
+  \ G+DOS, which throws error #-1004 (sector error); but +3DOS
+  \ throws #-1004 (no data) and then any further attempt to
+  \ access the disk throws error #-1000 (drive not ready; and
+  \ TR-DOS exists to BASIC with "Disc error Trk X sec X
+  \ Retry,Abort,Ignore?"... Beside, the heading of the block
+  \ was shown anyway before the error. The check prevents all
+  \ this.
+  \
+  \ 2017-03-12: Update the names of `stringer` words and
+  \ mentions to it.
 
   \ vim: filetype=soloforth

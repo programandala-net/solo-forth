@@ -4,53 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Double-cell operators.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2015-11-13: Add `dsqrt`.
-  \
-  \ 2016-11-17: Use `?(` instead of `[if]`. Compact the module,
-  \ saving 3 blocks.
-  \
-  \ 2016-11-26: Rewrite `d-` with Z80 opcodes, without
-  \ `z80-asm`. Compact `d2*` and `d2/`, saving two blocks.
-  \
-  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
-  \ to `jpnext,`, after the change in the kernel.
-  \
-  \ 2016-12-30: Compact the code, saving two blocks. Don't
-  \ compile flags as literals in `du<`, because `true` and
-  \ `false` are code words.
-  \
-  \ 2017-01-02: Convert `m+` from `z80-asm` to `z80-asm,`.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
-  \
-  \ 2017-01-13: Remove alternative implementation of `m*`, by
-  \ by Robert L. Smith, published on Forth Dimensions (volume
-  \ 4, number 1, page 3, 1982-05). It's much slower than the
-  \ current version included in the kernel.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
 
 ( ud* d* )
 
@@ -382,5 +353,35 @@ need 2nip  [defined] cell-bits ?\ 16 constant cell-bits
   loop  cr .s 2rot 2drop ;
 
 : dsqrt ( radicand . -- root . ) (dsqrt) 2nip ;
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-11-13: Add `dsqrt`.
+  \
+  \ 2016-11-17: Use `?(` instead of `[if]`. Compact the module,
+  \ saving 3 blocks.
+  \
+  \ 2016-11-26: Rewrite `d-` with Z80 opcodes, without
+  \ `z80-asm`. Compact `d2*` and `d2/`, saving two blocks.
+  \
+  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
+  \ to `jpnext,`, after the change in the kernel.
+  \
+  \ 2016-12-30: Compact the code, saving two blocks. Don't
+  \ compile flags as literals in `du<`, because `true` and
+  \ `false` are code words.
+  \
+  \ 2017-01-02: Convert `m+` from `z80-asm` to `z80-asm,`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-13: Remove alternative implementation of `m*`, by
+  \ by Robert L. Smith, published on Forth Dimensions (volume
+  \ 4, number 1, page 3, 1982-05). It's much slower than the
+  \ current version included in the kernel.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
   \ vim: filetype=soloforth

@@ -4,63 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ The management of exceptions.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-09: Main development.
-  \
-  \ 2015-10: Fixes.
-  \
-  \ 2016-04-14: Restored the file from the repository. It was
-  \ removed from version 0.3.0+2016-04-09 by mistake. Updated
-  \ the headers and documentation.  Renamed `(.throw)` to
-  \ `.throw-message`, and `msg-scr` to `error-messages-block`.
-  \ Fixed `error>ordinal`.
-  \
-  \ 2016-04-25: Add carriage return before the exception
-  \ message in `.throw-message`.
-  \
-  \ 2016-04-29: Add `warning"`.
-  \
-  \ 2016-05-03: Document `warning"`.
-  \
-  \ 2016-08-05: Rename `error-messages-block` to
-  \ `errors-block`. Combine blocks to save two of them.
-  \
-  \ 2016-11-26: Move `catch` from the kernel.
-  \
-  \ 2017-01-13: Improve documentation.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Remove remaining `exit` at the end of
-  \ conditional interpretation, after `immediate` or
-  \ `compile-only`.
-  \
-  \ 2017-01-20: Fix `error>ordinal`: error code #-286 was added
-  \ some days ago, making #-300 the new highest code available
-  \ for system error codes, but `error>ordinal` wasn't updated.
-  \
-  \ 2017-02-17: Update notation "behaviour" to "action".
 
 ( ?compiling ?executing abort" warning" )
 
@@ -250,6 +211,46 @@ s" Standard error codes" located errors-block !
   \ Origin: Forth-94 (EXCEPTION), Forth-2012 (EXCEPTION).
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-09: Main development.
+  \
+  \ 2015-10: Fixes.
+  \
+  \ 2016-04-14: Restored the file from the repository. It was
+  \ removed from version 0.3.0+2016-04-09 by mistake. Updated
+  \ the headers and documentation.  Renamed `(.throw)` to
+  \ `.throw-message`, and `msg-scr` to `error-messages-block`.
+  \ Fixed `error>ordinal`.
+  \
+  \ 2016-04-25: Add carriage return before the exception
+  \ message in `.throw-message`.
+  \
+  \ 2016-04-29: Add `warning"`.
+  \
+  \ 2016-05-03: Document `warning"`.
+  \
+  \ 2016-08-05: Rename `error-messages-block` to
+  \ `errors-block`. Combine blocks to save two of them.
+  \
+  \ 2016-11-26: Move `catch` from the kernel.
+  \
+  \ 2017-01-13: Improve documentation.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation, after `immediate` or
+  \ `compile-only`.
+  \
+  \ 2017-01-20: Fix `error>ordinal`: error code #-286 was added
+  \ some days ago, making #-300 the new highest code available
+  \ for system error codes, but `error>ordinal` wasn't updated.
+  \
+  \ 2017-02-17: Update notation "behaviour" to "action".
 
   \ vim: filetype=soloforth
 

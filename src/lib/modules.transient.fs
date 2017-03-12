@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702261230
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Implementation of transient modules, whose code is
@@ -14,57 +15,24 @@
   \ compilation of a program, but not during the execution.
   \ The size of the discarded code must be known in advance.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Credit
 
   \ The code was adapted from the Afera library. The Afera
   \ version was adapted from Spectrum Forth-83 (by Lennart
   \ Benschop, 1988), where it was used only for the assembler.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-06-01: Update: `there` was moved from the kernel to
-  \ the library.
-  \
-  \ 2016-11-13: Rename "np" to "hp" after the changes in the
-  \ kernel.
-  \
-  \ 2016-11-18: Adapt to far memory and fix. Use `limit`.
-  \ Improve documentation.
-  \
-  \ 2016-12-07: Rename the words and the module, to be
-  \ consistent with similar tools `module` and `package`.
-  \ Improve the documentation. Remove the wrong restoring of
-  \ `hp`.
-  \
-  \ 2016-12-08: Reserve also headers space, above `farlimit`.
-  \
-  \ 2016-12-29: Try alternative code to unlink the transient
-  \ code in `forget-transient`.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler` in
-  \ documentation.  Remove old system bank support from
-  \ `forget-transient`.
-  \
-  \ 2017-01-06: Update `voc-link` to `latest-wordlist`.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-02-26: Update "hp" notation to "np", after the changes
-  \ in the kernel.
 
 ( transient end-transient forget-transient )
 
@@ -168,5 +136,38 @@ variable old-current-latest
   \ finished by `end-transient`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-06-01: Update: `there` was moved from the kernel to
+  \ the library.
+  \
+  \ 2016-11-13: Rename "np" to "hp" after the changes in the
+  \ kernel.
+  \
+  \ 2016-11-18: Adapt to far memory and fix. Use `limit`.
+  \ Improve documentation.
+  \
+  \ 2016-12-07: Rename the words and the module, to be
+  \ consistent with similar tools `module` and `package`.
+  \ Improve the documentation. Remove the wrong restoring of
+  \ `hp`.
+  \
+  \ 2016-12-08: Reserve also headers space, above `farlimit`.
+  \
+  \ 2016-12-29: Try alternative code to unlink the transient
+  \ code in `forget-transient`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler` in
+  \ documentation.  Remove old system bank support from
+  \ `forget-transient`.
+  \
+  \ 2017-01-06: Update `voc-link` to `latest-wordlist`.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-26: Update "hp" notation to "np", after the changes
+  \ in the kernel.
 
   \ vim: filetype=soloforth

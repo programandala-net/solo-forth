@@ -4,99 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702272232
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words related to User Defined Graphics.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-04-23: Add `0udg:`. Factor `0udg!` from `udg!`.
-  \ Improve the documentation.
-  \
-  \ 2016-04-24: Add `udg[` and `0udg[`.
-  \
-  \ 2016-10-11: Add `udg-row[`.
-  \
-  \ 2016-12-21: Add `make-block-characters`,
-  \ `block-characters`, `0udg>`, `set-udg`, `get-udg`,
-  \ `set-font`, `get-font`, `rom-font`.
-  \
-  \ 2016-12-22: Rename "-characters" to "-chars" in all words,
-  \ to be consistent with the convention used in the escaped
-  \ strings module.
-  \
-  \ 2016-12-23: Add `udg-chars`.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
-  \
-  \ 2017-01-09: Rename `udg-chars` to `default-udg-chars`. Make
-  \ the basic words individually accessible to `need`.  Improve
-  \ documentation.
-  \
-  \ 2017-01-09: Add `(cursor-addr)` and `cursor-addr`.  Add
-  \ temporary experimental words `(display-char-bitmap)`,
-  \ `at-xy-display-0udg` and `0udg-at-xy-display`.
-  \
-  \ 2017-01-10: Improve documentation.
-  \
-  \ 2017-01-11: Move `set-font` to the kernel, because `cold`
-  \ must set the default font.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Remove remaining `exit` at the end of
-  \ conditional interpretation.
-  \
-  \ 2017-01-22: Rewrite `get-udg`, `set-udg` and `get-font` in
-  \ Z80.
-  \
-  \ 2017-02-02: Use `need binary` instead of `[undefined]
-  \ binary`.
-  \
-  \ 2017-02-04: Adapt to 0-index-only UDG, after the changes in
-  \ the kernel: Remove `first-udg`. Remove `udg!` and rename
-  \ `0udg!` to `udg!`; remove 'udg:` and rename `0udg:` to
-  \ `udg:`; rename `0udg>` to `udg>`; change the calculation of
-  \ `default-udg-chars`; remove `udg[` and rename `0udg[` to
-  \ `udg[`;  rename `at-xy-display-0udg` to
-  \ `at-xy-display-udg`; rename `0udg-at-xy-display` to
-  \ `udg-at-xy-display`. Compact the code, saving one block.
-  \ Improve `udg>` and other words ẁith `get-udg`.
-  \
-  \ 2017-02-16: Deactivate documentation of alternative
-  \ implementations of `(cursor-addr)`, `cursor-addr` and
-  \ `(display-char-bitmap)`, to prevent them from being
-  \ included twice in the glossary.
-  \
-  \ 2017-02-17: Update cross references.  Change markup of
-  \ inline code that is not a cross reference.
-  \
-  \ 2017-02-19: Replace `do`, which has been moved to the
-  \ library, with `?do`.
-  \
-  \ 2017-02-24: Fix requirement of `udg-row[`. Fix block char
-  \ 128.
-  \
-  \ 2017-02-25: Add `type-udg`.
-  \
-  \ 2017-02-27: Move `get-font` and `rom-font` to the new
-  \ module <printing.fonts.fs>.
 
 ( default-udg-chars udg> udg! udg: )
 
@@ -854,5 +779,81 @@ unused code udg-at-xy-display ( x y c -- )
   \ See also: `type`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-23: Add `0udg:`. Factor `0udg!` from `udg!`.
+  \ Improve the documentation.
+  \
+  \ 2016-04-24: Add `udg[` and `0udg[`.
+  \
+  \ 2016-10-11: Add `udg-row[`.
+  \
+  \ 2016-12-21: Add `make-block-characters`,
+  \ `block-characters`, `0udg>`, `set-udg`, `get-udg`,
+  \ `set-font`, `get-font`, `rom-font`.
+  \
+  \ 2016-12-22: Rename "-characters" to "-chars" in all words,
+  \ to be consistent with the convention used in the escaped
+  \ strings module.
+  \
+  \ 2016-12-23: Add `udg-chars`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-09: Rename `udg-chars` to `default-udg-chars`. Make
+  \ the basic words individually accessible to `need`.  Improve
+  \ documentation.
+  \
+  \ 2017-01-09: Add `(cursor-addr)` and `cursor-addr`.  Add
+  \ temporary experimental words `(display-char-bitmap)`,
+  \ `at-xy-display-0udg` and `0udg-at-xy-display`.
+  \
+  \ 2017-01-10: Improve documentation.
+  \
+  \ 2017-01-11: Move `set-font` to the kernel, because `cold`
+  \ must set the default font.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
+  \
+  \ 2017-01-22: Rewrite `get-udg`, `set-udg` and `get-font` in
+  \ Z80.
+  \
+  \ 2017-02-02: Use `need binary` instead of `[undefined]
+  \ binary`.
+  \
+  \ 2017-02-04: Adapt to 0-index-only UDG, after the changes in
+  \ the kernel: Remove `first-udg`. Remove `udg!` and rename
+  \ `0udg!` to `udg!`; remove 'udg:` and rename `0udg:` to
+  \ `udg:`; rename `0udg>` to `udg>`; change the calculation of
+  \ `default-udg-chars`; remove `udg[` and rename `0udg[` to
+  \ `udg[`;  rename `at-xy-display-0udg` to
+  \ `at-xy-display-udg`; rename `0udg-at-xy-display` to
+  \ `udg-at-xy-display`. Compact the code, saving one block.
+  \ Improve `udg>` and other words ẁith `get-udg`.
+  \
+  \ 2017-02-16: Deactivate documentation of alternative
+  \ implementations of `(cursor-addr)`, `cursor-addr` and
+  \ `(display-char-bitmap)`, to prevent them from being
+  \ included twice in the glossary.
+  \
+  \ 2017-02-17: Update cross references.  Change markup of
+  \ inline code that is not a cross reference.
+  \
+  \ 2017-02-19: Replace `do`, which has been moved to the
+  \ library, with `?do`.
+  \
+  \ 2017-02-24: Fix requirement of `udg-row[`. Fix block char
+  \ 128.
+  \
+  \ 2017-02-25: Add `type-udg`.
+  \
+  \ 2017-02-27: Move `get-font` and `rom-font` to the new
+  \ module <printing.fonts.fs>.
 
   \ vim: filetype=soloforth

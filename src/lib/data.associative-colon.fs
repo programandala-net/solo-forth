@@ -4,32 +4,26 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220028
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ `associative:`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Original code from F83, by Henry Laxen and Michael Perry.
 
   \ Adapted by Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-08-11: Adapted.
-  \ 2016-04-09: Fixed the file header. Improved the
-  \ documentation.
 
 ( associative: )
 
@@ -71,5 +65,13 @@
   \ ----
 
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-08-11: Adapted.
+  \
+  \ 2016-04-09: Fixed the file header. Improved the
+  \ documentation.
 
   \ vim: filetype=soloforth

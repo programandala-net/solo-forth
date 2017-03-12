@@ -4,36 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ `get-key?` and `fast-get-key?`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2017-01-02: Convert `get-key?` and `fast-get-key?` from
-  \ `z80-asm` to `z80-asm,`. Improve documentation.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-02-21: Need `unresolved`, which now is optional, not
-  \ part of the assembler.
 
 ( get-key? )
 
@@ -102,3 +90,17 @@ code fast-get-key? ( -- f )
 
   end-code
 
+  \ ===========================================================
+  \ Change log
+
+  \ 2017-01-02: Convert `get-key?` and `fast-get-key?` from
+  \ `z80-asm` to `z80-asm,`. Improve documentation.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-21: Need `unresolved`, which now is optional, not
+  \ part of the assembler.
+
+  \ vim: filetype=soloforth

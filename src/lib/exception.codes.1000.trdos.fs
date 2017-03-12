@@ -4,19 +4,13 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ The Forth system error codes (range -4095..-256) used for
   \ TR-DOS (range -1012..-1000).
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-08-04: Start.
-  \
-  \ 2017-02-05: Fix typo in error description.
 
 ( TR-DOS error codes #-1000..#-1012 )
 
@@ -41,5 +35,12 @@
 #-1010 \ TR-DOS: Stream already opened
 #-1011 \ TR-DOS: Not disk file
 #-1012 \ TR-DOS: Stream not open
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-08-04: Start.
+  \
+  \ 2017-02-05: Fix typo in error description.
 
   \ vim: filetype=soloforth

@@ -4,116 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703121644
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Misc words related to strings.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-04-22: Add `s""`, moved from the kernel.
-  \
-  \ 2016-04-24: Add `need pick`, because `pick` has been moved
-  \ from the kernel to the library.
-  \
-  \ 2016-04-27: Add `char-in-string?` and `char-position?`.
-  \
-  \ 2016-05-05: Rename `s=` to `str=`. Add `str<` and `str>`.
-  \
-  \ 2016-05-11: Fix `-prefix`. Start compacting the blocks.
-  \
-  \ 2016-08-02: Improve comment of `hunt`. Comment the string
-  \ comparison operators.
-  \
-  \ 2016-08-05: Reorganize and compact the code to save one
-  \ block.
-  \
-  \ 2016-11-17: Fix needing `trim`. Fix `+place`.
-  \
-  \ 2016-11-19: Update credit of `prefix?`.
-  \
-  \ 2016-11-21: Complete and improve documentation. Move
-  \ `contains` from <tools.list.blocks.fsb> here.
-  \
-  \ 2016-11-25: Rewrite `lengths` in Z80. Make `lengths` and
-  \ `s+` independently accessible for `need`.
-  \
-  \ 2016-12-06: Move `>cell-string` from the `switch` structure
-  \ module.
-  \
-  \ 2016-12-07: Rename `>cell-string` to `>bstring`. Add
-  \ `c>bstring`, `2>bstring`.
-  \
-  \ 2016-12-08: Rename the module filename with uppercase
-  \ "MISC" after the new convention.
-  \
-  \ 2016-12-16: Add `sconstants`, `/sconstants`, `u>str`.
-  \
-  \ 2016-12-18: Add `uppers1`. Make `#chars` and `#spaces`
-  \ individually accesible to `need`.
-  \
-  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
-  \ in the kernel.
-  \
-  \ 2016-12-30: Move `s'` here from its own module.
-  \
-  \ 2017-01-09: Add `fars,`, `farsconstant`, `farsconstants`,
-  \ `/farsconstants`.
-  \
-  \ 2017-01-10: Add `far,"`,  `far>sconstants`,
-  \ `/far>sconstants`, `save-farstring`.
-  \
-  \ 2017-01-10: Move all far-memory strings words to their own
-  \ module <strings.far.fsb>.  Simplify the string arrays:
-  \ remove the variant `sconstants`, which doesn't leave the
-  \ count on the stack, and rename `/sconstants` to
-  \ `sconstants`.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Remove remaining `exit` at the end of
-  \ conditional interpretation.
-  \
-  \ 2017-01-21: Add `/counted-string`.
-  \
-  \ 2017-01-22: Add `unescape`.
-  \
-  \ 2017-02-01: Fix needing of `#spaces` and `#chars`. Move
-  \ `upper` and `uppers` from the kernel. Add `upper-routine`.
-  \ Move `lowers` from the kernel.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-02-20: Replace `do`, which has been moved to the
-  \ library, with `?do`.
-  \
-  \ 2017-02-22: Move `str=` to the kernel, because `?(` has
-  \ been moved too.
-  \
-  \ 2017-02-27: Improve documentation.
-  \
-  \ 2017-03-04: Update naming convention of Z80 routines, after
-  \ the changes in the kernel.
-  \
-  \ 2017-03-11: Fix needing of `/name` and `first-name`.
-  \
-  \ 2017-03-12: Update the names of `stringer` words and
-  \ mentions to it.
 
 ( str< str> trim +place hunt )
 
@@ -977,5 +885,98 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \ See also: `replaces`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-22: Add `s""`, moved from the kernel.
+  \
+  \ 2016-04-24: Add `need pick`, because `pick` has been moved
+  \ from the kernel to the library.
+  \
+  \ 2016-04-27: Add `char-in-string?` and `char-position?`.
+  \
+  \ 2016-05-05: Rename `s=` to `str=`. Add `str<` and `str>`.
+  \
+  \ 2016-05-11: Fix `-prefix`. Start compacting the blocks.
+  \
+  \ 2016-08-02: Improve comment of `hunt`. Comment the string
+  \ comparison operators.
+  \
+  \ 2016-08-05: Reorganize and compact the code to save one
+  \ block.
+  \
+  \ 2016-11-17: Fix needing `trim`. Fix `+place`.
+  \
+  \ 2016-11-19: Update credit of `prefix?`.
+  \
+  \ 2016-11-21: Complete and improve documentation. Move
+  \ `contains` from <tools.list.blocks.fsb> here.
+  \
+  \ 2016-11-25: Rewrite `lengths` in Z80. Make `lengths` and
+  \ `s+` independently accessible for `need`.
+  \
+  \ 2016-12-06: Move `>cell-string` from the `switch` structure
+  \ module.
+  \
+  \ 2016-12-07: Rename `>cell-string` to `>bstring`. Add
+  \ `c>bstring`, `2>bstring`.
+  \
+  \ 2016-12-08: Rename the module filename with uppercase
+  \ "MISC" after the new convention.
+  \
+  \ 2016-12-16: Add `sconstants`, `/sconstants`, `u>str`.
+  \
+  \ 2016-12-18: Add `uppers1`. Make `#chars` and `#spaces`
+  \ individually accesible to `need`.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
+  \
+  \ 2016-12-30: Move `s'` here from its own module.
+  \
+  \ 2017-01-09: Add `fars,`, `farsconstant`, `farsconstants`,
+  \ `/farsconstants`.
+  \
+  \ 2017-01-10: Add `far,"`,  `far>sconstants`,
+  \ `/far>sconstants`, `save-farstring`.
+  \
+  \ 2017-01-10: Move all far-memory strings words to their own
+  \ module <strings.far.fsb>.  Simplify the string arrays:
+  \ remove the variant `sconstants`, which doesn't leave the
+  \ count on the stack, and rename `/sconstants` to
+  \ `sconstants`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
+  \
+  \ 2017-01-21: Add `/counted-string`.
+  \
+  \ 2017-01-22: Add `unescape`.
+  \
+  \ 2017-02-01: Fix needing of `#spaces` and `#chars`. Move
+  \ `upper` and `uppers` from the kernel. Add `upper-routine`.
+  \ Move `lowers` from the kernel.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-20: Replace `do`, which has been moved to the
+  \ library, with `?do`.
+  \
+  \ 2017-02-22: Move `str=` to the kernel, because `?(` has
+  \ been moved too.
+  \
+  \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-03-04: Update naming convention of Z80 routines, after
+  \ the changes in the kernel.
+  \
+  \ 2017-03-11: Fix needing of `/name` and `first-name`.
+  \
+  \ 2017-03-12: Update the names of `stringer` words and
+  \ mentions to it.
 
   \ vim: filetype=soloforth

@@ -6,13 +6,14 @@
   \ XXX UNDER DEVELOPMENT
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ A 42 CPL screen mode.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Author of the 42 cpl printing routine: Ricardo Serral Wigge.
@@ -23,41 +24,14 @@
   \ Marcos Cruz (programandala.net) integrated it into Solo
   \ Forth, 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-04-26: Update `latest name>` to `latestxt`.
-  \
-  \ 2016-05-07: Compact the blocks. Improve the file header.
-  \ Fix: `need mode32` was missing.
-  \
-  \ 2016-08-11: Rename the filenames of the driver and the
-  \ font.
-  \
-  \ 2016-10-16: Typo.
-  \
-  \ 2016-11-17: Use `?(` instead of `[if]`.
-  \
-  \ 2017-01-19: Remove remaining `exit` at the end of
-  \ conditional interpretation.
-  \
-  \ 2017-01-20: Fix typo.
-  \
-  \ 2017-02-08: Update the usage of `set-drive`, which now
-  \ returns an error result.
-  \
-  \ 2017-02-11: Replace `<file-as-is` with `0 0 file>`, after
-  \ the improvements in the G+DOS module. Use `drive` to make
-  \ the code compatible with any DOS.
-
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ To-do
 
   \ XXX TODO -- integrate the source of the driver
@@ -119,5 +93,32 @@ need columns need rows need set-font
   [ 64600 256 - ] literal set-font 63900 ;
   \ Set the 42 cpl font and `at-xy`;
   \ return the address of the output routine.
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-26: Update `latest name>` to `latestxt`.
+  \
+  \ 2016-05-07: Compact the blocks. Improve the file header.
+  \ Fix: `need mode32` was missing.
+  \
+  \ 2016-08-11: Rename the filenames of the driver and the
+  \ font.
+  \
+  \ 2016-10-16: Typo.
+  \
+  \ 2016-11-17: Use `?(` instead of `[if]`.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
+  \
+  \ 2017-01-20: Fix typo.
+  \
+  \ 2017-02-08: Update the usage of `set-drive`, which now
+  \ returns an error result.
+  \
+  \ 2017-02-11: Replace `<file-as-is` with `0 0 file>`, after
+  \ the improvements in the G+DOS module. Use `drive` to make
+  \ the code compatible with any DOS.
 
   \ vim: filetype=soloforth

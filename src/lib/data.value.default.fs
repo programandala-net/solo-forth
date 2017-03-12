@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702280020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ This module provides:
@@ -18,38 +19,17 @@
   \ `2value` and `to` in module "data.value.standard.fsb",
   \ but it's bigger and slower.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015: First versions.
-  \
-  \ 2015-09-25: Benchmark all versions.
-  \
-  \ 2015-10-07: Add `cvalue` and `cto`.
-  \
-  \ 2016-03-24: Split the code into several library modules.
-  \
-  \ 2016-05-11: Combine three library modules into one. Rewrote
-  \ all words as aliases. Document them.
-  \
-  \ 2016-05-13: Fix `to`, `2to` and `cto`: `immediate` was
-  \ missing.
-  \
-  \ 2016-08-02: Fix comment.
-  \
-  \ 2017-02-27: Improve documentation.
 
 ( value to 2value 2to cvalue cto )
 
@@ -191,5 +171,26 @@ need c!>  ' c!> alias cto immediate ?)
   \ _name_.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015: First versions.
+  \
+  \ 2015-09-25: Benchmark all versions.
+  \
+  \ 2015-10-07: Add `cvalue` and `cto`.
+  \
+  \ 2016-03-24: Split the code into several library modules.
+  \
+  \ 2016-05-11: Combine three library modules into one. Rewrote
+  \ all words as aliases. Document them.
+  \
+  \ 2016-05-13: Fix `to`, `2to` and `cto`: `immediate` was
+  \ missing.
+  \
+  \ 2016-08-02: Fix comment.
+  \
+  \ 2017-02-27: Improve documentation.
 
   \ vim: filetype=soloforth

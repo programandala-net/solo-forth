@@ -6,18 +6,19 @@
   \ XXX UNDER DEVELOPMENT
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ The Pong game.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Credit
 
   \ Based on code included in IsForth (version 1.23v):
@@ -29,46 +30,14 @@
   \
   \ Ported to IsForth by Mark Manning, 2012.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-11-09: First working version.
-  \
-  \ 2015-11-11: Improve with delay counters and Z80 halts.
-  \
-  \ 2016-04-23: Improve file header. Add frames to the ball
-  \ graphic. Adapt to new version of `g-emit-0udg`.
-  \
-  \ 2016-04-24: Compact the UDG definitions with `0udg[`.
-  \
-  \ 2016-04-24: Remove `[char]`, which has been moved to the
-  \ library.
-  \
-  \ 2016-11-23: Rename `c!toggle-bits` to `ctoggle`, after the
-  \ changes in the system.
-  \
-  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
-  \ in the kernel.
-  \
-  \ 2016-12-30: Compact the source, saving some blocks.
-  \
-  \ 2017-01-31: Update the attribute and color words.
-  \
-  \ 2017-02-04: Adapt to 0-index-only UDG, after the changes in
-  \ the kernel and the library.
-  \
-  \ 2017-02-05: Fix loading: a comment had removed a `-->`.
-  \ Add `pong-wordlist` for the words of the game. Show help
-  \ message at the end of the loading.
-
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ To-do
 
   \ XXX TODO -- bounce effect
@@ -519,5 +488,37 @@ variable racket2-delay
   break-key? until ;
 
 cr .( Type PONG to run)
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-11-09: First working version.
+  \
+  \ 2015-11-11: Improve with delay counters and Z80 halts.
+  \
+  \ 2016-04-23: Improve file header. Add frames to the ball
+  \ graphic. Adapt to new version of `g-emit-0udg`.
+  \
+  \ 2016-04-24: Compact the UDG definitions with `0udg[`.
+  \
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
+  \
+  \ 2016-11-23: Rename `c!toggle-bits` to `ctoggle`, after the
+  \ changes in the system.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
+  \
+  \ 2016-12-30: Compact the source, saving some blocks.
+  \
+  \ 2017-01-31: Update the attribute and color words.
+  \
+  \ 2017-02-04: Adapt to 0-index-only UDG, after the changes in
+  \ the kernel and the library.
+  \
+  \ 2017-02-05: Fix loading: a comment had removed a `-->`.
+  \ Add `pong-wordlist` for the words of the game. Show help
+  \ message at the end of the loading.
 
   \ vim: filetype=soloforth

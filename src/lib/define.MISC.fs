@@ -4,60 +4,25 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702282019
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Miscellaneous definers that can be defined in less than one
   \ block.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-11-26: Create this module to combine the modules that
-  \ contain small definers, in order to save blocks:
-  \ <define.semicolon.code.fsb>, <define.colon-no-name.fsb>,
-  \ <define.colon-nextname.fsb>, <flow.create-colon.fsb>.
-  \
-  \ 2016-11-26: Improve documentation of `nextname` and family.
-  \
-  \ 2016-12-06: Improve documentation of `:noname`.
-  \
-  \ 2016-12-08: Rename the module filename with uppercase
-  \ "MISC" after the new convention.
-  \
-  \ 2016-12-30: Compact the code, saving one block.
-  \
-  \ 2017-01-05: Update `also assembler` to `assembler-wordlist
-  \ >order`.
-  \
-  \ 2017-01-07: Improve documentation.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Remove remaining `exit` at the end of
-  \ conditional interpretation, after `immediate` or
-  \ `compile-only`.
-  \
-  \ 2017-02-17: Update notation "behaviour" to "action".
-  \ Update cross references.
-  \
-  \ 2017-02-27: Improve documentation.
-  \
-  \ 2017-02-28: Fix typo in documentation.
 
 ( create: ;code :noname nextname )
 
@@ -184,5 +149,41 @@
   \ See also: `nextname-header`, `nextname-string`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-11-26: Create this module to combine the modules that
+  \ contain small definers, in order to save blocks:
+  \ <define.semicolon.code.fsb>, <define.colon-no-name.fsb>,
+  \ <define.colon-nextname.fsb>, <flow.create-colon.fsb>.
+  \
+  \ 2016-11-26: Improve documentation of `nextname` and family.
+  \
+  \ 2016-12-06: Improve documentation of `:noname`.
+  \
+  \ 2016-12-08: Rename the module filename with uppercase
+  \ "MISC" after the new convention.
+  \
+  \ 2016-12-30: Compact the code, saving one block.
+  \
+  \ 2017-01-05: Update `also assembler` to `assembler-wordlist
+  \ >order`.
+  \
+  \ 2017-01-07: Improve documentation.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation, after `immediate` or
+  \ `compile-only`.
+  \
+  \ 2017-02-17: Update notation "behaviour" to "action".
+  \ Update cross references.
+  \
+  \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-02-28: Fix typo in documentation.
 
   \ vim: filetype=soloforth

@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221235
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Blocks Thru Indexer
@@ -15,66 +16,17 @@
   \ and then `need and family uses the index instead of
   \ searching the blocks.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-04-02: Start.
-  \
-  \ 2016-04-03: First working version.
-  \
-  \ 2016-04-24: Add `need nextname`, because `nextname` has
-  \ been moved from the kernel to the library.
-  \
-  \ 2016-05-05: Update `s=` to `str=`. Improve documentation.
-  \
-  \ 2016-05-07: New method: the indexed word is an alias, which
-  \ doesn't use data space, and its execution token is the
-  \ block it's associated to. This way, no data space is used
-  \ by the index.
-  \
-  \ 2016-05-14: Update: `evaluate` has been moved to the
-  \ library.
-  \
-  \ 2016-08-05: Compact the code to save one block.
-  \
-  \ 2016-11-13: Check the code with the far-memory system
-  \ recently implemented in the kernel. Now the library disk
-  \ can be indexed. Improve the documentation. Remove old
-  \ unused code.
-  \
-  \ 2016-11-19: Move to <blocks.index-wordlist.fsb> the code
-  \ shared with the new module <blocks.fly-indexer.fsb>.
-  \
-  \ 2016-11-24: Rename the module and some words, to be
-  \ consistent with the alternative version Fly Indexer.
-  \
-  \ 2016-11-25: Factor `use-default-located`. Improve
-  \ documentation.
-  \
-  \ 2016-11-26: Need `catch`, which has been moved to the
-  \ library.
-  \
-  \ 2016-12-30: Replace `search-index`, which was renamed on
-  \ 2016-11-25, with `indexed-name?`.
-  \
-  \ 2017-01-17: Fix text of exception #-277 in documentation.
-  \
-  \ 2017-02-17: Update notation "behaviour" to "action".
-  \ Update cross references.
-  \
-  \ 2017-02-21: Need `use-default-located`, which now is optional.
 
 ( make-thru-index use-thru-index )
 
@@ -228,5 +180,54 @@ need evaluate need catch need use-default-located
   \ restored with `use-no-index`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-02: Start.
+  \
+  \ 2016-04-03: First working version.
+  \
+  \ 2016-04-24: Add `need nextname`, because `nextname` has
+  \ been moved from the kernel to the library.
+  \
+  \ 2016-05-05: Update `s=` to `str=`. Improve documentation.
+  \
+  \ 2016-05-07: New method: the indexed word is an alias, which
+  \ doesn't use data space, and its execution token is the
+  \ block it's associated to. This way, no data space is used
+  \ by the index.
+  \
+  \ 2016-05-14: Update: `evaluate` has been moved to the
+  \ library.
+  \
+  \ 2016-08-05: Compact the code to save one block.
+  \
+  \ 2016-11-13: Check the code with the far-memory system
+  \ recently implemented in the kernel. Now the library disk
+  \ can be indexed. Improve the documentation. Remove old
+  \ unused code.
+  \
+  \ 2016-11-19: Move to <blocks.index-wordlist.fsb> the code
+  \ shared with the new module <blocks.fly-indexer.fsb>.
+  \
+  \ 2016-11-24: Rename the module and some words, to be
+  \ consistent with the alternative version Fly Indexer.
+  \
+  \ 2016-11-25: Factor `use-default-located`. Improve
+  \ documentation.
+  \
+  \ 2016-11-26: Need `catch`, which has been moved to the
+  \ library.
+  \
+  \ 2016-12-30: Replace `search-index`, which was renamed on
+  \ 2016-11-25, with `indexed-name?`.
+  \
+  \ 2017-01-17: Fix text of exception #-277 in documentation.
+  \
+  \ 2017-02-17: Update notation "behaviour" to "action".
+  \ Update cross references.
+  \
+  \ 2017-02-21: Need `use-default-located`, which now is optional.
 
   \ vim: filetype=soloforth

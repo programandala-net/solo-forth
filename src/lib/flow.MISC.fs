@@ -4,58 +4,25 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702280013
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Miscellaneous control flow structures that can be defined
   \ in less than one block.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-11-26: Create this module to combine the modules that
-  \ contain small control flow structures, in order to save
-  \ blocks: <flow.base-execute.fsb>, <flow.call.fsb>,
-  \ <flow.dont.fsb>, <flow.executions.fsb>,
-  \ <flow.question-question.fsb>, <flow.question-repeat.fsb>,
-  \ <flow.recurse.fsb>, <flow.retry.fsb>.
-  \
-  \ 2016-11-26: Document `base-execute`.  Compact `call` and
-  \ document it. Document `??`. Move `?leave` from the kernel.
-  \
-  \ 2016-12-03: Fix needing of `retry`.
-  \
-  \ 2016-12-04: Add `+perform`.
-  \
-  \ 2016-12-08: Rename the module filename with uppercase
-  \ "MISC" after the new convention.
-  \
-  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
-  \ in the kernel.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Remove remaining `exit` at the end of
-  \ conditional interpretation, after `immediate` or
-  \ `compile-only`. Improve `?repeat`. Fix needing of `??`.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-02-27: Improve documentation.
 
 ( +perform base-execute call don't executions )
 
@@ -383,5 +350,39 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ See also: `leave`, `unloop`, `do`, `?do`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-11-26: Create this module to combine the modules that
+  \ contain small control flow structures, in order to save
+  \ blocks: <flow.base-execute.fsb>, <flow.call.fsb>,
+  \ <flow.dont.fsb>, <flow.executions.fsb>,
+  \ <flow.question-question.fsb>, <flow.question-repeat.fsb>,
+  \ <flow.recurse.fsb>, <flow.retry.fsb>.
+  \
+  \ 2016-11-26: Document `base-execute`.  Compact `call` and
+  \ document it. Document `??`. Move `?leave` from the kernel.
+  \
+  \ 2016-12-03: Fix needing of `retry`.
+  \
+  \ 2016-12-04: Add `+perform`.
+  \
+  \ 2016-12-08: Rename the module filename with uppercase
+  \ "MISC" after the new convention.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation, after `immediate` or
+  \ `compile-only`. Improve `?repeat`. Fix needing of `??`.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-27: Improve documentation.
 
   \ vim: filetype=soloforth

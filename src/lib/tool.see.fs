@@ -4,18 +4,19 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ The `see` utility.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Credit
 
   \ This code was adapted and improved from Afera's `decode`
@@ -26,75 +27,12 @@
   \ published on Forth Dimensions (volume 4, number 2, page 28,
   \ 1982-07).
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-06-05: Copied from Afera. First changes to adapt it.
-  \
-  \ 2015-06-19: Added `?branch`.
-  \
-  \ 2015-07-23: Fix: `clit` was not included in the recognized
-  \ special cases.
-  \
-  \ 2015-08-14: Fixed a recent bug: `sp0 sp!` was used when
-  \ quitting, instead of `sp0 @ sp!`!
-  \
-  \ 2015-10-09: Fix: `slit` was missing from the special cases.
-  \
-  \ 2015-12-21: Fixed `decode-special` after the Forth-83
-  \ version of `do loop`: now the branch address is after `do`
-  \ or `?do`; also added `-branch` to it, in case it is already
-  \ defined during the compilation of `decode-special`.
-  \
-  \ 2015-12-24: Start converting from ITC to DTC.
-  \
-  \ 2016-04-15: Fixed `decode-compile`, which had not been
-  \ adapted from ITC to DTC.
-  \
-  \ 2016-04-17: Added the requisite of `recurse`, which is not
-  \ in the kernel anymore. Updated the history from the
-  \ development history of the project.
-  \
-  \ 2016-04-24: Add support for `2lit`.
-  \
-  \ 2016-04-24: Remove `[char]`, which has been moved to the
-  \ library.
-  \
-  \ 2016-05-17: Need `>body` and `body>`, which has been moved
-  \ to the library.
-  \
-  \ 2016-05-18: Improve `colon-cfa?`. Compact `decode-special`.
-  \ Fix `decode`, which showed the usage instructions before
-  \ checking the word.
-  \
-  \ 2016-11-17: Remove unused `need [if]`.
-  \
-  \ 2016-11-23: Rename `decode` to `see`; rename all words and
-  \ the module accordingly. Compact the code, saving one block.
-  \ Document the interface words.
-  \
-  \ 2016-11-24: Add `see-xt` and `see-body-from`. Make them
-  \ individually accessible for `need`.
-  \
-  \ 2016-12-03: Preserve the compilation wordlist and the
-  \ search order. Useful when the tool is needed during the
-  \ development of a program.
-  \
-  \ 2017-01-06: Fix: the compilation word list was left on the
-  \ stack. Improve: also `see-body-from` and `see-xt` are
-  \ compiled in the Forth word list.
-  \
-  \ 2017-01-18: Type compiled strings between quotes. This is
-  \ useful when they have leading or trailing spaces.
-  \
-  \ 2017-02-17: Update cross references.
 
 ( see )
 
@@ -285,5 +223,68 @@ get-current  also forth definitions
   \ }doc
 
 previous set-current
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-06-05: Copied from Afera. First changes to adapt it.
+  \
+  \ 2015-06-19: Added `?branch`.
+  \
+  \ 2015-07-23: Fix: `clit` was not included in the recognized
+  \ special cases.
+  \
+  \ 2015-08-14: Fixed a recent bug: `sp0 sp!` was used when
+  \ quitting, instead of `sp0 @ sp!`!
+  \
+  \ 2015-10-09: Fix: `slit` was missing from the special cases.
+  \
+  \ 2015-12-21: Fixed `decode-special` after the Forth-83
+  \ version of `do loop`: now the branch address is after `do`
+  \ or `?do`; also added `-branch` to it, in case it is already
+  \ defined during the compilation of `decode-special`.
+  \
+  \ 2015-12-24: Start converting from ITC to DTC.
+  \
+  \ 2016-04-15: Fixed `decode-compile`, which had not been
+  \ adapted from ITC to DTC.
+  \
+  \ 2016-04-17: Added the requisite of `recurse`, which is not
+  \ in the kernel anymore. Updated the history from the
+  \ development history of the project.
+  \
+  \ 2016-04-24: Add support for `2lit`.
+  \
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
+  \
+  \ 2016-05-17: Need `>body` and `body>`, which has been moved
+  \ to the library.
+  \
+  \ 2016-05-18: Improve `colon-cfa?`. Compact `decode-special`.
+  \ Fix `decode`, which showed the usage instructions before
+  \ checking the word.
+  \
+  \ 2016-11-17: Remove unused `need [if]`.
+  \
+  \ 2016-11-23: Rename `decode` to `see`; rename all words and
+  \ the module accordingly. Compact the code, saving one block.
+  \ Document the interface words.
+  \
+  \ 2016-11-24: Add `see-xt` and `see-body-from`. Make them
+  \ individually accessible for `need`.
+  \
+  \ 2016-12-03: Preserve the compilation wordlist and the
+  \ search order. Useful when the tool is needed during the
+  \ development of a program.
+  \
+  \ 2017-01-06: Fix: the compilation word list was left on the
+  \ stack. Improve: also `see-body-from` and `see-xt` are
+  \ compiled in the Forth word list.
+  \
+  \ 2017-01-18: Type compiled strings between quotes. This is
+  \ useful when they have leading or trailing spaces.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

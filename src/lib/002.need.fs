@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703121643
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ The `need` utility which manages the code dependencies.
@@ -19,139 +20,17 @@
   \ Alternative actions are provided by the optional tools
   \ Thru Indexer and Fly Indexer.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-06: First version, partly based on code from Afera.
-  \
-  \ 2015-06-25: Fix: `require` and `locate` needed to save the
-  \ parsed words to the circular string buffer.
-  \
-  \ 2015-09-13: Rename `require` to `need`, and all related
-  \ words accordingly.  The reason is `require` and `required`
-  \ are standard words (in Forth-94 and Forth-2012), and should
-  \ not be used for different purposes.
-  \
-  \ 2015-10-05: Fix `needed`. The trailing and leading spaces
-  \ of the string, sometimes used to prevent name clashes, had
-  \ to be removed before `undefined?`. `-leading` has to be
-  \ moved to the kernel.
-  \
-  \ 2015-10-16: Add `[needed]`.  It allows selective
-  \ compilation depending on the word specified by `need` or
-  \ `needed`.  Improve `located`: now the string searched for
-  \ is delimited with spaces. This prevents name clashes and
-  \ makes it unnecessary to add the spaces explicitly in risky
-  \ cases.
-  \
-  \ 2015-10-25: Improve `need` and `needed` a bit.
-  \
-  \ 2016-04-02: Factor `new-needed-word` from `needed`.  This
-  \ change was needed for `indexer`.
-  \
-  \ 2016-04-03: Make `need` and related words deferred. Factor
-  \ `new-needed-word` from `needed`. These changes were needed
-  \ for `indexer`.
-  \
-  \ 2016-04-26: Improve `located`: when the user press the
-  \ break key, throw exception #-28 ("user interrupt");
-  \ formerly the ordinary #-268 ("required, but not located")
-  \ was thrown by the calling word.
-  \
-  \ 2016-05-06: Make `from` and `locate` optional. Compact the
-  \ blocks.
-  \
-  \ 2016-05-07: Improve documentation. Fix the word shown when
-  \ `?locate` throws an error.
-  \
-  \ 2016-05-10: Fix a harmless bug: `locate-reneed` called the
-  \ deferred `reneeded` instead of `locate-reneeded`.
-  \
-  \ 2016-05-31: Fix block header.
-  \
-  \ 2016-06-01: Fix `need-here`, which left the string on the
-  \ stack.
-  \
-  \ 2016-10-28: Add a temporary debugging informer to
-  \ `located`.
-  \
-  \ 2016-11-19: Add `unlocated` in order to implement
-  \ `fly-indexer`. Improve the documentation.
-  \
-  \ 2016-11-21: Document why `contains` is not accessible here,
-  \ and therefore it's defined also in the strings module.
-  \
-  \ 2016-11-24: Rename some words to be consistent with the
-  \ changes in the Thru Index and the Fly Index.  Factor
-  \ `use-no-index`. Improve documentation.
-  \
-  \ 2016-11-25: Factor `use-no-index`, `use-default-located`.
-  \ Fix and improve documentation and names.
-  \
-  \ 2016-11-26: Improve `(located)` to detect empty strings.
-  \
-  \ 2016-12-03: Add debugging code.
-  \
-  \ 2016-12-25: Rename `from` to `need-from` and improve its
-  \ documentation.
-  \
-  \ 2016-12-30: Compact the code, saving one block.
-  \
-  \ 2017-01-05: Update `indexer` to `make-thru-index` in
-  \ documentation.
-  \
-  \ 2017-01-17: Improve documentation.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Improve optional debugging code in `(located)`.
-  \
-  \ 2017-01-23: Increase and tidy optional debugging code in
-  \ `(located)`.
-  \
-  \ 2017-02-09: Fix documentation.
-  \
-  \ 2017-02-12: Add more optional debugging code for
-  \ `(located)`.
-  \
-  \ 2017-02-17: Update notation "behaviour" to "action". Update
-  \ cross references.
-  \
-  \ 2017-02-19: Replace `do`, which has been moved to the
-  \ library, with `?do`. Fix markup typo in documentation.a
-  \
-  \ 2017-02-21: Make `use-default-need`, `use-default-located`
-  \ and `use-no-index` optional. They are needed only when a
-  \ blocks indexer is used.  This change saves 102 bytes from
-  \ the `need` tool. Now a copy of the code of
-  \ `use-default-need` and `use-default-located` is executed
-  \ during the loading of `need`.
-  \
-  \ 2017-02-25: Update the name of the circular string buffer,
-  \ after the changes in the kernel.
-  \
-  \ 2017-02-26: Update "hp" notation to "np", after the changes
-  \ in the kernel.
-  \
-  \ 2017-02-27: Improve documentation.
-  \
-  \ 2017-02-28: Fix typos in documentation.
-  \
-  \ 2017-03-12: Update the names of `stringer` words, and
-  \ mentions to it.
 
 ( delimited located needed-word )
 
@@ -678,5 +557,127 @@ need get-drive
 : checkpoint ( n -- )
   2 border cr ." Check point " . (.info key drop
   0 border ;
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-06: First version, partly based on code from Afera.
+  \
+  \ 2015-06-25: Fix: `require` and `locate` needed to save the
+  \ parsed words to the circular string buffer.
+  \
+  \ 2015-09-13: Rename `require` to `need`, and all related
+  \ words accordingly.  The reason is `require` and `required`
+  \ are standard words (in Forth-94 and Forth-2012), and should
+  \ not be used for different purposes.
+  \
+  \ 2015-10-05: Fix `needed`. The trailing and leading spaces
+  \ of the string, sometimes used to prevent name clashes, had
+  \ to be removed before `undefined?`. `-leading` has to be
+  \ moved to the kernel.
+  \
+  \ 2015-10-16: Add `[needed]`.  It allows selective
+  \ compilation depending on the word specified by `need` or
+  \ `needed`.  Improve `located`: now the string searched for
+  \ is delimited with spaces. This prevents name clashes and
+  \ makes it unnecessary to add the spaces explicitly in risky
+  \ cases.
+  \
+  \ 2015-10-25: Improve `need` and `needed` a bit.
+  \
+  \ 2016-04-02: Factor `new-needed-word` from `needed`.  This
+  \ change was needed for `indexer`.
+  \
+  \ 2016-04-03: Make `need` and related words deferred. Factor
+  \ `new-needed-word` from `needed`. These changes were needed
+  \ for `indexer`.
+  \
+  \ 2016-04-26: Improve `located`: when the user press the
+  \ break key, throw exception #-28 ("user interrupt");
+  \ formerly the ordinary #-268 ("required, but not located")
+  \ was thrown by the calling word.
+  \
+  \ 2016-05-06: Make `from` and `locate` optional. Compact the
+  \ blocks.
+  \
+  \ 2016-05-07: Improve documentation. Fix the word shown when
+  \ `?locate` throws an error.
+  \
+  \ 2016-05-10: Fix a harmless bug: `locate-reneed` called the
+  \ deferred `reneeded` instead of `locate-reneeded`.
+  \
+  \ 2016-05-31: Fix block header.
+  \
+  \ 2016-06-01: Fix `need-here`, which left the string on the
+  \ stack.
+  \
+  \ 2016-10-28: Add a temporary debugging informer to
+  \ `located`.
+  \
+  \ 2016-11-19: Add `unlocated` in order to implement
+  \ `fly-indexer`. Improve the documentation.
+  \
+  \ 2016-11-21: Document why `contains` is not accessible here,
+  \ and therefore it's defined also in the strings module.
+  \
+  \ 2016-11-24: Rename some words to be consistent with the
+  \ changes in the Thru Index and the Fly Index.  Factor
+  \ `use-no-index`. Improve documentation.
+  \
+  \ 2016-11-25: Factor `use-no-index`, `use-default-located`.
+  \ Fix and improve documentation and names.
+  \
+  \ 2016-11-26: Improve `(located)` to detect empty strings.
+  \
+  \ 2016-12-03: Add debugging code.
+  \
+  \ 2016-12-25: Rename `from` to `need-from` and improve its
+  \ documentation.
+  \
+  \ 2016-12-30: Compact the code, saving one block.
+  \
+  \ 2017-01-05: Update `indexer` to `make-thru-index` in
+  \ documentation.
+  \
+  \ 2017-01-17: Improve documentation.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Improve optional debugging code in `(located)`.
+  \
+  \ 2017-01-23: Increase and tidy optional debugging code in
+  \ `(located)`.
+  \
+  \ 2017-02-09: Fix documentation.
+  \
+  \ 2017-02-12: Add more optional debugging code for
+  \ `(located)`.
+  \
+  \ 2017-02-17: Update notation "behaviour" to "action". Update
+  \ cross references.
+  \
+  \ 2017-02-19: Replace `do`, which has been moved to the
+  \ library, with `?do`. Fix markup typo in documentation.a
+  \
+  \ 2017-02-21: Make `use-default-need`, `use-default-located`
+  \ and `use-no-index` optional. They are needed only when a
+  \ blocks indexer is used.  This change saves 102 bytes from
+  \ the `need` tool. Now a copy of the code of
+  \ `use-default-need` and `use-default-located` is executed
+  \ during the loading of `need`.
+  \
+  \ 2017-02-25: Update the name of the circular string buffer,
+  \ after the changes in the kernel.
+  \
+  \ 2017-02-26: Update "hp" notation to "np", after the changes
+  \ in the kernel.
+  \
+  \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-02-28: Fix typos in documentation.
+  \
+  \ 2017-03-12: Update the names of `stringer` words, and
+  \ mentions to it.
 
   \ vim: filetype=soloforth

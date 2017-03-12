@@ -4,14 +4,15 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Implementation of SwiftForth's packages, which are reusable
   \ named modules with private and public definitions.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Julian Fondren, 2016.
@@ -19,14 +20,14 @@
   \ Marcos Cruz (programandala.net) adapted the code to Solo
   \ Forth, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ References
 
   \ Newsgroups: comp.lang.forth
@@ -38,20 +39,6 @@
   \ http://forth.minimaltype.com/packages.html
 
   \ https://www.forth.com/swiftforth/
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-12-06: Start.
-  \
-  \ 2016-12-07: Fix `package`, test everything, complete
-  \ documentation, calculate the data space used.
-  \
-  \ 2017-01-07: Rename `named-wid` to `latest>wordlist`, after
-  \ the changes in the word-lists interface words.
-  \
-  \ 2017-02-17: Update cross references.  Change markup of
-  \ inline code that is not a cross reference.
 
 ( package public private end-package )
 
@@ -236,5 +223,19 @@ need latest>wordlist need +order need -order need nextname
   \ See also: `public`, `private`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-12-06: Start.
+  \
+  \ 2016-12-07: Fix `package`, test everything, complete
+  \ documentation, calculate the data space used.
+  \
+  \ 2017-01-07: Rename `named-wid` to `latest>wordlist`, after
+  \ the changes in the word-lists interface words.
+  \
+  \ 2017-02-17: Update cross references.  Change markup of
+  \ inline code that is not a cross reference.
 
   \ vim: filetype=soloforth

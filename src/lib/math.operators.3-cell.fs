@@ -4,35 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Triple-cell operators.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-12-30: Compact the code, saving two blocks. Make
-  \ `tum*`, `tum/`, `t+` and `t-` accessible to `need`.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Remove remaining `exit` at the end of
-  \ conditional interpretation.
 
 ( tum* tum/ t+ t- )
 
@@ -149,5 +138,17 @@
   \ _t2_ is the negation of _t1_.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-12-30: Compact the code, saving two blocks. Make
+  \ `tum*`, `tum/`, `t+` and `t-` accessible to `need`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
 
   \ vim: filetype=soloforth

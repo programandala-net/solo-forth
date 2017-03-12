@@ -4,6 +4,7 @@
 ; http://programandala.net/en.program.solo_forth.html
 
 ; Last modified: 201703112140
+; See change log at the end of the file
 
 ; ==============================================================
 ; Description
@@ -21,41 +22,6 @@
 ; You may do whatever you want with this work, so long as you
 ; retain every copyright, credit and authorship notice, and this
 ; license.  There is no warranty.
-
-; ==============================================================
-; History
-
-; See
-; http://programandala.net/en.program.solo_forth.history.html
-
-; Latest changes:
-
-; 2016-11-26: Improve `transfer-block` using a literal for the
-; second `transfer-block`.
-;
-; 2016-12-29: Change definition names to lowercase, after the
-; changes in the main kernel.
-;
-; 2017-02-05: Move `read-block` and `write-block` to the main
-; file of the kernel, because they are identical in G+DOS,
-; TR-DOS and +3DOS. Move `rec/track` to the main file of the
-; kernel.
-;
-; 2017-02-06: Improve documentation.
-;
-; 2017-02-07: Rewrite `read-mode` and `write-mode` in Z80.
-;
-; 2017-02-08: Improve `transfer-sector` to use the current
-; drive (formerly it always used drive 2). Move `set-drive`
-; from the library, because of that.
-;
-; 2017-02-09: Add `>drive-block` to `transfer-block`.
-;
-; 2017-02-17: Update cross references.
-;
-; 2017-03-03: Improve documentation.
-;
-; 2017-03-11: Update notation of Z80 flags.
 
 ; ==============================================================
 ; Requirements
@@ -302,5 +268,38 @@ transfer_mode:
 ; ==============================================================
 
 endif ; defined gplusdos
+
+; ==============================================================
+; Change log
+
+; Older changes are in
+; http://programandala.net/en.program.solo_forth.history.html
+
+; 2016-11-26: Improve `transfer-block` using a literal for the
+; second `transfer-block`.
+;
+; 2016-12-29: Change definition names to lowercase, after the
+; changes in the main kernel.
+;
+; 2017-02-05: Move `read-block` and `write-block` to the main
+; file of the kernel, because they are identical in G+DOS,
+; TR-DOS and +3DOS. Move `rec/track` to the main file of the
+; kernel.
+;
+; 2017-02-06: Improve documentation.
+;
+; 2017-02-07: Rewrite `read-mode` and `write-mode` in Z80.
+;
+; 2017-02-08: Improve `transfer-sector` to use the current
+; drive (formerly it always used drive 2). Move `set-drive`
+; from the library, because of that.
+;
+; 2017-02-09: Add `>drive-block` to `transfer-block`.
+;
+; 2017-02-17: Update cross references.
+;
+; 2017-03-03: Improve documentation.
+;
+; 2017-03-11: Update notation of Z80 flags.
 
 ; vim: filetype=z80:textwidth=64

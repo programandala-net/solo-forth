@@ -5,18 +5,18 @@
 
   \ Last modified: 201702220020
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words to save and restore the display status, in order to
   \ call ROM routines that prints to the screen.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you

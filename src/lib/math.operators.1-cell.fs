@@ -4,131 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702271829
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Single-cell operators.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2015: Add `within`, `between`, and common operators.
-  \
-  \ 2015-08-12: Add `lshift`. Improve `2/`.
-  \
-  \ 2015-08-14: Add `under+`, in Forth.
-  \
-  \ 2015-11-01: Add `rshift` and faster `lshift`.
-  \
-  \ 2015-11-13: Add `sqrt` (version by Wil Baden).
-  \
-  \ 2015-12-15: Rewrote `under+` in Z80.
-  \
-  \ 2015-12-21: Add `polarity`.
-  \
-  \ 2015-12-22: Add `%` and `u%`.
-  \
-  \ 2015-12-29: Add second version of `sqrt` (from Computer One
-  \ Forth).
-  \
-  \ 2016-03-20: Add `+under`, a variant of `under+`.
-  \
-  \ 2016-04-05: Add `cell/`.
-  \
-  \ 2016-04-07: Add `bits`, generic version of `pixels`.
-  \
-  \ 2016-04-27: Add `sgn`, `<=>`, `either`, `neither`.
-  \
-  \ 2016-04-28: Fix `<=>`. Add `0max`.
-  \
-  \ 2016-05-01: Add `clshift`.
-  \
-  \ 2016-05-02: Compact the blocks to save space. Remove `sgn`
-  \ because `polarity` does the same already.
-  \
-  \ 2016-07-14: Fix and complete credits of `any?`.
-  \
-  \ 2016-07-29: Add `gcd`.
-  \
-  \ 2016-10-16: Document `%`, `u%` and `gcd`.
-  \
-  \ 2016-10-24: Fix description of `split`.
-  \
-  \ 2016-10-24: Fix requiring `gcd`, `%` and `u%`.
-  \
-  \ 2016-10-24: Add `u>ud`.
-  \
-  \ 2016-11-14: Fix requiring `<=>`. Remove `sm/rem`, which is
-  \ in the kernel. Move `8*` here from the assemblers.
-  \
-  \ 2016-11-17: Use `?(` instead of `[if]`. Compact the module,
-  \ saving one block.
-  \
-  \ 2016-12-06: Simplify documentation of `between` and
-  \ `within`.
-  \
-  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
-  \ to `jpnext,`, after the change in the kernel.
-  \
-  \ 2016-12-21: Add `odd?`. Rewrite `8*` in Z80.
-  \
-  \ 2016-12-22: Add `even?`.
-  \
-  \ 2016-12-28: Add `ifelse`. Fix Typo. Improve documentation
-  \ of `either`, `neither` and `any?`.
-  \
-  \ 2016-12-30: Compact the code, saving two blocks.
-  \
-  \ 2017-01-02: Convert `lshift`, `rshift` and `bits` from
-  \ `z80-asm` to `z80-asm,`.
-  \
-  \ 2017-01-04: Fix: replace `>relresolve` with `>rresolve` in
-  \ `lshift` and `rshift`.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-21: Remove the slower (and only 3 bytes smaller)
-  \ alternative implementations of `rshift` and `lshift`.
-  \ Combine `rshift` and `lshift` in one block.
-  \
-  \ 2017-01-23: Add `?shift`.
-  \
-  \ 2017-01-24: Improve documentation of `fm/mod`. Improve
-  \ needing of symmetric-division and floored-division
-  \ operators.
-  \
-  \ 2017-01-26: Rewrite `odd?` and `even?` in Z80 and document
-  \ them.
-  \
-  \ 2017-02-17: Fix Asciidoctor table in documentation.  Update
-  \ cross references.  Change markup of inline code that is not
-  \ a cross reference.
-  \
-  \ 2017-02-19: Replace `do`, which has been moved to the
-  \ library, with `?do`.
-  \
-  \ 2017-02-20: Improve documentation.
-  \
-  \ 2017-02-21: Need `unresolved`, which now is optional, not
-  \ part of the assembler.
-  \
-  \ 2017-02-27: Improve documentation.
 
 ( under+ +under )
 
@@ -217,7 +110,7 @@ code +under ( n1|u1 n2|u2 x -- n3|u3 x )
   \
   \ }doc
 
-[unneeded] u% 
+[unneeded] u%
 ?\ : u% ( u1 u2 -- u3 ) >r 100 um* r> um/mod nip ;
 
   \ doc{
@@ -1055,5 +948,113 @@ code join ( b1 b2 -- x )
   \ See also: `split`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015: Add `within`, `between`, and common operators.
+  \
+  \ 2015-08-12: Add `lshift`. Improve `2/`.
+  \
+  \ 2015-08-14: Add `under+`, in Forth.
+  \
+  \ 2015-11-01: Add `rshift` and faster `lshift`.
+  \
+  \ 2015-11-13: Add `sqrt` (version by Wil Baden).
+  \
+  \ 2015-12-15: Rewrote `under+` in Z80.
+  \
+  \ 2015-12-21: Add `polarity`.
+  \
+  \ 2015-12-22: Add `%` and `u%`.
+  \
+  \ 2015-12-29: Add second version of `sqrt` (from Computer One
+  \ Forth).
+  \
+  \ 2016-03-20: Add `+under`, a variant of `under+`.
+  \
+  \ 2016-04-05: Add `cell/`.
+  \
+  \ 2016-04-07: Add `bits`, generic version of `pixels`.
+  \
+  \ 2016-04-27: Add `sgn`, `<=>`, `either`, `neither`.
+  \
+  \ 2016-04-28: Fix `<=>`. Add `0max`.
+  \
+  \ 2016-05-01: Add `clshift`.
+  \
+  \ 2016-05-02: Compact the blocks to save space. Remove `sgn`
+  \ because `polarity` does the same already.
+  \
+  \ 2016-07-14: Fix and complete credits of `any?`.
+  \
+  \ 2016-07-29: Add `gcd`.
+  \
+  \ 2016-10-16: Document `%`, `u%` and `gcd`.
+  \
+  \ 2016-10-24: Fix description of `split`.
+  \
+  \ 2016-10-24: Fix requiring `gcd`, `%` and `u%`.
+  \
+  \ 2016-10-24: Add `u>ud`.
+  \
+  \ 2016-11-14: Fix requiring `<=>`. Remove `sm/rem`, which is
+  \ in the kernel. Move `8*` here from the assemblers.
+  \
+  \ 2016-11-17: Use `?(` instead of `[if]`. Compact the module,
+  \ saving one block.
+  \
+  \ 2016-12-06: Simplify documentation of `between` and
+  \ `within`.
+  \
+  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
+  \ to `jpnext,`, after the change in the kernel.
+  \
+  \ 2016-12-21: Add `odd?`. Rewrite `8*` in Z80.
+  \
+  \ 2016-12-22: Add `even?`.
+  \
+  \ 2016-12-28: Add `ifelse`. Fix Typo. Improve documentation
+  \ of `either`, `neither` and `any?`.
+  \
+  \ 2016-12-30: Compact the code, saving two blocks.
+  \
+  \ 2017-01-02: Convert `lshift`, `rshift` and `bits` from
+  \ `z80-asm` to `z80-asm,`.
+  \
+  \ 2017-01-04: Fix: replace `>relresolve` with `>rresolve` in
+  \ `lshift` and `rshift`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-21: Remove the slower (and only 3 bytes smaller)
+  \ alternative implementations of `rshift` and `lshift`.
+  \ Combine `rshift` and `lshift` in one block.
+  \
+  \ 2017-01-23: Add `?shift`.
+  \
+  \ 2017-01-24: Improve documentation of `fm/mod`. Improve
+  \ needing of symmetric-division and floored-division
+  \ operators.
+  \
+  \ 2017-01-26: Rewrite `odd?` and `even?` in Z80 and document
+  \ them.
+  \
+  \ 2017-02-17: Fix Asciidoctor table in documentation.  Update
+  \ cross references.  Change markup of inline code that is not
+  \ a cross reference.
+  \
+  \ 2017-02-19: Replace `do`, which has been moved to the
+  \ library, with `?do`.
+  \
+  \ 2017-02-20: Improve documentation.
+  \
+  \ 2017-02-21: Need `unresolved`, which now is optional, not
+  \ part of the assembler.
+  \
+  \ 2017-02-27: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -4,49 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702251949
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words related to number printing.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-05-01: Add `holds`.
-  \
-  \ 2016-11-24: Move `u.r` from the kernel and document it.
-  \ Document also `ud.r` and `ud.`. Improve individual needing
-  \ of all of them.
-  \
-  \ 2016-12-08: Fix `u.r`. Fix needing of `ud.`.
-  \
-  \ 2016-12-30: Compact the code, saving one block.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Remove remaining `exit` at the end of
-  \ conditional interpretation. Rename `(d.)` to `(d.`,
-  \ `(dbin.)` to `(dbin.` and `(dhex.)` to `(dhex.`.  Make all
-  \ words individually accessible to `need`.
-  \
-  \ 2017-02-19: Replace `do`, which has been moved to the
-  \ library, with `?do`.
-  \
-  \ 2017-02-25: Improve documentation.
 
 ( ud.r u.r ud. holds )
 
@@ -220,7 +195,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
 
 [unneeded] <hex [unneeded] hex> and ?( need base' need base>
 : <hex ( -- ) base @ base' ! hex ; : hex> ( -- ) base> ; ?)
-  
+
   \ doc{
   \
   \ <hex ( -- )
@@ -357,7 +332,7 @@ need base' need base> need binary
 
 [unneeded] 32bin.
 ?\ need (dbin.  : 32bin. ( d -- ) #32 (dbin. ;
-  
+
   \ doc{
   \
   \ 32bin. ( d -- )
@@ -393,5 +368,31 @@ need base' need base> need binary
   \ See also: `8hex.`, `32bin.`, `16bin.`, `bin.`, `binary`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-05-01: Add `holds`.
+  \
+  \ 2016-11-24: Move `u.r` from the kernel and document it.
+  \ Document also `ud.r` and `ud.`. Improve individual needing
+  \ of all of them.
+  \
+  \ 2016-12-08: Fix `u.r`. Fix needing of `ud.`.
+  \
+  \ 2016-12-30: Compact the code, saving one block.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation. Rename `(d.)` to `(d.`,
+  \ `(dbin.)` to `(dbin.` and `(dhex.)` to `(dhex.`.  Make all
+  \ words individually accessible to `need`.
+  \
+  \ 2017-02-19: Replace `do`, which has been moved to the
+  \ library, with `?do`.
+  \
+  \ 2017-02-25: Improve documentation.
 
   \ vim: filetype=soloforth

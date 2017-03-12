@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703041852
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words related to the far-memory system, a virtual 64 KiB
@@ -14,19 +15,19 @@
   \ memory are included in the kernel (see `far-banks` to
   \ start).
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Credit
 
   \ The "far" naming convention was borrowed from a post by Dr
@@ -38,57 +39,6 @@
   \ CamelForth (2001):
   \
   \ http://www.worldofspectrum.org/z88forever/camelforth/camel-pools.html
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-11-15: Start.  Add `farhl`, `questionnextbank`,
-  \ `questionpreviousbank`.
-  \
-  \ 2016-11-16: Add `far2@`, `far@+`, `farc@+`, `far2@+`,
-  \ `far+!`, `farc+!`, `far2!` `move>far`, `move<far`,
-  \ `cmove>far`, `cmove<far`, `fartype-ascii`, `farallot`.
-  \
-  \ 2016-11-18: Credit about the naming convention.
-  \
-  \ 2016-11-26: Improve `far2@+`. Move `fartype-ascii` to the
-  \ printing module.
-  \
-  \ 2016-12-24: Fix block header. Improve the Asciidoctor
-  \ markup of the documentation.
-  \
-  \ 2016-12-30: Compact the code, saving one block.
-  \
-  \ 2017-01-05: Update `also assembler` to `assembler-wordlist
-  \ >order`.
-  \
-  \ 2017-01-09: Add `far,`.
-  \
-  \ 2017-01-10: Change `2*` to `cells`.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Remove remaining `exit` at the end of
-  \ conditional interpretation.
-  \
-  \ 2017-02-01: Fix typo. Improve the layout of some
-  \ documentation.  Add `default-bank-routine`,
-  \ `e-bank-routine`.  Move `!bank`, `c!bank`, `@bank` and
-  \ `c@bank` from the kernel. Rename `farhl` to
-  \ `far-hl-routine`; `questionnextbank` to
-  \ `?next-bank-routine`; `questionpreviousbank` to
-  \ `?previous-bank-routine`.
-  \
-  \ 2017-02-16: Fix typo in documentation of `farc@+`.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-02-26: Update "hp" notation to "np", after the changes
-  \ in the kernel.
-  \
-  \ 2017-03-04: Update naming convention of Z80 routines, after
-  \ the changes in the kernel.
 
 ( far-hl_ ?next-bank_ ?previous-bank_ )
 
@@ -526,5 +476,56 @@ code c@bank ( ca n -- c ) D1 c, e-bank_ call,
   \ ----
 
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-11-15: Start.  Add `farhl`, `questionnextbank`,
+  \ `questionpreviousbank`.
+  \
+  \ 2016-11-16: Add `far2@`, `far@+`, `farc@+`, `far2@+`,
+  \ `far+!`, `farc+!`, `far2!` `move>far`, `move<far`,
+  \ `cmove>far`, `cmove<far`, `fartype-ascii`, `farallot`.
+  \
+  \ 2016-11-18: Credit about the naming convention.
+  \
+  \ 2016-11-26: Improve `far2@+`. Move `fartype-ascii` to the
+  \ printing module.
+  \
+  \ 2016-12-24: Fix block header. Improve the Asciidoctor
+  \ markup of the documentation.
+  \
+  \ 2016-12-30: Compact the code, saving one block.
+  \
+  \ 2017-01-05: Update `also assembler` to `assembler-wordlist
+  \ >order`.
+  \
+  \ 2017-01-09: Add `far,`.
+  \
+  \ 2017-01-10: Change `2*` to `cells`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
+  \
+  \ 2017-02-01: Fix typo. Improve the layout of some
+  \ documentation.  Add `default-bank-routine`,
+  \ `e-bank-routine`.  Move `!bank`, `c!bank`, `@bank` and
+  \ `c@bank` from the kernel. Rename `farhl` to
+  \ `far-hl-routine`; `questionnextbank` to
+  \ `?next-bank-routine`; `questionpreviousbank` to
+  \ `?previous-bank-routine`.
+  \
+  \ 2017-02-16: Fix typo in documentation of `farc@+`.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-26: Update "hp" notation to "np", after the changes
+  \ in the kernel.
+  \
+  \ 2017-03-04: Update naming convention of Z80 routines, after
+  \ the changes in the kernel.
 
   \ vim: filetype=soloforth

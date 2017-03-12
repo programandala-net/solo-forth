@@ -4,50 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words related to printing control characters.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015: Add words to print cr, bs, backspaces.
-  \
-  \ 2016: Add `tabulate`.
-  \
-  \ 2016-05-01: Test and document `tabulate`.
-  \
-  \ 2016-05-04: Move `printer` from the kernel.
-  \
-  \ 2016-05-06: Fix and add conditional compilation.
-  \
-  \ 2016-11-26: Improve documentation.
-  \
-  \ 2016-12-25: Improve needing of word set `'cr' 'tab' 'bs'
-  \ crs tab tabs backspace backspaces`.
-  \
-  \ 2017-01-07: Fix typo.
-  \
-  \ 2017-01-10: Complete and improve documentation.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-02-17: Update cross references.
 
 ( printer tabulate )
 
@@ -207,5 +181,32 @@ variable /tabulate  8 /tabulate !
   \ See also: `backspace`, `'bs'`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015: Add words to print cr, bs, backspaces.
+  \
+  \ 2016: Add `tabulate`.
+  \
+  \ 2016-05-01: Test and document `tabulate`.
+  \
+  \ 2016-05-04: Move `printer` from the kernel.
+  \
+  \ 2016-05-06: Fix and add conditional compilation.
+  \
+  \ 2016-11-26: Improve documentation.
+  \
+  \ 2016-12-25: Improve needing of word set `'cr' 'tab' 'bs'
+  \ crs tab tabs backspace backspaces`.
+  \
+  \ 2017-01-07: Fix typo.
+  \
+  \ 2017-01-10: Complete and improve documentation.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

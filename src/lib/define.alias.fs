@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702280015
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Implementation of `alias`.  Features of an alias defined with
@@ -18,58 +19,17 @@
   \ - It can be reconfigured with `realias` and `alias!`, but
   \   the compiled aliases don't change.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-10-25: First version of `alias`: it creates a deferred
-  \ word and initializes it. Second version: it recognizes code
-  \ words and patches their code field instead.
-  \
-  \ 2015-12-26: New alternative version, adapted to DTC: if
-  \ _xt_ is a deferred word, the alias will point to the word
-  \ it's associated to.
-  \
-  \ 2016-02-27: Fixed the DTC version: the alias of an
-  \ unitialized deferred word executed the default error even
-  \ after the initialization of the deferred word.
-  \
-  \ 2016-03-04: Removed the ITC version.
-  \
-  \ 2016-04-17: Improved `alias`: nowe the aliases have the xt
-  \ of the original word.
-  \
-  \ 2016-04-18: Wrote `realias`.
-  \
-  \ 2016-04-29: Add `alias!`, a useful common factor of
-  \ `alias` and `realias`.
-  \
-  \ 2016-05-05: Add conditional compilation. Improve
-  \ documentation.
-  \
-  \ 2016-10-28: Adapt `alias!` to the extra-memory system.
-  \
-  \ 2016-11-13: Update the names of far-memory words.
-  \
-  \ 2016-11-18: Improve documentation of `alias`.
-  \
-  \ 2017-01-05: Remove old system bank support from `alias!`.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-02-27: Improve documentation.
 
 ( alias! alias realias )
 
@@ -122,5 +82,46 @@ need alias!
   \ See `alias`, `alias!`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-10-25: First version of `alias`: it creates a deferred
+  \ word and initializes it. Second version: it recognizes code
+  \ words and patches their code field instead.
+  \
+  \ 2015-12-26: New alternative version, adapted to DTC: if
+  \ _xt_ is a deferred word, the alias will point to the word
+  \ it's associated to.
+  \
+  \ 2016-02-27: Fixed the DTC version: the alias of an
+  \ unitialized deferred word executed the default error even
+  \ after the initialization of the deferred word.
+  \
+  \ 2016-03-04: Removed the ITC version.
+  \
+  \ 2016-04-17: Improved `alias`: nowe the aliases have the xt
+  \ of the original word.
+  \
+  \ 2016-04-18: Wrote `realias`.
+  \
+  \ 2016-04-29: Add `alias!`, a useful common factor of
+  \ `alias` and `realias`.
+  \
+  \ 2016-05-05: Add conditional compilation. Improve
+  \ documentation.
+  \
+  \ 2016-10-28: Adapt `alias!` to the extra-memory system.
+  \
+  \ 2016-11-13: Update the names of far-memory words.
+  \
+  \ 2016-11-18: Improve documentation of `alias`.
+  \
+  \ 2017-01-05: Remove old system bank support from `alias!`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-02-27: Improve documentation.
 
   \ vim: filetype=soloforth

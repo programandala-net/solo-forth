@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702231739
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Address register store and fetch words.
@@ -16,7 +17,7 @@
   \ cleaner-looking code.  (From the original source of Z88
   \ CamelForth, by Garry Lancaster.)
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Garry Lancaster wrote the original code for Z88 CamelForth,
@@ -25,36 +26,12 @@
   \ Marcos Cruz (programandala.net) adapted the code for Solo
   \ Forth, 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2015-07-20: Copy the code from Z88 CamelForth. Start
-  \ adapting it.
-  \
-  \ 2015-07-21: Finish the adaption. Not tested yet.
-  \
-  \ 2015-07-22: Let independent loading of the words.
-  \
-  \ 2016-05-07: Make block titles compatible with `indexer`.
-  \
-  \ 2016-05-10: Compact the blocks. Fix `!a`, `!a+`, `c@a+`.
-  \ Document.
-  \
-  \ 2016-11-13: Use `jppushhl` instead of `jp pushhl`; improve
-  \ comments.
-  \
-  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
-  \ to `jpnext,`, after the change in the kernel.
-  \
-  \ 2017-02-23: Fix notation of cross references in
-  \ documentation.
 
 ( a a! a@ )
 
@@ -275,5 +252,29 @@ code c@a+ ( -- c ) 2A c, a , 5E c, 23 c, 16 c, 00 c,
   \ See also: `a`, `c!a+`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-07-20: Copy the code from Z88 CamelForth. Start
+  \ adapting it.
+  \
+  \ 2015-07-21: Finish the adaption. Not tested yet.
+  \
+  \ 2015-07-22: Let independent loading of the words.
+  \
+  \ 2016-05-07: Make block titles compatible with `indexer`.
+  \
+  \ 2016-05-10: Compact the blocks. Fix `!a`, `!a+`, `c@a+`.
+  \ Document.
+  \
+  \ 2016-11-13: Use `jppushhl` instead of `jp pushhl`; improve
+  \ comments.
+  \
+  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
+  \ to `jpnext,`, after the change in the kernel.
+  \
+  \ 2017-02-23: Fix notation of cross references in
+  \ documentation.
 
   \ vim: filetype=soloforth

@@ -4,43 +4,25 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Basic implementation of text windows, which use specific
   \ printing words and share the global color attributes.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-12-23: Start.
-  \
-  \ 2016-12-24: First working version.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Remove remaining `exit` at the end of
-  \ conditional interpretation.
-  \
-  \ 2017-01-20: Change the behaviour of `window` and
-  \ `set-window` to make them more versatile; document them.
-  \
-  \ 2017-02-17: Fix markup in documentation.  Update cross
-  \ references.
 
 ( window set-window )
 
@@ -223,5 +205,24 @@ variable wtyped
              else  wfreecolumns dup /wtype  then
   repeat  at-wxy wtype+ ;
   \ Type string _ca len_ in the current window, left justified.
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-12-23: Start.
+  \
+  \ 2016-12-24: First working version.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
+  \
+  \ 2017-01-20: Change the behaviour of `window` and
+  \ `set-window` to make them more versatile; document them.
+  \
+  \ 2017-02-17: Fix markup in documentation.  Update cross
+  \ references.
 
   \ vim: filetype=soloforth

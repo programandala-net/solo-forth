@@ -6,30 +6,24 @@
   \ XXX UNDER DEVELOPMENT
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Quadruple-cell operators.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2015-11-13: Add `q2*`.
-  \
-  \ 2016-12-30: Modify the layout of two words.
 
 ( q2* )
 
@@ -82,5 +76,12 @@ end-code
   2>r dup 0< dup >r if  dnegate  then
   r> 2r> dup 0< dup >r if  dnegate  then
   rot >r udm* 2r> xor 0< if  qnegate  then ;
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-11-13: Add `q2*`.
+  \
+  \ 2016-12-30: Modify the layout of two words.
 
   \ vim: filetype=soloforth

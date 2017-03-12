@@ -4,54 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221249
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Misc words related to data structures.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2015-11-15: Add `link@` and `link,`.
-  \
-  \ 2016-04-28: Rename `set` to `storer` and improve it. Add
-  \ `cstorer`.
-  \
-  \ 2016-05-02: Join two blocks to save space.
-  \
-  \ 2016-05-10: Add `2storer`.
-  \
-  \ 2016-11-17: Add `const`, `cconst`, `2const`.
-  \
-  \ 2016-11-25: Move `storer`, `cstorer` and `2storer` to their
-  \ own module <data.storer.fsb>.  Move `const`, `cconst` and
-  \ `2const` to their own module <data.const.fsb>.  Document
-  \ all remaining words.  Convert `link@` from deferred to
-  \ alias. Add `enumcell`.
-  \
-  \ 2016-12-04: Add `cenum`.
-  \
-  \ 2016-12-08: Rename the module filename with uppercase
-  \ "MISC" after the new convention.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-02-17: Fix markup in documentation.  Update cross
-  \ references.
 
 ( buffer: cvariable enum cenum enumcell link@ link, )
 
@@ -213,5 +183,36 @@ need alias ' @ alias link@ ( node1 -- node2 )
   \ See also: `link@`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-11-15: Add `link@` and `link,`.
+  \
+  \ 2016-04-28: Rename `set` to `storer` and improve it. Add
+  \ `cstorer`.
+  \
+  \ 2016-05-02: Join two blocks to save space.
+  \
+  \ 2016-05-10: Add `2storer`.
+  \
+  \ 2016-11-17: Add `const`, `cconst`, `2const`.
+  \
+  \ 2016-11-25: Move `storer`, `cstorer` and `2storer` to their
+  \ own module <data.storer.fsb>.  Move `const`, `cconst` and
+  \ `2const` to their own module <data.const.fsb>.  Document
+  \ all remaining words.  Convert `link@` from deferred to
+  \ alias. Add `enumcell`.
+  \
+  \ 2016-12-04: Add `cenum`.
+  \
+  \ 2016-12-08: Rename the module filename with uppercase
+  \ "MISC" after the new convention.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-02-17: Fix markup in documentation.  Update cross
+  \ references.
 
   \ vim: filetype=soloforth

@@ -4,45 +4,31 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702272352
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ `options[` control structure, an alternative to `case` with
   \ single-word options and a specific default case. The
   \ compilation of options is done in interpretation mode.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Credit:
 
   \ `options[` is a port of IsForth's `case:`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-10-15: Finish porting IsForth's `case:`, with
-  \ different names.  In the original code the word `docase`
-  \ (called `(options)` in this port) is written in x86
-  \ assembler.  It has been rewritten from scratch, without
-  \ investigating the assembler code.
-  \
-  \ 2016-04-29: Improve documentation.
-  \
-  \ 2016-11-26: Improve `(options)`.
-  \
-  \ 2017-02-27: Improve documentation.
 
 ( options[ )
 
@@ -192,5 +178,20 @@ variable #options
   \ See `options[` for a usage example.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-10-15: Finish porting IsForth's `case:`, with
+  \ different names.  In the original code the word `docase`
+  \ (called `(options)` in this port) is written in x86
+  \ assembler.  It has been rewritten from scratch, without
+  \ investigating the assembler code.
+  \
+  \ 2016-04-29: Improve documentation.
+  \
+  \ 2016-11-26: Improve `(options)`.
+  \
+  \ 2017-02-27: Improve documentation.
 
   \ vim: filetype=soloforth

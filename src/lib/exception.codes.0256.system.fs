@@ -4,44 +4,25 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703082322
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ The Forth system error codes (range -4095..-256), except
   \ those reserved for the OS and the DOS.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-05-18: Modify format of messages.
-  \
-  \ 2016-11-25: Rename "required" to "needed", because the word
-  \ used is `need` and its family.
-  \
-  \ 2016-12-23: Add codes #-281 and #-282 for escaped strings
-  \ search order.
-  \
-  \ 2016-12-26: Add codes #-283 and #-285 for assembler labels.
-  \
-  \ 2017-01-11: Add code #-286.
-  \
-  \ 2017-02-09: Add code #-287, needed by `set-block-drives`.
-  \
-  \ 2017-03-08: Add code #-288, needed by `create-file` and
-  \ `open-file`.
 
 ( System error codes #-256..#-270 )
 
@@ -96,5 +77,25 @@
 #-298 \
 #-299 \
 #-300 \
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-05-18: Modify format of messages.
+  \
+  \ 2016-11-25: Rename "required" to "needed", because the word
+  \ used is `need` and its family.
+  \
+  \ 2016-12-23: Add codes #-281 and #-282 for escaped strings
+  \ search order.
+  \
+  \ 2016-12-26: Add codes #-283 and #-285 for assembler labels.
+  \
+  \ 2017-01-11: Add code #-286.
+  \
+  \ 2017-02-09: Add code #-287, needed by `set-block-drives`.
+  \
+  \ 2017-03-08: Add code #-288, needed by `create-file` and
+  \ `open-file`.
 
   \ vim: filetype=soloforth

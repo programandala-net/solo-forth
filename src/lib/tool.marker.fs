@@ -6,49 +6,24 @@
   \ XXX UNDER DEVELOPMENT
 
   \ Last modified: 201702261231
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ `marker`, `anew`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-10-27: Add `possibly`, `anew`.
-  \
-  \ 2015..2016: Drafts of `marker`.
-  \
-  \ 2016-01-01: Add example of `marker` from m3forth.
-  \
-  \ 2016-04-24: Move `n,` to module "compilation.fsb".
-  \
-  \ 2016-04-25: First working version of `marker`. Move
-  \ `possibly` to the module "compilation.fsb".
-  \
-  \ 2016-06-01: Update: `there` was moved from the kernel to
-  \ the library.
-  \
-  \ 2016-11-13: Rename "np" to "hp" after the changes in the
-  \ kernel.
-  \
-  \ 2017-01-06: Update `voc-link` to `latest-wordlist`;
-  \ `wordlists,` and `@wordlists` still must be adapted.
-  \
-  \ 2017-02-26: Update "hp" notation to "np", after the changes
-  \ in the kernel.
 
 ( marker )
 
@@ -175,5 +150,31 @@ need possibly need marker
   \ possible
 
 : anew ( "name" -- ) >in @  possibly  >in !  marker ;
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-10-27: Add `possibly`, `anew`.
+  \
+  \ 2015..2016: Drafts of `marker`.
+  \
+  \ 2016-01-01: Add example of `marker` from m3forth.
+  \
+  \ 2016-04-24: Move `n,` to module "compilation.fsb".
+  \
+  \ 2016-04-25: First working version of `marker`. Move
+  \ `possibly` to the module "compilation.fsb".
+  \
+  \ 2016-06-01: Update: `there` was moved from the kernel to
+  \ the library.
+  \
+  \ 2016-11-13: Rename "np" to "hp" after the changes in the
+  \ kernel.
+  \
+  \ 2017-01-06: Update `voc-link` to `latest-wordlist`;
+  \ `wordlists,` and `@wordlists` still must be adapted.
+  \
+  \ 2017-02-26: Update "hp" notation to "np", after the changes
+  \ in the kernel.
 
   \ vim: filetype=soloforth

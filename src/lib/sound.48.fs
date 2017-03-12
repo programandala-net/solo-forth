@@ -4,64 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702241531
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words related to 48k sound.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015: Main development.
-  \
-  \ 2016-04-14: Documented `bleep` and `beep>bleep`.
-  \
-  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
-  \ in the kernel.
-  \
-  \ 2016-12-30: Compact the code, saving two blocks.
-  \
-  \ 2017-01-03: Convert `laser-gun`, `ambulance`, and
-  \ `white-noise` from `z80-asm` to `z80-asm`. Fix needing of
-  \ `laser-gun` and `ambulance`. Fix structures: use `<mark ...
-  \ ?jr` instead of `rbegin ... ?jr`. Improve documentation.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Rename `beep>bleep` to `>bleep`. Improve
-  \ documentation.
-  \
-  \ 2017-01-23: Rename `>bleep` to `hz>bleep`. Add `dhz>bleep`,
-  \ `middle-octave`, `/octave`, `octave-changer`, `beep>dhz`,
-  \ `beep`.
-  \
-  \ 2017-01-24: Make `hz>bleep` and `dhz>bleep` faster (0.75
-  \ the previous time). Factor `beep>bleep` from `beep`. Factor
-  \ `beep>note` from `beep>bleep` and fix the calculation to
-  \ support also negative values of pitch.
-  \
-  \ 2017-01-25: Typo.
-  \
-  \ 2017-02-17: Update cross references.  Change markup of code
-  \ that is not a cross reference.
-  \
-  \ 2017-02-24: Improve documentation markup.
 
 ( bleep hz>bleep dhz>bleep )
 
@@ -627,5 +587,46 @@ code white-noise ( u -- )
   \ number of sample bytes.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015: Main development.
+  \
+  \ 2016-04-14: Documented `bleep` and `beep>bleep`.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
+  \
+  \ 2016-12-30: Compact the code, saving two blocks.
+  \
+  \ 2017-01-03: Convert `laser-gun`, `ambulance`, and
+  \ `white-noise` from `z80-asm` to `z80-asm`. Fix needing of
+  \ `laser-gun` and `ambulance`. Fix structures: use `<mark ...
+  \ ?jr` instead of `rbegin ... ?jr`. Improve documentation.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Rename `beep>bleep` to `>bleep`. Improve
+  \ documentation.
+  \
+  \ 2017-01-23: Rename `>bleep` to `hz>bleep`. Add `dhz>bleep`,
+  \ `middle-octave`, `/octave`, `octave-changer`, `beep>dhz`,
+  \ `beep`.
+  \
+  \ 2017-01-24: Make `hz>bleep` and `dhz>bleep` faster (0.75
+  \ the previous time). Factor `beep>bleep` from `beep`. Factor
+  \ `beep>note` from `beep>bleep` and fix the calculation to
+  \ support also negative values of pitch.
+  \
+  \ 2017-01-25: Typo.
+  \
+  \ 2017-02-17: Update cross references.  Change markup of code
+  \ that is not a cross reference.
+  \
+  \ 2017-02-24: Improve documentation markup.
 
   \ vim: filetype=soloforth

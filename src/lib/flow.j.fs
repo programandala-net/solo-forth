@@ -4,40 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702240011
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ `j` and `k`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-04-15: Written.
-  \
-  \ 2016-04-28: Calculate the secondary entry point of `i`,
-  \ instead of using the constant `(i)`, which has been removed
-  \ from the kernel.
-  \
-  \ 2016-05-04: Compact two blocks into one.
-  \
-  \ 2016-11-17: Use `?(` instead of `[if]`.
-  \
-  \ 2017-02-20: Update notation of word sets.
-  \
-  \ 2017-02-24: Improve documentation.
 
 ( j k )
 
@@ -88,5 +72,22 @@ code k ( -- n|u )
   \ See also: `i`, `j`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-15: Written.
+  \
+  \ 2016-04-28: Calculate the secondary entry point of `i`,
+  \ instead of using the constant `(i)`, which has been removed
+  \ from the kernel.
+  \
+  \ 2016-05-04: Compact two blocks into one.
+  \
+  \ 2016-11-17: Use `?(` instead of `[if]`.
+  \
+  \ 2017-02-20: Update notation of word sets.
+  \
+  \ 2017-02-24: Improve documentation.
 
   \ vim: filetype=soloforth

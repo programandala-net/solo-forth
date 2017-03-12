@@ -4,50 +4,30 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702272355
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ `for step`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Credit
 
   \ Adapted and modified from code written by Garry Lancaster
   \ for Z88 CamelForth, 2001.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-07-06: Adapted from Z88 CamelForth.
-  \
-  \ 2015-08-14: Checked. Removed the fig-Forth compiler
-  \ security.  Moved from the kernel to the library.  Improved
-  \ after Gforth: now the index is checked before decrementing
-  \ it.  Documented.
-  \
-  \ 2015-03-23: Added `for-i`, because `i` cannot be used since
-  \ the implementation of the Forth-83 `do loop`.
-  \
-  \ 2016-04-16: Revised. Improved file header. Fixed stack
-  \ notations.
-  \
-  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
-  \ in the kernel.
-  \
-  \ 2017-02-27: Improve documentation.
 
 ( for step )
 
@@ -157,5 +137,26 @@ need alias
   \ Return the current index _n_ of a `for` loop.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-07-06: Adapted from Z88 CamelForth.
+  \
+  \ 2015-08-14: Checked. Removed the fig-Forth compiler
+  \ security.  Moved from the kernel to the library.  Improved
+  \ after Gforth: now the index is checked before decrementing
+  \ it.  Documented.
+  \
+  \ 2015-03-23: Added `for-i`, because `i` cannot be used since
+  \ the implementation of the Forth-83 `do loop`.
+  \
+  \ 2016-04-16: Revised. Improved file header. Fixed stack
+  \ notations.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
+  \
+  \ 2017-02-27: Improve documentation.
 
   \ vim: filetype=soloforth

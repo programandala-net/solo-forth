@@ -4,33 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ `inkey`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-12-25: Improve documentation. Convert from `z80-asm`
-  \ to `z80-asm,` assembler.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
-  \
-  \ 2017-02-17: Update cross references.
 
 ( inkey )
 
@@ -65,5 +56,15 @@ code inkey ( -- c | 0 )
   \ XXX FIXME -- Some times this word returns zero when the key
   \ is pressed; `get-inkey` works fine.  Anyway this version is
   \ smaller and can be useful.
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-12-25: Improve documentation. Convert from `z80-asm`
+  \ to `z80-asm,` assembler.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

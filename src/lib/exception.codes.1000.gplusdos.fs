@@ -4,17 +4,13 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ The Forth system error codes (range -4095..-256) used for
   \ G+DOS.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-05-18: Modify format of messages.
 
 ( G+DOS error codes #-1000..#-1014 )
 
@@ -62,5 +58,10 @@
 
 #-1030 \ G+DOS: STREAM used
 #-1031 \ G+DOS: CHANNEL used
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-05-18: Modify format of messages.
 
   \ vim: filetype=soloforth

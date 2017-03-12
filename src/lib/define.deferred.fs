@@ -4,35 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words related to deferred words.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-04-17: Added `deferred`, using the old definition of
-  \ `alias`.
-  \
-  \ 2016-05-04: Move `defer@` from the kernel, document most
-  \ words, compact the blocks.
-  \
-  \ 2016-08-05: Improve conditional compilation of `<is>`,
-  \ `[is]` and `is`.
 
 ( deferred defers defer@ action-of )
 
@@ -137,5 +126,17 @@
 
 : is ( xt "name" -- )
   compiling? if  postpone [is]  else  <is>  then ; immediate
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-17: Added `deferred`, using the old definition of
+  \ `alias`.
+  \
+  \ 2016-05-04: Move `defer@` from the kernel, document most
+  \ words, compact the blocks.
+  \
+  \ 2016-08-05: Improve conditional compilation of `<is>`,
+  \ `[is]` and `is`.
 
   \ vim: filetype=soloforth

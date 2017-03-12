@@ -6,13 +6,14 @@
   \ XXX UNDER DEVELOPMENT -- not finished
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Multitask support, adapted from Spectrum Forth-83.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ L.C. Benschop wrote the original code Spectrum Forth-83,
@@ -21,20 +22,12 @@
   \ Marcos Cruz (programandala.net) adapted it to Solo Forth,
   \ 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-05-17: Start.
-  \
-  \ 2016-12-20: Move the `(wait)` user variable from the
-  \ kernel.
 
 ( benschop-multitasker )
 
@@ -105,5 +98,13 @@ code (start)
        dup 2 = if ." terminated" then
        dup 3 = if ." sleeping" then
            4 = if ." stopped" then  repeat then drop ;
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-05-17: Start.
+  \
+  \ 2016-12-20: Move the `(wait)` user variable from the
+  \ kernel.
 
   \ vim: filetype=soloforth

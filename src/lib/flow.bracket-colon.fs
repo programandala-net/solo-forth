@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702280009
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Incomplete implementation of quotations, as described in
@@ -13,31 +14,17 @@
   \ <http://www.forth200x.org/quotations-v3.txt>: No support
   \ for locals, not tested with `does>`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-11-25: First version.  Reference:
-  \ <http://www.forth200x.org/quotations-v3.txt>.  Not tested
-  \ with `does>`.  No support for locals.
-  \
-  \ 2017-01-05: Update `also assembler` to `assembler-wordlist
-  \ >order`.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-02-27: Improve documentation.
 
 ( [: ;] )
 
@@ -100,5 +87,19 @@
   \ See also: `[:`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-11-25: First version.  Reference:
+  \ <http://www.forth200x.org/quotations-v3.txt>.  Not tested
+  \ with `does>`.  No support for locals.
+  \
+  \ 2017-01-05: Update `also assembler` to `assembler-wordlist
+  \ >order`.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-27: Improve documentation.
 
   \ vim: filetype=soloforth

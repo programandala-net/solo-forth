@@ -4,83 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703121644
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words related to escaped strings.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-04-24: Remove `[char]` and `char`, which have been
-  \ moved to the library.
-  \
-  \ 2016-05-18: Use `wordlist` instead of `vocabulary`, which
-  \ has been moved to the library.
-  \
-  \ 2016-12-18: Improve documentation of `escaped-wordlist`.
-  \
-  \ 2016-12-22: Rename `escaped-wordlist` to
-  \ `esc-standard-chars-wordlist`.  Make the escaped characters
-  \ configurable with the search order. Improve documentation.
-  \ Rename "escaped" to "esc" in word names, because some of
-  \ them were longer than 31 characters. Rename `unescape-char`
-  \ to `esc-char>chars` and fix it. Factor `parse-esc-string`.
-  \ Use `alias` (31 bytes) if already defined, to save 14 bytes
-  \ of 2 double-cell constants defined in
-  \ `esc-standard-chars-wordlist`.  Add `parse-char` to
-  \ `esc-char>chars`, rename it `parse-esc-char>chars` and make
-  \ it accessible to `need`.
-  \
-  \ 2016-12-23: Add support for case-sensitive escaped chars.
-  \ Improve the management of the escaped strings search order:
-  \ Instead of a deferred word, use a set of words to
-  \ manipulate the escaped strings search order, analogous to
-  \ the main search order.
-  \
-  \ 2017-01-06: Fix erasing of `esc-context`: the parameters
-  \ were wrong and the Forth system crashed or became
-  \ corrupted, depending on the size of the dictionary and the
-  \ previous words.
-  \
-  \ 2017-01-11: Make `s\"` and `.\"` use
-  \ `esc-standard-chars-wordlist`. Improve documentation.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Remove remaining `exit` at the end of
-  \ conditional interpretation, after `immediate` or
-  \ `compile-only`.
-  \
-  \ 2017-01-27: Remove remaining `exit` after definition of
-  \ `max-esc-order`. Improve needing of `?esc-order`. Fix
-  \ `parse-esc-string`: execute `(parse-esc-string)` with
-  \ `catch` in order to restore the search order before
-  \ actually throwing a possible exception (e.g. thrown by
-  \ `(x)`); otherwise the system is unusable, because the
-  \ search order is the one used to parse the escaped strings.
-  \
-  \ 2017-02-01: Remove unnecessary `upper` from `(x)`.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-02-27: Improve documentation.
-  \
-  \ 2017-03-12: Update mentions to the `stringer`.
 
 ( esc-standard-chars-wordlist )
 
@@ -502,5 +443,65 @@ need parse-char need char>string
   \ `parse-esc-string`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-24: Remove `[char]` and `char`, which have been
+  \ moved to the library.
+  \
+  \ 2016-05-18: Use `wordlist` instead of `vocabulary`, which
+  \ has been moved to the library.
+  \
+  \ 2016-12-18: Improve documentation of `escaped-wordlist`.
+  \
+  \ 2016-12-22: Rename `escaped-wordlist` to
+  \ `esc-standard-chars-wordlist`.  Make the escaped characters
+  \ configurable with the search order. Improve documentation.
+  \ Rename "escaped" to "esc" in word names, because some of
+  \ them were longer than 31 characters. Rename `unescape-char`
+  \ to `esc-char>chars` and fix it. Factor `parse-esc-string`.
+  \ Use `alias` (31 bytes) if already defined, to save 14 bytes
+  \ of 2 double-cell constants defined in
+  \ `esc-standard-chars-wordlist`.  Add `parse-char` to
+  \ `esc-char>chars`, rename it `parse-esc-char>chars` and make
+  \ it accessible to `need`.
+  \
+  \ 2016-12-23: Add support for case-sensitive escaped chars.
+  \ Improve the management of the escaped strings search order:
+  \ Instead of a deferred word, use a set of words to
+  \ manipulate the escaped strings search order, analogous to
+  \ the main search order.
+  \
+  \ 2017-01-06: Fix erasing of `esc-context`: the parameters
+  \ were wrong and the Forth system crashed or became
+  \ corrupted, depending on the size of the dictionary and the
+  \ previous words.
+  \
+  \ 2017-01-11: Make `s\"` and `.\"` use
+  \ `esc-standard-chars-wordlist`. Improve documentation.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation, after `immediate` or
+  \ `compile-only`.
+  \
+  \ 2017-01-27: Remove remaining `exit` after definition of
+  \ `max-esc-order`. Improve needing of `?esc-order`. Fix
+  \ `parse-esc-string`: execute `(parse-esc-string)` with
+  \ `catch` in order to restore the search order before
+  \ actually throwing a possible exception (e.g. thrown by
+  \ `(x)`); otherwise the system is unusable, because the
+  \ search order is the one used to parse the escaped strings.
+  \
+  \ 2017-02-01: Remove unnecessary `upper` from `(x)`.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-03-12: Update mentions to the `stringer`.
 
   \ vim: filetype=soloforth

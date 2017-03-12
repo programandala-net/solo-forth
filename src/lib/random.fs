@@ -4,67 +4,26 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703020215
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Pseudo-random number generators.
   \
   \ See benchmark results in <meta.benchmark.rng.fsb>.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2015-12-25: Add `crnd`.
-  \
-  \ 2016-03-31: Adapted C. G. Montgomery's `rnd`.
-  \
-  \ 2016-04-08: Updated the literal in C. G. Montgomery's `rnd`
-  \ after the latest benchmarks.
-  \
-  \ 2016-10-18: Update the name of the benchmarks library
-  \ module.
-  \
-  \ 2016-12-06: Add `-1|1`. Improve documentation and needing
-  \ of `randomize` and `randomize0`.
-  \
-  \ 2016-12-12: Fix needing of `-1|1` and `randomize`.
-  \
-  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` after the
-  \ change in the kernel.
-  \
-  \ 2016-12-30: Compact the code, saving one block.
-  \
-  \ 2017-01-02: Convert `fast-rnd` from `z80-asm` to
-  \ `z80-asm,`.
-  \
-  \ 2017-01-04: Convert `crnd` from `z80-asm` to `z80-asm,`;
-  \ add its missing requirement. Make `crnd` and `crandom`
-  \ accessible to `need`; improve their documentation.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
-  \
-  \ 2017-01-12: Add `-1..1`.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-03-02: Fix `crnd` (a bug introduced when the word was
-  \ convernet to the new assembler).
 
 ( rnd random random-range )
 
@@ -296,5 +255,47 @@ need os-frames need randomize
   \ See also: `randomize`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-12-25: Add `crnd`.
+  \
+  \ 2016-03-31: Adapted C. G. Montgomery's `rnd`.
+  \
+  \ 2016-04-08: Updated the literal in C. G. Montgomery's `rnd`
+  \ after the latest benchmarks.
+  \
+  \ 2016-10-18: Update the name of the benchmarks library
+  \ module.
+  \
+  \ 2016-12-06: Add `-1|1`. Improve documentation and needing
+  \ of `randomize` and `randomize0`.
+  \
+  \ 2016-12-12: Fix needing of `-1|1` and `randomize`.
+  \
+  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` after the
+  \ change in the kernel.
+  \
+  \ 2016-12-30: Compact the code, saving one block.
+  \
+  \ 2017-01-02: Convert `fast-rnd` from `z80-asm` to
+  \ `z80-asm,`.
+  \
+  \ 2017-01-04: Convert `crnd` from `z80-asm` to `z80-asm,`;
+  \ add its missing requirement. Make `crnd` and `crandom`
+  \ accessible to `need`; improve their documentation.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-12: Add `-1..1`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-02: Fix `crnd` (a bug introduced when the word was
+  \ convernet to the new assembler).
 
   \ vim: filetype=soloforth

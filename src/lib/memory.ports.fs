@@ -4,34 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702281734
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words for ports input and output.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-05-07: Improve documentation. Compact the blocks.
-  \
-  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
-  \ to `jpnext,`, after the change in the kernel.
-  \ 
-  \ 2017-02-28: Improve `@p` and `!p`: faster and smaller.
-  \ Improve documentation.
 
 ( @p !p )
 
@@ -117,5 +107,16 @@ code !p ( b a -- ) D9 c, C1 c, E1 c, ED c, 69 c, D9 c,
   \ See also: `@p`, `!`, `c!`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-05-07: Improve documentation. Compact the blocks.
+  \
+  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
+  \ to `jpnext,`, after the change in the kernel.
+  \
+  \ 2017-02-28: Improve `@p` and `!p`: faster and smaller.
+  \ Improve documentation.
 
   \ vim: filetype=soloforth

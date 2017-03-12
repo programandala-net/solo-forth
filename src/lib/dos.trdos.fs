@@ -4,81 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703121609
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ TR-DOS support.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-08-04: Start: `dos-drive`, `get-drive`, `set-drive`.
-  \
-  \ 2017-02-05: Start from scratch. Move `get-drive` from the
-  \ TR-DOS kernel and rewrite it in Z80. Move `cat` from the
-  \ TR-DOS kernel.
-  \
-  \ 2017-02-10: Add DOS command constants. Add draft words to
-  \ manipulate files. Rename "filedescriptor" notation to
-  \ "fda". Add draft of `file-status`.
-  \
-  \ 2017-02-11: Fix `cat`.
-  \
-  \ 2017-02-12: Fix and document `file-status`. Add
-  \ `file-exists?`, `file-start`, `file-length`, `file-type`,
-  \ `file-dir`.  `file-sectors`, `file-sector`, `file-track`.
-  \
-  \ 2017-02-13: Fix `file-status`. Fix `file-dir` and rename it
-  \ to `file-dir#`, after the changes in the G+DOS
-  \ implementation.
-  \
-  \ 2017-02-14: Add `find-file`.
-  \
-  \ 2017-02-17: Restore the original TR-DOS notation
-  \ "descriptor".  Update cross references.
-  \
-  \ 2017-03-04: Update the names of the DOS calls, after the
-  \ changes in the kernel.
-  \
-  \ 2017-03-06: Add `>file`, which was removed from the kernel
-  \ by mistake on 2017-02-12.
-  \
-  \ 2017-03-08: Rename `cat` to `acat`, after the names used in
-  \ G+DOS. Add `(acat`. Improve calculation of dosior #1 ("no
-  \ files"). Add `delete-file`.
-  \
-  \ 2017-03-10: Adapt the DOS calls to the changes in the
-  \ kernel: The C register is not copied to the A register
-  \ anymore after returning from the DOS call; instead, the A
-  \ register is loaded from the TR-DOS latest error variable.
-  \ Add draft of `undelete-file`.  Add `read-file-descriptor`,
-  \ `write-file-descriptor`, `read-system-track`, `files/disk`.
-  \ Improve documentation.
-  \
-  \ 2017-03-11: Finish `undelete-file`. Add `.filename`,
-  \ `.fda-filename`, `fda-basic?`, `fda-deleted?`,
-  \ `fda-empty?`, `cat`, `cat-fda`, `?cat-fda`. Improve
-  \ documentation. Improve `undelete-file`: remove `throw` and
-  \ factor with `undelete-fda`. Fix requirements of
-  \ `undelete-file`. Rename `(file-dir#)` to `fda-filedir#` and
-  \ fix it.  Rename `(file-status)` to `fda-filestatus`. Add
-  \ `get-filename` and `rename-file`. Improve documentation.
-  \
-  \ 2017-03-12: Improve documentation.  Update the names of
-  \ `stringer` words.
 
 ( --dos-commands-- )
 
@@ -1206,5 +1149,63 @@ need read-file-descriptor need write-file-descriptor
   \ See also: `file-status`, `delete-file`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-08-04: Start: `dos-drive`, `get-drive`, `set-drive`.
+  \
+  \ 2017-02-05: Start from scratch. Move `get-drive` from the
+  \ TR-DOS kernel and rewrite it in Z80. Move `cat` from the
+  \ TR-DOS kernel.
+  \
+  \ 2017-02-10: Add DOS command constants. Add draft words to
+  \ manipulate files. Rename "filedescriptor" notation to
+  \ "fda". Add draft of `file-status`.
+  \
+  \ 2017-02-11: Fix `cat`.
+  \
+  \ 2017-02-12: Fix and document `file-status`. Add
+  \ `file-exists?`, `file-start`, `file-length`, `file-type`,
+  \ `file-dir`.  `file-sectors`, `file-sector`, `file-track`.
+  \
+  \ 2017-02-13: Fix `file-status`. Fix `file-dir` and rename it
+  \ to `file-dir#`, after the changes in the G+DOS
+  \ implementation.
+  \
+  \ 2017-02-14: Add `find-file`.
+  \
+  \ 2017-02-17: Restore the original TR-DOS notation
+  \ "descriptor".  Update cross references.
+  \
+  \ 2017-03-04: Update the names of the DOS calls, after the
+  \ changes in the kernel.
+  \
+  \ 2017-03-06: Add `>file`, which was removed from the kernel
+  \ by mistake on 2017-02-12.
+  \
+  \ 2017-03-08: Rename `cat` to `acat`, after the names used in
+  \ G+DOS. Add `(acat`. Improve calculation of dosior #1 ("no
+  \ files"). Add `delete-file`.
+  \
+  \ 2017-03-10: Adapt the DOS calls to the changes in the
+  \ kernel: The C register is not copied to the A register
+  \ anymore after returning from the DOS call; instead, the A
+  \ register is loaded from the TR-DOS latest error variable.
+  \ Add draft of `undelete-file`.  Add `read-file-descriptor`,
+  \ `write-file-descriptor`, `read-system-track`, `files/disk`.
+  \ Improve documentation.
+  \
+  \ 2017-03-11: Finish `undelete-file`. Add `.filename`,
+  \ `.fda-filename`, `fda-basic?`, `fda-deleted?`,
+  \ `fda-empty?`, `cat`, `cat-fda`, `?cat-fda`. Improve
+  \ documentation. Improve `undelete-file`: remove `throw` and
+  \ factor with `undelete-fda`. Fix requirements of
+  \ `undelete-file`. Rename `(file-dir#)` to `fda-filedir#` and
+  \ fix it.  Rename `(file-status)` to `fda-filestatus`. Add
+  \ `get-filename` and `rename-file`. Improve documentation.
+  \
+  \ 2017-03-12: Improve documentation.  Update the names of
+  \ `stringer` words.
 
   \ vim: filetype=soloforth

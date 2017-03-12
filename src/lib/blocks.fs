@@ -4,57 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702272315
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words related to disk blocks.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015..2016: Main development.
-  \
-  \ 2016-04-29: Add `lineload` and `lineblock>source`.
-  \
-  \ 2016-05-02: Join two blocks to save space.
-  \
-  \ 2016-05-13: Add `load-app`.
-  \
-  \ 2016-10-04: Start a new version of `load-app`, compatible
-  \ with `[if]` and other words that use `refill`.
-  \
-  \ 2016-10-11: Finish the new version of `load-app`,
-  \ compatible with `[if]` and other words that use `refill`.
-  \
-  \ 2016-11-21: Move `.line` to <tool.list.blocks.fsb>.
-  \
-  \ 2016-11-26: Rename `blocks` to `blk/disk` after the fix in
-  \ the kernel.
-  \
-  \ 2016-11-27: Use `lastblk` in `reload`, instead of `scr`.
-  \
-  \ 2017-02-16: Remove `?\`, which is in the kernel.
-  \
-  \ 2017-02-17: Update cross references.  Change markup of
-  \ inline code that is not a cross reference.
-  \
-  \ 2017-02-20: Replace `do`, which has been moved to the
-  \ library, with `?do`.
-  \
-  \ 2017-02-27: Improve documentation.
 
 ( ?--> update flush thru )
 
@@ -323,5 +290,39 @@
   \ See also: `loading-app`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015..2016: Main development.
+  \
+  \ 2016-04-29: Add `lineload` and `lineblock>source`.
+  \
+  \ 2016-05-02: Join two blocks to save space.
+  \
+  \ 2016-05-13: Add `load-app`.
+  \
+  \ 2016-10-04: Start a new version of `load-app`, compatible
+  \ with `[if]` and other words that use `refill`.
+  \
+  \ 2016-10-11: Finish the new version of `load-app`,
+  \ compatible with `[if]` and other words that use `refill`.
+  \
+  \ 2016-11-21: Move `.line` to <tool.list.blocks.fsb>.
+  \
+  \ 2016-11-26: Rename `blocks` to `blk/disk` after the fix in
+  \ the kernel.
+  \
+  \ 2016-11-27: Use `lastblk` in `reload`, instead of `scr`.
+  \
+  \ 2017-02-16: Remove `?\`, which is in the kernel.
+  \
+  \ 2017-02-17: Update cross references.  Change markup of
+  \ inline code that is not a cross reference.
+  \
+  \ 2017-02-20: Replace `do`, which has been moved to the
+  \ library, with `?do`.
+  \
+  \ 2017-02-27: Improve documentation.
 
   \ vim: filetype=soloforth

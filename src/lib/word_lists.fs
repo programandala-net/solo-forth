@@ -4,64 +4,19 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words related to word lists.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-04-17: Added the requisite of `recurse`, which is not
-  \ in the kernel anymore.
-  \
-  \ 2016-05-02: Join several blocks, to save space.
-  \
-  \ 2016-05-04: Improve the documentation of `trail`.
-  \
-  \ 2016-05-17: Need `>body`, which has been moved to the
-  \ library. Improve conditional compilation.
-  \
-  \ 2016-05-18: Simplify conditional compilation. Move
-  \ `vocabulary` from the kernel and rewrite it after
-  \ `wid>vocabulary` and the new word `dovocabulary`.
-  \
-  \ 2016-11-26: Improve `(wid>name`. Remove old definitions
-  \ `get-order` and `order@`. Move `seal` and `search-wordlist`
-  \ from the kernel.
-  \
-  \ 2016-12-06: Improve documentation of `wid>link`, `wid>name`
-  \ and `(wid>name`.  Add `-order` and `+order`.
-  \
-  \ 2017-01-06: Add `link>wid`. Improve documentation.
-  \
-  \ 2017-01-07: Remove `link>wid`, not needed anymore, because
-  \ the word-list fields are accessed from its identifier, and
-  \ the linked list of word lists uses the word-list
-  \ identifiers.  Rename `wid>link` to `wordlist>link`.  Rename
-  \ `(wid>name` to `wordlist>name`.  Remove `wid>name`.  Rename
-  \ `wid>vocabulary` to `wordlist>vocabulary`.  Add
-  \ `wordlist-name@` and `wordlist-name!`.  Rename `wid-of` to
-  \ `wordlist-of`.  Rename `named-wid` to `latest>wordlist`.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-18: Remove remaining `exit` at the end of
-  \ conditional interpretation.
-  \
-  \ 2017-02-17: Fix markup in documentation.  Update cross
-  \ references.
-  \
-  \ 2017-02-20: Update notation of word sets.
 
 ( wordlist>link wordlist>name wordlist-name@ wordlist-name! )
 
@@ -361,5 +316,51 @@ variable -order-wid
   \ `find`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-17: Added the requisite of `recurse`, which is not
+  \ in the kernel anymore.
+  \
+  \ 2016-05-02: Join several blocks, to save space.
+  \
+  \ 2016-05-04: Improve the documentation of `trail`.
+  \
+  \ 2016-05-17: Need `>body`, which has been moved to the
+  \ library. Improve conditional compilation.
+  \
+  \ 2016-05-18: Simplify conditional compilation. Move
+  \ `vocabulary` from the kernel and rewrite it after
+  \ `wid>vocabulary` and the new word `dovocabulary`.
+  \
+  \ 2016-11-26: Improve `(wid>name`. Remove old definitions
+  \ `get-order` and `order@`. Move `seal` and `search-wordlist`
+  \ from the kernel.
+  \
+  \ 2016-12-06: Improve documentation of `wid>link`, `wid>name`
+  \ and `(wid>name`.  Add `-order` and `+order`.
+  \
+  \ 2017-01-06: Add `link>wid`. Improve documentation.
+  \
+  \ 2017-01-07: Remove `link>wid`, not needed anymore, because
+  \ the word-list fields are accessed from its identifier, and
+  \ the linked list of word lists uses the word-list
+  \ identifiers.  Rename `wid>link` to `wordlist>link`.  Rename
+  \ `(wid>name` to `wordlist>name`.  Remove `wid>name`.  Rename
+  \ `wid>vocabulary` to `wordlist>vocabulary`.  Add
+  \ `wordlist-name@` and `wordlist-name!`.  Rename `wid-of` to
+  \ `wordlist-of`.  Rename `named-wid` to `latest>wordlist`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-18: Remove remaining `exit` at the end of
+  \ conditional interpretation.
+  \
+  \ 2017-02-17: Fix markup in documentation.  Update cross
+  \ references.
+  \
+  \ 2017-02-20: Update notation of word sets.
 
   \ vim: filetype=soloforth

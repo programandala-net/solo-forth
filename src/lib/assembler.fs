@@ -4,13 +4,14 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703120057
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ A Z80 assembler.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ The original assembler, for the 8080, was written by John
@@ -27,99 +28,12 @@
   \ improved the Spectrum Forth-83 version for Solo Forth,
   \ 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-12-25: First changes to the previous version, which
-  \ is called `z80-asm`:
-  \
-  \   1. "," suffixes in Z80 instructions;
-  \   2. one single set of conditions;
-  \   3. "a" and "r" prefixes in control structures;
-  \   4. condition "m" is renamed to "ne".
-
-  \ 2016-04-11: Moved `macro` to its own module.
-  \
-  \ 2016-04-13: Made `calc` independent from the assembler and
-  \ moved it to the floating point module.  Fixed `execute-hl`,
-  \ then renamed it and `call-xt` with a trailing comma, to
-  \ avoid loading them instead of the versions written for the
-  \ first assembler.
-
-  \ 2016-05-08:
-  \
-  \ - Rename conditions to the original names plus "?".
-  \ - Rename `|mark` to `>amark`.
-  \ - Rename `|resolve` to `>aresolve`.
-  \ - Rename "resmark"-like words to "rmark"-like.
-  \ - Rename "resresolve"-like words to "rresolve"-like.
-  \ - Remove "retCOND"-like and "callCOND"-like macros.
-  \ - Compact the blocks.
-  \ - Add `?jp` and `?jr` for conditional jumps.
-  \ - Remove "jpCOND"-like and "jrCOND"-like opcodes.
-  \ - Change the opcode values of the conditions.
-  \ - Rename `?page` to `?jr-range`.
-  \ - Rename `clr,` to `clrp,`; add new `clr,`.
-
-  \ 2016-05-09: Save and restore the compile word list, the
-  \ current radix and the search order.
-  \
-  \ 2016-11-14: Now `call,` is defined in the kernel, where it
-  \ existed with the old name `code-field,`. Compact the code,
-  \ save one block.  Move `8*` to the 1-cell operators module.
-  \
-  \ 2016-11-19: Now `jp,` is defined in the kernel, factored
-  \ from `defer`.
-  \
-  \ 2016-12-06: Rename `?jr-range` to `?rel` and make it
-  \ consume its argument, in order to reuse it in the future
-  \ implementation of local labels.
-  \
-  \ 2016-12-20: Fix stack comments of `rrepeat` and `auntil`.
-  \ Fix `jp>jr` to manage also unconditional jumps. Factor
-  \ `?call` with `?jp`.  Fix `relse`, `rwhile` and `runtil`.
-  \
-  \ 2016-12-25: Fix `jp>jr`. Rename `im1`, `im2` to `im1,`
-  \ `im2,`. Make `inverse-cond` and `jp>jr` compatible with
-  \ `z80-asm`, in case `z80-asm` was loaded first.
-  \
-  \ 2016-12-26: Factor `runtil`, fix `rstep`.
-  \
-  \ 2016-12-31: Fix: Move the location of unresolved references
-  \ from the string stack to data space. Using the string stack
-  \ is not safe for this.
-  \
-  \ 2017-01-02: Fix `runtil`, `auntil` and `ragain`.
-  \
-  \ 2017-01-05: The previous version of this assembler has been
-  \ deleted. Rename this module from
-  \ <assembler.z80-asm-comma.fsb> to <assembler.fsb>. Remove
-  \ `bc`, `de` and `hl`. Move `assembler` from the kernel.
-  \ Remove `z80-asm,`.
-  \
-  \ 2017-01-07: Improve the Z80 registers stack notation.
-  \ Update `wid>vocabulary` to `wordlist>vocabulary`.
-  \
-  \ 2017-02-12: Fix `relse` and `aelse`.
-  \
-  \ 2017-02-13: Replace `constant` with `cconstant`.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-02-21: Make `unresolved` optional. Make `?rel`
-  \ independent from the assembler, to be reused by `l:`.
-  \
-  \ 2017-02-27: Add `ldi,` and `ldd,`.
-  \
-  \ 2017-03-11: Make absolute-jump control structures optional.
-  \ Improve documentation.
 
 ( assembler )
 
@@ -568,5 +482,92 @@ macro call-xt, ( xt -- )
   \ See also: `execute-hl,`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-12-25: First changes to the previous version, which
+  \ is called `z80-asm`:
+  \
+  \   1. "," suffixes in Z80 instructions;
+  \   2. one single set of conditions;
+  \   3. "a" and "r" prefixes in control structures;
+  \   4. condition "m" is renamed to "ne".
+
+  \ 2016-04-11: Moved `macro` to its own module.
+  \
+  \ 2016-04-13: Made `calc` independent from the assembler and
+  \ moved it to the floating point module.  Fixed `execute-hl`,
+  \ then renamed it and `call-xt` with a trailing comma, to
+  \ avoid loading them instead of the versions written for the
+  \ first assembler.
+
+  \ 2016-05-08:
+  \
+  \ - Rename conditions to the original names plus "?".
+  \ - Rename `|mark` to `>amark`.
+  \ - Rename `|resolve` to `>aresolve`.
+  \ - Rename "resmark"-like words to "rmark"-like.
+  \ - Rename "resresolve"-like words to "rresolve"-like.
+  \ - Remove "retCOND"-like and "callCOND"-like macros.
+  \ - Compact the blocks.
+  \ - Add `?jp` and `?jr` for conditional jumps.
+  \ - Remove "jpCOND"-like and "jrCOND"-like opcodes.
+  \ - Change the opcode values of the conditions.
+  \ - Rename `?page` to `?jr-range`.
+  \ - Rename `clr,` to `clrp,`; add new `clr,`.
+
+  \ 2016-05-09: Save and restore the compile word list, the
+  \ current radix and the search order.
+  \
+  \ 2016-11-14: Now `call,` is defined in the kernel, where it
+  \ existed with the old name `code-field,`. Compact the code,
+  \ save one block.  Move `8*` to the 1-cell operators module.
+  \
+  \ 2016-11-19: Now `jp,` is defined in the kernel, factored
+  \ from `defer`.
+  \
+  \ 2016-12-06: Rename `?jr-range` to `?rel` and make it
+  \ consume its argument, in order to reuse it in the future
+  \ implementation of local labels.
+  \
+  \ 2016-12-20: Fix stack comments of `rrepeat` and `auntil`.
+  \ Fix `jp>jr` to manage also unconditional jumps. Factor
+  \ `?call` with `?jp`.  Fix `relse`, `rwhile` and `runtil`.
+  \
+  \ 2016-12-25: Fix `jp>jr`. Rename `im1`, `im2` to `im1,`
+  \ `im2,`. Make `inverse-cond` and `jp>jr` compatible with
+  \ `z80-asm`, in case `z80-asm` was loaded first.
+  \
+  \ 2016-12-26: Factor `runtil`, fix `rstep`.
+  \
+  \ 2016-12-31: Fix: Move the location of unresolved references
+  \ from the string stack to data space. Using the string stack
+  \ is not safe for this.
+  \
+  \ 2017-01-02: Fix `runtil`, `auntil` and `ragain`.
+  \
+  \ 2017-01-05: The previous version of this assembler has been
+  \ deleted. Rename this module from
+  \ <assembler.z80-asm-comma.fsb> to <assembler.fsb>. Remove
+  \ `bc`, `de` and `hl`. Move `assembler` from the kernel.
+  \ Remove `z80-asm,`.
+  \
+  \ 2017-01-07: Improve the Z80 registers stack notation.
+  \ Update `wid>vocabulary` to `wordlist>vocabulary`.
+  \
+  \ 2017-02-12: Fix `relse` and `aelse`.
+  \
+  \ 2017-02-13: Replace `constant` with `cconstant`.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-21: Make `unresolved` optional. Make `?rel`
+  \ independent from the assembler, to be reused by `l:`.
+  \
+  \ 2017-02-27: Add `ldi,` and `ldd,`.
+  \
+  \ 2017-03-11: Make absolute-jump control structures optional.
+  \ Improve documentation.
 
   \ vim: filetype=soloforth

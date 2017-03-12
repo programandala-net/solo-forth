@@ -4,37 +4,27 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702272348
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Numeric prefix words. Solo Forth recognizes the standard
   \ notations, but these words may be useful in some cases.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ XXX TODO -- update
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-05-14: Update: `evaluate` has been moved to the
-  \ library.
-  \
-  \ 2016-11-26: Need `catch`, which has been moved to the
-  \ library.
-  \
-  \ 2017-02-27: Improve documentation.
 
 ( base# b# d# h# )
 
@@ -101,5 +91,16 @@ create t# ( "name" -- n | d ) 36 c, x# immediate
   \ ``c#`` is an `immediate` word.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-05-14: Update: `evaluate` has been moved to the
+  \ library.
+  \
+  \ 2016-11-26: Need `catch`, which has been moved to the
+  \ library.
+  \
+  \ 2017-02-27: Improve documentation.
 
   \ vim: filetype=soloforth

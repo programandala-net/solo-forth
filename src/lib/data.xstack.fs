@@ -4,52 +4,26 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ `xstack`, an implementation of extra stacks.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
   \
   \ Code adapted from Galope (xstack module).
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-10-14: Rename `xstack` to `allocate-xstack` and write
-  \ `allot-xstack`. Move the common code to its own block.
-  \
-  \ 2016-11-26: Improve `allot-xstack`.
-  \
-  \ 2016-12-30: Compact the code, saving one block.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-21: Replace `xdepth.` with `.depth`. Rename `.x` to
-  \ `.xs`.
-  \
-  \ 2017-01-25: Make all stack operators and tools individually
-  \ accessible to `need`. Rename `set-xstack` to `xstack`.
-  \ Make `allot-xstack` and `allocate-xstack` more versatile:
-  \ they don't parse a name anymore, but simply return the
-  \ address of the new stack.
-  \
-  \ 2017-01-26: Remove `xp@`, `xp!` and `xp+!`.  Fix `xfree`.
-  \ Improve and complete documentation of all words.
-  \
-  \ 2017-02-17: Update cross references.
 
 ( xsize xp xp0 xstack xfree allocate-xstack allot-xstack )
 
@@ -400,5 +374,32 @@ need xp0 need xlen need xdepth need .depth
   \ See also: `xdepth` ,`(.xs)`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-10-14: Rename `xstack` to `allocate-xstack` and write
+  \ `allot-xstack`. Move the common code to its own block.
+  \
+  \ 2016-11-26: Improve `allot-xstack`.
+  \
+  \ 2016-12-30: Compact the code, saving one block.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-21: Replace `xdepth.` with `.depth`. Rename `.x` to
+  \ `.xs`.
+  \
+  \ 2017-01-25: Make all stack operators and tools individually
+  \ accessible to `need`. Rename `set-xstack` to `xstack`.
+  \ Make `allot-xstack` and `allocate-xstack` more versatile:
+  \ they don't parse a name anymore, but simply return the
+  \ address of the new stack.
+  \
+  \ 2017-01-26: Remove `xp@`, `xp!` and `xp+!`.  Fix `xfree`.
+  \ Improve and complete documentation of all words.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

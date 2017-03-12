@@ -4,55 +4,30 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ An associative list implemented with standard word lists.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Credit
 
   \ Based on code written by Wil Baden, published in Forth
   \ Dimensions (volume 17, number 4, page 36, 1995-11).
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-11-06: Start, adapted from Wil Baden's code.
-  \
-  \ 2016-03-24: Comments.
-  \
-  \ 2016-04-15: Improved with different types of items.
-  \ Factored. An obscure bug was discovered during the changes.
-  \ Finally its origin was found in `(;code)`, in the kernel,
-  \ and fixed.
-  \
-  \ 2016-11-26: Need `search-wordlist`, which has been moved to
-  \ the library.
-  \
-  \ 2016-12-15: Improve documentation. Rename `entry` and
-  \ friends after `field:` and friends, and make them
-  \ individually accessible by `need`. Compact the code to save
-  \ one block. Move the test to the tests module.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Remove remaining `exit` at the end of
-  \ conditional interpretation.
 
 ( associative-list item? item create-entry )
 
@@ -172,5 +147,31 @@ need create-entry  [unneeded] entry: ?(
   \ List items of associative list _wid_.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-11-06: Start, adapted from Wil Baden's code.
+  \
+  \ 2016-03-24: Comments.
+  \
+  \ 2016-04-15: Improved with different types of items.
+  \ Factored. An obscure bug was discovered during the changes.
+  \ Finally its origin was found in `(;code)`, in the kernel,
+  \ and fixed.
+  \
+  \ 2016-11-26: Need `search-wordlist`, which has been moved to
+  \ the library.
+  \
+  \ 2016-12-15: Improve documentation. Rename `entry` and
+  \ friends after `field:` and friends, and make them
+  \ individually accessible by `need`. Compact the code to save
+  \ one block. Move the test to the tests module.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
 
   \ vim: filetype=soloforth

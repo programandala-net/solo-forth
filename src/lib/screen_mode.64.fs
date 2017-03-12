@@ -4,13 +4,14 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ A 64 CPL screen mode.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Author of the original code: Andrew Owen.
@@ -20,40 +21,14 @@
   \ Marcos Cruz (programandala.net) adapted it to Solo Forth,
   \ 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-04-26: Update `latest name>` to `latestxt`.
-  \
-  \ 2016-05-07: Improve the file header.
-  \
-  \ 2016-08-11: Rename the filenames of the driver.
-  \
-  \ 2016-10-16: Fix credits.
-  \
-  \ 2017-01-02: Convert the new unfinished version of
-  \ `mode64-emit` from `z80-asm` to `z80-asm,` and fix it.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
-  \
-  \ 2017-02-08: Update the usage of `set-drive`, which now
-  \ returns an error result.
-  \
-  \ 2017-02-11: Replace old `<file-as-is` with `0 0 file>`, after
-  \ the improvements in the G+DOS module. Use `drive` to make
-  \ the code compatible with any DOS.
-  \
-  \ 2017-02-21: Need `unresolved`, which now is optional, not
-  \ part of the assembler.
-
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ To-do
 
   \ XXX TODO -- integrate the source of the driver
@@ -193,5 +168,31 @@ create 4x8font  hex
 56 c, A9 c, 06 c, 04 c, 06 c, 09 c, 06 c,  \ ~?
 
 decimal
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-26: Update `latest name>` to `latestxt`.
+  \
+  \ 2016-05-07: Improve the file header.
+  \
+  \ 2016-08-11: Rename the filenames of the driver.
+  \
+  \ 2016-10-16: Fix credits.
+  \
+  \ 2017-01-02: Convert the new unfinished version of
+  \ `mode64-emit` from `z80-asm` to `z80-asm,` and fix it.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-02-08: Update the usage of `set-drive`, which now
+  \ returns an error result.
+  \
+  \ 2017-02-11: Replace old `<file-as-is` with `0 0 file>`, after
+  \ the improvements in the G+DOS module. Use `drive` to make
+  \ the code compatible with any DOS.
+  \
+  \ 2017-02-21: Need `unresolved`, which now is optional, not
+  \ part of the assembler.
 
   \ vim: filetype=soloforth

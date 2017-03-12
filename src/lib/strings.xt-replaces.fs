@@ -4,30 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Al alternative to Forth-2012's `replaces`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2017-01-23: Start.
-  \
-  \ 2017-02-17: Update cross references.
 
 ( xt-substitution xt-replaces )
 
@@ -77,6 +71,13 @@ need xt-substitution
   \ `substitute-wordlist`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2017-01-23: Start.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth
 

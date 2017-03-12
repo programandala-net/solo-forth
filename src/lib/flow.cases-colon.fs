@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 20160324
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ `cases:` structure, an alternative to the standard `case`.
@@ -15,7 +16,7 @@
   \ is slower than standard `case`. The default case of the
   \ structure is mandatory.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Original code written by Dan Lerner, published on Forth
@@ -24,19 +25,12 @@
   \ Marcos Cruz (programandala.net), adapted, renamed and
   \ commented the original code, 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-11-14: First version.
-  \ 2016-04-27: Rename `other>` to `othercase>`. Improve
-  \ documentation and file header.
 
 ( cases: )
 
@@ -110,5 +104,13 @@
   \ See `cases:` for an usage example.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-11-14: First version.
+  \
+  \ 2016-04-27: Rename `other>` to `othercase>`. Improve
+  \ documentation and file header.
 
   \ vim: filetype=soloforth

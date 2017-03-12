@@ -4,58 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703121609
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words related to parsing.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-09-13: Add `parse-char`.
-  \
-  \ 2015-10-06: Move `word` from the kernel.
-  \
-  \ 2015-10-18: Move `command` from the editor and rename it to
-  \ `parse-line`.
-  \
-  \ 2015-10-22: Fix `parse-char`.
-  \
-  \ 2016-04-24: Move `char` and `[char]` from the kernel.
-  \
-  \ 2016-05-10: Fix `[char]`.
-  \
-  \ 2016-05-14: Compact the blocks. Fix `parse-line` and rename
-  \ it to `parse-all`. Finish and document `execute-parsing`.
-  \ Move `string>source` and `evaluate` from the kernel.
-  \ Rewrite `evaluate` after `execute-parsing`.
-  \
-  \ 2016-05-31: Update: `cliteral` has been moved to the
-  \ kernel.
-  \
-  \ 2016-11-17: Fix needing `char`, `[char]` and `word`.
-  \
-  \ 2016-12-30: Compact the code, saving one block.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-02-27: Improve documentation.
-  \
-  \ 2017-03-12: Update the names of `stringer` words.
 
 ( defined? parse-char parse-all )
 
@@ -229,5 +195,40 @@ need-here execute-parsing
   else dup 2 <> if 0 ?do drop loop -1 exit then
      drop >in ! blk ! false
   then ;
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-09-13: Add `parse-char`.
+  \
+  \ 2015-10-06: Move `word` from the kernel.
+  \
+  \ 2015-10-18: Move `command` from the editor and rename it to
+  \ `parse-line`.
+  \
+  \ 2015-10-22: Fix `parse-char`.
+  \
+  \ 2016-04-24: Move `char` and `[char]` from the kernel.
+  \
+  \ 2016-05-10: Fix `[char]`.
+  \
+  \ 2016-05-14: Compact the blocks. Fix `parse-line` and rename
+  \ it to `parse-all`. Finish and document `execute-parsing`.
+  \ Move `string>source` and `evaluate` from the kernel.
+  \ Rewrite `evaluate` after `execute-parsing`.
+  \
+  \ 2016-05-31: Update: `cliteral` has been moved to the
+  \ kernel.
+  \
+  \ 2016-11-17: Fix needing `char`, `[char]` and `word`.
+  \
+  \ 2016-12-30: Compact the code, saving one block.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-03-12: Update the names of `stringer` words.
 
   \ vim: filetype=soloforth

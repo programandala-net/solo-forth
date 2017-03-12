@@ -4,13 +4,14 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words to configure the charactes accepted as number point.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Wil Baden, published on Forth Dimensions (volume 20, number
@@ -18,24 +19,12 @@
 
   \ Adapted by Marcos Cruz (programandala.net), 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-04-24: Remove `[char]`, which has been moved to the
-  \ library.
-  \
-  \ 2016-11-17: Use `?(` instead of `[if]`.
-  \
-  \ 2017-02-16: Fix typo in documentation.
-  \
-  \ 2017-02-17: Update notation "behaviour" to "action".
 
 ( standard-number-point? extended-number-point? )
 
@@ -76,6 +65,18 @@
   \ default action is `standard-number-point?`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
+  \
+  \ 2016-11-17: Use `?(` instead of `[if]`.
+  \
+  \ 2017-02-16: Fix typo in documentation.
+  \
+  \ 2017-02-17: Update notation "behaviour" to "action".
 
   \ vim: filetype=soloforth
 

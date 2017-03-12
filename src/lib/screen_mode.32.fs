@@ -4,32 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ The screen mode 32.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-04-26: Change `latest name>` to `latestxt`.
-  \
-  \ 2016-05-07: Improve documentation.
-  \
-  \ 2017-01-20: Fix typo.
 
 ( mode32 )
 
@@ -56,5 +48,14 @@ need columns need rows need set-font need set-mode-output
   \ }doc
 
 ' mode32 ' default-mode defer!
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-26: Change `latest name>` to `latestxt`.
+  \
+  \ 2016-05-07: Improve documentation.
+  \
+  \ 2017-01-20: Fix typo.
 
   \ vim: filetype=soloforth

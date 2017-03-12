@@ -4,52 +4,29 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ The sample game Siderator 2.
 
   \ XXX UNDER DEVELOPMENT
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2009, 2010, 2013, 2015,
   \ 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-09-02: Start, with the code of the Jupiter ACE
-  \ version: http://programandala.net/en.program.siderator.html
-  \
-  \ 2016-05-02: Compact two blocks to save space in the
-  \ library.
-  \
-  \ 2016-05-18: Need `vocabulary`, which has been moved to the
-  \ library.
-  \
-  \ 2016-06-01: Replace `char` with char notation.
-  \
-  \ 2016-08-05: Compact the code, but no block is saved. Add
-  \ missing `need inverse`.
-  \
-  \ 2016-08-05: Compact the code, saving three blocks.
-  \
-  \ 2017-01-31: Update the attribute and color words.
-  \
-  \ 2017-02-19: Replace `do`, which has been moved to the
-  \ library, with `?do`.
-
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ To-do
 
   \ XXX TODO -- less stars!
@@ -288,5 +265,29 @@ rows 2 / constant craft-y
 : run ( -- )
   init  begin  -craft scroll  faster farther .info  continue?
         while  rudder .craft .stars delay  repeat  game-over ;
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-09-02: Start, with the code of the Jupiter ACE
+  \ version: http://programandala.net/en.program.siderator.html
+  \
+  \ 2016-05-02: Compact two blocks to save space in the
+  \ library.
+  \
+  \ 2016-05-18: Need `vocabulary`, which has been moved to the
+  \ library.
+  \
+  \ 2016-06-01: Replace `char` with char notation.
+  \
+  \ 2016-08-05: Compact the code, but no block is saved. Add
+  \ missing `need inverse`.
+  \
+  \ 2016-08-05: Compact the code, saving three blocks.
+  \
+  \ 2017-01-31: Update the attribute and color words.
+  \
+  \ 2017-02-19: Replace `do`, which has been moved to the
+  \ library, with `?do`.
 
   \ vim: filetype=soloforth

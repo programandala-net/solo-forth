@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702261228
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words to create and manage 1-dimension single-cell,
@@ -23,31 +24,17 @@
     \ 1 3 bar +!
     \ 3 bar far@ .
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2017-01-18: Start, based on the module
-  \ <data.array.variable.fsb>.
-  \
-  \ 2017-02-16: Fix typo in documentation.
-  \
-  \ 2017-02-17: Fix markup in documentation.  Update cross
-  \ references.
-  \
-  \ 2017-02-26: Update "hp" notation to "np", after the changes
-  \ in the kernel.
 
 ( faravariable far2avariable farcavariable )
 
@@ -122,6 +109,20 @@
   \ See also: `faravariable`, `far2variable`, `cavariable`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2017-01-18: Start, based on the module
+  \ <data.array.variable.fsb>.
+  \
+  \ 2017-02-16: Fix typo in documentation.
+  \
+  \ 2017-02-17: Fix markup in documentation.  Update cross
+  \ references.
+  \
+  \ 2017-02-26: Update "hp" notation to "np", after the changes
+  \ in the kernel.
 
   \ vim: filetype=soloforth
 

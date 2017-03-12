@@ -4,43 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Forth-2012 structures.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-11-28: Make `+field` deferred and provide three
-  \ optional implementations. Make all words accessible to
-  \ `need`.
-  \
-  \ 2016-12-24: Fix typo in documentation. Fix needing of
-  \ `+field-opt-0` and `+field-opt-0124`.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Remove remaining `exit` at the end of
-  \ conditional interpretation.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-02-22: Improve documentation.
 
 ( +field field: 2field: cfield: begin-structure end-structure )
 
@@ -195,5 +176,25 @@
   \ it uses 107 bytes of data space and needs `case`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-11-28: Make `+field` deferred and provide three
+  \ optional implementations. Make all words accessible to
+  \ `need`.
+  \
+  \ 2016-12-24: Fix typo in documentation. Fix needing of
+  \ `+field-opt-0` and `+field-opt-0124`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-22: Improve documentation.
 
   \ vim: filetype=soloforth

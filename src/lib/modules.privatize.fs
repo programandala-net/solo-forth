@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Implementation of unnamed modules with error checking.
@@ -13,7 +14,7 @@
   \ Modules hide the internal implementation and leave visible
   \ the words of the outer interface.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Copyright 1996 Phil Burk.
@@ -21,27 +22,12 @@
   \ Adapted from pForth to Solo Forth by Marcos Cruz
   \ (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2015-10: First version.
-  \
-  \ 2016-04-26: Use `current-latest` (old fig-Forth `latest`)
-  \ instead of current standard `latest`.
-  \
-  \ 2016-05-06: Update the requirements: `current-latest`
-  \ moved to the kernel.
-  \
-  \ 2016-12-07: Fix `privatize`: `hidden` instead of `hide`.
-  \ Update the documentation of `privatize` after
-  \ `hide-internal`.
 
 ( privatize )
 
@@ -108,5 +94,20 @@ variable private-start  variable private-stop
   \ checking and uses the stack.
 
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-10: First version.
+  \
+  \ 2016-04-26: Use `current-latest` (old fig-Forth `latest`)
+  \ instead of current standard `latest`.
+  \
+  \ 2016-05-06: Update the requirements: `current-latest`
+  \ moved to the kernel.
+  \
+  \ 2016-12-07: Fix `privatize`: `hidden` instead of `hide`.
+  \ Update the documentation of `privatize` after
+  \ `hide-internal`.
 
   \ vim: filetype=soloforth

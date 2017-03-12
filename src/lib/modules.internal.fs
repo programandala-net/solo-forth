@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702261229
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Simple and small implementation of unnamed modules.
@@ -16,7 +17,7 @@
   \ This implementation uses the data stack for temporary
   \ values and does no error checking.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Deway Val Schorre wrote the original code for fig-Forth,
@@ -27,45 +28,12 @@
   \ Marcos Cruz (programandala.net), adapted it to Solo Forth,
   \ 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2015-10-27: First version, as a simpler alternative to
-  \ `privatize`, even with the same names at first.
-  \
-  \ 2016-04-26: Use `current-latest` (old fig-Forth `latest`)
-  \ instead of current standard `latest`. Update the
-  \ documentation.
-  \
-  \ 2016-05-06: Update the requirements: `current-lastest`
-  \ moved to the kernel.
-  \
-  \ 2016-11-13: Rename `np@` to `hp@` after the changes in the
-  \ kernel.
-  \
-  \ 2016-11-18: Adapt to far memory.
-  \
-  \ 2016-12-07: Rename `external` to `end-internal`, `module`
-  \ to `unlink-internal`. Rename the module file accordingly.
-  \ Add `hide-internal`.
-  \
-  \ 2017-01-05: Remove old system bank support from
-  \ `unlink-internal`.
-  \
-  \ 2017-01-19: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-02-26: Update "hp" notation to "np", after the changes
-  \ in the kernel.
 
 ( internal end-internal unlink-internal hide-internal )
 
@@ -190,5 +158,38 @@ need internal need name<name need >>name
   \ does not use the stack.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-10-27: First version, as a simpler alternative to
+  \ `privatize`, even with the same names at first.
+  \
+  \ 2016-04-26: Use `current-latest` (old fig-Forth `latest`)
+  \ instead of current standard `latest`. Update the
+  \ documentation.
+  \
+  \ 2016-05-06: Update the requirements: `current-lastest`
+  \ moved to the kernel.
+  \
+  \ 2016-11-13: Rename `np@` to `hp@` after the changes in the
+  \ kernel.
+  \
+  \ 2016-11-18: Adapt to far memory.
+  \
+  \ 2016-12-07: Rename `external` to `end-internal`, `module`
+  \ to `unlink-internal`. Rename the module file accordingly.
+  \ Add `hide-internal`.
+  \
+  \ 2017-01-05: Remove old system bank support from
+  \ `unlink-internal`.
+  \
+  \ 2017-01-19: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-26: Update "hp" notation to "np", after the changes
+  \ in the kernel.
 
   \ vim: filetype=soloforth

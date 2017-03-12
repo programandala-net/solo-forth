@@ -4,13 +4,14 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221309
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ `associative-case:`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Original code by Frank Sergeant, for Pygmy Forth.
@@ -18,19 +19,12 @@
   \ Adapted by Marcos Cruz (programandala.net), 2015, 2016,
   \ 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-04-09: Fixed the file header.
-  \
-  \ 2017-02-22: Update markup in documentation.
 
 ( associative-case: )
 
@@ -72,5 +66,12 @@ need create:
   \ executed.  Numbers can't be constants.
 
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-09: Fixed the file header.
+  \
+  \ 2017-02-22: Update markup in documentation.
 
   \ vim: filetype=soloforth

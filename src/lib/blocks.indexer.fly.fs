@@ -6,8 +6,9 @@
   \ XXX UNDER DEVELOPMENT -- not usable yet
 
   \ Last modified: 201702220028
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Blocks Fly Indexer
@@ -17,37 +18,17 @@
   \ needed word only when it's not found in the blocks index,
   \ and the searched blocks are indexed on the fly.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-04-19: Start, based on the code of `indexer`.
-  \
-  \ 2016-11-24: Rename the module and some words, to be
-  \ consistent with the previous version Thru Indexer.
-  \
-  \ 2016-11-25: Factor `set-index-order`. Improve documentation
-  \ and names.
-  \
-  \ 2016-11-26: Need `catch`, which has been moved to the
-  \ library.  Rename `blocks` to `blk/disk` after the fix in
-  \ the kernel.
-  \
-  \ 2017-02-17: Update notation "behaviour" to "action".
-  \ Update cross references.
-  \
-  \ 2017-02-21: Need `use-default-need`, which now is optional.
 
 ( use-fly-index )
 
@@ -163,5 +144,25 @@ blk/disk bit-array indexed-blocks
   \ See also: `use-thru-index`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-19: Start, based on the code of `indexer`.
+  \
+  \ 2016-11-24: Rename the module and some words, to be
+  \ consistent with the previous version Thru Indexer.
+  \
+  \ 2016-11-25: Factor `set-index-order`. Improve documentation
+  \ and names.
+  \
+  \ 2016-11-26: Need `catch`, which has been moved to the
+  \ library.  Rename `blocks` to `blk/disk` after the fix in
+  \ the kernel.
+  \
+  \ 2017-02-17: Update notation "behaviour" to "action".
+  \ Update cross references.
+  \
+  \ 2017-02-21: Need `use-default-need`, which now is optional.
 
   \ vim: filetype=soloforth

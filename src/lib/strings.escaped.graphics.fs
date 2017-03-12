@@ -4,39 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words to include graphics characters in escaped strings.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-12-21: Start.
-  \
-  \ 2016-12-22: Adapt to the changes in the
-  \ <strings.escaped.fsb> module. Improve. Document. Fix
-  \ `left-column?`: use `even?` instead of `odd?`.
-  \
-  \ 2016-12-23: Remove debugging code. Use case-sensitive mode
-  \ to define the UDG escaped chars.
-  \
-  \ 2016-12-27: Fix escaped UDG "\C".
-  \
-  \ 2017-02-17: Update cross references.
 
 ( first-esc-block-char esc-block-chars-wordlist )
 
@@ -206,5 +191,21 @@ case-sensitive @ case-sensitive on
 case-sensitive !
 
 set-current
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-12-21: Start.
+  \
+  \ 2016-12-22: Adapt to the changes in the
+  \ <strings.escaped.fsb> module. Improve. Document. Fix
+  \ `left-column?`: use `even?` instead of `odd?`.
+  \
+  \ 2016-12-23: Remove debugging code. Use case-sensitive mode
+  \ to define the UDG escaped chars.
+  \
+  \ 2016-12-27: Fix escaped UDG "\C".
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

@@ -6,34 +6,24 @@
   \ XXX UNDER DEVELOPMENT
 
   \ Last modified: 201702261232
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words to save the system.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-11-13: Rename `np@` to `hp@` after the changes in the
-  \ kernel.
-  \
-  \ 2017-01-06: Update `voc-link` to `latest-wordlist`.
-  \
-  \ 2017-02-26: Update "hp" notation to "np", after the changes
-  \ in the kernel.
 
 ( extend size system turnkey )
 
@@ -101,5 +91,16 @@
   \ parameters for saving the system to disk.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-11-13: Rename `np@` to `hp@` after the changes in the
+  \ kernel.
+  \
+  \ 2017-01-06: Update `voc-link` to `latest-wordlist`.
+  \
+  \ 2017-02-26: Update "hp" notation to "np", after the changes
+  \ in the kernel.
 
   \ vim: filetype=soloforth

@@ -4,58 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702272340
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ The `~~` debugging tool.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-02-18: First version.
-  \
-  \ 2016-11-14: Document all words. Use `defer!`, which is the
-  \ kernel, instead of `is`, which is in the library.
-  \
-  \ 2016-11-25: Add a pause control with a configurable key to
-  \ resume. Update and improve documentation. Convert the
-  \ default actions of `~~save` and `~~restore` to named words,
-  \ in order to make them easier to reuse.
-  \
-  \ 2016-11-29: Improve `~~control` to wait for any key when
-  \ `~~resume-key` is less than zero. This makes it possible to
-  \ debug some kind of programs without interfering with the
-  \ key presses accepted by them.
-  \
-  \ 2016-12-03: Improve stack comments of `~~`. Rename `~~show`
-  \ to `~~info`.
-  \
-  \ 2016-12-04: Add `~~app-info`. Need `.s` (it's still in the
-  \ kernel, but only during development).
-  \
-  \ 2016-12-24: Improve `~~info` to produce clearer output.
-  \ Set default quit and resume keys: `q` and space. Remove
-  \ `~~x`, which is not useful because two full lines are used.
-  \
-  \ 2017-01-17: Improve documentation.
-  \
-  \ 2017-02-17: Update notation "behaviour" to "action".
-  \ Update cross references.
-  \
-  \ 2017-02-27: Improve documentation.
 
 ( ~~ )
 
@@ -307,5 +273,40 @@ defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
   \ `~~info`, `~~app-info`, `~~control` `~~save`, `~~restore`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-02-18: First version.
+  \
+  \ 2016-11-14: Document all words. Use `defer!`, which is the
+  \ kernel, instead of `is`, which is in the library.
+  \
+  \ 2016-11-25: Add a pause control with a configurable key to
+  \ resume. Update and improve documentation. Convert the
+  \ default actions of `~~save` and `~~restore` to named words,
+  \ in order to make them easier to reuse.
+  \
+  \ 2016-11-29: Improve `~~control` to wait for any key when
+  \ `~~resume-key` is less than zero. This makes it possible to
+  \ debug some kind of programs without interfering with the
+  \ key presses accepted by them.
+  \
+  \ 2016-12-03: Improve stack comments of `~~`. Rename `~~show`
+  \ to `~~info`.
+  \
+  \ 2016-12-04: Add `~~app-info`. Need `.s` (it's still in the
+  \ kernel, but only during development).
+  \
+  \ 2016-12-24: Improve `~~info` to produce clearer output.
+  \ Set default quit and resume keys: `q` and space. Remove
+  \ `~~x`, which is not useful because two full lines are used.
+  \
+  \ 2017-01-17: Improve documentation.
+  \
+  \ 2017-02-17: Update notation "behaviour" to "action".
+  \ Update cross references.
+  \
+  \ 2017-02-27: Improve documentation.
 
   \ vim: filetype=soloforth

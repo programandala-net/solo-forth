@@ -4,13 +4,14 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Implementation of VFX Forth's `module`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Ulrich Hoffmann wrote the original version, "Modules", for
@@ -20,7 +21,7 @@
   \ Solo Forth and improved it using the specific features of
   \ the system, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ The MIT License (MIT)
@@ -50,27 +51,11 @@
   \ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
   \ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ References
 
   \ http://theforth.net/package/modules
   \ http://www.mpeforth.com/vfxcom.htm
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-12-07: Start. Copy the code and documentation of
-  \ Modules 1.0.2 (http://theforth.net/package/modules) and
-  \ modify the code style after the conventions used in Solo
-  \ Forth.  Improve `end-module` with `perform`; `export` with
-  \ `previous`; `module` with `constant`; `expose-module` with
-  \ `execute >order`. Rewrite `export` to improve it with
-  \ `alias`. Document with example from the Modules'
-  \ documentation. Remove `expose-module` (it's just parsing
-  \ syntactic sugar); explain its simple alternative in the
-  \ documentation.
-  \
-  \ 2017-02-17: Update cross references.
 
 ( module end-module export )
 
@@ -148,5 +133,21 @@ need alias need nextname
   \ `export` are still available.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-12-07: Start. Copy the code and documentation of
+  \ Modules 1.0.2 (http://theforth.net/package/modules) and
+  \ modify the code style after the conventions used in Solo
+  \ Forth.  Improve `end-module` with `perform`; `export` with
+  \ `previous`; `module` with `constant`; `expose-module` with
+  \ `execute >order`. Rewrite `export` to improve it with
+  \ `alias`. Document with example from the Modules'
+  \ documentation. Remove `expose-module` (it's just parsing
+  \ syntactic sugar); explain its simple alternative in the
+  \ documentation.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

@@ -6,15 +6,16 @@
   \ XXX UNDER DEVELOPMENT -- not finished
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Multitask support, adapted from eForth and hForth.
   \
   \ Reference: Forth Dimensions (volume 18, number 2, page 32).
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Bill Muench wrote the original code for eForth, 1993-1997.
@@ -24,17 +25,12 @@
   \ Marcos Cruz (programandala.net) wrote a version for Solo
   \ Forth, based on eForth and hForth, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-05-17: Start.
 
 ( muench-koh-multitasker )
 
@@ -228,5 +224,10 @@ user follower  \ address of next task's `status`
   \ }doc
 
 set-current
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-05-17: Start.
 
   \ vim: filetype=soloforth

@@ -4,43 +4,26 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Credit
 
   \ Words inspired by TurboForth's `data`, which nevertheless
   \ works different: it's a parsing word that parses and
   \ compiles a given number of literals, including the count.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-11-25: Start.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Remove remaining `exit` at the end of
-  \ conditional interpretation.
-  \
-  \ 2017-02-16: Replace all words (`data:`, `;data`, `cdata:`,
-  \ `;cdata`, `2data:` and `;2data`) with the single pair
-  \ `data`, `end-data`, which is more versatile: it can do the
-  \ same as all the old words and more.
-  \
-  \ 2017-02-17: Update cross references.
 
 ( data end-data )
 
@@ -84,5 +67,23 @@
   \ compiled and store it at _orig_.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-11-25: Start.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
+  \
+  \ 2017-02-16: Replace all words (`data:`, `;data`, `cdata:`,
+  \ `;cdata`, `2data:` and `;2data`) with the single pair
+  \ `data`, `end-data`, which is more versatile: it can do the
+  \ same as all the old words and more.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

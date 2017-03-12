@@ -4,18 +4,19 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220028
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words to create and manage bit arrays.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Credit
 
   \ Based on:
@@ -25,20 +26,12 @@
   \ First Presented at North Bay Forth Interest Group,
   \ 1989-09-09.  Updated 1996-09-18.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-11-23: Start. Adapt, fix and improve the original code
-  \ (http://www.forth.org/svfig/Len/bits.htm).
-  \
-  \ 2017-02-17: Update cross references.
 
 ( bitmasks bits>bytes bit-array !bit @bit )
 
@@ -116,5 +109,13 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
   \ See also: `!bit`, `bit-array`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-11-23: Start. Adapt, fix and improve the original code
+  \ (http://www.forth.org/svfig/Len/bits.htm).
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

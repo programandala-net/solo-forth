@@ -4,44 +4,25 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ The `where` tool, which prints information about the last
   \ error.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-04-21: 3 bytes shorter.
-  \
-  \ 2016-04-24: Remove `[char]`, which has been moved to the
-  \ library.
-  \
-  \ 2016-11-17: Remove unused `need [if]`.
-  \
-  \ 2017-01-18: The temporary version in the kernel has been
-  \ removed. Improve documentation. Simplify: do not update
-  \ `scr`.
-  \
-  \ 2017-01-26: Fix stack underflow. Change title to "Block"
-  \ and print its number as unsigned (no practical difference
-  \ when using floppy disks, but block numbers are unsigned).
-  \
-  \ 2017-02-17: Update cross references.
 
 ( where )
 
@@ -68,5 +49,25 @@
   \ See also: `error-pos`, `error`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-21: 3 bytes shorter.
+  \
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
+  \
+  \ 2016-11-17: Remove unused `need [if]`.
+  \
+  \ 2017-01-18: The temporary version in the kernel has been
+  \ removed. Improve documentation. Simplify: do not update
+  \ `scr`.
+  \
+  \ 2017-01-26: Fix stack underflow. Change title to "Block"
+  \ and print its number as unsigned (no practical difference
+  \ when using floppy disks, but block numbers are unsigned).
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

@@ -4,49 +4,25 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703041855
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words that are common to all screen
   \ modes.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-05-07: Compact the blocks.
-  \
-  \ 2016-05-17: Need `>body`, which has been moved to the
-  \ library.
-  \
-  \ 2016-12-08: Rename the module filename with uppercase
-  \ "COMMON", after the new convention.
-  \
-  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
-  \ in the kernel.
-  \
-  \ 2017-01-18: Make `columns` and `rows` independent for
-  \ `need` and document them.  Remove `exit` at the end of
-  \ conditional interpretation.
-  \
-  \ 2017-02-16: Remove `set-font`, which is in the kernel.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-03-04: Update naming convention of Z80 routines, after
-  \ the changes in the kernel.
 
 ( columns rows set-mode-output )
 
@@ -120,5 +96,30 @@ code (banked-mode-output) ( -- )
   \ bank) to the system channels "K", "S" and "P", using and
   \ intermediate routine to page the code bank in and out.
   \ XXX OLD -- adapt to far memory or remove
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-05-07: Compact the blocks.
+  \
+  \ 2016-05-17: Need `>body`, which has been moved to the
+  \ library.
+  \
+  \ 2016-12-08: Rename the module filename with uppercase
+  \ "COMMON", after the new convention.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
+  \
+  \ 2017-01-18: Make `columns` and `rows` independent for
+  \ `need` and document them.  Remove `exit` at the end of
+  \ conditional interpretation.
+  \
+  \ 2017-02-16: Remove `set-font`, which is in the kernel.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-04: Update naming convention of Z80 routines, after
+  \ the changes in the kernel.
 
   \ vim: filetype=soloforth

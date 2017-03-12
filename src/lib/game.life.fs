@@ -6,13 +6,14 @@
   \ XXX UNDER DEVELOPMENT
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Conway's Game of Life, or Occam's Razor Dulled
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Original ANS Forth version: Copyright (C) 1995 Leo Wong.
@@ -22,7 +23,7 @@
   \ Version for Solo Forth: Marcos Cruz (programandala.net),
   \ 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Credit
 
   \ Code adapted from kForth. Original Credit:
@@ -37,25 +38,12 @@
   \ hello at albany dot net
   \ http://www.albany.net/~hello/
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015: Start.
-  \
-  \ 2016-04-03: Header reorganized after the original credit.
-  \
-  \ 2016-04-24: Remove `char`, which has been moved to the
-  \ library. Change the stack notation.
-  \
-  \ 2016-05-02: Compact two blocks to save space in the
-  \ library.
 
 ( life )
 
@@ -214,5 +202,18 @@ $10 CONSTANT Alive  \ 0y = not alive
 : Life ( -- ) Creation Goes-On ;
 
   \ Life
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015: Start.
+  \
+  \ 2016-04-03: Header reorganized after the original credit.
+  \
+  \ 2016-04-24: Remove `char`, which has been moved to the
+  \ library. Change the stack notation.
+  \
+  \ 2016-05-02: Compact two blocks to save space in the
+  \ library.
 
   \ vim: filetype=soloforth

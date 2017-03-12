@@ -4,41 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words related to the cursor position.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-10-14: Add `column`, `row`, `at-x`, `at-y`, adapted
-  \ from Galope.
-  \
-  \ 2016-05-01: Add conditional compilation and documentation.
-  \
-  \ 2016-05-07: Fix typos and conditional compilation.
-  \
-  \ 2016-11-26: Improve needing and documentation.
-  \
-  \ 2017-01-18: Fix `last-column` and `last-row`. Improve
-  \ documentation.  Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-02-17: Update cross references.
 
 ( column last-column row last-row at-x at-y )
 
@@ -121,5 +104,23 @@
   \ See also: `at-x`, `at-xy`, `row`, `column`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-10-14: Add `column`, `row`, `at-x`, `at-y`, adapted
+  \ from Galope.
+  \
+  \ 2016-05-01: Add conditional compilation and documentation.
+  \
+  \ 2016-05-07: Fix typos and conditional compilation.
+  \
+  \ 2016-11-26: Improve needing and documentation.
+  \
+  \ 2017-01-18: Fix `last-column` and `last-row`. Improve
+  \ documentation.  Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

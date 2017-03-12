@@ -4,54 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703112301
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words that recognize characters on the screen.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` after the
-  \ change in the kernel.
-  \
-  \ 2017-01-02: Convert `ocr` to `z80-asm,`. Improve
-  \ documentation.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
-  \
-  \ 2017-01-13: Fix `ocr`: `de` was still used as register, but
-  \ it doesn't exist anymore. Reorganize the source. Make
-  \ `ascii-ocr` and `udg-ocr` optional. Add `0udg-ocr`. Improve
-  \ documentation.
-  \
-  \ 2017-02-04: Adapt to 0-index-only UDG, after the changes in
-  \ the kernel and the library: Remove `udg-ocr` and rename
-  \ `0udg-ocr` to `udg-ocr`. Convert `ocr-chars` and
-  \ `ocr-first` to character variables.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-02-21: Need `unresolved`, which now is optional, not
-  \ part of the assembler.
-  \
-  \ 2017-02-25: Fix typo.
-  \
-  \ 2017-03-11: Need `>amark`, which now is optional, not
-  \ included in the assembler by default.
 
 ( ocr )
 
@@ -234,5 +204,36 @@ code ocr ( col line -- n )
   \ See also: `ascii-ocr`, `set-udg`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` after the
+  \ change in the kernel.
+  \
+  \ 2017-01-02: Convert `ocr` to `z80-asm,`. Improve
+  \ documentation.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-13: Fix `ocr`: `de` was still used as register, but
+  \ it doesn't exist anymore. Reorganize the source. Make
+  \ `ascii-ocr` and `udg-ocr` optional. Add `0udg-ocr`. Improve
+  \ documentation.
+  \
+  \ 2017-02-04: Adapt to 0-index-only UDG, after the changes in
+  \ the kernel and the library: Remove `udg-ocr` and rename
+  \ `0udg-ocr` to `udg-ocr`. Convert `ocr-chars` and
+  \ `ocr-first` to character variables.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-21: Need `unresolved`, which now is optional, not
+  \ part of the assembler.
+  \
+  \ 2017-02-25: Fix typo.
+  \
+  \ 2017-03-11: Need `>amark`, which now is optional, not
+  \ included in the assembler by default.
 
   \ vim: filetype=soloforth

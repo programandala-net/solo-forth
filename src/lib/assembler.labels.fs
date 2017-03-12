@@ -4,13 +4,14 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220028
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Local labels for the Z80 assembler.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Credit
 
   \ 8086/8 Assembler for hForth
@@ -56,27 +57,7 @@
   \   However, I did not bother and simply put 'ROM' and 'RAM' in
   \   'ASM8086.F' since '1MI' won't be used in any other places.
 
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-11-14: Code extracted from hForth (version 0.9.7,
-  \ 1997-06-02). First changes to adapt the source layout to
-  \ the style used in Solo Forth.
-  \
-  \ 2016-12-06: Revise source layout, comments, stack comments.
-  \ Divide source into blocks. Rename `xhere` and `codeb!`
-  \ after the hForth documentation. Use `?rel`, which is
-  \ already in the assemblers, instead of the original code.
-  \ Prepare for future development.
-  \
-  \ 2016-12-26: Review, try, test. Factor. Integrate init into
-  \ `asm`. Replace original error checking with `?throw` and
-  \ specific exception codes.
-  \
-  \ 2017-02-21: Need `?rel`. No need to load the whole
-  \ assembler. Improve documentation.
-
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ To-do
 
   \ 2016-12-26: Document. Simplify. Save memory: Store label
@@ -202,5 +183,25 @@ need ?rel
   \ }doc
 
 set-current set-order
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-11-14: Code extracted from hForth (version 0.9.7,
+  \ 1997-06-02). First changes to adapt the source layout to
+  \ the style used in Solo Forth.
+  \
+  \ 2016-12-06: Revise source layout, comments, stack comments.
+  \ Divide source into blocks. Rename `xhere` and `codeb!`
+  \ after the hForth documentation. Use `?rel`, which is
+  \ already in the assemblers, instead of the original code.
+  \ Prepare for future development.
+  \
+  \ 2016-12-26: Review, try, test. Factor. Integrate init into
+  \ `asm`. Replace original error checking with `?throw` and
+  \ specific exception codes.
+  \
+  \ 2017-02-21: Need `?rel`. No need to load the whole
+  \ assembler. Improve documentation.
 
   \ vim: filetype=soloforth

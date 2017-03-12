@@ -4,26 +4,48 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words to examine the stack.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-  \ -----------------------------------------------------------
-  \ History
+( .depth .s u.s )
+
+[unneeded] .depth ?\ : .depth ( n -- ) ." <" 0 .r ." > " ;
+
+[unneeded] .s ?( need .depth
+
+defer (.s) ( x -- ) ' . ' (.s) defer!
+
+: .s   ( -- )
+  depth dup .depth 0> if
+    sp@ sp0 @ cell- ?do i @ (.s)  [ cell negate ] literal +loop
+  then ; ?)
+
+  \ Credit:
+  \ Code from Afera. Original algorithm from v.Forth.
+
+[unneeded] u.s ?( need .s
+
+: u.s   ( -- )
+  ['] u. ['] (.s) defer!  .s  ['] . ['] (.s) defer! ; ?)
+
+  \ ===========================================================
+  \ Change log
 
   \ 2015-11-13: Modified `.depth` to print a signed number,
   \ better for debugging.
@@ -46,26 +68,5 @@
   \
   \ 2017-02-20: Replace `do`, which has been moved to the
   \ library, with `?do`.
-
-( .depth .s u.s )
-
-[unneeded] .depth ?\ : .depth ( n -- ) ." <" 0 .r ." > " ;
-
-[unneeded] .s ?( need .depth
-
-defer (.s) ( x -- ) ' . ' (.s) defer!
-
-: .s   ( -- )
-  depth dup .depth 0> if
-    sp@ sp0 @ cell- ?do i @ (.s)  [ cell negate ] literal +loop
-  then ; ?)
-
-  \ Credit:
-  \ Code from Afera. Original algorithm from v.Forth.
-
-[unneeded] u.s ?( need .s
-
-: u.s   ( -- )
-  ['] u. ['] (.s) defer!  .s  ['] . ['] (.s) defer! ; ?)
 
   \ vim: filetype=soloforth

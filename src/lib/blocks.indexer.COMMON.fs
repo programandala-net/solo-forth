@@ -4,47 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702241212
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Code common to the Thru Indexer and the Fly Indexer.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-11-19: Extracted from <blocks.indexer.fsb> in order to
-  \ share the code with <blocks.fly-indexer.fsb>.
-  \
-  \ 2016-11-21: Add missing `need`.
-  \
-  \ 2016-11-24: Rename the module.
-  \
-  \ 2016-11-25: Combine `search-index` and `name-indexed?` into
-  \ `indexed-name?`.  Add `set-index-order`. Improve
-  \ documentation.
-  \
-  \ 2016-11-26: Need `search-wordlist`, which has been moved to
-  \ the library.
-  \
-  \ 2016-12-08: Rename the module filename with uppercase
-  \ "COMMON", after the new convention.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-02-24: Improve documentation markup.
 
 ( common-indexer )
 
@@ -151,5 +128,29 @@ need common-indexer
 [unneeded] indexer-words ?( need wordlist-words need .wordname
 
 : indexer-words ( -- ) indexer-wordlist wordlist-words ; ?)
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-11-19: Extracted from <blocks.indexer.fsb> in order to
+  \ share the code with <blocks.fly-indexer.fsb>.
+  \
+  \ 2016-11-21: Add missing `need`.
+  \
+  \ 2016-11-24: Rename the module.
+  \
+  \ 2016-11-25: Combine `search-index` and `name-indexed?` into
+  \ `indexed-name?`.  Add `set-index-order`. Improve
+  \ documentation.
+  \
+  \ 2016-11-26: Need `search-wordlist`, which has been moved to
+  \ the library.
+  \
+  \ 2016-12-08: Rename the module filename with uppercase
+  \ "COMMON", after the new convention.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-24: Improve documentation markup.
 
   \ vim: filetype=soloforth

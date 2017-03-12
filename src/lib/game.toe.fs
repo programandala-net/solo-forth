@@ -4,29 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ The sample game Toe.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2017-02-19: Replace `do`, which has been moved to the
-  \ library, with `?do`.
 
 ( toe )
 
@@ -79,5 +74,11 @@ create board  squares allot
 
 : x ( square -- ) player-x play  display ;
 : o ( square -- ) player-o play  display ;
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2017-02-19: Replace `do`, which has been moved to the
+  \ library, with `?do`.
 
   \ vim: filetype=soloforth

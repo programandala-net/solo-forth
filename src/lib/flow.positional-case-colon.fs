@@ -4,13 +4,14 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221314
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ `positional-case:`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Original code from F83's `case:`, by Henry Laxen and
@@ -19,23 +20,12 @@
   \ Adapted by Marcos Cruz (programandala.net), 2015, 2016,
   \ 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-08-11: Adapted.
-  \
-  \ 2015-11-22: Modified to use `create:`.
-  \
-  \ 2015-12-14: Renamed to `positional-case:`.
-  \
-  \ 2016-04-09: Fixed the file header. Documented.
 
 ( positional-case: )
 
@@ -68,5 +58,16 @@ need create:
   \ ----
 
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-08-11: Adapted.
+  \
+  \ 2015-11-22: Modified to use `create:`.
+  \
+  \ 2015-12-14: Renamed to `positional-case:`.
+  \
+  \ 2016-04-09: Fixed the file header. Documented.
 
   \ vim: filetype=soloforth

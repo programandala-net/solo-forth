@@ -4,35 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words related to manipulate caps lock.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-11-23: Rename `c!toggle-bits` to `ctoggle`,
-  \ `c!set-bits` to `cset`, `c!reset-bits` to `creset` and
-  \ `c@test-bits` to `c@and`, after the changes in the system.
-  \ Use `c@and?`.
-  \
-  \ 2017-01-10: Document all words.
-  \
-  \ 2017-02-17: Update cross references.
 
 ( capslock )
 
@@ -103,5 +92,17 @@ need os-flags2 need ctoggle need cset need creset
   \ `capslock`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-11-23: Rename `c!toggle-bits` to `ctoggle`,
+  \ `c!set-bits` to `cset`, `c!reset-bits` to `creset` and
+  \ `c@test-bits` to `c@and`, after the changes in the system.
+  \ Use `c@and?`.
+  \
+  \ 2017-01-10: Document all words.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

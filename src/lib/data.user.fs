@@ -4,41 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words to use the user data space.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-09: First draft.
-  \
-  \ 2016-04-21: New version, moved from the kernel.
-  \
-  \ 2016-11-18: Add conditional compilation. Improve
-  \ documentation.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Remove remaining `exit` at the end of
-  \ conditional interpretation.
-  \
-  \ 2017-02-17: Update cross references.
 
 ( ucreate ?user uallot user 2user )
 
@@ -123,5 +106,23 @@
   \ See also: `user`, `ucreate`, `uallot`, `?user`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-09: First draft.
+  \
+  \ 2016-04-21: New version, moved from the kernel.
+  \
+  \ 2016-11-18: Add conditional compilation. Improve
+  \ documentation.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

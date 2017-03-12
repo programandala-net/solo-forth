@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702280023
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Definers of so called "fast constants", which work like
@@ -13,35 +14,22 @@
   \ literal. A literal is placed on the stack faster than a
   \ constant.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Credit
 
   \ Words inspired by IsForth's `const`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-11-25: Extract code from <data.misc.fsb>. Improve
-  \ documentation.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-02-27: Improve documentation.
 
 ( const cconst 2const )
 
@@ -107,5 +95,18 @@
   \ See: `[2const]`, `const`, `cconst`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-11-25: Extract code from <data.misc.fsb>. Improve
+  \ documentation.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-27: Improve documentation.
 
   \ vim: filetype=soloforth

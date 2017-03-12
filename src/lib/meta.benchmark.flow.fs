@@ -4,33 +4,21 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Flow control benchmarks written during the development of
   \ Solo Forth in order to choose from different implementation
   \ options.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-08-05: Compact the code to save one block.
-  \
-  \ 2016-10-12: Add `exec-bench`.
-  \
-  \ 2016-11-26: Remove `warnings off`, because now warnings are
-  \ deactivated by default.
-  \
-  \ 2017-02-19: Replace `do`, which has been moved to the
-  \ library, with `?do`.
 
 ( case-benchs )
 
@@ -236,6 +224,19 @@ need bench{
   \ +loop          108        97
 
   \ Note: 1 frame = 50th of second
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-08-05: Compact the code to save one block.
+  \
+  \ 2016-10-12: Add `exec-bench`.
+  \
+  \ 2016-11-26: Remove `warnings off`, because now warnings are
+  \ deactivated by default.
+  \
+  \ 2017-02-19: Replace `do`, which has been moved to the
+  \ library, with `?do`.
 
   \ vim: filetype=soloforth
 

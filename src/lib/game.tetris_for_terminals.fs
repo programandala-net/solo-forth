@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ The sample game Tetris for Terminals.
@@ -13,7 +14,7 @@
   \ An improved port of a game written in Forth-94 by Dirk Uwe
   \ Zoller in 1994.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Dirk Uwe Zoller, 1994-05-05.  Look&feel stolen from Mike
@@ -22,7 +23,7 @@
   \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
   \ 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Credit
 
   \ tt.pfe  Tetris for terminals, redone in ANSI-Forth.
@@ -38,35 +39,12 @@
   \
   \ Thank you.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-04-24: Remove `[char]`, which has been moved to the
-  \ library.
-  \
-  \ 2016-05-17: Need `>body`, which has been moved to the
-  \ library.
-  \
-  \ 2016-05-18: Need `vocabulary`, which has been moved to the
-  \ library.
-  \
-  \ 2016-10-28: Check requirements. Add `need randomize`.
-  \
-  \ 2016-11-19: Remove the debugging code. The problem was the
-  \ return stack overflowed. It has been solved in the kernel.
-  \
-  \ 2017-02-01: Replace `upper` with `lower`, because `upper`
-  \ has been moved to the library. Update the keys.
-  \
-  \ 2017-02-19: Replace `do`, which has been moved to the
-  \ library, with `?do`.
 
 ( tt )
 
@@ -626,5 +604,28 @@ also forth definitions
 cr start-message
 
 only forth definitions
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
+  \
+  \ 2016-05-17: Need `>body`, which has been moved to the
+  \ library.
+  \
+  \ 2016-05-18: Need `vocabulary`, which has been moved to the
+  \ library.
+  \
+  \ 2016-10-28: Check requirements. Add `need randomize`.
+  \
+  \ 2016-11-19: Remove the debugging code. The problem was the
+  \ return stack overflowed. It has been solved in the kernel.
+  \
+  \ 2017-02-01: Replace `upper` with `lower`, because `upper`
+  \ has been moved to the library. Update the keys.
+  \
+  \ 2017-02-19: Replace `do`, which has been moved to the
+  \ library, with `?do`.
 
   \ vim: filetype=soloforth

@@ -4,49 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words to list words.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2015-09-12: Fix `words-like`.
-  \
-  \ 2016-05-04: Compact the blocks. Add `words#`. Document.
-  \
-  \ 2016-11-17: Use `?(` instead of `[if]`.
-  \
-  \ 2016-11-24: Improve needing of individual words. Replace
-  \ `.name` with `.word`, a deferred word with default
-  \ behaviour `(.word`. Add its alternative behaviour
-  \ `.wordname`.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Remove remaining `exit` at the end of
-  \ conditional interpretation.
-  \
-  \ 2017-02-01: Fix `words-like` with `lowers` (words are
-  \ stored in lowercase).
-  \
-  \ 2017-02-17: Update notation "behaviour" to "action".
-  \ Update cross references.
 
 ( .word .wordname more-words? words wordlist-words )
 
@@ -174,5 +149,31 @@
   \ of the search order.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-09-12: Fix `words-like`.
+  \
+  \ 2016-05-04: Compact the blocks. Add `words#`. Document.
+  \
+  \ 2016-11-17: Use `?(` instead of `[if]`.
+  \
+  \ 2016-11-24: Improve needing of individual words. Replace
+  \ `.name` with `.word`, a deferred word with default
+  \ behaviour `(.word`. Add its alternative behaviour
+  \ `.wordname`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
+  \
+  \ 2017-02-01: Fix `words-like` with `lowers` (words are
+  \ stored in lowercase).
+  \
+  \ 2017-02-17: Update notation "behaviour" to "action".
+  \ Update cross references.
 
   \ vim: filetype=soloforth

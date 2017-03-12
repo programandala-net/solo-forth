@@ -4,49 +4,30 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ `times` and `dtimes`: control flow structures which execute
   \ _n_ or _d_ times the next word compiled.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Credit
 
   \ `times` was inspired by cmForth's `repeats`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015..2016: Several drafts, with different behaviours
-  \ during compilation.
-  \
-  \ 2016-04-16: Finished. Simplest version. Documented.
-  \
-  \ 2016-11-26: Move `dtimes` from its own module and finish it
-  \ after `times` (do nothing if the parameter is zero). Finish
-  \ documentation.
-  \
-  \ 2017-01-19: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-02-19: Replace `do`, which has been moved to the
-  \ library, with `?do`.
 
 ( times dtimes )
 
@@ -112,5 +93,25 @@ variable dtimes-xt  \ the _xt_ executed by `dtimes`
   \ See also: `times`, `executions`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015..2016: Several drafts, with different behaviours
+  \ during compilation.
+  \
+  \ 2016-04-16: Finished. Simplest version. Documented.
+  \
+  \ 2016-11-26: Move `dtimes` from its own module and finish it
+  \ after `times` (do nothing if the parameter is zero). Finish
+  \ documentation.
+  \
+  \ 2017-01-19: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-19: Replace `do`, which has been moved to the
+  \ library, with `?do`.
 
   \ vim: filetype=soloforth

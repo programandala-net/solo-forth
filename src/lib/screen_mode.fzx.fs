@@ -4,13 +4,14 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703112303
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ The FZX screen mode.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ FZX driver - Copyright (c) 2013 Einar Saukas
@@ -18,36 +19,12 @@
   \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
   \ 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-04-24: Remove `char`, which has been moved to the
-  \ library.
-  \
-  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
-  \ in the kernel.
-  \
-  \ 2017-01-02: Convert from `z80-asm` to `z80-asm,`. Compact
-  \ the code, saving one block.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
-  \
-  \ 2017-01-23: Move `fzx-test` to the tests module. Fix 7
-  \ wrong Z80 instructions in `(fzx-emit)`, remaining from the
-  \ conversion from the old assembler.
-  \
-  \ 2017-02-21: Need `unresolved`, which now is optional, not
-  \ part of the assembler.
-  \
-  \ 2017-03-11: Need `>amark`, which now is optional, not
-  \ included in the assembler by default.
 
 ( fzx-mode )
 
@@ -372,5 +349,29 @@ code fzx-emit ( c -- )
   b pop, next ix ldp#, jpnext,
 
   end-code
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-24: Remove `char`, which has been moved to the
+  \ library.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
+  \
+  \ 2017-01-02: Convert from `z80-asm` to `z80-asm,`. Compact
+  \ the code, saving one block.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-23: Move `fzx-test` to the tests module. Fix 7
+  \ wrong Z80 instructions in `(fzx-emit)`, remaining from the
+  \ conversion from the old assembler.
+  \
+  \ 2017-02-21: Need `unresolved`, which now is optional, not
+  \ part of the assembler.
+  \
+  \ 2017-03-11: Need `>amark`, which now is optional, not
+  \ included in the assembler by default.
 
   \ vim: filetype=soloforth

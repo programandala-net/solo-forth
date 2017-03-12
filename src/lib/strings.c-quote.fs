@@ -4,41 +4,25 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702272344
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Two implementations of `c"` and
   \ `csliteral`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-03-14: Write `c"` with a new, system-independent
-  \ implementation of `csliteral`.
-  \
-  \ 2016-03-15: Set the previous, system-dependent
-  \ implementation of `csliteral` as default.
-  \
-  \ 2016-04-24: Remove `[char]`, which has been moved to the
-  \ library.
-  \
-  \ 2016-08-05: Combine both blocks. Keep the alternative
-  \ definition of `csliteral` only as a reference.
-  \
-  \ 2017-02-27: Improve documentation.
 
 ( cslit csliteral c" )
 
@@ -108,5 +92,22 @@ exit
   r> postpone literal ; immediate compile-only
   \ Credit:
   \ Code from Gforth's `CLiteral`.
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-03-14: Write `c"` with a new, system-independent
+  \ implementation of `csliteral`.
+  \
+  \ 2016-03-15: Set the previous, system-dependent
+  \ implementation of `csliteral` as default.
+  \
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
+  \
+  \ 2016-08-05: Combine both blocks. Keep the alternative
+  \ definition of `csliteral` only as a reference.
+  \
+  \ 2017-02-27: Improve documentation.
 
   \ vim: filetype=soloforth

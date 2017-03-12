@@ -4,78 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702272347
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words related to memory.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015..2016: Main development.
-  \
-  \ 2016-04-17: Added `-!`. Documented some words.
-  \
-  \ 2016-04-23: Added `c-!`.
-  \
-  \ 2016-04-24: Remove `char`, which has been moved to the
-  \ library.
-  \
-  \ 2016-04-25: Add `@cell+`. Move `n,`, `n@`, `n!` from the
-  \ module "compilation.fsb".  Add `nn@`, `nn,`, `nn!`.
-  \
-  \ 2016-04-26: Remove unused words, specific of the TED
-  \ editor.
-  \
-  \ 2016-04-27: Add `/!`, `*!`, `2/!`, `2*!`.
-  \
-  \ 2016-05-09: Add `align`, `aligned`.
-  \
-  \ 2016-05-10: Remove the dependency on the assembler.
-  \ Compact the blocks. Remove unfinished words from cmForth.
-  \ Rename `@cell+` to `@+`. Add `2@+`.
-  \
-  \ 2016-08-01: Fix header line.
-  \
-  \ 2016-08-02: Fix requiring `c1+!`, `c1-!`, `1+!` and `1-!`.
-  \
-  \ 2016-11-16: Fix documentation.
-  \
-  \ 2016-11-22: Document `align` and `aligned`.
-  \
-  \ 2016-11-23: Rename `c!toggle-bits` to `ctoggle`,
-  \ `c!set-bits` to `cset`, `c!reset-bits` to `creset`, and
-  \ `c@test-bits` to `c@and` after the changes in the system.
-  \
-  \ 2016-11-26: Improve `2@+`.
-  \
-  \ 2016-12-08: Rename the module filename with uppercase
-  \ "MISC" after the new convention. Rename `exchange` to
-  \ `!exchange`. Add `c!exchange`. Add new `exchange` and
-  \ `cexchange`.
-  \
-  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
-  \ in the kernel.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-02-27: Improve documentation.
 
 ( -! c+! c-! )
 
@@ -596,5 +542,60 @@ end-code ?)
   \ See also: `exchange`, `c!exchange`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015..2016: Main development.
+  \
+  \ 2016-04-17: Added `-!`. Documented some words.
+  \
+  \ 2016-04-23: Added `c-!`.
+  \
+  \ 2016-04-24: Remove `char`, which has been moved to the
+  \ library.
+  \
+  \ 2016-04-25: Add `@cell+`. Move `n,`, `n@`, `n!` from the
+  \ module "compilation.fsb".  Add `nn@`, `nn,`, `nn!`.
+  \
+  \ 2016-04-26: Remove unused words, specific of the TED
+  \ editor.
+  \
+  \ 2016-04-27: Add `/!`, `*!`, `2/!`, `2*!`.
+  \
+  \ 2016-05-09: Add `align`, `aligned`.
+  \
+  \ 2016-05-10: Remove the dependency on the assembler.
+  \ Compact the blocks. Remove unfinished words from cmForth.
+  \ Rename `@cell+` to `@+`. Add `2@+`.
+  \
+  \ 2016-08-01: Fix header line.
+  \
+  \ 2016-08-02: Fix requiring `c1+!`, `c1-!`, `1+!` and `1-!`.
+  \
+  \ 2016-11-16: Fix documentation.
+  \
+  \ 2016-11-22: Document `align` and `aligned`.
+  \
+  \ 2016-11-23: Rename `c!toggle-bits` to `ctoggle`,
+  \ `c!set-bits` to `cset`, `c!reset-bits` to `creset`, and
+  \ `c@test-bits` to `c@and` after the changes in the system.
+  \
+  \ 2016-11-26: Improve `2@+`.
+  \
+  \ 2016-12-08: Rename the module filename with uppercase
+  \ "MISC" after the new convention. Rename `exchange` to
+  \ `!exchange`. Add `c!exchange`. Add new `exchange` and
+  \ `cexchange`.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-27: Improve documentation.
 
   \ vim: filetype=soloforth

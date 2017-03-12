@@ -4,42 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702280000
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Zero conditionals.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-11-24: Compact the code, saving one block. Add
-  \ conditional compilation for `need`.
-  \
-  \ 2016-11-26: Fix needing of `0exit`.
-  \
-  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
-  \ in the kernel.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-02-27: Improve documentation.
 
   \ XXX TODO Compilation stack notation.
 
@@ -111,5 +93,24 @@ code 0exit ( f -- ) ( R: nest-sys | -- nest-sys | )
   \ stop the interpretation of a block.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-11-24: Compact the code, saving one block. Add
+  \ conditional compilation for `need`.
+  \
+  \ 2016-11-26: Fix needing of `0exit`.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-02-27: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -4,6 +4,7 @@
 ; http://programandala.net/en.program.solo_forth.html
 
 ; Last modified: 201703121454
+; See change log at the end of the file
 
 ; ==============================================================
 ; Description
@@ -21,71 +22,6 @@
 ; You may do whatever you want with this work, so long as you
 ; retain every copyright, credit and authorship notice, and this
 ; license.  There is no warranty.
-
-; ==============================================================
-; History
-
-; See
-; http://programandala.net/en.program.solo_forth.history.html
-
-; Latest changes:
-
-; 2016-12-29: Change definition names to lowercase, after the
-; changes in the main kernel.
-;
-; 2017-02-03: Add more test words.
-;
-; 2017-02-04: Add option to restore the BASIC SP and the number
-; of lines of the lower screen before calling TR-DOS.
-;
-; The number of lines was the reason of the crash: TR-DOS throws
-; a disk error and BASIC can not print it. The disk error
-; happens when `transfer-sectors` reads a sector from disk B.
-; Choosing "abort" at the TR-DOS disk error message enters
-; BASIC. Then Forth can be reentered using a warm restart.  The
-; step rate of drive B has been increased by 2 units.
-;
-; Test all implementations of `cat` to confirm the problem.
-;
-; 2017-02-05: Remove duplicated implementations of `cat`. Tidy,
-; fix and improve the routines to enter and exit TR-DOS.  Remove
-; old code. Add `read-system-track`. Add first working version
-; of `set-drive`.
-;
-; 2017-02-05: Move `read-block` and `write-block` to the main
-; file of the kernel, because they are identical in G+DOS,
-; TR-DOS and +3DOS.  Move `rec/track` to the main file of the
-; kernel.
-;
-; 2017-02-07: Rewrite `read-mode` and `write-mode` in Z80.
-;
-; 2017-02-09: Add `>drive-block` to `transfer-block`.
-;
-; 2017-02-10: First draft of `file>`. First working version of
-; `>file`.
-;
-; 2017-02-12: Improve the conversion of TR-DOS error result:
-; check the contents of the A register also at the end.  This is
-; more versatile.  Remove temporary code.
-;
-; 2017-02-17: Update cross references.
-;
-; 2017-03-03: Simplify `sector-id`. Fix and improve
-; documentation.
-;
-; 2017-03-04: Rename the DOS calls, to make the command
-; parameter explicit. Rename their corresponding constants
-; accordingly, with the new naming convention.
-;
-; 2017-03-06: Restore the code of `>file`, which was removed by
-; mistake on 2017-02-12.
-;
-; 2017-03-08: Clear a possible previous error at the `dos.c`
-; entry.
-;
-; 2017-03-11: Update notation of Z80 flags.
-;
-; 2017-03-12: Add experimental `sector#`.
 
 ; ==============================================================
 ; Requirements
@@ -1055,5 +991,68 @@ endif ; testing_trdos
 ; ==============================================================
 
 endif ; defined trdos
+
+; ==============================================================
+; Change log
+
+; Older changes are in
+; http://programandala.net/en.program.solo_forth.history.html
+
+; 2016-12-29: Change definition names to lowercase, after the
+; changes in the main kernel.
+;
+; 2017-02-03: Add more test words.
+;
+; 2017-02-04: Add option to restore the BASIC SP and the number
+; of lines of the lower screen before calling TR-DOS.
+;
+; The number of lines was the reason of the crash: TR-DOS throws
+; a disk error and BASIC can not print it. The disk error
+; happens when `transfer-sectors` reads a sector from disk B.
+; Choosing "abort" at the TR-DOS disk error message enters
+; BASIC. Then Forth can be reentered using a warm restart.  The
+; step rate of drive B has been increased by 2 units.
+;
+; Test all implementations of `cat` to confirm the problem.
+;
+; 2017-02-05: Remove duplicated implementations of `cat`. Tidy,
+; fix and improve the routines to enter and exit TR-DOS.  Remove
+; old code. Add `read-system-track`. Add first working version
+; of `set-drive`.
+;
+; 2017-02-05: Move `read-block` and `write-block` to the main
+; file of the kernel, because they are identical in G+DOS,
+; TR-DOS and +3DOS.  Move `rec/track` to the main file of the
+; kernel.
+;
+; 2017-02-07: Rewrite `read-mode` and `write-mode` in Z80.
+;
+; 2017-02-09: Add `>drive-block` to `transfer-block`.
+;
+; 2017-02-10: First draft of `file>`. First working version of
+; `>file`.
+;
+; 2017-02-12: Improve the conversion of TR-DOS error result:
+; check the contents of the A register also at the end.  This is
+; more versatile.  Remove temporary code.
+;
+; 2017-02-17: Update cross references.
+;
+; 2017-03-03: Simplify `sector-id`. Fix and improve
+; documentation.
+;
+; 2017-03-04: Rename the DOS calls, to make the command
+; parameter explicit. Rename their corresponding constants
+; accordingly, with the new naming convention.
+;
+; 2017-03-06: Restore the code of `>file`, which was removed by
+; mistake on 2017-02-12.
+;
+; 2017-03-08: Clear a possible previous error at the `dos.c`
+; entry.
+;
+; 2017-03-11: Update notation of Z80 flags.
+;
+; 2017-03-12: Add experimental `sector#`.
 
 ; vim: filetype=z80:textwidth=64

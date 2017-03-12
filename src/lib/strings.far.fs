@@ -4,59 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703121645
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words to manage far-memory strings.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2017-01-10: Move all the far-memory string words from
-  \ <strings.MISC.fsb>.  Simplify the string arrays: remove the
-  \ variants that don't leave the count on the stack and remove
-  \ the slash from the names of the others.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Remove remaining `exit` at the end of
-  \ conditional interpretation.
-  \
-  \ 2017-01-20: Fix documentation.
-  \
-  \ 2017-02-01: Move `faruppers` from the kernel.
-  \
-  \ 2017-02-02: Add `far>sconstant` and `farsconstants>`.
-  \
-  \ 2017-02-03: Fix needing of `far>sconstant`.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-02-25: Update the name of the circular string buffer,
-  \ after the changes in the kernel.
-  \
-  \ 2017-02-26: Update "hp" notation to "np", after the changes
-  \ in the kernel.
-  \
-  \ 2017-03-04: Update naming convention of Z80 routines, after
-  \ the changes in the kernel.
-  \
-  \ 2017-03-12: Update the names of `stringer` words and
-  \ mentions to it.
 
 ( far," fars, farsconstant far>sconstant far>stringer )
 
@@ -316,6 +281,42 @@ code faruppers ( ca len -- )
   \ See also: `uppers`, `far-banks`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2017-01-10: Move all the far-memory string words from
+  \ <strings.MISC.fsb>.  Simplify the string arrays: remove the
+  \ variants that don't leave the count on the stack and remove
+  \ the slash from the names of the others.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
+  \
+  \ 2017-01-20: Fix documentation.
+  \
+  \ 2017-02-01: Move `faruppers` from the kernel.
+  \
+  \ 2017-02-02: Add `far>sconstant` and `farsconstants>`.
+  \
+  \ 2017-02-03: Fix needing of `far>sconstant`.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-25: Update the name of the circular string buffer,
+  \ after the changes in the kernel.
+  \
+  \ 2017-02-26: Update "hp" notation to "np", after the changes
+  \ in the kernel.
+  \
+  \ 2017-03-04: Update naming convention of Z80 routines, after
+  \ the changes in the kernel.
+  \
+  \ 2017-03-12: Update the names of `stringer` words and
+  \ mentions to it.
 
   \ vim: filetype=soloforth
 

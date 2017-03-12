@@ -4,43 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ The environmental queries of Forth-2012.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-11-13: Start: only the Forth-2012 queries, not the
-  \ obsolescent word set queries of Forth-94.
-  \
-  \ 2016-05-18: Update: use `wordlist` instead of `vocabulary`,
-  \ which has been moved to the library.
-  \
-  \ 2016-11-26: Need `search-wordlist`, which has been moved to
-  \ the library.
-  \
-  \ 2016-12-08: Fix `/hold`, `floored`. Rename the module
-  \ filename to <environment-question.fsb>.  Add
-  \ `return-stack-cells` and `data-stack-cells`.  Fix restoring
-  \ of the search order. Document `environment?` and
-  \ `environment-wordlist`.
-  \
-  \ 2017-02-17: Update cross references.
 
 ( environment? )
 
@@ -160,5 +141,25 @@ $2A +origin @ constant stack-cells ( -- n )
   \ XXX TODO -- add "#locals" when needed
 
 set-current previous
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-11-13: Start: only the Forth-2012 queries, not the
+  \ obsolescent word set queries of Forth-94.
+  \
+  \ 2016-05-18: Update: use `wordlist` instead of `vocabulary`,
+  \ which has been moved to the library.
+  \
+  \ 2016-11-26: Need `search-wordlist`, which has been moved to
+  \ the library.
+  \
+  \ 2016-12-08: Fix `/hold`, `floored`. Rename the module
+  \ filename to <environment-question.fsb>.  Add
+  \ `return-stack-cells` and `data-stack-cells`.  Fix restoring
+  \ of the search order. Document `environment?` and
+  \ `environment-wordlist`.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

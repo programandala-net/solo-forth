@@ -4,39 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words common to several implementations of arrays.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-11-23: Add `array>`, `2array>`.
-  \
-  \ 2016-12-08: Rename the module filename with uppercase
-  \ "COMMON", after the new convention.
-  \
-  \ 2016-12-20: Rename `jppushhl` to `jppushhl,`, after the
-  \ change in the kernel.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-02-17: Update cross references.
 
 ( array> 2array> )
 
@@ -90,6 +75,22 @@ code 2array> ( n a1 -- a2 )
   \ ----
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-11-23: Add `array>`, `2array>`.
+  \
+  \ 2016-12-08: Rename the module filename with uppercase
+  \ "COMMON", after the new convention.
+  \
+  \ 2016-12-20: Rename `jppushhl` to `jppushhl,`, after the
+  \ change in the kernel.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth
 

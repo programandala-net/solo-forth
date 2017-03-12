@@ -4,65 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words related to time.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2015-11-15: Add `leapy-year?`
-  \
-  \ 2016-05-07: Make block titles compatible with `indexer`.
-  \
-  \ 2016-05-17: Need `>body`, which has been moved to the
-  \ library.
-  \
-  \ 2016-11-17: Improve documentation of `frames@`, `frames!`,
-  \ `reset-frames`.
-  \
-  \ 2016-12-16: Add `seconds`.
-  \
-  \ 2016-12-20: Rewrite `ms`, after the v.Forth version.
-  \ Rewrite `pause`. Add `do-pause`. Move drafts and variants
-  \ of `ms` and `pause` to the development archive, to be
-  \ reused in the future.  Rename `jpnext` to `jpnext,` after
-  \ the change in the kernel. Update syntax of the `thiscase`
-  \ structure.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
-  \
-  \ 2017-01-17: Fix typo in documentation.
-  \
-  \ 2017-01-18: Rename `pause` to `?frames` and `do-pause` to
-  \ `frames`. The name "pause" was taken from BASIC but the new
-  \ names are more clear, and consistent with `ms` and
-  \ `seconds`. Write a new `pause` that works exactly like the
-  \ homonymous keyword of Sinclair BASIC, as a convenience. Add
-  \ `?seconds`. Improve documentation.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-02-03: Compact the code, saving one block. Rename
-  \ `(date)` to `date`. Fix `set-date`. Improve documentation.
-  \
-  \ 2017-02-17: Fix typo in the documentation.  Update cross
-  \ references.
 
 ( seconds ?seconds ms )
 
@@ -412,5 +371,47 @@ need get-time need get-date
   \ EXT).
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-11-15: Add `leapy-year?`
+  \
+  \ 2016-05-07: Make block titles compatible with `indexer`.
+  \
+  \ 2016-05-17: Need `>body`, which has been moved to the
+  \ library.
+  \
+  \ 2016-11-17: Improve documentation of `frames@`, `frames!`,
+  \ `reset-frames`.
+  \
+  \ 2016-12-16: Add `seconds`.
+  \
+  \ 2016-12-20: Rewrite `ms`, after the v.Forth version.
+  \ Rewrite `pause`. Add `do-pause`. Move drafts and variants
+  \ of `ms` and `pause` to the development archive, to be
+  \ reused in the future.  Rename `jpnext` to `jpnext,` after
+  \ the change in the kernel. Update syntax of the `thiscase`
+  \ structure.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-17: Fix typo in documentation.
+  \
+  \ 2017-01-18: Rename `pause` to `?frames` and `do-pause` to
+  \ `frames`. The name "pause" was taken from BASIC but the new
+  \ names are more clear, and consistent with `ms` and
+  \ `seconds`. Write a new `pause` that works exactly like the
+  \ homonymous keyword of Sinclair BASIC, as a convenience. Add
+  \ `?seconds`. Improve documentation.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-02-03: Compact the code, saving one block. Rename
+  \ `(date)` to `date`. Fix `set-date`. Improve documentation.
+  \
+  \ 2017-02-17: Fix typo in the documentation.  Update cross
+  \ references.
 
   \ vim: filetype=soloforth

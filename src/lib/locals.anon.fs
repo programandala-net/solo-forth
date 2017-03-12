@@ -4,14 +4,15 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ An implementation of locals using an array of anonymous
   \ variables.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Original code written by Leonard Morgenstern, published on
@@ -20,28 +21,12 @@
   \ Adapted, modified, improved and commented by Marcos Cruz
   \ (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-11-14: Adapted from the original code.
-  \
-  \ 2016-04-09: Fixed the file header.
-  \
-  \ 2016-05-17: Need `body>`, which has been moved to the
-  \ library.
-  \
-  \ 2017-02-17: Change markup of inline code that is not a
-  \ cross reference.
-  \
-  \ 2017-02-19: Replace `do`, which has been moved to the
-  \ library, with `?do`.
 
 ( create-anon anon +anon n>anon )
 
@@ -85,5 +70,21 @@ variable (anon) ( -- a )
   \   555 [ 2 ] +anon !
   \   [ 2 ] +anon ?   \ prints 555
   \ ;
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-11-14: Adapted from the original code.
+  \
+  \ 2016-04-09: Fixed the file header.
+  \
+  \ 2016-05-17: Need `body>`, which has been moved to the
+  \ library.
+  \
+  \ 2017-02-17: Change markup of inline code that is not a
+  \ cross reference.
+  \
+  \ 2017-02-19: Replace `do`, which has been moved to the
+  \ library, with `?do`.
 
   \ vim: filetype=soloforth

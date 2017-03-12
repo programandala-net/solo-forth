@@ -4,14 +4,15 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ SwiftForth's `[switch`, an extensible alternative to
   \ `case`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Rick VanNorman. Original code for SwiftForth was published
@@ -21,17 +22,12 @@
   \ Marcos Cruz (programandala.net) adapted the code to Solo
   \ Forth, 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2015-11-15: Adapt the original code.
 
   \ 2016-04-24: Add `need :noname` and `need pick`, because
   \ those words have been moved from the kernel to the library.
@@ -221,5 +217,10 @@ need alias  ' drop alias switch] ( head -- ) ?)
   \ See also: `[switch`, `switch]`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-11-15: Adapt the original code.
 
   \ vim: filetype=soloforth

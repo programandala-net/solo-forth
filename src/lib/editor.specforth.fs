@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702241541
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ This is the editor included with Specforth (also known as
@@ -20,7 +21,7 @@
   \ `copy` has been adapted from Abersoft Forth. The word
   \ `text` has been rewritten.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Copyright (C) 1983 by Artic Computing Ltd.
@@ -29,40 +30,12 @@
   \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
   \ 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-09-11: Adapted to Solo Forth.
-  \
-  \ 2016-04-24: Remove `[char]`, which has been moved to the
-  \ library.
-  \
-  \ 2016-05-14: Update with `parse-all`, a fixed version of old
-  \ `parse-line`.
-  \
-  \ 2016-05-18: Need `vocabulary`, which has been moved to the
-  \ library.
-  \
-  \ 2016-08-05: Compact the code to save two blocks.
-  \
-  \ 2016-11-21: Complete and improve documentation of all
-  \ words. Use radix prefix instead of `hex`. Init `r#`. Use
-  \ `l/scr` instead of a literal.
-  \
-  \ 2016-11-22: Move `r#` <editor.common.fsb>` and get `top`
-  \ from it.
-  \
-  \ 2017-02-20: Replace `do`, which has been moved to the
-  \ library, with `?do`.
-  \
-  \ 2017-02-24: Add cross references to documentation.
 
 ( editor )
 
@@ -495,5 +468,33 @@ need r# need top
   \ }doc
 
 only forth definitions
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-09-11: Adapted to Solo Forth.
+  \
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
+  \
+  \ 2016-05-14: Update with `parse-all`, a fixed version of old
+  \ `parse-line`.
+  \
+  \ 2016-05-18: Need `vocabulary`, which has been moved to the
+  \ library.
+  \
+  \ 2016-08-05: Compact the code to save two blocks.
+  \
+  \ 2016-11-21: Complete and improve documentation of all
+  \ words. Use radix prefix instead of `hex`. Init `r#`. Use
+  \ `l/scr` instead of a literal.
+  \
+  \ 2016-11-22: Move `r#` <editor.common.fsb>` and get `top`
+  \ from it.
+  \
+  \ 2017-02-20: Replace `do`, which has been moved to the
+  \ library, with `?do`.
+  \
+  \ 2017-02-24: Add cross references to documentation.
 
   \ vim: filetype=soloforth

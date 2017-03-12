@@ -4,35 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Two versions of the `dump` tool that work on far memory.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-11-16: Start. Copy and modify the code of ordinary
-  \ `dump` and `wdump`.
-  \
-  \ 2016-11-26: Need `?leave`, which has been moved to the
-  \ library.
-  \
-  \ 2017-02-20: Replace `do`, which has been moved to the
-  \ library, with `?do`.
 
 ( fardump )
 
@@ -76,6 +65,18 @@ need 16hex. need ?leave
   \ _a_.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-11-16: Start. Copy and modify the code of ordinary
+  \ `dump` and `wdump`.
+  \
+  \ 2016-11-26: Need `?leave`, which has been moved to the
+  \ library.
+  \
+  \ 2017-02-20: Replace `do`, which has been moved to the
+  \ library, with `?do`.
 
   \ vim: filetype=soloforth
 

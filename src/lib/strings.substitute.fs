@@ -4,13 +4,14 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Forth-2012's `substitute`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Unknown. Published in the documentation of Forth-2012.
@@ -18,30 +19,12 @@
   \ Marcos Cruz (programandala.net) adapted it to Solo Forth,
   \ 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2017-01-21: First version, adapted from the documentation
-  \ of Forth-2012.
-  \
-  \ 2017-01-22: Improve documentation. Make the code more clear
-  \ by renaming and a bit of factoring. Make it faster with Z80
-  \ code. Rewrite some parts to make the intermediate buffer
-  \ unnecessary.
-  \
-  \ 2017-01-23: Modify to support the new alternative
-  \ `xt-replaces`: Now execution of a substitution returns the
-  \ string pair, not the address of a counted string. Update
-  \ with `1/string`.
-  \
-  \ 2017-02-17: Update cross references.
 
 ( substitute )
 
@@ -203,5 +186,23 @@ code substitution-delimiter? ( ca -- f )
   \ See also: `unescape`, `substitution-delimiter?`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2017-01-21: First version, adapted from the documentation
+  \ of Forth-2012.
+  \
+  \ 2017-01-22: Improve documentation. Make the code more clear
+  \ by renaming and a bit of factoring. Make it faster with Z80
+  \ code. Rewrite some parts to make the intermediate buffer
+  \ unnecessary.
+  \
+  \ 2017-01-23: Modify to support the new alternative
+  \ `xt-replaces`: Now execution of a substitution returns the
+  \ string pair, not the address of a counted string. Update
+  \ with `1/string`.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

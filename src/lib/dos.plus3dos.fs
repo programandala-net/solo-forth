@@ -4,44 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703121608
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ +3DOS support.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2017-03-04: Start. Move `/filename` ,`>filename`,
-  \ `(rename-file)`, `rename-file`, `dos-get-1346` and
-  \ `dos-set-1346` from the kernel.  Remove "dos-" prefix from
-  \ `dos-get-1346` and `dos-set-1346`
-  \
-  \ 2017-03-08: Add `(delete-file` and `delete-file`. Improve
-  \ documentation. Add `r/o`, `w/o`, `r/w`, `bin`, `s/r`,
-  \ `do-dos-open_`, `file-id-table`, `file-id`, and drafts of
-  \ `create-file` and `open-file`. Move `close-file` from the
-  \ kernel and improve it to update `file-id-table`.
-  \
-  \ 2017-03-09: Move `reposition-file` and `file-position` from
-  \ the kernel. Document them. Improve `reposition-file`. Add
-  \ `/base-filename`, `/filename-ext`. Add drafts of `cat` and
-  \ `wcat`.
-  \
-  \ 2017-03-12: Update the names of `stringer` words.
 
 ( /filename /base-filename /filename-ext >filename )
 
@@ -769,5 +749,26 @@ variable cat-buffer
   \ See also: `wcat`, `(cat`, `set-drive`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2017-03-04: Start. Move `/filename` ,`>filename`,
+  \ `(rename-file)`, `rename-file`, `dos-get-1346` and
+  \ `dos-set-1346` from the kernel.  Remove "dos-" prefix from
+  \ `dos-get-1346` and `dos-set-1346`
+  \
+  \ 2017-03-08: Add `(delete-file` and `delete-file`. Improve
+  \ documentation. Add `r/o`, `w/o`, `r/w`, `bin`, `s/r`,
+  \ `do-dos-open_`, `file-id-table`, `file-id`, and drafts of
+  \ `create-file` and `open-file`. Move `close-file` from the
+  \ kernel and improve it to update `file-id-table`.
+  \
+  \ 2017-03-09: Move `reposition-file` and `file-position` from
+  \ the kernel. Document them. Improve `reposition-file`. Add
+  \ `/base-filename`, `/filename-ext`. Add drafts of `cat` and
+  \ `wcat`.
+  \
+  \ 2017-03-12: Update the names of `stringer` words.
 
   \ vim: filetype=soloforth

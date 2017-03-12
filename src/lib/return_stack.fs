@@ -4,60 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703112302
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words that manipulate the return stack.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-09-10: Add `n>r`, `nr>`.
-  \
-  \ 2015-10-27: Add `r'@`.
-  \
-  \ 2016-04-24: Move `2rdrop` from the kernel.
-  \
-  \ 2016-04-28: Add `dup>r`.
-  \
-  \ 2016-12-03: Use `cell` and `literal` in `rdepth`, for
-  \ clarity. Use `jp,`. Compact the code, saving 2 blocks.
-  \
-  \ 2016-12-06: Remove mutual needing of `n>r` and `nr>`,
-  \ because sometimes only one of them is required, and
-  \ complete their documentation.
-  \
-  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
-  \ to `jpnext,`, after the change in the kernel.
-  \
-  \ 2017-01-02: Convert `n>r` and `nr>` from `z80-asm` to
-  \ `z80-asm,`.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Remove remaining `exit` at the end of
-  \ conditional interpretation.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-03-11: Need `>aresolve` and `>amark`, which now are
-  \ optional, not included in the assembler by default.
 
 ( n>r )
 
@@ -192,5 +156,42 @@ code dup>r ( x -- x ) ( R: -- x )
   \ A faster alternative to the idiom `dup >r`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-09-10: Add `n>r`, `nr>`.
+  \
+  \ 2015-10-27: Add `r'@`.
+  \
+  \ 2016-04-24: Move `2rdrop` from the kernel.
+  \
+  \ 2016-04-28: Add `dup>r`.
+  \
+  \ 2016-12-03: Use `cell` and `literal` in `rdepth`, for
+  \ clarity. Use `jp,`. Compact the code, saving 2 blocks.
+  \
+  \ 2016-12-06: Remove mutual needing of `n>r` and `nr>`,
+  \ because sometimes only one of them is required, and
+  \ complete their documentation.
+  \
+  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
+  \ to `jpnext,`, after the change in the kernel.
+  \
+  \ 2017-01-02: Convert `n>r` and `nr>` from `z80-asm` to
+  \ `z80-asm,`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-11: Need `>aresolve` and `>amark`, which now are
+  \ optional, not included in the assembler by default.
 
   \ vim: filetype=soloforth

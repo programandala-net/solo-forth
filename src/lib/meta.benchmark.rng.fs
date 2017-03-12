@@ -4,49 +4,20 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ RNG benchmarks written during the development of Solo Forth
   \ in order to choose the best implementations.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-04-24: Add `need 2rdrop`, because `2rdrop` has been
-  \ moved from the kernel to the library.
-  \
-  \ 2016-11-23: Rename `c!set-bits` to `cset` after the changes
-  \ in the system.
-  \
-  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` after the
-  \ change in the kernel.
-  \
-  \ 2017-01-03: Convert all assembly words from `z80-asm` to
-  \ `z80-asm,`.
-  \
-  \ 2017-01-04: Fix: add another missing `need 2rdrop`, for
-  \ `16-bit-random-pix-benchmarks`. Convert `zh-crnd` to
-  \ `z80-asm,` and add its requirements. Shorten name parts:
-  \ "random-pix" to "rng-pix"; "-benchmark" to "-bench". Try
-  \ all of the benchs.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
-  \
-  \ 2017-01-23: Fix name.
-  \
-  \ 2017-02-17: Update notation "behaviour" to "action".
-  \
-  \ 2017-02-19: Replace `do`, which has been moved to the
-  \ library, with `?do`.
 
 ( rnd-bench )
 
@@ -1453,5 +1424,35 @@ code libzx-crnd ( -- b )
   \ | Milos Bazelides 2      | 00096 (000%) | 01055 (021 s) | 1
   \ | Z80 Heaven             | 00096 (000%) | 01061 (021 s) | 1
 
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-24: Add `need 2rdrop`, because `2rdrop` has been
+  \ moved from the kernel to the library.
+  \
+  \ 2016-11-23: Rename `c!set-bits` to `cset` after the changes
+  \ in the system.
+  \
+  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` after the
+  \ change in the kernel.
+  \
+  \ 2017-01-03: Convert all assembly words from `z80-asm` to
+  \ `z80-asm,`.
+  \
+  \ 2017-01-04: Fix: add another missing `need 2rdrop`, for
+  \ `16-bit-random-pix-benchmarks`. Convert `zh-crnd` to
+  \ `z80-asm,` and add its requirements. Shorten name parts:
+  \ "random-pix" to "rng-pix"; "-benchmark" to "-bench". Try
+  \ all of the benchs.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-23: Fix name.
+  \
+  \ 2017-02-17: Update notation "behaviour" to "action".
+  \
+  \ 2017-02-19: Replace `do`, which has been moved to the
+  \ library, with `?do`.
 
   \ vim: filetype=soloforth

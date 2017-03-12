@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702280027
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words to create and manage 1-dimension single-cell,
@@ -23,12 +24,12 @@
     \ 1 3 +ato bar
     \ 3 bar .
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Credit
 
   \ Originally based on code written by Leo Wong:
@@ -37,42 +38,12 @@
   \ http://forth.sourceforge.net/techniques/arrays-lw/
   \ http://forth.sourceforge.net/techniques/arrays-lw/index-v.txt
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-11-15: Adapted the Wong arrays to Solo Forth.
-  \
-  \ 2016-04-02: Reorganized the description.
-  \
-  \ 2016-05-17: Need `>body`, which has been moved to the
-  \ library.
-  \
-  \ 2016-11-22: Fix and complete documentation of all words.
-  \ Rename `array` to `avalue`, to be consistent with `ato`; in
-  \ fact it's an array of values, after the behaviour of the
-  \ standard `value`. Rename the module accordingly.  Remove
-  \ bounds checking: it's inefficient, usually not needed and
-  \ easy to add at application-level.  Extend the module with
-  \ double-cell and character values arrays.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Remove remaining `exit` at the end of
-  \ conditional interpretation, after `immediate` or
-  \ `compile-only`.
-  \
-  \ 2017-02-17: Fix markup in documentation.  Update cross
-  \ references.
-  \
-  \ 2017-02-27: Improve documentation.
 
 ( avalue 2avalue cavalue )
 
@@ -310,5 +281,35 @@
   \ See also: `cavalue`, `(+cato)`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-11-15: Adapted the Wong arrays to Solo Forth.
+  \
+  \ 2016-04-02: Reorganized the description.
+  \
+  \ 2016-05-17: Need `>body`, which has been moved to the
+  \ library.
+  \
+  \ 2016-11-22: Fix and complete documentation of all words.
+  \ Rename `array` to `avalue`, to be consistent with `ato`; in
+  \ fact it's an array of values, after the behaviour of the
+  \ standard `value`. Rename the module accordingly.  Remove
+  \ bounds checking: it's inefficient, usually not needed and
+  \ easy to add at application-level.  Extend the module with
+  \ double-cell and character values arrays.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation, after `immediate` or
+  \ `compile-only`.
+  \
+  \ 2017-02-17: Fix markup in documentation.  Update cross
+  \ references.
+  \
+  \ 2017-02-27: Improve documentation.
 
   \ vim: filetype=soloforth

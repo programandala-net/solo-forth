@@ -4,32 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Definer words to create "storers": words that store values.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-11-25: Extract code from <data.misc.fsb>. Improve
-  \ documentation.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
 
 ( storer cstorer 2storer )
 
@@ -86,6 +78,15 @@
   \ Uncontrolled Reference Words).
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-11-25: Extract code from <data.misc.fsb>. Improve
+  \ documentation.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
   \ vim: filetype=soloforth
 

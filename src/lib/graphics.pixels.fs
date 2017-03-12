@@ -4,75 +4,26 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703012208
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words that manipulate pixels.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-10-15: Make `(pixel-addr)` deferred. Rename previous
-  \ versions to `slow-(pixel-addr)` and `fast-(pixel-addr)`.
-  \ This way the application can choose the version associated
-  \ to `(pixel-addr)`, which will be used by other words.
-  \
-  \ 2016-10-15: Make `pixels` deferred. Rename previous
-  \ versions to `slow-pixels` and `fast-pixels`.  This way the
-  \ application can choose the version associated to `pixels`.
-  \
-  \ 2016-10-15: Add `bitmap>attr-addr`, `pixel-attr-addr`.
-  \
-  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
-  \ to `jpnext,`, after the change in the kernel.
-  \
-  \ 2016-12-25: Improve documentation. Write `plot176`.
-  \
-  \ 2016-12-26: Convert all code words (`fast-(pixel-addr)`,
-  \ `set-pixel`, `reset-pixel`, `toggle-pixel` `test-pixel`,
-  \ and `pixels`) from the `z80-asm` assembler to the
-  \ `z80-asm,` assembler. Add `(pixel-addr176)`,
-  \ `pixel-addr176`, `set-pixel176`, `reset-pixel176`,
-  \ `toggle-pixel176`, `test-pixel176`, `set-save-pixel176`.
-  \
-  \ 2017-01-04: Rename `test-pixel` to `get-pixel` and
-  \ `test-pixel176` to `get-pixel176`.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
-  \
-  \ 2017-01-09: Improve documentation with references to
-  \ `cursor-addr` and `(cursor-addr)`.
-  \
-  \ 2017-01-19: Remove remaining `exit` at the end of
-  \ conditional interpretation.
-  \
-  \ 2017-01-28: Compact the code, saving 8 blocks. Improve
-  \ documentation.
-  \
-  \ 2017-01-29: Improve documentation.
-  \
-  \ 2017-02-17: Update notation "behaviour" to "action".
-  \ Update cross references.  Change markup of inline code that
-  \ is not a cross reference.
-  \
-  \ 2017-02-20: Improve documentation.
-  \
-  \ 2017-02-28: Improve documentation.
-
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ To-do
 
   \ XXX TODO -- Reorganize relation between
@@ -796,5 +747,55 @@ need pixel-attr-addr
 : p1 ( x y -- ) pixel-attr-addr u. ;
 : p2 ( x y -- ) pixel-attr-addr1 u. ;
 : p ( x y -- ) 2dup p1 p2 ;
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-10-15: Make `(pixel-addr)` deferred. Rename previous
+  \ versions to `slow-(pixel-addr)` and `fast-(pixel-addr)`.
+  \ This way the application can choose the version associated
+  \ to `(pixel-addr)`, which will be used by other words.
+  \
+  \ 2016-10-15: Make `pixels` deferred. Rename previous
+  \ versions to `slow-pixels` and `fast-pixels`.  This way the
+  \ application can choose the version associated to `pixels`.
+  \
+  \ 2016-10-15: Add `bitmap>attr-addr`, `pixel-attr-addr`.
+  \
+  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
+  \ to `jpnext,`, after the change in the kernel.
+  \
+  \ 2016-12-25: Improve documentation. Write `plot176`.
+  \
+  \ 2016-12-26: Convert all code words (`fast-(pixel-addr)`,
+  \ `set-pixel`, `reset-pixel`, `toggle-pixel` `test-pixel`,
+  \ and `pixels`) from the `z80-asm` assembler to the
+  \ `z80-asm,` assembler. Add `(pixel-addr176)`,
+  \ `pixel-addr176`, `set-pixel176`, `reset-pixel176`,
+  \ `toggle-pixel176`, `test-pixel176`, `set-save-pixel176`.
+  \
+  \ 2017-01-04: Rename `test-pixel` to `get-pixel` and
+  \ `test-pixel176` to `get-pixel176`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-09: Improve documentation with references to
+  \ `cursor-addr` and `(cursor-addr)`.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
+  \
+  \ 2017-01-28: Compact the code, saving 8 blocks. Improve
+  \ documentation.
+  \
+  \ 2017-01-29: Improve documentation.
+  \
+  \ 2017-02-17: Update notation "behaviour" to "action".
+  \ Update cross references.  Change markup of inline code that
+  \ is not a cross reference.
+  \
+  \ 2017-02-20: Improve documentation.
+  \
+  \ 2017-02-28: Improve documentation.
 
   \ vim: filetype=soloforth

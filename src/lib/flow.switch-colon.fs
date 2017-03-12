@@ -4,45 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ An extendable case selector implemented with word lists.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-11-16: Start.
-  \
-  \ 2016-11-26: Need `search-wordlist`, which has been moved to
-  \ the library.
-  \
-  \ 2016-12-06: Update: Replace `next-name` with `nextname`.
-  \ Fix the key to string converter, rename it and move it to
-  \ <strings.misc.fsb>. Document and test the code.
-  \
-  \ 2016-12-07: Rename module to <flow.switch-colon.fsb>.
-  \ Rename `>cell-string` to `>bstring`.
-  \
-  \ 2016-12-27: Improve documentation.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-02-17: Update cross references.
 
 ( switch: switch :clause )
 
@@ -199,5 +178,27 @@ need search-wordlist need nextname need 2>bstring
   \ See also: `switch:`, `2switch`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-11-16: Start.
+  \
+  \ 2016-11-26: Need `search-wordlist`, which has been moved to
+  \ the library.
+  \
+  \ 2016-12-06: Update: Replace `next-name` with `nextname`.
+  \ Fix the key to string converter, rename it and move it to
+  \ <strings.misc.fsb>. Document and test the code.
+  \
+  \ 2016-12-07: Rename module to <flow.switch-colon.fsb>.
+  \ Rename `>cell-string` to `>bstring`.
+  \
+  \ 2016-12-27: Improve documentation.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

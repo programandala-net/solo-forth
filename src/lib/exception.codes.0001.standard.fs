@@ -4,28 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ The standard Forth error codes (range -255..-1).
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-05-18: Modify format of messages.
 
 ( Standard error codes #-01..#-15 )
 
@@ -134,5 +130,10 @@
 #-88 \
 #-89 \
 #-90 \
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-05-18: Modify format of messages.
 
   \ vim: filetype=soloforth

@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Toolset for one- and two-dimensional arrays by Julian V.
@@ -90,7 +91,7 @@
   \ http://forth.sourceforge.net/techniques/arrays-jvn/index-v.txt
   \ http://www.phys.virginia.edu/classes/551.jvn.fall01/arrays.f
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Copyright (C) 2001 Julian V. Noble
@@ -98,7 +99,7 @@
   \ Modified for Solo Forth by Marcos Cruz (programandala.net),
   \ 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ License of the original version:
@@ -115,25 +116,6 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-11-15: Adapted to Solo Forth.
-  \
-  \ 2016-04-03: Header reorganized after the original
-  \ documentation.
-  \
-  \ 2016-05-07: Make block titles compatible with `indexer`.
-  \
-  \ 2016-08-05: Remove `long` and `wide` (syntactic sugar).
-  \ Combine both blocks into one. Rewrite all stack comments
-  \ and word descriptions.
-  \
-  \ 2016-11-23: Complete documentation. Improve conditional
-  \ compilation for `need`.
-  \
-  \ 2017-02-17: Update cross references.
 
 ( 1array } 2array }} )
 
@@ -215,5 +197,24 @@
   \ See also: `2array`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-11-15: Adapted to Solo Forth.
+  \
+  \ 2016-04-03: Header reorganized after the original
+  \ documentation.
+  \
+  \ 2016-05-07: Make block titles compatible with `indexer`.
+  \
+  \ 2016-08-05: Remove `long` and `wide` (syntactic sugar).
+  \ Combine both blocks into one. Rewrite all stack comments
+  \ and word descriptions.
+  \
+  \ 2016-11-23: Complete documentation. Improve conditional
+  \ compilation for `need`.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

@@ -4,42 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702280022
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words that change the value of constants.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-05-10: First version.
-  \
-  \ 2016-05-17: Need `>body`, which has been moved to the
-  \ library.
-  \
-  \ 2016-11-17: Update documentation with `const`, `cconst` and
-  \ `2const`.
-  \
-  \ 2016-11-18: Add missing references to `const`, `cconst` and
-  \ `2const` in documentation.
-  \
-  \ 2017-02-17: Update cross references and improve
-  \ documentation.
-  \
-  \ 2017-02-27: Improve documentation.
 
 ( !> 2!> c!> )
 
@@ -154,5 +136,24 @@ need >body
   \ See also: `!>`, `2!>`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-05-10: First version.
+  \
+  \ 2016-05-17: Need `>body`, which has been moved to the
+  \ library.
+  \
+  \ 2016-11-17: Update documentation with `const`, `cconst` and
+  \ `2const`.
+  \
+  \ 2016-11-18: Add missing references to `const`, `cconst` and
+  \ `2const` in documentation.
+  \
+  \ 2017-02-17: Update cross references and improve
+  \ documentation.
+  \
+  \ 2017-02-27: Improve documentation.
 
   \ vim: filetype=soloforth

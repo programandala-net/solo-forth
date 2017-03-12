@@ -4,31 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702272356
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ `do` and `-do`
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2017-02-19: Move the code of `do`, `-do` and `(-do)` from
-  \ the kernel.
-  \
-  \ 2017-02-27: Improve documentation.
 
 ( do -do )
 
@@ -154,6 +147,14 @@ code (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
   \ Origin: Gforth.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2017-02-19: Move the code of `do`, `-do` and `(-do)` from
+  \ the kernel.
+  \
+  \ 2017-02-27: Improve documentation.
 
   \ vim: filetype=soloforth
 

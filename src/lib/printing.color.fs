@@ -4,108 +4,26 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703112341
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words related to color.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-05-01: Start. New words:
-  \
-  \   color@ color! color-mask@ color-mask! color 2color
-  \   permcolor@ permcolor! permcolor-mask@ permcolor-mask!
-  \   permcolor 2permcolor paper@ paper! ink@ ink!  bright@
-  \   bright! flash! flash@
-  \
-  \ 2016-05-04: Move `inverse` and `overprint` from the kernel.
-  \
-  \ 2016-08-01: Move color constants, `papery`, `brighty` and
-  \ `flashy` from _Nuclear Invaders_
-  \ (http://programandala.net/en.program.nuclear_invaders.html).
-  \
-  \ 2016-12-02: Fix `bright!`.
-  \
-  \ 2016-12-03: Rename `>paper` to `paper>attr` and `paper>` to
-  \ `attr>paper`, and rewrite them in Z80: much faster, and 2
-  \ bytes smaller each.
-  \
-  \ 2016-12-16: Make `color@`, `color!`, `color-mask@`,
-  \ `color-mask!`, `color` and `2color` individually accesible
-  \ to `need`.
-  \
-  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
-  \ in the kernel.
-  \
-  \ 2017-01-12: Rewrite `papery`, `brighty` and `flashy` in Z80
-  \ (smaller and faster code) and document them. Improve
-  \ `permcolor`.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-22: Rewrite `color!` and `color-mask!` in Z80.
-  \
-  \ 2017-01-24: Rename all words that fetch and store the
-  \ system attributes: prefix "color" to "attr", prefix
-  \ "permcolor" to "perm-attr". Rewrite `perm-attr!`,
-  \ `perm-attr-mask!`, `attr@`, `attr-mask@`, `perm-attr@`,
-  \ `perm-attr-mask@` in Z80. Improve documentation. Make all
-  \ words individually accessible to `need`. Add `inverse-on`
-  \ and `inverse-off` and rewrite `inverse` after them.  Add
-  \ `overprint-on` and `overprint-off` and rewrite `overprint`
-  \ after them.
-  \
-  \ 2017-01-25: Remove `permcolor` and `2permcolor`: they are
-  \ hardly useful.  Rename `color` to `attr-setter`, and
-  \ `2color` to `mask+attr-setter`.
-  \
-  \ 2017-01-27: Fix or improve several assembly jumps. Add
-  \ `mask+attr!` and `mask+attr@`. Improve documentation.
-  \ Improve `mask+attr-setter`.
-  \
-  \ 2017-01-31: Fix requirement of `paper!`. Fix Z80 opcode in
-  \ `paper>attr`. Rename `paper!`, `paper@` and family to
-  \ `set-paper`, `get-paper`, etc. Move `paper.`, `ink.`,
-  \ `bright.` and `flash.` from the kernel. Improve
-  \ documentation. Remove `paper>attr`; use `papery` instead.
-  \ Rewrite `set-paper` and `set-ink` in Z80.
-  \
-  \ 2017-02-01: Make color constants individually accessible to
-  \ `need`. Add `contrast`. Add `attr>ink`. Improve and update
-  \ the documentation: use the name "current attribute" for the
-  \ OS temporary attribute. Add `bright-mask`, `unbright-mask`,
-  \ `flash-mask`, `unflash-mask`, `ink-mask`, `unink-mask`,
-  \ `paper-mask`, `unpaper-mask`.
-  \
-  \ 2017-02-02: Move `permanent-colors` from the library and
-  \ rename it to `mask+attr>perm`.
-  \
-  \ 2017-02-15: Fix typo in documentation.
-  \
-  \ 2017-02-16: Fix typos in documentation.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-02-24: Fix typos in documentation.
-  \
-  \ 2017-03-11: Improve documentation.
-
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Operatyng system variables
 
   \ (From the ZX Spectrum +3 manual transcribed by Russell
@@ -1099,5 +1017,88 @@ create (0-9-color. ( -- a ) asm
   \ This word is a factor of `flash.` and `bright.`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-05-01: Start. New words:
+  \
+  \   color@ color! color-mask@ color-mask! color 2color
+  \   permcolor@ permcolor! permcolor-mask@ permcolor-mask!
+  \   permcolor 2permcolor paper@ paper! ink@ ink!  bright@
+  \   bright! flash! flash@
+  \
+  \ 2016-05-04: Move `inverse` and `overprint` from the kernel.
+  \
+  \ 2016-08-01: Move color constants, `papery`, `brighty` and
+  \ `flashy` from _Nuclear Invaders_
+  \ (http://programandala.net/en.program.nuclear_invaders.html).
+  \
+  \ 2016-12-02: Fix `bright!`.
+  \
+  \ 2016-12-03: Rename `>paper` to `paper>attr` and `paper>` to
+  \ `attr>paper`, and rewrite them in Z80: much faster, and 2
+  \ bytes smaller each.
+  \
+  \ 2016-12-16: Make `color@`, `color!`, `color-mask@`,
+  \ `color-mask!`, `color` and `2color` individually accesible
+  \ to `need`.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
+  \
+  \ 2017-01-12: Rewrite `papery`, `brighty` and `flashy` in Z80
+  \ (smaller and faster code) and document them. Improve
+  \ `permcolor`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-22: Rewrite `color!` and `color-mask!` in Z80.
+  \
+  \ 2017-01-24: Rename all words that fetch and store the
+  \ system attributes: prefix "color" to "attr", prefix
+  \ "permcolor" to "perm-attr". Rewrite `perm-attr!`,
+  \ `perm-attr-mask!`, `attr@`, `attr-mask@`, `perm-attr@`,
+  \ `perm-attr-mask@` in Z80. Improve documentation. Make all
+  \ words individually accessible to `need`. Add `inverse-on`
+  \ and `inverse-off` and rewrite `inverse` after them.  Add
+  \ `overprint-on` and `overprint-off` and rewrite `overprint`
+  \ after them.
+  \
+  \ 2017-01-25: Remove `permcolor` and `2permcolor`: they are
+  \ hardly useful.  Rename `color` to `attr-setter`, and
+  \ `2color` to `mask+attr-setter`.
+  \
+  \ 2017-01-27: Fix or improve several assembly jumps. Add
+  \ `mask+attr!` and `mask+attr@`. Improve documentation.
+  \ Improve `mask+attr-setter`.
+  \
+  \ 2017-01-31: Fix requirement of `paper!`. Fix Z80 opcode in
+  \ `paper>attr`. Rename `paper!`, `paper@` and family to
+  \ `set-paper`, `get-paper`, etc. Move `paper.`, `ink.`,
+  \ `bright.` and `flash.` from the kernel. Improve
+  \ documentation. Remove `paper>attr`; use `papery` instead.
+  \ Rewrite `set-paper` and `set-ink` in Z80.
+  \
+  \ 2017-02-01: Make color constants individually accessible to
+  \ `need`. Add `contrast`. Add `attr>ink`. Improve and update
+  \ the documentation: use the name "current attribute" for the
+  \ OS temporary attribute. Add `bright-mask`, `unbright-mask`,
+  \ `flash-mask`, `unflash-mask`, `ink-mask`, `unink-mask`,
+  \ `paper-mask`, `unpaper-mask`.
+  \
+  \ 2017-02-02: Move `permanent-colors` from the library and
+  \ rename it to `mask+attr>perm`.
+  \
+  \ 2017-02-15: Fix typo in documentation.
+  \
+  \ 2017-02-16: Fix typos in documentation.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-24: Fix typos in documentation.
+  \
+  \ 2017-03-11: Improve documentation.
 
   \ vim: filetype=soloforth

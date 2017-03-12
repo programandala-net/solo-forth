@@ -4,20 +4,13 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ The Forth system error codes (range -4095..-256) used for
   \ IDEDOS (range -1066..-1056).
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-05-18: Modify format of messages.
-  \
-  \ 2016-08-04: Add unused errors #-1045..#-1055, because
-  \ IDEDOS is used always with +3DOS.
 
 ( IDEDOS error codes #-1045..#-1059 )
 
@@ -46,5 +39,13 @@
 #-1064 \ IDEDOS: No swap partition available
 #-1065 \ IDEDOS: Invalid device
 #-1066 \ IDEDOS: 8-bit data transfer
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-05-18: Modify format of messages.
+  \
+  \ 2016-08-04: Add unused errors #-1045..#-1055, because
+  \ IDEDOS is used always with +3DOS.
 
   \ vim: filetype=soloforth

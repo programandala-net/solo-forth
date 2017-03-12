@@ -4,48 +4,29 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Forth-2012's `replaces`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Credit
 
   \ Code adapted from the Forth-2012 documentation.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-05-18: Use `wordlist` instead of `vocabulary`, which
-  \ has been moved to the library.
-  \
-  \ 2016-11-26: Need `search-wordlist`, which has been moved to
-  \ the library.
-  \
-  \ 2017-01-21: Finish. Test. Document. Make all words
-  \ individually accessible to `need`.
-  \
-  \ 2017-01-22: Improve documentation.
-  \
-  \ 2017-01-23: Modify to support the new alternative
-  \ `xt-replaces`:  Now execution of a substitution returns the
-  \ string pair, not the address of a counted string.
-  \
-  \ 2017-02-17: Update cross references.
 
 ( substitute-wordlist (substitution slit-substitution )
 
@@ -163,5 +144,25 @@ need slit-substitution
   \ `find-substitution`, `substitute-wordlist`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-05-18: Use `wordlist` instead of `vocabulary`, which
+  \ has been moved to the library.
+  \
+  \ 2016-11-26: Need `search-wordlist`, which has been moved to
+  \ the library.
+  \
+  \ 2017-01-21: Finish. Test. Document. Make all words
+  \ individually accessible to `need`.
+  \
+  \ 2017-01-22: Improve documentation.
+  \
+  \ 2017-01-23: Modify to support the new alternative
+  \ `xt-replaces`:  Now execution of a substitution returns the
+  \ string pair, not the address of a counted string.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ vim: filetype=soloforth

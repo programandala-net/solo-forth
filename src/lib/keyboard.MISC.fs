@@ -4,59 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221550
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words related to the keyboard.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-04-24: Remove `char`, which has been moved to the
-  \ library.
-  \
-  \ 2016-05-07: Make block titles compatible with `indexer`.
-  \
-  \ 2016-11-17: Use `?(` instead of `[if]`.
-  \
-  \ 2016-12-04: Use `cenum` instead of `enum` for `kk-1#`
-  \ constant and family. This change saves 40 bytes of data
-  \ space and makes the access faster. Add `#>kk`. Document
-  \ many words. Improve access by `need`. Define `/kk` by
-  \ default. Compact the code, saving two blocks.
-  \
-  \ 2016-12-24: Add `key-edit`, `key-left`, `key-right`,
-  \ `key-down`, `key-up`, `key-delete`, `key-enter`. Rename the
-  \ module from <keyboard.fsb> to <keyboard.MISC.fsb>.
-  \
-  \ 2016-12-30: Compact the code, saving one block.
-  \
-  \ 2017-01-05: Convert `set-accept` to far memory.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-02-01: Move `span` from the kernel.
-  \
-  \ 2017-02-15: Update notation in the documentation of `span`.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-02-19: Replace `do`, which has been moved to the
-  \ library, with `?do`.
 
 ( at-accept clear-accept set-accept )
 
@@ -303,7 +268,7 @@ noop noop noop noop noop noop noop noop noop noop noop noop [
   \ Adapted from Afera.
   \ XXX UNDER DEVELOPMENT
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Some tools to manage key presses. An improved and detailed
@@ -316,7 +281,7 @@ noop noop noop noop noop noop noop noop noop noop noop noop [
   \ words manage only physical keys of the keyboard, not key
   \ combinations.
   \
-  \ -----------------------------------------------------------
+  \ ===========================================================
 
 [defined] /kk ?\ 4 cconstant /kk
 
@@ -634,5 +599,41 @@ need kk-ports
   \ different prefix and used to hold values returned by `key`.
 
 [unneeded] key-enter  ?\ 13 cconstant key-enter
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-04-24: Remove `char`, which has been moved to the
+  \ library.
+  \
+  \ 2016-05-07: Make block titles compatible with `indexer`.
+  \
+  \ 2016-11-17: Use `?(` instead of `[if]`.
+  \
+  \ 2016-12-04: Use `cenum` instead of `enum` for `kk-1#`
+  \ constant and family. This change saves 40 bytes of data
+  \ space and makes the access faster. Add `#>kk`. Document
+  \ many words. Improve access by `need`. Define `/kk` by
+  \ default. Compact the code, saving two blocks.
+  \
+  \ 2016-12-24: Add `key-edit`, `key-left`, `key-right`,
+  \ `key-down`, `key-up`, `key-delete`, `key-enter`. Rename the
+  \ module from <keyboard.fsb> to <keyboard.MISC.fsb>.
+  \
+  \ 2016-12-30: Compact the code, saving one block.
+  \
+  \ 2017-01-05: Convert `set-accept` to far memory.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-02-01: Move `span` from the kernel.
+  \
+  \ 2017-02-15: Update notation in the documentation of `span`.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-19: Replace `do`, which has been moved to the
+  \ library, with `?do`.
 
   \ vim: filetype=soloforth

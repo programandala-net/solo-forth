@@ -4,14 +4,15 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ An implementation of nestable locals, with a predefined set
   \ of ten variables which return their contents.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ Original code by Marc Perkel, published on Forth Dimensions
@@ -20,24 +21,12 @@
   \ Adapted to Solo Forth and improved by Marcos Cruz
   \ (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-11-14: Start.
-  \
-  \ 2016-04-09: Fixed, improved, renamed, documented, finished.
-  \
-  \ 2017-02-17: Fix markup in comment.
-  \
-  \ 2017-02-19: Replace `do`, which has been moved to the
-  \ library, with `?do`.
 
 ( arguments results )
 
@@ -155,5 +144,17 @@ $0A arg: l5 $0C arg: l6 $0E arg: l7 $10 arg: l8 $12 arg: l9
   \ See `arguments` for a usage example.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-11-14: Start.
+  \
+  \ 2016-04-09: Fixed, improved, renamed, documented, finished.
+  \
+  \ 2017-02-17: Fix markup in comment.
+  \
+  \ 2017-02-19: Replace `do`, which has been moved to the
+  \ library, with `?do`.
 
   \ vim: filetype=soloforth

@@ -4,19 +4,13 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ The Forth system error codes (range -4095..-256) used for
   \ +3DOS.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-05-18: Modify format of messages.
-  \ 2016-08-04: Add range #-1000..#-1014 to simplify the
-  \ calculation, whatever the DOS implementation.
 
 ( +3DOS error codes #-1000..#-1014 )
 
@@ -63,5 +57,13 @@
 #-1034 \ +3DOS: File too big (trying to read/write past 8 MB)
 #-1035 \ +3DOS: Disk not bootable (boot sector not acceptable)
 #-1036 \ +3DOS: Drive in use (remap/remove with files open)
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-05-18: Modify format of messages.
+  \
+  \ 2016-08-04: Add range #-1000..#-1014 to simplify the
+  \ calculation, whatever the DOS implementation.
 
   \ vim: filetype=soloforth

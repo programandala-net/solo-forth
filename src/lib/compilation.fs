@@ -4,157 +4,24 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702272339
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Words related to compilation.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-06-04: Add `[if] [else] [then]`, adapted from Afera.
-  \
-  \ 2015-06-17: Add `[true]`, `[false]`.
-  \
-  \ 2015-06-25: Finish `[if] [else] [then]`.
-  \
-  \ 2015-10-22: Rename words that convert header addresses.
-  \
-  \ 2015-10-24: Move `body>name`, `name>link`, `link>name` and
-  \ `>>link` from the kernel.
-  \
-  \ 2015-10-29: Move `smudge` and `smudged` from the kernel.
-  \
-  \ 2015-11-13: Move `?pairs` from the kernel.
-  \
-  \ 2016-03-19: Add `save-here` and `restore-here`.
-  \
-  \ 2016-04-17: Add `name>>`.
-  \
-  \ 2016-04-24: Add `]l`, `]2l`, `exec`, `eval`.
-  \
-  \ 2016-04-24: Add `[const]`, `[2const]`, `[cconst]`.
-  \
-  \ 2016-04-24: Move `cliteral` from the kernel.
-  \
-  \ 2016-04-24: Move `n,` from module "tool.marker.fsb".
-  \
-  \ 2016-04-25: Simplify `exec`, move `possibly` from the
-  \ module "tool.marker.fsb".
-  \
-  \ 2016-04-25: Move `n,`, `n@`, `n!` to the module
-  \ "memory.misc.fsb".
-  \
-  \ 2016-04-26: Fix `restore-here`. Add `name>interpret`,
-  \ `name>compile`.  Move `current-latest` from the kernel,
-  \ formerly called `latest`.
-  \
-  \ 2016-04-27: Add `comp'`, `[comp']`. Move `warning` from the
-  \ kernel. Add `warn.throw`, `warn.message`, `warn-throw` and
-  \ common factors.
-  \
-  \ 2016-04-29: Add `string-parameter`.
-  \
-  \ 2016-05-02: Join several blocks to save space.
-  \
-  \ 2016-05-02: Move `[compile]` from the kernel.
-  \
-  \ 2016-05-04: Compact the blocks.
-  \
-  \ 2016-05-05: Update `s=` to `str=`.
-  \
-  \ 2016-05-06: Move `current-latest` back to the kernel.
-  \
-  \ 2016-05-07: Add `?(`, a simpler alternative to `[if]`.
-  \
-  \ 2016-05-12: Fix requirements of `[cconst]`.
-  \
-  \ 2016-05-13: Improve `[else]` with `refill`.
-  \
-  \ 2016-05-14: Update: `evaluate` has been moved to the
-  \ library.
-  \
-  \ 2016-05-15: Update comment.
-  \
-  \ 2016-05-17: Move `body>` and `>body` from the kernel.
-  \
-  \ 2016-05-18: Fix `body>` and `>body`: their codes were
-  \ exchanged.
-  \
-  \ 2016-05-31: Update: `cliteral` has been moved to the
-  \ kernel. Add `''` and `>>name`.
-  \
-  \ 2016-06-01: Move `there` from the kernel. Update. Add
-  \ `['']`.
-  \
-  \ 2016-08-05: Fix requiring of `]l`, `]2l`, `exec` ,`eval`,
-  \ `save-here` and `restore-here`. Compact the code of several
-  \ blocks. Replace one usage of `[if]` with `?(`.
-  \
-  \ 2016-11-23: Rename `c!toggle-bits` to `ctoggle`.
-  \
-  \ 2016-11-24: Make `name<name` compatible with far memory.
-  \
-  \ 2016-11-26: Improve `name>>` and `>>name`. Try `?warn` and
-  \ related words, and improve their documentation. Fix
-  \ `warn.throw`.
-  \
-  \ 2016-12-20: Rename `jppushhl` to `jppushhl,`, after the
-  \ change in the kernel.
-  \
-  \ 2016-12-23: Fix typo `s@`, instead of `@s`.
-  \
-  \ 2016-12-25: Improve needing of `warn.throw`,
-  \ `warn.message`, and `warn-throw`.
-  \
-  \ 2017-01-05: Remove old system bank support from
-  \ `name<name`. Rewrite `smudged`, adapted to far memory.
-  \
-  \ 2017-01-06: Add missing `exit` after loading some words.
-  \ Document `(comp')`.
-  \
-  \ 2017-01-18: Remove `exit` at the end of conditional
-  \ interpretation.
-  \
-  \ 2017-01-19: Remove remaining `exit` at the end of
-  \ conditional interpretation, after `immediate` or
-  \ `compile-only`, or at the end of a line.
-  \
-  \ 2017-01-20: Add `name>name`. Add alternative implementation
-  \ of `>name` in Forth, a possible replacement for the Z80
-  \ version included in the kernel.
-  \
-  \ 2017-01-23: Improve documentation of `''` and `['']`.
-  \
-  \ 2017-02-16: Remove `cliteral`, which is in the kernel. Fix
-  \ typo in documentation of `eval`.  Deactivate documentation
-  \ of the alternative implementation of `>name`.
-  \
-  \ 2017-02-17: Update notation "behaviour" to "action".
-  \ Update cross references.
-  \
-  \ 2017-02-22: Move `?(` to the kernel.
-  \
-  \ 2017-02-25: Add `]1l` and `[1const]`. Improve
-  \ documentation.
-  \
-  \ 2017-02-26: Update "hp" notation to "np", after the changes
-  \ in the kernel.
-  \
-  \ 2017-02-27: Improve documentation.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -915,5 +782,139 @@ variable warnings  warnings on
   \ See `warning"` and `(warning")` for a usage example.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-06-04: Add `[if] [else] [then]`, adapted from Afera.
+  \
+  \ 2015-06-17: Add `[true]`, `[false]`.
+  \
+  \ 2015-06-25: Finish `[if] [else] [then]`.
+  \
+  \ 2015-10-22: Rename words that convert header addresses.
+  \
+  \ 2015-10-24: Move `body>name`, `name>link`, `link>name` and
+  \ `>>link` from the kernel.
+  \
+  \ 2015-10-29: Move `smudge` and `smudged` from the kernel.
+  \
+  \ 2015-11-13: Move `?pairs` from the kernel.
+  \
+  \ 2016-03-19: Add `save-here` and `restore-here`.
+  \
+  \ 2016-04-17: Add `name>>`.
+  \
+  \ 2016-04-24: Add `]l`, `]2l`, `exec`, `eval`.
+  \
+  \ 2016-04-24: Add `[const]`, `[2const]`, `[cconst]`.
+  \
+  \ 2016-04-24: Move `cliteral` from the kernel.
+  \
+  \ 2016-04-24: Move `n,` from module "tool.marker.fsb".
+  \
+  \ 2016-04-25: Simplify `exec`, move `possibly` from the
+  \ module "tool.marker.fsb".
+  \
+  \ 2016-04-25: Move `n,`, `n@`, `n!` to the module
+  \ "memory.misc.fsb".
+  \
+  \ 2016-04-26: Fix `restore-here`. Add `name>interpret`,
+  \ `name>compile`.  Move `current-latest` from the kernel,
+  \ formerly called `latest`.
+  \
+  \ 2016-04-27: Add `comp'`, `[comp']`. Move `warning` from the
+  \ kernel. Add `warn.throw`, `warn.message`, `warn-throw` and
+  \ common factors.
+  \
+  \ 2016-04-29: Add `string-parameter`.
+  \
+  \ 2016-05-02: Join several blocks to save space.
+  \
+  \ 2016-05-02: Move `[compile]` from the kernel.
+  \
+  \ 2016-05-04: Compact the blocks.
+  \
+  \ 2016-05-05: Update `s=` to `str=`.
+  \
+  \ 2016-05-06: Move `current-latest` back to the kernel.
+  \
+  \ 2016-05-07: Add `?(`, a simpler alternative to `[if]`.
+  \
+  \ 2016-05-12: Fix requirements of `[cconst]`.
+  \
+  \ 2016-05-13: Improve `[else]` with `refill`.
+  \
+  \ 2016-05-14: Update: `evaluate` has been moved to the
+  \ library.
+  \
+  \ 2016-05-15: Update comment.
+  \
+  \ 2016-05-17: Move `body>` and `>body` from the kernel.
+  \
+  \ 2016-05-18: Fix `body>` and `>body`: their codes were
+  \ exchanged.
+  \
+  \ 2016-05-31: Update: `cliteral` has been moved to the
+  \ kernel. Add `''` and `>>name`.
+  \
+  \ 2016-06-01: Move `there` from the kernel. Update. Add
+  \ `['']`.
+  \
+  \ 2016-08-05: Fix requiring of `]l`, `]2l`, `exec` ,`eval`,
+  \ `save-here` and `restore-here`. Compact the code of several
+  \ blocks. Replace one usage of `[if]` with `?(`.
+  \
+  \ 2016-11-23: Rename `c!toggle-bits` to `ctoggle`.
+  \
+  \ 2016-11-24: Make `name<name` compatible with far memory.
+  \
+  \ 2016-11-26: Improve `name>>` and `>>name`. Try `?warn` and
+  \ related words, and improve their documentation. Fix
+  \ `warn.throw`.
+  \
+  \ 2016-12-20: Rename `jppushhl` to `jppushhl,`, after the
+  \ change in the kernel.
+  \
+  \ 2016-12-23: Fix typo `s@`, instead of `@s`.
+  \
+  \ 2016-12-25: Improve needing of `warn.throw`,
+  \ `warn.message`, and `warn-throw`.
+  \
+  \ 2017-01-05: Remove old system bank support from
+  \ `name<name`. Rewrite `smudged`, adapted to far memory.
+  \
+  \ 2017-01-06: Add missing `exit` after loading some words.
+  \ Document `(comp')`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation, after `immediate` or
+  \ `compile-only`, or at the end of a line.
+  \
+  \ 2017-01-20: Add `name>name`. Add alternative implementation
+  \ of `>name` in Forth, a possible replacement for the Z80
+  \ version included in the kernel.
+  \
+  \ 2017-01-23: Improve documentation of `''` and `['']`.
+  \
+  \ 2017-02-16: Remove `cliteral`, which is in the kernel. Fix
+  \ typo in documentation of `eval`.  Deactivate documentation
+  \ of the alternative implementation of `>name`.
+  \
+  \ 2017-02-17: Update notation "behaviour" to "action".
+  \ Update cross references.
+  \
+  \ 2017-02-22: Move `?(` to the kernel.
+  \
+  \ 2017-02-25: Add `]1l` and `[1const]`. Improve
+  \ documentation.
+  \
+  \ 2017-02-26: Update "hp" notation to "np", after the changes
+  \ in the kernel.
+  \
+  \ 2017-02-27: Improve documentation.
 
   \ vim: filetype=soloforth

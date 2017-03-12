@@ -4,35 +4,27 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702282240
+  \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Port of the ZX7 decompressor written by
   \ block.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2016-11-26: Create this module to combine the modules that
-  \ contain small definers, in order to save blocks:
-  \ <define.semicolon.code.fsb>, <define.colon-no-name.fsb>,
-  \ <define.colon-nextname.fsb>, <flow.create-colon.fsb>.
-  \
 
 ( zx7s )
 
@@ -146,11 +138,11 @@ code zx7s ( a1 a2 -- )
   \ ZX7 decoder by Einar Saukas, Antonio Villena & Metalbrain
   \ "Standard" version (69 bytes only)
 
-  \ ------------------------------------------------------------
+  \ ===========================================================-
   \ Parameters:
   \   HL: source address (compressed data)
   \   DE: destination address (decompressing)
-  \ ------------------------------------------------------------
+  \ ===========================================================-
 
   \ dzx7_standard:
   \         ld      a, $80
@@ -227,5 +219,14 @@ s" img.zx7"  compressed 0 file>
   .( display the screen. 'Q' to quit.) key 'q' ?exit
 compressed 16384 zx7s
 
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-11-26: Create this module to combine the modules that
+  \ contain small definers, in order to save blocks:
+  \ <define.semicolon.code.fsb>, <define.colon-no-name.fsb>,
+  \ <define.colon-nextname.fsb>, <flow.create-colon.fsb>.
+  \
 
   \ vim: filetype=soloforth

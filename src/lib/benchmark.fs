@@ -4,8 +4,9 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702221224
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Generic benchmarking tools.
@@ -14,25 +15,17 @@
   \ Forth, in order to choose between different implementation
   \ options, are in the file <development_benchmarks.fsb>.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2017-02-19: Replace `do`, which has been moved to the
-  \ library, with `?do`.
-  \
-  \ 2017-02-22: Improve documentation.
 
 ( bench{ }bench }bench. bench. benched )
 
@@ -58,7 +51,7 @@ need reset-frames need frames@
   \ }doc
 
 : }bench ( -- d ) frames@ ;
-  
+
   \ doc{
   \
   \ }bench ( -- d )  frames@ ;
@@ -66,7 +59,7 @@ need reset-frames need frames@
   \ Return the current value of the system frames counter.
   \
   \ See also: `bench{`, `frames@`, `bench.`, `}bench.`.
-  \ 
+  \
   \ }doc
 
 : bench. ( d -- ) 2dup d. ." frames (" 50 m/ nip . ." s) " ;
@@ -95,7 +88,7 @@ need reset-frames need frames@
 
 : benched ( xt n -- d )
   bench{ 0 ?do  dup execute  loop  }bench rot drop ;
-  
+
   \ doc{
   \
   \ benched ( xt n -- d )
@@ -136,7 +129,7 @@ need vector-loop-benchmark
   dup byte-magazine-benchmark
       interface-age-benchmark
       vector-loop-benchmarks ;
-  
+
   \ doc{
   \
   \ all-benchmarks ( n -- )
@@ -146,5 +139,13 @@ need vector-loop-benchmark
   \ times each (if applicable).
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2017-02-19: Replace `do`, which has been moved to the
+  \ library, with `?do`.
+  \
+  \ 2017-02-22: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -4,13 +4,14 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201702220020
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Leo Brodie's `doer make` construct.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Credit
 
   \ Original code by Leo Brodie, 1983, published on _Thinking
@@ -19,22 +20,12 @@
   \ This version was adapted from PFE by Marcos Cruz
   \ (programanadla.net), 2015, 2016.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2016-05-17: Need `>body`, which has been moved to the
-  \ library.
-  \
-  \ 2016-11-27: Move `doer-test` to the tests module.
-  \
-  \ 2017-02-17: Update notation "behaviour" to "action".
 
 ( doer )
 
@@ -77,5 +68,15 @@ variable >;and
 
 : undo ( "name" -- ) ['] doer-noop >body  ' >body ! ;
   \ Make the doer word "name" safe to execute.
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016-05-17: Need `>body`, which has been moved to the
+  \ library.
+  \
+  \ 2016-11-27: Move `doer-test` to the tests module.
+  \
+  \ 2017-02-17: Update notation "behaviour" to "action".
 
   \ vim: filetype=soloforth

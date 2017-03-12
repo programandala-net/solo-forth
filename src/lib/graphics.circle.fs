@@ -4,13 +4,14 @@
   \ http://programandala.net/en.program.solo_forth.html
 
   \ Last modified: 201703041850
+  \ See change log at the end of the file
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Description
 
   \ Implementation of a configurable fast `circle`.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ Authors
 
   \ rtunes
@@ -21,34 +22,12 @@
   \ Marcos Cruz (programandala.net) adapted the code to Solo
   \ Forth, 2015, 2016, 2017.
 
-  \ -----------------------------------------------------------
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Latest changes
-
-  \ 2017-01-02: Convert from `z80-asm` to `z80-asm,`.
-  \
-  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
-  \
-  \ 2017-01-28: Finish the conversion of the original code of
-  \ `circle`.  Document the word.
-  \
-  \ 2017-01-29: Make the pixel routine configurable with a
-  \ deferred word and provide code for color circles and faster
-  \ colorless circles.
-  \
-  \ 2017-01-30: Fix and rewrite the configuration method, using
-  \ an intermediate routine that does a jump.
-  \
-  \ 2017-02-17: Update cross references.
-  \
-  \ 2017-03-04: Update naming convention of Z80 routines, after
-  \ the changes in the kernel.
 
 ( uncolored-circle-pixel colored-circle-pixel )
 
@@ -340,6 +319,28 @@ code circle ( gx gy b -- )
   \
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2017-01-02: Convert from `z80-asm` to `z80-asm,`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-28: Finish the conversion of the original code of
+  \ `circle`.  Document the word.
+  \
+  \ 2017-01-29: Make the pixel routine configurable with a
+  \ deferred word and provide code for color circles and faster
+  \ colorless circles.
+  \
+  \ 2017-01-30: Fix and rewrite the configuration method, using
+  \ an intermediate routine that does a jump.
+  \
+  \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-04: Update naming convention of Z80 routines, after
+  \ the changes in the kernel.
 
   \ vim: filetype=soloforth
 
