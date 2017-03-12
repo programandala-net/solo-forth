@@ -1,11 +1,11 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-03-11
+:revdate: 2017-03-12
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201703121504
+// Last modified 201703121647
 
 // Application development {{{1
 == Application development ==
@@ -501,10 +501,6 @@ Use "catalog" instead of "catalogue".
 
 Update the manual: RAM banks used as far memory, the RAM disk, the
 different configuration in +3DOS...
-
-.2017-03-01:
-
-Replace "circular string buffer" with "`stringer`".
 
 .2017-02-28:
 
@@ -1705,6 +1701,8 @@ block index line backslash notation unnecesary.
 
 .2017-02-04:
 
+NOTE: Milestone: 0.14.0
+
 Rewrite `hide` in Z80, move it before `hidden` and use this one as
 its tail code.
 
@@ -1712,6 +1710,8 @@ Rewrite `reveal` in Z80, move it before `revelead` and use this one as
 its tail code.
 
 .2017-02-04:
+
+NOTE: Milestone: 0.14.0
 
 Make `cold` a code word in order to save space from basic init
 operations, e.g. modifying memory. Then continue execution into a

@@ -63,6 +63,8 @@
   \
   \ 2016-11-26: Need `catch`, which has been moved to the
   \ library.
+  \
+  \ 2017-03-12: Update mentions to the `stringer`.
 
 ( blocked )
 
@@ -104,15 +106,15 @@ variable len len off
 create rbuf $100 allot
   \ Replace buffer.
   \ XXX TODO -- rename
-  \ XXX TODO -- use the circular string buffer instead?
+  \ XXX TODO -- use the `stringer` instead?
 create ibuf $100 allot
   \ Insert buffer.
   \ XXX TODO -- rename
-  \ XXX TODO -- use the circular string buffer instead?
+  \ XXX TODO -- use the `stringer` instead?
 create fbuf $100 allot
   \ Search buffer.
   \ XXX TODO -- rename
-  \ XXX TODO -- use the circular string buffer instead?
+  \ XXX TODO -- use the `stringer` instead?
 
 : h ( -- )
   r# @ c/l /mod swap >r scr @ line>string

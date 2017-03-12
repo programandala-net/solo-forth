@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-03-04
+" Updated:  2017-03-12
 
 " This file is part of Solo Forth
 " http://programandala.net/en.program.solo_forth.html
@@ -389,13 +389,16 @@ syn keyword soloforthMath hex
 syn keyword soloforthMemory !
 syn keyword soloforthMemory !bank
 syn keyword soloforthMemory !s
+syn keyword soloforthMemory +stringer
 syn keyword soloforthMemory -leading
 syn keyword soloforthMemory -trailing
 syn keyword soloforthMemory /string
+syn keyword soloforthMemory /stringer
 syn keyword soloforthMemory 1/string
 syn keyword soloforthMemory 2!
 syn keyword soloforthMemory 2,
 syn keyword soloforthMemory 2@
+syn keyword soloforthMemory >stringer
 syn keyword soloforthMemory ?
 syn keyword soloforthMemory ?csb
 syn keyword soloforthMemory @
@@ -404,6 +407,7 @@ syn keyword soloforthMemory @s
 syn keyword soloforthMemory align
 syn keyword soloforthMemory aligned
 syn keyword soloforthMemory allocate-string
+syn keyword soloforthMemory allocate-stringer
 syn keyword soloforthMemory allot
 syn keyword soloforthMemory bank
 syn keyword soloforthMemory bank-start
@@ -429,6 +433,7 @@ syn keyword soloforthMemory csb0
 syn keyword soloforthMemory default-bank
 syn keyword soloforthMemory dp
 syn keyword soloforthMemory empty-csb
+syn keyword soloforthMemory empty-stringer
 syn keyword soloforthMemory erase
 syn keyword soloforthMemory far
 syn keyword soloforthMemory far!
@@ -441,25 +446,25 @@ syn keyword soloforthMemory farlimit
 syn keyword soloforthMemory farplace
 syn keyword soloforthMemory fill
 syn keyword soloforthMemory here
+syn keyword soloforthMemory limit
+syn keyword soloforthMemory move
 syn keyword soloforthMemory np
 syn keyword soloforthMemory np!
 syn keyword soloforthMemory np0
 syn keyword soloforthMemory np@
-syn keyword soloforthMemory limit
-syn keyword soloforthMemory move
 syn keyword soloforthMemory off
 syn keyword soloforthMemory on
 syn keyword soloforthMemory place
 syn keyword soloforthMemory s,
-syn keyword soloforthMemory save-counted-string
-syn keyword soloforthMemory save-string
 syn keyword soloforthMemory smove
 syn keyword soloforthMemory sp
 syn keyword soloforthMemory sp!
 syn keyword soloforthMemory sp0
 syn keyword soloforthMemory sp@
+syn keyword soloforthMemory stringer
 syn keyword soloforthMemory system-bank
 syn keyword soloforthMemory unused-csb
+syn keyword soloforthMemory unused-stringer
 syn keyword soloforthOperator *
 syn keyword soloforthOperator */
 syn keyword soloforthOperator */MOD
@@ -1140,6 +1145,9 @@ let b:current_syntax = "soloforth"
 "
 " 2017-03-04: Change "-routine" suffix to "_", aftert the new
 " naming convention.
+"
+" 2017-03-12: Update the names of `stringer` words and add the
+" missing ones.
 
 " --------------------------------------------------------------
 

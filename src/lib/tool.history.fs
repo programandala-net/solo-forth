@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201702220020
+  \ Last modified: 201703121646
 
   \ -----------------------------------------------------------
   \ Description
@@ -32,6 +32,9 @@
   \ 2016-05-07: Make block titles compatible with `indexer`.
   \
   \ 2017-01-05: Update from old system bank to far memory.
+  \
+  \ 2017-03-12: Update the names of `stringer` words and
+  \ mentions to it.
 
 ( history )
 
@@ -76,9 +79,8 @@ variable hp
 : history>history ( ca1 -- ca2 ) farcount + cell+ ;
   \ Convert a history string address to the next one.
 
-: history>string ( ca1 -- ca2 len2 ) farcount save-string ;
-  \ Copy a history string to a string in the circular string
-  \ buffer.
+: history>string ( ca1 -- ca2 len2 ) farcount >stringer ;
+  \ Copy a history string to a string in the `stringer`.
 
 -->
 
@@ -134,7 +136,7 @@ variable browsed-history
 : latest-history$ ( -- ca len )
   hp @ history<history history>string ;
   \ Return the latest string in the command line history,
-  \ copied in the circular string buffer.
+  \ copied in the `stringer`.
 
 : duplicated-history? ( ca len -- f ) latest-history$ str= ;
   \ Is string _ca len_ identical to the latest string in
@@ -167,7 +169,7 @@ variable browsed-history
 : browsed-history$ ( -- ca len )
   browsed-history @ history>string ;
   \ Return the latest string in the command line history,
-  \ copied in the circular string buffer.
+  \ copied in the `stringer`.
 
 : get-history   ( -- ca ) browsed-history$ set-accept ;
 
@@ -300,24 +302,22 @@ init-history  -->
   \ long.
   \ XXX TODO -- remove older strings if needed
 
-: latest-history ( -- ca len )
-  hp @ farcount  save-string ;
+: latest-history ( -- ca len ) hp @ farcount >stringer ;
   \ Return the latest string in the command line history,
-  \ copied in the circular string buffer.
+  \ copied to the `stringer`.
   \ XXX OLD
 
 : browsed-history ( -- ca len )
-  currently-browsed-history @
-  farcount save-string ;
+  currently-browsed-history @ farcount >stringer ;
   \ Return the latest string in the command line history,
-  \ copied in the circular string buffer.
+  \ copied to the `stringer`.
 
 : (history>) ( -- ca len )
   browsed-history  dup 0= ?exit
                    dup 1+ negate allot-history
   history-empty? if  init-hp0  then ;  -->
   \ Get a string from the command line history, and return it
-  \ as _ca len_ in the circular string buffer.
+  \ as _ca len_ in the `stringer`.
   \ XXX TODO -- adapt the browser variables
 
 ( history-xxx-old )

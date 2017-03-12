@@ -244,7 +244,7 @@ compile_only_mask:                equ %10000000
 max_word_length:                  equ word_length_mask
 valid_word_length_mask:           equ word_length_mask or smudge_mask
 
-stringer_size:                    equ 512 ; bytes, size of the circular string buffer
+stringer_size:                    equ 256 ; in bytes
 
 ; Memory banks
 
@@ -907,7 +907,7 @@ return_stack_limit: equ $+cell
 return_stack_bottom:
 
 ; ----------------------------------------------
-; Circular string buffer
+; Stringer (circular string buffer)
 
 stringer:
   ds stringer_size
@@ -2432,7 +2432,7 @@ endif
   dw s_literal_
   dw exit_
 parse_string.interpreting:
-  dw save_string_
+  dw to_stringer_
   dw exit_
 
 ; ----------------------------------------------
@@ -2597,18 +2597,19 @@ push_a:
 ;
 ; Return the number _n_ of free characters in the `stringer`.
 ;
-; Definition:
+; ``unused-stringer`` is written in Z80. Its equivalent
+; definition if Forth is the following:
 
 ; ----
 ; : unused-stringer ( -- n )
-;   >stringer @ ;
+;   +stringer @ ;
 ; ----
 
-; See also: `>stringer`.
+; See also: `+stringer`.
 ;
 ; }doc
 
-  ld hl,(to_stringerpfa)
+  ld hl,(plus_stringer_pfa)
   _jp_pushhl
 
 ; ----------------------------------------------
@@ -2624,18 +2625,18 @@ push_a:
 ; In order to reconfigure the `stringer`, this constant can be
 ; modified with `!>`.
 ;
-; See also: `>stringer`, `empty-stringer`.
+; See also: `+stringer`, `empty-stringer`.
 ;
 ; }doc
 
   dw stringer_size
 
 ; ----------------------------------------------
-  _variable_header to_stringer,'>stringer'
+  _variable_header plus_stringer_,'+stringer'
 
 ; doc{
 ;
-; >stringer ( -- a )
+; +stringer ( -- a )
 ;
 ; A variable that holds the pointer fo the `stringer`, i.e. an
 ; offset to its first free address. The offset equals the number
@@ -2660,9 +2661,9 @@ push_a:
 ; In order to move the circular string buffer, this constant can
 ; be modified with `!>`.
 ;
-; See also: `/stringer`, `>stringer`, `empty-stringer`,
-; `unused-stringer`, `?stringer`, `allocate-string`,
-; `save-string`.
+; See also: `/stringer`, `+stringer`, `empty-stringer`,
+; `unused-stringer`, `?stringer`, `allocate-stringer`,
+; `>stringer`.
 ;
 ; }doc
 
@@ -2682,18 +2683,18 @@ push_a:
 ; ----
 ; : ?stringer ( len -- )
 ;   dup unused-stringer >  \ not enough free space?
-;   if  empty-stringer >stringer !  then  negate >stringer +! ;
+;   if  empty-stringer +stringer !  then  negate +stringer +! ;
 ; ----
 
-; See also: `unused-stringer`, `empty-stringer`, `>stringer`.
+; See also: `unused-stringer`, `empty-stringer`, `+stringer`.
 ;
 ; }doc
 
-  ; XXX TODO -- Rename to `stringer-room`, `(allocate-string)`
+  ; XXX TODO -- Rename to `stringer-room`, `(allocate-stringer)`
   ; or something.
   ;
   ; XXX TODO -- Throw an error if _len_ is greater than the
-  ; stringer. Besides `allocate-string` should return a _ior_.
+  ; stringer. Besides `allocate-stringer` should return a _ior_.
 
   dw dup_,unused_stringer_,greater_than_
   dw zero_branch_,question_stringer_.enough
@@ -2701,15 +2702,15 @@ push_a:
   dw empty_stringer_
 
 question_stringer_.enough:
-  dw negate_,to_stringer,plus_store_
+  dw negate_,plus_stringer_,plus_store_
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header allocate_string_,'allocate-string'
+  _colon_header allocate_stringer_,'allocate-stringer'
 
 ; doc{
 ;
-; allocate-string ( len -- ca )
+; allocate-stringer ( len -- ca )
 
 ; Allocate _len_ characters in the circular string buffer and return
 ; the address _ca_ of the allocated space.
@@ -2717,11 +2718,11 @@ question_stringer_.enough:
 ; Definition:
 
 ; ----
-; : allocate-string ( len -- ca )
+; : allocate-stringer ( len -- ca )
 ;   ?stringer stringer unused-stringer + ;
 ; ----
 
-; See also: `save-string`, `stringer`, `?stringer`,
+; See also: `>stringer`, `stringer`, `?stringer`,
 ; `unused-stringer`.
 ;
 ; }doc
@@ -2734,27 +2735,27 @@ question_stringer_.enough:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header save_string_,'save-string'
+  _colon_header to_stringer_,'>stringer'
 
 ; doc{
 ;
-; save-string ( ca1 len1 -- ca2 len1 )
+; >stringer ( ca1 len1 -- ca2 len1 )
 
-; Save the string _ca1 len1_ in the circular string buffer and
-; return it at its new address as _ca2 len1_.
+; Copy string _ca1 len1_ to the `stringer` and return it as _ca2
+; len1_.
 ;
 ; Definition:
 
 ; ----
-; : save-string ( ca1 len1 -- ca2 len1 )
-;   dup allocate-string swap 2dup 2>r move 2r> ;
+; : >stringer ( ca1 len1 -- ca2 len1 )
+;   dup allocate-stringer swap 2dup 2>r move 2r> ;
 ; ----
 
-; See also: `allocate-string`, `stringer`, `save-farstring`.
+; See also: `allocate-stringer`, `far>stringer`.
 ;
 ; }doc
 
-  dw dup_,allocate_string_,swap_
+  dw dup_,allocate_stringer_,swap_
   dw two_dup_,two_to_r_
   dw move_,two_from_r_
   dw exit_
@@ -2766,19 +2767,19 @@ question_stringer_.enough:
 ;
 ; empty-stringer ( -- )
 ;
-; Empty the `stringer`, by initializing `>stringer` with
+; Empty the `stringer`, by initializing `+stringer` with
 ; `/stringer`.  The contents of the `stringer` are not modifed.
 ;
 ; Definition:
 
 ; ----
 ; : empty-stringer ( -- )
-;   /stringer >stringer ! ;
+;   /stringer +stringer ! ;
 ; ----
 
 ; }doc
 
-  dw slash_stringer_,to_stringer,store_
+  dw slash_stringer_,plus_stringer_,store_
   dw exit_
 
 ; ----------------------------------------------
@@ -7902,7 +7903,7 @@ endif ; pentagon=512 or pentagon=1024
 
 ; ----
 ; : name>string ( nt -- ca len )
-;   name>str allocate-string ( ca1 len ca )
+;   name>str allocate-stringer ( ca1 len ca )
 ;   2dup swap 2>r ( R: ca len ) -rot ( ca ca1 len )
 ;   0 ?do ( ca ca1 )
 ;     2dup farc@ swap i + c! char+
@@ -7916,7 +7917,7 @@ endif ; pentagon=512 or pentagon=1024
   ; XXX TODO -- Move to the library, with `.name`.
 
   dw name_to_str_  ; ( ca1 len )
-  dw dup_,allocate_string_ ; ( ca1 len ca )
+  dw dup_,allocate_stringer_ ; ( ca1 len ca )
   dw two_dup_,swap_,two_to_r_ ; ( R: ca len )
   dw minus_rot_ ; ( ca ca1 len )
   _literal 0
@@ -11080,18 +11081,10 @@ if 1 ; developing
 ;
 ; .unused ( -- )
 ;
-; Display the amount of space remaining in the regions addressed
-; by `here` and `np`, in address units.
+; Display the total RAM in the system, and the amount of space
+; remaining in the regions addressed by `here` and `np`, in
+; address units.
 ;
-; Definition:
-
-; ----
-; : .unused ( -- )
-;   ram . .\" KiB RAM\n" cr
-;   unused u. .\" B free data/code space\n"
-;   farunused u. ." B free name space" ;
-; ----
-
 ; See also: `unused`, `farunused`.
 
 ; }doc
@@ -11119,7 +11112,7 @@ endif
 ;
 ; boot ( -- )
 ;
-; A deferrer word executed by `abort`. By default it does
+; A deferred word executed by `abort`. By default it does
 ; nothing. It is changed by `turnkey`.
 ;
 ; See also: `cold`.

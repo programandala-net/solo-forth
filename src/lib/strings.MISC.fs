@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703110050
+  \ Last modified: 201703121644
 
   \ -----------------------------------------------------------
   \ Description
@@ -111,6 +111,9 @@
   \ the changes in the kernel.
   \
   \ 2017-03-11: Fix needing of `/name` and `first-name`.
+  \
+  \ 2017-03-12: Update the names of `stringer` words and
+  \ mentions to it.
 
 ( str< str> trim +place hunt )
 
@@ -199,7 +202,7 @@
 ( /counted-string ud>str u>str d>str char>string chars>string )
 
 [unneeded] /counted-string ?\ 255 cconstant /counted-string
-  
+
   \ doc{
   \
   \ /counted-string  ( -- len )
@@ -260,7 +263,7 @@
 
 [unneeded] char>string ?(
 : char>string ( c -- ca len )
-  1 allocate-string tuck c! 1 ; ?)
+  1 allocate-stringer tuck c! 1 ; ?)
 
   \ XXX TODO -- rename or write after `c>bstring`, which
   \ does the same but in `pad`.
@@ -279,7 +282,7 @@
 
 [unneeded] chars>string ?(
 : chars>string ( c1..cn n -- ca len )
-  dup if    dup allocate-string swap 2dup 2>r ( c1..cn ca n )
+  dup if    dup allocate-stringer swap 2dup 2>r ( c1..cn ca n )
             bounds ?do  i c!  loop  2r>
       else  pad swap  then ; ?)
 
@@ -396,11 +399,11 @@ code lengths
 [unneeded] s+  ?( need lengths need pick
 
 : s+ ( ca1 len1 ca2 len2 -- ca3 len3 )
-  lengths + >r          ( ca1 len2 ca2 len2 ) ( r: len3 )
-  r@ allocate-string >r ( r: len3 ca3 )
-  2 pick r@ +           ( ca1 len1 ca2 len2 len1+ca3 )
-  smove                 ( ca1 len1 ) \ 2nd string to buffer
-  r@ smove              \  1st string to buffer
+  lengths + >r            ( ca1 len2 ca2 len2 ) ( r: len3 )
+  r@ allocate-stringer >r ( r: len3 ca3 )
+  2 pick r@ +             ( ca1 len1 ca2 len2 len1+ca3 )
+  smove                   ( ca1 len1 ) \ 2nd string to buffer
+  r@ smove                \  1st string to buffer
   r> r> ; ?)
 
   \ Credit:
@@ -723,7 +726,7 @@ code lowers ( ca len -- )
   \
   \ }doc
 
-( contains chop s"" sconstant save-counted-string s' )
+( contains chop s"" sconstant counted>stringer s' )
 
 [unneeded] contains ?\ : contains  search nip nip ;
                          \ ( ca1 len1 ca2 len2 -- f )
@@ -760,13 +763,13 @@ code lowers ( ca len -- )
   \
   \ }doc
 
-[unneeded] s"" ?\ : s"" ( -- ca len ) 0 allocate-string 0 ;
+[unneeded] s"" ?\ : s"" ( -- ca len ) 0 allocate-stringer 0 ;
 
   \ doc{
   \
   \ s"" ( -- ca len )
   \
-  \ Return an empty string in the circular string buffer.
+  \ Return an empty string in the `stringer`.
   \
   \ See also: `s"`, `s\"`, `s'`.
   \
@@ -791,18 +794,18 @@ code lowers ( ca len -- )
   \
   \ }doc
 
-[unneeded] save-counted-string ?(
-: save-counted-string ( ca1 len1 -- ca2 )
-  dup 1+ allocate-string dup >r place r> ; ?)
+[unneeded] counted>stringer ?(
+: counted>stringer ( ca1 len1 -- ca2 )
+  dup 1+ allocate-stringer dup >r place r> ; ?)
 
   \ doc{
   \
-  \ save-counted-string ( ca1 len1 -- ca2 )
+  \ counted>stringer ( ca1 len1 -- ca2 )
   \
-  \ Save the string _ca1 len1_ in the `stringer` as a counted
-  \ string and return its new address _ca2_.
+  \ Copy string _ca1 len1_ to the `stringer` as a counted
+  \ string and return it as _ca2_.
   \
-  \ See also: `allocate-string`, 
+  \ See also: `>stringer`, `allocate-stringer`.
   \
   \ }doc
 
@@ -874,7 +877,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
 [unneeded] ruler ?(
 
 : ruler ( c len -- ca len )
-  dup allocate-string swap 2dup 2>r rot fill 2r> ; ?)
+  dup allocate-stringer swap 2dup 2>r rot fill 2r> ; ?)
 
   \ doc{
   \

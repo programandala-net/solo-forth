@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703062142
+  \ Last modified: 201703121646
 
   \ -----------------------------------------------------------
   \ Description
@@ -77,6 +77,9 @@
   \ Retry,Abort,Ignore?"... Beside, the heading of the block
   \ was shown anyway before the error. The check prevents all
   \ this.
+  \
+  \ 2017-03-12: Update the names of `stringer` words and
+  \ mentions to it.
 
 ( /line# .line# .line list-line list-lines list )
 
@@ -247,9 +250,9 @@ need .index need contains need nuf? need ?leave
 [unneeded] index-ilike ?( need uppers
 
 : index-ilike ( u1 u2 "name" -- )
-  parse-name save-string 2dup uppers
+  parse-name >stringer 2dup uppers
   2swap 1+ swap ?do
-    save-string  0 i line>string save-string 2dup uppers
+    >stringer  0 i line>string >stringer 2dup uppers
     2over contains if  i .index  then
     nuf? ?leave
   loop  2drop ; ?)
@@ -267,10 +270,10 @@ need .index need contains need nuf? need ?leave
   \
   \ }doc
 
-  \ Note: The parsed string is re-saved to the circular string
-  \ buffer in every iteration in order to prevent it from being
+  \ Note: The parsed string is re-saved to the `stringer` in
+  \ every iteration in order to prevent it from being
   \ overwritten by the strings of the index lines, because the
-  \ circular string buffer is small.
+  \ `stringer` is small.
 
 ( qx nx px )
 

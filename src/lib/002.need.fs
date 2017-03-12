@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702281944
+  \ Last modified: 201703121643
 
   \ -----------------------------------------------------------
   \ Description
@@ -149,6 +149,9 @@
   \ 2017-02-27: Improve documentation.
   \
   \ 2017-02-28: Fix typos in documentation.
+  \
+  \ 2017-03-12: Update the names of `stringer` words, and
+  \ mentions to it.
 
 ( delimited located needed-word )
 
@@ -200,7 +203,7 @@ variable last-locatable  blk/disk 1- last-locatable !
   \ }doc
 
 : delimited ( ca1 len1 -- ca2 len2 )
-  dup 2+ dup allocate-string swap ( ca1 len1 ca2 len2 )
+  dup 2+ dup allocate-stringer swap ( ca1 len1 ca2 len2 )
   2dup blank  2dup 2>r drop char+ smove 2r> ;
 
   \ doc{
@@ -208,8 +211,7 @@ variable last-locatable  blk/disk 1- last-locatable !
   \ delimited ( ca1 len1 -- ca2 len2 )
   \
   \ Add one leading space and one trailing space to string _ca1
-  \ len1_, returning the result _ca2 len2_ in the circular
-  \ string buffer.
+  \ len1_, returning the result _ca2 len2_ in the `stringer`.
   \
   \ }doc
 
@@ -374,7 +376,7 @@ defer reneed ( "name" -- ) defer needed ( ca len -- )
   \ }doc
 
 : locate-reneed ( "name" -- )
-  parse-name save-string locate-reneeded ;
+  parse-name >stringer locate-reneeded ;
 
   \ doc{
   \
@@ -424,7 +426,7 @@ defer reneed ( "name" -- ) defer needed ( ca len -- )
   \ }doc
 
 : new-needed-word ( ca len -- ca' len' )
-  -trailing -leading save-string 2dup needed-word 2! ;  -->
+  -trailing -leading >stringer 2dup needed-word 2! ;  -->
 
   \ doc{
   \
@@ -432,8 +434,8 @@ defer reneed ( "name" -- ) defer needed ( ca len -- )
   \
   \ Remove trailing and leading spaces from the word _ca1 len_,
   \ which is the parameter of the latest `need` `needed`,
-  \ `reneed` or `reneeded`, store it in the circular string
-  \ buffer and return it as _ca2 len'_ for further processing.
+  \ `reneed` or `reneeded`, store it in the `stringer`
+  \ and return it as _ca2 len'_ for further processing.
   \
   \ }doc
 
@@ -583,7 +585,7 @@ need use-default-need need  use-default-located
 
 [unneeded] locate ?(
 : locate ( "name" -- block | false )
-  parse-name save-string located ; ?)
+  parse-name >stringer located ; ?)
 
   \ doc{
   \

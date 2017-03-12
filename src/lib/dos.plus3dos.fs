@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703091703
+  \ Last modified: 201703121608
 
   \ -----------------------------------------------------------
   \ Description
@@ -40,6 +40,8 @@
   \ the kernel. Document them. Improve `reposition-file`. Add
   \ `/base-filename`, `/filename-ext`. Add drafts of `cat` and
   \ `wcat`.
+  \
+  \ 2017-03-12: Update the names of `stringer` words.
 
 ( /filename /base-filename /filename-ext >filename )
 
@@ -86,7 +88,7 @@
 [unneeded] >filename ?( need /filename
 
 : >filename ( ca1 len1 -- ca2 )
-  /filename min char+ save-string
+  /filename min char+ >stringer
   2dup + char- $FF swap c! drop ; ?)
 
   \ doc{
@@ -706,7 +708,7 @@ variable cat-buffer
   \ }doc
 
 : allocate-cat-buffer ( n -- ca )
-  /cat-entry * allocate-string dup /cat-entry erase ;
+  /cat-entry * allocate-stringer dup /cat-entry erase ;
 
   \ doc{
   \

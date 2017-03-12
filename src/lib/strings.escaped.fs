@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702272342
+  \ Last modified: 201703121644
 
   \ -----------------------------------------------------------
   \ Description
@@ -79,6 +79,8 @@
   \ 2017-02-17: Update cross references.
   \
   \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-03-12: Update mentions to the `stringer`.
 
 ( esc-standard-chars-wordlist )
 
@@ -187,8 +189,7 @@ need get-esc-order need catch
   \ Parse a text string delimited by a double quote,
   \ translating some configurable characters that are escaped
   \ with a backslash.  Add the translated string to _ca len_,
-  \ returning a new string _ca' len'_ in the circular string
-  \ buffer.
+  \ returning a new string _ca' len'_ in the `stringer`.
   \
   \ This word is a factor of `parse-esc-string`.
   \
@@ -243,7 +244,7 @@ variable case-sensitive-esc-chars  case-sensitive-esc-chars on
   \ Parse a text string delimited by a double quote,
   \ translating some configurable characters that are escaped
   \ with a backslash.  Return the translated string _ca len_ in
-  \ the circular string buffer.
+  \ the `stringer`.
   \
   \ The characters that must be escaped depend on the search
   \ order set by the deferred word `set-esc-string-order`,

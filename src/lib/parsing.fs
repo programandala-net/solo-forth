@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702272346
+  \ Last modified: 201703121609
 
   \ -----------------------------------------------------------
   \ Description
@@ -54,6 +54,8 @@
   \ interpretation.
   \
   \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-03-12: Update the names of `stringer` words.
 
 ( defined? parse-char parse-all )
 
@@ -70,7 +72,7 @@
 [unneeded] parse-all ?(
 
 : parse-all ( "ccc<eol>" -- ca len )
-  stream dup parsed save-string ; ?)
+  stream dup parsed >stringer ; ?)
 
   \ doc{
   \

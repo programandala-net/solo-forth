@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703041856
+  \ Last modified: 201703121645
 
   \ -----------------------------------------------------------
   \ Description
@@ -54,8 +54,11 @@
   \
   \ 2017-03-04: Update naming convention of Z80 routines, after
   \ the changes in the kernel.
+  \
+  \ 2017-03-12: Update the names of `stringer` words and
+  \ mentions to it.
 
-( far," fars, farsconstant far>sconstant save-farstring )
+( far," fars, farsconstant far>sconstant far>stringer )
 
 [unneeded] far,"
 
@@ -102,29 +105,28 @@
   \
   \ }doc
 
-[unneeded] save-farstring ?( need cmove<far
+[unneeded] far>stringer ?( need cmove<far
 
-: save-farstring ( ca1 len1 -- ca2 len1 )
-  dup allocate-string swap 2dup 2>r cmove<far 2r> ; ?)
+: far>stringer ( ca1 len1 -- ca2 len1 )
+  dup allocate-stringer swap 2dup 2>r cmove<far 2r> ; ?)
 
   \ doc{
   \
-  \ save-farstring ( ca1 len1 -- ca2 len1 )
+  \ far>stringer ( ca1 len1 -- ca2 len1 )
   \
-  \ Save the string _ca1 len1_, which is in far memory, in the
-  \ circular string buffer and return it at its new address as
-  \ _ca2 len1_.
+  \ Save the string _ca1 len1_, which is in far memory, to the
+  \ `stringer` and return it as _ca2 len1_.
   \
-  \ See also: `save-string`, `stringer`.
+  \ See also: `>stringer`.
   \
   \ }doc
 
 [unneeded] far>sconstant ?(
 
-need farsconstant need save-farstring
+need farsconstant need far>stringer
 
 : far>sconstant ( ca len "name" -- )
-  farsconstant does> 2@ save-farstring ; ?)
+  farsconstant does> 2@ far>stringer ; ?)
 
   \ doc{
   \
@@ -134,7 +136,7 @@ need farsconstant need save-farstring
   \ _ca len_.
   \
   \ When _name_ is executed, it returns the string _ca len_ in
-  \ the circular string buffer as _ca2 len_.
+  \ the `stringer` as _ca2 len_.
   \
   \ See also: `farsconstant`.
   \
@@ -224,11 +226,11 @@ need farsconstants, need array> need farsconstants>
   \ }doc
 
 [unneeded] far>sconstants ?( need farsconstants,
-need array> need farsconstants> need save-farstring
+need array> need farsconstants> need far>stringer
 
 : far>sconstants ( 0 ca[n]..ca[1] "name" -- n )
   farsconstants,  does> ( n -- ca len )
-  ( n pfa ) farsconstants> save-farstring ; ?)
+  ( n pfa ) farsconstants> far>stringer ; ?)
 
   \ doc{
   \
@@ -241,7 +243,7 @@ need array> need farsconstants> need save-farstring
   \
   \ When _name_ is executed, it converts the index on the stack
   \ (0.._n-1_) to the correspondent string _ca len_ in far
-  \ memory, and return a copy in the circular string buffer.
+  \ memory, and return a copy in the `stringer`.
   \
   \ Usage example:
 

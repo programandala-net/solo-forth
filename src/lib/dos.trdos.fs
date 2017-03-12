@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703121157
+  \ Last modified: 201703121609
 
   \ -----------------------------------------------------------
   \ Description
@@ -77,7 +77,8 @@
   \ fix it.  Rename `(file-status)` to `fda-filestatus`. Add
   \ `get-filename` and `rename-file`. Improve documentation.
   \
-  \ 2017-03-12: Improve documentation.
+  \ 2017-03-12: Improve documentation.  Update the names of
+  \ `stringer` words.
 
 ( --dos-commands-- )
 
@@ -1146,7 +1147,7 @@ need read-file-descriptor need write-file-descriptor
 : rename-file ( ca1 len1 ca2 len2 -- ior )
   file-dir# nip 0= if 2drop #-1002 exit then
     \ If _ca2 len2_ already exists, exit with ior #-1002 (file exists).
-  get-filename save-string 2swap
+  get-filename >stringer 2swap
     \ Get the complete version of _ca2 len2_ (with filetype),
     \ which was stored by `file-dir#` at `fda`, and preserve it.
   file-dir# ?dup if nip nip nip exit then
