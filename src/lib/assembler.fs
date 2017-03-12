@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703112327
+  \ Last modified: 201703120057
 
   \ -----------------------------------------------------------
   \ Description
@@ -121,12 +121,9 @@
   \ 2017-03-11: Make absolute-jump control structures optional.
   \ Improve documentation.
 
-  \ -----------------------------------------------------------
-  \ XXX TODO
-
-  \ - Finish the documentation.
-
 ( assembler )
+
+  \ XXX TODO - Finish the documentation.
 
 get-order get-current only forth definitions
 
@@ -267,8 +264,6 @@ A8 m2 xor, -->
 
 : addix, ( regp -- ) ix-op c, addp, ;
 : addiy, ( regp -- ) iy-op c, addp, ;
-  \ XXX TODO -- study changes needed to use `ix addp,` instead;
-  \ that means `h addp,` should be used instead of `addp,`
 
   \ Macros
 
@@ -286,13 +281,11 @@ A8 m2 xor, -->
 ( assembler )
 
   \ ZX Spectrum specific
-  \ XXX TODO -- make it optional
 
 CF m4 hook,  \ rst $08
 D7 m1 prt,   \ rst $16
 
   \ Index register opcodes
-  \ XXX TODO -- make it optional
 
 86 ma addx, 8E ma adcx, 96 ma subx, 9E ma sbcx, A6 ma andx,
 AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
@@ -302,10 +295,10 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
 : ftx, ( disp regpi reg -- ) nip 8* 46 + c, c, ;
 : stx, ( reg disp regpi -- ) drop swap 70 + c, c, ;
 : st#x, ( 8b disp regpi -- ) drop 36 c, swap c, c, ;
-: ftpx, ( disp regpi regp -- )
-  3dup 1+ ftx, rot 1+ -rot ftx, ;
-: stpx, ( disp regpi regp -- )
-  3dup 1+ stx, rot 1+ -rot stx, ;  -->
+: ftpx, ( disp regpi regp -- ) 3dup 1+ ftx, rot 1+ -rot ftx, ;
+: stpx, ( disp regpi regp -- ) 3dup 1+ stx, rot 1+ -rot stx, ;
+
+-->
 
 ( assembler )
 

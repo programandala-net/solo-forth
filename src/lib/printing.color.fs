@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702241533
+  \ Last modified: 201703112341
 
   \ -----------------------------------------------------------
   \ Description
@@ -102,6 +102,8 @@
   \ 2017-02-17: Update cross references.
   \
   \ 2017-02-24: Fix typos in documentation.
+  \
+  \ 2017-03-11: Improve documentation.
 
   \ -----------------------------------------------------------
   \ Operatyng system variables
@@ -172,8 +174,8 @@
   \ A constant that returns 0, the value that represents the
   \ black color.
   \
-  \ See also: `black`, `blue`, `red`, `magenta`, `green`,
-  \ `cyan`, `yellow`, `white`, `contrast`.
+  \ See also: `blue`, `red`, `magenta`, `green`,
+  \ `cyan`, `yellow`, `white`, `contrast`, `papery`.
   \
   \ }doc
 
@@ -187,7 +189,7 @@
   \ blue color.
   \
   \ See also: `black`, `red`, `magenta`, `green`, `cyan`,
-  \ `yellow`, `white`, `contrast`.
+  \ `yellow`, `white`, `contrast`, `papery`.
   \
   \ }doc
 
@@ -201,7 +203,7 @@
   \ red color.
   \
   \ See also: `black`, `blue`, `magenta`, `green`, `cyan`,
-  \ `yellow`, `white`, `contrast`.
+  \ `yellow`, `white`, `contrast`, `papery`.
   \
   \ }doc
 
@@ -215,7 +217,7 @@
   \ magenta color.
   \
   \ See also: `black`, `blue`, `red`, `green`, `cyan`,
-  \ `yellow`, `white`, `contrast`.
+  \ `yellow`, `white`, `contrast`, `papery`.
   \
   \ }doc
 
@@ -229,7 +231,7 @@
   \ green color.
   \
   \ See also: `black`, `blue`, `red`, `magenta`, `cyan`,
-  \ `yellow`, `white`, `contrast`.
+  \ `yellow`, `white`, `contrast`, `papery`.
   \
   \ }doc
 
@@ -243,7 +245,7 @@
   \ cyan color.
   \
   \ See also: `black`, `blue`, `red`, `magenta`, `green`,
-  \ `yellow`, `white`, `contrast`.
+  \ `yellow`, `white`, `contrast`, `papery`.
   \
   \ }doc
 
@@ -257,7 +259,7 @@
   \ yellow color.
   \
   \ See also: `black`, `blue`, `red`, `magenta`, `green`,
-  \ `cyan`, `white`, `contrast`.
+  \ `cyan`, `white`, `contrast`, `papery`.
   \
   \ }doc
 
@@ -271,13 +273,13 @@
   \ white color.
   \
   \ See also: `black`, `blue`, `red`, `magenta`, `green`,
-  \ `cyan`, `yellow`, `contrast`.
+  \ `cyan`, `yellow`, `contrast`, `papery`.
   \
   \ }doc
 
 [unneeded] contrast ?( need white need green
 
-: contrast ( b1 -- b1 ) green < abs white * ; ?)
+: contrast ( b1 -- b1 ) green < white and ; ?)
 
   \ doc{
   \
@@ -287,6 +289,8 @@
   \ `white` (7) if _b1_ is a dark color (`black`, `blue`, `red`
   \ or `magenta`); _b2_ is `black` (0) if _b1_ is a light
   \ colour (`green`, `cyan`, `yellow` or `white`).
+  \
+  \ See also: `papery`.
   \
   \ }doc
 
@@ -298,18 +302,18 @@
 
   \ doc{
   \
-  \ papery   ( b1 -- b2 )
+  \ papery ( b1 -- b2 )
   \
   \ Convert paper color _b1_ to its equivalent attribute _b2_.
   \
   \ This word is an alias of `8*`, which is written in Z80.
-  \ Its equivalent in Forth is the following:
+  \ Its equivalent definition in Forth is the following:
 
   \ ----
   \ : papery ( b1 -- b2 ) 8 * ;
   \ ----
 
-  \ See also: `brighty`, `flashy`, `attr>paper`.
+  \ See also: `brighty`, `flashy`, `attr>paper`, `contrast`
   \
   \ }doc
 
@@ -327,11 +331,11 @@ code brighty ( b1 -- b2 )
   \
   \ Convert attribute _b1_ to its brighty equivalent _b2_.
   \
-  \ This word is written in Z80. Its equivalent in Forth is the
-  \ following:
+  \ This word is written in Z80. Its equivalent definition in
+  \ Forth is the following:
 
   \ ----
-  \ : brighty ( b1 -- b2 )  bright-mask or ;
+  \ : brighty ( b1 -- b2 ) bright-mask or ;
   \ ----
 
   \ See also: `papery`, `flashy`.
@@ -340,7 +344,7 @@ code brighty ( b1 -- b2 )
 
 [unneeded] flashy ?(
 
-code flashy   ( b1 -- b2 )
+code flashy ( b1 -- b2 )
   E1 c, CB c, C0 7 8 * + 5 + c, jppushhl, end-code ?)
   \ pop hl
   \ set 7,l
@@ -348,15 +352,15 @@ code flashy   ( b1 -- b2 )
 
   \ doc{
   \
-  \ flashy   ( b1 -- b2 )
+  \ flashy ( b1 -- b2 )
   \
   \ Convert attribute _b1_ to its flashy equivalent _b2_.
   \
-  \ This word is written in Z80. Its equivalent in Forth is the
-  \ following:
+  \ This word is written in Z80. Its equivalent definition in
+  \ Forth is the following:
 
   \ ----
-  \ : flashy   ( b1 -- b2 )  flash-mask or ;
+  \ : flashy ( b1 -- b2 ) flash-mask or ;
   \ ----
 
   \ See also: `papery`, `brighty`.
@@ -735,8 +739,8 @@ code set-paper ( b -- )
   \ Set paper color _b_ (0..7) by modifying the corresponding
   \ bits of the current attribute.
   \
-  \ This word is written in Z80. Its equivalent code in Forth
-  \ is the following:
+  \ This word is written in Z80. Its equivalent definition in
+  \ Forth is the following:
 
   \ ----
   \ : set-paper ( b -- )
@@ -773,8 +777,8 @@ code set-ink ( b -- )
   \ 0..7 and its bits 3-7 are not masked. Therefore any value
   \ other than 0..7 will corrupt the current attribute.
   \
-  \ This word is written in Z80. Its equivalent code in Forth
-  \ is the following:
+  \ This word is written in Z80. Its equivalent definition in
+  \ Forth is the following:
 
   \ ----
   \ : set-ink ( b -- )

@@ -29,9 +29,59 @@ Options to make it easier to share code with other systems:
 // Assembler {{{1
 == Assembler ==
 
-.2017-03-10:
+.2017-03-12:
+
+Make index register instructions optional. All of them:
+
+----
+86 ma addx, 8E ma adcx, 96 ma subx, 9E ma sbcx, A6 ma andx,
+AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
+06 mb rlcx, 0E mb rrcx, 16 mb rlx,  1E mb rrx,  26 mb slax,
+2E mb srax, 3E mb srlx, 46 mc bitx, 86 mc resx, C6 mc setx,
+
+: ftx, ( disp regpi reg -- ) nip 8* 46 + c, c, ;
+: stx, ( reg disp regpi -- ) drop swap 70 + c, c, ;
+: st#x, ( 8b disp regpi -- ) drop 36 c, swap c, c, ;
+: ftpx, ( disp regpi regp -- ) 3dup 1+ ftx, rot 1+ -rot ftx, ;
+: stpx, ( disp regpi regp -- ) 3dup 1+ stx, rot 1+ -rot stx, ;
+----
+
+.2017-03-12:
+
+Make `hook,` and `prt,` optional.
+
+.2017-03-12:
+
+Study changes needed to use `ix addp,` instead of `addix,`;
+this means `h addp,` should be used instead of `addp,`
+
+.2017-03-12:
+
+Factor `create c,`, which is used 11 times. This will save 13 bytes:
+11 cells minus 9 bytes of the new definition.
+
+.2017-03-10, 2017-03-12:
 
 Remove the need to use `af` only for `push,` and `pop,`.
+
+The solution is a variant of `m3` to limit the register numbers:
+
+----
+: m3p ( 8b "name" -- )
+  create c,
+  does> ( reg -- ) ( reg pfa ) %1111110 and c@ swap 8* + c, ;
+  \ 1-byte opcode with register encoded in bits 3-5.
+----
+
+Then use it instead of `m3` to define `push,` and `pop,`:
+
+----
+C1 m3p pop, C5 m3p push,
+----
+
+This makes `6 cconstant af` unnecessary; and makes the syntax regular,
+making `a pop,` and `a push,` possible (even low-registers are
+allowed, like `c pop,`). But `m3p` needs more memory than `af`.
 
 .2017-03-07:
 
@@ -600,6 +650,18 @@ source.
 // DOS {{{1
 == DOS ==
 
+.2017-03-12:
+
+Rename `sector-id` to `block-drive-sector-id`, because in TR-DOS and
++3DOS its a generic reusable calculation: it depends on the space that
+can be used for blocks.
+
+Write a generic `sector-id` as a factor of `block-drive-sector-id`. In
+G+DOS both words can be aliases.
+
+This change is related to the future implementation of block files on
+TR-DOS and +3DOS.
+
 .2017-02-13:
 
 Decide if lower-level factor words return a _dosior_ or an _ior_.
@@ -691,6 +753,11 @@ Study what the unused RAM of the Plus D can be useful for.
 
 // TR-DOS {{{2
 === TR-DOS ===
+
+.2017-03-12:
+
+Rename `read-file-descriptor` to `read-fda`.
+Rename `write-file-descriptor` to `write-fda`.
 
 .2017-03-11:
 

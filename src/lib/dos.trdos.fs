@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703111548
+  \ Last modified: 201703121157
 
   \ -----------------------------------------------------------
   \ Description
@@ -76,6 +76,8 @@
   \ `undelete-file`. Rename `(file-dir#)` to `fda-filedir#` and
   \ fix it.  Rename `(file-status)` to `fda-filestatus`. Add
   \ `get-filename` and `rename-file`. Improve documentation.
+  \
+  \ 2017-03-12: Improve documentation.
 
 ( --dos-commands-- )
 
@@ -131,18 +133,117 @@ fda $0F + constant fda-filetrack ?)
   \ which has the following structure:
 
   \ |===
-  \ | Offset | Bytes | Contents
+  \ | Offset | Bytes | Address returned by | Contents
   \
-  \ | +0x0   | 8     | File name
-  \ | +0x8   | 1     | File type ('B, 'C', 'D', '#'...)
-  \ | +0x9   | 2     | Address (or length of a BASIC program)
-  \ | +0xB   | 2     | Length in bytes
-  \ | +0xD   | 1     | Length in sectors
-  \ | +0xE   | 1     | First sector of the file on its first track
-  \ | +0xF   | 1     | First track of the file
+  \ | +0x0   | 8     | `fda-filename`      | File name
+  \ | +0x8   | 1     | `fda-filetype`      | File type ('B, 'C', 'D', '#'...)
+  \ | +0x9   | 2     | `fda-filestart`     | Address (or length of a BASIC program)
+  \ | +0xB   | 2     | `fda-filelength`    | Length in bytes
+  \ | +0xD   | 1     | `fda-filesectors`   | Length in sectors
+  \ | +0xE   | 1     | `fda-filesector`    | First sector of the file on its first track
+  \ | +0xF   | 1     | `fda-filetrack`     | First track of the file
   \ |===
+
+  \ See also: `/fda`, `read-file-descriptor`,
+  \ `write-file-descriptor`.
   \
-  \ See also: `/fda`.
+  \ }doc
+
+  \ doc{
+  \
+  \ fda-filename ( -- ca )
+  \
+  \ First field of `fda` (File Descriptor Area).  _ca_ is the
+  \ address of a 8-byte area that holds the filename.
+  \
+  \ WARNING: The actual filename is a 9-character string formed
+  \ by the filename stored at ``fda-filename`` and the
+  \ character stored ad `fda-filetype.`
+  \
+  \ See also: `/filename`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ fda-filetype ( -- ca )
+  \
+  \ Second field of `fda` (File Descriptor Area).  _ca_ is the
+  \ address of a byte containing the filetype identifier
+  \ character.
+  \
+  \ Filetypes recognized by TR-DOS are 'B' for a BASIC program,
+  \ 'C' for a code file (the default on Solo Forth); 'D' for a
+  \ BASIC data array; '#' for sequential or random access data
+  \ files.  Only 'C' is in files created by Solo Forth.  The
+  \ programmer can use any character as filetype identifier.
+  \
+  \ WARNING: TR-DOS uses the filetype character as the last
+  \ character (the 9th character) of `fda-filename`, i.e. a
+  \ filename always has 9 characters, and the last one is the
+  \ filetype identifier.  That's why `fda-filename` and
+  \ ``fda-filetype`` are contiguous in `fda`. This is important
+  \ in some cases, e.g.  `rename-file` and `delete-file`. In
+  \ Solo Forth, when a filename does not include the filetype,
+  \ 'C' (code file) is used as default filetype.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ fda-filestart ( -- a )
+  \
+  \ Third field of `fda` (File Descriptor Area).  _a_ is the
+  \ address of a cell containing the file start address.  If
+  \ `fda-filetype` is 'B' (BASIC program), this cell contains
+  \ the length of the BASIC program, including its variables.
+  \
+  \ See also: `fda-filelength`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ fda-filelength ( -- a )
+  \
+  \ Fourth field of `fda` (File Descriptor Area).  _a_ is the
+  \ address of a cell containing the file length in bytes.
+  \
+  \ See also: `fda-filestart`, `fda-filesectors`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ fda-filesectors ( -- ca )
+  \
+  \ Fifth field of `fda` (File Descriptor Area).  _ca_ is the
+  \ address of a byte containing the file length in sectors.
+  \
+  \ See also: `fda-filetrack`, `fda-filesector`,
+  \ `fda-filelength`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ fda-filesector ( -- ca )
+  \
+  \ Sixth field of `fda` (File Descriptor Area).  _ca_ is the
+  \ address of a byte containing the first sector of the file.
+  \
+  \ See also: `fda-filetrack`, `fda-filesectors`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ fda-filetrack ( -- ca )
+  \
+  \ Seventh field of `fda` (File Descriptor Area).  _ca_ is the
+  \ address of a byte containing the first track of the file.
+  \
+  \ See also: `fda-filesector`, `fda-filesectors`.
   \
   \ }doc
 
