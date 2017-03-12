@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201703121448
+# Last modified: 201703121700
 
 # ==============================================================
 # Author
@@ -341,7 +341,7 @@ disks/gplusdos/disk_0_boot.mgt: \
 		bin/fonts/ea5a.f42.tap \
 		tmp/fzx_fonts.tap \
 		tmp/img.tap
-	mkmgt $@ bin/sys/gplusdos-sys-2a.tap $^
+	mkmgt $@ bin/dos/gplusdos-sys-2a.tap $^
 
 # ----------------------------------------------
 # +3DOS boot disk
@@ -1076,4 +1076,5 @@ oldbackup:
 # updated.
 #
 # 2017-03-12: Add draft rules to include the library, as a
-# block file, in the boot disk images.
+# block file, in the boot disk images. Rename <bin/sys/> to
+# </bin/dos/>.
