@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201703101316
+# Last modified: 201703121448
 
 # ==============================================================
 # Author
@@ -307,7 +307,7 @@ tmp/fzx_fonts.tap : $(fzx_fonts)
 	done; \
 	cd -
 	cat $(addsuffix .tap,$(fzx_fonts)) > $@ ; \
-	rm -f $(addsuffix .tap, $(fzx_fonts)) 
+	rm -f $(addsuffix .tap, $(fzx_fonts))
 
 # ==============================================================
 # Compressed test screen
@@ -483,6 +483,44 @@ trdos_core_lib_files = \
 	$(filter-out %gplusdos.fs %plus3dos.fs, $(core_lib_files))
 
 # ==============================================================
+# Block files
+
+# XXX UNDER DEVELOPMENT
+
+# Copying the whole library to a disk image, as one single
+# file, is not possible with ordinary tools, which are written
+# to manipulate only the ordinary filetypes that can be stored
+# on a ZX Spectrum tape.
+#
+# Therefore, this first approach can not work:
+
+%.fb: %.fs
+	fsb2 $<
+
+library_block_file=solo.fb
+
+tmp/library.gplusdos.tap: tmp/library.gplusdos.fb
+	cd tmp/; \
+	ln -f $(notdir $<) $(library_block_file);\
+	bin2code $(library_block_file) $(library_block_file).tap 0;\
+	mv $(library_block_file).tap $(notdir $@);\
+	cd -;
+
+tmp/library.trdos.tap: tmp/library.trdos.fb
+	cd tmp/; \
+	ln -f $(notdir $<) $(library_block_file);\
+	bin2code $(library_block_file) $(library_block_file).tap 0;\
+	mv $(library_block_file).tap $(notdir $@);\
+	cd -;
+
+tmp/library.plus3dos.tap: tmp/library.plus3dos.fb
+	cd tmp/; \
+	ln -sf $(notdir $<) $(library_block_file);\
+	bin2code $(library_block_file) $(library_block_file).tap 0;\
+	mv $(library_block_file).tap $(notdir $@);\
+	cd -;
+
+# ==============================================================
 # Block disks
 
 # The block disks contain the source blocks of the library and
@@ -638,7 +676,7 @@ disks/plus3dos/disk_9_library_without_dos.dsk: tmp/library_without_dos.fs
 tmp/library.trdos.fs: $(trdos_core_lib_files)
 	cat $(trdos_core_lib_files) > $@
 
-disks/trdos/disk_1_library.trd: tmp/library.trdos.fs 
+disks/trdos/disk_1_library.trd: tmp/library.trdos.fs
 	fsb2-trd $< SoloFh1 ; \
 	mv $(basename $<).trd $@
 
@@ -1036,3 +1074,6 @@ oldbackup:
 # crash on TR-DOS when the `origin` address was modified,
 # unless `make` was executed twice to force the loader be
 # updated.
+#
+# 2017-03-12: Add draft rules to include the library, as a
+# block file, in the boot disk images.
