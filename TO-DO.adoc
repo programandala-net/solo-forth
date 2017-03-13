@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201703131356
+// Last modified 201703131547
 
 // Application development {{{1
 == Application development ==
@@ -646,17 +646,9 @@ source.
 // DOS {{{1
 == DOS ==
 
-.2017-03-12:
+.2017-03-12, 2017-03-13:
 
-Rename `sector-id` to `block-drive-sector-id`, because in TR-DOS and
-+3DOS its a generic reusable calculation: it depends on the space that
-can be used for blocks.
-
-Write a generic `sector-id` as a factor of `block-drive-sector-id`. In
-G+DOS both words can be aliases.
-
-This change is related to the future implementation of block files on
-TR-DOS and +3DOS.
+Support block files?
 
 Block files can be supported easily on +3DOS (already done on
 DZX-Forth); with some more effort on TR-DOS; and probably also on
@@ -669,7 +661,8 @@ compile a project (Solo Forth loader and binary, blocks, data files,
 graphics, sounds, etc) in one single disk.
 
 In practice, the problems to be solved are bigger than the possible
-benefit.
+benefit on a diskette-based system. Block files seems more useful on a
+hard drive, on IDEDOS or ResiDOS.
 
 .2017-02-13:
 
@@ -762,6 +755,11 @@ Study what the unused RAM of the Plus D can be useful for.
 
 // TR-DOS {{{2
 === TR-DOS ===
+
+.2017-03-13:
+
+Use the 8 free sectors of the system track for 2 additional blocks.
+This requires changes in the fsb2-trd converter.
 
 .2017-03-12:
 

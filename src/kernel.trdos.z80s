@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201703130115
+; Last modified: 201703131551
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -462,29 +462,84 @@ dosior_hl_to_ior_hl:
   jp negate_hl  ; do `negate`, then return
 
 ; ----------------------------------------------
-  _colon_header sector_id_,'sector-id'
+  _code_header sector_to_dos_,'sector>dos'
 
 ; doc{
-
-; sector-id ( n -- x )
-
-; Convert the sequential disk sector _n_ to the disk sector id
-; _x_, in the format required by TR-DOS: The high byte of _x_
-; is the track (0..79 for side 0; 80..159 for side 1); its low
-; byte is the sector (0..15).
+;
+; sector>dos ( sector track -- x )
+;
+; Convert the 8-bit sector number _sector_ and the 8-bit track
+; number _track_ to the 16-bit number _x_ in the format used by
+; TR-DOS: The high byte of _x_ is the sector, and its low byte is
+; the track.
+;
+; ``sector>dos`` is a factor of `block-sector#>dos`.
+;
+; ``sector>dos`` is written in Z80. Its equivalen definition in
+; Forth is the following:
 ;
 ; ----
-; : sector-id ( n -- x )
-;   sectors/track +         \ the first track is not used
-;   sectors/track /mod      ( sector track )
-;   flip or  ;
+; : sector>dos ( sector track -- x ) flip or ;
 ; ----
 ;
 ; }doc
 
-  dw sectors_slash_track_,plus_  ; the first track is not used
-  dw sectors_slash_track_,slash_mod_
-  dw flip_,or_
+  pop de
+  pop hl
+  ld h,e
+  _jp_pushhl
+
+; ----------------------------------------------
+  _colon_header sector_hash_to_dos_,'sector#>dos'
+
+; doc{
+;
+; sector#>dos ( n -- x )
+;
+; Convert the sequential disk sector _n_ to the disk sector id
+; _x_, in the format required by TR-DOS: The high byte of _x_ is
+; the track (0..79 for side 0; 80..159 for side 1); its low byte
+; is the sector (0..15).
+;
+; Definition:
+
+; ----
+; : sector#>dos ( n -- x ) sectors/track /mod sector>dos  ;
+; ----
+
+; See also: `sectors/track`, `sector>dos`, `transfer-sector`.
+;
+; }doc
+
+  dw sectors_slash_track_,slash_mod_,sector_to_dos_
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header block_sector_hash_to_dos_,'block-sector#>dos'
+
+; doc{
+;
+; block-sector#>dos ( n -- x )
+;
+; Convert the sequential disk sector _n_ of a block disk to the
+; disk sector id _x_, in the format required by TR-DOS: The high
+; byte of _x_ is the track (0..79 for side 0; 80..159 for side
+; 1); its low byte is the sector (0..15).
+;
+; In TR-DOS, the first track of a block disk can not be used for
+; blocks.
+;
+; Definition:
+
+; ----
+; : block-sector#>dos ( n -- x ) sectors/track + sector#>dos ;
+; ----
+
+; See also: `sectors/track`, `sector#>dos`, `transfer-block`.
+;
+; }doc
+
+  dw sectors_slash_track_,plus_,sector_hash_to_dos_
   dw exit_
 
 ; ----------------------------------------------
@@ -502,7 +557,7 @@ dosior_hl_to_ior_hl:
 ; The high byte of _x_ is the track (0..79 for side 0; 80..159
 ; for side 1); its low byte is the sector (0..15).
 ;
-; See also: `sector-id`, `transfer-block`.
+; See also: `block-sector#>dos`, `transfer-block`.
 ;
 ; }doc
 
@@ -575,7 +630,7 @@ transfer_mode:
 ; ----
 ; : transfer-block ( u -- )
 ;   >drive-block
-;   sectors/block * sector-id buffer-data sectors/block
+;   sectors/block * block-sector#>dos buffer-data sectors/block
 ;   transfer-sectors throw  ;
 ; ----
 
@@ -585,7 +640,7 @@ transfer_mode:
 
   dw to_drive_block_
   dw sectors_slash_block_,star_ ; sequential number of the first sector of the block
-  dw sector_id_,buffer_data_,sectors_slash_block_
+  dw block_sector_hash_to_dos_,buffer_data_,sectors_slash_block_
   dw transfer_sectors_,throw_
   dw exit_
 
@@ -1056,6 +1111,8 @@ endif ; defined trdos
 ; 2017-03-12: Add experimental `sector#`.
 ;
 ; 2017-03-13: Update names including "rec" to "sector(s)";
-; update names including "blk" to "block(s)".
+; update names including "blk" to "block(s)".  Rename
+; `sector-id` to `block-sector#>dos` and factor `sector>dos` and
+; `sector#>dos` from it.
 
 ; vim: filetype=z80:textwidth=64
