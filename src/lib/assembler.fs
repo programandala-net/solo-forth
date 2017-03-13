@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703120057
+  \ Last modified: 201703131720
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -80,32 +80,30 @@ DD cconstant ix-op  FD cconstant iy-op
 
   \ Defining words for z80 instructions
 
-: m1 ( 8b "name" -- )
-  create c, does> ( -- ) ( pfa ) c@ c, ;
+: (c ( b "name" -- ) create c, ;
+
+: m1 ( 8b "name" -- ) (c does> ( -- ) ( pfa ) c@ c, ;
   \ 1-byte opcode without parameters.
 
-: m2 ( 8b "name" -- )
-  create c, does> ( reg -- ) ( reg pfa ) c@ + c, ;
+: m2 ( 8b "name" -- ) (c does> ( reg -- ) ( reg pfa ) c@ + c, ;
   \ 1-byte opcode with register encoded in bits 0-3.
 
 : m3 ( 8b "name" -- )
-  create c, does> ( reg -- ) ( reg pfa ) c@ swap 8* + c, ;
+  (c does> ( reg -- ) ( reg pfa ) c@ swap 8* + c, ;
   \ 1-byte opcode with register encoded in bits 3-5.
 
-: m4 ( 8b "name" -- )
-  create c, does> ( 8b -- ) ( 8b pfa ) c@ c, c, ;
+: m4 ( 8b "name" -- ) (c does> ( 8b -- ) ( 8b pfa ) c@ c, c, ;
   \ 1-byte opcode with 1-byte parameter.
 
-: m5 ( 8b "name" -- )
-  create c, does> ( 16b -- ) ( 16b pfa ) c@ c, , ;
+: m5 ( 8b "name" -- ) (c does> ( 16b -- ) ( 16b pfa ) c@ c, , ;
   \ 1-byte opcode with 2-byte parameter.
 
 : m6 ( 8b "name" -- )
-  create c, does> ( reg -- ) ( reg pfa ) CB c, c@ + c, ;
+  (c does> ( reg -- ) ( reg pfa ) CB c, c@ + c, ;
   \ Rotation of registers.
 
 : m7 ( 8b "name" -- )
-  create c, does> ( reg bit -- )
+  (c does> ( reg bit -- )
     ( reg bit pfa ) CB c, c@ swap 8* + + c, ;  -->
   \ Bit manipulation of registers.
 
@@ -120,23 +118,20 @@ DD cconstant ix-op  FD cconstant iy-op
   \ Compile a relative jump _op_ to absolute address _a_.
   \ XXX TODO -- use `<rresolve`
 
-: m9 ( 8b "name" -- )
-  create c, does> ( a -- ) ( a pfa ) c@ (jr,) ;
+: m9 ( 8b "name" -- ) (c does> ( a -- ) ( a pfa ) c@ (jr,) ;
   \ Relative jumps.
 
 : ma ( 8b "name" -- )
-  create c, does> ( disp regph -- ) ( disp regph pfa )
-  c@ c, drop c, ;
+  (c does> ( disp regph -- ) ( disp regph pfa ) c@ c, drop c, ;
   \ Index registers with register.
 
 : mb ( 8b "name" -- )
-  create c, does> ( disp regph -- ) ( disp regph pfa )
+  (c does> ( disp regph -- ) ( disp regph pfa )
   CB c, c@ c, drop c, ;
   \ Rotation with index registers.
 
 : mc ( 8b "name" -- )
-  create c, does> ( disp regph bit -- )
-  ( disp regph bit pfa )
+  (c does> ( disp regph bit -- ) ( disp regph bit pfa )
   CB c, c@ rot drop rot c, swap 8* + c, ;  -->
   \ Bit manipulation with index registers.
 
@@ -569,5 +564,8 @@ macro call-xt, ( xt -- )
   \
   \ 2017-03-11: Make absolute-jump control structures optional.
   \ Improve documentation.
+  \
+  \ 2017-03-13: Factor `create c,` to `(c`. This saves 13
+  \ bytes.
 
   \ vim: filetype=soloforth
