@@ -41,7 +41,7 @@ need os-flags2 need ctoggle need cset need creset
   \
   \ }doc
 
-: toggle-capslock ( -- )   capslock ctoggle ;
+: toggle-capslock ( -- ) capslock ctoggle ;
 
   \ doc{
   \
@@ -54,7 +54,7 @@ need os-flags2 need ctoggle need cset need creset
   \
   \ }doc
 
-: set-capslock     ( -- )   capslock cset ;
+: set-capslock ( -- ) capslock cset ;
 
   \ doc{
   \
@@ -67,7 +67,7 @@ need os-flags2 need ctoggle need cset need creset
   \
   \ }doc
 
-: unset-capslock   ( -- )   capslock creset ;
+: unset-capslock ( -- ) capslock creset ;
 
   \ doc{
   \
@@ -80,7 +80,7 @@ need os-flags2 need ctoggle need cset need creset
   \
   \ }doc
 
-: capslock?        ( -- f ) capslock c@and? ;
+: capslock? ( -- f ) capslock c@and? ;
 
   \ doc{
   \

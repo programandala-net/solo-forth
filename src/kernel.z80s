@@ -2440,7 +2440,7 @@ parse_string.interpreting:
 
 ; doc{
 ;
-; clit  ( -- )
+; clit ( -- )
 ;
 ; See also: `cliteral`, `lit`, `2lit`.
 ;
@@ -6739,7 +6739,7 @@ source.other:
 
 ; doc{
 ;
-; 2+  ( n1 -- n2 )
+; 2+ ( n1 -- n2 )
 ;
 ; }doc
 

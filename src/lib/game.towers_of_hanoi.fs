@@ -51,16 +51,16 @@ variable slowness  1000 slowness !
 create PegSPS  pegs cells allot
   \ pointers for three disk stacks
 
-: PegSP     ( peg -- addr ) cells PegSPS + ;
-: PUSH      ( c peg -- )   PegSP tuck @ c!  1 chars swap +! ;
-: POP       ( peg -- c )   PegSP -1 chars over +!  @ c@ ;
+: PegSP ( peg -- addr ) cells PegSPS + ;
+: PUSH  ( c peg -- )    PegSP tuck @ c!  1 chars swap +! ;
+: POP   ( peg -- c )    PegSP -1 chars over +!  @ c@ ;
 
 create PegStacks  30 chars allot
   \ stack area for up to 10 disks
 
-: PegStack ( peg -- addr )  10 * PegStacks + ;
+: PegStack ( peg -- addr ) 10 * PegStacks + ;
 
-: clear-peg    ( peg -- ) dup PegStack  swap PegSP ! ;
+: clear-peg ( peg -- ) dup PegStack  swap PegSP ! ;
 : clear-pegs ( -- ) pegs 0 ?do  i clear-peg  loop ;
 
   \ : PegDepth ( peg -- depth ) dup PegSP @  swap PegStack - ;

@@ -26,7 +26,7 @@
 ( assert assert= assert( )
 
 [unneeded] assert
-?\ : assert   ( n -- )   0= if  abort  then ;
+?\ : assert ( n -- ) 0= if  abort  then ;
 
 [unneeded] assert=
 ?\ need assert  : assert= ( a b -- ) = assert ;

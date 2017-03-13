@@ -54,7 +54,7 @@ need reset-frames need frames@
 
   \ doc{
   \
-  \ }bench ( -- d )  frames@ ;
+  \ }bench ( -- d ) frames@ ;
   \
   \ Return the current value of the system frames counter.
   \
@@ -74,7 +74,7 @@ need reset-frames need frames@
   \
   \ }doc
 
-: }bench. ( -- )  frames@ bench. ;
+: }bench. ( -- ) frames@ bench. ;
 
   \ doc{
   \

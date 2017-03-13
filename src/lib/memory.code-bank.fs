@@ -33,7 +33,7 @@ need save-here need call need there
 
 variable cp  bank-start cp !  \ code pointer
 
-: code-here  ( -- a ) cp @ ;
+: code-here ( -- a ) cp @ ;
 : code-there ( a -- ) cp ! ;
 : code-allot ( n -- ) cp +! ;
 

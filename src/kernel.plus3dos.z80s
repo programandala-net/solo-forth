@@ -411,7 +411,7 @@ dosior_to_ior.hl:
 
 ; ----
 ; : sector-id ( n -- x )
-;   1+              \ the first sector is not used
+;   1+                  \ the first sector is not used
 ;   sectors/track /mod  ( sector track )
 ;   flip or ;
 ; ----
@@ -878,7 +878,7 @@ if current_drive_method=4
 
 ; doc{
 ;
-; log-in-disk  ( n -- ior )
+; log-in-disk ( n -- ior )
 ;
 ; Log in a new disk in phyisical drive unit _n_ (0..1).
 ;

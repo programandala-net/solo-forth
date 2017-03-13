@@ -360,7 +360,7 @@ set-current set-order
 
   \ doc{
   \
-  \ >amark  ( -- a )
+  \ >amark ( -- a )
   \
   \ Leave the address of an assembler absolute forward
   \ reference.
@@ -373,7 +373,7 @@ set-current set-order
 
   \ doc{
   \
-  \ >aresolve  ( a -- )
+  \ >aresolve ( a -- )
   \
   \ Resolve an assembler absolute forward reference.
   \

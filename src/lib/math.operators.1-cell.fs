@@ -804,7 +804,7 @@ need 2/
 : */_mod ( n1 n2 n3 -- n4 n5 ) >r m* r> fm/mod ; ?)
 
 [unneeded] */_ ?( need */_mod
-: */_ ( n1 n2 n3 -- n4 )  */_mod nip ; ?)
+: */_ ( n1 n2 n3 -- n4 ) */_mod nip ; ?)
 
 ( any? either neither ifelse )
 

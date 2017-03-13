@@ -188,7 +188,7 @@ variable brick-row  variable brick-col
 : 2c! ( c1 c2 a -- ) dup >r c! r> 1+ c! ;
   \ Store a pair of characters.
 
-: 2emit ( c1 c2 -- )  emit emit ;
+: 2emit ( c1 c2 -- ) emit emit ;
 
 : position ( row col -- )
   2* col0 + swap row0 + at-xy ;

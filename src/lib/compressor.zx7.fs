@@ -117,7 +117,7 @@ code zx7s ( a1 a2 -- )
 
   \ doc{
   \
-  \ zx7s  ( a1 a2 -- )
+  \ zx7s ( a1 a2 -- )
   \
   \ Decompress data from _a1_ and copy the result to _a2_.
   \

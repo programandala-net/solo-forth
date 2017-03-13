@@ -247,7 +247,7 @@ code call ( a -- )
   \ XXX TODO -- 2016-11-26: It seems more useful the old
   \ version, extended as the rest of alternative conditionals:
   \
-  \ : ??   ( f -- )  0= if  r> cell+ >r  then ; compile-only
+  \ : ??  ( f -- )  0= if  r> cell+ >r  then ; compile-only
   \ : 0?? ( f -- )     if  r> cell+ >r  then ; compile-only
   \ : -?? ( f -- ) 0>= if  r> cell+ >r  then ; compile-only
   \ : +?? ( f -- )  0< if  r> cell+ >r  then ; compile-only

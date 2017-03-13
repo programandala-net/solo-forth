@@ -113,7 +113,7 @@
 
   \ doc{
   \
-  \ /counted-string  ( -- len )
+  \ /counted-string ( -- len )
   \
   \ _len_ is the maximum length of a counted string, in
   \ characters.

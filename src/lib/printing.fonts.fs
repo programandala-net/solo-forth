@@ -140,7 +140,7 @@ code outlet-autochars ( a -- )
 
   \ doc{
   \
-  \ outlet-autochars  ( a -- )
+  \ outlet-autochars ( a -- )
   \
   \ Create a modified, bolder copy of the ZX Spectrum ROM font
   \ and store it at _a_. 768 bytes will be used from _a_. Then

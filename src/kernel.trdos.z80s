@@ -685,7 +685,7 @@ if 0 ; XXX TMP --
 
 ; doc{
 ;
-; (>file)  ( -- ior )
+; (>file) ( -- ior )
 ;
 ; }doc
 
@@ -729,7 +729,7 @@ paren_to_file.exit:
   _colon_header to_file_,'>file'
 
 ; ----
-; : >file  ( ca1 len1 ca2 len2 -- ior )
+; : >file ( ca1 len1 ca2 len2 -- ior )
 ;   filename>fda file-length ! file-address ! (>file) ;
 ; ----
 

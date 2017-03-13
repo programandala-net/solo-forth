@@ -137,7 +137,7 @@ create tape-header  /tape-header 2 * allot
 
   \ doc{
   \
-  \ /tape-filename  ( -- n )
+  \ /tape-filename ( -- n )
   \
   \ _n_ is the maximum length of a tape filename, which is 10
   \ characters.
@@ -169,7 +169,7 @@ create tape-header  /tape-header 2 * allot
   \
   \ }doc
 
-: tape-length ( -- a )  tape-header 11 + ;
+: tape-length ( -- a ) tape-header 11 + ;
 
   \ doc{
   \
@@ -179,7 +179,7 @@ create tape-header  /tape-header 2 * allot
   \
   \ }doc
 
-: tape-start ( -- a )  tape-header 13 + ;
+: tape-start ( -- a ) tape-header 13 + ;
 
   \ doc{
   \

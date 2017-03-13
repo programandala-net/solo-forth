@@ -179,7 +179,7 @@ create fbuf $100 allot
 : p ( -- ) scr @ 1- top g ;
   \ Go to previous screen.
 
-: s ( u "ccc<eol>" | u -- )  >r
+: s ( u "ccc<eol>" | u -- ) >r
   begin  ['] f catch  while  scr @ r@ =  if  rdrop  exit  then
          scr @ r@ u<  if  n  else  p  then  repeat  r> ;
   \ Search for _ccc_ until screen _u_. If _ccc_ is empty, use

@@ -184,7 +184,7 @@ s" Standard error codes" located errors-block !
   execute         ( )    \ `execute` returns if no `throw`
   r> catcher !    ( )    \ restore previous catcher
   r> drop         ( )    \ discard saved stack pointer
-  0 ;            ( 0 )  \ normal completion, no error
+  0 ;             ( 0 )  \ normal completion, no error
 
   \ Credit:
   \

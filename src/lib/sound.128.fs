@@ -45,7 +45,7 @@ $FFFD const sound-register-port $BFFD const sound-write-port ?)
 
   \ doc{
   \
-  \ sound-register-port  ( -- a )
+  \ sound-register-port ( -- a )
   \
   \ The I/O port used to select a register of the AY-3-8912
   \ sound generator, before writing a value into it using
@@ -61,7 +61,7 @@ $FFFD const sound-register-port $BFFD const sound-write-port ?)
 
   \ doc{
   \
-  \ sound-write-port  ( -- a )
+  \ sound-write-port ( -- a )
   \
   \ The I/O port used to write to a register of the AY-3-8912
   \ sound generator.
@@ -120,7 +120,7 @@ need !p need sound-register-port need sound-write-port
 
   \ doc{
   \
-  \ !volume  ( b1 b2 -- )
+  \ !volume ( b1 b2 -- )
   \
   \ Store _b1_ at volume register of channel _b2_ (0..2,
   \ equivalent to notation 'A'..'C').
@@ -145,7 +145,7 @@ need !p need sound-register-port need sound-write-port
 
   \ doc{
   \
-  \ @volume  ( b1 -- b2 )
+  \ @volume ( b1 -- b2 )
   \
   \ Fetch _b2_ from the volume register of channel _b1_ (0..2,
   \ equivalent to notation 'A'..'C').
@@ -170,7 +170,7 @@ need !p need sound-register-port need sound-write-port
 
   \ doc{
   \
-  \ set-mixer  ( b -- )
+  \ set-mixer ( b -- )
   \
   \ Set the mixer register of the AY-3-8912 sound
   \ generator to _b_.
@@ -205,7 +205,7 @@ need !p need sound-register-port need sound-write-port
 
   \ doc{
   \
-  \ get-mixer  ( -- b )
+  \ get-mixer ( -- b )
   \
   \ Get the contents _b_ of the mixer register of the
   \ AY-3-8912 sound generator.
@@ -240,7 +240,7 @@ need !p need sound-register-port need sound-write-port
 
   \ doc{
   \
-  \ -mixer  ( -- )
+  \ -mixer ( -- )
   \
   \ Disable the noise and tone mixers for the three channels of
   \ the AY-3-8912 sound generator.

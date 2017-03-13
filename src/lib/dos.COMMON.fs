@@ -94,7 +94,7 @@ create block-drives ( -- ca ) max-drives allot
 
   \ doc{
   \
-  \ block-drives  ( -- ca )
+  \ block-drives ( -- ca )
   \
   \ _ca_ is the address of a character table that holds the
   \ disk drives used as block drives. This table can be
@@ -167,7 +167,7 @@ need ?drive# need block-drive@ need ?block-drive
 
   \ doc{
   \
-  \ -block-drives  ( -- )
+  \ -block-drives ( -- )
   \
   \ Fill `block-drives` with `not-block-drive`, making no disk
   \ drive be used as block drive.

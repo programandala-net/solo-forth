@@ -362,7 +362,7 @@ code 2>true ( x1 x2 -- true ) E1 c, end-code
   \
   \ }doc
 
-code >true ( x -- true )   E1 c, ' true jp, end-code ?)
+code >true ( x -- true ) E1 c, ' true jp, end-code ?)
   \ pop hl
   \ jp true_
 

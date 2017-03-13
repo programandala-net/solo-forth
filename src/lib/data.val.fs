@@ -36,18 +36,24 @@
 [unneeded] val ?(
 
 variable (val)
-: init-val ( -- )  ['] @ (val) ! ;  init-val
+
+: init-val ( -- ) ['] @ (val) ! ; init-val
+
 : val ( x "name" -- )
-  create ,  does> ( -- ) ( pfa ) (val) perform  init-val ;
+  create ,  does> ( -- ) ( pfa ) (val) perform init-val ;
+
 : toval    ( -- ) ['] ! (val) ! ; ?)
 
 [unneeded] 2val ?(
 
 variable (2val)
-: init-2val ( -- )  ['] 2@ (2val) ! ;  init-2val
+
+: init-2val ( -- ) ['] 2@ (2val) ! ; init-2val
+
 : 2val ( xd "name" -- )
-  create 2,  does> ( -- ) ( pfa ) (2val) perform  init-2val ;
-: 2toval    ( -- ) ['] 2! (2val) ! ; ?)
+  create 2,  does> ( -- ) ( pfa ) (2val) perform init-2val ;
+
+: 2toval ( -- ) ['] 2! (2val) ! ; ?)
 
   \ ===========================================================
   \ Change log

@@ -254,8 +254,8 @@ defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
   \ }doc
 
 : ~~ ( -- )
-  latest      ( nt )   postpone literal
-  >in @ c/l / ( line ) postpone literal
+  latest      ( nt )    postpone literal
+  >in @ c/l / ( line )  postpone literal
   blk @       ( block ) postpone literal
                         postpone (~~) ; immediate compile-only
 

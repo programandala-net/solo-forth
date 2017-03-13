@@ -633,7 +633,7 @@ need catch
 : retry-it ( -- )
   begin   1 2 ['] do-it catch
   while   ( x1 x2 ) 2drop ." Exception, keep trying" cr
-  repeat ( c )
+  repeat  ( c )
   ." The character was " emit cr ;
 
 ( err>ord )

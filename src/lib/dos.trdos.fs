@@ -207,7 +207,7 @@ fda $0F + constant fda-filetrack ?)
 
   \ doc{
   \
-  \ files/disk  ( -- n )
+  \ files/disk ( -- n )
   \
   \ Return the maximum number _n_ of files on a disk, including
   \ the deleted files, which is 128.
@@ -1103,7 +1103,7 @@ need read-file-descriptor need write-file-descriptor
 
   \ doc{
   \
-  \ rename-file  ( ca1 len1 ca2 len2 -- ior )
+  \ rename-file ( ca1 len1 ca2 len2 -- ior )
   \
   \ Rename the file named by the character string _ca1 len1_ to
   \ the name in the character string _ca2 len2_ and return
