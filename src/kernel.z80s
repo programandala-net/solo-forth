@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201703112139
+; Last modified: 201703130127
 
 include version.z80s
 
@@ -6207,15 +6207,15 @@ do_user:
   dw bytes_per_buffer
 
 ; ----------------------------------------------
-  _constant_header b_slash_rec_,'b/rec'
+  _constant_header b_slash_sector_,'b/sector'
 
 ; doc{
 ;
-; b/rec ( -- n )
+; b/sector ( -- n )
 ;
-; Bytes per disk record (sector).
+; Bytes per disk sector.
 ;
-; See also: `rec/blk`, `rec/track`.
+; See also: `sectors/block`, `sectors/track`.
 ;
 ; }doc
 
@@ -6224,46 +6224,45 @@ do_user:
   dw bytes_per_sector
 
 ; ----------------------------------------------
-  _c_constant_header rec_slash_track_,'rec/track'
+  _c_constant_header sectors_slash_track_,'sectors/track'
 
 ; doc{
 ;
-; rec/track ( -- n )
+; sectors/track ( -- n )
 ;
-; Records (sectors) per disk track.
+; Sectors per disk track.
 ;
-; See also: `b/rec`, `rec/blk`, `blk/disk`.
+; See also: `b/sector`, `sectors/block`, `blocks/disk`.
 ;
 ; }doc
 
   db sectors_per_track
 
 ; ----------------------------------------------
-  _c_constant_header rec_slash_blk_,'rec/blk'
+  _c_constant_header sectors_slash_block_,'sectors/block'
 
 ; doc{
 ;
-; rec/blk ( -- n )
+; sectors/block ( -- n )
 ;
-; Records (sectors) per block.
+; Sectors per block.
 ;
-; See also: `b/rec`, `rec/track`, `blk/disk`.
+; See also: `b/sector`, `sectors/track`, `blocks/disk`.
 ;
 ; }doc
-
 
   db sectors_per_block
 
 ; ----------------------------------------------
-  _constant_header blk_slash_disk_,'blk/disk'
+  _constant_header blocks_slash_disk_,'blocks/disk'
 
 ; doc{
 ;
-; blk/disk ( -- n )
+; blocks/disk ( -- n )
 ;
 ; A constant. Number of blocks per disk.
 ;
-; See also: `rec/blk`, `rec/track`.
+; See also: `sectors/block`, `sectors/track`.
 ;
 ; }doc
 
@@ -8841,11 +8840,12 @@ simple_accept.end
 ; max-blocks ( -- u )
 ;
 ; Return the number _u_ of maximum blocks available in the
-; system. The number depends on `#block-drives` and `blk/disk`.
+; system. The number depends on `#block-drives` and
+; `blocks/disk`.
 ;
 ; }doc
 
-  dw blk_slash_disk_,hash_block_drives_,c_fetch_,star_
+  dw blocks_slash_disk_,hash_block_drives_,c_fetch_,star_
   dw exit_
 
 ; ----------------------------------------------

@@ -4,15 +4,12 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-03-12
+" Updated:  2017-03-13.
+"
+" See change log at the end of the file.
 
 " This file is part of Solo Forth
 " http://programandala.net/en.program.solo_forth.html
-
-" --------------------------------------------------------------
-" History
-
-" See at the end of the file.
 
 " --------------------------------------------------------------
 " Usage
@@ -107,10 +104,10 @@ syn keyword soloforthDefine (user)
 syn keyword soloforthDefine +field
 syn keyword soloforthDefine ,
 syn keyword soloforthDefine /user
+syn keyword soloforthDefine 1literal
 syn keyword soloforthDefine 2constant
 syn keyword soloforthDefine 2field:
 syn keyword soloforthDefine 2lit
-syn keyword soloforthDefine 1literal
 syn keyword soloforthDefine 2literal
 syn keyword soloforthDefine 2to
 syn keyword soloforthDefine 2value
@@ -149,8 +146,8 @@ syn keyword soloforthDefine end-structure
 syn keyword soloforthDefine field:
 syn keyword soloforthDefine header
 syn keyword soloforthDefine header,
-syn keyword soloforthDefine hide
 syn keyword soloforthDefine hidden
+syn keyword soloforthDefine hide
 syn keyword soloforthDefine immediate
 syn keyword soloforthDefine immediate-mask
 syn keyword soloforthDefine immediate?
@@ -191,13 +188,13 @@ syn keyword soloforthFiles ?)
 syn keyword soloforthFiles ?-->
 syn keyword soloforthFiles ?\
 syn keyword soloforthFiles b/buf
-syn keyword soloforthFiles b/rec
+syn keyword soloforthFiles b/sector
 syn keyword soloforthFiles blk
-syn keyword soloforthFiles blk/disk
 syn keyword soloforthFiles block
 syn keyword soloforthFiles block-number
 syn keyword soloforthFiles block>source
 syn keyword soloforthFiles blocks
+syn keyword soloforthFiles blocks/disk
 syn keyword soloforthFiles buffer
 syn keyword soloforthFiles buffer-block
 syn keyword soloforthFiles buffer-data
@@ -223,12 +220,12 @@ syn keyword soloforthFiles need
 syn keyword soloforthFiles needed
 syn keyword soloforthFiles read-block
 syn keyword soloforthFiles read-mode
-syn keyword soloforthFiles rec/blk
 syn keyword soloforthFiles reload
 syn keyword soloforthFiles reneed
 syn keyword soloforthFiles reneeded
 syn keyword soloforthFiles save-buffers
 syn keyword soloforthFiles scr
+syn keyword soloforthFiles sectors/block
 syn keyword soloforthFiles thru
 syn keyword soloforthFiles transfer-block
 syn keyword soloforthFiles transfer-mode
@@ -572,6 +569,9 @@ syn keyword soloforthStack tuck
 syn keyword soloforthString compare
 syn keyword soloforthString farlowers
 syn keyword soloforthString faruppers
+syn keyword soloforthString lower
+syn keyword soloforthString lower_
+syn keyword soloforthString lowers
 syn keyword soloforthString replaces
 syn keyword soloforthString scan
 syn keyword soloforthString search
@@ -579,9 +579,6 @@ syn keyword soloforthString skip
 syn keyword soloforthString str=
 syn keyword soloforthString substitute
 syn keyword soloforthString unescape
-syn keyword soloforthString lower
-syn keyword soloforthString lower_
-syn keyword soloforthString lowers
 syn keyword soloforthString upper
 syn keyword soloforthString uppers
 syn keyword soloforthTool ms
@@ -905,7 +902,7 @@ hi def link soloforthWordlists Statement
 let b:current_syntax = "soloforth"
 
 " --------------------------------------------------------------
-" History
+" Change log
 
 " 2015-06-05: First version, based on <abersoftforth.vim> and
 " <abersoftforthafera.vim>.
@@ -1148,6 +1145,9 @@ let b:current_syntax = "soloforth"
 "
 " 2017-03-12: Update the names of `stringer` words and add the
 " missing ones.
+"
+" 2017-03-13: Update names including "rec" to "sector(s)";
+" update names including "blk" to "block(s)".
 
 " --------------------------------------------------------------
 

@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201703121454
+; Last modified: 201703130115
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -475,15 +475,15 @@ dosior_hl_to_ior_hl:
 ;
 ; ----
 ; : sector-id ( n -- x )
-;   rec/track +         \ the first track is not used
-;   rec/track /mod      ( sector track )
+;   sectors/track +         \ the first track is not used
+;   sectors/track /mod      ( sector track )
 ;   flip or  ;
 ; ----
 ;
 ; }doc
 
-  dw rec_slash_track_,plus_  ; the first track is not used
-  dw rec_slash_track_,slash_mod_
+  dw sectors_slash_track_,plus_  ; the first track is not used
+  dw sectors_slash_track_,slash_mod_
   dw flip_,or_
   dw exit_
 
@@ -575,7 +575,7 @@ transfer_mode:
 ; ----
 ; : transfer-block ( u -- )
 ;   >drive-block
-;   rec/blk * sector-id buffer-data rec/blk
+;   sectors/block * sector-id buffer-data sectors/block
 ;   transfer-sectors throw  ;
 ; ----
 
@@ -584,8 +584,8 @@ transfer_mode:
 ; }doc
 
   dw to_drive_block_
-  dw rec_slash_blk_,star_ ; sequential number of the first sector of the block
-  dw sector_id_,buffer_data_,rec_slash_blk_
+  dw sectors_slash_block_,star_ ; sequential number of the first sector of the block
+  dw sector_id_,buffer_data_,sectors_slash_block_
   dw transfer_sectors_,throw_
   dw exit_
 
@@ -977,13 +977,13 @@ dot_drives.exit
 ;
 ; ----
 ; : sector# ( track sector -- n )
-;   swap rec/track * + ;
+;   swap sectors/track * + ;
 ; ----
 ;
 ; }doc
 
 
-  dw swap_,rec_slash_track_,star_,plus_
+  dw swap_,sectors_slash_track_,star_,plus_
   dw exit_
 
 endif ; testing_trdos
@@ -1054,5 +1054,8 @@ endif ; defined trdos
 ; 2017-03-11: Update notation of Z80 flags.
 ;
 ; 2017-03-12: Add experimental `sector#`.
+;
+; 2017-03-13: Update names including "rec" to "sector(s)";
+; update names including "blk" to "block(s)".
 
 ; vim: filetype=z80:textwidth=64

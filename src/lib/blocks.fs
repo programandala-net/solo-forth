@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702272315
+  \ Last modified: 201703130119
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -263,13 +263,13 @@
 
   \ : load-app ( "name" -- )
   \   loading-app on
-  \   blk/disk locate ?do   loading-app @ 0= ?leave  i load
-  \                 loop  end-app ; ?)
+  \   blocks/disk locate ?do   loading-app @ 0= ?leave  i load
+  \                      loop  end-app ; ?)
   \   \ XXX OLD -- incompatible with words that use `refill`
 
 : load-app ( "name" -- )
   loading-app on  locate blk !
-  begin   loading-app @  blk @ blk/disk <  and  while
+  begin   loading-app @  blk @ blocks/disk <  and  while
           blk @ (load) 1 blk +!
   repeat  end-app ; ?)
 
@@ -324,5 +324,8 @@
   \ library, with `?do`.
   \
   \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-03-13: Update names including "rec" to "sector(s)";
+  \ update names including "blk" to "block(s)".
 
   \ vim: filetype=soloforth

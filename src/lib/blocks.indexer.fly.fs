@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not usable yet
 
-  \ Last modified: 201702220028
+  \ Last modified: 201703130118
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -37,7 +37,7 @@ only forth definitions
 need common-indexer need get-order need set-order
 need bit-array need catch need use-default-need
 
-blk/disk bit-array indexed-blocks
+blocks/disk bit-array indexed-blocks
 
   \ doc{
   \
@@ -164,5 +164,8 @@ blk/disk bit-array indexed-blocks
   \ Update cross references.
   \
   \ 2017-02-21: Need `use-default-need`, which now is optional.
+  \
+  \ 2017-03-13: Update names including "rec" to "sector(s)";
+  \ update names including "blk" to "block(s)".
 
   \ vim: filetype=soloforth

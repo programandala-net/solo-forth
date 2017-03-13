@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201703112152
+; Last modified: 201703130114
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -412,14 +412,14 @@ dosior_to_ior.hl:
 ; ----
 ; : sector-id ( n -- x )
 ;   1+              \ the first sector is not used
-;   rec/track /mod  ( sector track )
+;   sectors/track /mod  ( sector track )
 ;   flip or ;
 ; ----
 
 ; }doc
 
   dw one_plus_
-  dw rec_slash_track_,slash_mod_
+  dw sectors_slash_track_,slash_mod_
   dw flip_,or_
   dw exit_
 
@@ -438,11 +438,11 @@ dosior_to_ior.hl:
 
 ; ----
 ; : transfer-block ( u -- )
-;   >drive-block
-;   rec/blk * dup    sector-id buffer-data
-;                    transfer-sector throw
-;                 1+ sector-id [ buffer-data b/rec + ] literal
-;                    transfer-sector throw ;
+;   >drive-block sectors/block * dup
+;     sector-id buffer-data
+;     transfer-sector throw
+;  1+ sector-id [ buffer-data b/sector + ] literal
+;     transfer-sector throw ;
 ; ----
 
 ; See also: `transfer-sector`.
@@ -450,7 +450,7 @@ dosior_to_ior.hl:
 ; }doc
 
   dw to_drive_block_
-  dw rec_slash_blk_,star_ ; sequential number of the first sector of the block
+  dw sectors_slash_block_,star_ ; sequential number of the first sector of the block
   dw dup_
   dw sector_id_
   dw buffer_data_
@@ -1213,5 +1213,8 @@ endif ; defined plus3dos
 ; library.
 ;
 ; 2017-03-11: Update notation of Z80 flags.
+;
+; 2017-03-13: Update names including "rec" to "sector(s)";
+; update names including "blk" to "block(s)".
 
 ; vim: filetype=z80:textwidth=64

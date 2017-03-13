@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703121646
+  \ Last modified: 201703130119
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -271,8 +271,8 @@ need .line# need /line# need .block# need /block#
   \
   \ }doc
 
-: qx-bounds ( -- u1 u2 )
-  scr @ /qx / /qx * /qx bounds 0 max swap blk/disk min swap ;
+: qx-bounds ( -- u1 u2 ) scr @ /qx / /qx * /qx bounds
+                         0 max swap blocks/disk min swap ;
 
   \ doc{
   \
@@ -292,7 +292,7 @@ need .line# need /line# need .block# need /block#
   \ type  0 inverse loop  cr  qx-columns +loop ;
   \
   \ XXX OLD -- The stepped outer loops makes the block count
-  \ overflow at the end of the disk, beyond `blk/disk`. The
+  \ overflow at the end of the disk, beyond `blocks/disk`. The
   \ next version uses one single loop:
 
   \ : qx-row? ( n -- f ) qx-columns mod 1+ qx-columns = ;
@@ -346,7 +346,7 @@ need .line# need /line# need .block# need /block#
   \ }doc
 
 : nx ( -- )
-  /qx scr @ + [ blk/disk 1- ] literal min scr ! qx ;
+  /qx scr @ + [ blocks/disk 1- ] literal min scr ! qx ;
 
   \ doc{
   \
@@ -470,5 +470,8 @@ need list-lines
   \
   \ 2017-03-12: Update the names of `stringer` words and
   \ mentions to it.
+  \
+  \ 2017-03-13: Update names including "rec" to "sector(s)";
+  \ update names including "blk" to "block(s)".
 
   \ vim: filetype=soloforth

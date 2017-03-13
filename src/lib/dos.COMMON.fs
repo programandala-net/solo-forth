@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703062115
+  \ Last modified: 201703130118
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -102,9 +102,9 @@ create block-drives ( -- ca ) max-drives allot
   \
   \ The length of the table is `max-drives`.  The first element
   \ of the table (offset 0) is the disk drive used for blocks
-  \ from number 0 to number ``blk/disk 1-``; the second element
+  \ from number 0 to number ``blocks/disk 1-``; the second element
   \ of the table (offset 1) the disk drive used for blocks from
-  \ number `blk/disk` to number ``blk/disk 2 * 1-``; and so on.
+  \ number `blocks/disk` to number ``blocks/disk 2 * 1-``; and so on.
   \
   \ The number of used block drives is hold in `#block-drives`.
   \
@@ -125,7 +125,7 @@ create block-drives ( -- ca ) max-drives allot
 need ?drive# need block-drive@ need ?block-drive
 
 : (>drive-block ( u1 -- u2 )
-  blk/disk /mod ( block drive ) dup ?drive#
+  blocks/disk /mod ( block drive ) dup ?drive#
   block-drive@ dup ?block-drive set-drive throw ;
 
   \ doc{
@@ -239,9 +239,9 @@ need ?drives need -block-drives need block-drive!
   \ Set the block drives to the drives specified by drive
   \ identifiers _c[n]..c[1]_. Subsequently drive _c[1]_ will be
   \ searched first for blocks from block number 0 to block
-  \ number ``blk/disk 1-``; drive _c[n+1]_ will be searched far
-  \ blocks from block number `blk/disk` to block number
-  \ ``blk/disk 2 * 1-``; and so on.
+  \ number ``blocks/disk 1-``; drive _c[n+1]_ will be searched far
+  \ blocks from block number `blocks/disk` to block number
+  \ ``blocks/disk 2 * 1-``; and so on.
   \
   \ If _n_ is zero, no drive is used for blocks.
   \
@@ -272,7 +272,7 @@ need block-drive@
   \ to the drives specified by drive
   \ identifiers
   \ _c[n]..c[1]_. Subsequently drive _c[1]_ will be searched
-  \ first for blocks, from block 0 to `blk/disk` minus one, and
+  \ first for blocks, from block 0 to `blocks/disk` minus one, and
   \ so on.
   \
   \ If _n_ is zero, no drive is used for blocks.
@@ -316,5 +316,8 @@ need block-drive@
   \ documentation. Remove the default configuration of
   \ `block-drives` that was set when `set-block-drives` was
   \ compiled.
+  \
+  \ 2017-03-13: Update names including "rec" to "sector(s)";
+  \ update names including "blk" to "block(s)".
 
   \ vim: filetype=soloforth

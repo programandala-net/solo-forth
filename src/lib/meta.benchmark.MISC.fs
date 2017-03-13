@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703112330
+  \ Last modified: 201703130116
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -712,8 +712,8 @@ $0005 1 +field-ca 5f-ca drop  -->
 
 need bench{ need }bench.
 
-: constsum ( -- n ) buffer-data b/rec + ;
-: litsum ( -- n ) [ buffer-data b/rec + ] literal ;
+: constsum ( -- n ) buffer-data b/sector + ;
+: litsum ( -- n ) [ buffer-data b/sector + ] literal ;
 
 : run ( u -- )
   cr ." Results for " dup u. ." iterations"
@@ -2521,5 +2521,8 @@ need slow-pixels need fast-pixels
   \ in the kernel.
   \
   \ 2017-03-11: Fix typo.
+  \
+  \ 2017-03-13: Update names including "rec" to "sector(s)";
+  \ update names including "blk" to "block(s)".
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703121643
+  \ Last modified: 201703130118
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -43,7 +43,7 @@
   \ That's why `contains` is not included in the block header.
 
 variable default-first-locatable  variable first-locatable
-variable last-locatable  blk/disk 1- last-locatable !
+variable last-locatable  blocks/disk 1- last-locatable !
   \ Variables that define the range of blocks to be searched
   \ by `located` and its descendants.
 
@@ -679,5 +679,8 @@ need get-drive
   \
   \ 2017-03-12: Update the names of `stringer` words, and
   \ mentions to it.
+  \
+  \ 2017-03-13: Update names including "rec" to "sector(s)";
+  \ update names including "blk" to "block(s)".
 
   \ vim: filetype=soloforth
