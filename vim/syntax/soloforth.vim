@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-03-13.
+" Updated:  2017-03-13
 "
 " See change log at the end of the file.
 
@@ -816,6 +816,7 @@ syn match soloforthDefine "\<\[compile]\>"
 
 "syn match soloforthNumber '\<-\=[0-9.]*[0-9.]\+\>'
 
+
 syn match soloforthNumber '\<-\=[0-9A-F.]\{2}\>'
 syn match soloforthNumber '\<-\=[0-9A-F.]\{4}\>'
 "syn match soloforthNumber '\<-\=[0-9A-F.]\{8}\>'
@@ -840,13 +841,16 @@ syn region soloforthString start=+\<.\\\"+ end=+"+ end=+$+
 syn match soloforthComment '\<(\s[^)]*)' contains=soloforthTodo
 syn match soloforthComment '\<\\\>.*$' contains=soloforthTodo
 
+" Comment regions have to come after the highlighting for numbers otherwise they have no effect:
+syn region soloforthComment start='\<0 ?(\>' end='\<?)\>' contains=soloforthTodo
+syn region soloforthComment start='\<0 \[if\]\>' end='\<\[then\]\>' contains=soloforthTodo
+
 " Block Titles
 " Adapted from fsb
 " http://programandala.net/en.program.fsb.html
 
 " syn match soloforthBlockTitle /^\.\?(\s.\+)\(\s\+.*\)\?$/
 syn match soloforthBlockTitle /^\.\?(\s.\{-})/
-
 
 syn match soloforthCharOps '\<char\s\+\S\+\>'
 syn match soloforthCharOps '\<\[char\]\s\+\S\+\>'
@@ -1147,7 +1151,8 @@ let b:current_syntax = "soloforth"
 " missing ones.
 "
 " 2017-03-13: Update names including "rec" to "sector(s)";
-" update names including "blk" to "block(s)".
+" update names including "blk" to "block(s)". Add comment
+" regions for `0 ?(` and `0 [if]`, adapted from <gforth.vim>.
 
 " --------------------------------------------------------------
 

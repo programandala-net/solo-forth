@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201703130122
+// Last modified 201703131356
 
 // Application development {{{1
 == Application development ==
@@ -671,7 +671,6 @@ graphics, sounds, etc) in one single disk.
 In practice, the problems to be solved are bigger than the possible
 benefit.
 
-
 .2017-02-13:
 
 Decide if lower-level factor words return a _dosior_ or an _ior_.
@@ -815,6 +814,21 @@ Implement a `map-b` word with a custom _disk change_ routine.
 `set-drive`, `open-disk` and `close-file` work on drive "a".  But when drive
 "b" is used, `close-file` returns ior -1006 (unrecognised disk format). This
 is a problem of fsb2's fb2dsk.
+
+// Uni-DOS {{{1
+== Uni-DOS ==
+
+.2017-03-13:
+
+The G+DOS version runs on Uni-DOS.
+
+Notes:
+
+- `cat` commands return _ior_ #-1148 (!), though the manual of Uni-DOS
+  lists `pcat` hook command as supported.
+- `delete-file` works.
+- `>file` works.
+- `file>` works.
 
 // Errors {{{1
 == Errors ==
