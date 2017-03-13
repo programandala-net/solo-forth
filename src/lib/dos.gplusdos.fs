@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703111635
+  \ Last modified: 201703131346
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -91,10 +91,10 @@
 
   \ doc{
   \
-  \ /ufia  ( -- n )
+  \ /ufia ( -- n )
   \
-  \ _n_ is the length of a UFIA (User File Information Area),
-  \ 24-byte structure which describes a file for system calls.
+  \ _n_ is the length of a UFIA (User File Information Area), a
+  \ 24-byte structure which describes a file.
   \
   \ See also: `ufia`, `ufia1`, `ufia2`.
   \
@@ -104,13 +104,12 @@
 
   \ doc{
   \
-  \ ufia1  ( -- a )
+  \ ufia1 ( -- a )
   \
   \ _a_ is the address of G+DOS UFIA1 (in the Plus D memory).
   \ A UFIA (User File Information Area) is a 24-byte structure
-  \ which describes a file for system calls.  G+DOS uses
-  \ ``ufia1`` and `ufia2` for its internal operations. Forth
-  \ words use `ufia` for system calls.
+  \ which describes a file.  See `ufia` for a detailed
+  \ description.
   \
   \ See also: `/ufia`.
   \
@@ -120,13 +119,12 @@
 
   \ doc{
   \
-  \ ufia1  ( -- a )
+  \ ufia2 ( -- a )
   \
   \ _a_ is the address of G+DOS UFIA2 (in the Plus D memory).
   \ A UFIA (User File Information Area) is a 24-byte structure
-  \ which describes a file for system calls.  G+DOS uses
-  \ `ufia1` and ``ufia2`` for its internal operations. Forth
-  \ words use `ufia` for system calls.
+  \ which describes a file.  See `ufia` for a detailed
+  \ description.
   \
   \ See also: `/ufia`.
   \
@@ -137,14 +135,14 @@
 
   \ doc{
   \
-  \ >ufiax  ( a1 a2 -- )
+  \ >ufiax ( a1 a2 -- )
   \
   \ Move a UFIA (User File Information Area) from _a1_ to _a2_,
   \ with the Plus D Memory paged in.
   \
   \ ``>ufiax`` is a common factor of `>ufia1` and `>ufia2`.
   \
-  \ See also: `ufia`, `/ufia`.
+  \ See also: `ufia`, `/ufia`, `ufia1`, `ufia2`.
   \
   \ }doc
 
@@ -157,7 +155,7 @@
 
   \ doc{
   \
-  \ >ufia1  ( a -- )
+  \ >ufia1 ( a -- )
   \
   \ Move a UFIA (User File Information Area) from _a_ to
   \ `ufia1`.
@@ -171,7 +169,7 @@
 
   \ doc{
   \
-  \ >ufia2  ( a -- )
+  \ >ufia2 ( a -- )
   \
   \ Move a UFIA (User File Information Area) from _a_ to
   \ `ufia2`.
@@ -192,7 +190,11 @@ create ufia  /ufia allot  ufia /ufia erase
   \
   \ Return constant address _a_ of a buffer used as UFIA (User
   \ File Information Area), a 24-byte structure which describes
-  \ a file for system calls.
+  \ a file.
+  \
+  \ Solo Forth words use ``ufia`` for G+DOS calls.  G+DOS uses
+  \ its own buffers `ufia1` and `ufia2` for internal
+  \ operations.
 
   \ |===
   \ | Offset | Bytes | Meaning
@@ -945,7 +947,7 @@ code ((cat ( -- ior )
 
   \ doc{
   \
-  \ ((cat  ( -- ior )
+  \ ((cat ( -- ior )
   \
   \ Show a disk catalogue of the current drive, calling the
   \ corresponding G+DOS hook command, which uses the data in
@@ -977,7 +979,7 @@ code ((cat ( -- ior )
   \ }doc
 
 [unneeded] wcat ?( need set-filename need (cat
-: wcat  ( ca len -- ) set-filename $14 (cat ; ?)
+: wcat ( ca len -- ) set-filename $14 (cat ; ?)
 
   \ doc{
   \
@@ -1006,7 +1008,7 @@ code ((cat ( -- ior )
   \
   \ }doc
 
-[unneeded] cat ?\ need wcat : cat  ( -- ) s" *" wcat ;
+[unneeded] cat ?\ need wcat : cat ( -- ) s" *" wcat ;
 
   \ doc{
   \
@@ -1256,50 +1258,66 @@ code c!dosvar ( b n -- )
 
 ( rename-file )
 
-  \ XXX UNDER DEVELOPMENT -- Second approach to implement
-  \ `rename-file`: copy part of the G+DOS routine, with a
-  \ different ending.
-
-need assembler need back-from-dos-error_ need patch
+need dos-in, need dos-out, need back-from-dos-error_
 need set-filename need ufia need >ufia1 need >ufia2
 
 code (rename-file ( -- ior )
 
-  b push, dos-in,
-    \ Save the Forth IP.
-    \ Page in the Plus D memory.
-  back-from-dos-error_ h ldp#, h push, 2066 sp stp,
-    \ Set G+DOS D_ERR_SP ($2066) so an error will go to
-    \   `back-from-dos-error_` instead of returning to BASIC.
-    \   This is needed because we are using direct calls to the
-    \   G+DOS ROM instead of hook codes.
+  C5 c, dos-in,
+    \ push bc                ; save the Forth IP
+    \ in a,(231)             ; page in the Plus D memory
+
+    \ Now set G+DOS D_ERR_SP ($2066) so an error will go to
+    \ `back-from-dos-error_` instead of returning to BASIC.
+    \ This is needed because we are using direct calls to the
+    \ G+DOS ROM instead of hook codes:
+
+  21 c, back-from-dos-error_ , E5 c, ED c, 73 c, 2066 ,
+    \ ld hl,back_from_dos_error_pfa
+    \ push hl
+    \ ld ($2066),sp
 
     \ The following code is a copy of G+DOS RENAME_RUN routine
-    \ ($257C), except its final part, which returns to BASIC.
+    \ ($257C), except its final part, which originally returns
+    \ to BASIC and therefore it has been modified:
 
-  2626 call, 2559 call, 167C z? ?jp,
-    \ call swap_ufias        ; Swap UFIA 1 & 2 in the DFCA.
-    \ call find_file_2559    ; Does the 2nd filename exist?
-    \ jp   z,rep_28          ; Error #28 if it does exist.
-  2626 call, 2559 call, 1678 nz? ?jp,
-    \ call swap_ufias        ; Swap UFIA 1 & 2 in the DFCA.
-    \ call find_file_2559    ; Does the 1st filename exist?
-    \ jp   nz,rep_26         ; Error #26 if it doesn't exist.
-  h incp, d push, 3E1F d ldp#, exde, 0A b ldp#, ldir, d pop,
-    \ inc  hl                ; Point to 1st filename.
-    \ push de                ; Save track and sector of its catalogue entry.
-    \ ld   de,ufia2.nstr2    ; Second filename.
+  2626 call, 2559 call, CA c, 167C ,
+    \ call swap_ufias        ; swap UFIA 1 & 2 in the DFCA
+    \ call find_file_2559    ; does the 2nd filename exist?
+    \ jp   z,rep_28          ; error #28 if it does exist
+  2626 call, 2559 call, C2 c, 1678 ,
+    \ call swap_ufias        ; swap UFIA 1 & 2 in the DFCA
+    \ call find_file_2559    ; does the 1st filename exist?
+    \ jp   nz,rep_26         ; error #26 if it doesn't exist
+  23 c, D5 c, 11 c, 3E1F , EB c, 01 c, #10 , ED c, B0 c, D1 c,
+    \ inc  hl                ; point to 1st filename
+    \ push de                ; save track and sector of its catalogue entry
+    \ ld   de,ufia2.nstr2    ; second filename
     \ ex   de,hl             ; HL = 2nd filename; DE = 1st filename
-    \ ld   bc,10             ; Filename length.
-    \ ldir                   ; Rename.
-    \ pop  de                ; Restore track and sector.
+    \ ld   bc,10             ; filename length
+    \ ldir                   ; rename
+    \ pop  de                ; restore track and sector
   0584 call,
-    \ call wsad              ; Write the CATalogue sector.
+    \ call wsad              ; write the CATalogue sector
 
-  dos-out, h pop, b pop, next ix ldp#, ' false jp, end-code
-    \ Page out the Plus D memory.
-    \ Consume the address of `back-from-dos-error_` that was pushed at the start.
-    \ Restore the Forth registers and exit returning an _ior_.
+  dos-out, E1 c, C1 c, DD c, 21 c, next , ' false jp, end-code
+    \ out (231),a            ; page out the Plus D memory
+    \ pop hl                 ; consume the address of `back-from-dos-error_`
+    \ pop bc                 ; restore the Forth IP
+    \ ld ix,next             ; restore the Forth IX
+    \ jp false_              ; exit returning a zero _ior_
+
+  \ doc{
+  \
+  \ (rename-file ( -- ior )
+  \
+  \ Rename the file named by the filename stored in `ufia1` to
+  \ the filename stored in `ufia2`.  and return error result
+  \ _ior_.
+  \
+  \ ``(rename-file`` is a factor of ``rename-file`.
+  \
+  \ }doc
 
 : rename-file ( ca1 len1 ca2 len2 -- ior )
   set-filename ufia >ufia2 set-filename ufia >ufia1
@@ -1310,7 +1328,7 @@ code (rename-file ( -- ior )
 
   \ doc{
   \
-  \ rename-file  ( ca1 len1 ca2 len2 -- ior )
+  \ rename-file ( ca1 len1 ca2 len2 -- ior )
   \
   \ Rename the file named by the character string _ca1 len1_ to
   \ the name in the character string _ca2 len2_ and return
@@ -1416,5 +1434,8 @@ code (rename-file ( -- ior )
   \ 2017-03-10: Improve documentation.
   \
   \ 2017-03-11: Improve documentation.
+  \
+  \ 2017-03-13: Test `rename-file`. Rewrite it with Z80
+  \ opcodes. Improve documentation.
 
   \ vim: filetype=soloforth
