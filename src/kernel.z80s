@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201703132052
+; Last modified: 201703140029
 
 include version.z80s
 
@@ -10929,19 +10929,18 @@ quit.begin:
   dw exit_
 
 ; ----------------------------------------------
-  _alias_header to_defer_,'>defer',,one_plus_
+  _alias_header to_action_,'>action',,one_plus_
 
 ; doc{
 ;
-; >defer ( xt -- a )
+; >action ( xt -- a )
 ;
-; Return the address _a_ that holds the xt currently associated
-; to the deferred word _xt_.
+; Return the address _a_ that holds the execution token
+; currently associated to the deferred word _xt_.
+;
+; See also: `defer`, `action-of`, `defer!`, `defer@`.
 ;
 ; }doc
-
-; XXX TODO -- rename to `>action`, after the standard
-; `action-of`?
 
 ; ----------------------------------------------
   _colon_header defer_store_,'defer!'
@@ -10950,13 +10949,15 @@ quit.begin:
 ;
 ; defer! ( xt1 xt2 -- )
 ;
-; Change the deferred word _xt2_ to execute _xt1_.
+; Set the deferred word _xt2_ to execute _xt1_.
 ;
 ; Origin: Forth-2012 (CORE EXT).
 ;
+; See also: `defer@`, `defer`, `>action`.
+;
 ; }doc
 
-  dw to_defer_,store_
+  dw to_action_,store_
   dw exit_
 
 ; ----------------------------------------------
