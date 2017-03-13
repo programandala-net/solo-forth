@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201703132035
+// Last modified 201703140003
 
 // Application development {{{1
 == Application development ==
@@ -1630,18 +1630,6 @@ Also, `end-module` is used by modules `module` and `begin-module`.
 // Names {{{1
 == Names ==
 
-.2017-03-01:
-
-Possible notation: "attra" for "screen attribute address",
-and "scra" for "screen address".
-
-Example:
-
-- Rename `bitmap>attr-addr` to `scra>attra`.
-- Rename `pixel-attr-addr` to `gxy>attra`.
-
-Or maybe something with "display" instead of "screen".
-
 .2017-02-24:
 
 Rename `(0-1-8-color.` and `(0-9-color.` after the current convention
@@ -1668,14 +1656,6 @@ Current names of some screen filters are too generic. Rename them:
 - `water` to `wave-screen`
 - `inverted` to `invert-screen`
 - `fade` to `fade-screen`
-
-.2017-01-28:
-
-Rename `(pixel-addr)` to `(pixel-addr`, and family.
-
-.2017-01-28:
-
-Rename `bitmap>attr-addr` to `screen>attr-addr`? More clear?
 
 .2017-01-05:
 

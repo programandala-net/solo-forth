@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703041851
+  \ Last modified: 201703132343
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -147,7 +147,7 @@ code g-emit-udg ( c -- )
 
 ( g-emit_ )
 
-need assembler need (pixel-addr)
+need assembler need gxy>scra_
 
 create g-emit_ ( -- a ) asm
 
@@ -159,7 +159,7 @@ create g-emit_ ( -- a ) asm
     h pop, h dec, h push, h inc,
       \ next line
 
-    b push, h b ldp, (pixel-addr) call, b pop,
+    b push, h b ldp, gxy>scra_ call, b pop,
       \ convert the coords H (x) and L (y) to an address in HL
       \ and a bit in A
 
@@ -238,5 +238,7 @@ create g-emit_ ( -- a ) asm
   \
   \ 2017-03-04: Update naming convention of Z80 routines, after
   \ the changes in the kernel.
+  \
+  \ 2017-03-13: Update name: `(pixel-addr)` to `gxy>scra_`.
 
   \ vim: filetype=soloforth

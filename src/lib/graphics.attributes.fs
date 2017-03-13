@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703021423
+  \ Last modified: 201703132351
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,11 +23,11 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-\ (attr-addr) attr attr-addr \
+( xy>attra_ xy>attr xy>attra )
 
-[unneeded] (attr-addr) ?(
+[unneeded] xy>attra_ ?(
 
-create (attr-addr) ( -- a ) asm
+create xy>attra_ ( -- a ) asm
 
   7B c, 0F c, 0F c, 0F c, 5F c, E6 c, E0 c, AA c, 6F c, 7B c,
     \ ld a,e    ; line to a $00..$17 (max %00010111)
@@ -47,7 +47,7 @@ create (attr-addr) ( -- a ) asm
 
   \ doc{
   \
-  \ (attr-addr) ( -- a )
+  \ xy>attra_ ( -- a )
   \
   \ Return the address _a_ of a Z80 routine that calculates the
   \ attribute address of a cursor position.  This is a modified
@@ -63,10 +63,10 @@ create (attr-addr) ( -- a ) asm
   \
   \ }doc
 
-[unneeded] attr ?( need (attr-addr)
+[unneeded] xy>attr ?( need xy>attra_
 
-code attr ( col row -- b )
-  D1 c, E1 c, 55 c, (attr-addr) call, 6E c, 26 c, 00 c,
+code xy>attr ( col row -- b )
+  D1 c, E1 c, 55 c, xy>attra_ call, 6E c, 26 c, 00 c,
     \ pop de ; E = row
     \ pop hl
     \ ld d,l ; D = col
@@ -78,17 +78,17 @@ code attr ( col row -- b )
 
   \ doc{
   \
-  \ attr ( col row -- b )
+  \ xy>attr ( col row -- b )
   \
   \ Return the color attribute _b_ of the given cursor
   \ coordinates _col row_.
   \
   \ }doc
 
-[unneeded] attr-addr ?( need (attr-addr)
+[unneeded] xy>attra ?( need xy>attra_
 
-code attr-addr ( col row -- a )
-  D1 c, E1 c, 55 c, (attr-addr) call, jppushhl, end-code ?)
+code xy>attra ( col row -- a )
+  D1 c, E1 c, 55 c, xy>attra_ call, jppushhl, end-code ?)
     \ pop de ; E = row
     \ pop hl
     \ ld d,l ; D = col
@@ -97,7 +97,7 @@ code attr-addr ( col row -- a )
 
   \ doc{
   \
-  \ attr-addr ( col row -- a )
+  \ xy>attra ( col row -- a )
   \
   \ Return the color attribute address _a_ of the given cursor
   \ coordinates _col row_.
@@ -123,5 +123,8 @@ code attr-addr ( col row -- a )
   \
   \ 2017-01-19: Remove remaining `exit` at the end of
   \ conditional interpretation, after `end-asm`.
+  \
+  \ 2017-03-13: Rename: `(attr-addr)` to `xy>attra_`,
+  \ `attr-addr` to `xy>attra`.  `attr` to `xy>attr`.
 
   \ vim: filetype=soloforth

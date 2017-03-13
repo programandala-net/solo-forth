@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132043
+  \ Last modified: 201703132342
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,10 +33,10 @@
 
 [unneeded] uncolored-circle-pixel ?(
 
-need assembler need (pixel-addr)
+need assembler need gxy>scra_
 
 create uncolored-circle-pixel ( -- a ) asm
-  h push, b push, d push, (pixel-addr) call,
+  h push, b push, d push, gxy>scra_ call,
   \ HL = screen address ; A = pixel position in hl (0..7)
   a b ld, b inc, 1 a ld#, rbegin  rrca,  rstep  m or, a m ld,
   d pop, b pop, h pop, ret, end-asm ?)
@@ -59,10 +59,10 @@ create uncolored-circle-pixel ( -- a ) asm
 
 [unneeded] colored-circle-pixel ?(
 
-need assembler need (pixel-addr)
+need assembler need gxy>scra_
 
 create colored-circle-pixel ( -- a ) asm
-  h push, b push, d push, (pixel-addr) call,
+  h push, b push, d push, gxy>scra_ call,
   \ HL = screen address ; A = pixel position in hl (0..7)
   22EC call, d pop, b pop, h pop, ret, end-asm ?)
   \ Note: $22EC is an alternative entry to ROM PLOT_SUB: +7 bytes
@@ -343,7 +343,8 @@ code circle ( gx gy b -- )
   \ 2017-03-04: Update naming convention of Z80 routines, after
   \ the changes in the kernel.
   \
-  \ 2017-03-13: Improve documentation.
+  \ 2017-03-13: Improve documentation.  Update name:
+  \ `(pixel-addr)` to `gxy>scra_`.
 
   \ vim: filetype=soloforth
 

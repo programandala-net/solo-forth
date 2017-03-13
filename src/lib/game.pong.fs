@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201702220020
+  \ Last modified: 201703132341
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -54,7 +54,7 @@ only forth definitions
 need columns need rows need udg[ need rnd need ??
 3 constant /kk need pressed?
 
-need cvariable need 2/ need pixel-addr
+need cvariable need 2/ need gxy>scra
 need g-emit-udg need ctoggle need g-at-xy
 
 need black need white need set-ink need brighty need papery
@@ -364,8 +364,8 @@ variable racket2-delay
   \ Draw the frame of the arena.
 
 : arena-line ( -- )
-  [ 0 96 pixel-addr nip ] literal columns %10101010 fill
-  [ 0 95 pixel-addr nip ] literal columns %01010101 fill ;
+  [ 0 96 gxy>scra nip ] literal columns %10101010 fill
+  [ 0 95 gxy>scra nip ] literal columns %01010101 fill ;
   \ Draw the line of the arena.
 
 : arena ( -- )
@@ -520,5 +520,7 @@ cr .( Type PONG to run)
   \ 2017-02-05: Fix loading: a comment had removed a `-->`.
   \ Add `pong-wordlist` for the words of the game. Show help
   \ message at the end of the loading.
+  \
+  \ 2017-03-13: Update name: `pixel-addr` to `gxy>scra`.
 
   \ vim: filetype=soloforth

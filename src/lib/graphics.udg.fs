@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132010
+  \ Last modified: 201703132357
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -423,11 +423,11 @@ code get-udg ( -- a ) 2A c, os-udg , jppushhl, end-code ?)
   \
   \ }doc
 
-\ (cursor-addr) cursor-addr \
+( xy>scra_ xy>scra )
 
-[unneeded] (cursor-addr) ?( need assembler
+[unneeded] xy>scra_ ?( need assembler
 
-create (cursor-addr) ( -- a ) asm
+create xy>scra_ ( -- a ) asm
 
   b a ld, %11000 and#, #64 add#, a d ld, b a ld, %111 and#,
   rrca, rrca, rrca, a e ld, c a ld, e add, a e ld,
@@ -455,7 +455,7 @@ create (cursor-addr) ( -- a ) asm
 
   \ doc{
   \
-  \ (cursor-addr) ( -- a )
+  \ xy>scra_ ( -- a )
   \
   \ Return address _a_ of a Z80 routine that calculates the
   \ screen address correspondent to given cursor coordinates.
@@ -469,16 +469,16 @@ create (cursor-addr) ( -- a ) asm
   \
   \ - DE = screen address
   \
-  \ See also: `cursor-addr`, `(pixel-addr)`.
+  \ See also: `xy>scra`, `gxy>scra_`.
   \
   \ }doc
 
-[unneeded] cursor-addr ?( need assembler need (cursor-addr)
+[unneeded] xy>scra ?( need assembler need xy>scra_
 
-code cursor-addr ( x y -- a )
+code xy>scra ( x y -- a )
 
   h pop, l a ld, h pop, b push, a b ld, l c ld,
-  (cursor-addr) call, exde, b pop, jppushhl, end-code ?)
+  xy>scra_ call, exde, b pop, jppushhl, end-code ?)
 
   \ pop hl
   \ ld a,l
@@ -493,20 +493,20 @@ code cursor-addr ( x y -- a )
 
   \ doc{
   \
-  \ cursor-addr ( x y -- a )
+  \ xy>scra ( x y -- a )
   \
   \ Convert cursor coordinates _x y_ to their correspondent
   \ screen address _a_.
   \
-  \ See also: `(cursor-addr)` , `pixel-addr`.
+  \ See also: `xy>scra_` , `gxy>scra`.
   \
   \ }doc
 
-\ (cursor-addr) cursor-addr \
+( xy>scra_ xy>scra )
 
-[unneeded] (cursor-addr) ?( need assembler
+[unneeded] xy>scra_ ?( need assembler
 
-create (cursor-addr) ( -- a ) asm
+create xy>scra_ ( -- a ) asm
 
   \ XXX TMP --
   \
@@ -537,7 +537,7 @@ create (cursor-addr) ( -- a ) asm
   \ How To Write ZX Spectrum Games – Chapter 9
   \ http://chuntey.arjunnair.in/?p=154
 
-  \ (cursor-addr) ( -- a )
+  \ xy>scra_ ( -- a )
   \
   \ Return address _a_ of a Z80 routine that calculates the
   \ screen address correspondent to given cursor coordinates.
@@ -551,13 +551,13 @@ create (cursor-addr) ( -- a ) asm
   \
   \ - HL = screen address
   \
-  \ See also: `cursor-addr`, `(pixel-addr)`.
+  \ See also: `xy>scra`, `gxy>scra_`.
 
-[unneeded] cursor-addr ?( need assembler need (cursor-addr)
+[unneeded] xy>scra ?( need assembler need xy>scra_
 
-code cursor-addr ( x y -- a )
+code xy>scra ( x y -- a )
 
-  h pop, d pop, l d ld, (cursor-addr) call, jppushhl,
+  h pop, d pop, l d ld, xy>scra_ call, jppushhl,
   end-code ?)
 
   \ pop hl           ; L = y coordinate
@@ -566,27 +566,27 @@ code cursor-addr ( x y -- a )
   \ call cursor_addr
   \ jp push_hl
 
-  \ cursor-addr ( x y -- a )
+  \ xy>scra ( x y -- a )
   \
   \ Convert cursor coordinates _x y_ to their correspondent
   \ screen address _a_.
   \
-  \ See also: `(cursor-addr)` , `pixel-addr`.
+  \ See also: `xy>scra_` , `gxy>scra`.
 
-\ (display-char-bitmap) \
+( display-char-bitmap_ )
 
-[unneeded] (display-char-bitmap) ?(
+[unneeded] display-char-bitmap_ ?(
 
-need assembler need (cursor-addr)
+need assembler need xy>scra_
 
-create (display-char-bitmap) ( -- a ) asm
+create display-char-bitmap_ ( -- a ) asm
 
   \ ; Input:
   \ ;   HL = address of the character bitmap
   \ ;   B = y coordinate (0..23)
   \ ;   C = x coordinate (0..31)
 
-  (cursor-addr) call, 8 b ld#,
+  xy>scra_ call, 8 b ld#,
 
   \   call cursor_addr ; DE = screen address
   \   ld b,8 ; pixels high
@@ -603,7 +603,7 @@ create (display-char-bitmap) ( -- a ) asm
 
   \ doc{
   \
-  \ (display-char-bitmap) ( -- a )
+  \ display-char-bitmap_ ( -- a )
   \
   \ Return address _a_ of a Z80 routine that displays
   \ the bitmap of a character at given cursor coordinates.
@@ -616,25 +616,25 @@ create (display-char-bitmap) ( -- a ) asm
   \
   \ }doc
 
-\ (display-char-bitmap) \
+( display-char-bitmap_ )
 
   \ XXX TMP --
   \
   \ Alternative version that uses the version of
-  \ `(cursor-addr)` that does not use the BC register.
+  \ `xy>scra_` that does not use the BC register.
 
-[unneeded] (display-char-bitmap) ?(
+[unneeded] display-char-bitmap_ ?(
 
-need assembler need (cursor-addr)
+need assembler need xy>scra_
 
-create (display-char-bitmap) ( -- a ) asm
+create display-char-bitmap_ ( -- a ) asm
 
   \ ; Input:
   \ ;   HL = address of the character bitmap
   \ ;   D = y coordinate (0..23)
   \ ;   E = x coordinate (0..31)
 
-  (cursor-addr) call,
+  xy>scra_ call,
 
   \   push hl
   \   call cursor_addr      ; HL = screen address
@@ -654,7 +654,7 @@ create (display-char-bitmap) ( -- a ) asm
 
   end-asm ?)
 
-  \ (display-char-bitmap) ( -- a )
+  \ display-char-bitmap_ ( -- a )
   \
   \ Return address _a_ of a Z80 routine that displays
   \ the bitmap of a character at given cursor coordinates.
@@ -671,7 +671,7 @@ create (display-char-bitmap) ( -- a ) asm
 
 [unneeded] at-xy-display-udg ?(
 
-need assembler need (display-char-bitmap) need os-udg
+need assembler need display-char-bitmap_ need os-udg
 
 unused code at-xy-display-udg ( c x y -- )
 
@@ -684,7 +684,7 @@ unused code at-xy-display-udg ( c x y -- )
   \ ld e,l                    ; E = x coordinate
 
   h pop, b push, d b ld, e c ld, h addp, h addp, h addp,
-  os-udg d ftp, d addp, (display-char-bitmap) call,
+  os-udg d ftp, d addp, display-char-bitmap_ call,
 
   \ pop hl                    ; HL = _c_ (0..255), H must be 0
   \ push bc                   ; save Forth IP
@@ -720,7 +720,7 @@ unused code at-xy-display-udg ( c x y -- )
 
 [unneeded] udg-at-xy-display ?(
 
-need assembler need (display-char-bitmap) need os-udg
+need assembler need display-char-bitmap_ need os-udg
 
 unused code udg-at-xy-display ( x y c -- )
 
@@ -734,7 +734,7 @@ unused code udg-at-xy-display ( x y c -- )
   \ add hl,de       ; HL = address of the bitmap of _c_
 
   d pop, e a ld, d pop, b push, a b ld, e c ld,
-  (display-char-bitmap) call,
+  display-char-bitmap_ call,
 
   \ pop de                    ; E = y coordinate
   \ ld a,e                    ; A = y coordinate
@@ -857,6 +857,10 @@ unused code udg-at-xy-display ( x y c -- )
   \ 2017-02-27: Move `get-font` and `rom-font` to the new
   \ module <printing.fonts.fs>.
   \
-  \ 2017-03-13: Improve documentation.
+  \ 2017-03-13: Improve documentation.  Update references:
+  \ `(pixel-addr)` to `gxy>scra_`, `pixel-addr` to `gxy>scra`.
+  \ Rename: `cursor-addr` to `xy>scra`, `(cursor-addr)` to
+  \ `xy>scra_`, `(display-char-bitmap)` to
+  \ `display-char-bitmap_`.
 
   \ vim: filetype=soloforth

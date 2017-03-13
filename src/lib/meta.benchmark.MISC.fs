@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703130116
+  \ Last modified: 201703132346
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -2384,7 +2384,7 @@ need >body need bench{ need }bench.
 ( set-pixel-bench )
 
 need bench{ need }bench need bench.
-need slow-(pixel-addr) need fast-(pixel-addr) need set-pixel
+need slow-gxy>scra_ need fast-gxy>scra_ need set-pixel
 need j
 
 : set-pixel-bench ( -- d )
@@ -2392,15 +2392,15 @@ need j
     192 0 ?do  256 0 ?do  i j set-pixel  loop  loop
   }bench ;
 
-: mode ( xt -- ) ['] (pixel-addr) defer! ;
-: slow ( -- ) ['] slow-(pixel-addr) mode ;
-: fast ( -- ) ['] fast-(pixel-addr) mode ;
+: mode ( xt -- ) ['] gxy>scra_ defer! ;
+: slow ( -- ) ['] slow-gxy>scra_ mode ;
+: fast ( -- ) ['] fast-gxy>scra_ mode ;
 
 : run ( -- )
   cls fast set-pixel-bench cls slow set-pixel-bench cls
   ." Results of set-pixel in frames:" cr
-  ." slow-(pixel-addr):" bench. cr
-  ." fast-(pixel-addr):" bench. cr ;
+  ." slow-gxy>scra_:" bench. cr
+  ." fast-gxy>scra_:" bench. cr ;
 
   \ Date            Frames (1 frame = 50th of second)
   \ --------------  ---------------------------------
@@ -2523,6 +2523,8 @@ need slow-pixels need fast-pixels
   \ 2017-03-11: Fix typo.
   \
   \ 2017-03-13: Update names including "rec" to "sector(s)";
-  \ update names including "blk" to "block(s)".
+  \ update names including "blk" to "block(s)".  Rename:
+  \ `(pixel-addr)` to `gxy>scra_`, `fast-(pixel-addr)` to
+  \ `fast-gxy>scra_`, `slow-(pixel-addr)` to `slow-gxy>scra_`.
 
   \ vim: filetype=soloforth

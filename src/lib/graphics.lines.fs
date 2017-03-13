@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132013
+  \ Last modified: 201703132343
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -121,7 +121,7 @@ code rdraw176 ( gx gy -- )
 
   \ XXX UNDER DEVELOPMENT -- not usable yet
 
-need assembler need l: need os-coords need (pixel-addr)
+need assembler need l: need os-coords need gxy>scra_
 
 code rdraw ( gx gy -- )
 
@@ -223,7 +223,7 @@ code rdraw ( gx gy -- )
     \  dec     a
     \  ld      c,a
 
-  (pixel-addr) call, 22EC 07 + call, exx, c a ld, rstep
+  gxy>scra_ call, 22EC 07 + call, exx, c a ld, rstep
     \  call    pixel_addr ; alternative routine for 0..191 gy
     \  call    $22EC ; alternative entry to PLOT-SUB ROM routine
     \  exx
@@ -372,6 +372,7 @@ need x1 need incx need y1 need incy
   \
   \ 2017-02-17: Update cross references.
   \
-  \ 2017-03-13: Improve documentation.
+  \ 2017-03-13: Improve documentation.  Update name:
+  \ `(pixel-addr)` to `gxy>scra_`.
 
   \ vim: filetype=soloforth

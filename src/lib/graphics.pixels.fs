@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132044
+  \ Last modified: 201703132353
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,52 +27,52 @@
   \ To-do
 
   \ XXX TODO -- Reorganize relation between
-  \ `slow-(pixel-addr)`, `(pixel-addr)` and
-  \ `fast-(pixel-addr)`. Remove `fast-(pixel-addr)` and the
-  \ deferred `(pixel-addr)`, then rename `slow-(pixel-addr)` to
-  \ `(pixel-addr)`.
+  \ `slow-gxy>scra_`, `gxy>scra_` and
+  \ `fast-gxy>scra_`. Remove `fast-gxy>scra_` and the
+  \ deferred `gxy>scra_`, then rename `slow-gxy>scra_` to
+  \ `gxy>scra_`.
 
-\ (pixel-addr) slow-(pixel-addr) fast-(pixel-addr) \
+\ gxy>scra_ slow-gxy>scra_ fast-gxy>scra_ \
 
-[unneeded] (pixel-addr) [unneeded] slow-(pixel-addr) and ?(
+[unneeded] gxy>scra_ [unneeded] slow-gxy>scra_ and ?(
 
-defer (pixel-addr) ( -- a )
+defer gxy>scra_ ( -- a )
 
   \ doc{
   \
-  \ (pixel-addr) ( -- a )
+  \ gxy>scra_ ( -- a )
   \
-  \ A deferred word that executes `fast-(pixel-addr)` or, by
-  \ default, `slow-(pixel-addr)`:  Return address _a_ of an
+  \ A deferred word that executes `fast-gxy>scra_` or, by
+  \ default, `slow-gxy>scra_`:  Return address _a_ of an
   \ alternative to the PIXEL-ADD ROM routine ($22AA), to let
   \ the range of the y coordinate be 0..191 instead of 0..175.
   \
-  \ See also: `(pixel-addr176)`, `(cursor-addr)`.
+  \ See also: `gxy176>scra_`, `xy>scra_`.
   \
   \ }doc
 
-create slow-(pixel-addr) ( -- a ) asm
+create slow-gxy>scra_ ( -- a ) asm
   3E c, BF c, 90 00 + c, C3 c, 22B0 , end-asm
   \ ld a,191 ; max Y coordinate
   \ sub b
   \ jp $22B0 ; and return
 
-' slow-(pixel-addr) ' (pixel-addr) defer! ?)
+' slow-gxy>scra_ ' gxy>scra_ defer! ?)
 
   \ doc{
   \
-  \ slow-(pixel-addr) ( -- a )
+  \ slow-gxy>scra_ ( -- a )
   \
   \ Return address _a_ of an alternative entry point to the
   \ PIXEL-ADD ROM routine ($22AA), to let the range of the y
   \ coordinate be 0..191 instead of 0..175.
   \
-  \ This is the default action of `(pixel-addr)`.
+  \ This is the default action of `gxy>scra_`.
   \
-  \ When `fast-(pixel-addr)` (which is faster but bigger, and
+  \ When `fast-gxy>scra_` (which is faster but bigger, and
   \ requires the assembler) is needed, the application must use
-  \ ``need fast-(pixel-addr)`` before ``need set-pixel`` or any
-  \ other word that needs `(pixel-addr)`.
+  \ ``need fast-gxy>scra_`` before ``need set-pixel`` or any
+  \ other word that needs `gxy>scra_`.
   \
   \ Input registers:
 
@@ -85,15 +85,15 @@ create slow-(pixel-addr) ( -- a ) asm
   \ - A = position of the pixel in the byte address (0..7),
   \       note: position 0=bit 7, position 7=bit 0.
 
-  \ See also: `(pixel-addr176)`.
+  \ See also: `gxy176>scra_`.
   \
   \ }doc
 
-[unneeded] fast-(pixel-addr) ?(
+[unneeded] fast-gxy>scra_ ?(
 
-need (pixel-addr) need assembler
+need gxy>scra_ need assembler
 
-create fast-(pixel-addr) ( -- a ) asm
+create fast-gxy>scra_ ( -- a ) asm
 
   #191 a ld#, b sub,  a b ld, rra, scf, rra, a and, rra,
     \ B = adjusted Y coordinate (0..191)
@@ -123,24 +123,24 @@ create fast-(pixel-addr) ( -- a ) asm
     \ L = low byte
     \ A = pixel position
 
-' fast-(pixel-addr) ' (pixel-addr) defer! ?)
+' fast-gxy>scra_ ' gxy>scra_ defer! ?)
 
   \ doc{
   \
-  \ fast-(pixel-addr) ( -- a )
+  \ fast-gxy>scra_ ( -- a )
   \
   \ Return address _a_ of a a modified copy of the PIXEL-ADD
   \ ROM routine ($22AA), to let the range of the y coordinate
   \ be 0..191 instead of 0..175.
   \
-  \ This code is a bit faster than `slow-(pixel-addr)` because
+  \ This code is a bit faster than `slow-gxy>scra_` because
   \ the necessary jump to the ROM is saved and a useless `and
   \ a` has been removed. But in most cases the speed gain is so
   \ small (only 0.01: see `set-pixel-bench`) that it's not
   \ worth the extra space, including the assembler.
   \
-  \ When ``fast-(pixel-addr)`` is loaded, it is set as the
-  \ current action of `(pixel-addr)`.
+  \ When ``fast-gxy>scra_`` is loaded, it is set as the
+  \ current action of `gxy>scra_`.
   \
   \ Input registers:
 
@@ -153,17 +153,17 @@ create fast-(pixel-addr) ( -- a ) asm
   \ - A = position of the pixel in the byte address (0..7),
   \       note: position 0=bit 7, position 7=bit 0.
 
-  \ See also: `(pixel-addr176)`.
+  \ See also: `gxy176>scra_`.
   \
   \ }doc
 
-\ (pixel-addr176) pixel-addr176 pixel-addr \
+\ gxy176>scra_ gxy176>scra gxy>scra \
 
-[unneeded] (pixel-addr176) ?(
+[unneeded] gxy176>scra_ ?(
 
   \ XXX UNDER DEVELOPMENT -- 2016-12-26
 
-create (pixel-addr176) ( -- a ) asm
+create gxy176>scra_ ( -- a ) asm
   3E c, #175 c, 90 00 + c, C3 c, 22B0 , end-asm ?)
   \ ld a,175 ; max Y coordinate in BASIC
   \ sub b
@@ -171,7 +171,7 @@ create (pixel-addr176) ( -- a ) asm
 
   \ doc{
   \
-  \ (pixel-addr176) ( -- a )
+  \ gxy176>scra_ ( -- a )
   \
   \ Return address _a_ of a routine that uses an alternative
   \ entry point to the PIXEL-ADD ROM routine ($22AA), to bypass
@@ -188,20 +188,20 @@ create (pixel-addr176) ( -- a ) asm
   \ - A = position of the pixel in the byte address (0..7),
   \       note: position 0=bit 7, position 7=bit 0.
 
-  \ See also: `pixel-addr176`, `(pixel-addr)`.
+  \ See also: `gxy176>scra`, `gxy>scra_`.
   \
   \ }doc
 
-[unneeded] pixel-addr176 ?( need (pixel-addr176)
+[unneeded] gxy176>scra ?( need gxy176>scra_
 
-code pixel-addr176 ( gx gy -- n a )
+code gxy176>scra ( gx gy -- n a )
   E1 c,  D1 c, C5 c, 40 05 + c, 48 03 + c,
   \ pop hl
   \ pop de
   \ push bc
   \ ld b,l ; b=gy
   \ ld c,e ; c=gx
-  CD c, (pixel-addr176) , C1 c, 16 c, 0 c,  58 07 + c,
+  CD c, gxy176>scra_ , C1 c, 16 c, 0 c,  58 07 + c,
   \ call pixel_addr176
   \ pop bc
   \ ld d,0
@@ -211,19 +211,19 @@ code pixel-addr176 ( gx gy -- n a )
 
   \ doc{
   \
-  \ pixel-addr176 ( gx gy -- n a )
+  \ gxy176>scra ( gx gy -- n a )
   \
   \ Return screen address _a_ and pixel position _n_ (0..7) of
   \ pixel coordinates _gx_ (0..255) and _gy_ (0..175).
   \
-  \ See also: `(pixel-addr176)`, `pixel-addr`, `cursor-addr`.
+  \ See also: `gxy176>scra_`, `gxy>scra`, `xy>scra`.
   \
   \ }doc
 
-[unneeded] pixel-addr ?( need (pixel-addr)
+[unneeded] gxy>scra ?( need gxy>scra_
 
-code pixel-addr ( gx gy -- n a )
-  E1 c,  D1 c, C5 c, 40 05 + c, 48 03 + c, CD c, (pixel-addr) ,
+code gxy>scra ( gx gy -- n a )
+  E1 c,  D1 c, C5 c, 40 05 + c, 48 03 + c, CD c, gxy>scra_ ,
   \ pop hl
   \ pop de
   \ push bc
@@ -238,18 +238,18 @@ code pixel-addr ( gx gy -- n a )
 
   \ doc{
   \
-  \ pixel-addr ( gx gy -- n a )
+  \ gxy>scra ( gx gy -- n a )
   \
   \ Return screen address _a_ and pixel position _n_ (0..7) of
   \ pixel coordinates _gx_ (0..255) and _gy_ (0..191).
   \
-  \ See also: `(pixel-addr)`, `pixel-addr176`, `cursor-addr`.
+  \ See also: `gxy>scra_`, `gxy176>scra`, `xy>scra`.
   \
   \ }doc
 
 ( plot plot176 )
 
-[unneeded] plot ?( need (pixel-addr)
+[unneeded] plot ?( need gxy>scra_
 
 code plot ( gx gy -- )
 
@@ -258,7 +258,7 @@ code plot ( gx gy -- )
     \ pop hl
     \ pop bc            ; C = x coordinate
     \ ld b,l            ; B = y coordinate (0..191)
-  ED c, 43 c, 5C7D , CD c, (pixel-addr) ,
+  ED c, 43 c, 5C7D , CD c, gxy>scra_ ,
     \ ld ($5C7D),bc     ; update COORDS
     \ call pixel_addr   ; hl = screen address
     \                   ; A = pixel position in hl (0..7)
@@ -316,11 +316,11 @@ code plot176 ( gx gy -- )
 
 ( set-pixel set-pixel176 )
 
-[unneeded] set-pixel?( need (pixel-addr) need assembler
+[unneeded] set-pixel?( need gxy>scra_ need assembler
 
 code set-pixel ( gx gy -- )
 
-  h pop, d pop, b push, l b ld, e c ld, (pixel-addr) call,
+  h pop, d pop, b push, l b ld, e c ld, gxy>scra_ call,
   a b ld, b inc, 1 a ld#,
   rbegin  rrca,  rstep
   m or, a m ld,  \ combine pixel with byte in the screen
@@ -345,11 +345,11 @@ code set-pixel ( gx gy -- )
   \
   \ }doc
 
-[unneeded] set-pixel176 ?( need assembler need (pixel-addr176)
+[unneeded] set-pixel176 ?( need assembler need gxy176>scra_
 
 code set-pixel176 ( gx gy -- )
 
-  h pop, d pop, b push, l b ld, e c ld, (pixel-addr176) call,
+  h pop, d pop, b push, l b ld, e c ld, gxy176>scra_ call,
   a b ld, b inc, 1 a ld#,
   rbegin  rrca,  rstep
   m or, a m ld,  \ combine pixel with byte in the screen
@@ -379,12 +379,12 @@ code set-pixel176 ( gx gy -- )
 
 ( set-save-pixel176 )
 
-need assembler need (pixel-addr176) need os-coords
+need assembler need gxy176>scra_ need os-coords
 
 code set-save-pixel176 ( gx gy -- )
 
   h pop, d pop, b push,
-  l b ld, e c ld, os-coords bc stp, (pixel-addr176) call,
+  l b ld, e c ld, os-coords bc stp, gxy176>scra_ call,
   a b ld, b inc, 1 a ld#,
   rbegin  rrca,  rstep
   m or, a m ld,  \ combine pixel with byte in the screen
@@ -414,11 +414,11 @@ code set-save-pixel176 ( gx gy -- )
 
 ( reset-pixel reset-pixel176 )
 
-[unneeded] reset-pixel ?( need (pixel-addr) need assembler
+[unneeded] reset-pixel ?( need gxy>scra_ need assembler
 
 code reset-pixel ( gx gy -- )
 
-  h pop, d pop, b push, l b ld, e c ld, (pixel-addr) call,
+  h pop, d pop, b push, l b ld, e c ld, gxy>scra_ call,
   a b ld, b inc, 1 a ld#, rbegin  rrca,  rstep,
   cpl, m and, a m ld,  \ combine pixel with byte in the screen
   b pop, jpnext, end-code ?)
@@ -442,12 +442,11 @@ code reset-pixel ( gx gy -- )
   \
   \ }doc
 
-[unneeded] reset-pixel176 ?( need (pixel-addr176)
-                              need assembler
+[unneeded] reset-pixel176 ?( need gxy176>scra_ need assembler
 
 code reset-pixel176 ( gx gy -- )
 
-  h pop, d pop, b push, l b ld, e c ld, (pixel-addr176) call,
+  h pop, d pop, b push, l b ld, e c ld, gxy176>scra_ call,
   a b ld, b inc, 1 a ld#, rbegin  rrca,  rstep,
   cpl, m and, a m ld,  \ combine pixel with byte in the screen
   b pop, jpnext, end-code
@@ -475,11 +474,11 @@ code reset-pixel176 ( gx gy -- )
 
 ( toggle-pixel toggle-pixel176 )
 
-[unneeded] toggle-pixel ?( need (pixel-addr) need assembler
+[unneeded] toggle-pixel ?( need gxy>scra_ need assembler
 
 code toggle-pixel ( gx gy -- )
 
-  h pop, d pop, b push, l b ld, e c ld, (pixel-addr) call,
+  h pop, d pop, b push, l b ld, e c ld, gxy>scra_ call,
   a b ld, b inc, 1 a ld#, rbegin  rrca,  rstep
   m xor, a m ld,  \ combine pixel with byte in the screen
   b pop, jpnext, end-code ?)
@@ -504,12 +503,11 @@ code toggle-pixel ( gx gy -- )
   \
   \ }doc
 
-[unneeded] toggle-pixel176 ?( need (pixel-addr176)
-                               need assembler
+[unneeded] toggle-pixel176 ?( need gxy176>scra_ need assembler
 
 code toggle-pixel176 ( gx gy -- )
 
-  h pop, d pop, b push, l b ld, e c ld, (pixel-addr176) call,
+  h pop, d pop, b push, l b ld, e c ld, gxy176>scra_ call,
   a b ld, b inc, 1 a ld#, rbegin  rrca,  rstep
   m xor, a m ld,  \ combine pixel with byte in the screen
   b pop, jpnext, end-code ?)
@@ -537,10 +535,10 @@ code toggle-pixel176 ( gx gy -- )
 
 ( get-pixel get-pixel176 )
 
-[unneeded] get-pixel ?( need (pixel-addr) need assembler
+[unneeded] get-pixel ?( need gxy>scra_ need assembler
 
 code get-pixel ( gx gy -- f )
-  h pop, d pop, b push, l b ld, e c ld, (pixel-addr) call,
+  h pop, d pop, b push, l b ld, e c ld, gxy>scra_ call,
   \ HL = screen address
   \ A = pixel position in HL
   a b ld, b inc, m a ld,
@@ -548,10 +546,10 @@ code get-pixel ( gx gy -- f )
   b pop,   \ restore the Forth IP
   1 and#, ' true nz? ?jp, ' false jp, end-code ?)
 
-[unneeded] get-pixel176 ?( need (pixel-addr176) need assembler
+[unneeded] get-pixel176 ?( need gxy176>scra_ need assembler
 
 code get-pixel176 ( gx gy -- f )
-  h pop, d pop, b push, l b ld, e c ld, (pixel-addr176) call,
+  h pop, d pop, b push, l b ld, e c ld, gxy176>scra_ call,
   \ HL = screen address
   \ A = pixel position in HL
   a b ld, b inc, m a ld,
@@ -649,11 +647,11 @@ code fast-pixels ( -- n )
   \
   \ }doc
 
-( bitmap>attr-addr pixel-attr-addr x>gx y>gy gx>x gy>y )
+( scra>attra gxy>attra x>gx y>gy gx>x gy>y )
 
-[unneeded] bitmap>attr-addr ?(
+[unneeded] scra>attra ?(
 
-code bitmap>attr-addr ( a1 -- a2 )
+code scra>attra ( a1 -- a2 )
   E1 c, 7C c, 0F c, 0F c, 0F c, E6 c, 03 c, F6 c, 58 c, 67 c,
     \ pop hl
     \ ld a,h ; fetch high byte $40..$57
@@ -672,22 +670,20 @@ code bitmap>attr-addr ( a1 -- a2 )
 
   \ doc{
   \
-  \ bitmap>attr-addr ( a1 -- a2 )
+  \ scra>attra ( a1 -- a2 )
   \
   \ Convert screen bitmap address _a1_ to its correspondent
   \ attribute address _a2_.
   \
   \ }doc
 
-[unneeded] pixel-attr-addr ?( need pixel-addr
-                              need bitmap>attr-addr
+[unneeded] gxy>attra ?( need gxy>scra need scra>attra
 
-: pixel-attr-addr ( gx gy -- a )
-  pixel-addr nip bitmap>attr-addr ; ?)
+: gxy>attra ( gx gy -- a ) gxy>scra nip scra>attra ; ?)
 
   \ doc{
   \
-  \ pixel-attr-addr ( gx gy -- a )
+  \ gxy>attra ( gx gy -- a )
   \
   \ Convert pixel coordinates _gx gy_ to their correspondent
   \ attribute address _a_.
@@ -746,7 +742,7 @@ code bitmap>attr-addr ( a1 -- a2 )
   \
   \ }doc
 
-( pixel-attr-addr2 )
+( gxy>attra2 )
 
   \ XXX UNDER DEVELOPMENT 2017-03-02
   \
@@ -754,7 +750,7 @@ code bitmap>attr-addr ( a1 -- a2 )
 
 need assembler
 
-code pixel-attr-addr2 ( gx gy -- a )
+code gxy>attra2 ( gx gy -- a )
 
   exx, b pop, h pop, l b ld,
   \ exx                 ; save Forth IP
@@ -796,9 +792,9 @@ code pixel-attr-addr2 ( gx gy -- a )
 
   \ XXX TMP -- Test tool:
 
-need pixel-attr-addr
-: p1 ( x y -- ) pixel-attr-addr u. ;
-: p2 ( x y -- ) pixel-attr-addr1 u. ;
+need gxy>attra
+: p1 ( x y -- ) gxy>attra u. ;
+: p2 ( x y -- ) gxy>attra1 u. ;
 : p ( x y -- ) 2dup p1 p2 ;
 
   \ ===========================================================
@@ -853,6 +849,13 @@ need pixel-attr-addr
   \
   \ 2017-03-13: Add `x>gx`, `y>gy`, `gx>x`, `gy>y`.
   \
-  \ 2017-03-13: Improve documentation.
+  \ 2017-03-13: Improve documentation.  Rename:
+  \ `bitmap>attr-addr` to `scra>attra`, `pixel-attr-addr` to
+  \ `gxy>attra`, `(pixel-addr176)` to  `gxy176>scra_`
+  \ `pixel-addr176` to  `gxy176>scra`, `(pixel-addr)` to
+  \ `gxy>scra_`, `fast-(pixel-addr)` to  `fast-gxy>scra_`,
+  \ `slow-(pixel-addr)` to  `slow-gxy>scra_`, `pixel-addr` to
+  \ `gxy>scra`.  Update references: `(cursor-addr)` to
+  \ `xy>scra_`, `cursor-addr` to  `xy>scra`.
 
   \ vim: filetype=soloforth
