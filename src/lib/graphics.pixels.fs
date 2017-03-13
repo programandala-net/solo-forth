@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703012208
+  \ Last modified: 201703131749
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -648,7 +648,7 @@ code fast-pixels ( -- n )
   \
   \ }doc
 
-( bitmap>attr-addr pixel-attr-addr )
+( bitmap>attr-addr pixel-attr-addr x>gx y>gy gx>x gy>y )
 
 [unneeded] bitmap>attr-addr ?(
 
@@ -690,6 +690,58 @@ code bitmap>attr-addr ( a1 -- a2 )
   \
   \ Convert pixel coordinates _gx gy_ to their correspondent
   \ attribute address _a_.
+  \
+  \ }doc
+
+[unneeded] x>gx
+
+?\ need alias need 8* ' 8* alias x>gx ( x -- gx )
+
+  \ doc{
+  \
+  \ x>gx ( x -- gx )
+  \
+  \ Convert column _x_ to graphic x coordinate _gx_.
+  \
+  \ See also: `y>gy`, `gx>x`.
+  \
+  \ }doc
+
+[unneeded] y>gy
+
+?\ need rows need 8* : y>gy ( y -- gy ) rows swap - 8* 1- ;
+
+  \ doc{
+  \
+  \ y>gy ( y -- gy )
+  \
+  \ Convert row _y_ to graphic y coordinate _gy_.
+  \
+  \ See also: `x>gx`, `gy>y`.
+  \
+  \ }doc
+
+[unneeded] gx>x ?\ : gx>x ( gx -- x ) 8 / ;
+
+  \ doc{
+  \
+  \ gx>x ( gx -- x )
+  \
+  \ Convert graphic x coordinate _gx_ to column _x_.
+  \
+  \ See also: `gy>y`, `x>gx`.
+  \
+  \ }doc
+
+[unneeded] gy>y ?\ : gy>y ( gy -- y ) #191 swap - 8 / ;
+
+  \ doc{
+  \
+  \ gy>y ( gy -- y )
+  \
+  \ Convert graphic y coordinate _gy_ to row _y_.
+  \
+  \ See also: `gx>x`, `y>gy`.
   \
   \ }doc
 
@@ -797,5 +849,7 @@ need pixel-attr-addr
   \ 2017-02-20: Improve documentation.
   \
   \ 2017-02-28: Improve documentation.
+  \
+  \ 2017-03-13: Add `x>gx`, `y>gy`, `gx>x`, `gy>y`.
 
   \ vim: filetype=soloforth
