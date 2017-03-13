@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703041852
+  \ Last modified: 201703131955
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -382,12 +382,11 @@ code !bank ( x a n -- )
   \ Store cell _x_ into address _a_ ($C000..$FFFF) of bank _n_
   \ (0..7).
   \
-  \ This word is written in Z80. Its equivalent code in Forth
-  \ is the following:
+  \ ``!bank`` is written in Z80. Its equivalent definition in
+  \ Forth is the following:
 
   \ ----
-  \ : !bank ( x a n -- )
-  \   bank ! default-bank ;
+  \ : !bank ( x a n -- ) bank ! default-bank ;
   \ ----
 
   \ }doc
@@ -410,12 +409,11 @@ code c!bank ( c ca n -- ) D1 c, e-bank_ call,
   \ Store _c_ into address _ca_ ($C000..$FFFF) of bank _n_
   \ (0..7).
   \
-  \ This word is written in Z80. Its equivalent code in Forth
-  \ is the following:
+  \ ``c!bank`` is written in Z80. Its equivalent definition in
+  \ Forth is the following:
 
   \ ----
-  \ : c!bank ( c ca n -- )
-  \   bank c! default-bank ;
+  \ : c!bank ( c ca n -- ) bank c! default-bank ;
   \ ----
 
   \ }doc
@@ -442,12 +440,11 @@ code @bank ( a n -- x )
   \ Fetch _x_ from address _a_ ($C000..$FFFF) of bank _n_
   \ (0..7).
   \
-  \ This word is written in Z80. Its equivalent code in Forth
-  \ is the following:
+  \ ``@bank`` is written in Z80. Its equivalent definition in
+  \ Forth is the following:
 
   \ ----
-  \ : @bank ( a n -- x )
-  \   bank @ default-bank ;
+  \ : @bank ( a n -- x ) bank @ default-bank ;
   \ ----
 
   \ }doc
@@ -527,5 +524,7 @@ code c@bank ( ca n -- c ) D1 c, e-bank_ call,
   \
   \ 2017-03-04: Update naming convention of Z80 routines, after
   \ the changes in the kernel.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

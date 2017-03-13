@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703121644
+  \ Last modified: 201703132049
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -39,10 +39,11 @@ dup >order set-current case-sensitive @ case-sensitive on
   \ after a backslash in strings parsed by `s\"`, `.\"` and
   \ other words.
   \
-  \ The execution of the words defined in this word list
-  \ returns the new character(s) on the stack (the last one at
-  \ the bottom) and the count. Example of the stack effect of a
-  \ escaped character that returns two characters:
+  \ The execution of the words defined in the word list
+  \ identified by ``esc-standard-chars-wordlist`` returns the
+  \ new character(s) on the stack (the last one at the bottom)
+  \ and the count. Example of the stack effect of a escaped
+  \ character that returns two characters:
 
   \ ----
   \   ( -- c[1] c[0] 2 )
@@ -132,7 +133,7 @@ need get-esc-order need catch
   \ with a backslash.  Add the translated string to _ca len_,
   \ returning a new string _ca' len'_ in the `stringer`.
   \
-  \ This word is a factor of `parse-esc-string`.
+  \ ``(parse-esc-string)`` is a factor of `parse-esc-string`.
   \
   \ See also: `set-esc-order`.
   \
@@ -193,7 +194,7 @@ variable case-sensitive-esc-chars  case-sensitive-esc-chars on
   \ Therefore, by default, the escaped characters are those
   \ described in Forth-2012's `s\"`.
   \
-  \ This word is a common factor of `s\"` and `.\"`.
+  \ ``parse-esc-string`` is a common factor of `s\"` and `.\"`.
   \
   \ See also: `(parse-esc-string)`.
   \
@@ -222,10 +223,11 @@ need set-esc-order  esc-standard-chars-wordlist 1 set-esc-order
   \      ( Run-time: -- ca len )
 
   \
-  \ Note: Loading this word sets `esc-standard-chars-wordlist`
-  \ as the only wordlist in `esc-order`. That is the standard
-  \ behaviour. Alternative escaped chars can be configured with
-  \ `esc-block-chars-wordlist` and `esc-udg-chars-wordlist`.
+  \ Note: When ``s\"`` is loaded, `esc-standard-chars-wordlist`
+  \ is set as the only word list in `esc-order`. That is the
+  \ standard behaviour. Alternative escaped chars can be
+  \ configured with `esc-block-chars-wordlist` and
+  \ `esc-udg-chars-wordlist`.
   \
   \ ``s\"`` is an `immediate` word.
   \
@@ -255,10 +257,11 @@ need set-esc-order  esc-standard-chars-wordlist 1 set-esc-order
 
   \ ``.\"`` is an `immediate` and `compile-only` word.
   \
-  \ Note: Loading this word sets `esc-standard-chars-wordlist`
-  \ as the only wordlist in `esc-order`. That is the standard
-  \ behaviour. Alternative escaped chars can be configured with
-  \ `esc-block-chars-wordlist` and `esc-udg-chars-wordlist`.
+  \ Note: When ``.\"`` is loaded, `esc-standard-chars-wordlist`
+  \ is set as the only word list in `esc-order`. That is the
+  \ standard behaviour. Alternative escaped chars can be
+  \ configured with `esc-block-chars-wordlist` and
+  \ `esc-udg-chars-wordlist`.
   \
   \ See also: `parse-esc-string`, `set-esc-order`, `s\"`.
   \
@@ -503,5 +506,7 @@ need parse-char need char>string
   \ 2017-02-27: Improve documentation.
   \
   \ 2017-03-12: Update mentions to the `stringer`.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

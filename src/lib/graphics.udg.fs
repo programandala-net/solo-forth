@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702272232
+  \ Last modified: 201703132010
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -332,16 +332,17 @@ code make-block-chars ( a -- )
   \ 128..143, and store them (128 bytes in total) from address
   \ _a_.
   \
-  \ This word is provided for easier conversion of BASIC
-  \ programs that use the original block characters. These
-  \ characters are part of the ZX Spectrum character set, but
-  \ they are not included in the ROM font. Instead, their
+  \ ``make-block-chars`` is provided for easier conversion of
+  \ BASIC programs that use the original block characters.
+  \ These characters are part of the ZX Spectrum character set,
+  \ but they are not included in the ROM font. Instead, their
   \ bitmaps are built on the fly by the BASIC ROM printing
   \ routine. In Solo Forth there's no such restriction, and
   \ characters 0..255 can be redefined by the user.
   \
-  \ This word is written in Z80 and uses 18 B of code space,
-  \ but the word `block-chars` is provided as an alternative.
+  \ ``make-block-chars`` is written in Z80 and uses 18 B of
+  \ code space, but the word `block-chars` is provided as an
+  \ alternative.
   \
   \ }doc
 
@@ -855,5 +856,7 @@ unused code udg-at-xy-display ( x y c -- )
   \
   \ 2017-02-27: Move `get-font` and `rom-font` to the new
   \ module <printing.fonts.fs>.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

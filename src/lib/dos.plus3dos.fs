@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703121608
+  \ Last modified: 201703131934
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -640,7 +640,7 @@ variable cat-buffer
   \
   \ .cat-entry ( ca -- )
   \
-  \ Display a catalog entry stored at _ca_. Format of the
+  \ Display a catalogue entry stored at _ca_. Format of the
   \ entry:
   \
   \ - Bytes 0..7: Base filename (left justified, space filled)
@@ -663,7 +663,7 @@ variable cat-buffer
   \
   \ .cat-entry# ( n -- )
   \
-  \ Display the catalog entry number _n_ from buffer pointed by
+  \ Display the catalogue entry number _n_ from buffer pointed by
   \ `cat-buffer`.
   \
   \ ``.cat-entry#`` is a factor of `.cat`.
@@ -770,5 +770,7 @@ variable cat-buffer
   \ `wcat`.
   \
   \ 2017-03-12: Update the names of `stringer` words.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703041850
+  \ Last modified: 201703132043
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -117,10 +117,12 @@ create colored-circle-pixel ( -- a ) asm
   \ set-circle-pixel ( a -- )
   \
   \ Set the address _a_ of the routine `circle-pixel` will jump
-  \ to. This word is used to make `circle-pixel` jump to
-  \ `colored-circle-pixel`, `uncolored-circle-pixel`, or other
-  \ routine provided by the application, therefore configuring
-  \ `circle`.
+  \ to.
+  \
+  \ ``set-circle-pixel``  is used to make `circle-pixel` jump
+  \ to `colored-circle-pixel`, `uncolored-circle-pixel`, or
+  \ other routine provided by the application, therefore
+  \ configuring `circle`.
   \
   \ }doc
 
@@ -302,21 +304,20 @@ code circle ( gx gy b -- )
   \ Draw a circle at center coordinates _gx gy_ and with radius
   \ _b_.
   \
-  \ This word does not use the ROM routine and it's much
+  \ ``circle`` does not use the ROM routine and it's much
   \ faster.
   \
-  \ This word does no error checking: the whole circle must fit
-  \ the screen. Otherwise, strange things will happen when
+  \ ``circle`` does no error checking: the whole circle must
+  \ fit the screen. Otherwise, strange things will happen when
   \ other parts of the screen bitmap, the screen attributes or
   \ even the system variables will be altered.
   \
-  \ Note: By default this word does nothing. Its factor routine
-  \ `circle-pixel` must be configured first with
+  \ Note: By default ``circle`` does nothing. Its factor
+  \ routine `circle-pixel` must be configured first with
   \ `set-circle-pixel`, in order to choose the routine that
   \ creates the pixels of the circle: `uncolored-circle-pixel`,
   \ `colored-circle-pixel` or a routine provided by the
   \ application.
-  \
   \
   \ }doc
 
@@ -341,6 +342,8 @@ code circle ( gx gy b -- )
   \
   \ 2017-03-04: Update naming convention of Z80 routines, after
   \ the changes in the kernel.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth
 

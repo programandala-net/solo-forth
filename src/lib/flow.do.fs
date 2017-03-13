@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702272356
+  \ Last modified: 201703131954
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -82,8 +82,6 @@ code (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
   \
   \ (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys | )
   \
-  \ This word is compiled by `-do`.
-  \
   \ If _n1|u1_ is not less than _n2|u2_, discard both
   \ parameters and continue execution at the location given by
   \ the consumer of the _do-sys_ left by `-do` at compilation
@@ -92,6 +90,8 @@ code (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
   \ immediately following `-do`.  Anything  already on the
   \ return stack becomes unavailable until the loop control
   \ parameters _loop_sys_ are discarded.
+  \
+  \ ``(-do)`` is compiled by `-do`.
   \
   \ }doc
 
@@ -105,7 +105,7 @@ code (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
   \
 
   \ Compile `(-do)` and leave _do-sys_ to be consumed by `loop`
-  \ or `+loop`.  This word is an alternative to `do` and `?do`,
+  \ or `+loop`.  ``-do`` is an alternative to `do` and `?do`,
   \ to create count-down loops with `+loop`.
   \
   \ ``-do`` is an `immediate` and `compile-only` word.
@@ -155,6 +155,8 @@ code (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
   \ the kernel.
   \
   \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth
 

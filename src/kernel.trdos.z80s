@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201703131551
+; Last modified: 201703131936
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -420,7 +420,7 @@ push_dos_ior:
 ;
 ; Convert a DOS ior to a Forth ior.
 ;
-; This word is written in Z80. Its equivalent definition in
+; ``dosior>ior`` is written in Z80. Its equivalent definition in
 ; Forth is the following:
 
 ; ----
@@ -653,7 +653,7 @@ transfer_mode:
 ;
 ; Init TR-DOS drive _b_ (0..3) and set it as the current one.
 ;
-; This word is used by `set-drive`.
+; ``init-drive`` is used by `set-drive`.
 ;
 ; See also: `read-system-track`.
 ;
@@ -683,7 +683,7 @@ transfer_mode:
 ;
 ; Read the system track of the current TR-DOS disk.
 ;
-; This word is used by `set-drive`.
+; ``read-system-track`` is used by `set-drive`.
 ;
 ; See also: `init-drive`.
 ;
@@ -847,7 +847,7 @@ if 0 ; XXX OLD
   ; XXX REMARK -- `origin` must be moved up; $+219 is not
   ; enough.
   ;
-  ; XXX FIXME -- The catalog is displayed, but at the end
+  ; XXX FIXME -- The catalogue is displayed, but at the end
   ; something goes wrong, the screen is corrupted and the system
   ; freezes.
 
@@ -1113,6 +1113,6 @@ endif ; defined trdos
 ; 2017-03-13: Update names including "rec" to "sector(s)";
 ; update names including "blk" to "block(s)".  Rename
 ; `sector-id` to `block-sector#>dos` and factor `sector>dos` and
-; `sector#>dos` from it.
+; `sector#>dos` from it. Improve documentation.
 
 ; vim: filetype=z80:textwidth=64

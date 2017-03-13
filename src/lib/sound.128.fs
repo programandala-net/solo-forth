@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702281835
+  \ Last modified: 201703131954
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -379,8 +379,8 @@ need sound-register-port need sound-write-port need /sound
   \
   \ fplay ( ca -- )
   \
-  \ Play a sound whose 14 bytes are stored at _ca_.
-  \ This word is a faster version of `play`.
+  \ Play a sound whose 14 bytes are stored at _ca_.  ``fplay``
+  \ is a faster version of `play`.
   \
   \ }doc
 
@@ -633,5 +633,7 @@ decimal
   \ to `!volume`. Add `@volume`. Rename `shutup` to `-mixer`.
   \ Write `silence`, an upper layer on `-mixer`. Add `@sound`.
   \ Add `get-mixer`, `set-mixer`.  Improve documentation.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

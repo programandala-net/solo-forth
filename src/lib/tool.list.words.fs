@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703132019
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -60,7 +60,7 @@
   \
   \ An alternative action for the deferred word `.word`,
   \ which is used by `words`, `words-like` and
-  \ `wordlist-words`.  This word prints _nt_ and its
+  \ `wordlist-words`.  ``.wordname`` prints _nt_ and its
   \ correspondent name.
   \
   \ }doc
@@ -175,5 +175,7 @@
   \
   \ 2017-02-17: Update notation "behaviour" to "action".
   \ Update cross references.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

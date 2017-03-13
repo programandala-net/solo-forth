@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201702221608
+  \ Last modified: 201703132023
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -488,8 +488,8 @@ code f10 ( F: -- r )
 
 ( (f>s )
 
-  \ XXX REMARK -- This word must be in other block than `f>s`,
-  \ to avoid a circular `need`.
+  \ XXX REMARK -- `(f>s` must be in other block than `f>s`, to
+  \ avoid a circular `need`.
 
 code (f>s ( -- n ) ( F: r -- )
   C5 c,  CD c, 2DA2 ,
@@ -796,5 +796,7 @@ need alias
   \ Update `also assembler` to `assembler-wordlist >order`.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

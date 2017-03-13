@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702252003
+  \ Last modified: 201703131956
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -81,7 +81,7 @@
   \
   \ Remove _x_ from the stack and display the string _ca len_.
   \
-  \ This word is one of the possible actions of
+  \ ``drop-type`` is one of the possible actions of
   \ `type-right-field` and `type-center-field`.
   \
   \ }doc
@@ -264,5 +264,7 @@ constant type-center-field-cases
   \ 2017-02-17: Update cross references.
   \
   \ 2017-02-25: Improve documentation.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221249
+  \ Last modified: 201703132006
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -157,7 +157,7 @@ need alias ' @ alias link@ ( node1 -- node2 )
   \ link@ ( node1 -- node2 )
   \
   \ Fetch the node _node2_ from the linked list node _node1_.
-  \ This word is an alias of `@`.
+  \ ``link@`` is an alias of `@`.
   \
   \ See also: `link,`.
   \
@@ -214,5 +214,7 @@ need alias ' @ alias link@ ( node1 -- node2 )
   \
   \ 2017-02-17: Fix markup in documentation.  Update cross
   \ references.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

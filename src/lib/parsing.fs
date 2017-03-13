@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703121609
+  \ Last modified: 201703131955
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -46,7 +46,8 @@
   \
   \ Parse the rest of the source.
   \
-  \ This word is a useful factor of Specforth editor's `text`.
+  \ ``parse-all`` is a useful factor of Specforth editor's
+  \ `text`.
   \
   \ }doc
 
@@ -230,5 +231,7 @@ need-here execute-parsing
   \ 2017-02-27: Improve documentation.
   \
   \ 2017-03-12: Update the names of `stringer` words.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703131956
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -45,7 +45,7 @@ code -branch ( n -- )
   \ negative, the following in-line address is copied to IP to
   \ branch forward or backward.
   \
-  \ This word is compiled by `+if` and `+until`.
+  \ ``-branch`` is compiled by `+if` and `+until`.
   \
   \ See also: `+while`.
   \
@@ -69,7 +69,7 @@ code +branch ( n -- )
   \ positive, the following in-line address is copied to IP to
   \ branch forward or backward.
   \
-  \ This word is compiled by `-if` and `-until`.
+  \ ``+branch`` is compiled by `-if` and `-until`.
   \
   \ See also: `-while`.
   \
@@ -89,6 +89,8 @@ code +branch ( n -- )
   \ interpretation.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth
 

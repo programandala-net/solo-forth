@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703131749
+  \ Last modified: 201703132044
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -139,8 +139,8 @@ create fast-(pixel-addr) ( -- a ) asm
   \ small (only 0.01: see `set-pixel-bench`) that it's not
   \ worth the extra space, including the assembler.
   \
-  \ Loading this word sets it as the current action of
-  \ `(pixel-addr)`.
+  \ When ``fast-(pixel-addr)`` is loaded, it is set as the
+  \ current action of `(pixel-addr)`.
   \
   \ Input registers:
 
@@ -304,7 +304,8 @@ code plot176 ( gx gy -- )
   \ rows of the screen (the lower 16 pixel rows are not used).
   \ _gx_ is 0..255; _gy_ is 0..175.
   \
-  \ This word is equivalent to Sinclair BASIC's PLOT command.
+  \ ``plot176`` is equivalent to Sinclair BASIC's ``PLOT``
+  \ command.
   \
   \ WARNING: If parameters are out of range, the ROM will throw
   \ a BASIC error, and the system will crash.
@@ -403,8 +404,8 @@ code set-save-pixel176 ( gx gy -- )
   \ Set a pixel without changing its attribute on the screen,
   \ and using only the top 176 pixel rows of the screen (the
   \ lower 16 pixel rows are not used).  _gx_ is 0..255; _gy_ is
-  \ 0..175.  This word updates the graphic coordinates
-  \ (contrary to `set-pixel176`).
+  \ 0..175.  ``set-save-pixel176`` updates the graphic
+  \ coordinates (contrary to `set-pixel176`).
   \
   \ See also:  `set-pixel`, `plot`, `plot176`, `reset-pixel`,
   \ `toggle-pixel`, `reset-pixel176`, `toggle-pixel176`.
@@ -641,8 +642,8 @@ code fast-pixels ( -- n )
   \
   \ Return the number _u_ of pixels that are set on the screen.
   \ This is the alternative action of the deferred word
-  \ `pixels`. This word simply executes `bits` with the screen
-  \ address and length on the stack.
+  \ `pixels`. ``slow-pixels`` simply executes `bits` with the
+  \ screen address and length on the stack.
   \
   \ See also: `fast-pixels`.
   \
@@ -851,5 +852,7 @@ need pixel-attr-addr
   \ 2017-02-28: Improve documentation.
   \
   \ 2017-03-13: Add `x>gx`, `y>gy`, `gx>x`, `gy>y`.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

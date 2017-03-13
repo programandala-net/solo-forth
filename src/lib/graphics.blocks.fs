@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221326
+  \ Last modified: 201703132015
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -357,7 +357,7 @@ code wipe-block ( column row width height color -- )
   \ of the given size in characters.  The bitmap is erased and
   \ the color attributes are changed with the given color.
   \
-  \ This word is written in assembler and it combines the
+  \ ``wipe-block`` is written in assembler and it combines the
   \ functions of `clear-block` and `color-block`. It may be
   \ defined also this way (with slower but much smaller code):
 
@@ -378,5 +378,7 @@ code wipe-block ( column row width height color -- )
   \ `wipe-block` from `z80-asm` to `z80-asm,`.
   \
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

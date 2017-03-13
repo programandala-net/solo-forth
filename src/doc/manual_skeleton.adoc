@@ -6,7 +6,7 @@
 :toc-placement!:
 :linkattrs:
 
-// Last modified 201703111533
+// Last modified 201703131933
 
 toc::[]
 
@@ -90,9 +90,9 @@ on each DOS.
 | Word              | G+DOS | TR-DOS | +3DOS | Comment
 
 | `>file`           | YES   | YES    |       | Save memory zone to a file
-| `acat`            | YES   | YES    | n/a   | Abbreviated disk catalog
+| `acat`            | YES   | YES    | n/a   | Abbreviated disk catalogue
 | `bin`             |       |        | YES   | Standard Forth
-| `cat`             | YES   | YES    | draft | Detailed disk catalog
+| `cat`             | YES   | YES    | draft | Detailed disk catalogue
 | `close-file`      |       |        | YES   | Standard Forth
 | `create-file`     |       |        | draft | Standard Forth
 | `delete-file`     | YES   | YES    | YES   | Standard Forth
@@ -128,8 +128,8 @@ on each DOS.
 | `set-drive`       | YES   | YES    | draft |
 | `undelete-file`   |       | YES    |       |
 | `w/o`             |       |        | YES   | Standard Forth
-| `wacat`           | YES   |        |       | Abbreviated disk catalog with wildcards
-| `wcat`            | YES   |        | draft | Detailed disk catalog with wildcards
+| `wacat`           | YES   |        |       | Abbreviated disk catalogue with wildcards
+| `wcat`            | YES   |        | draft | Detailed disk catalogue with wildcards
 | `write-file`      |       |        |       | Standard Forth
 | `write-line`      |       |        |       | Standard Forth
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703131720
+  \ Last modified: 201703132040
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -281,7 +281,7 @@ F2 cconstant p?   FA cconstant m?
 
 : (runtil) ( dest cs-id op -- ) , 0B ?pairs <rresolve ;
   \ Compile a relative conditional jump.
-  \ This word is common factor of `runtil` and `rstep`.
+  \ ``(runtil)`` is common factor of `runtil` and `rstep`.
 
 : runtil ( dest cs-id op -- ) jp>jr inverse-cond (runtil) ;
   \ End a `rbegin runtil` loop.
@@ -412,7 +412,7 @@ variable unresolved> ( -- a ) unresolved0> unresolved> !
   \ array accessed by `unresolved`. Its default value is
   \ `unresolved0>`, which is an 8-cell array.
   \
-  \ The cell array pointed by this word is used to store
+  \ The cell array pointed by ``unresolved>`` is used to store
   \ unresolved addresses during the compilation of code words.
   \ This method is a simpler alternative to labels created by
   \ `l:`.
@@ -566,6 +566,6 @@ macro call-xt, ( xt -- )
   \ Improve documentation.
   \
   \ 2017-03-13: Factor `create c,` to `(c`. This saves 13
-  \ bytes.
+  \ bytes. Improve documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201703132017
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -39,10 +39,10 @@ need columns need rows need set-font need set-mode-output
   \ mode32 ( -- )
   \
   \ Set the default printing mode: the 32 cpl ROM routine, the
-  \ ROM font, and the special code for `at-xy` (required to
-  \ use the whole screen).
+  \ ROM font, and the special code for `at-xy` (required to use
+  \ the whole screen).
   \
-  \ This word is loaded when `mode42` or `mode64` are loaded,
+  \ ``mode32`` is loaded when `mode42` or `mode64` are loaded,
   \ in order to make it the default mode.
   \
   \ }doc
@@ -57,5 +57,7 @@ need columns need rows need set-font need set-mode-output
   \ 2016-05-07: Improve documentation.
   \
   \ 2017-01-20: Fix typo.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

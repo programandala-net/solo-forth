@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703131346
+  \ Last modified: 201703132023
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -367,7 +367,7 @@ code (delete-file) ( -- ior )
   \ Delete a disk file using the data hold in `ufia`.
   \ Return an error result _ior_.
   \
-  \ This word is a factor of `delete-file`.
+  \ ``(delete-file)`` is a factor of `delete-file`.
   \
   \ }doc
 
@@ -468,7 +468,7 @@ code (>file) ( -- ior )
   \ Save a file to disk using the data hold in `ufia` and
   \ return error result _ior_.
   \
-  \ This word is a factor of `>file`.
+  \ ``(>file)`` is a factor of `>file`.
   \
   \ }doc
 
@@ -523,7 +523,7 @@ code (file>) ( ca len -- ior )
   \
   \ Return error result _ior_.
   \
-  \ This word is a factor of `file>`.
+  \ ``(file>)`` is a factor of `file>`.
   \
   \ See also: `file-address`, `file-length`.
   \
@@ -608,7 +608,7 @@ code (file-status) ( -- a ior )
   \ If the file does not exists, _a_ is useless and _ior_ is
   \ the corresponding error code.
   \
-  \ This word is a low-level factor of `file-status`.
+  \ ``(file-status)`` is a low-level factor of `file-status`.
   \
   \ }doc
 
@@ -1437,5 +1437,7 @@ code (rename-file ( -- ior )
   \
   \ 2017-03-13: Test `rename-file`. Rewrite it with Z80
   \ opcodes. Improve documentation.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703132022
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -245,15 +245,15 @@ noop noop noop noop noop noop noop noop noop noop noop noop [
   \ discard it and wait for a second key. Then return _true_ if
   \ it's _c_, else return _false_.
   \
-  \ This word is a useful factor of `nuf?`.
+  \ ``aborted?`` is a useful factor of `nuf?`.
   \
   \ Usage example:
-  \
+
   \ ----
   \ : listing ( -- )
   \   begin  ." bla "  bl aborted?  until  ." Aborted" ;
   \ ----
-  \
+
   \ }doc
 
 [unneeded] break? ?(
@@ -635,5 +635,7 @@ need kk-ports
   \
   \ 2017-02-19: Replace `do`, which has been moved to the
   \ library, with `?do`.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

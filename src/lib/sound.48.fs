@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702241531
+  \ Last modified: 201703132014
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -45,16 +45,18 @@ code bleep ( duration pitch -- )
   \
   \ bleep ( duration pitch -- )
   \
-  \ Produce a tone in the internal beeper. This word calls the
+  \ Produce a tone in the internal beeper.
+  \
+  \ ``bleep`` calls the
   \ BEEPER ROM routine with _pitch_ in the HL register and
   \ _duration_ in the DE register.
-  \
+
   \ ////
   \ The following description is taken, with small layout
   \ changes, from _Spectrum Advanced Forth_ by Don Thomasson
   \ (Melbourne House, 1984), page 26:
   \ ////
-  \
+
   \ [quote, Don Thomasson&#44; Spectrum Advanced Forth (Melbourne House&#44; 1984)&#44; page 26]
   \ _____
   \
@@ -92,7 +94,7 @@ code bleep ( duration pitch -- )
   \ Spectrum disassembly by Dr. Ian Logan, Dr.  Frank O'Hara et
   \ al.:
   \ ////
-  \
+
   \ [quote, Dr. Ian Logan&#44; Dr.  Frank O'Hara et al., ZX Spectrum disassembly]
   \ _____
 
@@ -628,5 +630,7 @@ code white-noise ( u -- )
   \ that is not a cross reference.
   \
   \ 2017-02-24: Improve documentation markup.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

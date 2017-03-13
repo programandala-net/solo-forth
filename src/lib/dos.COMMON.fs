@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703130118
+  \ Last modified: 201703132043
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -34,7 +34,7 @@
   \ Convert drive number _c1_ (0 index) to actual drive
   \ identifier _c2_ (DOS dependent).
   \
-  \ This word is used in order to make the code portable,
+  \ ``drive`` is used in order to make the code portable,
   \ abstracting the DOS drive identifiers.
   \
   \ Usage example:
@@ -269,25 +269,12 @@ need block-drive@
   \ Get the current configuration of block drives, as
   \ configured by `
   \
-  \ to the drives specified by drive
-  \ identifiers
-  \ _c[n]..c[1]_. Subsequently drive _c[1]_ will be searched
-  \ first for blocks, from block 0 to `blocks/disk` minus one, and
-  \ so on.
+  \ to the drives specified by drive identifiers _c[n]..c[1]_.
+  \ Subsequently drive _c[1]_ will be searched first for
+  \ blocks, from block 0 to `blocks/disk` minus one, and so on.
   \
   \ If _n_ is zero, no drive is used for blocks.
   \
-  \ When this word is loaded, the default configuration is set,
-  \ i.e. use all drives for blocks:
-
-  \ |===
-  \ | DOS    | Default configuration
-  \
-  \ | G+DOS  | ``2 1      2 set-block-drives``
-  \ | TR-DOS | ``3 2 1 0  4 set-block-drives``
-  \ | +3DOS  | ``'B' 'A'  2 set-block-drives``
-  \ |===
-
   \ See also: `-block-drives`, `#block-drives`, `block-drive!`.
   \
   \ }doc
@@ -319,5 +306,7 @@ need block-drive@
   \
   \ 2017-03-13: Update names including "rec" to "sector(s)";
   \ update names including "blk" to "block(s)".
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

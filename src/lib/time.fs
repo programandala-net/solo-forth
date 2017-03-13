@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703132017
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -185,7 +185,7 @@ need os-frames
 [unneeded] pause ?( need ?frames
 
 : pause ( u -- )
-  ?dup if  ?frames exit  then  begin  key?  until ; ?)
+  ?dup if ?frames exit then  begin key? until ; ?)
 
   \ doc{
   \
@@ -196,7 +196,7 @@ need os-frames
   \ TV (there are 50 frames per second in in Europe and 60
   \ frames per second in USA), or until a key is pressed.
   \
-  \ This word is a convenience that works like the homonymous
+  \ ``pause`` is a convenience that works like the homonymous
   \ keyword of Sinclair BASIC.
   \
   \ See: `frames`, `?frames`, `os-frames`, `?seconds`.
@@ -413,5 +413,7 @@ need get-time need get-date
   \
   \ 2017-02-17: Fix typo in the documentation.  Update cross
   \ references.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

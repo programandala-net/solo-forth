@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703132010
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -358,7 +358,7 @@ need xp0 need xlen need xdepth need .depth
   \ Display a list of the items in the current `xstack`; TOS is
   \ the right-most item.
   \
-  \ This word is a factor of `.xs`.
+  \ ``(.xs)`` is a factor of `.xs`.
   \
   \ }doc
 
@@ -401,5 +401,7 @@ need xp0 need xlen need xdepth need .depth
   \ Improve and complete documentation of all words.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

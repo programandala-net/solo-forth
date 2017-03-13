@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221235
+  \ Last modified: 201703132009
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -142,8 +142,9 @@ need evaluate need catch need use-default-located
   \ (make-thru-index) ( -- )
   \
   \ Create the blocks index, from `first-locatable` to
-  \ `last-locatable`. This word is a factor of
-  \ `make-thru-index`.
+  \ `last-locatable`.
+  \
+  \ ``(make-thru-index)`` is a factor of `make-thru-index`.
   \
   \ See also: `use-thru-index`.
   \
@@ -163,18 +164,19 @@ need evaluate need catch need use-default-located
   \ Create the blocks index and activate it. The current word
   \ list and the current search order are preserved.
   \
-  \ This word first creates a blocks index, i.e. a word list
-  \ from the names that are on the index (header) line of every
-  \ searchable block, ignoring duplicates; second, it executes
-  \ `use-thru-index` to activate the blocks index, changing the
-  \ default behaivour of `need` and related words.
+  \ ``make-thru-index`` first creates a blocks index, i.e. a
+  \ word list from the names that are on the index (header)
+  \ line of every searchable block, ignoring duplicates;
+  \ second, it executes `use-thru-index` to activate the blocks
+  \ index, changing the default behaivour of `need` and related
+  \ words.
   \
   \ The words in the index have a fake execution token, which
   \ is the block they belong to.  This way, after indexing all
   \ the disk blocks only once, `need` will search the word list
   \ and load the block of the word found. On the contrary, the
-  \ default action of `need` is to search all the blocks
-  \ every time.
+  \ default action of `need` is to search all the blocks every
+  \ time.
   \
   \ The default action of `need` and related words can be
   \ restored with `use-no-index`.
@@ -229,5 +231,7 @@ need evaluate need catch need use-default-located
   \ Update cross references.
   \
   \ 2017-02-21: Need `use-default-located`, which now is optional.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702272340
+  \ Last modified: 201703132011
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -110,7 +110,7 @@ variable ~~resume-key  bl ~~resume-key !
   \
   \ Is there any key to be checked by `~~control`?
   \
-  \ This word is part of the `~~` tool.
+  \ ``~~control??`` is part of the `~~` tool.
   \
   \ }doc
 
@@ -159,7 +159,7 @@ variable ~~resume-key  bl ~~resume-key !
   \ restored by the default actions of `~~save` and
   \ `~~restore`.
   \
-  \ This word is part of the `~~` tool.
+  \ ``~~xy-backup`` is part of the `~~` tool.
   \
   \ }doc
 
@@ -198,7 +198,7 @@ defer ~~save ( -- ) defer ~~restore ( -- )
   \ Save the cursor coordinates.  This is the default
   \ action of `~~save`.
   \
-  \ This word is part of the `~~` tool.
+  \ ``~~save-xy`` is part of the `~~` tool.
   \
   \ See also: `~~restore-xy`, `~~restore`, `~~xy-backup`.
   \
@@ -213,7 +213,7 @@ defer ~~save ( -- ) defer ~~restore ( -- )
   \ Restore the cursor coordinates.  This is the default
   \ action of `~~restore`.
   \
-  \ This word is part of the `~~` tool.
+  \ ``~~restore-xy`` is part of the `~~` tool.
   \
   \ See also: `~~save-xy`, `~~save`, `~~xy-backup`.
   \
@@ -308,5 +308,7 @@ defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
   \ Update cross references.
   \
   \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

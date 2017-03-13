@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703112341
+  \ Last modified: 201703132001
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -224,7 +224,7 @@
   \
   \ Convert paper color _b1_ to its equivalent attribute _b2_.
   \
-  \ This word is an alias of `8*`, which is written in Z80.
+  \ ``papery`` is an alias of `8*`, which is written in Z80.
   \ Its equivalent definition in Forth is the following:
 
   \ ----
@@ -249,7 +249,7 @@ code brighty ( b1 -- b2 )
   \
   \ Convert attribute _b1_ to its brighty equivalent _b2_.
   \
-  \ This word is written in Z80. Its equivalent definition in
+  \ ``brighty`` is written in Z80. Its equivalent definition in
   \ Forth is the following:
 
   \ ----
@@ -274,7 +274,7 @@ code flashy ( b1 -- b2 )
   \
   \ Convert attribute _b1_ to its flashy equivalent _b2_.
   \
-  \ This word is written in Z80. Its equivalent definition in
+  \ ``flashy`` is written in Z80. Its equivalent definition in
   \ Forth is the following:
 
   \ ----
@@ -304,8 +304,8 @@ code attr>paper ( b1 -- b2 )
   \
   \ Convert attribute _b1_ to its paper color number _b2_.
   \
-  \ This word is written in Z80. The equivalent code in Forth
-  \ is the following:
+  \ ``attr>paper`` is written in Z80. The equivalent code in
+  \ Forth is the following:
 
   \ ----
   \ : attr>paper ( b1 -- b2 ) paper-mask and 3 rshift ;
@@ -330,8 +330,8 @@ code attr>ink ( b1 -- b2 )
   \
   \ Convert attribute _b1_ to its ink color number _b2_.
   \
-  \ This word is written in Z80. The equivalent code in Forth
-  \ is the following:
+  \ ``attr>ink`` is written in Z80. The equivalent code in
+  \ Forth is the following:
 
   \ ----
   \ : attr>ink ( b1 -- b2 ) ink-mask and ;
@@ -499,7 +499,7 @@ code mask+attr@ ( -- b1 b2 )
   \
   \ attr-setter ( b "name" -- )
   \
-  \ Create a definition "name" that, when executed, will
+  \ Create a definition _name_ that, when executed, will
   \ set _b_ as the current attribute.
   \
   \ See also: `mask+attr-setter`.
@@ -515,7 +515,7 @@ code mask+attr@ ( -- b1 b2 )
   \
   \ mask+attr-setter ( b1 b2 "name" -- )
   \
-  \ Create a definition "name" that, when executed, will set
+  \ Create a definition _name_ that, when executed, will set
   \ _b1_ as the current attribute mask and _b2_ as the
   \ current attribute.
   \
@@ -657,12 +657,11 @@ code set-paper ( b -- )
   \ Set paper color _b_ (0..7) by modifying the corresponding
   \ bits of the current attribute.
   \
-  \ This word is written in Z80. Its equivalent definition in
-  \ Forth is the following:
+  \ ``set-paper`` is written in Z80. Its equivalent definition
+  \ in Forth is the following:
 
   \ ----
-  \ : set-paper ( b -- )
-  \   papery attr@ unpaper-mask and or attr! ;
+  \ : set-paper ( b -- ) papery attr@ unpaper-mask and or attr! ;
   \ ----
 
   \ See also: `paper.`, `set-ink`, `set-flash`, `set-bright`.
@@ -695,12 +694,11 @@ code set-ink ( b -- )
   \ 0..7 and its bits 3-7 are not masked. Therefore any value
   \ other than 0..7 will corrupt the current attribute.
   \
-  \ This word is written in Z80. Its equivalent definition in
+  \ ``set-ink`` is written in Z80. Its equivalent definition in
   \ Forth is the following:
 
   \ ----
-  \ : set-ink ( b -- )
-  \   attr@ %11111000 and or attr! ;
+  \ : set-ink ( b -- ) attr@ %11111000 and or attr! ;
   \ ----
 
   \ See also: `ink.`, `set-paper`, `set-flash`, `set-bright`.
@@ -882,7 +880,7 @@ code paper. ( b -- ) 3E c, 11 c, (0-9-color. jp, end-code ?)
   \ corresponding control characters.  If _b_ is greater than
   \ 9, 9 is used instead.
   \
-  \ This word is much slower than `set-paper` or `attr!`, but
+  \ ``paper.`` is much slower than `set-paper` or `attr!`, but
   \ it can handle pseudo-colors 8 (transparent) and 9
   \ (contrast), setting the correspondent system variables and
   \ flags accordingly.
@@ -905,7 +903,7 @@ code ink. ( b -- ) 3E c, 10 c, (0-9-color. jp, end-code ?)
   \ control characters.  If _b_ is greater than 9, 9 is used
   \ instead.
   \
-  \ This word is much slower than `set-ink` or `attr!`, but it
+  \ ``ink.`` is much slower than `set-ink` or `attr!`, but it
   \ can handle pseudo-colors 8 (transparent) and 9 (contrast),
   \ setting the correspondent system variables and flags
   \ accordingly.
@@ -966,7 +964,7 @@ create (0-9-color. ( -- a ) asm
   \ - Values greater than 8 or less than 0 are converted to 8.
 
   \
-  \ This word is much slower than `set-flash` or `attr!`, but
+  \ ``flash.`` is much slower than `set-flash` or `attr!`, but
   \ it can handle pseudo-color 8 (transparent).
   \
   \ See also: `bright.`, `(0-1-8-color.`.
@@ -990,8 +988,8 @@ create (0-9-color. ( -- a ) asm
   \ - 3, 5 and 7 are converted to 1.
   \ - Values greater than 8 or less than 0 are converted to 8.
 
-  \ This word is much slower than `set-bright` or `attr!`, but
-  \ it can handle pseudo-color 8 (transparent).
+  \ ``bright.`` is much slower than `set-bright` or `attr!`,
+  \ but it can handle pseudo-color 8 (transparent).
   \
   \ See also: `flash.`, `(0-1-8-color.`.
   \
@@ -1100,5 +1098,7 @@ create (0-9-color. ( -- a ) asm
   \ 2017-02-24: Fix typos in documentation.
   \
   \ 2017-03-11: Improve documentation.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

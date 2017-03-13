@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201703132046
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -117,8 +117,8 @@ need alias need nextname
   \ export ( parent-wid "name" -- parent-wid )
   \
   \ Make the word named _name_ accessible outside the `module`
-  \ currently defined.  After `end-module` this word is still
-  \ available.
+  \ currently defined.  _name_ will be still available after
+  \ `end-module`.
   \
   \ }doc
 
@@ -149,5 +149,7 @@ need alias need nextname
   \ documentation.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

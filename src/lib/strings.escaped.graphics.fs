@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201703132050
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -157,8 +157,9 @@ wordlist dup constant esc-udg-chars-wordlist set-current
   \ that must be escaped after a backslash in strings parsed by
   \ `s\"`, `.\"` and other words.
   \
-  \ The execution of the words defined in this word list
-  \ returns the correspondent UDG character (144..164) and a 1.
+  \ The execution of the words defined in the word list
+  \ identified by ``esc-udg-chars-wordlist`` returns the
+  \ correspondent UDG character (144..164) and a 1.
   \
   \ In order to make `s\", `.\"` and their common factor
   \ `parse-esc-string` recognize the escaped UDG characters,
@@ -207,5 +208,7 @@ set-current
   \ 2016-12-27: Fix escaped UDG "\C".
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

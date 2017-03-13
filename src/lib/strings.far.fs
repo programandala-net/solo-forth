@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703121645
+  \ Last modified: 201703132019
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -126,7 +126,7 @@ need farsconstant need far>stringer
   \ When _name_ is executed, it returns an address that holds
   \ the address of the table in far memory.
   \
-  \ This word is a common factor of `farsconstants` and
+  \ ``farconstants,`` is a common factor of `farsconstants` and
   \ `far>sconstants`.
   \
   \ }doc
@@ -141,7 +141,7 @@ need farsconstant need far>stringer
   \ Return the far-memory string _ca len_ whose address is
   \ stored at the _n_ cell of the table _a_ in data space.
   \
-  \ This word is a factor of `farsconstants` and
+  \ ``farsconstants>`` is a factor of `farsconstants` and
   \ `far>sconstants`.
   \
   \ }doc
@@ -317,6 +317,8 @@ code faruppers ( ca len -- )
   \
   \ 2017-03-12: Update the names of `stringer` words and
   \ mentions to it.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth
 

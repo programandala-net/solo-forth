@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703132020
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -37,13 +37,12 @@
   \
   \ classic-number-point? ( c -- f )
   \
-  \ Is character _c_ a classic number point?  Allowed
-  \ points are: comma, hyphen, period, slash and
-  \ colon.
+  \ Is character _c_ a classic number point?  Allowed points
+  \ are: comma, hyphen, period, slash and colon.
   \
-  \ This word is an alternative action for the deferred word
-  \ `number-point?`, which is used in `number?`, and whose
-  \ default action is `standard-number-point?`.
+  \ ``classic-number-point?`` is an alternative action for the
+  \ deferred word `number-point?`, which is used in `number?`,
+  \ and whose default action is `standard-number-point?`.
   \
   \ }doc
 
@@ -60,9 +59,9 @@
   \ are: plus sign, comma, hyphen, period, slash and colon,
   \ after _Forth Programmer's Handbook_.
   \
-  \ This word is an alternative action for the deferred word
-  \ `number-point?`, which is used in `number?`, and whose
-  \ default action is `standard-number-point?`.
+  \ ``extended-number-point?`` is an alternative action for the
+  \ deferred word `number-point?`, which is used in `number?`,
+  \ and whose default action is `standard-number-point?`.
   \
   \ }doc
 
@@ -77,6 +76,8 @@
   \ 2017-02-16: Fix typo in documentation.
   \
   \ 2017-02-17: Update notation "behaviour" to "action".
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth
 

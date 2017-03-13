@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703130118
+  \ Last modified: 201703131957
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -37,9 +37,9 @@
 : contains ( ca1 len1 ca2 len2 -- f ) search nip nip ;
   \ Does string _ca1 len1_ contain string _ca2 len2_?
   \
-  \ This word is defined also in <strings.misc.fsb>,
-  \ because it can not be loaded by the applications from this
-  \ block (because `[unneeded]` is not defined at this point).
+  \ ``contains`` is defined also in <strings.misc.fsb>, because
+  \ it can not be loaded by the applications from this block
+  \ (because `[unneeded]` is not defined at this point).
   \ That's why `contains` is not included in the block header.
 
 variable default-first-locatable  variable first-locatable
@@ -415,8 +415,8 @@ blk @ 1+ dup default-first-locatable !  first-locatable !
   \ Set the default actions of `need`, `needed`, `reneed`, and
   \ `reneeded`: Use `locate` to search the blocks.
   \
-  \ This word is a common factor of `use-no-index` and
-  \ `use-fly-index`.
+  \ ``use-default-need`` is a common factor of `use-no-index`
+  \ and `use-fly-index`.
   \
   \ }doc
 
@@ -433,8 +433,8 @@ blk @ 1+ dup default-first-locatable !  first-locatable !
   \ Set the default actions of `located` and `unlocated`:
   \ Search the blocks.
   \
-  \ This word is a common factor of `use-no-index` and
-  \ `use-thru-index`.
+  \ ``use-default-located`` is a common factor of
+  \ `use-no-index` and `use-thru-index`.
   \
   \ }doc
 
@@ -494,7 +494,7 @@ need use-default-need need  use-default-located
   \ will search from. If not found, throw an exception #-268
   \ ("needed, but not located").
   \
-  \ This word is intended to prevent undesired name clashes
+  \ ``need-from`` is intended to prevent undesired name clashes
   \ during the execution of `need` and related words. _name_ is
   \ supposed to be a conventional marker.
   \
@@ -681,6 +681,7 @@ need get-drive
   \ mentions to it.
   \
   \ 2017-03-13: Update names including "rec" to "sector(s)";
-  \ update names including "blk" to "block(s)".
+  \ update names including "blk" to "block(s)".  Improve
+  \ documentation.
 
   \ vim: filetype=soloforth

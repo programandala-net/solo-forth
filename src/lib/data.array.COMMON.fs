@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703132016
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -39,15 +39,16 @@ code array> ( n a1 -- a2 )
   \ array> ( n a1 -- a2 )
   \
   \ Return address _a2_ of element _n_ of a 1-dimension
-  \ single-cell array _a1_. This word is a common factor
-  \ of `avalue` and `avariable`. It's written in Z80 but
-  \ its equivalent definition in Forth is the following:
+  \ single-cell array _a1_. ``array>`` is a common factor of
+  \ `avalue` and `avariable`.
   \
+  \ ``array>`` is written in Z80 but its equivalent definition
+  \ in Forth is the following:
+
   \ ----
-  \ : array> ( n a1 -- a2 )
-  \   swap cells + ;
+  \ : array> ( n a1 -- a2 ) swap cells + ;
   \ ----
-  \
+
   \ }doc
 
 [unneeded] 2array> ?(
@@ -65,15 +66,16 @@ code 2array> ( n a1 -- a2 )
   \ 2array> ( n a1 -- a2 )
   \
   \ Return address _a2_ of element _n_ of a 1-dimension
-  \ single-cell array _a1_.  This word is a common factor of
-  \ `2avalue` and `2avariable`. It's written in Z80 but its
-  \ equivalent definition in Forth is the following:
+  \ single-cell array _a1_.  ``2array>`` is a common factor of
+  \ `2avalue` and `2avariable`.
   \
+  \ ``2array>`` is written in Z80 but its equivalent definition
+  \ in Forth is the following:
+
   \ ----
-  \ : 2array> ( n a1 -- a2 )
-  \   swap [ 2 cells ] literal * + ;
+  \ : 2array> ( n a1 -- a2 ) swap [ 2 cells ] literal * + ;
   \ ----
-  \
+
   \ }doc
 
   \ ===========================================================
@@ -91,6 +93,8 @@ code 2array> ( n a1 -- a2 )
   \ interpretation.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth
 

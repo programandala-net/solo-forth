@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702271829
+  \ Last modified: 201703132020
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -130,7 +130,7 @@ code +under ( n1|u1 n2|u2 x -- n3|u3 x )
   \ u>ud ( u -- ud )
   \
   \ Extend a single unsigned number _u_ to form a double
-  \ unsigned number _ud_. This word is just an alias of `0`.
+  \ unsigned number _ud_. ``u>ud`` is just an alias of `0`.
   \
   \ See also: `s>d`.
   \
@@ -219,13 +219,13 @@ code odd? ( n -- f )
   \
   \ Is _n_ an odd number?
   \
-  \ This word is written in Z80. The equivalent code in Forth
-  \ is the following:
-  \
+  \ ``odd?`` is written in Z80. Its equivalent definition in
+  \ Forth is the following:
+
   \ ----
   \ : odd? ( n -- f ) 1 and 0<> ;
   \ ----
-  \
+
   \ See also: `odd?`.
   \
   \ }doc
@@ -246,13 +246,13 @@ code even? ( n -- f )
   \
   \ Is _n_ an even number?
   \
-  \ This word is written in Z80. The equivalent code in Forth
-  \ is the following:
-  \
+  \ ``even?`` is written in Z80. Its equivalent definition in
+  \ Forth is the following:
+
   \ ----
   \ : even? ( n -- f ) 1 and 0= ;
   \ ----
-  \
+
   \ See also: `odd?`.
   \
   \ }doc
@@ -1056,5 +1056,7 @@ code join ( b1 b2 -- x )
   \ part of the assembler.
   \
   \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

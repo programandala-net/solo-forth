@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703121609
+  \ Last modified: 201703132029
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -341,12 +341,11 @@ need -fda-filename need /filename need fda
   \
   \ Return the number _b_ of the current drive (0..3).
   \
-  \ This word is written in Z80. Its equivalent definition in
-  \ Forth is the following:
+  \ ``get-drive`` is written in Z80. Its equivalent definition
+  \ in Forth is the following:
 
   \ ----
-  \ : get-drive ( -- b )
-  \   $5FC6 c@ ;
+  \ : get-drive ( -- b ) $5FC6 c@ ;
   \ ----
 
   \ See also: `set-drive`.
@@ -368,7 +367,7 @@ code (acat ( -- ior )
   \
   \ (acat ( -- ior )
   \
-  \ Display an abbreviated catalog of the current disk and
+  \ Display an abbreviated catalogue of the current disk and
   \ return error result _ior_.  ``(acat`` is a factor of
   \ `acat`.
   \
@@ -382,7 +381,7 @@ code (acat ( -- ior )
   \
   \ acat ( -- ior )
   \
-  \ Display an abbreviated catalog of the current disk.
+  \ Display an abbreviated catalogue of the current disk.
   \
   \ See also: `set-drive`, `(acat`.
   \
@@ -633,7 +632,7 @@ code fda-filestatus ( -- a ior )
   \ Otherwise _ior_ is an exception code and _ca2_ is
   \ undefined.
   \
-  \ See also: `file-status`.
+  \ See also: `file-status`, `fda-filestart`.
   \
   \ }doc
 
@@ -651,7 +650,7 @@ code fda-filestatus ( -- a ior )
   \ _ior_ is zero and _len2_ is the file length.  Otherwise
   \ _ior_ is an exception code and _len2_ is undefined.
   \
-  \ See also: `file-status`.
+  \ See also: `file-status`, `fda-filelength`.
   \
   \ }doc
 
@@ -659,9 +658,6 @@ code fda-filestatus ( -- a ior )
 
 : file-type ( ca len -- n ior )
   file-status nip fda-filetype c@ swap ; ?)
-
-  \ XXX REMARK -- 2017-02-13: This word is useless in TR-DOS,
-  \ because the filetype is part of the filename.
 
   \ doc{
   \
@@ -673,11 +669,13 @@ code fda-filestatus ( -- a ior )
   \ identifier.  Otherwise _ior_ is an exception code and _n_
   \ is undefined.
   \
-  \ Note this word is useless in TR-DOS, because the file type
-  \ in part of the filename. This word is included for
-  \ compatibility with other DOSs supported.
+  \ Note: In TR-DOS the file type is the 9th character of the
+  \ filename. When a filetype is not included in a filename,
+  \ i.e. when the specified filename is shorter than 9
+  \ characters, filetype 'C' (code file) is assumed by default.
+  \ Therefore ``file-type`` is almost useless on TR-DOS.
   \
-  \ See also: `file-status`.
+  \ See also: `file-status`, `fda-filetype`.
   \
   \ }doc
 
@@ -758,7 +756,7 @@ code fda-filedir# ( -- n ior )
   \ found, _ior_ is zero and _n_ is the length in sectors.
   \ Otherwise _ior_ is an exception code and _n_ is undefined.
   \
-  \ See also: `file-status`.
+  \ See also: `file-status`, `fda-filesectors`.
   \
   \ }doc
 
@@ -776,7 +774,7 @@ code fda-filedir# ( -- n ior )
   \ successfully found, _ior_ is zero and _n_ is the sector.
   \ Otherwise _ior_ is an exception code and _n_ is undefined.
   \
-  \ See also: `file-status`.
+  \ See also: `file-status`, `fda-filesector`.
   \
   \ }doc
 
@@ -794,7 +792,7 @@ code fda-filedir# ( -- n ior )
   \ is zero and _n_ is the track.  Otherwise _ior_ is an
   \ exception code and _n_ is undefined.
   \
-  \ See also: `file-status`.
+  \ See also: `file-status`, `fda-filetrack`.
   \
   \ }doc
 
@@ -1038,7 +1036,7 @@ need fda-basic? need fda-empty? need fda-deleted?
   \
   \ cat-fda ( n -- )
   \
-  \ Display catalog entry _n_ of the current drive.
+  \ Display catalogue entry _n_ of the current drive.
   \ The entry is already stored in `fda`.
   \
   \ ``cat-fda`` is a factor of `?cat-fda`.
@@ -1053,7 +1051,7 @@ need fda-basic? need fda-empty? need fda-deleted?
   \
   \ ?cat-fda ( n -- )
   \
-  \ If catalog entry _n_ of the current drive is not a
+  \ If catalogue entry _n_ of the current drive is not a
   \ deleted file, display it.  The entry is already stored at
   \ `fda`.
   \
@@ -1076,7 +1074,7 @@ need fda-basic? need fda-empty? need fda-deleted?
   \
   \ cat ( -- )
   \
-  \ Show a disk catalog of the current drive.
+  \ Show a disk catalogue of the current drive.
   \
   \ See also: `acat`, `?cat-fda`, `cat-fda`, `set-drive`.
   \
@@ -1207,5 +1205,7 @@ need read-file-descriptor need write-file-descriptor
   \
   \ 2017-03-12: Improve documentation.  Update the names of
   \ `stringer` words.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

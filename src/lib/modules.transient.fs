@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702261230
+  \ Last modified: 201703132009
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -65,7 +65,8 @@ variable old-current-latest
   \ `farlimit`; then reserve data and headers space as said and
   \ update `limit` and `farlimit` accordingly.
   \
-  \ This word must be used before compiling the transient code.
+  \ ``transient`` must be used before compiling the transient
+  \ code.
   \
   \ Usage example:
 
@@ -103,8 +104,9 @@ variable old-current-latest
   \
   \ end-transient ( -- )
   \
-  \ End the transient code started by `transient`.  This word
-  \ must be used after compiling the transient code.
+  \ End the transient code started by `transient`.
+  \ ``end-transient`` must be used after compiling the
+  \ transient code.
   \
   \ The inner operation is: Restore the old values of `dp`,
   \ `np`, `limit` and `farlimit`.
@@ -126,8 +128,9 @@ variable old-current-latest
   \
   \ Forget the transient code compiled between `transient` and
   \ `end-transient`, by unlinking the header space that was
-  \ reserved and used for it.  This word must be used when the
-  \ transient code is not going to be used any more.
+  \ reserved and used for it.  ``forget-transient`` must be
+  \ used when the transient code is not going to be used any
+  \ more.
   \
   \ The inner operation is: Restore the old value of
   \ `latest-wordlist`; store the _nt_ of the latest word
@@ -169,5 +172,7 @@ variable old-current-latest
   \
   \ 2017-02-26: Update "hp" notation to "np", after the changes
   \ in the kernel.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201703132012
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -60,7 +60,7 @@ code get-inkey ( -- c | 0 )
   \ Leave the value of the key being pressed. If no key being
   \ pressed leave zero.
   \
-  \ This word reads the keyboard, so it works even when the
+  \ ``get-inkey`` reads the keyboard, so it works even when the
   \ keyboard is not read by an interrupts routine.
   \
   \ See also: `inkey`, `key`.
@@ -76,5 +76,7 @@ code get-inkey ( -- c | 0 )
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

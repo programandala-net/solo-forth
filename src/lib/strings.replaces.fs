@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703132001
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -60,7 +60,7 @@ need substitute-wordlist need nextname
   \ `substitute-wordlist` its substitution and return the
   \ address of its storage space in data space, not allocated.
   \
-  \ This word is a common factor of `substitution` and
+  \ ``(substitution`` is a common factor of `substitution` and
   \ `xt-substitution`.
   \
   \ See also: `substitution`, `xt-substitution`, `replaces`.
@@ -136,7 +136,7 @@ need slit-substitution
   \ The name of a substitution should not contain the "%"
   \ delimiter character.
   \
-  \ This word allots data space and creates a definition.
+  \ ``replaces`` allots data space and creates a definition.
   \
   \ Origin: Forth-2012 (STRING EXT).
   \
@@ -164,5 +164,7 @@ need slit-substitution
   \ string pair, not the address of a counted string.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

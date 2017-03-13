@@ -3,7 +3,8 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201703132006
+  \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
@@ -27,6 +28,8 @@
 
 : nonfull-display ( -- ) 2 23659 c! ;
 
+  \ XXX TODO -- Rewrite in Z80.
+
   \ doc{
   \
   \ nonfull-display ( -- )
@@ -35,12 +38,16 @@
   \ and 22 lines in the upper main screen, which is the default
   \ configuration in BASIC.
   \
+  \ See also: `full-display`, `save-display`.
+  \
   \ }doc
 
   \ Note: 23659 is the system variable DF_SZ (lines in the
   \ lower screen).
 
 : full-display ( -- ) 0 23659 c! ;
+
+  \ XXX TODO -- Rewrite in Z80.
 
   \ doc{
   \
@@ -49,6 +56,8 @@
   \ Set the full screen mode: no lines in the lower screen,
   \ thus 24 lines in the upper main screen, which is the
   \ default configuration in Solo Forth.
+  \
+  \ See also: `nonfull-display`, `save-display`.
   \
   \ }doc
 
@@ -62,10 +71,12 @@
   \
   \ save-display ( -- ) ( R: -- col row )
   \
-  \ Save the status of the display.  This word is intended to
-  \ be used before calling a ROM routine that uses the display.
-  \ The display can be restored to its previous status with
-  \ `restore-display`.
+  \ Save the status of the display.  ``save-display`` is
+  \ intended to be used before calling a ROM routine that uses
+  \ the display.  The display can be restored to its previous
+  \ status with `restore-display`.
+  \
+  \ See also: `save-mode`, `nonfull-display`.
   \
   \ }doc
 
@@ -77,9 +88,16 @@
   \ restore-display ( -- ) ( R: col row -- )
   \
   \ Restore the status of the display, saved by `save-display`.
-  \ Intended to be used after calling a ROM routine that uses
-  \ the display.
+  \ ``restore-display`` is intended to be used after calling a
+  \ ROM routine that uses the display.
+  \
+  \ See also: `display`, `full-display`, `restore-mode`.
   \
   \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

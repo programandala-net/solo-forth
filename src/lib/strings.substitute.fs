@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201703132007
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -107,19 +107,19 @@ code substitution-delimiter? ( ca -- f )
   \ substitution-delimiter? ( ca -- f )
   \
   \ Does _ca_ contains the character hold in the character
-  \ constant `substitution-delimiter`? If so return _true_, else
-  \ return _false_.
+  \ constant `substitution-delimiter`? If so return _true_,
+  \ else return _false_.
   \
-  \ This word is a factor of `substitute`.
+  \ ``substitution-delimiter?`` is a factor of `substitute`.
   \
-  \ This word is written in Z80. Its equivalent code is Forth
-  \ is the following:
-  \
+  \ ``substitution-delimiter?`` is written in Z80. Its
+  \ equivalent definition is Forth is the following:
+
   \ ----
   \ : substitution-delimiter? ( ca -- f )
   \  c@ substitution-delimiter = ;
   \ ----
-  \
+
   \ }doc
 
 ( substitute )
@@ -204,5 +204,7 @@ code substitution-delimiter? ( ca -- f )
   \ with `1/string`.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

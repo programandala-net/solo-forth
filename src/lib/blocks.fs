@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703130119
+  \ Last modified: 201703132015
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,7 +33,7 @@
   \ ?--> ( f -- )
   \
   \ If _f_ is not false, continue interpretation on the next
-  \ sequential block.  parse area. This word is used for
+  \ sequential block.  parse area. ``?-->`` is used for
   \ conditional compilation.
   \
   \ ``?-->`` is an `immediate` word.
@@ -327,5 +327,7 @@
   \
   \ 2017-03-13: Update names including "rec" to "sector(s)";
   \ update names including "blk" to "block(s)".
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

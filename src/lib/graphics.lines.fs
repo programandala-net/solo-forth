@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703132013
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -65,7 +65,8 @@ code rdraw176 ( gx gy -- )
   \ 16 pixel rows are not used). _gx_ is 0..255; _gy_ is
   \ 0..175.
   \
-  \ This word is equivalent to Sinclair BASIC's DRAW command.
+  \ ``rdraw176`` is equivalent to Sinclair BASIC's ``DRAW``
+  \ command.
   \
   \ See also: `adraw176`, `rdraw`.
   \
@@ -239,14 +240,14 @@ code rdraw ( gx gy -- )
 
   \ Credit:
   \
-  \ This word is a modified version of the DRAW-LINE ROM
+  \ `rdraw` is a modified version of the DRAW-LINE ROM
   \ routine.
 
   \ doc{
   \
   \ rdraw ( gx gy -- )
   \
-  \ REMARK: This word is under development.
+  \ REMARK: ``rdraw`` is under development.
   \
   \ Draw a line relative _gx gy_ to the current coordinates.
   \ _gx_ is 0..255; _gy_ is 0..191.
@@ -337,9 +338,10 @@ need x1 need incx need y1 need incy
   \ Draw a line from the current coordinates to the given
   \ absolute coordinates _gx gy_, using only the top 176 pixel
   \ rows of the screen (the lower 16 pixel rows are not used)
-  \ and preserving the current attributes of the screen.
-  \ _gx_ is 0..255; _gy_ is 0..175. This word is faster than
-  \ `adraw176`.
+  \ and preserving the current attributes of the screen.  _gx_
+  \ is 0..255; _gy_ is 0..175.
+  \
+  \ ``aline176`` is faster than `adraw176`.
   \
   \ See also: `rdraw176`.
   \
@@ -369,5 +371,7 @@ need x1 need incx need y1 need incy
   \ 2017-02-03: Compact the code, saving one block.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

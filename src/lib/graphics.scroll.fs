@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703132009
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -72,9 +72,9 @@ code pixel-pan-right ( -- )
   \
   \ pixel-pan-right ( -- )
   \
-  \ Pan the whole screen one pixel to the right.  This word is
-  \ a wrapper that calls `(pixel-pan-right` saving the BC
-  \ register.
+  \ Pan the whole screen one pixel to the right.
+  \ ``pixel-pan-right`` is a wrapper that calls
+  \ `(pixel-pan-right` saving the BC register.
   \
   \ See `(pixel-pan-right`, `pixels-pan-right`,
   \ `pixel-scroll-up`.
@@ -141,8 +141,8 @@ code pixel-scroll-up ( -- )
   \
   \ pixel-scroll-up ( -- )
   \
-  \ Scroll the whole screen one pixel up. This word is a
-  \ wrapper that calls `(pixel-scroll-up` saving the BC
+  \ Scroll the whole screen one pixel up. ``pixel-scroll-up``
+  \ is a wrapper that calls `(pixel-scroll-up` saving the BC
   \ register.
   \
   \ See also: `pixel-pan-right`, `pixels-scroll-up`.
@@ -187,5 +187,7 @@ code pixel-scroll-up ( -- )
   \ pixel row of the screen.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

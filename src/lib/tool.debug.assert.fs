@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702272341
+  \ Last modified: 201703132022
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -102,8 +102,8 @@ variable assert-level ( -- a ) 1 assert-level !
   \
   \ If the contents of `assert-level` is greater than _n_, then
   \ parse and discard the input stream to the next right paren
-  \ (the end of the assertion); else do nothing.  This word is
-  \ the common factor of `assert0(`, `assert1(`, `assert2(`,
+  \ (the end of the assertion); else do nothing.  ``assertn``
+  \ is the common factor of `assert0(`, `assert1(`, `assert2(`,
   \ and `assert3(`.
   \
   \ Origin: Gforth.
@@ -191,14 +191,14 @@ variable assert-level ( -- a ) 1 assert-level !
   \ assert( ( -- )
   \
   \ Start a normal assertion.  Normal assertion are turned on
-  \ by default. This word is equivalent to `assert1(`.
+  \ by default. ``assert(`` is equivalent to `assert1(`.
   \
   \ ``assert(`` is an `immediate` word.
   \
   \ Origin: Gforth.
   \
-  \ See also: `assert-level`, `assert0(`, `assert1(`, `assert2(`,
-  \ assert3(`, `)`.
+  \ See also: `assert-level`, `assert0(`, `assert1(`,
+  \ `assert2(`, assert3(`, `)`.
   \
   \ }doc
 
@@ -233,5 +233,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \ 2017-02-17: Update cross references.
   \
   \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

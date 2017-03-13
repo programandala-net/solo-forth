@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703131958
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -146,7 +146,7 @@
   \ `+field-opt-0124`) because the field 0 does not calculate
   \ the field offset.
   \
-  \ This word uses 31 bytes of data space.
+  \ ``+field-opt-0`` uses 31 bytes of data space.
   \
   \ }doc
 
@@ -196,5 +196,7 @@
   \ 2017-02-17: Update cross references.
   \
   \ 2017-02-22: Improve documentation.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

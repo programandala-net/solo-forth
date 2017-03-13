@@ -158,12 +158,11 @@ code 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
   \
   \ 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
   \
-  \ This word is written is Z80. A possible implementation of
+  \ ``3dup`` is written is Z80. An equivalent definition in
   \ Forth is the following:
 
   \ ----
-  \ : 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
-  \   dup 2over rot ;
+  \ : 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 ) dup 2over rot ;
   \ ----
 
   \ }doc

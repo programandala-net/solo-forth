@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220028
+  \ Last modified: 201703131958
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -103,8 +103,9 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
   \ @bit ( b ca -- f )
   \
   \ Fetch _f_ from an element of a bit-array, represented by
-  \ address _ca_ and bitmask _b_.  This word is an alias of
-  \ `c@and?`.
+  \ address _ca_ and bitmask _b_.
+  \
+  \ ``@bit`` is an alias of `c@and?`.
   \
   \ See also: `!bit`, `bit-array`.
   \
@@ -117,5 +118,7 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
   \ (http://www.forth.org/svfig/Len/bits.htm).
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

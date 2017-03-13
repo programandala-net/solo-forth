@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702272339
+  \ Last modified: 201703132040
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -112,7 +112,7 @@
   \
   \ Since aliases share the execution token of their original
   \ word, it's not possible to get the name of an alias from
-  \ its execution token. But this word can do it:
+  \ its execution token. But ``''`` can do it:
 
   \ ----
   \ ' drop alias abandon
@@ -171,7 +171,7 @@ need >>name need name>name need name>>
   \ Try to find the name token _nt_ of the word represented by
   \ execution token _xt_. Return 0 if it fails.
   \
-  \ This word searches all headers, from the oldest one to the
+  \ ``>name`` searches all headers, from the oldest one to the
   \ newest one, for the first one whose _xtp_ (execution token
   \ pointer) contains _xt_.  This way, when a word has
   \ additional headers created by `alias` or `synonym`, its
@@ -326,7 +326,7 @@ need >>name need name>name need name>>
   \
   \ Toggle the "smudge bit" of the given _nt_.
   \
-  \ This word is obsolete. `hidden` and `revealed` are used
+  \ ``smudged`` is obsolete. `hidden` and `revealed` are used
   \ instead.
   \
   \ See also: `smudge`.
@@ -345,7 +345,7 @@ need >>name need name>name need name>>
   \ found during dictionary searches, until compiling is
   \ completed without error.
   \
-  \ This word is obsolete. `hide` and `reveal` are used
+  \ ``smudge`` is obsolete. `hide` and `reveal` are used
   \ instead.
   \
   \ Origin: fig-Forth.
@@ -653,10 +653,10 @@ variable warnings  warnings on
   \ needed, return _ca len_ and the _xt_ of the word found in
   \ the current compilation wordlist.
   \
-  \ This word is factor of `warn.throw`, `warn.message` and
+  \ ``?warn`` is factor of `warn.throw`, `warn.message` and
   \ `warn-throw`.
   \
-  \ See `no-warnings?`, `not-redefined?`, `warn.message`,
+  \ See also: `no-warnings?`, `not-redefined?`, `warn.message`,
   \ `warn.throw`, `warn-throw`.
   \
   \ }doc
@@ -916,5 +916,7 @@ variable warnings  warnings on
   \ in the kernel.
   \
   \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

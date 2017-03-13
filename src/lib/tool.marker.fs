@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201702261231
+  \ Last modified: 201703132012
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -94,7 +94,7 @@ need get-order need @cell+ need nn, need nn@ need there
   \ the configuration of word lists that were saved at _a_ by
   \ `marker,`.
   \
-  \ This word is a factor of `marker`.
+  \ ``unmarker`` is a factor of `marker`.
   \
   \ }doc
 
@@ -114,7 +114,7 @@ need get-order need @cell+ need nn, need nn@ need there
   \ current data-space pointer, and return its address _a_, for
   \ later restoration by `unmarker`.
   \
-  \ This word is a factor of `marker`.
+  \ ``marker,`` is a factor of `marker`.
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
@@ -176,5 +176,7 @@ need possibly need marker
   \
   \ 2017-02-26: Update "hp" notation to "np", after the changes
   \ in the kernel.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

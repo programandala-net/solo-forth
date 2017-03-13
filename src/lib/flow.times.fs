@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703132019
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -46,7 +46,7 @@ variable times-xt  \ the _xt_ executed by `times`
   \ Repeat the next compiled instruction _n_ times.  If _n_ is
   \ zero, continue executing the following instruction.
   \
-  \ This word is useful to implement complicated math
+  \ ``times`` is useful to implement complicated math
   \ operations, like shifts, multiply, divide and square root,
   \ from appropriate math step instructions.  It is also useful
   \ in repeating auto-indexing memory instructions.
@@ -113,5 +113,7 @@ variable dtimes-xt  \ the _xt_ executed by `dtimes`
   \
   \ 2017-02-19: Replace `do`, which has been moved to the
   \ library, with `?do`.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth

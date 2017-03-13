@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703121644
+  \ Last modified: 201703131957
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -289,12 +289,13 @@ code lengths
 
   \ doc{
   \
-  \ lengths ( ca1 len1 ca2 len2 -- ca1 len1 ca2 len2 len1 len2 )
+  \ lengths ( ca1 len1 ca2 len2 -- ca1 len1 ca2 len2 len1 len2
+  \ )
   \
   \ Duplicate lengths _len1_ and _len2_ of strings _ca1 len1_
-  \ and _ca2 len2_. This word is a factor of `s+`.
+  \ and _ca2 len2_. ``lengths`` is a factor of `s+`.
   \
-  \ This word is written in Z80. Its equivalent definition in
+  \ ``lengths`` is written in Z80. Its equivalent definition in
   \ Forth is the following:
 
   \ ----
@@ -978,5 +979,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \
   \ 2017-03-12: Update the names of `stringer` words and
   \ mentions to it.
+  \
+  \ 2017-03-13: Improve documentation.
 
   \ vim: filetype=soloforth
