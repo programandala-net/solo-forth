@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201703142257
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -18,7 +18,7 @@
   \ Julian Fondren, 2016.
 
   \ Marcos Cruz (programandala.net) adapted the code to Solo
-  \ Forth, 2016.
+  \ Forth, 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -76,6 +76,9 @@ need latest>wordlist need +order need -order need nextname
   \
   \ _wid1_ is the word list of the package _name_; _wid0_
   \ is the word list in which the package _name_ was created.
+  \
+  \ `end-package` ends the package; `public` start public
+  \ definitions and `private` starts private definitions.
   \
   \ Syntax:
 
@@ -162,13 +165,12 @@ need latest>wordlist need +order need -order need nextname
 
   \ Origin: SwiftForth.
   \
-  \ See also: `end-package`, `public`, `private`.
+  \ See also: `internal`, `isolate`, `module`, `privatize`,
+  \ `seclusion`.
   \
   \ }doc
 
 : public ( wid0 wid1 -- wid0 wid1 ) over set-current ;
-
-  \ XXX FIXME -- name clash with `begin-module`
 
   \ doc{
   \
@@ -187,8 +189,6 @@ need latest>wordlist need +order need -order need nextname
   \ }doc
 
 : private ( wid0 wid1 -- wid0 wid1 ) dup set-current ;
-
-  \ XXX FIXME -- name clash with `begin-module`
 
   \ doc{
   \
@@ -237,5 +237,7 @@ need latest>wordlist need +order need -order need nextname
   \
   \ 2017-02-17: Update cross references.  Change markup of
   \ inline code that is not a cross reference.
+  \
+  \ 2017-03-14: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132046
+  \ Last modified: 201703142257
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -75,6 +75,7 @@ need alias need nextname
   \ module ( "name" -- parent-wid )
   \
   \ Start the definition of a new module named _name_.
+  \ `end-module` ends the module and `export` exports a word.
   \
   \ Usage example:
 
@@ -101,10 +102,12 @@ need alias need nextname
 
   \ The module name is defined as a constant that holds the
   \ word list identifier the module words are defined into.
-  \ Therefore, to expose the internal words of a module, you can
-  \ use `name >order`, where _name_ is the name of the module.
+  \ Therefore, to expose the internal words of a module, you
+  \ can use `name >order`, where _name_ is the name of the
+  \ module.
   \
-  \ See also: `export`, `end-module`.
+  \ See also: `internal`, `isolate`, `package`, `privatize`,
+  \ `seclusion`.
   \
   \ }doc
 
@@ -151,5 +154,7 @@ need alias need nextname
   \ 2017-02-17: Update cross references.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-03-14: Improve documentation.
 
   \ vim: filetype=soloforth

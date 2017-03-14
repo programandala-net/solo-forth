@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702261229
+  \ Last modified: 201703142257
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -45,12 +45,15 @@
   \
   \ internal ( -- nt )
   \
-  \ Start internal (private) definitions of a module.
+  \ Start internal (private) definitions.  Return the _nt_ of
+  \ the latest word created in the compilation word list.
   \
-  \ Return the _nt_ of the latest word created in the
-  \ compilation word list.
+  \ The end of the internal definitions is marked by
+  \ `end-internal`. Then those definitions can be unlinked by
+  \ `unlink-internal` or hidden by `hide-internal`.
   \
-  \ See also: `end-internal`, `unlink-internal`.
+  \ See also: `isolate`, `module`, `package`, `privatize`,
+  \ `seclusion`.
   \
   \ }doc
 
@@ -60,13 +63,13 @@
   \
   \ end-internal ( -- a )
   \
-  \ End internal (private) definitions.
+  \ End internal (private) definitions.  Return the current
+  \ value of the headers pointer, which is the _xtp_ (execution
+  \ token pointer) of the next word defined.
   \
-  \ Returne the current value of the headers pointer, which is
-  \ the _xtp_ (execution token pointer) of the next word
-  \ defined.
-  \
-  \ See also: `internal`, `unlink-internal`.
+  \ The start of the internal definitions was marked by
+  \ `internal`. The internal definitions can be unlinked by
+  \ `unlink-internal` or hidden by `hide-internal`.
   \
   \ }doc
 
@@ -104,13 +107,18 @@
   \ ----
 
   \ At least one word must be defined between `end-internal`
-  \ and `unlink-internal`.
+  \ and ``unlink-internal``.
   \
   \ The alternative word `hide-internal` can be used instead of
-  \ `unlink-internal` in order to keep the internal words
-  \ searchable, e.g. accessible for `traverse-wordlist`.
+  \ ``unlink-internal`` in order to keep the internal words
+  \ searchable.
   \
   \ }doc
+
+  \ XXX TODO -- Add this when `traverse-wordlist` is
+  \ implemented:
+  \
+  \ searchable, e.g. accessible for `traverse-wordlist`.
 
 [unneeded] hide-internal ?(
 
@@ -126,7 +134,7 @@ need internal need name<name need >>name
   \ hide-internal ( nt xtp -- )
   \
   \ Hide all words defined between the latest pair `internal`
-  \ and `end-external`, setting the smudge bit of their
+  \ and `end-external`, setting the `smudge` bit of their
   \ headers.
   \
   \ Usage example:
@@ -147,15 +155,14 @@ need internal need name<name need >>name
   \ ----
 
   \ At least one word must be defined between `end-internal`
-  \ and `hide-internal`.
+  \ and ``hide-internal``.
   \
   \ The alternative word `unlink-internal` uses a different,
   \ simpler method: it unlinks the internal words from the
   \ dictionary.
   \
-  \ The `privatize` tool, available in its own library module,
-  \ is similar to `hide-internal`, but has error checking and
-  \ does not use the stack.
+  \ `privatize` uses a similar method, but it has error
+  \ checking and does not use the stack.
   \
   \ }doc
 
@@ -191,5 +198,7 @@ need internal need name<name need >>name
   \
   \ 2017-02-26: Update "hp" notation to "np", after the changes
   \ in the kernel.
+  \
+  \ 2017-03-14: Improve documentation.
 
   \ vim: filetype=soloforth

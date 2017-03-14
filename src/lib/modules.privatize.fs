@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201703142257
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -78,21 +78,23 @@ variable private-start  variable private-stop
   \
   \ ----
   \ private{
-  \ \ everything between `private{` and `}private`
+  \
+  \ \ Everything between `private{` and `}private`
   \ \ will become private.
+  \
   \ : foo ;
   \ : moo ;
+  \
   \ }private
   \
-  \ : goo   foo moo ;  \ can use foo and moo
-  \ privatize          \ hide foo and moo
+  \ : goo   foo moo ;  \ can use `foo` and `moo`
+  \ privatize          \ hide `foo` and `moo`
   \ ' foo              \ will fail
   \ ----
 
-  \ The `hide-internal` tool, available in the library module
-  \ of `internal`, is similar to `privatize`, but has no error
-  \ checking and uses the stack.
-
+  \ See also: `internal`, `isolate`, `module`, `package`,
+  \ `seclusion`.
+  \
   \ }doc
 
   \ ===========================================================
@@ -109,5 +111,7 @@ variable private-start  variable private-stop
   \ 2016-12-07: Fix `privatize`: `hidden` instead of `hide`.
   \ Update the documentation of `privatize` after
   \ `hide-internal`.
+  \
+  \ 2017-03-14: Improve documentation.
 
   \ vim: filetype=soloforth
