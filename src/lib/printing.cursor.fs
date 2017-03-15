@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201703151951
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,7 +23,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( column last-column row last-row at-x at-y )
+( column last-column row last-row at-x at-y xy>r r>xy )
 
 [unneeded] column
 ?\ : column ( -- col ) xy drop ;
@@ -105,6 +105,32 @@
   \
   \ }doc
 
+
+[unneeded] xy>r ?\ : xy>r ( R: -- col row ) r>    xy 2>r >r ;
+
+  \ doc{
+  \
+  \ xy>r ( -- ) ( R: -- col row )
+  \
+  \ Save the current cursor coordinates to the return stack.
+  \
+  \ See also: `r>xy`, `save-mode`.
+  \
+  \ }doc
+
+[unneeded] r>xy ?\ : r>xy ( R: col row -- ) r> 2r> at-xy >r ;
+
+  \ doc{
+  \
+  \ r>xy ( -- ) ( R: col row -- )
+  \
+  \ Restore the current cursor coordinates from the return
+  \ stack.
+  \
+  \ See also: `xy>r`, `restore-mode`.
+  \
+  \ }doc
+
   \ ===========================================================
   \ Change log
 
@@ -122,5 +148,7 @@
   \ interpretation.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-15: Add `xy>r` and `r>xy`.
 
   \ vim: filetype=soloforth
