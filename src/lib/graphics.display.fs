@@ -1,15 +1,15 @@
-  \ graphics.screen_filters.fs
+  \ graphics.display.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703152016
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ Words that make filter effects to the whole screen.
+  \ Words that make display effects.
 
   \ ===========================================================
   \ Author
@@ -23,26 +23,24 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( fade )
+( fade-display )
 
 need assembler
 
-code fade ( -- )
+code fade-display ( -- )
   b push,
   8 b ld#, rbegin  5AFF h ldp#, halt, halt,
     rbegin
-      m a ld, a d ld, 07 and#, nz? rif  a dec,  rthen
-      a e ld, a d ld, 38 and#, nz? rif  8 sub#,  rthen
-      e or, d xor, 3F and#, d xor,
-      a m ld, h decp, h a ld,
-      58 cp#,
-    c? runtil
-  rstep
-  b pop, jpnext, end-code
+      m a ld, a d ld, %00000111 and#, nz? rif  a dec,   rthen
+      a e ld, a d ld, %00111000 and#, nz? rif  8 sub#,  rthen
+        e or,  d xor, %00111111 and#, d xor, a m ld,
+     h decp, h a ld, 58 cp#, c? runtil
+       \ repeat until HL<$5800 (first attribute address)
+  rstep b pop, jpnext, end-code
 
   \ doc{
   \
-  \ fade ( -- )
+  \ fade-display ( -- )
   \
   \ Do a screen fade to black, by decrementing the values of
   \ paper and ink in a loop.
@@ -57,11 +55,11 @@ code fade ( -- )
   \ published on Microhobby Especial, issue 7 (1987-12), page
   \ 46: <http://microhobby.org/mhes7.htm>.
 
-( inverted water blackout )
+( invert-display wave-display blackout )
 
-[unneeded] inverted ?( need assembler
+[unneeded] invert-display ?( need assembler
 
-code inverted ( -- )
+code invert-display ( -- )
 
   4000 h ldp#, rbegin   m a ld, cpl, a m ld, h incp,
                         h a ld, 58 cp#,  z? runtil
@@ -76,17 +74,17 @@ code inverted ( -- )
 
   \ doc{
   \
-  \ inverted ( -- )
+  \ invert-display ( -- )
   \
   \ Invert the pixels of the whole screen.
   \
-  \ See also: `water`, `fade`.
+  \ See also: `wave-display`, `fade-display`.
   \
   \ }doc
 
-[unneeded] water ?( need assembler
+[unneeded] wave-display ?( need assembler
 
-code water ( -- )
+code wave-display ( -- )
 
   b push, 20 b ld#,
   rbegin  57FF h ldp#,
@@ -102,12 +100,12 @@ code water ( -- )
 
   \ doc{
   \
-  \ water ( -- )
+  \ wave-display ( -- )
   \
   \ Modify the screen bitmap with a water effect. At the end
   \ the original image is  restored.
   \
-  \ See also: `inverted`, `fade`.
+  \ See also: `invert-display`, `fade-display`.
   \
   \ }doc
 
@@ -131,7 +129,7 @@ code blackout ( -- )
   \
   \ Erase the screen (bitmap and the attributes) with zeros.
   \
-  \ See also: `fade`, `cls`, `attr-cls`.
+  \ See also: `fade-display`, `cls`, `attr-cls`.
   \
   \ }doc
 
@@ -159,5 +157,9 @@ code blackout ( -- )
   \ 2017-02-03: Improve documentation.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-15: Rename the module file. Rename `inverted` to
+  \ `invert-display`, `fade` to `fade-display` and `water` to
+  \ `wave-display`. The previous names were too generic.
 
   \ vim: filetype=soloforth
