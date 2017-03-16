@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132017
+  \ Last modified: 201703161628
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -80,10 +80,10 @@ code ms ( u -- )
 
 ( frames@ frames! reset-frames )
 
-need os-frames
 
+[unneeded] frames@ ?( need os-frames
 : frames@ ( -- d )
-  os-frames @ [ os-frames cell+ ] literal c@ ;
+  os-frames @ [ os-frames cell+ ] literal c@ ; ?)
 
   \ doc{
   \
@@ -96,8 +96,9 @@ need os-frames
   \
   \ }doc
 
+[unneeded] frames@ ?( need os-frames
 : frames! ( d -- )
-  [ os-frames cell+ ] literal c! os-frames ! ;
+  [ os-frames cell+ ] literal c! os-frames ! ; ?)
 
   \ doc{
   \
@@ -110,7 +111,8 @@ need os-frames
   \
   \ }doc
 
-: reset-frames ( -- ) 0. frames! ;
+[unneeded] reset-frames
+?\ need frames! : reset-frames ( -- ) 0. frames! ;
 
   \ doc{
   \
@@ -202,6 +204,9 @@ need os-frames
   \ See: `frames`, `?frames`, `os-frames`, `?seconds`.
   \
   \ }doc
+
+  \ XXX TODO -- Rename `pause` to `basic-pause` or something,
+  \ when the multitasking `pause` will be implemented.
 
 ( leapy-year? date set-date get-date )
 
@@ -415,5 +420,8 @@ need get-time need get-date
   \ references.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-03-16: Make `frames@`, `frames!` and `reset-frames`
+  \ individually accessible to `need`.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201703140029
+; Last modified: 201703161607
 
 include version.z80s
 
@@ -1600,7 +1600,7 @@ endif
 ; range of addresses, as follows:
 
 ; |===
-; | Offset | Address range | Default bank
+; | Offset | Address range | Bank
 ;
 ; | +0     | $0000..$3FFF  | 1
 ; | +1     | $4000..$7999  | 3
@@ -1608,8 +1608,10 @@ endif
 ; | +3     | $C000..$FFFF  | 6
 ; |===
 
-; NOTE: The default banks are valid for G+DOS and TR-DOS.  +3DOS
-; requires other configuration, which is under development.
+; WARNING: On +3DOS bank 6 is used for disk cache and RAM disk,
+; and the default value of `farlimit` is $C000 instead of $0000.
+; Therefore, the name space is 16 KiB smaller than on G+DOS or
+; TR-DOS.
 ;
 ; See also: `bank`, `banks`, `bank-index`, `far`, `far@`,
 ; `farc@`, `far!`, `farc!`, `farcount`, `farplace`, `fartype`,
@@ -3735,20 +3737,20 @@ char_question.not:
 ;
 ; skip-sign? ( ca len -- ca' len' f )
 ;
+; If number string _ca len_ starts with a minus sign, remove it
+; and return the result string _ca' len'_ and a true flag _f_;
+; else _ca' len'_ is identical to _ca len_ and _f_ is false.
+;
 ; Definition:
 
 ; ----
 ; : skip-sign? ( ca len -- ca' len' f )
 ;   over c@ '-' = dup >r abs /string r> ;
-;   \ get optional sign
-;   \ ca len = number
-;   \ ca' len' = number without the minus sign
-;   \ f = negative number?
 ; ----
 
+; See also: `number?`, `?negate`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ; Credit:
   ; Code adapted from CamelForth.
@@ -4514,6 +4516,9 @@ wait_for_key:
 
   ; XXX TMP -- for debugging of `view`:
   ; im 1 ; interrupt mode 1
+
+  ; XXX TODO -- On G+DOS, routine at $0E08 can be used instead,
+  ; to save some bytes.
 
   ; output: A = key code
   bit 5,(iy+1)      ; FLAGS system variable: new key available?
@@ -5370,7 +5375,7 @@ true_if_cy:
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required
 ; Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `0=`, `inverse`.
+; See also: `?negate`, `0=`, `inverse`, `dnegate`.
 ;
 ; }doc
 
@@ -5428,6 +5433,8 @@ negate_hl:
 ;
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required
 ; Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `negate`, `?dnegate`.
 ;
 ; }doc
 
@@ -5501,9 +5508,13 @@ endif
 ;
 ; nip ( x1 x2 -- x2 )
 ;
+; Drop the first item below the top of stack.
+;
+; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+;
+; See also: `drop`, `tuck`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   pop hl
   pop de
@@ -5516,9 +5527,13 @@ endif
 ;
 ; tuck ( x1 x2 -- x2 x1 x2 )
 ;
+; Copy the first (top) stack item below the second stack item.
+;
+; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+;
+; See also: `dup`, `over`, `nip`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   pop hl
   pop de
@@ -5577,9 +5592,15 @@ endif
 ;
 ; dup ( x -- x x )
 ;
+; Duplicate _x_.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `?dup`, `2dup`, `tuck`, `over`, `0dup`, `-dup`,
+; `nup`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   pop hl
   push hl
@@ -5592,9 +5613,15 @@ endif
 ;
 ; 2dup ( x1 x2 -- x1 x2 x1 x2 )
 ;
+; Duplicate cell pair _x1 x2_.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+;
+; See also: `dup`, `2over`, `2drop`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   pop hl
   pop de
@@ -5613,6 +5640,8 @@ endif
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `c+!`, `@`, `+`, `!`.
 ;
 ; }doc
 
@@ -5731,9 +5760,17 @@ endif
 ;
 ; 2! ( x1 x2 a -- )
 ;
+; Store the cell pair _x1 x2_ at _a_, with _x2_ at _a_ and _x1_
+; at the next consecutive cell. It is equivalent to the sequence
+; ``swap over ! cell+ !``.
+;
+; Origin: Forth-79 (Double Number Word Set), Forth-83 (Double
+; Number Extension Word Set), Forth-94 (CORE), Forth-2012
+; (CORE).
+;
+; See also: `2@`, `!`, `c!`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   pop hl
 two_store.into_hl_pointer:
@@ -5799,9 +5836,14 @@ two_store.into_hl_pointer:
 ;
 ; ! ( x a -- )
 ;
+; Store _x_ at _a_.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `@`, `+!`, `2!`, `c!`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   pop hl
 store.into_hl_pointer:
@@ -5819,9 +5861,14 @@ store.de_into_hl_pointer:
 ;
 ; c! ( c ca -- )
 ;
+; Store _c_ at _ca_.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `!`, `2!`, `c@`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   pop hl
   pop de
@@ -5843,6 +5890,34 @@ store.de_into_hl_pointer:
 
 ; ----------------------------------------------
   _colon_header colon_,':'
+
+; doc{
+;
+; : ( "name" -- -sys )
+;
+; Parse _name_. Create a definition for _name_, called a "colon
+; definition". Enter  compilation  `state` and  start  the
+; current definition. Append  the initiation semantics given
+; below to the current definition.
+;
+; Initiation: ``( i*x -- i*x ) ( R: -- nest-sys )``
+;
+; Save implementation-dependent information  _nest-sys_ about
+; the calling  definition. The  stack effects  _i*x_ represent
+; arguments to _name_.
+;
+; _name_ execution: ``( i*x -- j*x )``
+;
+; Execute the definition name. The stack effects _i*x_  and
+; _j*x_ represent arguments to and results from _name_,
+; respectively.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `;`, `does>`, `header`.
+;
+; }doc
 
 if 0 ; XXX TMP -- for debugging
   dw cr_
@@ -5898,6 +5973,11 @@ do_colon:
 ;
 ; finish-code ( -- )
 ;
+; End the current definition, allow it to be found in the
+; dictionary and enter interpretation state.
+;
+; ``finish-code`` is a factor of `;` and `;code`.
+;
 ; Definition:
 
 ; ----
@@ -5907,6 +5987,10 @@ do_colon:
 ;   reveal ;
 ; ----
 
+; Origin: Gforth.
+;
+; See also: `reveal`, `noname?`, `?csp`, `[`.
+;
 ; }doc
 
   ; Credit:
@@ -5926,20 +6010,31 @@ do_colon:
 
 ; doc{
 ;
-; ; ( -- )
+; ;
+;   Compilation: ( -- )
+;   Run-time:    ( -- ) ( R: nest-sys -- )
+;
+; Compilation: Append the run-time semantics below to the
+; current definition. End the current definition, allow it to be
+; found in the dictionary and enter interpretation state.
+;
+; Run-time: Return to the calling definition specified by
+; _nest-sys_.
 ;
 ; ``;`` is an `immediate` and `compile-only` word.
 ;
 ; Definition:
 
 ; ----
-; : ; ( -- )
-;   postpone exit  finish-code ;
+; : ; ( -- ) postpone exit finish-code ;
 ; ----
 
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `exit`, `:`, `finish-code`, `;code`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   dw compile_,exit_
   dw finish_code_
@@ -5969,9 +6064,14 @@ do_c_constant:
 ;
 ; c@ ( ca -- c )
 ;
+; Fetch the character _c_ stored at _ca_.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `@`, `2@`, `c!`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   pop hl
 c_fetch.hl:
@@ -6003,9 +6103,14 @@ do_constant:
 ;
 ; @ ( a -- x )
 ;
+; _x_ is the value stored at _a_.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `!`, `2@`, `c@`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   pop hl
 fetch.hl:
@@ -8327,19 +8432,19 @@ base_store:
 
 ; doc{
 ;
-; (;code) ( -- )
+; (;code) ( -- ) ( R: a -- )
 ;
-; Rewrite the code field of the most recently defined word (it
-; can not be a code word) to point to the following machine code
-; sequence.
+; Rewrite the code field of the most recently defined high-level
+; word (it can not be a code word) to point to the following
+; machine code sequence.
 ;
-; ``(;code)`` is the run-time procedure compiled by `;code`.
+; ``(;code)`` is the run-time procedure compiled by `;code` and
+; `does>`.
 ;
 ; Definition:
 
 ; ----
-; : (;code) ( -- ) ( R: a -- )
-;   r> latest name> 1+ ! ;
+; : (;code) ( -- ) ( R: a -- ) r> latest name> 1+ ! ;
 ; ----
 
 ; }doc
@@ -8354,13 +8459,65 @@ base_store:
 
 ; doc{
 ;
-; does> ( -- )
+; does>
+;   Compilation: ( -- )
+;   Run-time: ( -- ) ( R: nest-sys1 -- )
+;
+; Define the execution-time action of a word created by a
+; high-level defining word.  Used in the form:
+
+; ----
+; : definer ... create ... does> ... ;
+;
+; definer name
+; ----
+
+; where `create` could be also any user defined word which
+; executes `create`.
+
+; ``does>`` marks the termination of the defining part of the
+; defining word _definer_ and then begins the definition of the
+; execution-time action for words that will later be defined by
+; _definer_.  When _name_ is later executed, the address of
+; _name_'s parameter field is placed on the stack and then the
+; sequence of words between ``does>`` and `;` are executed.
 ;
 ; ``does>`` is an `immediate` and `compile-only` word.
 ;
+; Detailed definition, after Forth-2012:
+;
+; Compilation:
+;
+; Append the run-time  semantics below  to the  current
+; definition.  Append the initiation semantics given below to
+; the current definition.
+;
+; Run-time:
+;
+; Replace the execution semantics of the  most recent
+; definition, referred to  as name, with the _name_ execution
+; semantics given  below. Return  control  to the  calling
+; definition  specified  by _nest-sys1_.
+;
+; Initiation: ``( i*x -- i*x pfa ) ( R: -- nest-sys2)``
+;
+; Save information _nest-sys2_  about the calling definition.
+; Place _name_'s parameter field address on the stack. The stack
+; effects _i*x_ represent arguments to name.
+;
+; _name_ execution: ``( i*x -- j*x )``
+;
+; Execute the portion of the definition  that begins with the
+; initiation  semantics appended by the ``does>``  which
+; modified _name_. The stack effects _i*x_ and _j*x_ represent
+; arguments to and results from _name_, respectively.
+;
+; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
+; Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `;`, `;code`, `create`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
 do_does: equ do_colon
 
@@ -11143,6 +11300,8 @@ endif
 ; activates the current screen mode. It's set to `noop` until
 ; the first mode change is done.
 ;
+; See also: `save-mode`, `restore-mode`.
+;
 ; }doc
 
   ; XXX TODO -- convert to a deferred word?
@@ -11156,9 +11315,20 @@ endif
 ;
 ; save-mode ( -- )
 ;
-; }doc
+; Save the current screen mode into `previous-mode`.
+;
+; ``save-mode`` is executed by `bye` before setting the default
+; screen mode.
+;
+; Definition:
 
-  ; XXX TODO -- Finish the documentation.
+; ----
+; : save-mode ( -- ) current-mode @ previous-mode ! ;
+; ----
+
+; See also: `restore-mode`, `current-mode`, `previous-mode`.
+;
+; }doc
 
   dw current_mode_,fetch_
   dw previous_mode_,store_
@@ -11171,9 +11341,20 @@ endif
 ;
 ; restore-mode ( -- )
 ;
-; }doc
+; Restore the screen mode that was saved in `previous-mode` by
+; `save-mode`.
+;
+; ``restore-mode`` is executed by `warm`.
+;
+; Definition:
 
-  ; XXX TODO -- Finish the documentation.
+; ----
+; : restore-mode ( -- ) previous-mode perform ;
+; ----
+
+; See also: `current-mode`, `perform`.
+;
+; }doc
 
   dw previous_mode_,perform_
   dw exit_
@@ -11403,6 +11584,8 @@ endif
 
 ; Origin: fig-Forth's ``+-``.
 ;
+; See also: `negate`, `?dnegate`.
+;
 ; }doc
 
   pop hl
@@ -11429,6 +11612,8 @@ question_negate.hl:
 ; ----
 
 ; Origin: fig-Forth's ``d+-``.
+;
+; See also: `?negate`.
 ;
 ; }doc
 
@@ -13521,9 +13706,9 @@ system_stack_pointer:
 ;
 ; Default action of `at-xy`, in mode 32.
 ;
-; WARNING: The system will crash if the coordinates are out of screen.
-; For the sake of speed, no check is done.  A wrapper secure word can
-; be written if needed.
+; WARNING: The system will crash if the coordinates are out of
+; screen.  For the sake of speed, no check is done.  A wrapper
+; secure word can be written if needed.
 ;
 ; See also: `at-xy`.
 ;
@@ -13563,10 +13748,10 @@ at_pfa.last_line:
 ;
 ; cls ( -- )
 ;
-; Clear the screen with the current attribute, reset the
-; graphic coordinates at the lower left corner (x 0, y 0) and
-; reset the cursor position at the upper left corner (column 0,
-; row 0).
+; Clear the screen with the current attribute, reset the graphic
+; coordinates at the lower left corner (gx 0, gy 0) and reset
+; the cursor position at the upper left corner (column 0, row
+; 0).
 ;
 ; See also: `attr!`, `attr-cls`, `page`.
 ;
@@ -13685,7 +13870,7 @@ attr_cls.a: ; alternative entry point used by `cls`
 ;
 ; mode32-xy ( -- col row )
 ;
-; Return the current column and row, in mode 32.
+; Return the current column and row, in `mode32`.
 ;
 ; This is the default action of `xy`.
 ;
@@ -13709,7 +13894,9 @@ attr_cls.a: ; alternative entry point used by `cls`
   _literal sys_s_posx
   dw c_fetch_,minus_
   dw dup_
-  _literal 32 ; XXX TODO -- chars per line in the current mode
+  _literal 32 ; XXX TODO -- Chars per line in the current mode,
+              ;             in case this word can be reused
+              ;             by other modes.
   dw equals_
   dw zero_branch_,mode32_xy.end
   dw drop_,one_plus_
@@ -13832,25 +14019,36 @@ do_two_constant:
 ;
 ; 2@ ( a -- x1 x2 )
 ;
+; Fetch the cell pair _x1 x2_ stored at _a_. _x2_ is stored at
+; _a_ and _x1_ is stored at the next consecutive cell. It is
+; equivalent to the sequence ``dup cell+ @ swap @``.
+;
+; Origin: Forth-79 (Double Number Word Set), Forth-83 (Double
+; Number Extension Word Set), Forth-94 (CORE), Forth-2012
+; (CORE).
+;
+; See also: `2!`, `@`, `c@`.
+;
 ; }doc
 
-  ; XXX TODO -- Finish the documentation.
-
-  pop hl ; address
+  pop hl        ; address
 two_fetch.hl:
-  ld e,(hl)     ; 07t  1
-  inc hl        ; 06t  1
-  ld d,(hl)     ; 07t  1 ; DE = low part
-  inc hl        ; 06t  1
-  ld a,(hl)     ; 07t  1
-  inc hl        ; 06t  1
-  ld h,(hl)     ; 07t  1
-  ld l,a        ; 04t  1 ; HL = high part
-  ex de,hl      ; 04t  1
-  jp push_hlde  ; 10t  3
-                ; 11t  0 ; push de
-                ; 11t  0 ; push hl
-                ; 86t 12 TOTAL
+                ;  T  B
+                ; -- --
+  ld e,(hl)     ; 07  1
+  inc hl        ; 06  1
+  ld d,(hl)     ; 07  1 ; DE = low part
+  inc hl        ; 06  1
+  ld a,(hl)     ; 07  1
+  inc hl        ; 06  1
+  ld h,(hl)     ; 07  1
+  ld l,a        ; 04  1 ; HL = high part
+  ex de,hl      ; 04  1
+  jp push_hlde  ; 10  3
+                ; 11  0 ; push de
+                ; 11  0 ; push hl
+                ; -- --
+                ; 86 12 Total
 
 ; ----------------------------------------------
   _colon_header two_variable_,'2variable'
@@ -13925,10 +14123,14 @@ two_fetch.hl:
 ; Before executing `exit` within a do-loop, a program shall
 ; discard the loop-control parameters by executing `unloop`.
 ;
-; In Solo Forth `exit` can be used in interpretation mode to
-; stop the interpretation of a block.
+; ``exit`` is compiled by `;`.
 ;
-; Origin: Forth-94 (CORE), Forth-2012 (CORE).
+; In Solo Forth `exit` can be used in interpretation mode to
+; stop the interpretation of a block, like fig-Forth's ``;s``.
+;
+; Origin: fig-Forth's ``;s``, Forth-79 (Required Word Set),
+; Forth-83 (Required Word Set), Forth-94 (CORE), Forth-2012
+; (CORE).
 ;
 ; }doc
 
@@ -13947,15 +14149,18 @@ two_fetch.hl:
 ;
 ; ?exit ( f -- ) ( R: nest-sys | -- nest-sys | )
 ;
-;
 ; If _f_ is zero, do nothing. Otherwise return control to the
 ; calling definition, specified by _nest-sys_.
+;
+; ``?exit`` is the conditional version of `exit`.
 ;
 ; ``?exit`` can not be used within a `loop`. Use ``if unloop
 ; exit then`` instead.
 ;
 ; In Solo Forth ``?exit`` can be used in interpretation mode to
 ; stop the interpretation of a block.
+;
+; See also: `0exit`, `-exit`, `+exit`.
 ;
 ; }doc
 
@@ -14191,32 +14396,34 @@ first_boot:
 
 if plus3dos
 
-  ; +3DOS uses RAM pages 1, 3, 4 and 6 as an array of 128 sector
+  ; +3DOS uses RAM banks 1, 3, 4 and 6 as an array of 128 sector
   ; buffers (numbered 0...127), each of 512 bytes, thus 32
-  ; buffers per RAM page. The cache and RAM disk occupy two
+  ; buffers per RAM bank. The cache and RAM disk occupy two
   ; separate (contiguous) areas of this array.
   ;
   ; The default configuration of +3DOS is the following:
-  ;
+
   ; |===
-  ; | Usage    | First buffer | Number of buffers | KiB
+  ; | Usage     | First buffer | Number of buffers | KiB
   ;
-  ; | Cache    >| 32 >|   8 >|  4
-  ; | RAM disk >| 40 >|  88 >| 44
-  ; | Total     |    >| 176 >| 48
+  ; | Cache    >|          32 >|                8 >|  4
+  ; | RAM disk >|          40 >|               88 >| 44
+  ;
+  ; | Total     |             >|              176 >| 48
   ; |===
 
   ;
-  ; In order to free 3 RAM pages for the Forth name space, and
+  ; In order to free 3 RAM banks for the Forth name space, and
   ; still keep a small RAM disk, the default configuration is
   ; modified the following way:
 
   ; |===
-  ; | Usage    | First buffer | Number of buffers | KiB
+  ; | Usage     | First buffer | Number of buffers | KiB
   ;
-  ; | Cache    >|  96 >|  8 >|  4
-  ; | RAM disk >| 104 >| 24 >| 12
-  ; | Total     |     >| 32 >| 16
+  ; | Cache    >|          96 >|                8 >|  4
+  ; | RAM disk >|         104 >|               24 >| 12
+  ;
+  ; | Total     |             >|               32 >| 16
   ; |===
 
   ld de,$6008 ; $08 sectors for the cache, from sector $60

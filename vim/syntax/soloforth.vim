@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-03-13
+" Updated:  2017-03-14
 "
 " See change log at the end of the file.
 
@@ -356,7 +356,6 @@ syn keyword soloforthForth word-length-mask
 syn keyword soloforthFunction false
 syn keyword soloforthFunction true
 syn keyword soloforthGraphics at-xy
-syn keyword soloforthGraphics attr
 syn keyword soloforthGraphics attr-cls
 syn keyword soloforthGraphics border
 syn keyword soloforthGraphics bright.
@@ -1153,6 +1152,8 @@ let b:current_syntax = "soloforth"
 " 2017-03-13: Update names including "rec" to "sector(s)";
 " update names including "blk" to "block(s)". Add comment
 " regions for `0 ?(` and `0 [if]`, adapted from <gforth.vim>.
+"
+" 2017-03-14: Remove `attr`.
 
 " --------------------------------------------------------------
 

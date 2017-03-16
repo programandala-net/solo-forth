@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703020215
+  \ Last modified: 201703161920
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( rnd random random-range )
+( rnd random random-range fast-rnd fast-random )
 
 [unneeded] rnd [unneeded] random and ?(
 
@@ -34,7 +34,27 @@
 : rnd ( -- u )
   rnd-seed 2@ $62DC um* rot 0 d+ over rnd-seed 2! ;
 
-: random ( n -- 0..n-1 ) rnd um* nip ; ?)
+  \ doc{
+  \
+  \ rnd ( -- u )
+  \
+  \ Return a random number _u_.
+  \
+  \ See also: `random`, `random-range`, `fast-rnd`.
+  \
+  \ }doc
+
+: random ( n1 -- n2 ) rnd um* nip ; ?)
+
+  \ doc{
+  \
+  \ random ( n1 -- n2 )
+  \
+  \ Return a random number _n2_ from 0 to _n1_ minus 1.
+  \
+  \ See also: `rnd`, `random-range`, `fast-random`.
+  \
+  \ }doc
 
   \ Credit:
   \
@@ -46,7 +66,7 @@
 
 [unneeded] random-range  ?( need random
 
-: random-range ( n1 n2 -- n3 ) over - 1+ random + ;
+: random-range ( n1 n2 -- n3 ) over - 1+ random + ; ?)
 
   \ doc{
   \
@@ -54,26 +74,22 @@
   \
   \ Return a random number from _n1_ (min) to _n2_ (max).
   \
+  \ See also: `random`.
+  \
   \ }doc
 
-?)
-
-( fast-rnd fast-random )
-
-need assembler need os-seed
+[unneeded] fast-rnd ?( need os-seed
 
 code fast-rnd ( -- u )
-
-  os-seed fthl, h d ldp,
+  2A c, os-seed , 54 c, 5D c, 29 c, 19 c, 29 c, 19 c,
     \ ld hl,(seed)
-    \ ld c,l
-    \ ld b,h
-  h addp, d addp, h addp, d addp, h addp,
-  d addp, h addp, h addp, h addp, h addp, d addp,
+    \ ld d,h
+    \ ld e,l
     \ add hl,hl
     \ add hl,de
     \ add hl,hl
     \ add hl,de
+  29 c, 19 c, 29 c, 29 c, 29 c, 29 c, 19 c,
     \ add hl,hl
     \ add hl,de
     \ add hl,hl
@@ -81,13 +97,39 @@ code fast-rnd ( -- u )
     \ add hl,hl
     \ add hl,hl
     \ add hl,de
-  h inc, h incp, os-seed sthl, jppushhl, end-code
+  24 c, 23 c, 22 c, os-seed , jppushhl, end-code ?)
     \ inc h
     \ inc hl
     \ ld (seed),hl
     \ jp push_hl
 
-: fast-random ( n -- 0..n-1 ) fast-rnd um* nip ;
+  \ doc{
+  \
+  \ fast-rnd ( -- u )
+  \
+  \ Return a random number _u_.
+  \
+  \ ``fast-rnd`` generates a sequence of pseudo-random values
+  \ that has a cycle of 65536 (so it will hit every single
+  \ number): ``f(n+1)=241f(n)+257``.
+  \
+  \ See also: `fast-random`, `rnd`.
+  \
+  \ }doc
+
+[unneeded] fast-random ?( need fast-rnd
+
+: fast-random ( n1 -- n2 ) fast-rnd um* nip ; ?)
+
+  \ doc{
+  \
+  \ fast-random ( n1 -- n2 )
+  \
+  \ Return a random number _n2_ from 0 to _n1_ minus 1.
+  \
+  \ See also: `fast-rnd`, `random`.
+  \
+  \ }doc
 
   \ Credit:
   \
@@ -134,34 +176,20 @@ code fast-rnd ( -- u )
   \      ret
   \ ----
 
-( crnd crandom )
+( crnd crandom -1|1 -1..1 randomize randomize0 )
 
-[unneeded] crandom
-?\ need crnd  : crandom ( b1 -- b2 ) crnd um* nip ;
-
-  \ doc{
-  \
-  \ crandom ( b1 -- b2 )
-  \
-  \ Return a random 8-bit number _b2_ in range _0..b1-1_
-  \
-  \ }doc
-
-[unneeded] crnd ?exit
-
-need assembler need os-seed
+[unneeded] crnd ?( need os-seed
 
 code crnd ( -- b )
-  os-seed fthl,
+  2A c, os-seed , ED c, 5F c, 57 c, 5E c, 19 c,
     \ ld      hl,(randData)
-  ED c, 5F c, a d ld, m e ld, d addp, l add, h xor,
     \ ld      a,r
     \ ld      d,a
     \ ld      e,(hl)
     \ add     hl,de
+  85 c, AC c, 22 c, os-seed , pusha jp, end-code ?)
     \ add     a,l
     \ xor     h
-  os-seed sthl, pusha jp, end-code
     \ ld      (randData),hl
     \ jp push_a
 
@@ -197,14 +225,23 @@ code crnd ( -- b )
   \
   \ Return a random 8-bit number _b_ (0..255).
   \
-  \ See also: `crandom`.
+  \ See also: `crandom`, `rnd`.
   \
   \ }doc
 
-( -1|1 -1..1 randomize randomize0 )
+[unneeded] crandom
+?\ need crnd  : crandom ( b1 -- b2 ) crnd um* nip ;
+
+  \ doc{
+  \
+  \ crandom ( b1 -- b2 )
+  \
+  \ Return a random 8-bit number _b2_ in range _0..b1-1_
+  \
+  \ }doc
 
 [unneeded] -1|1
-?\ need random  : -1|1 ( -- -1|1 ) 2 random 2* 1- ;
+?\ need random : -1|1 ( -- -1|1 ) 2 random 2* 1- ;
 
   \ doc{
   \
@@ -212,10 +249,12 @@ code crnd ( -- b )
   \
   \ Return a random number: -1 or 1.
   \
+  \ See also: `-1..1`, `rnd`, `fast-random`.
+  \
   \ }doc
 
 [unneeded] -1..1
-?\ need random  : -1..1 ( -- -1|0|1 ) 3 random 1- ;
+?\ need random : -1..1 ( -- -1|0|1 ) 3 random 1- ;
 
   \ doc{
   \
@@ -223,33 +262,33 @@ code crnd ( -- b )
   \
   \ Return a random number: -1, 0 or 1.
   \
+  \ See also: `-1|1`, `rnd`, `fast-random`.
+  \
   \ }doc
 
 [unneeded] randomize
-?\ need os-seed  : randomize ( n -- ) os-seed ! ;
+?\ need os-seed : randomize ( n -- ) os-seed ! ;
 
   \ doc{
   \
   \ randomize ( n -- )
   \
-  \ Set the seed of the random number generator to _n_.
+  \ Set the seed used by `fast-rnd` and `fast-random` to _n_.
   \
   \ See also: `randomize0`.
   \
   \ }doc
 
-[unneeded] randomize0 ?exit
-
-need os-frames need randomize
+[unneeded] randomize0 ?( need os-frames need randomize
 
 : randomize0 ( n -- )
-  ?dup 0=  if  os-frames @  then  randomize ;
+  ?dup 0= if os-frames @ then randomize ; ?)
 
   \ doc{
   \
   \ randomize0 ( -- )
   \
-  \ Set the seed of the random number generator to _n_;
+  \ Set the seed used by `fast-rnd` and `fast-random` to _n_;
   \ if _n_ is zero use the system frames counter instead.
   \
   \ See also: `randomize`.
@@ -297,5 +336,9 @@ need os-frames need randomize
   \
   \ 2017-03-02: Fix `crnd` (a bug introduced when the word was
   \ convernet to the new assembler).
+  \
+  \ 2017-03-16: Compact the code, saving two blocks.  Complete
+  \ and improve documentation. Rewrite `fast-rnd` and `crnd`
+  \ with Z80 opcodes.
 
   \ vim: filetype=soloforth
