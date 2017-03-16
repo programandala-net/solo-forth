@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132011
+  \ Last modified: 201703161734
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -39,54 +39,54 @@ variable ~~?  ~~? on
   \
   \ }doc
 
-variable ~~y  ~~y off
+create ~~y  0 c,
 
   \ doc{
   \
-  \ ~~y ( -- a )
+  \ ~~y ( -- ca )
   \
-  \ A variable that holds the row the debugging information
-  \ compiled by `~~` will be printed at.  Its default value is
-  \ zero.
+  \ A character variable that holds the row the debugging
+  \ information compiled by `~~` will be printed at.  Its
+  \ default value is zero.
   \
   \ }doc
 
-variable ~~quit-key  'q' ~~quit-key !
+create ~~quit-key 'q' c,
 
   \ doc{
   \
-  \ ~~quit-key ( -- a )
+  \ ~~quit-key ( -- ca )
   \
-  \ A variable that holds the key code used to quit at the
-  \ debugging points compiled by `~~`. If its value is not
-  \ zero, `~~control` will wait for a key press in order to
+  \ A character variable that holds the key code used to quit
+  \ at the debugging points compiled by `~~`. If its value is
+  \ not zero, `~~control` will wait for a key press in order to
   \ quit the debugging.  Its default value is the code of 'q'.
   \
   \ See also: `~~resume-key`.
   \
   \ }doc
 
-variable ~~resume-key  bl ~~resume-key !
+create ~~resume-key bl c,
 
   \ doc{
   \
-  \ ~~resume-key ( -- a )
+  \ ~~resume-key ( -- ca )
   \
-  \ A variable that holds the key code used to resume execution
-  \ at the debugging points compiled by `~~`.  If it contains
-  \ zero, `~~control` will not wait for a key.  If it contains
-  \ a negative value (e.g. _true_), `~~control` will wait for
-  \ any key.  Otherwise `~~control` will wait for the key it
-  \ contains.  Its default value is `bl`, the code of the space
-  \ character.
+  \ A character variable that holds the key code used to resume
+  \ execution at the debugging points compiled by `~~`.  If
+  \ ``~~resume-key`` contains zero, `~~control` will not wait
+  \ for a key.  If ``~~resume-key`` contains $FF, `~~control`
+  \ will wait for any key.  Otherwise `~~control` will wait for
+  \ the key stored at ``~~resume-key``, whose default value is
+  \ `bl`, the code of the space character.
   \
   \ See also: `~~quit-key`.
   \
   \ }doc
 
 : ~~info ( nt line block -- )
-  0 ~~y @ 2dup 2>r at-xy columns 2* spaces 2r@ at-xy
-  ." Block" 4 .r ."  Line" 3 .r space .name 2r> 1+ at-xy .s ;
+  0 ~~y c@ 2dup 2>r at-xy columns 2* spaces 2r@ at-xy
+  ." Block " 4 .r ."  Line " 2 .r space .name 2r> 1+ at-xy .s ;
 
   \ doc{
   \
@@ -102,7 +102,7 @@ variable ~~resume-key  bl ~~resume-key !
   \
   \ }doc
 
-: ~~control? ( -- f ) ~~resume-key @ ~~quit-key @ or ;
+: ~~control? ( -- f ) ~~resume-key c@ ~~quit-key c@ or ;
 
   \ doc{
   \
@@ -114,23 +114,23 @@ variable ~~resume-key  bl ~~resume-key !
   \
   \ }doc
 
-: ~~press? ( c a -- f ) @ tuck = swap 0<> and ;
+: ~~press? ( c ca -- f ) c@ tuck = swap 0<> and ;
 
   \ doc{
   \
-  \ ~~press? ( c a -- f )
+  \ ~~press? ( c ca -- f )
   \
-  \ Is the contents of _a_ not zero and equal to _c_?
+  \ Is the character stored at _ca_ not zero and equal to _c_?
   \ This is a factor of `~~control` used to check key presses,
   \ in the code compiled by `~~`.
   \
   \ }doc
 
 : ~~control ( -- )
-  ~~control? 0= ?exit                         begin  key dup
-    ~~quit-key ~~press? if  drop quit  then
-      ~~resume-key @ 0< if  drop exit  then
-  ~~resume-key ~~press? if  exit       then   again ;  -->
+  ~~control? 0= ?exit                       begin key dup
+      ~~quit-key ~~press? if drop quit then
+    ~~resume-key c@ $FF = if drop exit then
+    ~~resume-key ~~press? if exit      then again ; -->
 
   \ doc{
   \
@@ -310,5 +310,10 @@ defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
   \ 2017-02-27: Improve documentation.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-03-16: Convert cell variables to character variables.
+  \ Change the behaviour of `~~control`: check if
+  \ `~~resume-key` contains $FF instead of a negative value.
+  \ Update and improve documentation.
 
   \ vim: filetype=soloforth
