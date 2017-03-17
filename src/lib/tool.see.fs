@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132050
+  \ Last modified: 201703172146
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -74,19 +74,19 @@ variable see-address  \ in the word being decoded
     ['] ?branch   of  see-branch     endof
     ['] (do)      of  see-branch     endof
     ['] (?do)     of  see-branch     endof
-    ['] (.")      of  see-sliteral   endof
-    [undefined] cslit ?\ ['] cslit   of see-sliteral endof
-    [undefined] -branch ?\ ['] -branch of see-branch   endof
-  endcase ;  -->
+    ['] (.")      of  see-sliteral   endof -->
 
 ( see )
 
-: colon-end? ( xt -- f )
-  dup  ['] exit =  swap ['] (;code) =  or ;
+    [undefined] cslit    ?\ ['] cslit    of see-sliteral endof
+    [undefined] (abort") ?\ ['] (abort") of see-sliteral endof
+    [undefined] -branch  ?\ ['] -branch  of see-branch   endof
+  endcase ;
+
+: colon-end? ( xt -- f ) dup ['] exit = swap ['] (;code) = or ;
   \ Is _xt_ the end of colon definition?
 
-: colon-xt? ( xt -- f )
-  dup c@ $CD = swap 1+ @ docolon = and ;
+: colon-xt? ( xt -- f ) dup c@ $CD = swap 1+ @ docolon = and ;
   \ Is _xt_ a colon definition?
   \ First, its first byte must be $CD (the Z80 call opcode);
   \ second, its jump address must be the colon interpreter.
@@ -288,5 +288,8 @@ previous set-current
   \ 2017-02-17: Update cross references.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-03-17: Support `(abort")`, provided it is defined when
+  \ `see` is compiled.
 
   \ vim: filetype=soloforth

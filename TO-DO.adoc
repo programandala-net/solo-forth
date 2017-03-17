@@ -1,11 +1,11 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-03-16
+:revdate: 2017-03-17
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201703162002
+// Last modified 201703172252
 
 // Application development {{{1
 == Application development ==
@@ -875,9 +875,9 @@ Or write a variant:
 
 Add `.udg"` as a fast way to print strings of UDG (0..255).
 
-.2017-01-09:
+.2017-01-09, 2017-03-17:
 
-Finish `udg-block[`.
+Finish `udg-block`, combining it with the new `grid`.
 
 .2016-12-26:
 
@@ -961,6 +961,10 @@ does nothing, as expected.
 
 // Maths {{{1
 == Maths ==
+
+.2017-03-17:
+
+Write `negate! ( a -- )` and `invert! ( a -- )`.
 
 .2017-03-16:
 
@@ -1924,7 +1928,7 @@ Make the tape words return a standard _ior_.
 // Time {{{1
 == Time ==
 
-.2017-02-13:
+.2017-02-13, 2017-03-17:
 
 Try simpler alternative to `ms`, based on this loop found in the Plus
 D disassembly:
@@ -1936,6 +1940,8 @@ rest_1:
   djnz rest_1 ; 13/08 T
   ; 255*13+8= 3323 T
 ----
+
+But it needs to be adjusted slightly depending on the machine.
 
 .2017-01-24:
 
