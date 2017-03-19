@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201703191228
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -19,7 +19,7 @@
   \ Forth Dimensions (volume 6, number 1, page 33, 1984-05).
   \
   \ Adapted, modified, improved and commented by Marcos Cruz
-  \ (programandala.net), 2015, 2016.
+  \ (programandala.net), 2015, 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -28,48 +28,77 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( create-anon anon +anon n>anon )
+( anon )
 
-need body>
+need array>
 
-variable (anon) ( -- a )
-  \ xt of the latest anonymous variable.
+variable anon> ( -- a )
 
-: create-anon ( -- )
-  here (anon) !
-  [ (anon) body> @ ] literal compile, 0 , ;
-  \ Create a new anonymous variable.  `(anon)` is used to get
-  \ and compile the xt executed by all variables.
+  \ doc{
+  \
+  \ anon>  ( -- a )
+  \
+  \ A variable. _a_ contains the address of the buffer used by
+  \ local variables defined by `set-anon` and accessed by
+  \ `anon`.
+  \
+  \ ``anon>`` must be set by the application before compiling a
+  \ word that uses `set-anon` and `anon`.  One single buffer
+  \ pointed by ``anon>`` can be shared by several words,
+  \ provided they dont't need to use it at the same time, e.g.
+  \ because of nesting.
+  \
+  \ }doc
 
-: anon ( Compilation: -- ) ( Run-time: -- a )
-  (anon) @
-  compiling? if  compile,  else  execute  then ; immediate
-  \ Current anonymous variable (first cell),
-  \ equivalent to ``-0 +anon``.
+: anon \ Compilation: ( n -- ) Run-time: ( -- a )
+  anon> @ array> postpone literal ; immediate compile-only
 
-: +anon ( Compilation:  n -- ) ( Run-time: -- )
-  cells (anon) @ execute +
-  compiling? if  postpone literal  then ; immediate
-  \ Current anonymous variable (cell _n_, first is 0).
+  \ doc{
+  \
+  \ anon
+  \   Compilation:  ( n -- )
+  \   Run-time: ( -- a )
 
-: n>anon ( x1..xn n -- )
-  cells postpone anon swap bounds ?do  i !  cell +loop ;
-  \ Store the given _n_ cells into the current anonymous
-  \ variable.
+  \
+  \ Compilation: Compile a reference to cell _n_ (0 index) of
+  \ the buffer pointed by `anon>`.
+  \
+  \ Run-time: Return address _a_ of cell _n_ (0 index) of the
+  \ buffer that was pointed by `anon>` during the compilation.
+  \
+  \ ``anon`` is an `immediate` and `compile-only` word.
+  \
+  \ See also: `arguments`, `local`.
+  \
+  \ }doc
 
+: set-anon ( x[n-1]..x[0] n -- )
+  cells anon> @ swap bounds ?do i ! cell +loop ;
+
+  \ doc{
+  \
+  \ set-anon  ( x[n-1]..x[0] n a -- )
+  \
+  \ Store the given _n_ cells into the buffer pointed by
+  \ `anon>`, which will be accessed by `anon`.
+  \
   \ Usage example:
 
-  \ create-anon 5 cells allot
+  \ ----
+  \ here anon> ! 5 cells allot
   \
-  \ : test
-  \   400 300 200 100 000  5 n>anon
-  \   anon ?          \ prints 0
-  \   123 anon !
-  \   anon ?          \ prints 123
-  \   [ 2 ] +anon ?   \ prints 200
-  \   555 [ 2 ] +anon !
-  \   [ 2 ] +anon ?   \ prints 555
-  \ ;
+  \ : test ( x4 x3 x2 x1 x0 -- )
+  \   5 set-anon
+  \   [ 0 ] anon ?     \ print _x5_
+  \   123 [ 0 ] anon !
+  \   [ 0 ] anon ?     \ print 123
+  \   [ 2 ] anon ?     \ print _x3_
+  \   555 [ 2 ] anon !
+  \   [ 2 ] anon ?     \ print 555
+  \   ;
+  \ ----
+  
+  \ }doc
 
   \ ===========================================================
   \ Change log
@@ -86,5 +115,11 @@ variable (anon) ( -- a )
   \
   \ 2017-02-19: Replace `do`, which has been moved to the
   \ library, with `?do`.
+  \
+  \ 2017-03-18: Document. Rewrite: Simplify and make more
+  \ versatile.
+  \
+  \ 2017-03-19: Finish the new version. Update the
+  \ documentation.
 
   \ vim: filetype=soloforth

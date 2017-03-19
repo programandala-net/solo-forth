@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702282329
+  \ Last modified: 201703191356
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -22,6 +22,82 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( local-test )
+
+need local
+
+variable tmp  tmp off cr .( original value of tmp = ) tmp ?
+
+: run ( -- ) tmp local
+  1001 tmp ! cr ." temporary value of tmp = " tmp ? cr ;
+
+run
+
+cr .( restored value of tmp = ) tmp ?
+
+( anon-test )
+
+need anon  here anon> ! 5 cells allot
+
+: run5  ( x[n-1]..x[0] n -- )
+  set-anon cr
+  [ 0 ] anon ?                   \ print first parameter
+  123 [ 0 ] anon ! [ 0 ] anon ?  \ print 123
+  [ 1 ] anon ?                   \ print second parameter
+  [ 2 ] anon ?                   \ print third parameter
+  555 [ 2 ] anon ! [ 2 ] anon ?  \ print 555
+  [ 3 ] anon ?                   \ print fourth parameter
+  [ 4 ] anon ? ;                 \ print fifth parameter
+
+400 300 200 100 000 5 run5
+
+here anon> ! 2 cells allot
+
+: run2  ( x[n-1]..x[0] n -- )
+  set-anon cr [ 0 ] anon ? [ 1 ] anon ? ;
+
+2002 1001 2 run2
+
+( arguments-test )
+
+need arguments need results need toarg need +toarg need 3dup
+
+: val-test ( length width height -- length' volume surface )
+  3 arguments   l0 l1 * toarg l5       \ surface
+                l5 l2 * toarg l4       \ volume
+                $2000 +toarg l0        \ length+$2000
+                l4 toarg l1            \ volume
+                l5 toarg l2            \ surface
+  3 results ;
+
+: var-test ( length width height -- length' volume surface )
+  3 arguments   l0 @ l1 @ * l5 !   \ surface
+                l5 @ l2 @ * l4 !   \ volume
+                $2000 l0 +!        \ length+$2000
+                l4 @ l1 !            \ volume
+                l5 @ l2 !            \ surface
+  3 results ; -->
+
+( arguments-test )
+
+defer test
+
+: .results ( length width height -- )
+  ." OUTPUT" cr ."   Surface:" . cr
+                ."   Volume: " . cr
+                ."   Length + 8192: " . cr ;
+
+
+: run ( length width height -- )
+  3dup 3dup
+  cr ." INPUT"  cr ."   Length: " . cr
+                   ."   Width:  " . cr
+                   ."   Height: " . cr
+  ." Value-like arguments:"    cr val-test .results
+  arg-default-action off  arg-action off
+  \ ['] noop dup arg-default-action ! ['] arg-action defer!
+  ." Variable-like arguments:" cr var-test .results ;
 
 ( zx7s-test )
 
@@ -1044,5 +1120,9 @@ blk @ 1+ blk @ 2+ thru
   \ in the kernel.
   \
   \ 2017-02-28: Add `zx7s-test`.
+  \
+  \ 2017-03-18: Add `arguments-test` and `anon-test`.
+  \
+  \ 2017-03-19: Finish `anon-test`. Add `local-test`.
 
   \ vim: filetype=soloforth

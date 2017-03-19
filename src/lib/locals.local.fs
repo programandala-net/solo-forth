@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201703181758
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -30,27 +30,25 @@
 
 ( local )
 
-need :noname need >body
+here ] ( R: a x -- ) 2r> swap ! exit [
+  \ Exit point of `local` to restore the value _x_ of variable
+  \ _a_.
 
-:noname  \ Compilation: ( -- xt )
-         \ Run-time:    ( -- ) ( R: a x -- )
-  2r> swap ! ;
-  \ Restore variable address _a_ and value _x_.
-
-: local  \ Compilation: ( xt -- xt )
-         \ Run-time: ( a0 -- ) ( R: a1 -- a0 x pfa a1 )
-           \ xt  = execution token to restore the variable
-           \ a0  = address of a variable
-           \ x   = its current value
-           \ a1  = return address
-           \ pfa = pfa of `restore-local`
-  r> swap                     \ save top return address
-  dup @ 2>r                   \ save variable address and value
-  [ dup >body ] literal >r    \ force exit via `restore-local`
-  >r ;                       \ restore top return address
+: local \ Interpretation: ( a -- a )
+        \ Run-time: ( a0 -- ) ( R: a1 -- a0 x pfa a1 )
+          \ a   = address of colon code to be executed
+          \       to restore the variable
+          \ a0  = address of a variable
+          \ x   = its current value
+          \ a1  = return address
+          \ pfa = pfa of `restore-local`
+  r> swap              \ save top return address
+  dup @ 2>r            \ save variable address and value
+  [ dup ] literal >r   \ force exit via the restoration code
+  >r ;                 \ restore top return address
   compile-only
 
-  drop  \ delete xt
+  drop \ discard _a_
 
   \ doc{
   \
@@ -70,6 +68,8 @@ need :noname need >body
   \ v ?  \ default value
   \ ----
   \
+  \ See also: `arguments`, `anon`.
+  \
   \ }doc
 
   \ ===========================================================
@@ -86,5 +86,27 @@ need :noname need >body
   \ library.
   \
   \ 2016-12-30: Remove the old, unused, first version.
+  \
+  \ 2017-03-18: Improve the code: `:noname` and `>body` are not
+  \ needed anymore. 
+  \
+  \ The previous version used the following memory:
+
+  \   Including requirements:
+  \     Data space:  70 B
+  \     Name space:  32 B
+  \     Total:      102 B 
+  \   Not including requirements:
+  \     Data space:  34 B
+  \     Name space:  10 B
+  \     Total:       44 B
+
+  \ The new version uses the following memory:
+
+  \     Data space: 31 B
+  \     Name space: 10 B
+  \     Total:      41 B
+
+  \ Improve documentation.
 
   \ vim: filetype=soloforth
