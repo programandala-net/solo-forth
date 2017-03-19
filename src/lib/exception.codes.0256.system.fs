@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703082322
+  \ Last modified: 201703191943
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -65,8 +65,8 @@
 #-286 \ not located
 #-287 \ wrong number of drives
 #-288 \ too many files open
-#-289 \
-#-290 \
+#-289 \ input source exhausted
+#-290 \ invalid UDG scan
 #-291 \
 #-292 \
 #-293 \
@@ -97,5 +97,8 @@
   \
   \ 2017-03-08: Add code #-288, needed by `create-file` and
   \ `open-file`.
+  \
+  \ 2017-03-19: Add code #-289, needed by `parse-name-thru`.
+  \ Add code #-290, needed by `udg-scan>number`.
 
   \ vim: filetype=soloforth

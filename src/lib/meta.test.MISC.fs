@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703191356
+  \ Last modified: 201703191946
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -22,6 +22,27 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( udg-block-test )
+
+need udg-block need set-udg
+
+create udg-font 255 8 * allot udg-font set-udg
+
+5 1 140 udg-block
+
+....XXXXXXXXXXXXXXXXXXXXXXXXXXX.........
+...XXXXXXXXXXXXXXXXXXXXXXXXXXX..........
+..XXXXXXXXXXXXXXXXXXXXXXXXXXX...........
+.XXXXXXXXXXXXXXXXXXXXXXXXXXX............
+XXXXXXXXXXXXXXXXXXXXXXXXXXX.............
+XXXXXXXXXXXXXXXXXXXXXXXXXX..............
+XXXXXXXXXXXXXXXXXXXXXXXXX...............
+....XXXXXXXXXXXXXXXXXXXXXXXXXXX.........
+
+: run ( -- ) cr 145 140 ?do i emit loop cr ;
+
+run
 
 ( local-test )
 
@@ -1123,6 +1144,7 @@ blk @ 1+ blk @ 2+ thru
   \
   \ 2017-03-18: Add `arguments-test` and `anon-test`.
   \
-  \ 2017-03-19: Finish `anon-test`. Add `local-test`.
+  \ 2017-03-19: Finish `anon-test`. Add `local-test`. Add
+  \ `udg-block-test`.
 
   \ vim: filetype=soloforth

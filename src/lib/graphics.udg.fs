@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132357
+  \ Last modified: 201703191958
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,7 +23,45 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( default-udg-chars udg> udg! udg: )
+( /udg /udg* udg-width default-udg-chars udg> udg! udg: )
+
+[unneeded] /udg ?\ 8 cconstant /udg
+
+  \ doc{
+  \
+  \ /udg ( -- b )
+  \
+  \ _b_ is the size of a UDG (User Defined Graphic), in bytes.
+  \
+  \ See also: `udg-width`, `udg!`.
+  \
+  \ }doc
+
+[unneeded] /udg* ?\ need 8* need alias ' 8* alias /udg*
+
+  \ doc{
+  \
+  \ /udg* ( n1 -- n2 )
+  \
+  \ Multiply _n1_ by the `/udg`, resulting _n2_. Used by
+  \ `udg>`.
+  \
+  \ ``/udg*`` is an `alias` of `8*`.
+  \
+  \ }doc
+
+[unneeded] udg-width ?\ 8 cconstant udg-width
+
+  \ doc{
+  \
+  \ udg-width ( -- b )
+  \
+  \ _b_ is the width of a UDG (User Defined Graphic), in
+  \ pixels.
+  \
+  \ See also: `/udg`, `udg!`.
+  \
+  \ }doc
 
 [unneeded] default-udg-chars ?( need rom-font need get-udg
 
@@ -49,47 +87,50 @@ move ?)
   \
   \ }doc
 
-[unneeded] udg> ?( need 8* need get-udg
-: udg> ( n -- a ) 8* get-udg + ; ?)
+[unneeded] udg> ?( need /udg* need get-udg
+
+: udg> ( n -- a ) /udg* get-udg + ; ?)
 
   \ doc{
   \
   \ udg> ( c -- a )
   \
   \ Convert UDG number _n_ (0..255) to the address _a_ of its
-  \ bitmap.
+  \ bitmap, pointed by `os-udg`.
   \
-  \ See also: `udg!`, `udg:`.
+  \ See also: `udg!`, `udg:`, `/udg*`, `get-udg`.
   \
   \ }doc
 
 [unneeded] udg! ?( need udg>
-: udg! ( b0..b7 c -- ) udg> dup 7 + ?do  i c!  -1 +loop ; ?)
+
+: udg! ( b0..b7 c -- ) udg> dup 7 + ?do i c! -1 +loop ; ?)
 
   \ doc{
   \
   \ udg! ( b0..b7 c -- )
   \
-  \ Store the 8-byte bitmap _b0..b7_ into UDG _c_ (0..255).
-  \ _b0_ is the first (top) scan.  _b7_ is the last (bottom)
-  \ scan.
+  \ Store the 8-byte bitmap _b0..b7_ into UDG _c_ (0..255) of
+  \ the UDG font pointed by `os-udg`.  _b0_ is the first (top)
+  \ scan.  _b7_ is the last (bottom) scan.
   \
-  \ See also: `udg:`.
+  \ See also: `udg:`, `udg>`.
   \
   \ }doc
 
 [unneeded] udg: ?( need udg! ?(
-: udg: ( b0..b7 c "name" -- ) dup constant  udg! ; ?)
+
+: udg: ( b0..b7 c "name" -- ) dup cconstant udg! ; ?)
 
   \ doc{
   \
   \ udg: ( b0..b7 c "name" -- )
   \
-  \ Create a constant _name_ for UDG char _c_ (0..255) and
+  \ Create a `cconstant` _name_ for UDG char _c_ (0..255) and
   \ store the 8-byte bitmap _b0..b7_ into that UDG char.  _b0_
   \ is the first (top) scan.  _b7_ is the last (bottom) scan.
   \
-  \ See also: `udg!`.
+  \ See also: `udg!`, `udg>`.
   \
   \ }doc
 
@@ -169,30 +210,146 @@ variable udg0  variable current-udg  variable current-scan
   \
   \ }doc
 
-( udg-block[ )
+( udg-scan>number )
 
-  \ XXX UNDER DEVELOPMENT
-  \ 2016-10-04: Start.
+need binary
 
-: udg-block[ ( c "ccc" -- )
-  begin   parse-name 2dup s" ]udg-block" compare
-  while   dup 8 mod dup abort" Wrong scan length"
-    udg-block-row[
-  repeat ;
-
-: ]udg-block ;
+create udg-blank '.' c,  create udg-dot 'X' c,
 
   \ doc{
   \
-  \ udg-block[ ( c "ccc" -- )
+  \ udg-blank  ( -- ca )
   \
-  \ Start a set of UDG definitions that form a sprite, from UDG
-  \ character _c_ (0..255).
+  \ A character variable that holds the characted used by
+  \ `grid` and `g` as a grid blank. By default it's '.'.
+  \
+  \ See also: `udg-dot`, `udg-scan>binary`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ udg-dot  ( -- ca )
+  \
+  \ A character variable that holds the characted used by
+  \ `grid` and `g` as a grid blank. By default it's 'X'.
+  \
+  \ See also: `udg-blank`, `udg-scan>binary`.
+  \
+  \ }doc
+
+: udg-scan>binary ( ca len -- )
+  bounds ?do i c@ dup udg-blank c@ =
+                  if   drop '0' i c!
+                  else udg-dot c@ = if '1' i c! then
+                  then loop ;
+
+  \ doc{
+  \
+  \ udg-scan>binary ( ca len -- )
+  \
+  \ Convert the characters `udg-blank` and `udg-dot` found in
+  \ UDG scan string _ca len_ to '0' and '1' respectively.
+  \
+  \ }doc
+
+: udg-scan>number? ( ca len -- n true | false )
+  2dup udg-scan>binary base @ >r binary number? r> base ! ;
+
+  \ doc{
+  \
+  \ udg-scan>number? ( ca len -- n true | false )
+  \
+  \ Is UDG scan string _ca len_ a valid binary number?
+  \ The string is processed by `udg-scan>binary` first.
+  \
+  \ See also: `udg-scan>number`.
+  \
+  \ }doc
+
+: udg-scan>number ( ca len -- n )
+  >stringer udg-scan>number? 0= #-290 ?throw ;
+
+  \ doc{
+  \
+  \ udg-scan>number ( ca len -- n )
+  \
+  \ If UDG scan string _ca len_, after being processed by
+  \ `udg-scan>binary`, is a valid binary number, return the
+  \ result _n_.  Otherwise throw exception #-290 (invalid UDG
+  \ scan).
+  \
+  \ See also: `udg-scan>number?`, `udg-block`.
+  \
+  \ }doc
+
+( parse-udg-block-row )
+
+  \ XXX UNDER DEVELOPMENT -- 2017-03-19
+  \
+  \ A possible factor of `udg-block` to skip invalid UDG scans,
+  \ in order to allow UDG blocks span on several Forth blocks,
+  \ ignoring the index line.
+  \
+  \ But anyway this is not needed when `load-app` is used.
+
+need parse-name-thru
+
+: parse-udg-block-row ( "name..." -- ca len )
+  base @ >r
+  begin
+    begin parse-name-thru 2dup >stringer 2dup udg-scan>binary
+          evaluate
+    while
+  while repeat r> base ! ; -->
+
+
+: parse-udg-block-row ( len "name..." -- ca len )
+  begin
+    begin dup parse-name-thru rot over <> while 2drop repeat
+    2dup
+  while repeat ; -->
+
+( udg-block )
+
+need udg-scan>number need udg> need /udg need /udg*
+need udg-width need parse-name-thru need j need anon
+
+here anon> ! 3 cells allot
+
+: udg-block ( width height c "name..." -- )
+  3 set-anon
+    \ Set the anonymous local variables:
+    \   [ 0 ] anon = _c_
+    \   [ 1 ] anon = height
+    \   [ 2 ] anon = width
+  [ 1 ] anon @ /udg* 0 ?do parse-name-thru ( ca len )
+    [ 2 ] anon @ 0 ?do
+      over udg-width udg-scan>number ( ca len b )
+      j /udg /mod [ 2 ] anon @ * i + /udg* +
+        \ Calculate the offset from the address of _c_ in
+        \ the UDG font, to store the scan _b_.
+      [ 0 ] anon @ udg> + c!
+        \ Store _b_ at the proper address in the UDG font,
+        \ i.e. the address of _c_ plus the offset.
+      udg-width /string ( ca' len' ) loop 2drop loop ;
+
+  \ doc{
+  \
+  \ udg-block ( width height c "name..." -- )
+  \
+  \ Start a set of UDG definitions that form a UDG block, from
+  \ UDG character _c_ (0..255). _width_ and _height_ are in
+  \ characters.  The maximum _width_ is 7 (imposed by the size
+  \ of Forth source blocks). _height_ has no maximum, as the
+  \ UDG block can ocuppy more than one Forth block (provided
+  \ the Forth block have no index line, i.e. `load-app` is used
+  \ to load the source).
 
   \ Usage example:
   \
   \ ----
-  \ 140 udg-block[
+  \ 5 2 140 udg-block
   \
   \ 0011110000111100001111000011110000111100
   \ 0111111001111110011111100111111001011110
@@ -202,8 +359,14 @@ variable udg0  variable current-udg  variable current-scan
   \ 1100111111011111111111111111111111111111
   \ 0111111001111110011111100111111001111110
   \ 0011110000111100001111000011110000111100
-  \
-  \ ]udg-block
+  \ 0011110000111100001111000011110000111100
+  \ 0111111001111110011111100111111001011110
+  \ 1111111111111111111111111011111110111111
+  \ 1111111111111111101111111011111111111111
+  \ 1111111110111111101111111111111111111111
+  \ 1100111111011111111111111111111111111111
+  \ 0111111001111110011111100111111001111110
+  \ 0011110000111100001111000011110000111100
   \ ----
   \
   \ }doc
@@ -211,6 +374,7 @@ variable udg0  variable current-udg  variable current-scan
 ( udg-row[ )
 
 need get-udg need evaluate need binary need abort"
+need parse-name-thru
 
 8 constant udg-height  8 constant udg-width
   \ height in bytes (scans)
@@ -269,14 +433,9 @@ variable udg-row-first-udg
 
 ( udg-row[ )
 
-: parse-udg-row-scan ( "ccc" -- ca len )
-  begin   parse-name dup 0=
-  while   2drop refill 0= abort" UDG row scan is missing"
-  repeat ;
-
 : udg-row[ ( c "ccc" -- )
   udg-row-first-udg !  udg-row-height off  udg-row-width off
-  begin   parse-udg-row-scan 2dup udg-row-scan?
+  begin   parse-name-thru 2dup udg-row-scan?
   while   udg-row-scan
   repeat  ]udg-row ;
 
@@ -781,6 +940,118 @@ unused code udg-at-xy-display ( x y c -- )
   \
   \ }doc
 
+( grid g )
+
+need binary need abort"
+
+create grid-blank '.' c,  create grid-dot 'X' c,
+
+  \ doc{
+  \
+  \ grid-blank  ( -- ca )
+  \
+  \ A character variable that holds the characted used by
+  \ `grid` and `g` as a grid blank. By default it's '.'.
+  \
+  \ See also: `grid-dot`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ grid-dot  ( -- ca )
+  \
+  \ A character variable that holds the characted used by
+  \ `grid` and `g` as a grid blank. By default it's 'X'.
+  \
+  \ See also: `grid-blank`.
+  \
+  \ }doc
+
+: grid>binary ( ca len -- )
+  bounds ?do i c@ dup grid-blank c@ =
+                  if   drop '0' i c!
+                  else grid-dot c@ = if '1' i c! then
+                  then loop ;
+
+: grid>number? ( ca len -- n true | false )
+  2dup grid>binary base @ >r binary number? r> base ! ;
+
+: grid-row ( ca len -- n )
+  >stringer grid>number? 0= abort" Invalid UDG grid" ; -->
+
+( grid g )
+
+: grid ( "name..." )
+  begin  begin parse-name dup while 2dup s" end-grid" str=
+                                    if 2drop exit then grid-row
+         repeat 2drop
+  refill 0= until ;
+
+  \ doc{
+  \
+  \ grid  ( "name..." -- )
+  \
+  \ Parse a UDG grid and convert it to numbers, until
+  \ ``end-grid`` is found.  The grid can be written with binary
+  \ numbers (without the "%" prefix") or with the characters
+  \ stored at `grid-blank` and `grid-dot`.
+  \
+  \ NOTE: At the moment the maximum length of the grid rows is
+  \ 16 pixels. Only the 16 pixels at the right of the row are
+  \ used.
+  \
+  \ Usage example:
+
+  \ ----
+  \ grid
+  \ ......XXXX......
+  \ ...XXXXXXXXXX...
+  \ ..XXXXXXXXXXXX..
+  \ ..XXX..XX..XXX..
+  \ ..XXXXXXXXXXXX..
+  \ .....XX..XX.....
+  \ ....XX.XX.XX....
+  \ ..XX........XX..
+  \ end-grid
+  \ ----
+
+  \ See also: `g`.
+  \
+  \ }doc
+
+: g ( "name" -- ) parse-name grid-row ;
+
+  \ doc{
+  \
+  \ g  ( "name" -- n | d )
+  \
+  \ Parse a UDG grid row and convert it to number.  The grid
+  \ row can be written with binary numbers (without the "%"
+  \ prefix") or with the characters stored at `grid-blank` and
+  \ `grid-dot`.
+  \
+  \ NOTE: At the moment the maximum length of the grid rows is
+  \ 16 pixels. Only the 16 pixels at the right of the row are
+  \ used.
+  \
+  \ Usage example:
+
+  \ ----
+  \ g ......XXXX......
+  \ g ...XXXXXXXXXX...
+  \ g ..XXXXXXXXXXXX..
+  \ g ..XXX..XX..XXX..
+  \ g ..XXXXXXXXXXXX..
+  \ g .....XX..XX.....
+  \ g ....XX.XX.XX....
+  \ g ..XX........XX..
+  \ ----
+
+  \ See also: `grid`.
+  \
+  \ }doc
+
   \ ===========================================================
   \ Change log
 
@@ -862,5 +1133,15 @@ unused code udg-at-xy-display ( x y c -- )
   \ Rename: `cursor-addr` to `xy>scra`, `(cursor-addr)` to
   \ `xy>scra_`, `(display-char-bitmap)` to
   \ `display-char-bitmap_`.
+  \
+  \ 2017-03-17: Add `grid`, `end-grid`, `g`... Another tool to
+  \ define UDG grids, before combining all of them into one
+  \ single tool with all the features.
+  \
+  \ 2017-03-18: Start implementation of `udg-block`, which will
+  \ supersede `grid` and `udg-row[`.
+  \
+  \ 2017-03-19: Add `/udg`, `/udg*`, `udg-width`. Finish
+  \ `udg-block`.
 
   \ vim: filetype=soloforth
