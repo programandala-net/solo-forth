@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703191946
+  \ Last modified: 201703192254
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,13 +23,34 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+( udg-group-test )
+
+need udg-group need set-udg
+
+here 5 8 * allot set-udg
+
+5 1 0 udg-group
+
+..XXXX.. ..XXXX.. ..XXXX.. ..XXXX.. ..XXXX..
+.XXXXXX. .XXXXXX. .XXXXXX. .XXXXXX. .X.XXXX.
+XXXXXXXX XXXXXXXX XXXXXXXX X.XXXXXX X.XXXXXX
+XXXXXXXX XXXXXXXX X.XXXXXX X.XXXXXX XXXXXXXX
+XXXXXXXX X.XXXXXX X.XXXXXX XXXXXXXX XXXXXXXX
+XX..XXXX XX.XXXXX XXXXXXXX XXXXXXXX XXXXXXXX
+.XXXXXX. .XXXXXX. .XXXXXX. .XXXXXX. .XXXXXX.
+..XXXX.. ..XXXX.. ..XXXX.. ..XXXX.. ..XXXX..
+
+: run ( -- ) cr 5 0 ?do i emit-udg loop cr ;
+
+run
+
 ( udg-block-test )
 
 need udg-block need set-udg
 
-create udg-font 255 8 * allot udg-font set-udg
+create udg-font 5 8 * allot udg-font set-udg
 
-5 1 140 udg-block
+5 1 0 udg-block
 
 ....XXXXXXXXXXXXXXXXXXXXXXXXXXX.........
 ...XXXXXXXXXXXXXXXXXXXXXXXXXXX..........
@@ -40,7 +61,7 @@ XXXXXXXXXXXXXXXXXXXXXXXXXX..............
 XXXXXXXXXXXXXXXXXXXXXXXXX...............
 ....XXXXXXXXXXXXXXXXXXXXXXXXXXX.........
 
-: run ( -- ) cr 145 140 ?do i emit loop cr ;
+: run ( -- ) cr 5 0 ?do i emit-udg loop cr ;
 
 run
 
@@ -1145,6 +1166,6 @@ blk @ 1+ blk @ 2+ thru
   \ 2017-03-18: Add `arguments-test` and `anon-test`.
   \
   \ 2017-03-19: Finish `anon-test`. Add `local-test`. Add
-  \ `udg-block-test`.
+  \ `udg-block-test` and `udg-group-test`.
 
   \ vim: filetype=soloforth
