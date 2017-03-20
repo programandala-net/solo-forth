@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220028
+  \ Last modified: 201703210003
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -72,7 +72,7 @@ forth-wordlist set-current
 
 #16 constant max-l#
 
-2 cells  max-l# 2* cells +  constant /fwds
+max-l# 2* 2+ cells constant /fwds
   \ cell structure:
   \   +0    = address of the next free pair
   \   +1    = ? \ XXX TODO --
@@ -128,9 +128,7 @@ create bwds ( -- a ) /bwds allot
   \
   \ }doc
 
-  \ If label number _n_ is out of range, throw exception #-283.
-
-: l? ( n -- a | 0 ) dup ?l#  cells bwds + @ ;
+: l? ( n -- a | 0 ) dup ?l# cells bwds + @ ;
 
   \ doc{
   \
@@ -155,8 +153,11 @@ need ?rel
   dup l? #-284 ?throw  \ should be unknown
   here  over cells bwds + ! \ now known
   begin  dup lpop ( a true | n false ) while
-    here over - 1-  swap over ?rel c!  \ resolve ref
+    here over - 1- swap over ?rel c!  \ resolve ref
   repeat  2drop ;
+
+  \ XXX TODO -- Use `!` instead of `?rel c!` to resolve
+  \ absolute references, depending on a field.
 
   \ doc{
   \
@@ -170,7 +171,10 @@ need ?rel
   \ }doc
 
 : l# ( n -- a )
-  dup l? ?dup 0= if  here 1+ 2dup swap lpush  then  nip ;
+  dup l? ?dup 0= if here 1+ 2dup swap lpush then nip ;
+
+  \ XXX TODO -- Rename to `rl#`. Add `al#` for absolute
+  \ references.
 
   \ doc{
   \
@@ -183,6 +187,97 @@ need ?rel
   \ }doc
 
 set-current set-order
+
+( --dx-forth-labels-- l: l# )
+
+  \ XXX UNDER DEVELOPMENT -- Alternative implementation, from
+  \ DX-Forth 4.15.
+
+get-order get-current
+
+root-wordlist assembler-wordlist forth-wordlist 3 set-order
+forth-wordlist set-current
+
+need :noname need within need abort"
+
+: rel ( a1 a2 -- offset )
+  1+ - dup $80 $-80 within #-269 ?throw ;
+
+  \ XXX TODO -- Use `?rel` to do the check.
+
+  \ doc{
+  \
+  \ rel ( a1 a2 -- offset )
+  \
+  \ If assembler relative branch _n_ is too long, throw
+  \ exception #-269 (relative jump too long).
+  \
+  \ }doc
+
+  \ labels
+#20 constant max-l#  \ max labels
+#25 constant max-fwd  \ max forward references
+
+  \ arrays
+:noname ( n -- adr )  count rot * + ;  ( xt)
+
+dup build lt 1 cells dup c, max-l# * allot  \ labels
+    build ft 2 cells dup c, max-fwd * allot  \ fwd refs
+
+: !lb ( -- )
+  0 lt [ max-l# cells ] literal erase
+  0 ft [ max-fwd cells 2*  ] literal erase ; !lb
+  \ reset labels
+
+-->
+
+( l: l# )
+
+: fwd ( n -- )  here 1+ ( skip opcode )
+  max-fwd 1+ 0 do
+    i max-fwd = #-285 ?throw
+    i ft dup @ if drop else tuck ! cell+ ! 0 0 leave then
+  loop 2drop ;
+  \ add address to forward ref table
+
+: ?l ( n -- n )
+  1- dup max-l# 0 within abort" invalid label" ;
+  \ check label number
+
+: l: ( n -- )
+  ?l lt dup @ abort" duplicate label" here swap ! ;
+  \ declare label
+
+: l# ( n -- a )
+  ?l dup lt @ ( n adr ) ?dup if nip else fwd here then ;
+  \ get label address
+
+set-current set-order
+
+( l: l# )
+
+  \ XXX TODO - DX-Forth uses `ready` in `;code` and `label`;
+  \ and it uses `check` in `end-code`.
+
+need abort"
+  \ XXX TMP --
+
+: ?lb ( -- )
+  max-fwd 0 do
+    i ft 2@ dup if ( fwd ref )
+      swap lt @ dup 0= abort" unresolved reference"
+      ( target label ) over 1- c@ ( opc )
+      dup $C7 and 0= swap $30 and and  \ rel jmp ?
+      if over rel swap c! else swap !  then
+    else 2drop then
+  loop ;
+  \ resolve all forward references
+
+: ready ( -- sp ) csp @ !lb !csp ;
+  \ reset labels and stack point
+
+: check ( sp -- ) ?csp ?lb csp ! ;
+  \ check labels and stack point
 
   \ ===========================================================
   \ Change log
@@ -203,5 +298,9 @@ set-current set-order
   \
   \ 2017-02-21: Need `?rel`. No need to load the whole
   \ assembler. Improve documentation.
+  \
+  \ 2017-03-20: Add alternative implementation extracted from
+  \ DX-Forth (version 4.15, 2016-01-16).  First changes to
+  \ adapt it to Solo Forth.
 
   \ vim: filetype=soloforth

@@ -1,11 +1,11 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-03-19
+:revdate: 2017-03-20
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201703191953
+// Last modified 201703202356
 
 // Application development {{{1
 == Application development ==
@@ -28,6 +28,10 @@ Options to make it easier to share code with other systems:
 
 // Assembler {{{1
 == Assembler ==
+
+.2017-03-20:
+
+Improve `l:` and `l#` to support also absolute references.
 
 .2017-03-12:
 
@@ -931,11 +935,6 @@ Change: modify `expect` after Spectrum Forth-83.
 // Kernel {{{1
 == Kernel ==
 
-.2017-02-20:
-
-Convert DOS labels to flags, after the method used for labels of
-Russian clones. This makes conditions shorter.
-
 .2016-10-27:
 
 Use `_jump` macros at the end of `umax`, `umin`, `dabs`, `abs`, etc.
@@ -968,6 +967,10 @@ does nothing, as expected.
 
 // Maths {{{1
 == Maths ==
+
+.2017-03-19:
+
+Gforth `s>number`, `s>number?`, `s>unumber?`.
 
 .2017-03-17:
 

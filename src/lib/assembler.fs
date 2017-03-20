@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132040
+  \ Last modified: 201703210005
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -378,7 +378,7 @@ set-current set-order
 
 [unneeded] ?rel
 
-?\ : ?rel ( n -- ) 80 + FF swap u< #-269 ?throw ;
+?\ : ?rel ( n -- ) $80 + $FF swap u< #-269 ?throw ;
 
   \ doc{
   \
@@ -567,5 +567,7 @@ macro call-xt, ( xt -- )
   \
   \ 2017-03-13: Factor `create c,` to `(c`. This saves 13
   \ bytes. Improve documentation.
+  \
+  \ 2017-03-21: Fix number notation in `?rel`.
 
   \ vim: filetype=soloforth
