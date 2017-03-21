@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201703211234
+; Last modified: 201703212129
 
 include version.z80s
 
@@ -11466,9 +11466,11 @@ cold.hash_words:
   dw 0
   dw lit_,hash_words_pfa,store_
 
-  ; Set `warn` to its default action:
-  dw lit_,noop_
+  ; Set `warn` and `init-asm` to their default action `noop`:
+  dw lit_,noop_,dup_
   dw lit_,warn_
+  dw defer_store_
+  dw lit_,init_asm_
   dw defer_store_
 
   dw only_,forth_,definitions_  ; init the search order
