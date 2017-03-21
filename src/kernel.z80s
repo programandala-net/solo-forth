@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201703161607
+; Last modified: 201703211234
 
 include version.z80s
 
@@ -1996,9 +1996,9 @@ endif
 ;
 ; init-asm ( -- )
 ;
-; A deferred word called by `asm`. Its default action is `noop`.
-; ``init-asm`` is modified by the assembler labels module in
-; order to init the labels.
+; A deferred word called by `asm`.  Its action is set by the
+; assembler labels module in order to init the labels.  Its
+; default action is `noop`.
 ;
 ; }doc
 
@@ -3468,11 +3468,12 @@ number_base.current:
 ;     over c@ base @ digit? while
 ;        >r 2swap r> swap base @ um* drop rot base @
 ;        um* d+ 2swap 1 /string
-;        \ 1 dpl +! \ XXX TODO
 ;   repeat then ;
 ; ----
 
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `number?`.
 ;
 ; }doc
 
@@ -3517,7 +3518,7 @@ to_number.end:
 ; deferred word used in `number?`. Its default action is
 ; `standard-number-point?`, which only allows the period.
 ;
-; The library provides alternatives which accept more points.
+; See also: `classic-number-point?`, `extended-number-point?`.
 ;
 ; }doc
 
@@ -3531,10 +3532,8 @@ to_number.end:
 ; Is character _c_ a valid point in a number?  The only allowed
 ; point is period.
 ;
-; This is the default action of the deferred word
-; `number-point?`, which is used in `number?`.
-;
-; The library provides alternatives which accept more points.
+; ``standard-number-point?`` is the default action of the
+; deferred word `number-point?`, which is used in `number?`.
 
 ; Definition:
 
@@ -3543,6 +3542,8 @@ to_number.end:
 ;   '.' = ;
 ; ----
 
+; See also: `classic-number-point?`, `extended-number-point?`.
+;
 ; }doc
 
   _literal '.'
@@ -3556,10 +3557,10 @@ to_number.end:
 ;
 ; number? ( ca len -- 0 | n 1 | d 2 )
 ;
-; Convert a string _ca len_ to a number. Return 0 if the
-; conversion is not possible. If the result is a single number,
-; return _n_ and 1. If the result is a double number, return _d_
-; and 2.
+; Convert a string _ca len_ to a number, using the current value
+; of `base`.. Return 0 if the conversion is not possible. If the
+; result is a single number, return _n_ and 1. If the result is
+; a double number, return _d_ and 2.
 ;
 ; ``number?`` accepts valid point anywhere on the number and
 ; updates `dpl` with the position of the last one. If no point
@@ -3604,6 +3605,8 @@ to_number.end:
 ;   then  r> base !  ;        \ restore the radix
 ; ----
 
+; See also: `>number`, `number-point?`, `skip-sign?`, `dpl`.
+;
 ; }doc
 
   ; XXX TODO make it a deferred word
@@ -5512,7 +5515,7 @@ endif
 ;
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See also: `drop`, `tuck`.
+; See also: `drop`, `tuck`, `2nip`.
 ;
 ; }doc
 
@@ -5531,7 +5534,7 @@ endif
 ;
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See also: `dup`, `over`, `nip`.
+; See also: `dup`, `over`, `nip`, `nup`.
 ;
 ; }doc
 
@@ -5598,7 +5601,7 @@ endif
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; See also: `?dup`, `2dup`, `tuck`, `over`, `0dup`, `-dup`,
-; `nup`.
+; `nup`, `3dup`.
 ;
 ; }doc
 
@@ -5619,7 +5622,7 @@ endif
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ;
-; See also: `dup`, `2over`, `2drop`.
+; See also: `dup`, `2over`, `2drop`, `3dup`.
 ;
 ; }doc
 
@@ -5704,6 +5707,8 @@ endif
 ; Fetch the caracter at _ca_ and do a bit-by-bit logical "and"
 ; of it with _b_. Return _false_ if the result is zero, else
 ; _true_.
+;
+; See also: `c@and`.
 ;
 ; }doc
 
@@ -5883,6 +5888,8 @@ store.de_into_hl_pointer:
 ; docolon ( -- a )
 ;
 ; A constant that returns the address of the colon interpreter.
+;
+; ``dolocon`` is used by `does>`.
 ;
 ; }doc
 
@@ -8035,13 +8042,12 @@ name_to_string.loop_exit:
 ;
 ; !csp ( -- )
 ;
-; Save the the current data stack position.
+; Save the the current data stack position, `sp@`, into `csp`.
 ;
 ; Definition:
 
 ; ----
-; : !csp ( -- )
-;   sp@ csp ! ;
+; : !csp ( -- ) sp@ csp ! ;
 ; ----
 
 ; Origin: fig-Forth.
@@ -8058,14 +8064,12 @@ name_to_string.loop_exit:
 ;
 ; ?throw ( f n -- )
 ;
-; Perform a `throw` of value _n_ if the boolean flag _f_ is
-; non-zero.
+; If _f_ is non-zero, `throw` exception _n_ 
 ;
 ; Definition:
 
 ; ----
-; : ?throw ( f n -- )
-;   swap if  throw  else  drop  then ;
+; : ?throw ( f n -- ) swap if throw else drop then ;
 ; ----
 
 ; }doc
@@ -8076,7 +8080,6 @@ name_to_string.loop_exit:
   dw exit_
 
 ; XXX TODO -- benchmark, compare to `swap 0<> and throw`
-; XXX TODO -- benchmark, compare to `and throw`
 
 ; ----------------------------------------------
   _colon_header compiling_question_,'compiling?'
@@ -8447,6 +8450,8 @@ base_store:
 ; : (;code) ( -- ) ( R: a -- ) r> latest name> 1+ ! ;
 ; ----
 
+; See also: `latest`, `name>`.
+;
 ; }doc
 
   dw from_r_
@@ -8484,7 +8489,14 @@ base_store:
 ;
 ; ``does>`` is an `immediate` and `compile-only` word.
 ;
-; Detailed definition, after Forth-2012:
+; Definition:
+
+; ----
+; : does> ( -- )
+;   postpone (;code) docolon call, ; immediate compile-only
+; ----
+
+; Detailed description, after Forth-2012:
 ;
 ; Compilation:
 ;
@@ -8515,7 +8527,7 @@ base_store:
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `;`, `;code`, `create`.
+; See also: `;`, `;code`, `create`, `(;code)`, `call,`.
 ;
 ; }doc
 
@@ -9283,6 +9295,8 @@ fill.done:
 ;   >in +! ;
 ; ----
 
+; See also: `parse`.
+;
 ; }doc
 
   dw to_in_,plus_store_
@@ -9312,7 +9326,7 @@ fill.done:
 
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See also: `stream`, `parsed`.
+; See also: `stream`, `scan`, `parsed`, `parse-name`.
 ;
 ; }doc
 
@@ -9364,6 +9378,8 @@ parse.end:
 ;
 ; If name _ca len_ is empty, throw exception #-16.
 ;
+; See also: `header`.
+;
 ; }doc
 
   dw dup_,zero_equals_
@@ -9386,7 +9402,8 @@ parse.end:
 ;   parse-name ?name-too-short header, ;
 ; ----
 
-; See also: `header`, `nextname-header`.
+; See also: `header`, `header,`, `nextname-header`,
+; `parse-name`, `?name-too-short`.
 ;
 ; }doc
 
@@ -9452,7 +9469,10 @@ endif
 ; ----
 
 ; Origin: Forth-2012 (CORE EXT).
-
+;
+; See also: `parse`, `parse-name-thru`, `word`, `stream`,
+; `scan`, `parsed`, `parsed-name`.
+;
 ; }doc
 
   dw stream_              ; ( ca len )
@@ -10011,6 +10031,12 @@ compare.end:
 ; Is string _ca1 len1_ lexicographically equal to string _ca2
 ; len2_?
 ;
+; Definition:
+;
+; ----
+; : str= ( ca1 len1 ca2 len2 -- f ) compare 0= ;
+; ----
+;
 ; See also: `str<`, `str>`, `compare`.
 ;
 ; }doc
@@ -10513,6 +10539,9 @@ interpret_table.0:
 ;
 ; The actions of the text interpreter are determined by the
 ; configuration of `interpret-table`.
+;
+; See also: `evaluate`, `execute-parsing`, `set-source`,
+; `nest-source`.
 ;
 ; }doc
 

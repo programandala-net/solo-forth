@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132016
+  \ Last modified: 201703212114
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -42,8 +42,8 @@ code array> ( n a1 -- a2 )
   \ single-cell array _a1_. ``array>`` is a common factor of
   \ `avalue` and `avariable`.
   \
-  \ ``array>`` is written in Z80 but its equivalent definition
-  \ in Forth is the following:
+  \ ``array>`` is written in Z80. Its equivalent definition in
+  \ Forth is the following:
 
   \ ----
   \ : array> ( n a1 -- a2 ) swap cells + ;
@@ -69,8 +69,8 @@ code 2array> ( n a1 -- a2 )
   \ single-cell array _a1_.  ``2array>`` is a common factor of
   \ `2avalue` and `2avariable`.
   \
-  \ ``2array>`` is written in Z80 but its equivalent definition
-  \ in Forth is the following:
+  \ ``2array>`` is written in Z80. Its equivalent definition in
+  \ Forth is the following:
 
   \ ----
   \ : 2array> ( n a1 -- a2 ) swap [ 2 cells ] literal * + ;
@@ -95,6 +95,8 @@ code 2array> ( n a1 -- a2 )
   \ 2017-02-17: Update cross references.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-03-21: Improve documentation.
 
   \ vim: filetype=soloforth
 

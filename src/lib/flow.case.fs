@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703171102
+  \ Last modified: 201703190106
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -151,6 +151,14 @@ need between
 : (less-of) ( x1 x2 -- x1 x1 | x1 x1' )
   nup nup >= if  invert  then ;
 
+  \ doc{
+  \
+  \ (less-of) ( x1 x2 -- x1 x1 | x1 x1' )
+  \
+  \ The run-time factor of `less-of`.
+  \
+  \ }doc
+
 : less-of
   \ Compilation: ( -- of-sys )
   \ Run-time: ( x1 x2 -- | x1 )
@@ -167,18 +175,29 @@ need between
   \
   \ Usage example:
 
+  \ ----
   \ : test ( x -- )
   \   case
-  \     10 of  ." ten!"  endof
-  \     15 less-of  ." less than 15"  endof
+  \     10 of      ." ten!"         endof
+  \     15 less-of ." less than 15" endof
   \     ." greater than 14"
   \   endcase ;
   \ ----
 
+  \ See also: `greater-of`, `(less-of)`.
+  \
   \ }doc
 
 : (greater-of) ( x1 x2 -- x1 x1 | x1 x1' )
   nup nup <= if  invert  then ;
+
+  \ doc{
+  \
+  \ (greater-of) ( x1 x2 -- x1 x1 | x1 x1' )
+  \
+  \ The run-time factor of `greater-of`.
+  \
+  \ }doc
 
 : greater-of
   \ Compilation: ( -- of-sys )
@@ -187,12 +206,30 @@ need between
 
   \ Usage example:
 
+
+  \ doc{
+  \
+  \ greater-of
+  \   Compilation: ( -- of-sys )
+  \   Run-time: ( x1 x2 -- | x1 )
+
+  \
+  \ ``greater-of`` is an `immediate` and `compile-only` word.
+  \
+  \ Usage example:
+
+  \ ----
   \ : test ( x -- )
   \   case
-  \     10 of  ." ten!"  endof
-  \     15 greater-of  ." greater than 15"  endof
+  \     10 of         ." ten!"            endof
+  \     15 greater-of ." greater than 15" endof
   \     ." less than 10 or 11..15"
   \   endcase ;
+  \ ----
+
+  \ See also: `less-of`.
+  \
+  \ }doc
 
 ( any-of default-of )
 
@@ -209,7 +246,6 @@ need between
   \ _x1..xn_, return _x0 x0_; else return _x0 0_.
   \
   \ }doc
-
 
 : any-of
   \ Compilation: ( -- of-sys )
@@ -243,9 +279,9 @@ need between
   \ ----
   \ : test ( n -- )
   \   case
-  \     1 of  ." one"  endof
-  \     2 7 10 3 any-of  ." two, seven or ten"  endof
-  \     6 of  ." six"  endof
+  \     1 of            ." one"               endof
+  \     2 7 10 3 any-of ." two, seven or ten" endof
+  \     6 of            ." six"               endof
   \   endcase ;
   \ ----
 
@@ -267,9 +303,9 @@ need between
 
   \ : test ( x -- )
   \   case
-  \     1 of  ." one"  endof
-  \     2 of  ." two"  endof
-  \     default-of  ." other"  endof
+  \     1 of       ." one"    endof
+  \     2 of       ." two"    endof
+  \     default-of ." other"  endof
   \   endcase ;
 
 ( within-of or-of )
@@ -294,9 +330,9 @@ need between
 
   \ : test ( x -- )
   \   case
-  \     1 of  ." one"  endof
-  \     2 5 within-of  ." within two and five"  endof
-  \     6 of  ." six"  endof
+  \     1 of          ." one"                 endof
+  \     2 5 within-of ." within two and five" endof
+  \     6 of          ." six"                 endof
   \   endcase ;
 
   \ Credit:
@@ -315,9 +351,9 @@ need between
 
   \ : test ( x -- )
   \   case
-  \     1 of  ." one"  endof
-  \     2 3 or-of  ." two or three"  endof
-  \     4 of  ." four"  endof
+  \     1 of      ." one"          endof
+  \     2 3 or-of ." two or three" endof
+  \     4 of      ." four"         endof
   \   endcase ;
 
   \ ===========================================================
@@ -341,5 +377,7 @@ need between
   \ 2017-03-17: Use `cconstant` instead of `constant`. Update
   \ style of stack comments. Remove all alternative
   \ implementations of `case`. Improve documentation.
+  \
+  \ 2017-03-19: Improve documentation.
 
   \ vim: filetype=soloforth

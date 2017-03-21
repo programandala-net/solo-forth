@@ -3,13 +3,13 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132046
+  \ Last modified: 201703211509
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ Words related to memory.
+  \ Words to manipulate memory.
 
   \ ===========================================================
   \ Author
@@ -47,6 +47,8 @@ code -! ( n|u a -- )
   \
   \ Subtract n|u from the single-cell number at _a_.
   \
+  \ See also: `+!`, `1-!`, `c-!`.
+  \
   \ }doc
 
 [unneeded] c+! ?(
@@ -65,6 +67,8 @@ code c+! ( c ca -- )
   \ c+! ( c ca - )
   \
   \ Add _c_ to the char at _ca_
+  \
+  \ See also: `c-!`, `c1+!`, `+!`.
   \
   \ }doc
 
@@ -85,6 +89,8 @@ code c-! ( c ca -- )
   \
   \ Subtract _c_ from the char at _ca_
   \
+  \ See also: `c+!`, `c1-!`, `-!`.
+  \
   \ }doc
 
 ( c1+! c1-! 1+! 1-! )
@@ -101,6 +107,8 @@ code c-! ( c ca -- )
   \
   \ Increment the char at _ca_.
   \
+  \ See also: `c1-!`, `c+!`, `1+!`.
+  \
   \ }doc
 
 [unneeded] c1-!
@@ -114,6 +122,8 @@ code c-! ( c ca -- )
   \ c1-! ( ca - )
   \
   \ Decrement the char at _ca_.
+  \
+  \ See also: `c1+!`, `c-!`, `1-!`.
   \
   \ }doc
 
@@ -138,6 +148,8 @@ code 1+! ( a -- )
   \
   \ Increment the single-cell number at _a_.
   \
+  \ See also: `c1+!`, `1-!`, `+!`.
+  \
   \ }doc
 
 [unneeded] 1-! ?(
@@ -161,6 +173,8 @@ code 1-! ( a -- )
   \
   \ Decrement the single-cell number at _a_.
   \
+  \ See also: `1+!`, `c1-!`, `-!`.
+  \
   \ }doc
 
 ( @+ 2@+ c@+ )
@@ -176,6 +190,8 @@ code 1-! ( a -- )
   \ incremented by one cell.
   \ This is handy for stepping through cell arrays.
   \
+  \ See also: `@`, `2@+`, `c@+`.
+  \
   \ }doc
 
 [unneeded] 2@+
@@ -189,21 +205,11 @@ code 1-! ( a -- )
   \ incremented by two cells.
   \ This is handy for stepping through double-cell arrays.
   \
+  \ See also: `2@`, `@+`, `c@+`.
+  \
   \ }doc
 
-[unneeded] c@+ ?exit
-
-code c@+ ( ca -- ca' c )
-  E1 c, 7E c, 23 c, E5 c, C3 c, pusha , end-code
-    \ pop hl
-    \ ld a,(hl)
-    \ inc hl
-    \ push hl
-    \ jp push_a
-
-  \ Credit:
-  \
-  \ Code adapted from Pygmy Forth.
+[unneeded] c@+ ?\ need alias ' count alias c@+ ( ca -- ca' c )
 
   \ doc{
   \
@@ -213,59 +219,118 @@ code c@+ ( ca -- ca' c )
   \ _ca_ incremented by one character.  This is handy for
   \ stepping through character arrays.
   \
+  \ This word is an `alias` of `count`.
+  \
+  \ See also: `c@`, `2@+`, `@+`.
+  \
   \ }doc
 
 ( n, nn, n@ nn@ n! nn! )
 
-[unneeded] n, ?\ : n, ( xu..x1 u -- ) 0 ?do  ,  loop ;
-  \ If _u_ is not zero, store _u_ cells _xu..x1_ into data
-  \ space, being _x1_ the first one stored and _xu_ the last
-  \ one.
+[unneeded] n, ?\ : n, ( x[u]..x[1] u -- ) 0 ?do , loop ;
+
+  \ doc{
+  \
+  \ n, ( x[u]..x[1] u -- )
+  \
+  \ If _u_ is not zero, store _u_ cells _x[u]..x[1]_ into data
+  \ space, being _x[1]_ the first one stored and _x[u]_ the
+  \ last one.
+  \
+  \ See also: `,`, `nn,`, `n@`, `n!`.
+  \
+  \ }doc
 
 [unneeded] nn, ?( need need-here need-here n,
-: nn, ( xu..x1 u -- ) dup , n, ; ?)
+: nn, ( x[u]..x[1] u -- ) dup , n, ; ?)
+
+  \ doc{
+  \
+  \ nn, ( x[u]..x[1] u -- )
+  \
   \ Store the count _u_ into data space.  If _u_ is not zero,
-  \ store also _u_ cells _xu..x1_ into data space, being _x1_
-  \ the first one stored and _xu_ the last one.
+  \ store also _u_ cells _x[u]..x[1]_ into data space, being
+  \ _x[1]_ the first one stored and _x[u]_ the last one.
+  \
+  \ See also: `,`, `n,`, `nn!`.
+  \
+  \ }doc
 
 [unneeded] n@ ?(
-: n@ ( a u -- xu..x1 )
-  tuck 1- cells +  \ point _a_ to _xu_
-  swap 0 ?do  dup i cells - @ swap  loop  drop ; ?)
-  \ If _u_ is not zero, read _u_ cells _xu..x1_ from
-  \ _a_, being _x1_ the first one stored and _xu_ the last
-  \ one.
+: n@ ( a u -- x[u]..x[1] )
+  tuck 1- cells + \ point _a_ to _x[u]_
+  swap 0 ?do dup i cells - @ swap loop drop ; ?)
+
+  \ doc{
+  \
+  \ n@ ( a u -- x[u]..x[1] )
+  \
+  \ If _u_ is not zero, read _u_ cells _x[u]..x[1]_ from _a_,
+  \ being _x[1]_ the first one stored and _x[u]_ the last one.
+  \
+  \ See also: `nn@`, `@`, `nn!`.
+  \
+  \ }doc
 
 [unneeded] nn@ ?( need need-here need-here n@
-: nn@ ( a -- x1..xu u | 0 ) dup @ >r cell+ r@ n@ r> ; ?)
+: nn@ ( a -- x[1]..x[u] u | 0 ) dup @ >r cell+ r@ n@ r> ; ?)
+
+  \ doc{
+  \
+  \ nn@ ( a -- x[1]..x[u] u | 0 )
+  \
   \ Read the count _u_ from _a_.  If it's zero, return it.  If
-  \ _u_ is not zero, read _u_ cells _xu..x1_ from the next cell
-  \ address, being _x1_ the first cell stored there and _xu_
-  \ the last one.
+  \ _u_ is not zero, read _u_ cells _x[u]..x[1]_ from the next
+  \ cell address, being _x[1]_ the first cell stored there and
+  \ _x[u]_ the last one.
+  \
+  \ See also: `n@`, `@`, `nn!`.
+  \
+  \ }doc
 
 [unneeded] n! ?(
-: n! ( xu..x1 u a -- )
-  swap 0 ?do  dup >r ! r> cell+  loop  drop ; ?)
+: n! ( x[u]..x[1] u a -- )
+  swap 0 ?do dup >r ! r> cell+ loop drop ; ?)
+
+  \ doc{
+  \
+  \ n! ( x[u]..x[1] u a -- )
+  \
   \ If _u_ is not zero, store _u_ cells at address _a_, being
-  \ _x1_ the first cell stored there and _xu_ the last one.
+  \ _x[1]_ the first cell stored there and _x[u]_ the last one.
+  \
+  \ See also: `nn!`, `!`, `n@`.
+  \
+  \ }doc
 
 [unneeded] nn! ?( need need-here need-here n!
-: nn! ( xu..x1 u a -- ) 2dup ! cell+ n! ; ?)
+: nn! ( x[u]..x[1] u a -- ) 2dup ! cell+ n! ; ?)
+
+  \ doc{
+  \
+  \ nn! ( x[u]..x[1] u a -- )
+  \
   \ Store the count _u_ at _a_.  If _u_ is not zero, store also
-  \ _u_ cells _xu..x1_ at the next cell address, being _x1_ the
-  \ first one stored and _xu_ the last one.
+  \ _u_ cells _x[u]..x[1]_ at the next cell address, being
+  \ _x[1]_ the first one stored and _x[u]_ the last one.
+  \
+  \ See also: `n!`, `!`, `nn@`.
+  \
+  \ }doc
 
 ( bit>mask bit? set-bit reset-bit )
 
 [unneeded] bit? [unneeded] set-bit? [unneeded] reset-bit?
 [unneeded] bit>bask and and and
-?\ need lshift  : bit>mask ( n -- b ) 1 swap lshift ;
+?\ need lshift : bit>mask ( n -- b ) 1 swap lshift ;
 
   \ doc{
   \
   \ bit>mask ( n -- b )
   \
   \ Convert bit number _n_ to a bitmask _b_ with bit _n_ set.
+  \
+  \ See also: `bit?`, `set-bit`, `reset-bit`.
   \
   \ }doc
 
@@ -278,6 +343,8 @@ code c@+ ( ca -- ca' c )
   \
   \ Is bit _n_ of _b_ set?
   \
+  \ See also: `bit?`, `set-bit`, `bit>mask`.
+  \
   \ }doc
 
 [unneeded] set-bit?
@@ -289,6 +356,8 @@ code c@+ ( ca -- ca' c )
   \
   \ Set bit _n_ of _b1_, returning the result _b2_.
   \
+  \ See also: `bit?`, `set-bit`, `bit>mask`.
+  \
   \ }doc
 
 [unneeded] reset-bit?
@@ -299,6 +368,8 @@ code c@+ ( ca -- ca' c )
   \ reset-bit ( b1 n -- b2 )
   \
   \ Reset bit _n_ of _b1_, returning the result _b2_.
+  \
+  \ See also: `bit?`, `set-bit`, `bit>mask`.
   \
   \ }doc
 
@@ -328,14 +399,16 @@ code c@and ( b1 ca -- b2 )
     \ ld a,e
     \ and (hl)
     \ jp push_a
-end-code ?)
+  end-code ?)
 
   \ doc{
   \
   \ c@and ( b1 ca -- b2 )
   \
   \ Fetch the caracter at _ca_ and do a bit-by-bit logical
-  \ "and" of it with _b1_, returning the result _b2_.
+  \ `and` of it with _b1_, returning the result _b2_.
+  \
+  \ See also: `c@and?`, `ctoggle`.
   \
   \ }doc
 
@@ -369,6 +442,8 @@ end-code ?)
   \ ctoggle ( b ca -- )
   \
   \ Invert the bits at _ca_ specified by the bitmask _b_.
+  \
+  \ See also: `c@and`.
   \
   \ }doc
 
@@ -466,8 +541,7 @@ end-code ?)
 
 ( /! *! 2/! 2*! exchange cexchange )
 
-[unneeded] /!
-?\ : /! ( n a -- ) tuck @ swap / swap ! ;
+[unneeded] /! ?\ : /! ( n a -- ) tuck @ swap / swap ! ;
 
   \ doc{
   \
@@ -476,10 +550,11 @@ end-code ?)
   \ Divide _n_ by the single-cell number at _a_ and store
   \ the quotient in _a_
   \
+  \ See also: `2/!`, `*!`, `+!`, `-!`.
+  \
   \ }doc
 
-[unneeded] *!
-?\ : *! ( n a -- ) tuck @ swap * swap ! ;
+[unneeded] *! ?\ : *! ( n a -- ) tuck @ swap * swap ! ;
 
   \ doc{
   \
@@ -488,10 +563,11 @@ end-code ?)
   \ Multiply _n|u_ by the single-cell number at _a_ and store
   \ the product in _a_
   \
+  \ See also: `2*!` `/!`, `+!`, `-!`.
+  \
   \ }doc
 
-[unneeded] 2*!
-?\ : 2*! ( a -- ) dup @ 2* swap ! ;
+[unneeded] 2*! ?\ : 2*! ( a -- ) dup @ 2* swap ! ;
 
   \ doc{
   \
@@ -499,12 +575,11 @@ end-code ?)
   \
   \ Do a `2*` shift to the single-cell number at _a_.
   \
-  \ See `2*`.
+  \ See also: `2/!`, `2*`.
   \
   \ }doc
 
-[unneeded] 2/!
-?\ need 2/  : 2/! ( a -- ) dup @ 2/ swap ! ;
+[unneeded] 2/! ?\ need 2/ : 2/! ( a -- ) dup @ 2/ swap ! ;
 
   \ doc{
   \
@@ -512,7 +587,7 @@ end-code ?)
   \
   \ Do a `2/` shift to the single-cell number at _a_.
   \
-  \ See `2/`.
+  \ See also: `2*!`, `2/`.
   \
   \ }doc
 
@@ -599,5 +674,8 @@ end-code ?)
   \ 2017-02-27: Improve documentation.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-03-21: Improve documentation. Convert `c@+` to an
+  \ alias of `count`.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132020
+  \ Last modified: 201703171822
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -26,7 +26,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( standard-number-point? extended-number-point? )
+( classic-number-point? extended-number-point? )
 
 [unneeded] classic-number-point? ?(
 
@@ -43,6 +43,8 @@
   \ ``classic-number-point?`` is an alternative action for the
   \ deferred word `number-point?`, which is used in `number?`,
   \ and whose default action is `standard-number-point?`.
+  \
+  \ See also: `extended-number-point?`.
   \
   \ }doc
 
@@ -63,6 +65,8 @@
   \ deferred word `number-point?`, which is used in `number?`,
   \ and whose default action is `standard-number-point?`.
   \
+  \ See also: `classic-number-point?`.
+  \
   \ }doc
 
   \ ===========================================================
@@ -78,6 +82,8 @@
   \ 2017-02-17: Update notation "behaviour" to "action".
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-03-17: Fix index line. Improve documentation.
 
   \ vim: filetype=soloforth
 

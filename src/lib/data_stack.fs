@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703112300
+  \ Last modified: 201703211316
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -41,6 +41,8 @@
   \
   \ 2nip ( x1 x2 x3 x4 -- x3 x4 )
   \
+  \ See also: `nip`.
+  \
   \ }doc
 
 [unneeded] pick ?(
@@ -54,6 +56,8 @@ code pick ( xu .. x1 x0 u -- xu .. x1 x0 xu )
   \ doc{
   \
   \ pick ( xu .. x1 x0 u -- xu .. x1 x0 xu )
+  \
+  \ See also: `roll`, `rot`.
   \
   \ }doc
 
@@ -103,6 +107,8 @@ code roll ( xu xn .. x0 u -- xn .. x0 xu )
   \
   \ roll ( xu xn .. x0 u -- xn .. x0 xu )
   \
+  \ See also: `pick`, `rot`.
+  \
   \ }doc
 
 ( 3drop 4drop 3dup )
@@ -119,6 +125,8 @@ code 3drop ( x1 x2 x3 -- )
   \
   \ 3drop ( x1 x2 x3 -- )
   \
+  \ See also: `drop`, `2drop`, `4drop`.
+  \
   \ }doc
 
 [unneeded] 4drop ?(
@@ -133,6 +141,8 @@ code 4drop ( x1 x2 x3 x4 -- )
   \ doc{
   \
   \ 4drop ( x1 x2 x3 x4 -- )
+  \
+  \ See also: `drop`, `2drop`, `3drop`.
   \
   \ }doc
 
@@ -165,6 +175,8 @@ code 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
   \ : 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 ) dup 2over rot ;
   \ ----
 
+  \ See also: `dup`, `2dup`.
+  \
   \ }doc
 
 ( 2rot swapped )
@@ -234,6 +246,15 @@ code 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
   \
   \ nup ( x1 x2 -- x1 x1 x2 )
   \
+  \ This word is defined in Z80. Its equivalent definition in
+  \ Forth is the following:
+  \
+  \ ----
+  \ : nup ( x1 x2 -- x1 x1 x2 ) over swap ;
+  \ ----
+  \
+  \ See also: `dup`, `tuck`, `drup`, `dip`.
+  \
   \ }doc
 
 [unneeded] drup ?( code drup ( x1 x2 -- x1 x1 )
@@ -248,6 +269,15 @@ code 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
   \
   \ drup ( x1 x2 -- x1 x1 )
   \
+  \ This word is defined in Z80. Its equivalent definition in
+  \ Forth is the following:
+  \
+  \ ----
+  \ : drup ( x1 x2 -- x1 x1 ) drop dup ;
+  \ ----
+  \
+  \ See also: `dup`, `tuck`, `nup`, `dip`.
+  \
   \ }doc
 
 [unneeded] dip ?( code dip ( x1 x2 -- x2 x2 )
@@ -261,6 +291,15 @@ code 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
   \ doc{
   \
   \ dip ( x1 x2 -- x2 x2 )
+  \
+  \ This word is defined in Z80. Its equivalent definition in
+  \ Forth is the following:
+  \
+  \ ----
+  \ : dip ( x1 x2 -- x2 x2 ) nip dup ;
+  \ ----
+  \
+  \ See also: `nip`, `dup`, `tuck`, `drup`.
   \
   \ }doc
 
@@ -280,6 +319,8 @@ code 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
   \
   \ Duplicate _x_ if it's zero.
   \
+  \ See also: `dup`, `-dup`.
+  \
   \ }doc
 
 [unneeded] -dup ?( code -dup ( x -- x | x x )
@@ -296,6 +337,8 @@ code 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
   \ -dup ( x -- x x | x )
   \
   \ Duplicate _x_ if it's negative.
+  \
+  \ See also: `dup`, `0dup`.
   \
   \ }doc
 
@@ -320,6 +363,8 @@ code ndrop ( x1..xn n -- )
   \
   \ Drop _n_ cell items from the stack.
   \
+  \ See also: `2ndrop`, `drop`, `2drop`.
+  \
   \ }doc
 
 [unneeded] 2ndrop ?(
@@ -342,6 +387,8 @@ code 2ndrop ( dx1..dxn n -- )
   \ 2ndrop ( dx1..dxn n -- )
   \
   \ Drop _n_ double cell items from the stack.
+  \
+  \ See also: `ndrop`, `drop`, `2drop`.
   \
   \ }doc
 
@@ -459,5 +506,7 @@ code >false ( x -- false ) E1 c, ' false jp, end-code ?)
   \
   \ 2017-03-11: Need `>mark`, which now is optional, not
   \ included in the assembler by default.
+  \
+  \ 2017-03-21: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132001
+  \ Last modified: 201703172158
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -24,7 +24,7 @@
   \ this license.  There is no warranty.
 
   \ ===========================================================
-  \ Operatyng system variables
+  \ Operating system variables
 
   \ (From the ZX Spectrum +3 manual transcribed by Russell
   \ Marks et al.; and from the ZX Spectrum ROM disassembly.)
@@ -424,7 +424,9 @@ code attr-mask! ( b -- )
   \
   \ }doc
 
-code mask+attr>perm ( -- ) $1CAD call, jpnext, end-code
+[unneeded] mask+attr>perm
+
+?\ code mask+attr>perm ( -- ) $1CAD call, jpnext, end-code
   \ call rom_set_permanent_colors_0x1CAD
   \ _jp_next
 
@@ -1100,5 +1102,7 @@ create (0-9-color. ( -- a ) asm
   \ 2017-03-11: Improve documentation.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-03-17: Fix needing of `mask+attr>perm`. Fix typo.
 
   \ vim: filetype=soloforth

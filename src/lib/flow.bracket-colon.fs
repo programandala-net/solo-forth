@@ -35,15 +35,21 @@
 
   \ doc{
   \
-  \ [:  \ Compilation: ( -- orig xt )
+  \ [:
+  \   Compilation: ( -- orig xt )
+  \
+
+  \ Start a quotation.
   \
   \ Suspend compiling to the current definition, start a new
   \ nested definition and compilation continues with this
-  \ nested definition.
+  \ nested definition. Return _orig_ and the execution token
+  \ _xt_ of of the host definition, both to be consumed by
+  \ `;]`.
+  \
+  \ NOTE: Locals are not supported yet.
   \
   \ ``[:`` is an `immediate` and `compile-only` word.
-  \
-  \ See also: `;]`.
   \
   \ }doc
 
@@ -61,30 +67,32 @@
   \ quotations.
 
 : ;]  \ Compilation: ( orig xt1 -- )
-      \ Execution:   ( -- xt2 )
+      \ Run-time:   ( -- xt2 )
   lastxt !  postpone exit  dup >resolve
   cell+ postpone literal ; immediate compile-only
 
   \ doc{
   \
   \ ;]
-  \   Compilation: ( orig -- )
-  \   Run-time: ( -- xt )
+  \   Compilation: ( orig xt1 -- )
+  \   Run-time: ( -- xt2 )
+  \
+
+  \ End a quotation started by `[:`.
   \
   \ ``;]`` is an `immediate` and `compile-only` word.
   \
-  \ Compilation: ( orig -- )
+  \ Compilation: ( orig xt1 -- )
   \
   \ End the current nested definition, and resume compilation
-  \ to the previous (containing) current definition. It appends
-  \ the following run-time to the (containing) current
+  \ to the previous (containing) current definition, identified
+  \ by _xt1_. Resolve the branch from _orig_ left by `[:`.
+  \ Append the following run-time to the (containing) current
   \ definition:
   \
-  \ Run-time: ( -- xt )
+  \ Run-time: ( -- xt2 )
   \
-  \ _xt_ is the execution token of the nested definition.
-  \
-  \ See also: `[:`.
+  \ _xt2_ is the execution token of the nested definition.
   \
   \ }doc
 
@@ -101,5 +109,7 @@
   \ 2017-02-17: Update cross references.
   \
   \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-03-18: Improve documentation.
 
   \ vim: filetype=soloforth
