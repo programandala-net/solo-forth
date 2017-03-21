@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703191943
+  \ Last modified: 201703212102
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -58,7 +58,7 @@
 #-282 \ escaped strings search-order underflow
 #-283 \ assembly label number out of range
 #-284 \ assembly label number already used
-#-285 \ too many unresolved forward assembly label references
+#-285 \ too many unresolved assembly label references
 
 ( System error codes #-286..#-300 )
 
@@ -100,5 +100,7 @@
   \
   \ 2017-03-19: Add code #-289, needed by `parse-name-thru`.
   \ Add code #-290, needed by `udg-scan>number`.
+  \
+  \ 2017-03-21: Improve text of #-285.
 
   \ vim: filetype=soloforth

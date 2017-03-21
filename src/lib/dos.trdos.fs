@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132029
+  \ Last modified: 201703212058
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -500,13 +500,13 @@ code (file>) ( ca len -- ior )
 
 ( >file )
 
-need assembler need l: need --dos-commands--
-need fda need set-filename
+need assembler also assembler need l: previous
+need --dos-commands-- need fda need set-filename
 
 code (>file) ( -- ior )
 
   b push, dos-read-system-track c ld#, dos-c_ call,
-  0 l# nz? ?jr,
+  0 rl# nz? ?jr,
   \   push bc ; save the Forth IP
   \
   \   ld c,trdos_command.read_system_track
@@ -529,7 +529,7 @@ code (>file) ( -- ior )
   \   jr z,paren_to_file.file_not_found ; jump if no error
   \
   \   ; error: file found
-  2 a ld#, 0 l# jr,
+  2 a ld#, 0 rl# jr,
   \   ld a,trdos_error.file_exists ; error code "file exists"
   \   jr paren_to_file.exit
 
@@ -1207,5 +1207,8 @@ need read-file-descriptor need write-file-descriptor
   \ `stringer` words.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-03-21: Adapt to the new implementation of assembler
+  \ labels.
 
   \ vim: filetype=soloforth

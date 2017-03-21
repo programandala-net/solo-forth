@@ -23,6 +23,23 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+( l:-test )
+
+need assembler also assembler need l: previous
+
+code a-call ( a -- )
+  #3 rl# jr, nop, #3 rl# c? ?jr,
+  #2 call, al#
+  nop,
+  #2 l: ret,
+  #3 l: nop,
+  #3 jp, al#
+  #2 rl# jr,
+  ret,
+  end-code
+
+  cr .( Disassemble at ) ' a-call u. cr .( to see the result)
+
 ( udg-group-test )
 
 need udg-group need set-udg
@@ -146,15 +163,17 @@ defer test
 page
   .( zx7s-test loading) cr
 need zx7s  need file>
-create compresssed 6912 allot
+create compressed 6912 allot
 
+page
   .( Press any key to load the) cr
   .( compressed screen from the) cr
-  .( first disk drive.) key drop
+  .( first disk drive. 'Q' to quit.) key 'q' = ?exit
 s" img.zx7"  compressed 0 file>
 
+page
   .( Press any key to decompress and) cr
-  .( display the screen.) key drop
+  .( display the screen. 'Q' to quit.) key 'q' = ?exit
 compressed 16384 zx7s
 
 ( udg-row[-test )
@@ -1167,5 +1186,8 @@ blk @ 1+ blk @ 2+ thru
   \
   \ 2017-03-19: Finish `anon-test`. Add `local-test`. Add
   \ `udg-block-test` and `udg-group-test`.
+  \
+  \ 2017-03-21: Add `l:-test`. Fix `zx7s-test` after the
+  \ version used in the `zx7s` module.
 
   \ vim: filetype=soloforth

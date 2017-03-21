@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132343
+  \ Last modified: 201703212056
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -121,7 +121,8 @@ code rdraw176 ( gx gy -- )
 
   \ XXX UNDER DEVELOPMENT -- not usable yet
 
-need assembler need l: need os-coords need gxy>scra_
+need os-coords need gxy>scra_
+need assembler also assembler need l: previous
 
 code rdraw ( gx gy -- )
 
@@ -153,7 +154,7 @@ code rdraw ( gx gy -- )
     \  jr      nc,dl_x_ge_y
     \ ; gy is greater than gx
 
-  c l ld, d push, a xor, a e ld, 00 l# jr,  rthen
+  c l ld, d push, a xor, a e ld, 00 rl# jr,  rthen
     \  ld      l,c
     \  push    de
     \  xor     a
@@ -170,24 +171,22 @@ code rdraw ( gx gy -- )
     \  push    de
     \  ld      d,$00
 
-  00 l: b h ld, b a ld, rra,
+  00 l: b h ld, b a ld, rra, -->
     \ dl_larger:
     \  ld      h,b
     \  ld      a,b
     \  rra
 
--->
-
 ( rdraw )
 
-  rbegin  l add, 01 l# c? ?jr, h cp, 02 l# c? ?jr,
+  rbegin  l add, 01 rl# c? ?jr, h cp, 02 rl# c? ?jr,
     \ d_l_loop:
     \  add     a,l
     \  jr      c,d_l_diag
     \  cp      h
     \  jr      c,d_l_hr_vt
 
-  01 l: h sub, a c ld, exx, b pop, b push, 03 l# jr,
+  01 l: h sub, a c ld, exx, b pop, b push, 03 rl# jr,
     \ d_l_diag:
     \  sub     h
     \  ld      c,a
@@ -205,7 +204,7 @@ code rdraw ( gx gy -- )
 
   03 l:
   os-coords h ftp, b a ld, h add, a b ld, c a ld, a inc, l add,
-  05 l# c? ?jr,
+  05 rl# c? ?jr,
   \ XXX z? ?jr, ; XXX TODO -- adapt, integer out of range
     \ d_l_step:
     \  ld      hl,($5c7d) ; coords
@@ -230,7 +229,7 @@ code rdraw ( gx gy -- )
     \  ld      a,c
     \  djnz    d_l_loop
 
-  d pop, ret,  05 l: 04 l# z? ?jr, b pop, jpnext, end-code
+  d pop, ret,  05 l: 04 rl# z? ?jr, b pop, jpnext, end-code
     \  pop     de
     \  ret
     \ d_l_range:
@@ -374,5 +373,8 @@ need x1 need incx need y1 need incy
   \
   \ 2017-03-13: Improve documentation.  Update name:
   \ `(pixel-addr)` to `gxy>scra_`.
+  \
+  \ 2017-03-21: Adapt to the new implementation of assembler
+  \ labels.
 
   \ vim: filetype=soloforth
