@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703192254
+  \ Last modified: 201703221602
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -158,23 +158,25 @@ defer test
   \ ['] noop dup arg-default-action ! ['] arg-action defer!
   ." Variable-like arguments:" cr var-test .results ;
 
-( zx7s-test )
+( zx7-test )
 
-page
-  .( zx7s-test loading) cr
-need zx7s  need file>
+need zx7s need zx7t need file> need case
 create compressed 6912 allot
 
-page
-  .( Press any key to load the) cr
-  .( compressed screen from the) cr
-  .( first disk drive. 'Q' to quit.) key 'q' = ?exit
-s" img.zx7"  compressed 0 file>
+page .( Press any key to load the) cr
+     .( compressed screen from the) cr
+     .( first disk drive. 'Q' to quit.) key 'q' = ?exit
+1 set-drive throw s" img.zx7"  compressed 0 file>
 
-page
-  .( Press any key to decompress and) cr
-  .( display the screen. 'Q' to quit.) key 'q' = ?exit
-compressed 16384 zx7s
+: run ( -- )
+  page  begin home ." 's' to decompress with zx7s" cr
+                   ." 't' to decompress with zx7t" cr
+                   ." 'q' to quit"
+          key case
+            's' of page compressed 16384 zx7s endof
+            't' of page compressed 16384 zx7t endof
+            'q' of quit endof
+          endcase again ; run
 
 ( udg-row[-test )
 
@@ -1189,5 +1191,8 @@ blk @ 1+ blk @ 2+ thru
   \
   \ 2017-03-21: Add `l:-test`. Fix `zx7s-test` after the
   \ version used in the `zx7s` module.
+  \
+  \ 2017-03-22: Rename `zx7s-test` to `zx7-test` and support
+  \ both `zx7s` and `zx7t`.
 
   \ vim: filetype=soloforth

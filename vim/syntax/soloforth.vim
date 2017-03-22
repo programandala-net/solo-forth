@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-03-14
+" Updated:  2017-03-22
 "
 " See change log at the end of the file.
 
@@ -742,7 +742,9 @@ syn keyword soloforthAssembler sla,
 syn keyword soloforthAssembler slax,
 syn keyword soloforthAssembler sra,
 syn keyword soloforthAssembler srax,
+syn keyword soloforthAssembler sll,
 syn keyword soloforthAssembler srl,
+syn keyword soloforthAssembler sllx,
 syn keyword soloforthAssembler srlx,
 syn keyword soloforthAssembler st#x,
 syn keyword soloforthAssembler sta,
@@ -1154,6 +1156,8 @@ let b:current_syntax = "soloforth"
 " regions for `0 ?(` and `0 [if]`, adapted from <gforth.vim>.
 "
 " 2017-03-14: Remove `attr`.
+"
+" 2017-03-22: Add `sll,`, `sllx,`.
 
 " --------------------------------------------------------------
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703210005
+  \ Last modified: 201703221505
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -149,11 +149,11 @@ C9 m1 ret, CE m4 adc#, D3 m4 out, 41 m3 outbc, D6 m4 sub#, D9
 m1 exx, DB m4 in, 40 m3 inbc, 0DE m4 sbc#, E3 m1 exsp, E6 m4
 and#, E9 m1 jphl, EB m1 exde, EE m4 xor#, F3 m1 di,  F6 m4 or#,
 F9 m1 ldsp, FB m1 ei, FE m4 cp#, 00 m6 rlc, 08 m6 rrc, 10 m6
-rl, 18 m6 rr, 20 m6 sla, 28 m6 sra, 38 m6 srl,  40 m7 bit, 80
-m7 res, C0 m7 set, A0ED m8 ldi, B0ED m8 ldir, A8ED m8 ldd, B8ED
-m8 lddr, 44ED m8 neg, 57ED m8 ldai, 47ED m8 ldia, 56ED m8 im1,
-5EED m8 im2, B1ED m8 cpir, 6FED m8 rld, A0 m2 and, B0 m2 or,
-A8 m2 xor, -->
+rl, 18 m6 rr, 20 m6 sla, 28 m6 sra, 30 m6 sll, 38 m6 srl,  40
+m7 bit, 80 m7 res, C0 m7 set, A0ED m8 ldi, B0ED m8 ldir, A8ED
+m8 ldd, B8ED m8 lddr, 44ED m8 neg, 57ED m8 ldai, 47ED m8 ldia,
+56ED m8 im1, 5EED m8 im2, B1ED m8 cpir, 6FED m8 rld, A0 m2 and,
+B0 m2 or, A8 m2 xor, -->
 
 ( assembler )
 
@@ -198,8 +198,9 @@ D7 m1 prt,   \ rst $16
 
 86 ma addx, 8E ma adcx, 96 ma subx, 9E ma sbcx, A6 ma andx,
 AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
-06 mb rlcx, 0E mb rrcx, 16 mb rlx,  1E mb rrx,  26 mb slax,
-2E mb srax, 3E mb srlx, 46 mc bitx, 86 mc resx, C6 mc setx,
+06 mb rlcx, 0E mb rrcx, 16 mb rlx,  1E mb rrx,
+26 mb slax, 2E mb srax, 36 mb sllx, 3E mb srlx,
+46 mc bitx, 86 mc resx, C6 mc setx,
 
 : ftx, ( disp regpi reg -- ) nip 8* 46 + c, c, ;
 : stx, ( reg disp regpi -- ) drop swap 70 + c, c, ;
@@ -569,5 +570,8 @@ macro call-xt, ( xt -- )
   \ bytes. Improve documentation.
   \
   \ 2017-03-21: Fix number notation in `?rel`.
+  \
+  \ 2017-03-22: Add undocumented instructions `sll,` and
+  \ `sllx,`.
 
   \ vim: filetype=soloforth
