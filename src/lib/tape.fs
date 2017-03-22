@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703062241
+  \ Last modified: 201703221941
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -40,53 +40,16 @@
   \ this license.  There is no warranty.
 
   \ ===========================================================
-  \ Development documentation
+  \ Credit
 
-  \ The information was guessed from from Don Thomasson's book
-  \ _Advanced Spectrum Forth_ (page 119), the ZX Spectrum ROM
-  \ disassembly (whose description of the tape headers is
-  \ wrong), the _Abersoft Forth disassembled_ project
+  \ The required information about the tape routines was
+  \ extracted from from Don Thomasson's book _Advanced Spectrum
+  \ Forth_ (page 119), the ZX Spectrum ROM disassembly (whose
+  \ description of the tape headers is wrong), the _Abersoft
+  \ Forth disassembled_ project
   \ (http://programandala.net/en.program.abersoft_forth.html)
   \ and the Afera library
   \ (http://programandala.net/en.program.afera.html).
-
-  \ Structure of a tape header:
-
-  \ +00 : byte, filetype (3 for code files)
-  \ +01 : 10-char filename, padded with spaces
-  \ +11 : cell, length
-  \ +13 : cell, start address
-  \ +15 : cell, not used for code files
-
-  \ Arrangement of both tape headers:
-
-  \ IX addresses the first header, which must contain the data.
-  \ The second header is used by the system when loading and
-  \ verifying. Only the "CODE" file type column is relevant to
-  \ Solo Forth.
-
-  \                 File types
-  \                 -----------------------
-  \ NEW     OLD     PROG   DATA  DATA  CODE
-  \ HEADER  HEADER         num   chr          NOTES
-  \ ------  ------  ----   ----  ----  ----   ----------------------------
-  \ IX+$00  IX+$11  0      1     2     3      File type
-  \ IX+$01  IX+$12  x      x     x     x      F  ($FF if filename is null)
-  \ IX+$02  IX+$13  x      x     x     x      i
-  \ IX+$03  IX+$14  x      x     x     x      l
-  \ IX+$04  IX+$15  x      x     x     x      e
-  \ IX+$05  IX+$16  x      x     x     x      n
-  \ IX+$06  IX+$17  x      x     x     x      a
-  \ IX+$07  IX+$18  x      x     x     x      m
-  \ IX+$08  IX+$19  x      x     x     x      e
-  \ IX+$09  IX+$1A  x      x     x     x      .
-  \ IX+$0A  IX+$1B  x      x     x     x      Padding spaces
-  \ IX+$0B  IX+$1C  lo     lo    lo    lo     Total...
-  \ IX+$0C  IX+$1D  hi     hi    hi    hi     ...length of datablock
-  \ IX+$0D  IX+$1E  Auto   -     -     Start  Various
-  \ IX+$0E  IX+$1F  Start  a-z   a-z   addr   ($80 if no autostart).
-  \ IX+$0F  IX+$20  lo     -     -     -      Length of program only...
-  \ IX+$10  IX+$21  hi     -     -     -      ...i.e. without variables
 
 ( tape-header )
 
@@ -96,7 +59,7 @@
   \
   \ /tape-header ( -- n )
   \
-  \ _n_ is the length of `tape-header`: 17 bytes.
+  \ _n_ is the length of a `tape-header`: 17 bytes.
   \
   \ }doc
 
@@ -105,31 +68,61 @@ create tape-header  /tape-header 2 * allot
   \ doc{
   \
   \ tape-header ( -- a )
-
+  \
   \ Address of the tape header, which is used by the ROM
   \ routines. Its structure is the following:
 
+  \ .Structure of a tape header
   \ |===
   \ | Offset  | Size     | Description
   \
-  \ | +00     | byte     | filetype
-  \ | +01     | 10-chars | filename, padded with spaces
+  \ | +00     | byte     | filetype (3 for code files)
+  \ | +01     | 10 chars | filename, padded with spaces
   \ | +11     | cell     | length
   \ | +13     | cell     | start address
   \ | +15     | cell     | not used for code files
   \ |===
 
-  \ When the first char of the filename is code 255, it is
-  \ regarded as a wildcard which will match any filename. The
-  \ word `tape-file>` sets the wildcard when the provided
-  \ filename is empty.
+  \ When the first char of the filename is 255, it is regarded
+  \ as a wildcard which will match any filename. The word
+  \ `tape-file>` sets the wildcard when the provided filename
+  \ is empty.
   \
-  \ A second tape header follows the main one. It is used by
-  \ the ROM routines while loading.
+  \ A second tape header, pointed by `last-tape-header`,
+  \ follows the main one. It is used by the ROM routines while
+  \ loading. It can be used by the application to know the
+  \ details of the last tape file that was loaded.
   \
+  \ IX addresses the first header, which must contain the data.
+  \ The second header is used by the system when loading and
+  \ verifying. Only the "CODE" file type column is relevant to
+  \ Solo Forth.
+
+  \ .Detailed structure of both tape headers
+  \ |===
+  \ | First header | Second header | BASIC program | Num DATA | String DATA | CODE | Notes
+
+  \ | IX+$00 | IX+$11 | 0     | 1   | 2   | 3     | File type
+  \ | IX+$01 | IX+$12 | x     | x   | x   | x     | F ($FF if filename is null)
+  \ | IX+$02 | IX+$13 | x     | x   | x   | x     | i
+  \ | IX+$03 | IX+$14 | x     | x   | x   | x     | l
+  \ | IX+$04 | IX+$15 | x     | x   | x   | x     | e
+  \ | IX+$05 | IX+$16 | x     | x   | x   | x     | n
+  \ | IX+$06 | IX+$17 | x     | x   | x   | x     | a
+  \ | IX+$07 | IX+$18 | x     | x   | x   | x     | m
+  \ | IX+$08 | IX+$19 | x     | x   | x   | x     | e
+  \ | IX+$09 | IX+$1A | x     | x   | x   | x     | .
+  \ | IX+$0A | IX+$1B | x     | x   | x   | x     | Padding spaces
+  \ | IX+$0B | IX+$1C | lo    | lo  | lo  | lo    | Total...
+  \ | IX+$0C | IX+$1D | hi    | hi  | hi  | hi    | ...length of datablock
+  \ | IX+$0D | IX+$1E | Auto  | -   | -   | Start | Various
+  \ | IX+$0E | IX+$1F | Start | a-z | a-z | addr  | ($80 if no autostart).
+  \ | IX+$0F | IX+$20 | lo    | -   | -   | -     | Length of program only...
+  \ | IX+$10 | IX+$21 | hi    | -   | -   | -     | ...i.e. without variables
+  \ |===
+
   \ See also: `tape-filename`, `tape-filetype`, `tape-start`,
-  \ `tape-length`, `any-tape-filename` and
-  \ `?set-tape-filename`.
+  \ `tape-length`, `any-tape-filename`, `?set-tape-filename`.
   \
   \ }doc
 
@@ -146,7 +139,7 @@ create tape-header  /tape-header 2 * allot
   \
   \ }doc
 
-: tape-filetype ( -- ca ) tape-header ;  3 tape-filetype c!
+tape-header constant tape-filetype ( -- ca ) 3 tape-filetype c!
 
   \ doc{
   \
@@ -155,9 +148,11 @@ create tape-header  /tape-header 2 * allot
   \ Address of the file type (one byte) in `tape-header`.
   \ Its default value is 3 (code file).
   \
+  \ See also: `last-tape-filetype`.
+  \
   \ }doc
 
-: tape-filename ( -- ca ) tape-header 1+ ;
+tape-header 1+ constant tape-filename ( -- ca )
 
   \ doc{
   \
@@ -165,11 +160,12 @@ create tape-header  /tape-header 2 * allot
   \
   \ Address of the filename in `tape-header`.
   \
-  \ See also: `/tape-filename`, `set-tape-filename`.
+  \ See also: `/tape-filename`, `set-tape-filename`,
+  \ `last-tape-filename`.
   \
   \ }doc
 
-: tape-length ( -- a ) tape-header 11 + ;
+tape-header 11 + constant tape-length ( -- a )
 
   \ doc{
   \
@@ -177,15 +173,19 @@ create tape-header  /tape-header 2 * allot
   \
   \ Address of the file length in `tape-header`.
   \
+  \ See also: `last-tape-length`.
+  \
   \ }doc
 
-: tape-start ( -- a ) tape-header 13 + ;
+tape-header 13 + constant tape-start ( -- a )
 
   \ doc{
   \
   \ tape-start ( -- a )
   \
   \ Address of the file start in `tape-header`.
+  \
+  \ See also: `last-tape-start`.
   \
   \ }doc
 
@@ -270,8 +270,9 @@ code (tape-file>) ( -- )
   \
   \ (tape-file>) ( -- )
   \
-  \ Low-level factor of `tape-file>`: read a tape file
-  \ using the data stored at `tape-header`.
+  \ Read a tape file using the data stored at `tape-header`.
+  \
+  \ ``(tape-file>)`` is a factor of `tape-file>`.
   \
   \ }doc
 
@@ -289,11 +290,12 @@ code (tape-file>) ( -- )
   \ header instead, which is the address the file was saved
   \ from.  _len2_ is zero if it's unspecified.
   \
-  \ WARNING: If _len2_ is not zero, and it's not the length of
-  \ the file, the ROM routine returns to BASIC with "Tape
-  \ loading error". This will crash the system, because the
-  \ lower screen has no lines. This will be avoided in a future
-  \ version of Solo Forth.
+  \ WARNING: If _len2_ is not zero or the exact length of the
+  \ file, the ROM routine returns to BASIC with "Tape loading
+  \ error". This crashes the system, because in Solo Forth the
+  \ lower screen has no lines, and BASIC can not print the
+  \ message. This will be avoided in a future version of Solo
+  \ Forth.
   \
   \ See also: `>tape-file`, `(tape-file>)`, `>file`.
   \
@@ -327,8 +329,9 @@ code (>tape-file) ( -- )
   \
   \ (>tape-file) ( -- )
   \
-  \ Low-level factor of `>tape-file`: write a tape file
-  \ using the data stored at `tape-header`.
+  \ Write a tape file using the data stored at `tape-header`.
+  \
+  \ ``(>tape-file)`` is a factor of `>tape-file`.
   \
   \ }doc
 
@@ -343,6 +346,76 @@ code (>tape-file) ( -- )
   \ len2_.
   \
   \ See also: `tape-file>`, `(>tape-file)`, `>file`.
+  \
+  \ }doc
+
+( last-tape-header )
+
+need tape-header
+
+tape-header /tape-header + constant last-tape-header ( -- ca )
+
+  \ doc{
+  \
+  \ last-tape-header ( -- ca )
+  \
+  \ Address of the second tape header, which is used by the ROM
+  \ routines while loading. Its structure is the identical to
+  \ `tape-header`.
+  \
+  \ It can be used by the application to know the details of
+  \ the last tape file that was loaded.
+  \
+  \ See also: `last-tape-filename`, `last-tape-filetype`,
+  \ `last-tape-start`, `last-tape-length`.
+  \
+  \ }doc
+
+last-tape-header constant last-tape-filetype ( -- ca )
+
+  \ doc{
+  \
+  \ last-tape-filetype ( -- ca )
+  \
+  \ Address of the file type (one byte) in `last-tape-header`.
+  \
+  \ See also: `tape-filetype`.
+  \
+  \ }doc
+
+last-tape-header 1+ constant last-tape-filename ( -- ca )
+
+  \ doc{
+  \
+  \ last-tape-filename ( -- ca )
+  \
+  \ Address of the filename in `last-tape-header`.
+  \
+  \ See also: `/tape-filename`, `tape-filename`.
+  \
+  \ }doc
+
+last-tape-header 11 + constant last-tape-length ( -- a )
+
+  \ doc{
+  \
+  \ tape-length ( -- a )
+  \
+  \ Address of the file length in `last-tape-header`.
+  \
+  \ See also: `tape-length`.
+  \
+  \ }doc
+
+last-tape-header 13 + constant last-tape-start ( -- a )
+
+  \ doc{
+  \
+  \ tape-start ( -- a )
+  \
+  \ Address of the file start in `last-tape-header`.
+  \
+  \ See also: `tape-start`.
   \
   \ }doc
 
@@ -372,5 +445,8 @@ code (>tape-file) ( -- )
   \ file equivalents and update the order of the parameters
   \ accordingly. Improve the documentation. Compact the code to
   \ save one block.
+  \
+  \ 2017-03-22: Improve documentation.  Convert `tape-header`
+  \ fields to constants. Add `last-tape-header` and its fields.
 
   \ vim: filetype=soloforth

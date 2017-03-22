@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201703221603
+// Last modified 201703221942
 
 // Application development {{{1
 == Application development ==
@@ -1933,13 +1933,13 @@ Z88 CamelForth does it. Also DX-Forth has this feature.
 // Tape {{{1
 == Tape ==
 
-.2017-02-08, 2017-03-06:
+.2017-02-08, 2017-03-06, 2017-03-22:
 
-Fix `tape-file>`: when the file length attribute is not zero
-(=undefined) or the real file lenght to be loaded, the ROM routine
+Fix `tape-file>`: when the file length attribute is not zero (zero
+means undefined) or the real file lenght to be loaded, the ROM routine
 returns to BASIC with "Tape loading error". This crashes the system
 (because the message can not be printed, because the lower screen has
-no lines). This will be avoided in a future version of Solo Forth.
+no lines).
 
 The simplest solution seems to remove the parameter and always use 0
 internally.
