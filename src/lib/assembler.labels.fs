@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703212020
+  \ Last modified: 201703232017
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,7 +33,11 @@ assembler-wordlist dup >order set-current need ?rel
   \ Identifier of relative references.
   \ Identifier of absolute references.
 
-#16 cconstant max-label  #16 cconstant max-l-ref
+#23 cconstant max-labels
+  \ Maximum number (count) of labels.
+
+#23 cconstant max-l-refs
+  \ Maximum number (count) of label references.
 
 2 cell+ cconstant /l-ref
   \ Size of a label reference.
@@ -44,16 +48,16 @@ assembler-wordlist dup >order set-current need ?rel
   \ +1 = byte: label number
   \ +2 = cell: label address
 
-  \ XXX TODO -- Combine byte 0 and 1 into one? Use the last bit
-  \ to mark absolute references.
+  \ XXX TODO -- Combine byte 0 and byte 1 into one. Use the
+  \ last bit to mark absolute references.
 
-max-label /l-ref * cconstant /l-refs
+max-l-refs /l-ref * cconstant /l-refs
 
 create l-refs /l-refs allot
   \ Table of label references.  Used references can be
   \ scattered through the table.
 
-max-label cells cconstant /labels
+max-labels cells cconstant /labels
 
 create labels /labels allot
   \ Table of labels. One cell to hold the address of each
@@ -68,7 +72,7 @@ create labels /labels allot
 
 ( l: )
 
-: ?l# ( n -- ) [ max-label 1- ] 1literal u> #-283 ?throw ;
+: ?l# ( n -- ) [ max-labels 1- ] 1literal u> #-283 ?throw ;
   \ If assembler label _n_ is out of range, throw exception
   \ #-283.
 
@@ -76,12 +80,12 @@ create labels /labels allot
   \ Convert label reference _n_ to the address _a_ of its data.
 
 : free-l-ref ( -- a | 0 )
-  max-l-ref 0 ?do i >l-ref dup c@ 0= if unloop exit then drop
-              loop 0 ;
+  max-l-refs 0 ?do i >l-ref dup c@ 0= if unloop exit then drop
+               loop 0 ;
   \ Return address _a_ of the first unused label reference in
   \ `l-refs`, or zero if all label references are in use.
 
-: ?free-l-ref ( -- a ) free-l-ref dup 0= #285 ?throw ;
+: ?free-l-ref ( -- a ) free-l-ref dup 0= #-285 ?throw ;
   \ Return address _a_ of the first unused label reference in
   \ `l-refs`. If all label references are in use, throw
   \ exception #-285.
@@ -199,7 +203,7 @@ create labels /labels allot
   \ Resolve label reference stored at _a_.
 
 : resolve-refs ( n -- )
-  max-l-ref 0 ?do dup i >l-ref dup 1+ c@ rot =
+  max-l-refs 0 ?do dup i >l-ref dup 1+ c@ rot =
     if resolve-ref else drop then
   loop drop ;
   \ Resolve all references to label _n_.
@@ -250,9 +254,15 @@ set-current set-order
   \ implementation based on DX-Forth.
   \
   \ Memory used (including requirements):
-  \
+
   \                       Current       Previous (hForth)
   \ Data/code space:      554 B         421 B
   \ Name space:           353 B         145 B
+
+  \ 2017-03-22: Increase number of labels and references to 22.
+  \ Fix throw code.
+  \
+  \ 2017-03-22: Increase number of labels and references to 23,
+  \ needed by `dzx7m`.
 
   \ vim: filetype=soloforth
