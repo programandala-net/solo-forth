@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703232013
+  \ Last modified: 201703252038
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -252,7 +252,8 @@ rthen e rr, exsp, h push, d sbcp, d pop, ldir,
 
 ( dzx7m )
 
-need assembler also assembler need l: previous
+need assembler also assembler need l:
+max-labels c@ #23 max-labels c! previous
 
 code dzx7m ( a1 a2 -- )
 
@@ -328,6 +329,7 @@ rbegin a add, #11 rl# z? ?jr, c rl, b rl, #12 rl# c? ?jr,
   \         rl      d                       ; insert first bit into D
   \         add     a, a                    ; check next bit
   \         jr      z, dzx7m_load_bits4     ; no more bits left?
+
 d rl, a add, d rl, a add, #14 rl# z? ?jr, ccf, #7 rl# c? ?jr,
   \         rl      d                       ; insert second bit into D
   \         add     a, a                    ; check next bit
@@ -512,6 +514,9 @@ d rl, a add, ccf, #17 rl# c? ?jr, #16 jp, al#
   \         jr      c, dzx7m_offset_end_ev
   \         jp      dzx7m_offset_inc_ev
 
+also assembler max-labels c! previous
+  \ Restore the default values.
+
   \ doc{
   \
   \ dzx7m ( a1 a2 -- )
@@ -554,5 +559,8 @@ d rl, a add, ccf, #17 rl# c? ?jr, #16 jp, al#
   \ 2017-03-23: Finish `dzx7m` (the port of ZX7 decompressor
   \ "Mega" version).  Rename the words an the module.  Complete
   \ the documentation.
+  \
+  \ 2017-03-25: Adapt to the new version of `l:`, which is
+  \ configurable.
 
   \ vim: filetype=soloforth

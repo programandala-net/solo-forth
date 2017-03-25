@@ -1,11 +1,11 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-03-23
+:revdate: 2017-03-25
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201703232015
+// Last modified 201703252041
 
 // Application development {{{1
 == Application development ==
@@ -28,16 +28,6 @@ Options to make it easier to share code with other systems:
 
 // Assembler {{{1
 == Assembler ==
-
-.2017-03-22:
-
-Make the number of labels and references configurable. Use the
-stringer or the name space to allocate them.
-
-.2017-03-21:
-
-Reduce the size of `l-refs`: Combine byte 0 and 1 into one. Use the
-last bit to mark absolute references.
 
 .2017-03-12:
 

@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-03-22
+" Updated:  2017-03-25
 "
 " See change log at the end of the file.
 
@@ -182,7 +182,6 @@ syn keyword soloforthFiles +load
 syn keyword soloforthFiles +thru
 syn keyword soloforthFiles -->
 syn keyword soloforthFiles .line
-syn keyword soloforthFiles ;s
 syn keyword soloforthFiles ?(
 syn keyword soloforthFiles ?)
 syn keyword soloforthFiles ?-->
@@ -233,6 +232,8 @@ syn keyword soloforthFiles transfer-sector
 syn keyword soloforthFiles update
 syn keyword soloforthFiles updated?
 syn keyword soloforthFiles where
+syn keyword soloforthFiles rename-file
+syn keyword soloforthFiles delete-file
 syn keyword soloforthFiles write-block
 syn keyword soloforthFiles write-mode
 syn keyword soloforthFlow +loop
@@ -408,6 +409,7 @@ syn keyword soloforthMemory allot
 syn keyword soloforthMemory bank
 syn keyword soloforthMemory bank-start
 syn keyword soloforthMemory blank
+syn keyword soloforthMemory dump
 syn keyword soloforthMemory c!
 syn keyword soloforthMemory c!bank
 syn keyword soloforthMemory c!s
@@ -795,6 +797,12 @@ syn keyword soloforthControlFlow rthen
 syn keyword soloforthControlFlow runtil
 syn keyword soloforthControlFlow rwhile
 
+" Assembler labels:
+
+syn keyword soloforthControlFlow l:
+syn keyword soloforthControlFlow al#
+syn keyword soloforthControlFlow rl#
+
 " Quotations:
 
 syn match soloforthFlow "\<\[:\>"
@@ -1158,6 +1166,9 @@ let b:current_syntax = "soloforth"
 " 2017-03-14: Remove `attr`.
 "
 " 2017-03-22: Add `sll,`, `sllx,`.
+"
+" 2017-03-25: Add `rename-file`, `delete-file`, `dump`, `l:`,
+" `al#`, `rl#`. Remove old `;s`.
 
 " --------------------------------------------------------------
 

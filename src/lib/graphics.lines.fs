@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703212056
+  \ Last modified: 201703251855
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -154,7 +154,7 @@ code rdraw ( gx gy -- )
     \  jr      nc,dl_x_ge_y
     \ ; gy is greater than gx
 
-  c l ld, d push, a xor, a e ld, 00 rl# jr,  rthen
+  c l ld, d push, a xor, a e ld, #0 rl# jr,  rthen
     \  ld      l,c
     \  push    de
     \  xor     a
@@ -171,7 +171,7 @@ code rdraw ( gx gy -- )
     \  push    de
     \  ld      d,$00
 
-  00 l: b h ld, b a ld, rra, -->
+  #0 l: b h ld, b a ld, rra, -->
     \ dl_larger:
     \  ld      h,b
     \  ld      a,b
@@ -179,14 +179,14 @@ code rdraw ( gx gy -- )
 
 ( rdraw )
 
-  rbegin  l add, 01 rl# c? ?jr, h cp, 02 rl# c? ?jr,
+  rbegin  l add, #1 rl# c? ?jr, h cp, #2 rl# c? ?jr,
     \ d_l_loop:
     \  add     a,l
     \  jr      c,d_l_diag
     \  cp      h
     \  jr      c,d_l_hr_vt
 
-  01 l: h sub, a c ld, exx, b pop, b push, 03 rl# jr,
+  #1 l: h sub, a c ld, exx, b pop, b push, #3 rl# jr,
     \ d_l_diag:
     \  sub     h
     \  ld      c,a
@@ -195,16 +195,16 @@ code rdraw ( gx gy -- )
     \  push    bc
     \  jr      d_l_step
 
-  02 l: a c ld, d push, exx, b pop,
+  #2 l: a c ld, d push, exx, b pop,
     \ d_l_hr_vt:
     \  ld      c,a
     \  push    de
     \  exx
     \  pop     bc
 
-  03 l:
+  #3 l:
   os-coords h ftp, b a ld, h add, a b ld, c a ld, a inc, l add,
-  05 rl# c? ?jr,
+  #5 rl# c? ?jr,
   \ XXX z? ?jr, ; XXX TODO -- adapt, integer out of range
     \ d_l_step:
     \  ld      hl,($5c7d) ; coords
@@ -218,7 +218,7 @@ code rdraw ( gx gy -- )
     \  jr      z,report_bc ; XXX TODO -- adapt, integer out of range
 
     \ d_l_plot:
-  04 l: a dec, a c ld,
+  #4 l: a dec, a c ld,
     \  dec     a
     \  ld      c,a
 
@@ -229,7 +229,7 @@ code rdraw ( gx gy -- )
     \  ld      a,c
     \  djnz    d_l_loop
 
-  d pop, ret,  05 l: 04 rl# z? ?jr, b pop, jpnext, end-code
+  d pop, ret,  #5 l: #4 rl# z? ?jr, b pop, jpnext, end-code
     \  pop     de
     \  ret
     \ d_l_range:
@@ -376,5 +376,7 @@ need x1 need incx need y1 need incy
   \
   \ 2017-03-21: Adapt to the new implementation of assembler
   \ labels.
+  \
+  \ 2017-03-25: Change the notation of assembler label numbers.
 
   \ vim: filetype=soloforth

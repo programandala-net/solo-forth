@@ -3,13 +3,13 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703232017
+  \ Last modified: 201703252032
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ Local labels for the Z80 assembler.
+  \ Assembler labels.
 
   \ ===========================================================
   \ Author
@@ -29,110 +29,216 @@ get-order get-current
 only forth definitions need array> need c+!
 assembler-wordlist dup >order set-current need ?rel
 
-1 cconstant rl-id  2 cconstant al-id
-  \ Identifier of relative references.
-  \ Identifier of absolute references.
+%01000000 cconstant rl-id  %10000000 cconstant al-id
 
-#23 cconstant max-labels
-  \ Maximum number (count) of labels.
+  \ doc{
+  \
+  \ rl-id ( -- b )
+  \
+  \ Identifier of relative references created by `rl#`.
+  \ ``rl-id`` is used as a bitmask added to the label number
+  \ stored in `l-refs`.
+  \
+  \ See also: `al-id`.
+  \
+  \ }doc
 
-#23 cconstant max-l-refs
-  \ Maximum number (count) of label references.
+  \ doc{
+  \
+  \ al-id ( -- b )
+  \
+  \ Identifier of absolute references created by `al#`.
+  \ ``rl-ad`` is used as a bitmask added to the label number
+  \ stored in `l-refs`.
+  \
+  \ See also: `rl-id`.
+  \
+  \ }doc
 
-2 cell+ cconstant /l-ref
+create max-labels 8 c,  create max-l-refs 16 c,
+
+  \ doc{
+  \
+  \ max-labels  ( -- ca )
+  \
+  \ _ca_ holds a byte, which is the maximum number (count) of
+  \ labels that can be defined by `l:`.  Its default value is
+  \ 8. The application can change the value, but the default
+  \ one should be restored after the code word has been
+  \ compiled.
+  \
+  \ ``max-labels`` is used by `init-labels` to allocate the
+  \ `labels` table.
+  \
+  \ Usage example:
+
+  \ ----
+  \ need assembler  also assembler need l:
+  \ max-labels c@ #24 max-labels c!
+  \ previous
+  \
+  \ code my-word ( -- )
+  \   \ Z80 code that needs #24 labels
+  \ end-code
+  \
+  \ max-labels c! \ restore the default value
+  \ ----
+
+  \ See also: `max-l-refs`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ max-l-refs  ( -- ca )
+  \
+  \ _ca_ holds a byte, which is the maximum number (count) of
+  \ unresolved label referenced that can be created by `rl#` or
+  \ `al#`.  Its default value is 16. The application can change
+  \ the value, but the default one should be restored after the
+  \ code word has been compiled.
+  \
+  \ ``max-l-refs`` is used by `init-labels` to allocate the
+  \ `l-refs` table.
+  \
+  \ Usage example:
+
+  \ ----
+  \ need assembler  also assembler need l:
+  \ max-l-refs c@ #16 max-l-refs c!
+  \ previous
+  \
+  \ code my-word ( -- )
+  \   \ Z80 code that needs #16 label references
+  \ end-code
+  \
+  \ max-l-refs c! \ restore the default value
+  \ ----
+
+  \ See also: `max-labels`.
+  \
+  \ }doc
+
+1 cell+ cconstant /l-ref
   \ Size of a label reference.
-  \ Structure:
-  \ +0 = byte: 0:           unused reference
-  \            1 (`rl-id`): relative reference
-  \            2 (`al-id`): absolute reference
-  \ +1 = byte: label number
-  \ +2 = cell: label address
 
-  \ XXX TODO -- Combine byte 0 and byte 1 into one. Use the
-  \ last bit to mark absolute references.
+: /l-refs ( -- n ) max-l-refs c@ /l-ref * ;
+  \ Size of the label references table in bytes
 
-max-l-refs /l-ref * cconstant /l-refs
+: /labels ( -- n ) max-labels c@ cells ;
+  \ Size of the labels table in bytes.
 
-create l-refs /l-refs allot
-  \ Table of label references.  Used references can be
-  \ scattered through the table.
+variable labels  variable l-refs
 
-max-labels cells cconstant /labels
+  \ doc{
+  \
+  \ labels  ( -- a )
+  \
+  \ A variable. _a_ contains the address of the labels table,
+  \ which is allocated in the `stringer` by `init-labels`.  The
+  \ size of the table can be configured with `max-label`.
+  \
+  \ Each element of the table (0 index) is one cell, which
+  \ holds hold the address of the correspending label, or zero
+  \ if the label is undefined.
+  \
+  \ }doc
 
-create labels /labels allot
-  \ Table of labels. One cell to hold the address of each
-  \ label, or zero if the label is undefined.
+  \ doc{
+  \
+  \ l-refs  ( -- a )
+  \
+  \ A variable. _a_ contains the address of the label
+  \ references table, which is allocated in the `stringer` by
+  \ `init-labels`. The size of the table can be configured with
+  \ `max-l-refs`.
+  \
+  \ Each element of the table (0 index) has the following
+  \ structure:
+
+  \ ....
+  \ +0 = byte: unused reference:
+  \               all bits are 0
+  \            used reference:
+  \               label number:        bits 0..5
+  \               relative reference?: bit 6 = 1 (mask `rl-id`)
+  \               absolute reference?: bit 7 = 1 (mask `al-id`)
+  \ +1 = cell: label address
+  \ ....
+
+  \ }doc
 
 : init-labels ( -- )
-  l-refs /l-refs erase labels /labels erase ; init-labels
-  \ Init the labels and the label references, by erasing their
-  \ data.
+  /labels allocate-stringer dup labels ! /labels erase
+  /l-refs allocate-stringer dup l-refs ! /l-refs erase ;
 
-' init-labels ' init-asm defer! -->
+init-labels ' init-labels ' init-asm defer!
 
-( l: )
+  \ doc{
+  \
+  \ init-labels ( -- )
+  \
+  \ Init the assembler labels and their references, by
+  \ allocating space for them in the `stringer` and erasing it.
+  \ `labels` and `l-refs` are given new values.
+  \
+  \ Loading ``init-labels`` makes it the action of `init-asm`,
+  \ which is called by `asm` and therefore also by `code` and
+  \ `;code`. Therefore, if the application needs a specific
+  \ ammount of labels or label references, `max-labels` and
+  \ `max-l-refs` must be configured before compiling the
+  \ assembly word.
+  \
+  \ }doc
 
-: ?l# ( n -- ) [ max-labels 1- ] 1literal u> #-283 ?throw ;
+: ?l# ( n -- ) max-labels c@ 1- u> #-283 ?throw ; -->
   \ If assembler label _n_ is out of range, throw exception
   \ #-283.
 
-: >l-ref ( n -- a ) /l-ref * l-refs + ;
+( l: )
+
+: >l-ref ( n -- a ) /l-ref * l-refs @ + ;
   \ Convert label reference _n_ to the address _a_ of its data.
 
+: free-l-ref? ( n -- a f ) >l-ref dup c@ 0= ;
+
 : free-l-ref ( -- a | 0 )
-  max-l-refs 0 ?do i >l-ref dup c@ 0= if unloop exit then drop
-               loop 0 ;
+  max-l-refs c@ 0 ?do i free-l-ref? if unloop exit then drop
+                  loop 0 ;
   \ Return address _a_ of the first unused label reference in
   \ `l-refs`, or zero if all label references are in use.
 
-: ?free-l-ref ( -- a ) free-l-ref dup 0= #-285 ?throw ;
-  \ Return address _a_ of the first unused label reference in
-  \ `l-refs`. If all label references are in use, throw
-  \ exception #-285.
+: new-l-ref ( orig n b -- )
+  or free-l-ref dup 0= #-285 ?throw tuck c! 1+ ! ;
+  \ Create a new reference _orig_ to label _n_ of type _b_
+  \ (`rl-id` or `al-id`).  If all label references are in use,
+  \ throw exception #-285.
 
-: !l-ref ( a n b a0 -- ) tuck c! 1+ tuck c! 1+ ! ;
-  \ Store a label reference _a n b_ at _a0_.
-
-: new-l-ref ( a n b -- ) ?free-l-ref !l-ref ;
-  \ Create a new reference to label _n_, of type _b_ (`rl-id`
-  \ for relative reference, `al-id` for absolute reference), to
-  \ be stored at _a_.
-
-: >l ( n -- a ) labels array> ;
-  \ Return address _a_ of label _n_ in the labels array.
+: >l ( b -- a )
+  [ rl-id al-id or invert ] cliteral and labels @ array> ;
+  \ Return address _a_ of label _b_ in the labels array.
   \ _a_ holds the value of the label.
 
-: resolve-al# ( a n -- ) >l @ swap ! ;
-  \ Resolve an absolute reference to label _n_, and store it at
-  \ _a_.
+: resolve-al# ( orig b -- ) >l @ swap ! ;
+  \ Resolve an absolute reference at _orig_ to label _b_.
 
-: resolve-rl# ( a n -- ) >l @ over 1+ - dup ?rel swap c! ;
-  \ Resolve a relative reference to label _n_ and store it at
-  \ _a_.
+: resolve-rl# ( orig b -- ) >l @ over 1+ - dup ?rel swap c! ;
+  \ Resolve a relative reference at _orig_ to label _b_.
 
-: resolve-l# ( a n b -- )
-  rl-id = if resolve-rl# else resolve-al# then ;
-  \ Resolve reference to label _n_, of type _b_ (`rl-id` for
-  \ relative reference, `al-id` for absolute reference), and
-  \ store it at _a_.
+: (resolve-ref ( orig b -- )
+  dup rl-id and if resolve-rl# else resolve-al# then ;
+  \ Resolve reference at _orig_ to label _b_.
+  \ XXX TODO -- Unfactor.
 
-: (l# ( a n b -- )
-  over ?l# over >l @ if resolve-l# else new-l-ref then ; -->
-  \ Manage a new reference to label _n_, of type _b_ (1 for
-  \ relative reference, 2 for absolute reference), to be stored
-  \ at _a_. If label _n_ has been defined, resolve the
-  \ reference; else store it.
-
-( l: )
-
-: al# ( -- ) here cell- dup @ al-id (l# ;
+: al# ( -- ) here cell- dup @ ( orig n ) dup ?l# dup >l @ ?dup
+             if nip swap ! else al-id new-l-ref then ; -->
 
   \ doc{
   \
   \ al#  ( -- )
   \
   \ Create an absolute reference to an assembler label defined
-  \ by `l:` The label number has been compiled in the last cell
+  \ by `l:`. The label number has been compiled in the last cell
   \ of the latest Z80 instruction.  If the corresponding label
   \ is already defined, its value is patched into the latest
   \ Z80 instruction.  Otherwise it will be patched after the
@@ -154,20 +260,11 @@ create labels /labels allot
   \
   \ }doc
 
-  \ : rl# ( -- ) here 1- dup c@ 2+ $FF and rl-id (l# ;
-  \
-  \ XXX OLD -- First version, for syntax `#0 jr, rl#`, which
-  \ can not work, because the label number is interpreted as an
-  \ address by the assembler relative jump instruction, causing
-  \ exception #-269 (relative jump too long). That syntax is
-  \ needed for absolute references, though, because the length
-  \ of the opcode can vary (1 or 2 bytes, before the value of
-  \ the label).
+( l: )
 
 : rl# ( n -- a )
-  dup ?l#
-  dup >l @ ?dup if   nip
-                else here 1+ tuck swap rl-id new-l-ref then ;
+  dup ?l#  dup >l @ ?dup
+  if nip else here 1+ dup rot rl-id new-l-ref then ;
 
   \ doc{
   \
@@ -196,16 +293,22 @@ create labels /labels allot
   \
   \ }doc
 
-: @l-ref ( a0 -- a n b ) dup 2+ @ swap dup 1+ c@ swap c@ ;
-  \ Fetch a label reference _a n b_ from _a0_.
+: @l-ref ( a -- orig b ) dup 1+ @ swap c@ ;
+  \ Fetch a label reference _orig b_ from _a0_.
 
-: resolve-ref ( a -- ) dup @l-ref resolve-l# /l-ref erase ;
+: resolve-ref ( a -- ) dup @l-ref (resolve-ref /l-ref erase ;
   \ Resolve label reference stored at _a_.
 
+: l-id># ( b -- n ) [ rl-id al-id or invert ] cliteral and ;
+
+: ?resolve-ref ( n1 n2 -- )
+  >l-ref dup c@ dup if   l-id># rot = if resolve-ref
+                                      else drop then
+                    else 2drop drop then ;
+  \ If label reference _n2_ points to label _n1_, resolve it.
+
 : resolve-refs ( n -- )
-  max-l-refs 0 ?do dup i >l-ref dup 1+ c@ rot =
-    if resolve-ref else drop then
-  loop drop ;
+  max-l-refs c@ 0 ?do dup i ?resolve-ref loop drop ;
   \ Resolve all references to label _n_.
 
 : l: ( n -- )
@@ -215,14 +318,28 @@ create labels /labels allot
   \
   \ l:  ( n -- )
   \
-  \ Create a new assembler label _n_.
-  \
-  \ See also: `rl#`, `al#`.
+  \ If assembler label _n_ has been defined in the current
+  \ definition, throw exception #-284 (assembly label number
+  \ already used); else create a new assembler label _n_ and
+  \ resolve all previous references to it that could have been
+  \ created by `rl#` or `al#`.
   \
   \ }doc
 
-
 set-current set-order
+
+( .l )
+
+  \ XXX TMP -- For debugging.
+
+need dump
+
+assembler-wordlist >order need l:
+
+: .l ( -- ) labels @ /labels dump cr l-refs @ /l-refs dump ;
+
+previous
+
 
   \ ===========================================================
   \ Change log
@@ -253,7 +370,8 @@ set-current set-order
   \ implementation based on hForth, and the unfinished
   \ implementation based on DX-Forth.
   \
-  \ Memory used (including requirements):
+  \ Memory used (including requirements and space for 16 labels
+  \ and 16 references):
 
   \                       Current       Previous (hForth)
   \ Data/code space:      554 B         421 B
@@ -262,7 +380,20 @@ set-current set-order
   \ 2017-03-22: Increase number of labels and references to 22.
   \ Fix throw code.
   \
-  \ 2017-03-22: Increase number of labels and references to 23,
-  \ needed by `dzx7m`.
+  \ 2017-03-23: Increase number of labels and references to 23,
+  \ needed by `dzx7m`. Start an improved version.
+  \
+  \ 2017-03-24: Reduce the size of the label references table,
+  \ by combining the label number and the reference type into
+  \ one byte.
+  \
+  \ 2017-03-25: Make the size of the tables configurable by the
+  \ application and use the `stringer` to allocate them.
+  \ Memory used (including requirements):
+
+  \ Data/code space:      500 B
+  \ Name space:           355 B
+
+  \ Improve documentation.
 
   \ vim: filetype=soloforth
