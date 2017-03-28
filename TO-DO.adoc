@@ -1,11 +1,11 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-03-25
+:revdate: 2017-03-28
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201703252041
+// Last modified 201703281309
 
 // Application development {{{1
 == Application development ==
@@ -28,6 +28,10 @@ Options to make it easier to share code with other systems:
 
 // Assembler {{{1
 == Assembler ==
+
+.2017-03-26:
+
+Document the instructions.
 
 .2017-03-12:
 
@@ -55,7 +59,7 @@ Make `hook,` and `prt,` optional.
 Study changes needed to use `ix addp,` instead of `addix,`;
 this means `h addp,` should be used instead of `addp,`
 
-.2017-03-10, 2017-03-12:
+.2017-03-10, 2017-03-12, 2017-03-26:
 
 Remove the need to use `af` only for `push,` and `pop,`.
 
@@ -63,8 +67,7 @@ The solution is a variant of `m3` to limit the register numbers:
 
 ----
 : m3p ( 8b "name" -- )
-  create c,
-  does> ( reg -- ) ( reg pfa ) %1111110 and c@ swap 8* + c, ;
+  (c does> ( reg -- ) ( reg pfa ) %1111110 and c@ swap 8* + c, ;
   \ 1-byte opcode with register encoded in bits 3-5.
 ----
 
@@ -76,7 +79,8 @@ C1 m3p pop, C5 m3p push,
 
 This makes `6 cconstant af` unnecessary; and makes the syntax regular,
 making `a pop,` and `a push,` possible (even low-registers are
-allowed, like `c pop,`). But `m3p` needs more memory than `af`.
+allowed, like `c pop,`). But `m3p` needs more memory than the `af`
+constant.
 
 .2017-03-07:
 
@@ -105,9 +109,9 @@ macro for `jppushhl,`, not `jp push_hl`.
 
 .2017-01-13:
 
-Modify words that restore IX: use the current contents of `next` instead of its
-default value. This way the value of IX can be changed to implement a debugger
-or multitasking.
+Modify words that restore IX: use the current contents of `next`
+instead of its default value. This way the value of IX can be changed
+to implement a debugger or multitasking.
 
 .2017-01-13, 2017-02-16:
 
@@ -802,6 +806,11 @@ save several blocks of source.
 // Graphics {{{1
 == Graphics ==
 
+.2017-03-28:
+
+Rewrite `set-flash` and `set-bright` in Z80 and use any non-zero
+parameter as _true_.
+
 .2017-03-19:
 
 NOTE: Milestone: 0.14.0
@@ -1386,6 +1395,13 @@ Study the way v.Forth manages the interrupts and adapt it.
 
 // Library {{{1
 == Library ==
+
+.2017-03-28:
+
+- Combine the module <graphics.attr.fs> with <printing.color.fs> or
+  <printing.cursor.fs>.
+- Rename module <printing.color.fs> to <printing.attributes.fs>.
+- Rename module <printing.*> to <print.*>.
 
 .2017-02-22:
 

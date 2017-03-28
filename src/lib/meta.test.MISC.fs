@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703232015
+  \ Last modified: 201703281308
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -22,6 +22,20 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( gigatype-test )
+
+need gigatype
+
+: run ( -- )
+  cls
+  8 0 ?do
+    17 0 i 3 * tuck at-xy s" GIGATYPE" i gigatype
+                    at-xy ." style "   i .
+  loop
+  key drop home ;
+
+run
 
 ( l:-test )
 
@@ -163,12 +177,14 @@ defer test
 need dzx7s need dzx7t need dzx7m need file> need case
 create compressed 6912 allot
 
-page .( Press any key to load the) cr
-     .( compressed screen from the) cr
-     .( first disk drive. 'Q' to quit.) key 'q' = ?exit
-1 set-drive throw s" img.zx7"  compressed 0 file>
-
 : run ( -- )
+
+  page ." Press any key to load the" cr
+       ." compressed screen from the" cr
+      ." first disk drive. 'Q' to quit." key 'q' = ?exit
+
+  1 set-drive throw s" img.zx7"  compressed 0 file> throw
+
   page  begin home
           ." Decompress with dzx7[S/T/M]" cr ." or [Q]uit" cr
           key lower case
@@ -1197,5 +1213,7 @@ blk @ 1+ blk @ 2+ thru
   \
   \ 2017-03-23: Update the names of the ZX7 decompressors and
   \ test.
+  \
+  \ 2017-03-28: Improve `dzx7-test`. Add `gigatype-test`.
 
   \ vim: filetype=soloforth
