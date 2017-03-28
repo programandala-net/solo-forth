@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703252032
+  \ Last modified: 201703280125
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -262,8 +262,7 @@ init-labels ' init-labels ' init-asm defer!
 
 ( l: )
 
-: rl# ( n -- a )
-  dup ?l#  dup >l @ ?dup
+: rl# ( n -- a ) dup ?l#  dup >l @ ?dup
   if nip else here 1+ dup rot rl-id new-l-ref then ;
 
   \ doc{
@@ -311,8 +310,25 @@ init-labels ' init-labels ' init-asm defer!
   max-l-refs c@ 0 ?do dup i ?resolve-ref loop drop ;
   \ Resolve all references to label _n_.
 
-: l: ( n -- )
-  dup >l dup @ #-284 ?throw here swap ! resolve-refs ;
+: l! ( x n -- )
+  dup >l dup @ #-284 ?throw rot swap ! resolve-refs ;
+
+  \ doc{
+  \
+  \ l!  ( x n -- )
+  \
+  \ If assembler label _n_ has been defined in the current
+  \ definition, throw exception #-284 (assembly label number
+  \ already used); else create a new assembler label _n_ with
+  \ value _x_ and resolve all previous references to it that
+  \ could have been created by `rl#` or `al#`. Usually _x_ is
+  \ an address.
+  \
+  \ See also: `l:`.
+  \
+  \ }doc
+
+: l: ( n -- ) here swap l! ;
 
   \ doc{
   \
@@ -320,9 +336,12 @@ init-labels ' init-labels ' init-asm defer!
   \
   \ If assembler label _n_ has been defined in the current
   \ definition, throw exception #-284 (assembly label number
-  \ already used); else create a new assembler label _n_ and
-  \ resolve all previous references to it that could have been
-  \ created by `rl#` or `al#`.
+  \ already used); else create a new assembler label _n_ with
+  \ the value returned by `here` and resolve all previous
+  \ references to it that could have been created by `rl#` or
+  \ `al#`.
+  \
+  \ See also: `l!`.
   \
   \ }doc
 
@@ -395,5 +414,7 @@ previous
   \ Name space:           355 B
 
   \ Improve documentation.
+
+  \ 2017-03-27: Add `l!` and rewrite `l:` after it.
 
   \ vim: filetype=soloforth

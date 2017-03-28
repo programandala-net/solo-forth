@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703221505
+  \ Last modified: 201703260051
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -220,6 +220,74 @@ D2 cconstant nc?  DA cconstant c?
 E2 cconstant po?  EA cconstant pe?
 F2 cconstant p?   FA cconstant m?
 
+  \ doc{
+  \
+  \ z? ( -- op )
+  \
+  \ See also: `nz?`, `c?`, `nc?`, `po?`, `pe?`, `p?`, `m?`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ nz? ( -- op )
+  \
+  \ See also: `z?`, `c?`, `nc?`, `po?`, `pe?`, `p?`, `m?`,
+  \ `?ret,`, `?jp,`, `?jr`, `?call`, `rif`, `rwhile`, `runtil`,
+  \ `aif`, `awhile`, `auntil`.
+  \
+  \ }doc
+
+  \ XXX TODO -- Finish documentation.
+
+  \ doc{
+  \
+  \ c? ( -- op )
+  \
+  \ See also: `z?`, `nz?`, `nc?`, `po?`, `pe?`, `p?`, `m?`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ nc? ( -- op )
+  \
+  \ See also: `z?`, `nz?`, `c?`, `po?`, `pe?`, `p?`, `m?`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ po? ( -- op )
+  \
+  \ See also: `z?`, `nz?`, `c?`, `nc?`, `pe?`, `p?`, `m?`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ pe? ( -- op )
+  \
+  \ See also: `z?`, `nz?`, `c?`, `nc?`, `po?`, `p?`, `m?`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ p? ( -- op )
+  \
+  \ See also: `z?`, `nz?`, `c?`, `nc?`, `po?`, `pe?`, `m?`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ m? ( -- op )
+  \
+  \ See also: `z?`, `nz?`, `c?`, `nc?`, `po?`, `pe?`, `p?`.
+  \
+  \ }doc
+
 : jp>jr ( op1 -- op2 )
   dup C3 = if drop 18 exit then dup c? > #-273 ?throw A2 - ;
   \ Convert an absolute-jump opcode to its relative-jump
@@ -281,14 +349,14 @@ F2 cconstant p?   FA cconstant m?
 : rwhile ( op -- orig cs-id ) rif 2+ ;
 
 : (runtil) ( dest cs-id op -- ) , 0B ?pairs <rresolve ;
-  \ Compile a relative conditional jump.
-  \ ``(runtil)`` is common factor of `runtil` and `rstep`.
+  \ Compile a relative conditional jump.  ``(runtil)`` is
+  \ common factor of `runtil`, `ragain` and `rstep`.
 
 : runtil ( dest cs-id op -- ) jp>jr inverse-cond (runtil) ;
   \ End a `rbegin runtil` loop.
 
 : ragain ( dest cs-id -- ) 18 (runtil) ;
-  \ End a `rbegin ragin` loop by compiling `jr`.
+  \ End a `rbegin ragain` loop by compiling a `jr` to _dest_.
   \
   \ Note: $18 is the opcode of `jr`.
 
@@ -324,12 +392,15 @@ assembler-wordlist >order set-current   need inverse-cond
 
 : awhile ( op -- orig cs-id ) aif 2+ ;
 
-: auntil  inverse-cond c, $09 ?pairs <resolve ;
-  \ ( dest cs-id op -- )
-  \ Compile an absolute conditional jump.
+: (auntil) ( dest cs-id op ) c, $09 ?pairs <resolve ;
+  \ Compile an absolute conditional jump.  ``(auntil)`` is
+  \ common factor of `auntil` and `aagain`.
 
-: aagain ( cs-id -- ) $C3 auntil ;
-  \ Compile an absolute jump.
+: auntil ( dest cs-id op -- ) inverse-cond (auntil) ;
+  \ End a `abegin auntil` loop.
+
+: aagain ( dest cs-id -- ) $C3 (auntil) ;
+  \ End a `abegin aagain` loop by compiling a `jp` to _dest_.
   \
   \ Note: $C3 is the opcode of `jp`
 
@@ -348,7 +419,7 @@ set-current set-order
   \ Convert an assembler condition flag (actually, an absolute
   \ jump opcode) to its opposite.
   \
-  \ Examples: `c?` to `nc?`; `nz?` to `z?`, etc.
+  \ Examples: `c?` is converted to `nc?`; `nz?` to `z?`, etc.
   \
   \ }doc
 
@@ -573,5 +644,7 @@ macro call-xt, ( xt -- )
   \
   \ 2017-03-22: Add undocumented instructions `sll,` and
   \ `sllx,`.
+  \
+  \ 2017-03-26: Fix `aagain`. Improve documentation.
 
   \ vim: filetype=soloforth
