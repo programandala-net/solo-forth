@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221237
+  \ Last modified: 201703281402
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,13 +27,14 @@
 
 ( ascii-char? control-char? )
 
-[unneeded] ascii-char? ?\ : ascii-char? ( c -- f ) 128 < ;
+[unneeded] ascii-char? ?\ : ascii-char? ( c -- f ) 127 < ;
 
   \ doc{
   \
-  \ ascii-char?    ( c -- f )
+  \ ascii-char? ( c -- f )
   \
-  \ Is character _c_ an ASCII character?
+  \ Is character _c_ an ASCII character, i.e. in the range
+  \ 0..126?
   \
   \ }doc
 
@@ -41,27 +42,60 @@
 
   \ doc{
   \
-  \ control-char?    ( c -- f )
+  \ control-char? ( c -- f )
   \
-  \ Is character _c_ a control character?
+  \ Is character _c_ a control character, i.e. in the range
+  \ 0..31?
   \
   \ }doc
 
 ( printable-ascii-char? >printable-ascii-char )
 
-[unneeded] printable-ascii-char? dup
-?\ need within
-?\ : printable-ascii-char? ( c -- f ) bl 128 within ;
+[unneeded] printable-ascii-char? ?(  need within
 
-[unneeded] >printable-ascii-char ?exit
+: printable-ascii-char? ( c -- f ) bl 127 within ; ?)
+
+  \ doc{
+  \
+  \ printable-ascii-char? ( c -- f )
+  \
+  \ Is _c_ a printable ASCII character, i.e. in the range
+  \ 32..126?
+  \
+  \ See also: `>printable-ascii-char`.
+  \
+  \ }doc
+
+[unneeded] >printable-ascii-char ?(
 
 need printable-ascii-char?
 
 '.' cconstant default-printable-ascii-char
 
-: >printable-ascii-char ( c1 -- c2 )
+  \ doc{
+  \
+  \ default-printable-ascii-char ( -- c )
+  \
+  \ Return the default ASCII character _c_ used by
+  \ `>printable-ascii-cthar`.
+  \
+  \ }doc
+
+: >printable-ascii-char ( c1 -- c1 | c2 )
   dup printable-ascii-char? ?exit
-  drop default-printable-ascii-char ;
+  drop default-printable-ascii-char ; ?)
+
+  \ doc{
+  \
+  \ >printable-ascii-char ( c1 -- c1 | c2 )
+  \
+  \ If character _c1_ is a printable ASCII character, return
+  \ it, else return the character returned by
+  \ `default-printable-ascii-char`.
+  \
+  \ See also: `printable-ascii-char?`.
+  \
+  \ }doc
 
   \ ===========================================================
   \ Change log
@@ -77,5 +111,9 @@ need printable-ascii-char?
   \ interpretation.
   \
   \ 2017-01-26: Fix requirement of `printable-ascii-char?`.
+  \
+  \ 2017-03-28: Improve documentation. Fix `ascii-char?` and
+  \ `printable-ascii-char?`: the higher ASCII character is 126,
+  \ not 127.
 
   \ vim: filetype=soloforth

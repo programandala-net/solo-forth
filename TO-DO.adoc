@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201703281309
+// Last modified 201703281406
 
 // Application development {{{1
 == Application development ==
@@ -186,6 +186,17 @@ convention.
 // Interpreter/compiler {{{1
 == Interpreter/compiler ==
 
+.2017-03-28:
+
+Adapt from 8080 F83 2.0:
+
+----
+: ::   ( -- )
+   HIDE  HERE  >R  [ ' : @ ] LITERAL ,   !CSP  ]
+   R@ EXECUTE  R> DP ! ;
+  \ compile and execute nameless FORTH code, then forget it
+----
+
 .2017-01-23:
 
 Rewrite `here` in Z80. `dp` must be an ordinary variable first.
@@ -266,6 +277,43 @@ actual strings.
 
 // Control structures {{{1
 == Control structures ==
+
+.2017-03-28
+
+From 8080 F83 2.0:
+
+----
+: MANY   (S -- ) KEY? NOT IF   >IN OFF   THEN   ;
+  \ Re-execute the input stream until the user presses a key.
+----
+
+.2017-03-28
+
+From 8080 F83 2.0:
+
+----
+\ Iterated Interpretation                             03Apr84map
+
+VARIABLE #TIMES   ( # times already performed )   1 #TIMES !
+  \ A variable that keeps track of how many times.
+
+: TIMES   (S n -- )
+   1 #TIMES +!  #TIMES @
+   < IF  1 #TIMES !  ELSE  >IN OFF  THEN   ;
+  \ Re-execute the input stream a specified number of times.
+----
+
+.2017-03-28:
+
+From 8080 F83 2.0:
+
+----
+: WHEN   (S f -- ) PAUSE  NOT IF   R> 4 - >R   THEN   ;
+\  Re-execute the previous word until it returns true.
+\  NOTE: WHEN is slightly magic.
+\  Usage:   : TEST   READY WHEN    BEEP  ;
+\      Where READY returns a flag.
+----
 
 .2016-12-26:
 
@@ -1395,6 +1443,10 @@ Study the way v.Forth manages the interrupts and adapt it.
 
 // Library {{{1
 == Library ==
+
+.2017-03-28:
+
+Move words from <chars.fsb> to <strings.misc.fsb>.
 
 .2017-03-28:
 
