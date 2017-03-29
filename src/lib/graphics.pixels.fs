@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132353
+  \ Last modified: 201703291240
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -32,7 +32,7 @@
   \ deferred `gxy>scra_`, then rename `slow-gxy>scra_` to
   \ `gxy>scra_`.
 
-\ gxy>scra_ slow-gxy>scra_ fast-gxy>scra_ \
+( gxy>scra_ slow-gxy>scra_ fast-gxy>scra_ )
 
 [unneeded] gxy>scra_ [unneeded] slow-gxy>scra_ and ?(
 
@@ -52,7 +52,7 @@ defer gxy>scra_ ( -- a )
   \ }doc
 
 create slow-gxy>scra_ ( -- a ) asm
-  3E c, BF c, 90 00 + c, C3 c, 22B0 , end-asm
+  3E c, BF c, 90 00 + c, 22B0 jp, end-asm
   \ ld a,191 ; max Y coordinate
   \ sub b
   \ jp $22B0 ; and return
@@ -157,14 +157,14 @@ create fast-gxy>scra_ ( -- a ) asm
   \
   \ }doc
 
-\ gxy176>scra_ gxy176>scra gxy>scra \
+( gxy176>scra_ gxy176>scra gxy>scra )
 
 [unneeded] gxy176>scra_ ?(
 
   \ XXX UNDER DEVELOPMENT -- 2016-12-26
 
 create gxy176>scra_ ( -- a ) asm
-  3E c, #175 c, 90 00 + c, C3 c, 22B0 , end-asm ?)
+  3E c, #175 c, 90 00 + c, 22B0 jp, end-asm ?)
   \ ld a,175 ; max Y coordinate in BASIC
   \ sub b
   \ jp $22B0 ; call ROM routine and return
@@ -201,12 +201,12 @@ code gxy176>scra ( gx gy -- n a )
   \ push bc
   \ ld b,l ; b=gy
   \ ld c,e ; c=gx
-  CD c, gxy176>scra_ , C1 c, 16 c, 0 c,  58 07 + c,
+  gxy176>scra_ call, C1 c, 16 c, 0 c,  58 07 + c,
   \ call pixel_addr176
   \ pop bc
   \ ld d,0
   \ ld e,a
-  C3 c, pushhlde , end-code ?)
+  pushhlde jp, end-code ?)
   \ jp push_hlde
 
   \ doc{
@@ -223,14 +223,14 @@ code gxy176>scra ( gx gy -- n a )
 [unneeded] gxy>scra ?( need gxy>scra_
 
 code gxy>scra ( gx gy -- n a )
-  E1 c,  D1 c, C5 c, 40 05 + c, 48 03 + c, CD c, gxy>scra_ ,
+  E1 c,  D1 c, C5 c, 40 05 + c, 48 03 + c, gxy>scra_ call,
   \ pop hl
   \ pop de
   \ push bc
   \ ld b,l ; b=gy
   \ ld c,e ; c=gx
   \ call pixel_addr
-  C1 c, 16 c, 0 c,  58 07 + c, C3 c, pushhlde , end-code ?)
+  C1 c, 16 c, 0 c,  58 07 + c, pushhlde jp, end-code ?)
   \ pop bc
   \ ld d,0
   \ ld e,a
@@ -258,7 +258,7 @@ code plot ( gx gy -- )
     \ pop hl
     \ pop bc            ; C = x coordinate
     \ ld b,l            ; B = y coordinate (0..191)
-  ED c, 43 c, 5C7D , CD c, gxy>scra_ ,
+  ED c, 43 c, 5C7D , gxy>scra_ call,
     \ ld ($5C7D),bc     ; update COORDS
     \ call pixel_addr   ; hl = screen address
     \                   ; A = pixel position in hl (0..7)
@@ -276,7 +276,7 @@ code plot ( gx gy -- )
   \ current graphic coordinates.  _gx_ is 0..255; _gy_ is
   \ 0..191.
   \
-  \ See also: `set-pixel`, `plot176`.
+  \ See also: `set-pixel`, `plot176`, `xy>gxy`.
   \
   \ }doc
 
@@ -289,7 +289,7 @@ code plot176 ( gx gy -- )
     \ pop hl
     \ pop bc            ; C = x coordinate
     \ ld b,l            ; B = y coordinate (0..175)
-  CD c, 22E5 , D9 c, DD c, 21 c, next , jpnext, end-code ?)
+  22E5 call, D9 c, DD c, 21 c, next , jpnext, end-code ?)
     \ call $22E5        ; ROM PLOT-SUB
     \ exx               ; restore Forth IP
     \ ld ix,next        ; restore Forth IX
@@ -310,7 +310,7 @@ code plot176 ( gx gy -- )
   \ WARNING: If parameters are out of range, the ROM will throw
   \ a BASIC error, and the system will crash.
   \
-  \ See also: `set-pixel176`, `plot`.
+  \ See also: `set-pixel176`, `plot`, `xy>gxy176`.
   \
   \ }doc
 
@@ -341,7 +341,8 @@ code set-pixel ( gx gy -- )
   \ the current graphic coordinates.  _gx_ is 0..255; _gy_ is
   \ 0..191.
   \
-  \ See also:  `plot`, `plot176`, `reset-pixel`, `toggle-pixel`.
+  \ See also:  `plot`, `plot176`, `reset-pixel`,
+  \ `toggle-pixel`, `xy>gxy`.
   \
   \ }doc
 
@@ -373,7 +374,7 @@ code set-pixel176 ( gx gy -- )
   \
   \ See also:  `set-save-pixel176`, `set-pixel`, `plot`,
   \ `plot176`, `reset-pixel`, `toggle-pixel`, `reset-pixel176`,
-  \ `toggle-pixel176`.
+  \ `toggle-pixel176`, `xy>gxy176`.
   \
   \ }doc
 
@@ -857,5 +858,10 @@ need gxy>attra
   \ `slow-(pixel-addr)` to  `slow-gxy>scra_`, `pixel-addr` to
   \ `gxy>scra`.  Update references: `(cursor-addr)` to
   \ `xy>scra_`, `cursor-addr` to  `xy>scra`.
+  \
+  \ 2017-03-27: Update index lines.
+  \
+  \ 2017-03-29: Use `call,` and `jp,`, which are in the kernel,
+  \ instead of opcodes. Improve documentation.
 
   \ vim: filetype=soloforth

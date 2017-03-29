@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703192301
+  \ Last modified: 201703280051
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -492,156 +492,6 @@ code get-udg ( -- a ) 2A c, os-udg , jppushhl, end-code ?)
   \
   \ }doc
 
-( xy>scra_ xy>scra )
-
-[unneeded] xy>scra_ ?( need assembler
-
-create xy>scra_ ( -- a ) asm
-
-  b a ld, %11000 and#, #64 add#, a d ld, b a ld, %111 and#,
-  rrca, rrca, rrca, a e ld, c a ld, e add, a e ld,
-  ret, end-asm ?)
-
-  \ ld a,b     ; y coordinate
-  \ and %11000 ; mask segment: 0..2
-  \ add a,64   ; 64*256 = 16384, Spectrum's screen memory
-  \ ld d,a     ; high byte of the screen address
-  \ ld a,b     ; y coordinate
-  \ and %111   ; mask row within segment: 0..7
-  \ rrca       ; multiply row...
-  \ rrca       ; ...
-  \ rrca       ; ...by 32
-  \ ld e,a     ; low byte of the screen address
-  \ ld a,c     ; add on y coordinate
-  \ add a,e    ; mix with low byte
-  \ ld e,a     ; DE = address of screen position
-  \ ret
-
-  \ Credit:
-  \
-  \ How To Write ZX Spectrum Games – Chapter 9
-  \ http://chuntey.arjunnair.in/?p=154
-
-  \ doc{
-  \
-  \ xy>scra_ ( -- a )
-  \
-  \ Return address _a_ of a Z80 routine that calculates the
-  \ screen address correspondent to given cursor coordinates.
-  \
-  \ Input registers:
-  \
-  \ - B = y coordinate (0..23)
-  \ - C = x coordinate (0..31)
-  \
-  \ Output registers:
-  \
-  \ - DE = screen address
-  \
-  \ See also: `xy>scra`, `gxy>scra_`.
-  \
-  \ }doc
-
-[unneeded] xy>scra ?( need assembler need xy>scra_
-
-code xy>scra ( x y -- a )
-
-  h pop, l a ld, h pop, b push, a b ld, l c ld,
-  xy>scra_ call, exde, b pop, jppushhl, end-code ?)
-
-  \ pop hl
-  \ ld a,l
-  \ pop hl
-  \ push bc          ; save Forth IP
-  \ ld b,a           ; y coordinate
-  \ ld c,l           ; x coordinate
-  \ call cursor_addr
-  \ ex de,hl         ; HL = screen address
-  \ pop bc           ; restore Forth IP
-  \ jp push_hl
-
-  \ doc{
-  \
-  \ xy>scra ( x y -- a )
-  \
-  \ Convert cursor coordinates _x y_ to their correspondent
-  \ screen address _a_.
-  \
-  \ See also: `xy>scra_` , `gxy>scra`.
-  \
-  \ }doc
-
-( xy>scra_ xy>scra )
-
-[unneeded] xy>scra_ ?( need assembler
-
-create xy>scra_ ( -- a ) asm
-
-  \ XXX TMP --
-  \
-  \ Alternative version that does not use the BC register and
-  \ returns the address in HL.
-
-  d a ld, %11000 and#, #64 add#, a h ld, d a ld, %111 and#,
-  rrca, rrca, rrca, a l ld, e a ld, l add, a l ld,
-  ret, end-asm ?)
-
-  \ ld a,d     ; y coordinate
-  \ and %11000 ; mask segment: 0..2
-  \ add a,64   ; 64*256 = 16384, Spectrum's screen memory
-  \ ld h,a     ; high byte of the screen address
-  \ ld a,d     ; y coordinate
-  \ and %111   ; mask row within segment: 0..7
-  \ rrca       ; multiply row...
-  \ rrca       ; ...
-  \ rrca       ; ...by 32
-  \ ld l,a     ; low byte of the screen address
-  \ ld a,e     ; add on y coordinate
-  \ add a,l    ; mix with low byte
-  \ ld l,a     ; HL = address of screen position
-  \ ret
-
-  \ Credit:
-  \
-  \ How To Write ZX Spectrum Games – Chapter 9
-  \ http://chuntey.arjunnair.in/?p=154
-
-  \ xy>scra_ ( -- a )
-  \
-  \ Return address _a_ of a Z80 routine that calculates the
-  \ screen address correspondent to given cursor coordinates.
-  \
-  \ Input registers:
-  \
-  \ - D = y coordinate (0..23)
-  \ - E = x coordinate (0..31)
-  \
-  \ Output registers:
-  \
-  \ - HL = screen address
-  \
-  \ See also: `xy>scra`, `gxy>scra_`.
-
-[unneeded] xy>scra ?( need assembler need xy>scra_
-
-code xy>scra ( x y -- a )
-
-  h pop, d pop, l d ld, xy>scra_ call, jppushhl,
-  end-code ?)
-
-  \ pop hl           ; L = y coordinate
-  \ pop de           ; E = x coordinate
-  \ ld d,l           ; D = y coordinate
-  \ call cursor_addr
-  \ jp push_hl
-
-  \ xy>scra ( x y -- a )
-  \
-  \ Convert cursor coordinates _x y_ to their correspondent
-  \ screen address _a_.
-  \
-  \ See also: `xy>scra_` , `gxy>scra`.
-
 ( display-char-bitmap_ )
 
 [unneeded] display-char-bitmap_ ?(
@@ -928,5 +778,8 @@ unused code udg-at-xy-display ( x y c -- )
   \ and the experimental `grid`; they are superseded by
   \ `udg-block` and `udg-group`. Compact the code, saving one
   \ blocks. Improve documentation.
+  \
+  \ 2017-03-28: Move `xy>scra` and `xy>scra_` to the
+  \ <printing.cursor.fs> module.
 
   \ vim: filetype=soloforth
