@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703291155
+  \ Last modified: 201703291556
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -22,6 +22,30 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( menu-test )
+
+need menu need :noname
+
+:noname ( -- ) unnest unnest ;
+:noname ( -- ) 2 border ;
+:noname ( -- ) 1 border ;
+:noname ( -- ) 0 border ;
+
+create actions> , , , ,
+
+here s" EXIT"  s,
+here s" Red"   s,
+here s" Blue"  s,
+here s" Black" s,
+
+create texts> , , , ,
+
+: menu-pars actions> texts> s" Border" 7 7 14 4 ;
+
+: h ( -- ) home default-colors ;
+
+menu-pars new-menu
 
 ( orthodraw-test ortholine-test )
 
@@ -1242,6 +1266,7 @@ blk @ 1+ blk @ 2+ thru
   \
   \ 2017-03-28: Improve `dzx7-test`. Add `gigatype-test`.
   \
-  \ 2017-03-29: Add `orthodraw-test`, `ortholine-test`.
+  \ 2017-03-29: Add `orthodraw-test`, `ortholine-test`. Add
+  \ `menu-test`.
 
   \ vim: filetype=soloforth
