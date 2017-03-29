@@ -3,7 +3,8 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160325
+  \ Last modified: 201703292226
+  \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
@@ -13,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016.
+  \ Marcos Cruz (programandala.net), 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -22,9 +23,12 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( number )
+( number cell-bits )
 
-: number ( ca len -- n | d ) number? 0= #-275 ?throw ;
+[unneeded] number
+
+?\ : number ( ca len -- n | d ) number? 0= #-275 ?throw ;
+
   \ doc{
   \
   \ number ( ca len -- n | d )
@@ -34,7 +38,30 @@
   \ valid point, return _n_. If conversion fails due to an
   \ invalid character, an exception #-275 is thrown.
   \
+  \ See also: `number?`, `>number`.
+  \
   \ }doc
+
+[unneeded] cell-bits ?\ 16 cconstant cell-bits
+
+  \ doc{
+  \
+  \ cell-bits  ( -- n )
+  \
+  \ A constant. _n_ is the number of bits in a cell.
+  \
+  \ See also: `cell`, `environment?`.
+  \
+  \ }doc
+
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2016: `number`.
+  \
+  \ 2017-03-29: Move `cell-bits` from the 1-cell and 2-cell
+  \ operators modules. Improve documentation.
 
   \ vim: filetype=soloforth
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703292228
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -329,7 +329,7 @@ need mt* need tnegate need ut/
   \ 18/5 p. 29 (1997-01).
 
 need q2* need d2* need d< need m+ need d- need 2rot
-need 2nip  [defined] cell-bits ?\ 16 constant cell-bits
+need 2nip need cell-bits
 
   \ XXX FIXME wrong results
   \
@@ -340,8 +340,9 @@ need 2nip  [defined] cell-bits ?\ 16 constant cell-bits
   \ It works in Gforth
 
 : (dsqrt) ( radicand . -- remainder . root . )
-  0. 0.             ( radicand . remainder . root . )
-  cell-bits 0 do    ( radicand . remainder . root . )
+  0. 0.  ( radicand . remainder . root . )
+  [ cell-bits ] cliteral 0 do
+    \ ( radicand . remainder . root . )
     cr .s  key drop  \ XXX INFORMER
     2>r q2* q2* 2r>  d2*
     2over 2over d2* 2swap
@@ -383,5 +384,7 @@ need 2nip  [defined] cell-bits ?\ 16 constant cell-bits
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-03-29: Update needing of `cell-bits`.
 
   \ vim: filetype=soloforth

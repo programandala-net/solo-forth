@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703291155
+  \ Last modified: 201703292303
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -24,6 +24,32 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( sqrt-bench )
+
+need baden-sqrt need newton-sqrt need bench{ need }bench.
+
+: run ( u -- )
+  cls ." Results for " dup u. ." iterations"
+  dup cr ." baden-sqrt :" cr space
+  bench{ 0 ?do i abs baden-sqrt  drop loop }bench.
+      cr ." newton-sqrt   :" cr space
+  bench{ 0 ?do i abs newton-sqrt drop loop }bench. ;
+
+  \ 2017-03-29:
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- ---------------------------------
+  \       baden[1]  baden[2]        newton
+  \       --------  -------- -------------
+  \ 00100       20        20    170 (8.50)
+  \ 01000      220       219   1717 (7.80)
+  \ 10000     2260      2258  17170 (7.59)
+  \ 65535    15118     15105 112515 (7.44)
+  \
+  \ Notes:
+  \ [1] Loop parameter compiled with `literal`.
+  \ [2] Loop parameter compiled with `cliteral`.
 
 ( orthodraw-bench ortholine-bench )
 
@@ -2549,6 +2575,7 @@ need slow-pixels need fast-pixels
   \ `(pixel-addr)` to `gxy>scra_`, `fast-(pixel-addr)` to
   \ `fast-gxy>scra_`, `slow-(pixel-addr)` to `slow-gxy>scra_`.
   \
-  \ 2017-03-29: Add `orthodraw-bench` and `ortholine-bench`.
+  \ 2017-03-29: Add `orthodraw-bench`, `ortholine-bench`
+  \ `sqrt-bench`.
 
   \ vim: filetype=soloforth

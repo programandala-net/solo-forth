@@ -1038,6 +1038,10 @@ does nothing, as expected.
 
 .2017-03-29:
 
+Finish `crshift`.
+
+.2017-03-29:
+
 Variant of `+under`, from PFE's `(under+)`:
 
 ----
@@ -1882,6 +1886,14 @@ Improve tab control.
 // Stacks {{{1
 == Stacks ==
 
+.2017-03-29:
+
+Use the code of `rp@` as storage of the pointer. This save one cell
+from the parameter area of the kernel. Or use any `ld
+hl,(return_stack_pointer)` of a more used word, to make the most from
+the 10 saved T-cycles. `>r` is a good candidate. Better yet, the
+`do_colon` part of `:`. Better yet, `exit`.
+
 .2017-03-21:
 
 Add `4dup`.
@@ -2026,6 +2038,10 @@ Make the tape words return a standard _ior_.
 
 // Time {{{1
 == Time ==
+
+.2017-03-29:
+
+Fix: `0 frames` does `$FFFF frames`.
 
 .2017-02-13, 2017-03-17:
 

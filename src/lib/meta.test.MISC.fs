@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703291556
+  \ Last modified: 201703292305
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -22,6 +22,20 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( sqrt-test )
+
+need baden-sqrt need newton-sqrt need printer
+
+: run ( -- ) cr ." Printing different results" cr
+                   ." Press BREAK to stop" cr cr printer cr
+                   ." Number baden-sqrt  newton-sqrt" cr
+                   ." ------ ----------- -----------" cr
+  32768 0 ?do
+    i newton-sqrt i baden-sqrt 2dup <>
+    if  i 6 .r space 11 .r space 11 .r cr else 2drop then
+    break-key? if display ." Break." cr leave then
+  loop display ." End."  ;
 
 ( menu-test )
 
@@ -1266,7 +1280,7 @@ blk @ 1+ blk @ 2+ thru
   \
   \ 2017-03-28: Improve `dzx7-test`. Add `gigatype-test`.
   \
-  \ 2017-03-29: Add `orthodraw-test`, `ortholine-test`. Add
-  \ `menu-test`.
+  \ 2017-03-29: Add `orthodraw-test`, `ortholine-test`,
+  \ `menu-test`, `sqrt-test`.
 
   \ vim: filetype=soloforth
