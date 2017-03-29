@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132346
+  \ Last modified: 201703291155
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -24,6 +24,28 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( orthodraw-bench ortholine-bench )
+
+need orthodraw need ortholine need bench{ need }bench.
+
+: run ( u -- )
+  cls ." Results for " dup u. ." iterations"
+  dup cr ." orthodraw :" cr space
+  bench{ 0 ?do  0 0 1 1 100 orthodraw loop }bench.
+      cr ." ortholine :" cr space
+  bench{ 0 ?do  0 0 1 1 100 ortholine  loop }bench. ;
+
+  \ 2017-03-29:
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- ---------------------------------
+  \       orthodraw          ortholine
+  \       ---------  -----------------
+  \ 00100        97         56
+  \ 01000       975        562
+  \ 10000      9752       5621  (0.57)
+  \ 65535     63911      36833  (0.57)
 
 ( ink-bench )
 
@@ -2526,5 +2548,7 @@ need slow-pixels need fast-pixels
   \ update names including "blk" to "block(s)".  Rename:
   \ `(pixel-addr)` to `gxy>scra_`, `fast-(pixel-addr)` to
   \ `fast-gxy>scra_`, `slow-(pixel-addr)` to `slow-gxy>scra_`.
+  \
+  \ 2017-03-29: Add `orthodraw-bench` and `ortholine-bench`.
 
   \ vim: filetype=soloforth

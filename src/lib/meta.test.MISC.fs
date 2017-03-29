@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703281308
+  \ Last modified: 201703291155
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -22,6 +22,32 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( orthodraw-test ortholine-test )
+
+need orthodraw need ortholine need attr! need ms need random
+
+variable delay  300 delay !  variable length  30 length !
+
+2variable center  100 100 center 2!
+
+: ray ( gx gy n1 n2 xt )
+  >r center 2@ 2swap length @ r> execute delay @ ms ;
+
+: color ( -- b ) 7 random 1+ ;
+
+: d-ray ( gx gy n1 n2 ) color attr! ['] orthodraw ray ;
+
+: d-test ( -- ) 0  1 d-ray  1  1 d-ray  1 0 d-ray  1 -1 d-ray
+                0 -1 d-ray -1 -1 d-ray -1 0 d-ray -1  1 d-ray ;
+
+: l-ray ( gx gy n1 n2 ) ['] ortholine ray ;
+
+: l-test ( -- ) 0  1 l-ray  1  1 l-ray  1 0 l-ray  1 -1 l-ray
+                0 -1 l-ray -1 -1 l-ray -1 0 l-ray -1  1 l-ray ;
+
+: run ( -- ) 100 100 center 2! 30 length ! d-test
+             130 120 center 2! 50 length ! l-test ;
 
 ( gigatype-test )
 
@@ -1215,5 +1241,7 @@ blk @ 1+ blk @ 2+ thru
   \ test.
   \
   \ 2017-03-28: Improve `dzx7-test`. Add `gigatype-test`.
+  \
+  \ 2017-03-29: Add `orthodraw-test`, `ortholine-test`.
 
   \ vim: filetype=soloforth

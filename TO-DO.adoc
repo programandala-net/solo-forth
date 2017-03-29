@@ -1,11 +1,11 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-03-28
+:revdate: 2017-03-29
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201703281406
+// Last modified 201703291201
 
 // Application development {{{1
 == Application development ==
@@ -140,6 +140,11 @@ NOTE: Milestone: 0.14.0
 
 // Bugs {{{1
 == Bugs ==
+
+.2017-03-28:
+
+The sector calculation on +3DOS is wrong. This is a recent bug,
+because it was working fine.
 
 .2017-03-22:
 
@@ -853,6 +858,12 @@ save several blocks of source.
 
 // Graphics {{{1
 == Graphics ==
+
+.2017-03-29:
+
+Reorganize relation between `slow-gxy>scra_`, `gxy>scra_` and
+`fast-gxy>scra_`. Remove `fast-gxy>scra_` and the deferred
+`gxy>scra_`, then rename `slow-gxy>scra_` to `gxy>scra_`.
 
 .2017-03-28:
 
