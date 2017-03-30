@@ -1,28 +1,30 @@
-  \ data.value.val.fs
+  \ data.val.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703302122
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ This module defines `val` and `toval`, which behave like
+  \ This module provides `val` and `toval`, which behave like
   \ standard `value` and `to` except `valto` doesn't parse: it
-  \ changes the run-time behaviour of the value.
+  \ changes the run-time behaviour of the words created by
+  \ `val`.
   \
-  \ Also double-cell variant `2val` and `2toval` are included.
+  \ Also double-cell variant `2val` and `2toval` and character
+  \ variant `cval` and `ctoval` are provided.
   \
-  \ These words are 3-4 times slower than `value` and `2value`
-  \ (from module "data.value.default.fsb"), but since they are
+  \ These words are 3-4 times slower than using `constant` and
+  \ `!>`, or `2constant` and `2!>` but since they are
   \ non-parsing they may be useful in special cases.
 
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -31,29 +33,149 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( val 2val )
+( val 2val cval )
 
-[unneeded] val ?(
-
-variable (val)
+[unneeded] val ?(  variable (val)
 
 : init-val ( -- ) ['] @ (val) ! ; init-val
 
+  \ doc{
+  \
+  \ init-val  ( -- )
+  \
+  \ Init the default behaviour of words created by `val`: Make
+  \ them return their content.
+  \
+  \ ``init-val`` is a factor of `val`.
+  \
+  \ }doc
+
 : val ( x "name" -- )
-  create ,  does> ( -- ) ( pfa ) (val) perform init-val ;
+  create , does> ( -- ) ( pfa ) (val) perform init-val ;
 
-: toval    ( -- ) ['] ! (val) ! ; ?)
+  \ doc{
+  \
+  \ val ( x "name" -- )
+  \
+  \ Create a definition for _name_ that will place _x_ on the
+  \ stack (unless `toval` is used first) and then will execute
+  \ `init-val`.
+  \
+  \ ``val`` is an alternative to the standard `value`.
+  \
+  \ See also: `cval`, `2val`, `variable`, `constant`.
+  \
+  \ }doc
 
-[unneeded] 2val ?(
+: toval ( -- ) ['] ! (val) ! ; ?)
 
-variable (2val)
+  \ doc{
+  \
+  \ toval ( -- )
+  \
+  \ Change the default behaviour of words created by `val`:
+  \ make them store a new value instead of returning its actual
+  \ one.
+  \
+  \ ``toval`` and `val` are a non-parsing alternative to the
+  \ standard `to` and `value`.
+  \
+  \ See also: `ctoval`, `2toval`.
+  \
+  \ }doc
+
+[unneeded] 2val ?(  variable (2val)
 
 : init-2val ( -- ) ['] 2@ (2val) ! ; init-2val
 
+  \ doc{
+  \
+  \ init-2val  ( -- )
+  \
+  \ Init the default behaviour of words created by `2val`: Make
+  \ them return their content.
+  \
+  \ ``init-2val`` is a factor of `2val`.
+  \
+  \ }doc
+
 : 2val ( xd "name" -- )
-  create 2,  does> ( -- ) ( pfa ) (2val) perform init-2val ;
+  create 2, does> ( -- ) ( pfa ) (2val) perform init-2val ;
+
+  \ doc{
+  \
+  \ 2val ( x1 x2 "name" -- )
+  \
+  \ Create a definition for _name_ that will place _x1 x2_ on
+  \ the stack (unless `2toval` is used first) and then will
+  \ execute `init-2val`.
+  \
+  \ ``2val`` is an alternative to the standard `2value`.
+  \
+  \ See also: `val`, `cval`, `2variable`, `2constant`.
+  \
+  \ }doc
 
 : 2toval ( -- ) ['] 2! (2val) ! ; ?)
+
+  \ doc{
+  \
+  \ 2toval ( -- )
+  \
+  \ Change the default behaviour of words created by `2val`:
+  \ make them store a new value instead of returning its actual
+  \ one.
+  \
+  \ ``2toval`` and `2val` are a non-parsing alternative to the
+  \ standard `to` and `2value`.
+  \
+  \ See also: `toval`, `ctoval`.
+  \
+  \ }doc
+
+[unneeded] cval ?(  variable (cval)
+
+: init-cval ( -- ) ['] c@ (cval) ! ; init-cval
+
+  \ doc{
+  \
+  \ init-cval  ( -- )
+  \
+  \ Init the default behaviour of words created by `cval`: Make
+  \ them return their content.
+  \
+  \ ``init-cval`` is a factor of `cval`.
+  \
+  \ }doc
+
+: cval ( xd "name" -- )
+  create c, does> ( -- ) ( pfa ) (cval) perform init-cval ;
+
+  \ doc{
+  \
+  \ cval ( c "name" -- )
+  \
+  \ Create a definition for _name_ that will place _c_ on
+  \ the stack (unless `ctoval` is used first) and then will
+  \ execute `init-cval`.
+  \
+  \ See also: `val`, `2val`, `cvariable`, `cconstant`.
+  \
+  \ }doc
+
+: ctoval ( -- ) ['] c! (cval) ! ; ?)
+
+  \ doc{
+  \
+  \ ctoval ( -- )
+  \
+  \ Change the default behaviour of words created by `cval`:
+  \ make them store a new value instead of returning its actual
+  \ one.
+  \
+  \ See also: `toval`, `2toval`.
+  \
+  \ }doc
 
   \ ===========================================================
   \ Change log
@@ -68,5 +190,7 @@ variable (2val)
   \
   \ 2016-05-11: Rename `value` to `val` and `to` to `toval`.
   \ Factor the initialization. Add a double-cell version.
+  \
+  \ 2017-03-30: Add `cval` and `ctoval`. Document all words.
 
   \ vim: filetype=soloforth
