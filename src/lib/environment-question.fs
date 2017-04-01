@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201704010017
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -72,75 +72,237 @@ wordlist constant environment-wordlist ( -- wid )
   \ | STACK-CELLS        | n      | yes       |  maximum size of the data stack, in cells
   \ |===
 
-  \ Note: Forth-2012 designates the Forth-94 practice of using
-  \ `environment?` to inquire whether a given word set is
-  \ present as obsolescent.  The Forth-94 environmental
-  \ strings are not supported in Solo Forth.
+  \ Notes:
+  \
+  \ . Forth-2012 designates the Forth-94 practice of using
+  \   `environment?` to inquire whether a given word set is
+  \   present as obsolescent.  The Forth-94 environmental strings
+  \   are not supported in Solo Forth.
+  \ . In Solo Forth environment queries are also independent
+  \   ordinary constants accessible by `need`.
+
   \
   \ Origin: Forth-2012 (CORE).
-
-  \ See also: `environment-wordlist`.
+  \
+  \ See also: `environment-wordlist`.  `/counted-string`,
+  \ `/pad`, `address-unit-bits`, `floored`, `max-char`,
+  \ `max-d`, `max-n`, `max-u`, `max-ud`, `return-stack-cells`,
+  \ `stack-cells`.
   \
   \ }doc
 
-get-current  environment-wordlist dup >order set-current
+need address-unit-bits need max-char need /counted-string
+need /pad need floored need max-n need max-u need max-d
+need max-ud need return-stack-cells need stack-cells
 
-  \ XXX TODO -- document?
+get-current environment-wordlist dup >order set-current
 
-8 constant address-unit-bits ( -- n )
+' address-unit-bits alias address-unit-bits ( -- n )
   \ Size of one address unit, in bits.
 
-255 constant max-char ( -- u )
+' max-char alias max-char ( -- u )
   \ Maximum value of any character in the character set.
 
-255 constant /counted-string ( -- n )
+' /counted-string alias /counted-string ( -- n )
   \ Maximum size of a counted string, in characters.
 
-' /hold alias /hold ( -- n )
+' /hold alias /hold
   \ Size of the pictured numeric string output buffer, in
   \ characters.
 
-84 constant /pad ( -- n )
+' /pad alias /pad ( -- n )
   \ Size of the scratch area pointed to by `pad`, in
   \ characters.
-  \
-  \ XXX TODO -- A more useful definition, but non-constant,
-  \ therefore non-standard:
-  \
-  \ : /pad ( -- u ) limit @ pad - ;
 
-false constant floored ( -- f )
+' floored alias floored ( -- f ) -->
   \ True if floored division is the default.
-  \
-  \ XXX OLD -- This returned the current behaviour when
-  \ `environment?` is being loaded:
-  \       1 -3 mod 0< constant floored ( -- f )
-
--->
 
 ( environment? )
 
-32767 constant max-n ( -- n )
+' max-n alias max-n ( -- n )
   \ Largest usable signed integer.
 
--1 constant max-u ( -- u )
+' max-u alias max-u ( -- u )
   \ Largest usable unsigned integer.
 
--1 max-n 2constant max-d ( -- d )
+' max-d alias max-d ( -- d )
   \ Largest usable signed double.
 
--1. 2constant max-ud ( -- ud )
+' max-ud alias max-ud ( -- ud )
   \ Largest usable unsigned double.
 
-$2C +origin @ constant return-stack-cells ( -- n )
+' return-stack-cells alias return-stack-cells ( -- n )
     \ Maximum size of the return stack, in cells.
 
-$2A +origin @ constant stack-cells ( -- n )
+' stack-cells alias stack-cells ( -- n )
     \ Maximum size of the data stack, in cells.
 
   \ XXX TODO -- add "#locals" when needed
 
 set-current previous
+
+( address-unit-bits max-char /counted-string /pad floored )
+
+[unneeded] address-unit-bits
+
+?\ 8 cconstant address-unit-bits ( -- n )
+
+  \ doc{
+  \
+  \ address-unit-bits ( -- n )
+  \
+  \ _n_ is the size of one address unit, in bits.
+  \
+  \ See also: `max-char`, `environment?`.
+  \
+  \ }doc
+
+[unneeded] max-char
+
+?\ 255 cconstant max-char ( -- u )
+
+  \ doc{
+  \
+  \ max-char  ( -- u )
+  \
+  \ _u_ is the maximum value of any character in the character
+  \ set.
+  \
+  \ See also: `address-unit-bits`, `/counted-string`,
+  \ `environment?`.
+  \
+  \ }doc
+
+[unneeded] /counted-string
+
+?\ 255 cconstant /counted-string ( -- n )
+
+  \ doc{
+  \
+  \ /counted-string ( -- n )
+  \
+  \ _n_ is the maximum size of a counted string, in characters.
+  \
+  \ See also: `max-char`, `environment?`.
+  \
+  \ }doc
+
+[unneeded] /pad
+
+?\ 84 cconstant /pad ( -- n )
+
+  \ doc{
+  \
+  \ /pad ( -- n )
+  \
+  \ _n_ is the size of the scratch area pointed to by `pad`, in
+  \ characters.
+  \
+  \ See also: `/hold`, `environment?`.
+  \
+  \ }doc
+
+[unneeded] floored
+
+?\ false cconstant floored ( -- f )
+
+  \ doc{
+  \
+  \ floored ( -- f )
+  \
+  \ _f_ is _true_ if floored division is the default.
+  \
+  \ See also: `environment?`.
+  \
+  \ }doc
+
+( max-n max-u max-d max-ud return-stack-cells stack-cells )
+
+[unneeded] max-n
+
+?\ 32767 constant max-n ( -- n )
+
+  \ doc{
+  \
+  \ max-n ( -- n )
+  \
+  \ _n_ is the largest usable signed integer.
+  \
+  \ See also: `max-u`, `max-d`, `environment?`.
+  \
+  \ }doc
+
+[unneeded] max-u
+
+?\ -1 constant max-u ( -- u )
+
+  \ doc{
+  \
+  \ max-u ( -- u )
+  \
+  \ _u_ is the largest usable unsigned integer.
+  \
+  \ See also: `max-n`, `max-ud`, `environment?`.
+  \
+  \ }doc
+
+[unneeded] max-d
+
+?\ need max-n -1 max-n 2constant max-d ( -- d )
+
+  \ doc{
+  \
+  \ max-d ( -- d )
+  \
+  \ _d_ is the largest usable signed double.
+  \
+  \ See also: `max-n`, `max-ud`, `environment?`.
+  \
+  \ }doc
+
+[unneeded] max-ud
+
+?\ -1. 2constant max-ud ( -- ud )
+
+  \ doc{
+  \
+  \ max-ud ( -- ud )
+  \
+  \ _ud_ is the largest usable unsigned double.
+  \
+  \ See also: `max-u`, `max-d`, `environment?`.
+  \
+  \ }doc
+
+[unneeded] return-stack-cells
+
+?\ $2C +origin @ constant return-stack-cells ( -- n )
+
+  \ doc{
+  \
+  \ return-stack-cells ( -- n )
+  \
+  \ _n_ is the maximum size of the return stack, in cells.
+  \
+  \ See also: `return-stack-cells`, `environment?`.
+  \
+  \ }doc
+
+[unneeded] stack-cells
+
+?\ $2A +origin @ constant stack-cells ( -- n )
+
+  \ doc{
+  \
+  \ return-stack-cells ( -- n )
+  \
+  \ _n_ is the maximum size of the data stack, in cells.
+  \
+  \ See also: `stack-cells`, `environment?`.
+  \
+  \ }doc
+
+  \ XXX TODO -- add "#locals" when needed
 
   \ ===========================================================
   \ Change log
@@ -161,5 +323,14 @@ set-current previous
   \ `environment-wordlist`.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-30: Use `cconstant` when possible.
+  \
+  \ 2017-03-31: Fix and update the "/hold" query, after
+  \ converting the kernel's `/hold` to a constant. Make all
+  \ queries accessible as constants, then make aliases in
+  \ `environment-wordlist`. This is more versatile, because the
+  \ application can `need` individual constants instead of
+  \ redefining them or needing `environment?`.
 
   \ vim: filetype=soloforth

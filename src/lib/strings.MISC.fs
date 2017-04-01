@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703131957
+  \ Last modified: 201704010022
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -107,20 +107,7 @@
   \
   \ }doc
 
-( /counted-string ud>str u>str d>str char>string chars>string )
-
-[unneeded] /counted-string ?\ 255 cconstant /counted-string
-
-  \ doc{
-  \
-  \ /counted-string ( -- len )
-  \
-  \ _len_ is the maximum length of a counted string, in
-  \ characters.
-  \
-  \ See also: `environment?`.
-  \
-  \ }doc
+( ud>str u>str d>str char>string chars>string )
 
 [unneeded] ud>str
 ?\ : ud>str ( ud -- ca len ) <# #s #> ;
@@ -981,5 +968,9 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \ mentions to it.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-04-01: Remove the `/counted-string` constant, which
+  \ now is available in <environment-question.fs>, after the
+  \ improvement in `environment?`.
 
   \ vim: filetype=soloforth
