@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703292303
+  \ Last modified: 201704041948
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -495,13 +495,13 @@ need bench{ need }bench. need d*
   \ 2017-01-13:
 
   \ Times Frames (1 frame = 50th of second)
-  \ ----- ------------------------------------
-  \       Kernel um*   Library m*
-  \       ----------  -----------
-  \ 00010          0            1
-  \ 00100          5           14
-  \ 01000         46          143
-  \ 10000        462         1427
+  \ ----- ---------------------------------
+  \       Kernel m*  Library m*
+  \       ---------  ----------
+  \ 00010         0           1
+  \ 00100         5          14
+  \ 01000        46         143
+  \ 10000       462        1427
 
 ( dot-quote-bench )
 
@@ -969,7 +969,8 @@ variable var1  : variable-bench ( u -- )
 
 
   \ Notes:
-  \ (1) Version 0.10.0-pre.79+20161014.
+  \ (1) Version 0.10.0-pre.79+20161014. The default `value` and
+  \ `2value` are aliases of `constant` and `2constant`.
 
 ( fetch-bench )
 
@@ -1009,7 +1010,8 @@ cvariable cvar  : cvariable-bench ( u -- )
 
 
   \ Notes:
-  \ (1) Version 0.10.0-pre.79+20161014.
+  \ (1) Version 0.10.0-pre.79+20161014. The default `value` and
+  \ `cvalue` are aliases of `constant` and `cconstant`.
 
 ( store-bench )
 
@@ -2071,10 +2073,11 @@ defer (u<)
 
   \ 2016-04-15: Start.
 
-
 unused
+
   \ 2016-04-15: This is the current implementation.
   \ Credit: from Gforth 0.7.3.
+
 : gforth-m*/ ( d1 n1 +n2 -- d2 )
   >r s>d >r abs -rot s>d r> xor r> swap >r >r dabs
   rot tuck um* 2swap um* swap
@@ -2084,7 +2087,7 @@ unused
          dnegate
   else   drop
   then ;
-unused - cr .( gforth ) . .( bytes)  \ 89 bytes
+unused - cr .( Gforth ) . .( bytes)  \ 89 bytes
 
 -->
 
@@ -2103,7 +2106,7 @@ unused
 : coldforth-m*/ ( d1 n1 +n2 -- d2 )
     >r mt* dup 0< if    tnegate r> ut/ dnegate
                   else  r> ut/  then ;
-         cr .( coldforth:)
+         cr .( Coldforth:)
 unused - cr .( m*/ only ) . .( bytes)  \ 33 bytes
 unused - cr .( with requirements) . .( bytes)  \ 185 bytes
 
@@ -2577,5 +2580,7 @@ need slow-pixels need fast-pixels
   \
   \ 2017-03-29: Add `orthodraw-bench`, `ortholine-bench`
   \ `sqrt-bench`.
+  \
+  \ 2017-04-04: Improve comments.
 
   \ vim: filetype=soloforth

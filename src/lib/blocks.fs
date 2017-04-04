@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132015
+  \ Last modified: 201704010010
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -174,14 +174,14 @@
   \ }doc
 
 [unneeded] +thru
-?\ : +thru ( n1 n2 -- ) 1+ swap ?do  i +load  loop ;
+?\ : +thru ( u1 u2 -- ) 1+ swap ?do  i +load  loop ;
 
   \ doc{
   \
   \ +thru ( u1 u2 -- )
   \
-  \ Load consecutively the blocks that are _n1_ blocks through
-  \ _n2_ blocks from the current one.
+  \ Load consecutively the blocks that are _u1_ blocks through
+  \ _u2_ blocks from the current one.
   \
   \ See also: `+load`, `blk`, `load`.
   \
@@ -329,5 +329,7 @@
   \ update names including "blk" to "block(s)".
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-04-01: Fix documentation.
 
   \ vim: filetype=soloforth

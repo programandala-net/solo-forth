@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703172158
+  \ Last modified: 201703291126
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -379,7 +379,8 @@ code attr! ( b -- )
   \
   \ Set _b_ as the current attribute.
   \
-  \ See also: `attr@`, `perm-attr!`.
+  \ See also: `attr@`, `perm-attr!`, `set-paper`, `set-ink`,
+  \ `set-flash`, `set-bright`.
   \
   \ }doc
 
@@ -666,7 +667,8 @@ code set-paper ( b -- )
   \ : set-paper ( b -- ) papery attr@ unpaper-mask and or attr! ;
   \ ----
 
-  \ See also: `paper.`, `set-ink`, `set-flash`, `set-bright`.
+  \ See also: `attr!`, `paper.`, `set-ink`, `set-flash`,
+  \ `set-bright`.
   \
   \ }doc
 
@@ -703,7 +705,8 @@ code set-ink ( b -- )
   \ : set-ink ( b -- ) attr@ %11111000 and or attr! ;
   \ ----
 
-  \ See also: `ink.`, `set-paper`, `set-flash`, `set-bright`.
+  \ See also: `attr!`, `ink.`, `set-paper`, `set-flash`,
+  \ `set-bright`.
   \
   \ }doc
 
@@ -718,12 +721,47 @@ code set-ink ( b -- )
 ( bright-mask unbright-mask get-bright set-bright )
 
 [unneeded] bright-mask    ?\ %01000000 cconstant bright-mask
+
+  \ doc{
+  \
+  \ bright-mask ( -- b )
+  \
+  \ A constant. _b_ is the bitmask of the bit used to indicate
+  \ the bright status in an attribute byte.
+  \
+  \ See also: `bright-mask`, `brighty`, `set-bright`, `attr!`.
+  \
+  \ }doc
+
 [unneeded] unbright-mask  ?\ %10111111 cconstant unbright-mask
+
+  \ doc{
+  \
+  \ unbright-mask ( -- b )
+  \
+  \ A constant. _b_ is the inverted bitmask of the bit used to
+  \ indicate the bright status in an attribute byte.
+  \
+  \ See also: `unbright-mask`, `brighty`, `set-bright`, `attr!`.
+  \
+  \ }doc
 
 [unneeded] get-bright ?( need attr@ need bright-mask
 
 : get-bright ( -- f )
   attr@ [ bright-mask ] cliteral and 0= ; ?)
+
+  \ doc{
+  \
+  \ get-bright ( -- f )
+  \
+  \ If bright is active in the current attribute, return _true_,
+  \ else return _false_.
+  \
+  \ See also: `set-bright`, `attr@`, `bright.`, `get-paper`,
+  \ `get-ink`, `get-flash`.
+  \
+  \ }doc
 
 [unneeded] set-bright ?(
 
@@ -733,15 +771,64 @@ need bright-mask need attr@ need unbright-mask need attr!
   [ bright-mask ] cliteral and
   attr@ [ unbright-mask ] cliteral and or attr! ; ?)
 
+  \ doc{
+  \
+  \ set-bright ( f -- )
+  \
+  \ If _f_ is _true_, turn bright on by setting the
+  \ corresponding bit of the current attribute. If _f_ is
+  \ _false_, turn bright off by resetting the bit. Other
+  \ non-zero values of _f_ will turn bright on or off depending
+  \ on them having a common bit with `bright-mask`.
+  \
+  \ See also: `get-bright`, `attr!`, `bright.`, `set-paper`,
+  \ `set-ink`, `set-flash`.
+  \
+  \ }doc
+
 ( flash-mask unflash-mask get-flash set-flash )
 
 [unneeded] flash-mask   ?\ %10000000 cconstant flash-mask
+
+  \ doc{
+  \
+  \ flash-mask ( -- b )
+  \
+  \ A constant. _b_ is the bitmask of the bit used to indicate
+  \ the flash status in an attribute byte.
+  \
+  \ See also: `flash-mask`, `flashy`, `set-flash`, `attr!`.
+  \
+  \ }doc
+
 [unneeded] unflash-mask ?\ %01111111 cconstant unflash-mask
+  
+  \ doc{
+  \
+  \ unflash-mask ( -- b )
+  \
+  \ A constant. _b_ is the inverted bitmask of the bit used to
+  \ indicate the flash status in an attribute byte.
+  \
+  \ See also: `unflash-mask`, `flashy`, `set-flash`, `attr!`.
+  \
+  \ }doc
 
 [unneeded] get-flash ?( need attr@ need flash-mask
 
-: get-flash ( -- f )
-  attr@ [ flash-mask ] literal and 0= ; ?)
+: get-flash ( -- f ) attr@ [ flash-mask ] cliteral and 0= ; ?)
+
+  \ doc{
+  \
+  \ get-flash ( -- f )
+  \
+  \ If flash is active in the current attribute, return _true_,
+  \ else return _false_.
+  \
+  \ See also: `set-flash`, `attr!`, `flash.`, `set-paper`,
+  \ `set-ink`, `set-bright`.
+  \
+  \ }doc
 
 [unneeded] set-flash ?(
 
@@ -751,22 +838,37 @@ need flash-mask need attr@ need unflash-mask need attr!
   [ flash-mask ] cliteral and
   attr@ [ unflash-mask ] cliteral and or attr! ; ?)
 
+  \ doc{
+  \
+  \ set-flash ( f -- )
+  \
+  \ If _f_ is _true_, turn flash on by setting the
+  \ corresponding bit of the current attribute. If _f_ is
+  \ _false_, turn flash off by resetting the bit. Other
+  \ non-zero values of _f_ will turn flash on or off depending
+  \ on them having a common bit with `flash-mask`.
+  \
+  \ See also: `get-flash`, `attr!`, `flash.`, `set-paper`,
+  \ `set-ink`, `set-bright`.
+  \
+  \ }doc
+
 ( inverse-on inverse-off inverse )
 
 [unneeded] inverse-on ?(
 
-code inverse-on ( f -- )
+code inverse-on ( -- )
   FD c, CB c, 57 c, C6 08 02 * + c,  jpnext, end-code ?)
-    \ set 2,(iy+sys_p_flag_offset) ; temporary inverse mode flag
+    \ set 2,(iy+sys_p_flag_offset) ; permanent inverse mode flag
     \ _jp_next
 
   \ doc{
   \
-  \ inverse-on ( f -- )
+  \ inverse-on ( -- )
   \
   \ Turn the inverse printing mode on.
   \
-  \ See also: `inverse-off`, `inverse`.
+  \ See also: `inverse-off`, `inverse`, `overprint-on`.
   \
   \ }doc
 
@@ -774,7 +876,7 @@ code inverse-on ( f -- )
 
 code inverse-off ( -- )
   FD c, CB c, 57 c, 86 08 02 * + c,  jpnext, end-code ?)
-    \ res 2,(iy+sys_p_flag_offset) ; temporary inverse mode flag
+    \ res 2,(iy+sys_p_flag_offset) ; permanent inverse mode flag
     \ _jp_next
 
   \ doc{
@@ -783,7 +885,7 @@ code inverse-off ( -- )
   \
   \ Turn the inverse printing mode off.
   \
-  \ See also: `inverse-on`, `inverse`.
+  \ See also: `inverse-on`, `inverse`, `overprint-off`.
   \
   \ }doc
 
@@ -815,7 +917,7 @@ code inverse ( f -- )
 
 code overprint-on ( -- )
   FD c, CB c, 57 c, C6 08 00 * + c,  jpnext, end-code ?)
-    \ set 0,(iy+sys_p_flag_offset) ; temporary overprint mode flag
+    \ set 0,(iy+sys_p_flag_offset) ; permanent overprint mode flag
 
   \ doc{
   \
@@ -823,7 +925,7 @@ code overprint-on ( -- )
   \
   \ Turn the overprint mode on.
   \
-  \ See also: `overprint-off`, `overprint`.
+  \ See also: `overprint-off`, `overprint`, `inverse-on`.
   \
   \ }doc
 
@@ -831,7 +933,7 @@ code overprint-on ( -- )
 
 code overprint-off ( -- )
   FD c, CB c, 57 c, 86 08 00 * + c,  jpnext, end-code ?)
-    \ res 0,(iy+sys_p_flag_offset) ; temporary overprint mode flag
+    \ res 0,(iy+sys_p_flag_offset) ; permanent overprint mode flag
     \ _jp_next
 
   \ doc{
@@ -840,7 +942,7 @@ code overprint-off ( -- )
   \
   \ Turn the overprint mode off.
   \
-  \ See also: `overprint-on`, `overprint`.
+  \ See also: `overprint-on`, `overprint`, `inverse-off`.
   \
   \ }doc
 
@@ -1104,5 +1206,9 @@ create (0-9-color. ( -- a ) asm
   \ 2017-03-13: Improve documentation.
   \
   \ 2017-03-17: Fix needing of `mask+attr>perm`. Fix typo.
+  \
+  \ 2017-03-28: Improve documentation.
+  \
+  \ 2017-03-29: Fix comments.
 
   \ vim: filetype=soloforth

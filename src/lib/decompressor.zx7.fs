@@ -10,6 +10,7 @@
   \ Description
 
   \ ZX7 decompressors.
+  \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027996
 
   \ ===========================================================
   \ Authors
@@ -129,9 +130,9 @@ rthen e rr, exsp, h push, d sbcp, d pop, ldir,
   \ the decompressor. `dzx7t` and `dzx7m` are bigger but
   \ faster.
   \
-  \ For more information, see the
-  \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027996[thread
-  \ about ZX7 in the World of Spectrum forum].
+  \ For more information, see
+  \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027996
+  \ ZX7 in World of Spectrum].
   \
   \ }doc
 
@@ -244,9 +245,9 @@ rthen e rr, exsp, h push, d sbcp, d pop, ldir,
   \ more bytes (97 bytes in total). `dzx7m` is bigger but
   \ faster.
   \
-  \ For more information, see the
-  \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027996[thread
-  \ about ZX7 in the World of Spectrum forum].
+  \ For more information, see
+  \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027996
+  \ ZX7 in World of Spectrum].
   \
   \ }doc
 
@@ -531,9 +532,9 @@ also assembler max-labels c! previous
   \ biggest (251 bytes) version of the decompressor. `dzx7s`
   \ and `dzx7t` are smaller but slower.
   \
-  \ For more information, see the
-  \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027996[thread
-  \ about ZX7 in the World of Spectrum forum].
+  \ For more information, see
+  \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027996
+  \ ZX7 in World of Spectrum].
   \
   \ }doc
 
@@ -562,5 +563,7 @@ also assembler max-labels c! previous
   \
   \ 2017-03-25: Adapt to the new version of `l:`, which is
   \ configurable.
+  \
+  \ 2017-03-26: Fix description of ZX7 links in documentation.
 
   \ vim: filetype=soloforth

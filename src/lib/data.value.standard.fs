@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702280017
+  \ Last modified: 201703301952
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,37 +33,40 @@
 
 need >body
 
-: value ( n "name"  -- ) create  0 c, ,  does> 1+ @ ;
+: value ( n "name"  -- ) create 0 c, , does> 1+ @ ;
 
   \ doc{
   \
   \ value ( x "name" -- )
   \
-  \ Create a definition "name" with the following execution
+  \ Create a definition _name_ with the following execution
   \ semantics: place _x_ on the stack.
-  \
-  \ See `to`.
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
+  \ See also: `2value`, `to`.
+  \
   \ }doc
 
-: 2value ( n "name"  -- ) create  1 c, 2,  does> 1+ 2@ ;
+: 2value ( n "name"  -- ) create 1 c, 2, does> 1+ 2@ ;
 
   \ doc{
   \
   \ 2value ( xd "name" -- )
   \
-  \ Create a definition "name" with the following execution
+  \ Create a definition _name_ with the following execution
   \ semantics: place _xd_ on the stack.
-  \
-  \ See `to`.
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
+  \ See also: `value`, `to`.
+  \
   \ }doc
 
-: to ( Int: i*x "name" -- ( Comp: "name" -- ( Exe: i*x -- )
+: to
+  \ Interpretation: ( i*x "name" -- )
+  \ Compilation:    ( "name" -- )
+  \ Run-time        ( i*x -- )
   ' >body dup 1+ swap c@
   compiling? if  swap postpone literal
                  if  postpone 2!  else  postpone !  then  exit
@@ -75,14 +78,14 @@ need >body
   \
   \ to
   \   Interpretation: ( i*x "name" -- )
-  \   Compilation: ( "name" -- )
-  \   Execution: ( i*x -- )
-  \
+  \   Compilation:    ( "name" -- )
+  \   Run-time:       ( i*x -- )
+
   \ ``to`` is an `immediate` word.
   \
   \ Interpretation:
   \
-  \ Parse "name", which is a word created by `value` or
+  \ Parse _name_, which is a word created by `value` or
   \ `2value`, and make _i*x_ its value.
   \
   \ Compilation:
@@ -91,9 +94,9 @@ need >body
   \ `2value`, and append the execution execution semantics
   \ given below to the current definition.
   \
-  \ Execution:
+  \ Run-time:
   \
-  \ Make _i*x_ the value of "name".
+  \ Make _i*x_ the value of _name_.
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
@@ -112,5 +115,7 @@ need >body
   \ library.
   \
   \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-03-30: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703292256
+  \ Last modified: 201704042019
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -717,9 +717,9 @@ need sqrt need d2* need cell-bits
   \
   \ sqrt ( n1 -- n2 )
   \
-  \ Integer square root _n2_ of radicand _n1_.  ``sqrt`` is a
-  \ deferred word which can execute `baden-sqrt` or
-  \ `newton-sqrt`.
+  \ Calculate integer square root _n2_ of radicand _n1_.
+  \ ``sqrt`` is a deferred word which can execute `baden-sqrt`
+  \ or `newton-sqrt`.
   \
   \ }doc
 
@@ -733,8 +733,6 @@ need sqrt need d2* need cell-bits
   \ Credit:
   \
   \ Adapted from Sinclair QL's Computer One Forth.
-
-  \ XXX TODO -- benchmark
 
   \ doc{
   \
@@ -760,21 +758,78 @@ need sqrt need d2* need cell-bits
 
 : /-rem ( n1 n2 -- n3 n4 ) >r  s>d  r> sm/rem ; ?)
 
+  \ doc{
+  \
+  \ /-rem ( n1 n2 -- n3 n4 )
+  \
+  \ Divide _n1_ by _n2_ (doing a symmetric division), giving the
+  \ remainder _n3_ and the symmetric quotient _n4_.
+  \
+  \ See also: `/mod`, `/_mod`, `sm/rem`.
+  \
+  \ }doc
+
 [unneeded] /- ?( need /-rem
 
 : /- (  n1 n2 -- n3 ) /-rem nip ; ?)
+
+  \ doc{
+  \
+  \ /- ( n1 n2 -- n3 )
+  \
+  \ Divide _n1_ by _n2_ (doing a symmetric division), giving the
+  \ symmetric quotient _n4_.
+  \
+  \ See also: `/-rem`, `/`, `/_`, `sm/rem`.
+  \
+  \ }doc
 
 [unneeded] -rem ?( need /-rem
 
 : -rem ( n1 n2 -- n3 ) /-rem drop ; ?)
 
+  \ doc{
+  \
+  \ -rem ( n1 n2 -- n3 )
+  \
+  \ Divide _n1_ by _n2_ (doing a symmetric division), giving the
+  \ remainder _n3_.
+  \
+  \ See also: `/-rem`, `/`, `/_mod`.
+  \
+  \ }doc
+
 [unneeded] */-rem ?( need sm/rem
 
 : */-rem (  n1 n2 n3 -- n4 n5 ) >r  m*  r> sm/rem ; ?)
 
+  \ doc{
+  \
+  \ */-rem ( n1 n2 n3 -- n4 n5 )
+  \
+  \ Multiply _n1_ by _n2_ producing the intermediate result
+  \ _d_.  Divide _d_ by _n3_ (doing a symmetric division), giving
+  \ the remainder _n4_ and the symmetric quotient _n5_.
+  \
+  \ See also: `*/mod`, `*/_mod`, `sm/rem`.
+  \
+  \ }doc
+
 [unneeded] ?( need */-rem
 
 : */- ( n1 n2 n3 -- n4 ) */-rem nip ; ?)
+
+  \ doc{
+  \
+  \ */- ( n1 n2 n3 -- n4 )
+  \
+  \ Multiply _n1_ by _n2_ producing the intermediate result
+  \ _d_.  Divide _d_ by _n3_ (doing a symmetric division),
+  \ giving the symmetric quotient _n4_.
+  \
+  \ See also: `*/-rem`, `*/`, `*/_`, `sm/rem`.
+  \
+  \ }doc
 
 ( fm/mod )
 
@@ -833,17 +888,73 @@ need sqrt need d2* need cell-bits
 [unneeded] /_mod ?( need fm/mod
 : /_mod ( n1 n2 -- n3 n4 ) >r s>d r> fm/mod ; ?)
 
-[unneeded] /_ ?( need /_mod
-: /_ ( n1 n2 -- n3 ) /_mod nip ; ')
+  \ doc{
+  \
+  \ /_mod ( n1 n2 -- n3 n4 )
+  \
+  \ Divide _n1_ by _n2_ (doing a floored division), giving the
+  \ remainder _n3_ and the floored quotient _n4_.
+  \
+  \ See also: `/mod`, `/-rem`, `fm/mod`.
+  \
+  \ }doc
+
+[unneeded] /_ ?\ need /_mod : /_ ( n1 n2 -- n3 ) /_mod nip ;
+
+  \ doc{
+  \
+  \ /_ ( n1 n2 -- n3 )
+  \
+  \ Divide _n1_ by _n2_ (doing a floored division), giving the
+  \ floored quotient _n4_.
+  \
+  \ See also: `/_mod`, `/`, `/-`, `fm/mod`.
+  \
+  \ }doc
 
 [unneeded] _mod ?( need /_mod
 : _mod ( n1 n2 -- n3 ) /_mod drop ; ?)
 
+  \ doc{
+  \
+  \ /_mod ( n1 n2 -- n3 )
+  \
+  \ Divide _n1_ by _n2_ (doing a floored division), giving the
+  \ remainder _n3_.
+  \
+  \ See also: `/_mod`, `/`, `-rem`.
+  \
+  \ }doc
+
 [unneeded] */_mod ?( need fm/mod
 : */_mod ( n1 n2 n3 -- n4 n5 ) >r m* r> fm/mod ; ?)
 
+  \ doc{
+  \
+  \ */_mod ( n1 n2 n3 -- n4 n5 )
+  \
+  \ Multiply _n1_ by _n2_ producing the intermediate result
+  \ _d_.  Divide _d_ by _n3_ (doing a floored division), giving
+  \ the remainder _n4_ and the floored quotient _n5_.
+  \
+  \ See also: `*/mod`, `*/-rem`, `fm/mod`.
+  \
+  \ }doc
+
 [unneeded] */_ ?( need */_mod
 : */_ ( n1 n2 n3 -- n4 ) */_mod nip ; ?)
+
+  \ doc{
+  \
+  \ */_ ( n1 n2 n3 -- n4 )
+  \
+  \ Multiply _n1_ by _n2_ producing the intermediate result
+  \ _d_.  Divide _d_ by _n3_ (doing a floored division), giving
+  \ the floored quotient _n4_.
+  \
+  \ See also: `*/_mod`, `*/`, `*/-`, `fm/mod`.
+  \
+  \ }doc
 
 ( any? either neither ifelse )
 
@@ -1105,5 +1216,7 @@ code join ( b1 b2 -- x )
   \ 2017-03-29: Improve documentation. Rename and document the
   \ two variants of `sqrt`, then add the deferred word `sqrt`
   \ to access any of them.  Update needing of `cell-bits`.
+  \
+  \ 2017-04-04: Improve documentation.
 
   \ vim: filetype=soloforth

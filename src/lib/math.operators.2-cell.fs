@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703292228
+  \ Last modified: 201704041949
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -32,16 +32,36 @@
 [unneeded] ud*
 ?\ : ud* ( ud1 u2 -- ud3 ) dup >r um* drop  swap r> um* rot + ;
 
-  \ Credit:
+  \ doc{
   \
-  \ Code of `d*` from DX-Forth 4.13.
-
-  \ This implementation uses 30 bytes.
-  \ Relative speed: 1.0000
+  \ ud* ( ud1 ud2 -- ud3 )
+  \
+  \ Multiply _ud1_ by _ud2_ giving the product _ud3_.
+  \
+  \ See also: `d*`, `um*`, `*`.
+  \
+  \ }doc
 
 [unneeded] d* ?(
 : d* ( d|ud1 d|ud2 -- d|ud3 )
   >r swap >r 2dup um* rot r> * + rot r> * + ; ?)
+
+  \ Credit:
+  \
+  \ Code of `d*` from DX-Forth 4.13.
+
+  \ This implementation uses 31 bytes.
+  \ Relative speed: 1.0000
+
+  \ doc{
+  \
+  \ d* ( d|ud1 d|ud2 -- d|ud3 )
+  \
+  \ Multiply _d1|ud1_ by _d2|ud2_ giving the product _d3|ud3_.
+  \
+  \ See also: `ud*`, `um*`, `*`.
+  \
+  \ }doc
 
   \ --------------------------------------------
   \ Alternative implementation.
@@ -118,9 +138,16 @@ need tum* need t+ need t- need tum/ need d2* need lshift
   r> 2r> 2drop  1 r>  rot >r  lshift tum/  r> 0 ;
     \ undo nurmalization of dividend to get remainder
 
-  \ Double unsigned divide with remainder.  Given a dividend
-  \ _ud1_ and a divisor _ud2_, return remainder _ud3_ and
-  \ quotient _ud4_.
+  \ doc{
+  \
+  \ du/mod ( ud1 ud2 -- ud3 ud4 )
+  \
+  \ Divide _ud1_ by _ud2_, giving the remainder _ud3_ and
+  \ the quotient _ud4_.
+  \
+  \ See also: `/mod`.
+  \
+  \ }doc
 
 ( d0= d0< d< du< )
 
@@ -242,11 +269,22 @@ need 2nip
   \ page 17, 1994-08).
 
 [unneeded] d10*
-?\ : d10* ( ud -- ud*10 ) d2* 2dup d2* d2* d+ ;
+?\ : d10* ( ud1 -- ud2 ) d2* 2dup d2* d2* d+ ;
 
   \ Credit:
   \
   \ Code of `d10*` from Pygmy Forth.
+
+  \ doc{
+  \
+  \ d10* ( ud1 -- ud2 )
+  \
+  \ Multiply _ud1_ per 10, resulting _ud2_.
+  \
+  \ See also: `d*`, `2*`, `8*`.
+  \
+  \ }doc
+
 
 ( m+ )
 
@@ -282,7 +320,7 @@ exit
 
 : m+ ( d1|ud1 n -- d2|ud2 ) s>d d+ ;
 
-( m*/ alt-m*/ )
+( m*/ )
 
 
 : m*/ ( d1 n1 +n2 -- d2 )
@@ -291,8 +329,6 @@ exit
   >r 0 d+ r> -rot i um/mod -rot r> um/mod -rot r>
   if    if  1 0 d+  then  dnegate
   else  drop  then ;
-
-  \ XXX TODO -- see difference Gforth - Forth-94
 
   \ Credit:
   \
@@ -306,20 +342,9 @@ exit
   \ intermediate result _t_.  Divide _t_ by _+n2_ giving the
   \ double-cell quotient _d2_.
   \
+  \ See also: `*/`, `m*`.
+  \
   \ }doc
-
-need mt* need tnegate need ut/
-
-: alt-m*/ ( d1 n1 +n2 -- d2 )
-    >r mt* dup 0< if    tnegate r> ut/ dnegate
-                  else  r> ut/  then ;
-
-  \ XXX TMP --
-  \ XXX TODO -- benchmark with the previous version
-
-  \ Credit:
-  \ Robert Smith (from COLDFORTH Version 0.8, GPL)
-  \ https://github.com/oco2000/m3forth/blob/master/lib/include/double.f
 
 ( dsqrt )
 
@@ -339,21 +364,26 @@ need 2nip need cell-bits
   \
   \ It works in Gforth
 
-: (dsqrt) ( radicand . -- remainder . root . )
+: (dsqrt) ( d1 -- d2 d3 )
   0. 0.  ( radicand . remainder . root . )
   [ cell-bits ] cliteral 0 do
-    \ ( radicand . remainder . root . )
-    cr .s  key drop  \ XXX INFORMER
+    \ cr .s  key drop  \ XXX INFORMER
     2>r q2* q2* 2r>  d2*
     2over 2over d2* 2swap
-      cr .s ." d< ?"  \ XXX INFORMER
+      \ cr .s ." d< ?"  \ XXX INFORMER
       d< if
-      cr .s ." d<"  \ XXX INFORMER
+      \ cr .s ." d<"  \ XXX INFORMER
       2dup 2>r d2* d- -1 m+ 2r>  1 m+
     then
-  loop  cr .s 2rot 2drop ;
+  loop  2rot 2drop ;
 
-: dsqrt ( radicand . -- root . ) (dsqrt) 2nip ;
+: dsqrt ( d1 -- d2 ) (dsqrt) 2nip ;
+
+  \ dsqrt ( d1 -- d2 )
+  \
+  \ Calculate integer square root _d2_ of radicand _d1_.
+  \
+  \ See also: `sqrt`.
 
   \ ===========================================================
   \ Change log
@@ -386,5 +416,7 @@ need 2nip need cell-bits
   \ interpretation.
   \
   \ 2017-03-29: Update needing of `cell-bits`.
+  \
+  \ 2017-04-04: Improve documentation.
 
   \ vim: filetype=soloforth

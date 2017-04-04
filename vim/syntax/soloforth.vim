@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-03-25
+" Updated:  2017-04-04
 "
 " See change log at the end of the file.
 
@@ -465,7 +465,7 @@ syn keyword soloforthMemory unused-csb
 syn keyword soloforthMemory unused-stringer
 syn keyword soloforthOperator *
 syn keyword soloforthOperator */
-syn keyword soloforthOperator */MOD
+syn keyword soloforthOperator */mod
 syn keyword soloforthOperator +
 syn keyword soloforthOperator +!
 syn keyword soloforthOperator -
@@ -504,6 +504,7 @@ syn keyword soloforthOperator d>s
 syn keyword soloforthOperator dabs
 syn keyword soloforthOperator dnegate
 syn keyword soloforthOperator flip
+syn keyword soloforthOperator fm/mod
 syn keyword soloforthOperator invert
 syn keyword soloforthOperator lshift
 syn keyword soloforthOperator m*
@@ -521,7 +522,6 @@ syn keyword soloforthOperator u<
 syn keyword soloforthOperator u>
 syn keyword soloforthOperator ud/mod
 syn keyword soloforthOperator um*
-syn keyword soloforthOperator um/mod
 syn keyword soloforthOperator um/mod
 syn keyword soloforthOperator umax
 syn keyword soloforthOperator umin
@@ -1169,6 +1169,8 @@ let b:current_syntax = "soloforth"
 "
 " 2017-03-25: Add `rename-file`, `delete-file`, `dump`, `l:`,
 " `al#`, `rl#`. Remove old `;s`.
+"
+" 2017-04-04: Add `fm/mod`.
 
 " --------------------------------------------------------------
 

@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201703131558
+; Last modified: 201703281543
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -87,12 +87,12 @@ _colon_header dosior_to_ior_,'dosior>ior'
 ;
 ; Convert the 8-bit sector number _sector_ and the 8-bit track
 ; number _track_ to the 16-bit number _x_ in the format used by
-; G+DOS: The high byte of _x_ is the sector, and its low byte is
-; the track.
+; G+DOS: The high byte of _x_ is the track, and its low byte is
+; the sector.
 ;
 ; ``sector>dos`` is a factor of `block-sector#>dos`.
 ;
-; ``sector>dos`` is written in Z80. Its equivalen definition in
+; ``sector>dos`` is written in Z80. Its equivalent definition in
 ; Forth is the following:
 ;
 ; ----
@@ -166,7 +166,7 @@ _colon_header dosior_to_ior_,'dosior>ior'
 ; 1); its low byte is the sector (1..10).
 ;
 ; In G+DOS all sectors of a block disk can be used for blocks.
-; Therefore ``block-sector#>dos`` is an alias of `sector#>dos`,
+; Therefore ``block-sector#>dos`` is an alias of `sector#>dos`.
 ;
 ; See also: `transfer-block`.
 ;
@@ -194,7 +194,8 @@ _colon_header dosior_to_ior_,'dosior>ior'
 ;      transfer-sector throw ;
 ; ----
 
-; See also: `transfer-sector`.
+; See also: `transfer-sector`, `block-sector#>dos`,
+; `>drive-block`.
 ;
 ; }doc
 
@@ -356,5 +357,7 @@ endif ; defined gplusdos
 ; update names including "blk" to "block(s)".  Rename
 ; `sector-id` to `block-sector#>dos` and factor `sector>dos` and
 ; `sector#>dos` from it.
+;
+; 2017-03-28: Fix and improve documentation.
 
 ; vim: filetype=z80:textwidth=64

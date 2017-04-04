@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201703292153
+; Last modified: 201704042024
 
 include version.z80s
 
@@ -11864,7 +11864,7 @@ endif
 ;
 ; * ( n1|u1 n2|u2 -- n3|u3 )
 ;
-; Multiply n1|u1 by n2|u2 giving the product n3|u3.
+; Multiply _n1|u1_ by _n2|u2_ giving the product _n3|u3_.
 ;
 ; Origin: fig-Forth, Forth-79, Forth-83, Forth-94, Forth-2012.
 ;
@@ -11896,10 +11896,12 @@ endif
 ;
 ; /mod ( n1 n2 -- n3 n4 )
 ;
-; Divide _n1_ by _n2_ and leave the remainder _n3_ and quotient
-; _n4_.
+; Divide _n1_ by _n2_, giving the remainder _n3_ and the
+; quotient _n4_.
 ;
 ; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
+;
+; See also: `du/mod`.
 ;
 ; }doc
 
@@ -11916,7 +11918,6 @@ endif
 ; / ( n1 n2 -- n3 )
 ;
 ; Divide _n1_ by _n2_, giving the quotient _n3_.
-
 ;
 ; Definition:
 
@@ -11925,6 +11926,8 @@ endif
 ; ----
 
 ; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
+;
+; See also: `/mod`, `/_`, `/-`, 
 ;
 ; }doc
 
@@ -11953,6 +11956,8 @@ endif
 
 ; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
 ;
+; See also: `/mod`, `/_mod`, `/-rem`.
+;
 ; }doc
 
   ; XXX TODO -- Finish the documentation.
@@ -11977,11 +11982,12 @@ endif
 ; Definition:
 
 ; ----
-; : */mod ( n1 n2 n3 -- n4 n5 )
-;   >r m* r> m/ ;
+; : */mod ( n1 n2 n3 -- n4 n5 ) >r m* r> m/ ;
 ; ----
 
 ; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
+;
+; See also: `/mod`, `*/`, `*/_mod`, `*/-rem`, `m*`, `m/`.
 ;
 ; }doc
 
@@ -12010,6 +12016,8 @@ endif
 ; ----
 
 ; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
+;
+; See also: `*/mod`, `m*/`, `*`, `/`, '*/_mod`, `*/-rem`.
 ;
 ; }doc
 

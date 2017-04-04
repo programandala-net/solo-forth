@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702280023
+  \ Last modified: 201703302301
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -83,9 +83,9 @@
 
   \ doc{
   \
-  \ 2const ( xd "name" -- )
+  \ 2const ( x1 x2 "name" -- )
   \
-  \ Create a double fast constant _name_, with value _xd_.
+  \ Create a double fast constant _name_, with value _x1 x2_.
   \
   \ A double fast constant works like an ordinary `2constant`,
   \ except its value is compiled as a literal.
@@ -108,5 +108,7 @@
   \ 2017-02-17: Update cross references.
   \
   \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-03-30: Improve documentation.
 
   \ vim: filetype=soloforth

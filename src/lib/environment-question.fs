@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704010017
+  \ Last modified: 201704011203
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -232,6 +232,9 @@ set-current previous
   \
   \ }doc
 
+  \ XXX REMARK -- Equivalent calculation:
+  \   0 1 2 um/mod nip 1-
+
 [unneeded] max-u
 
 ?\ -1 constant max-u ( -- u )
@@ -332,5 +335,7 @@ set-current previous
   \ `environment-wordlist`. This is more versatile, because the
   \ application can `need` individual constants instead of
   \ redefining them or needing `environment?`.
+  \
+  \ 2017-04-01: Improve documentation.
 
   \ vim: filetype=soloforth
