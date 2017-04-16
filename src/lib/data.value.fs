@@ -1,26 +1,20 @@
-  \ data.value.standard.fs
+  \ data.value.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703301952
+  \ Last modified: 201704161248
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ A standard implemention of `value`, `2value` and `to`.
-  \
-  \ This is provided as an alternative, when compatibility is
-  \ required, but the code is bigger and slower than the
-  \ default version provided by module
-  \ "data.value.default.fsb", which uses the non-standard word
-  \ `2to`.
+  \ Standard `value`, `2value` and `to`; non-standard `cvalue`.
 
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -29,11 +23,25 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( value 2value to )
+( cvalue value 2value to )
 
-need >body
+[unneeded] cvalue
+?\ : cvalue ( c "name"  -- ) create 0 c, c, does> 1+ c@ ;
 
-: value ( n "name"  -- ) create 0 c, , does> 1+ @ ;
+  \ doc{
+  \
+  \ cvalue ( c "name" -- )
+  \
+  \ Create a definition _name_ with the following execution
+  \ semantics: place _c_ on the stack.
+  \
+  \ See also: `to`, `value`, `2value`, `cconstant`,
+  \ `cvariable`.
+  \
+  \ }doc
+
+[unneeded] value
+?\ : value ( n "name"  -- ) create 1 c, , does> 1+ @ ;
 
   \ doc{
   \
@@ -44,35 +52,41 @@ need >body
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See also: `2value`, `to`.
+  \ See also: `to`, `cvalue`, `2value`, `constant`, `variable`.
   \
   \ }doc
 
-: 2value ( n "name"  -- ) create 1 c, 2, does> 1+ 2@ ;
+[unneeded] 2value
+?\ : 2value ( x1 x2 "name"  -- ) create 2 c, 2, does> 1+ 2@ ;
 
   \ doc{
   \
-  \ 2value ( xd "name" -- )
+  \ 2value ( x1 x2 "name" -- )
   \
   \ Create a definition _name_ with the following execution
-  \ semantics: place _xd_ on the stack.
+  \ semantics: place _x1 x2_ on the stack.
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See also: `value`, `to`.
+  \ See also: `to`, `cvalue`, `value`, `2constant`,
+  \ `2variable`.
   \
   \ }doc
+
+[unneeded] cvalue [unneeded] value [unneeded] 2value and and
+[defined] to or ?(
+
+need >body need array>
+
+create to> ' c! , ' ! , ' 2! ,
 
 : to
   \ Interpretation: ( i*x "name" -- )
   \ Compilation:    ( "name" -- )
   \ Run-time        ( i*x -- )
-  ' >body dup 1+ swap c@
-  compiling? if  swap postpone literal
-                 if  postpone 2!  else  postpone !  then  exit
-             then
-  if  2!  else  !  then
-  ; immediate
+  ' >body dup 1+ swap c@ to> array>
+  compiling? if swap postpone literal @ compile, exit then
+             perform ; immediate
 
   \ doc{
   \
@@ -85,13 +99,13 @@ need >body
   \
   \ Interpretation:
   \
-  \ Parse _name_, which is a word created by `value` or
-  \ `2value`, and make _i*x_ its value.
+  \ Parse _name_, which is a word created by `cvalue`, `value`
+  \ or `2value`, and make _i*x_ its value.
   \
   \ Compilation:
   \
-  \ Parse _name_, which is a word created by `value` or
-  \ `2value`, and append the execution execution semantics
+  \ Parse _name_, which is a word created by `cvalue`, `value`
+  \ or `2value`, and append the execution execution semantics
   \ given below to the current definition.
   \
   \ Run-time:
@@ -117,5 +131,13 @@ need >body
   \ 2017-02-27: Improve documentation.
   \
   \ 2017-03-30: Improve documentation.
+  \
+  \ 2017-04-08: Improve documentation. Make `value` and
+  \ `2value` accessible to `need`. Rewrite `to` with an
+  \ execution table (11 bytes saved). Add `cvalue`.
+  \
+  \ 2017-04-09: Improve documentation.
+  \
+  \ 2017-04-16: Improve documentation.
 
   \ vim: filetype=soloforth
