@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703260051
+  \ Last modified: 201703281058
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -521,7 +521,7 @@ macro execute-hl, ( -- )
   jphl,                    \ execute the xt in HL
   >resolve                 \ phony_compiled_word
   here cell+ ,             \ point to the phony xt following
-  0000 b ldp#  >aresolve   \ restore the Forth IP
+  0000 b ldp#, >aresolve   \ restore the Forth IP
   endm
 
   \ doc{
@@ -535,18 +535,19 @@ macro execute-hl, ( -- )
   \
   \ }doc
 
-macro call-xt, ( xt -- )
-  h ldp#,  execute-hl,
-  endm
+macro call-xt, ( xt -- ) 21 c, , execute-hl, endm
 
   \ doc{
   \
   \ call-xt, ( xt -- )
   \
-  \ Compile a call to _xt_.
-  \ ``call-xt,`` is the low-level equivalent of `execute`.
+  \ Compile a Z80 call to _xt_, by compiling the Z80
+  \ instruction that loads the HL register with _xt_, and then
+  \ executing `execute-hl,` to compile the rest of the
+  \ necessary code.
   \
-  \ See also: `execute-hl,`.
+  \ ``call-xt,`` is the low-level equivalent of `execute`: it's
+  \ used to call a colon word from a code word.
   \
   \ }doc
 
@@ -646,5 +647,8 @@ macro call-xt, ( xt -- )
   \ `sllx,`.
   \
   \ 2017-03-26: Fix `aagain`. Improve documentation.
+  \
+  \ 2017-03-28: Fix code typo in `execute-hl`. Rewrite
+  \ `call-xt,` with Z80 opcodes. Improve documentation.
 
   \ vim: filetype=soloforth
