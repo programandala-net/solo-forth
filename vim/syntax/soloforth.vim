@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-04-04
+" Updated:  2017-04-16
 "
 " See change log at the end of the file.
 
@@ -826,13 +826,13 @@ syn match soloforthDefine "\<\[compile]\>"
 "syn match soloforthNumber '\<-\=[0-9.]*[0-9.]\+\>'
 
 
-syn match soloforthNumber '\<-\=[0-9A-F.]\{2}\>'
-syn match soloforthNumber '\<-\=[0-9A-F.]\{4}\>'
-"syn match soloforthNumber '\<-\=[0-9A-F.]\{8}\>'
-syn match soloforthNumber '\<-\=[0-9.]\+\>'
-syn match soloforthNumber '\<\$-\=[0-9A-F.]\+\>'
-syn match soloforthNumber '\<#-\=[0-9.]\+\>'
-syn match soloforthNumber '\<%-\=[01.]\+\>'
+syn match soloforthNumber '\<-\=[0-9A-F]\{2}\.\=\>'
+syn match soloforthNumber '\<-\=[0-9A-F]\{4}\.\=\>'
+"syn match soloforthNumber '\<-\=[0-9A-F]\{8}\.\=\>'
+syn match soloforthNumber '\<-\=[0-9]\+\.\=\>'
+syn match soloforthNumber '\<\$-\=[0-9A-F]\+\.\=\>'
+syn match soloforthNumber '\<#-\=[0-9]\+\.\=\>'
+syn match soloforthNumber '\<%-\=[01]\+\.\=\>'
 syn match soloforthNumber '\<\'.\'\>'
 
 " Strings
@@ -966,8 +966,7 @@ let b:current_syntax = "soloforth"
 "
 " 2015-08-30: Updated: `pusha`.
 "
-" 2015-08-30: Updated: `asm`, `end-asm`, circular string
-" buffer.
+" 2015-08-30: Updated: `asm`, `end-asm`, circular string buffer.
 "
 " 2015-09-07: Added `don't` and `unnest`.
 "
@@ -1090,8 +1089,8 @@ let b:current_syntax = "soloforth"
 "
 " 2016-11-20: Add `blocks`.
 "
-" 2016-11-23: Add `align` and `aligned`. Update
-" bit-manipulation words.
+" 2016-11-23: Add `align` and `aligned`. Update bit-manipulation
+" words.
 "
 " 2016-11-24: Add `-exit`.
 "
@@ -1146,8 +1145,8 @@ let b:current_syntax = "soloforth"
 "
 " 2017-02-22: Add `str=`.
 "
-" 2017-02-26: Rename "hp" notation to "np", after the changes
-" in the kernel.
+" 2017-02-26: Rename "hp" notation to "np", after the changes in
+" the kernel.
 "
 " 2017-02-27: Add `ldi,` and `ldd,`.
 "
@@ -1171,6 +1170,9 @@ let b:current_syntax = "soloforth"
 " `al#`, `rl#`. Remove old `;s`.
 "
 " 2017-04-04: Add `fm/mod`.
+"
+" 2017-04-16: Improve the patterns of numbers: only one optional
+" decimal point at the end.
 
 " --------------------------------------------------------------
 
