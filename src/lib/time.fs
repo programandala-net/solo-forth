@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703161628
+  \ Last modified: 201703292330
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -80,8 +80,8 @@ code ms ( u -- )
 
 ( frames@ frames! reset-frames )
 
-
 [unneeded] frames@ ?( need os-frames
+
 : frames@ ( -- d )
   os-frames @ [ os-frames cell+ ] literal c@ ; ?)
 
@@ -92,11 +92,12 @@ code ms ( u -- )
   \ Fetch the system frames counter, which is incremented every
   \ 20 ms by the OS.
   \
-  \ See also: `frames!`, `reset-frames`, `os-frames`.
+  \ See also: `frames!`, `reset-frames`, `os-frames`, `bench{`.
   \
   \ }doc
 
-[unneeded] frames@ ?( need os-frames
+[unneeded] frames! ?( need os-frames
+
 : frames! ( d -- )
   [ os-frames cell+ ] literal c! os-frames ! ; ?)
 
@@ -107,11 +108,12 @@ code ms ( u -- )
   \ Store _d_ at the system frames counter, which is
   \ incremented every 20 ms by the OS.
   \
-  \ See also: `frames@`, `reset-frames`, `os-frames`.
+  \ See also: `frames@`, `reset-frames`, `os-frames`, `bench{`.
   \
   \ }doc
 
 [unneeded] reset-frames
+
 ?\ need frames! : reset-frames ( -- ) 0. frames! ;
 
   \ doc{
@@ -121,7 +123,7 @@ code ms ( u -- )
   \ Reset the system frames counter, which is incremented every
   \ 20 ms by the OS, setting it to zero.
   \
-  \ See: `frames@`, `frames!`, `os-frames`.
+  \ See: `frames@`, `frames!`, `os-frames`, `bench{`.
   \
   \ }doc
 
@@ -228,6 +230,8 @@ code ms ( u -- )
   \
   \ Is _n_ a leapy year?
   \
+  \ See also: `set-date`.
+  \
   \ }doc
 
   \ Alternative implementation:
@@ -250,9 +254,9 @@ code ms ( u -- )
   \ `set-date` and `get-date`, with the following structure:
 
   \ ....
-  \ +0 bytes = day (1 byte)
-  \ +1 bytes = month (1 byte)
-  \ +2 bytes = year (1 cell)
+  \ +0 day   (1 byte)
+  \ +1 month (1 byte)
+  \ +2 year  (1 cell)
   \ ....
   \
   \ See: `set-date`, `get-date`.
@@ -289,18 +293,18 @@ code ms ( u -- )
   \ can be fetch with `get-date`. The date is not updated by
   \ the system.
   \
-  \ See: `get-date`, `date`.
+  \ See: `get-date`, `date`, `leapy-year?`.
   \
   \ }doc
 
 ( set-time get-time reset-time )
 
-need frames@ need frames! need m+ need alias need ud*
+[unneeded] get-time ?( need frames@
 
 : get-time ( -- second minute hour )
   frames@ 50 um/mod nip s>d   ( sec . )
           60 um/mod s>d       ( sec min . )
-          60 um/mod           ( sec min hour ) ;
+          60 um/mod           ( sec min hour ) ; ?)
 
   \ doc{
   \
@@ -308,72 +312,90 @@ need frames@ need frames! need m+ need alias need ud*
   \
   \ Return the current time.
   \
-  \ The system doesn't have an actual clock. The system frames
-  \ counter is used instead. It is increased by the interrupts
-  \ routine every 20th ms. The counter is a 24-bit value, so
-  \ its maximum is $FFF ticks of 20 ms (5592 minutes, 93
-  \ hours), then it starts again from zero.
+  \ The system doesn't have a clock. The system frames counter
+  \ is used instead. It is increased by the interrupts routine
+  \ every 20th ms. The counter is a 24-bit value, so its
+  \ maximum is $FFFFFF ticks of 20 ms (5592 minutes, 93 hours),
+  \ then it starts again from zero.
+  \
+  \ See also: `set-time`, `time&date`.
   \
   \ }doc
 
+[unneeded] set-time ?( need ud* need frames!
+
 : set-time ( second minute hour -- )
-  3600 um*  rot 60 * m+  rot m+ ( seconds ) 50. ud* frames! ;
+  3600 um* rot 60 * m+ rot m+ ( seconds ) 50. ud* frames! ; ?)
 
   \ doc{
   \
   \ set-time ( second minute hour -- )
   \
-  \ Set the current time. See `get-time`.
+  \ Set the current time.
+  \
+  \ See also: `get-time`.
   \
   \ }doc
 
-' reset-frames alias reset-time ( -- )
+[unneeded] reset-time ?( need reset-frames need alias
+' reset-frames alias reset-time ( -- ) ?)
 
   \ doc{
   \
   \ reset-time ( -- )
   \
-  \ Reset the current time to 00:00:00. See `get-time`.
+  \ Reset the current time to 00:00:00.
+  \
+  \ See also: `get-time`.
   \
   \ }doc
 
-( .time .system-time .date .system-date .time&date time&date )
+( .00 .0000 .time .system-time .date .system-date )
 
   \ XXX TODO document
 
-need get-time need get-date
+[unneeded] .00 ?\ : .00 ( n -- ) s>d <# # # #> type ;
 
-: .00 ( n -- ) s>d <# # # #> type ;
-: .0000 ( n -- ) s>d <# # # # # #> type ;
+[unneeded] .0000 ?\ : .0000 ( n -- ) s>d <# # # # # #> type ;
 
-: .time ( second minute hour -- )
-  .00 ':' emit .00 ':' emit .00 ;
+[unneeded] .time ?( need .00
 
-: .system-time ( -- ) get-time .time ;
+: .time ( second minute hour -- ) .00 ." :" .00 ." :" .00 ; ?)
 
-: .date ( day month year -- )
-  .0000 '-' emit .00 '-' emit .00 ;
+[unneeded] .system-time ?( need get-time need .time
 
-: .system-date ( -- ) get-date  .date ;
+: .system-time ( -- ) get-time .time ; ?)
+
+[unneeded] .date ?( need .0000 need .00
+
+: .date ( day month year -- ) .0000 ." -" .00 ." -" .00 ;
+
+[unneeded] .system-date ?( need get-date need .date
+
+: .system-date ( -- ) get-date  .date ; ?)
+
+( .time&date time&date )
+
+[unneeded] .time&date ?( need .date need .time
 
 : .time&date ( second minute hour day month year -- )
-  .date 'T' emit .time ;
+  .date ." T" .time ; ?)
+
+[unneeded] time&date ?( need get-time need get-date
 
 : time&date ( -- second minute hour day month year )
-  get-time get-date ;
+  get-time get-date ; ?)
 
   \ doc{
   \
   \ time&date ( -- second minute hour day month year )
   \
-  \ Return the current time and date: second (0..59), minute
-  \ (0..59), hour (0..23), day (1..31), month (1..12) and year
-  \ (e.g., 2016).
+  \ Return the current time and date: second, minute, hour,
+  \ day, month and year.
   \
-  \ See: `get-time`, `get-date`, `set-time`, `set-date`.
+  \ Origin: Forth-94 (FACILITY EXT), Forth-201 (FACILITY EXT).
   \
-  \ Origin: Forth-94 (FACILITY EXT), Forth-201 (FACILITY
-  \ EXT).
+  \ See also: `get-time`, `get-date`, `set-time`, `set-date`.
   \
   \ }doc
 
@@ -423,5 +445,8 @@ need get-time need get-date
   \
   \ 2017-03-16: Make `frames@`, `frames!` and `reset-frames`
   \ individually accessible to `need`.
+  \
+  \ 2017-03-29: Fix needing of `frames!`. Improve needing of
+  \ time and date words. Improve documentation.
 
   \ vim: filetype=soloforth

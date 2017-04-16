@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703211509
+  \ Last modified: 201704091812
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -96,7 +96,7 @@ code c-! ( c ca -- )
 ( c1+! c1-! 1+! 1-! )
 
 [unneeded] c1+!
-?\  code c1+! ( ca -- ) E1 c, 34 c, jpnext, end-code
+?\ code c1+! ( ca -- ) E1 c, 34 c, jpnext, end-code
     \ pop hl
     \ inc (hl)
     \ jp next
@@ -112,7 +112,7 @@ code c-! ( c ca -- )
   \ }doc
 
 [unneeded] c1-!
-?\  code c1-! ( ca -- ) E1 c, 35 c, jpnext, end-code
+?\ code c1-! ( ca -- ) E1 c, 35 c, jpnext, end-code
     \ pop hl
     \ dec (hl)
     \ jp next
@@ -320,8 +320,7 @@ code 1-! ( a -- )
 
 ( bit>mask bit? set-bit reset-bit )
 
-[unneeded] bit? [unneeded] set-bit? [unneeded] reset-bit?
-[unneeded] bit>bask and and and
+[unneeded] bit>mask
 ?\ need lshift : bit>mask ( n -- b ) 1 swap lshift ;
 
   \ doc{
@@ -335,7 +334,7 @@ code 1-! ( a -- )
   \ }doc
 
 [unneeded] bit?
-?\ : bit? ( b n -- f ) bit>mask and 0<> ;
+?\ need bit>mask : bit? ( b n -- f ) bit>mask and 0<> ;
 
   \ doc{
   \
@@ -348,7 +347,7 @@ code 1-! ( a -- )
   \ }doc
 
 [unneeded] set-bit?
-?\ : set-bit ( b1 n -- b2 ) bit>mask or ;
+?\ need bit>mask : set-bit ( b1 n -- b2 ) bit>mask or ;
 
   \ doc{
   \
@@ -360,8 +359,8 @@ code 1-! ( a -- )
   \
   \ }doc
 
-[unneeded] reset-bit?
-?\ : reset-bit ( b1 n -- b2 ) bit>mask invert and ;
+[unneeded] reset-bit? ?( need bit>mask
+: reset-bit ( b1 n -- b2 ) bit>mask invert and ; ?)
 
   \ doc{
   \
@@ -428,8 +427,7 @@ code c@and ( b1 ca -- b2 )
 
 [unneeded] ctoggle ?(
 code ctoggle ( b ca -- )
-  E1 c, D1 c, 7E c, A8 03 + c, 70 07 + c, jpnext,
-end-code ?)
+  E1 c, D1 c, 7E c, A8 03 + c, 70 07 + c, jpnext, end-code ?)
     \ pop hl
     \ pop de
     \ ld a,(hl)
@@ -487,8 +485,7 @@ end-code ?)
   \
   \ }doc
 
-[unneeded] alloted
-?\ : allotted ( n -- a ) here swap allot ;
+[unneeded] alloted ?\ : allotted ( n -- a ) here swap allot ;
 
   \ doc{
   \
@@ -500,7 +497,7 @@ end-code ?)
   \ }doc
 
 [unneeded] align
-?\ need alias  ' noop alias align immediate
+?\ need alias ' noop alias align immediate
 
   \ doc{
   \
@@ -520,7 +517,7 @@ end-code ?)
   \ }doc
 
 [unneeded] aligned
-?\ need alias  ' noop alias aligned immediate
+?\ need alias ' noop alias aligned immediate
 
   \ doc{
   \
@@ -677,5 +674,7 @@ end-code ?)
   \
   \ 2017-03-21: Improve documentation. Convert `c@+` to an
   \ alias of `count`.
+  \
+  \ 2017-04-09: Fix needing of `bit>mask` and family.
 
   \ vim: filetype=soloforth
