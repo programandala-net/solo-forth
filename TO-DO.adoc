@@ -1,11 +1,11 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-04-09
+:revdate: 2017-04-17
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201704091938
+// Last modified 201704171809
 
 // Application development {{{1
 == Application development ==
@@ -456,6 +456,10 @@ additional link.
 
 // Documentation {{{1
 == Documentation ==
+
+.2017-04-16:
+
+Document the folllowing words: `>>link name>> >>name >body body>`.
 
 .2017-03-17:
 
@@ -1765,6 +1769,15 @@ Adapt from Gforth: `noname`, analogous to `nextname`.
 
 // Printing {{{1
 == Printing ==
+
+.2017-04-17:
+
+Import `center-type` from _Nuclear Waste Invaders_ and rename and
+modify `gigatype-center` accordingly.
+
+.2017-04-16:
+
+Convert `columns` and `rows` to character constants.
 
 .2017-03-15:
 

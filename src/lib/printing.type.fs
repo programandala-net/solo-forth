@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703131956
+  \ Last modified: 201704171806
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -225,7 +225,7 @@ constant type-center-field-cases
   \
   \ See also: `type-center-field-fit`,
   \ `type-center-field-crop`, `drop-type`, `type-left-field`,
-  \ `type-right-field`.
+  \ `type-right-field`, `gigatype-title`.
   \
   \ }doc
 
@@ -266,5 +266,8 @@ constant type-center-field-cases
   \ 2017-02-25: Improve documentation.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-03-17: Improve documentation, after the implementation
+  \ of `gigatype-title`.
 
   \ vim: filetype=soloforth

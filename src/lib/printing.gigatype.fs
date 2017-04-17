@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703281313
+  \ Last modified: 201704171807
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -75,7 +75,7 @@ code (gigatype ( ca len a1 a2 -- )
   \ a2 = style data table
 
 d pop, h pop, #1 h stp, al# h pop, l a ld, #3 sta, al#
-h pop, #2 h stp, al# exde, b push,
+h pop, #2 h stp, al# exde, a and, next z? ?jp, b push,
   \   pop de                        ; style data table
   \   pop hl                        ; screen address
   \   ld (set_screen_address+1),hl
@@ -85,6 +85,8 @@ h pop, #2 h stp, al# exde, b push,
   \   pop hl                        ; string address
   \   ld (set_string_address+1),hl
   \   ex de,hl                      ; HL = style data table
+  \   and a                         ; empty string?
+  \   jp z,next                     ; if so, exit
   \   push bc                       ; save the Forth IP
 
 #0 l: m a ld, FF cp#, z? rif b pop, jpnext, rthen
@@ -338,8 +340,8 @@ h push, #4 call, al# h pop, h pop, d pop, b pop, 02 a ld#,
   \
   \ (gigatype ( ca len a1 a2 -- )
   \
-  \ Type text string _ca len_ at screen address _a1_ using
-  \ style data table _a2_.
+  \ If _len_ is greater than zero, display text string _ca len_
+  \ at screen address _a1_ using style data table _a2_.
   \
   \ ``(gigatype`` is written in Z80 and it's a factor of
   \ `gigatype`.
@@ -355,14 +357,15 @@ need xy>scra need array>
   \
   \ gigatype ( ca len n -- )
   \
-  \ Type text string _ca len_ as a title with style _n_ (0..7),
-  \ at the current cursor coordinates. ``gigatype`` displays
-  \ characters from the current font, with doubled pixels
-  \ (16x16 pixels per character) and modifying them on the fly
-  \ after a given style _n_.  The text is combined with the
-  \ current content of the screen, as if `overprint` were
-  \ active. The current attribute, set by `attr!` and other
-  \ words, is used to color the text.
+  \ If _len_ is greater than zero, display text string _ca len_
+  \ as a title with style _n_ (0..7), at the current cursor
+  \ coordinates. ``gigatype`` displays characters from the
+  \ current font, with doubled pixels (16x16 pixels per
+  \ character) and modifying them on the fly after a given
+  \ style _n_.  The text is combined with the current content
+  \ of the screen, as if `overprint` were active. The current
+  \ attribute, set by `attr!` and other words, is used to color
+  \ the text.
   \
   \ Usage example:
 
@@ -376,7 +379,8 @@ need xy>scra need array>
   \   key drop home ;
   \ ----
 
-  \ See also: `set-font`, `(gigatext`, `type`.
+  \ See also: `gigatype-title`, `set-font`, `(gigatext`,
+  \ `type`.
   \
   \ }doc
 
@@ -790,11 +794,46 @@ need xy>scra need array>
   \   defb 001h   ;ffb4 01  .
   \   defb 0ffh   ;ffb5 ff  .
 
+( gigatype-title )
+
+need gigatype need 2/
+
+: gigatype-title ( ca1 len1 n -- )
+  >r 32 over 2* - 2/ xy nip at-xy r> gigatype ;
+
+  \ doc{
+  \
+  \ gigatype-title ( ca1 len1 n -- )
+  \
+  \ If _len1_ is greater than zero, display the character
+  \ string _ca1 len1_ at the center of the current row (the
+  \ current column is not used), using `gigatype` and its style
+  \ number _n_.
+  \
+  \ WARNING: `gigatype` prints double-size (16x16 pixels)
+  \ characters.  Therefore, the maximum value of _len1_ is 16
+  \ characters, but ``gigatype-title`` does no check. Beside,
+  \ it calculates the column of the title assuming the current
+  \ mode is `mode32` (32 characters per line), which is the
+  \ default one.
+  \
+  \ See also: `type-center-field`.
+  \
+  \ }doc
+
   \ ===========================================================
   \ Change log
 
   \ 2017-03-27: Start adapting the disassembly of the original
   \ routine.
+  \
+  \ 2017-04-16: Start draft of `gigatype-center`, based on
+  \ `type-center-field`. Fix `(gigatype`: do nothing when the
+  \ length of the string is zero.  Improve documentation.
+  \
+  \ 2017-04-17: Add `gigatype-title` (a simpler but enough
+  \ implementation of `gigatype-center`, which has been
+  \ discarded). Improve documentation.
 
   \ vim: filetype=soloforth
 
