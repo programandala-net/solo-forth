@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703041855
+  \ Last modified: 201704162237
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -26,8 +26,7 @@
 
 ( columns rows set-mode-output )
 
-[unneeded] columns
-?\ need value  32 value columns  exit
+[unneeded] columns ?\ need value 32 value columns
 
   \ doc{
   \
@@ -40,8 +39,7 @@
   \
   \ }doc
 
-[unneeded] rows
-?\ need value  24 value rows  exit
+[unneeded] rows ?\ need value 24 value rows
 
   \ doc{
   \
@@ -54,10 +52,12 @@
   \
   \ }doc
 
+[unneeded] set-mode-output ?(
+
 need os-chans
 
 : set-mode-output ( a -- )
-  os-chans @ 2dup ! 2dup 5 + ! 15 + ! ;
+  os-chans @ 2dup ! 2dup 5 + ! 15 + ! ; ?)
 
   \ doc{
   \
@@ -121,5 +121,7 @@ code (banked-mode-output) ( -- )
   \
   \ 2017-03-04: Update naming convention of Z80 routines, after
   \ the changes in the kernel.
+  \
+  \ 2017-04-16: Improve needing of `set-mode-output`.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201704042024
+; Last modified: 201704172256
 
 include version.z80s
 
@@ -1639,7 +1639,7 @@ endif
 ;
 ; If the actual far-memory address _a_ ($C000..$FFFF) has
 ; increased to the next bank ($0000..$3FFF), convert it to the
-; correspondent actual address _a'_ ($C000..$FFFF) in the next
+; corresponding actual address _a'_ ($C000..$FFFF) in the next
 ; bank and page in the next bank. Otherwise return _a_.
 ;
 ; See also: `?next-bank_`, `?previous-bank`.
@@ -1654,7 +1654,7 @@ question_next_bank:
 
   ; If the actual far-memory address ($C000..$FFFF) in the HL
   ; register has increased to the next bank ($0000..$3FFF),
-  ; convert it to the correspondent actual address
+  ; convert it to the corresponding actual address
   ; ($C000..$FFFF) in the next bank and page in the next bank,
   ; else do nothing.
   ;
@@ -1662,7 +1662,7 @@ question_next_bank:
   ;   HL = address in a paged bank ($C000..$FFFF) or higher
   ;        ($0000..$3FFF).
   ; Output (when HL is above the paged bank):
-  ;   HL = correspondent address in the next bank, which is paged in
+  ;   HL = corresponding address in the next bank, which is paged in
   ;   A = corrupted
   ;   D = 0
   ;   E = bank
@@ -1714,7 +1714,7 @@ new_bank:
 ;
 ; If the actual far-memory address _a_ ($C000..$FFFF) has
 ; decreased to the previous bank ($8000..$BFFF), convert it to
-; the correspondent actual address _a'_ ($C000..$FFFF) in the
+; the corresponding actual address _a'_ ($C000..$FFFF) in the
 ; previous bank and page in the next bank. Otherwise return
 ; _a_.
 ;
@@ -1730,7 +1730,7 @@ question_previous_bank:
 
   ; If the actual far-memory address ($C000..$FFFF) in the HL
   ; register has decreased to the previous bank ($8000..$BFFF),
-  ; convert it to the correspondent actual address
+  ; convert it to the corresponding actual address
   ; ($C000..$FFFF) in the previous bank and page in the next
   ; bank, else do nothing.
   ;
@@ -1738,7 +1738,7 @@ question_previous_bank:
   ;   HL = address in a paged bank ($C000..$FFFF) or lower
   ;        ($8000..$BFFF).
   ; Output (when HL is below the paged bank):
-  ;   HL = correspondent address in the previous bank, which is paged in
+  ;   HL = corresponding address in the previous bank, which is paged in
   ;   A = corrupted
   ;   D = 0
   ;   E = bank
@@ -1787,7 +1787,7 @@ question_previous_bank:
 ; far ( a1 -- a2 )
 ;
 ; Convert a far-memory address _a1_ ($0000..$FFFF) to its actual
-; equivalent _a2_ ($C000..$FFFF) and page in the correspondent
+; equivalent _a2_ ($C000..$FFFF) and page in the corresponding
 ; memory bank, using the configuration at `far-banks`.
 ;
 ; ``far`` is written in Z80. Its equivalent definition in Forth
@@ -1810,7 +1810,7 @@ far.hl:
 
   ; Convert a far-memory address ($0000..$FFFF) to its
   ; actual equivalent ($C000..$FFFF) and page in the
-  ; correspondent memory bank.
+  ; corresponding memory bank.
   ;
   ; Input:
   ;   HL = far-memory address ($0000..$FFFF)
@@ -2610,11 +2610,11 @@ push_a:
 ;
 ; /stringer ( -- n )
 ;
-; A constant that holds the maximum size of `stringer`, in
+; A constant that holds the maximum size of the `stringer`, in
 ; characters.
 ;
-; In order to reconfigure the `stringer`, this constant can be
-; modified with `!>`.
+; See in `stringer` an example how to move and resize the
+; `stringer`.
 ;
 ; See also: `+stringer`, `empty-stringer`.
 ;
@@ -2629,7 +2629,7 @@ push_a:
 ;
 ; +stringer ( -- a )
 ;
-; A variable that holds the pointer fo the `stringer`, i.e. an
+; A variable that holds the pointer of the `stringer`, i.e. an
 ; offset to its first free address. The offset equals the number
 ; of free characters in the `stringer`.
 ;
@@ -2647,12 +2647,24 @@ push_a:
 ; stringer ( -- a )
 ;
 ; A constant that returns the base address of the ``stringer``,
-; the circular string buffer used by all string operations.
+; which is the circular string buffer used by all string
+; operations.
 ;
-; In order to move the circular string buffer, this constant can
-; be modified with `!>`.
+; The application can move and resize the ``stringer`` if
+; needed. Example:
+
+; ----
+; stringer /stringer 2constant old-stringer
+;   \ Keep the address and length of the old stringer, in order
+;   \ to reuse its space later.
 ;
-; See also: `/stringer`, `+stringer`, `empty-stringer`,
+; need !>
+;
+; here 1024 dup allot !> /stringer !> stringer empty-stringer
+;   \ Create a new, 1024-byte `stringer` in data space.
+; ----
+
+; See also: `!>`, `/stringer`, `empty-stringer`, `+stringer`,
 ; `unused-stringer`, `?stringer`, `allocate-stringer`,
 ; `>stringer`.
 ;
@@ -2673,8 +2685,8 @@ push_a:
 
 ; ----
 ; : ?stringer ( len -- )
-;   dup unused-stringer >  \ not enough free space?
-;   if  empty-stringer +stringer !  then  negate +stringer +! ;
+;   dup unused-stringer > if empty-stringer then
+;       negate +stringer +! ;
 ; ----
 
 ; See also: `unused-stringer`, `empty-stringer`, `+stringer`.
@@ -2684,8 +2696,9 @@ push_a:
   ; XXX TODO -- Rename to `stringer-room`, `(allocate-stringer)`
   ; or something.
   ;
-  ; XXX TODO -- Throw an error if _len_ is greater than the
-  ; stringer. Besides `allocate-stringer` should return a _ior_.
+  ; XXX TODO -- Throw an error if _len_ is greater than
+  ; `/stringer`. Besides `allocate-stringer` should return a
+  ; _ior_.
 
   dw dup_,unused_stringer_,greater_than_
   dw zero_branch_,question_stringer_.enough
@@ -2703,8 +2716,8 @@ question_stringer_.enough:
 ;
 ; allocate-stringer ( len -- ca )
 
-; Allocate _len_ characters in the circular string buffer and return
-; the address _ca_ of the allocated space.
+; Allocate _len_ characters in the circular string buffer and
+; return the address _ca_ of the allocated space.
 ;
 ; Definition:
 
@@ -3505,8 +3518,8 @@ to_number.end:
 ;
 ; number-point? ( c -- f )
 ;
-; Is character _c_ a valid point in a number?  This is a
-; deferred word used in `number?`. Its default action is
+; Is character _c_ a valid point in a number?  ``number-point?``
+; is a deferred word used in `number?`. Its default action is
 ; `standard-number-point?`, which only allows the period.
 ;
 ; See also: `classic-number-point?`, `extended-number-point?`.
@@ -4073,7 +4086,7 @@ skip.end:
 ;         characters 144..255 are printed by `emit-udg`.
 ; | 162 | Characters 0..162 are printed by the ROM
 ;         (this range includes also the 128-BASIC UDG set 144..162,
-;         correspondent to UDG characters 0..18 in Solo Forth);
+;         corresponding to UDG characters 0..18 in Solo Forth);
 ;         characters 163..255 are printed by `emit-udg`.
 ; | 255 | Characters 0..255 are printed by the ROM
 ;         (this range includes also the 128-BASIC tokens);
@@ -4181,8 +4194,9 @@ emit_udg.l
 ; printing ( -- a )
 ;
 ; _a_ is the address of a cell containing the printer flag.
-; This flag is set by `printer`, reset by `display` and checked
-; by `page`. It should not be changed directly.
+; ``printing`` is set by `printer`, reset by `display` and
+; checked by `page`. ``printing`` should not be changed directly
+; by the application.
 ;
 ; }doc
 
@@ -4365,8 +4379,8 @@ endif
 ; default-break-key? ( -- f )
 ;
 ; Is the default break key (Shift+Space) pressed?
-; This is the default action of the deferred word
-; `break-key?`.
+; ``default-break-key?`` is the default action of the deferred
+; word `break-key?`.
 ;
 ; }doc
 
@@ -4381,8 +4395,8 @@ endif
 ;
 ; break-key? ( -- f )
 ;
-; Is the break key pressed? This is a deferred work. Its default
-; action is `default-break-key?`.
+; Is the break key pressed? ``break-key?`` is a deferred word
+; whose default action is `default-break-key?`.
 ;
 ; }doc
 
@@ -4546,7 +4560,7 @@ wait_for_key:
 ;
 ; Transmit a carriage return to the selected output device.
 ;
-; This is a deferred word whose default action is `(cr)`.
+; ``cr`` is a deferred word whose default action is `(cr)`.
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
@@ -5953,8 +5967,8 @@ do_colon:
 ; noname? ( -- a )
 ;
 ; A variable that holds a flag: Was the word being defined
-; created by `:noname`? This flag is set by `:noname` and reset
-; by `;`.
+; created by `:noname`? ``noname?`` is set by `:noname` and
+; reset by `;`.
 ;
 ; }doc
 
@@ -6372,12 +6386,15 @@ do_user:
 ; +origin ( n -- a )
 ;
 ; Leave the memory address relative by _n_ bytes to the origin
-; parameter area.  This definition is used to access or modify
-; the boot-up parameters at the origin area.
+; parameter area.  ``+origin`` is used to access or modify the
+; boot-up parameters at the origin area.
 ;
 ; Origin: fig-Forth.
 ;
 ; }doc
+
+; XXX TODO -- Finish the documentation: include the parameters
+; that can be accessed.
 
   dw lit_,origin,plus_
   dw exit_
@@ -6452,9 +6469,9 @@ do_user:
 ;
 ; lastblk ( -- a )
 ;
-; User variable that holds the block number of the block most recently
-; or loaded (with `load` or `continued`). This is the value used by
-; `reload`.
+; User variable that holds the block number of the block most
+; recently or loaded (with `load` or `continued`). ``lastblk``
+; is used by `reload`.
 ;
 ; }doc
 
@@ -6481,11 +6498,11 @@ do_user:
 ;
 ; dp ( -- a )
 ;
-; A variable, the data-space pointer, which contains its next
-; free address.  The value may be read by `here` and altered by
-; `there` and `allot`.
+; A user variable. _a_ is the address of a cell containing the
+; data-space pointer.  The value may be read by `here` and
+; altered by `there` and `allot`.
 ;
-; Origin: fig-Forth's ``dp`` user variable.
+; Origin: fig-Forth.
 ;
 ; }doc
 
@@ -6557,13 +6574,12 @@ do_user:
 ;
 ; scr ( -- a )
 ;
-; User variable that holds the number of the block most
-; recently listed by `list`. This variable is used by the block
-; editors.
+; User variable that holds the number of the block most recently
+; listed by `list`. ``scr`` is used by the block editors.
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
-; (Controlled Reference Words), Forth-94 (BLOCK EXT),
-; Forth-2012 (BLOCK EXT).
+; (Controlled Reference Words), Forth-94 (BLOCK EXT), Forth-2012
+; (BLOCK EXT).
 ;
 ; }doc
 
@@ -6961,10 +6977,12 @@ source.other:
 ; most-significant bit, filling the vacated least-significant
 ; bit with zero.
 ;
-; This is the same as `1 lshift`.
+; ``2*`` is equivalent to ``1 lshift``.
 ;
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
 ; Forth-2012 (CORE).
+;
+; See also: `lshift`, `8*`.
 ;
 ; }doc
 
@@ -7382,9 +7400,9 @@ u_less_than.de_hl:
 ; current-latest ( -- nt )
 ;
 ; Leave the name token of the topmost word in the current
-; compilation word list.  This is different from `latest`,
-; which returns the name token of the latest word defined in
-; the system.
+; compilation word list.  ``current-latest`` is different from
+; `latest`, which returns the name token of the latest word
+; defined in the system.
 ;
 ; Definition:
 
@@ -7393,8 +7411,6 @@ u_less_than.de_hl:
 ; ----
 
 ; Origin: fig-Forth's ``latest``.
-;
-; See also: `latest`.
 ;
 ; }doc
 
@@ -7987,7 +8003,7 @@ endif ; pentagon=512 or pentagon=1024
 ; name>string ( nt -- ca len )
 ;
 ; Convert the name token _nt_ to its name string _ca len_
-; in the circular string buffer.
+; in the `stringer`.
 ;
 ; Definition:
 
@@ -8025,7 +8041,8 @@ name_to_string.loop_exit:
 ;
 ; !csp ( -- )
 ;
-; Save the the current data stack position, `sp@`, into `csp`.
+; Save the the current data stack position, `sp@`, into `csp`,
+; to be checked later by `?csp`.
 ;
 ; Definition:
 
@@ -8107,7 +8124,7 @@ name_to_string.loop_exit:
 ;
 ; ?csp ( -- )
 ;
-; Issue error "definition unbalanced" if the current data stack
+; Throw error #-264 (definition not finished) if the current data stack
 ; position does not match the value saved by `!csp`.
 ;
 ; // XXX TODO and `checking` is not zero.
@@ -8160,9 +8177,9 @@ name_to_string.loop_exit:
 ; Compile the cell following the compilation address of
 ; ``compile`` into the dictionary.
 ;
-; This allows specific compilation situations to be handled in
-; addition to simply compiling an execution token (which the
-; interpreter already does).
+; ``compile`` allows specific compilation situations to be
+; handled in addition to simply compiling an execution token
+; (which the interpreter already does).
 ;
 ; ``compile`` is a `compile-only` word.
 ;
@@ -8965,9 +8982,9 @@ simple_accept.end
 ;
 ; A character variable that holds the number of block drives
 ; defined in `block-drives`, i.e. the number of drives that are
-; used for blocks.  This variable could be modified manually,
-; provided also `block-drives` is configured accordingly, but
-; `set-block-drives` is provided for that.
+; used for blocks.  ``#block-drives`` could be modified
+; manually, provided also `block-drives` is configured
+; accordingly, but `set-block-drives` is provided for that.
 ;
 ; }doc
 
@@ -9784,8 +9801,8 @@ error.message:
 ; If so, and if the content of `warnings` is not zero, do a
 ; configurable action, usually issue a warning message.
 ;
-; This is a deferred word which is called by `header,` and whose
-; default action is `noop`. Alternative actions are
+; ``warn`` is a deferred word which is called by `header,` and
+; whose default action is `noop`. Alternative actions are
 ; provided by `warn.message`, `warn.throw` and `warn-throw`.
 ;
 ; }doc
@@ -10999,7 +11016,7 @@ question_paren.exit:
 ;
 ; .ok ( -- )
 ;
-; Print "ok". This is the default action of `ok`, the word
+; Print "ok". ``.ok`` is the default action of `ok`, the word
 ; called by `quit` after interpreting a command.
 ;
 ; }doc
@@ -12211,12 +12228,12 @@ endif
 ;
 ; >drive-block ( u1 -- u2 )
 ;
-; Convert block _u1_ to its equivalent _u2_ in its
-; corresponding disk drive, which is set the current drive.
+; Convert block _u1_ to its equivalent _u2_ in its corresponding
+; disk drive, which is set the current drive.
 ;
-; This is a deferred word that by default executes `noop`.  Its
-; action is set to `(>drive-block` when `set-block-drives` is
-; loaded.
+; ``>drive-block`` is a deferred word whose default action is
+; `noop`.  Its action is set to `(>drive-block` when
+; `set-block-drives` is loaded.
 ;
 ; }doc
 
@@ -13408,7 +13425,7 @@ if 0
 ; ----
 
 ; Read 20 blocks, starting from block _u_, and print the start
-; of their first lines.  This tool is useful when a new DOS is
+; of their first lines.  ``blks`` is useful when a new DOS is
 ; implemented, in order to check the disk access calculations.
 
   dw page_
@@ -13601,13 +13618,14 @@ system_stack_pointer:
 ;
 ; limit ( -- a )
 ;
-; Variable that holds the address above the highest address
-; usable by the data space, which is the region addressed by
-; `here`. Its default value is zero, which is right above the
-; highest memory address ($FFFF).
+; A variable. _a_ is the address of a cell containing the
+; address above the highest address usable by the data space
+; (the data space is the region addressed by `dp`). Its default
+; value is zero, which is right above the highest memory address
+; ($FFFF).
 ;
-; This variable can be modified by a program in order to reserve
-; a memory zone for special purposes.
+; ``limit`` can be modified by a program in order to reserve a
+; memory zone for special purposes.
 ;
 ; Origin: Fig-Forth's ``limit`` constant.
 ;
@@ -13624,12 +13642,14 @@ system_stack_pointer:
 ;
 ; farlimit ( -- a )
 ;
+; A variable. _a_ is the address of a cell containing the
+; address above the highest address usable by the names space
 ; Variable that holds the far-memory address above the highest
-; address usable by the names space, which is the region
-; addressed by `np`. Its default value is zero, which is right
-; above the highest far-memory address ($FFFF).
+; address usable by the names space (the names space is the
+; region addressed by `np`). Its default value is zero, which is
+; right above the highest far-memory address ($FFFF).
 ;
-; This variable can be modified by a program in order to reserve
+; ``farlimit`` can be modified by a program in order to reserve
 ; a memory zone for special purposes.
 ;
 ; Origin: Fig-Forth's ``limit`` constant.
@@ -13648,10 +13668,8 @@ system_stack_pointer:
 ; unused ( -- u )
 ;
 ; Return the amount of space remaining in the region addressed
-; by `here`, in address units.
-;
-; This region includes the transient spaces addressed by `pad`
-; and `hold`
+; by `here`, in address units.  This region includes the
+; transient spaces addressed by `pad` and `hold`
 ;
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
@@ -13836,7 +13854,10 @@ attr_cls.a: ; alternative entry point used by `cls`
 ;
 ; at-xy ( col row -- )
 ;
-; This is a deferred word, whose default action is
+; Set the cursor coordinates to column _col_ and row _row_.  The
+; upper left corner is column zero, row zero.
+;
+; ``at-xy`` is a deferred word whose default action is
 ; `mode32-at-xy`.
 ;
 ; Origin: Forth-94 (FACILITY), Forth-2012 (FACILITY).
@@ -13854,7 +13875,7 @@ attr_cls.a: ; alternative entry point used by `cls`
 ;
 ; Return the current column and row, in `mode32`.
 ;
-; This is the default action of `xy`.
+; ``mode32-xy`` is the default action of `xy`.
 ;
 ; Definition:
 
@@ -13862,6 +13883,8 @@ attr_cls.a: ; alternative entry point used by `cls`
 ; : (mode32-xy) ( -- col row )
 ;   24 23689 c@ -
 ;   33 23688 c@ - dup 32 = if  drop 1+ 0  then  swap ;
+;   \ 23688 = OS variable S_POSX
+;   \ 23689 = OS variable S_POSY
 ; ----
 
 ; }doc
@@ -13896,8 +13919,7 @@ mode32_xy.end:
 ;
 ; Return the current column and row of the text cursor.
 ;
-; This is a deferred word whose default action is
-; `mode32-xy`.
+; ``xy`` is a deferred word whose default action is `mode32-xy`.
 ;
 ; See also: `at-xy`.
 ;

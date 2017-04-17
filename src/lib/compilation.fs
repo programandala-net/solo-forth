@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132040
+  \ Last modified: 201704172318
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -31,6 +31,8 @@
   \ Note: `[if]` uses 132 bytes of data space (not including
   \ `str=`).
 
+[unneeded] [if] [unneeded] [then] [unneeded] [else] and and ?(
+
 : [else] ( "ccc" -- )
   1 begin  begin  parse-name dup while  2dup s" [if]" str=
                   if    2drop 1+
@@ -42,33 +44,130 @@
            repeat  2drop
     refill 0= until  drop ; immediate
 
+  \ doc{
+  \
+  \ [else] ( "ccc" -- )
+  \
+  \ Parse and discard space-delimited words from the parse
+  \ area, including nested occurrences of `[if]`-`[then]`, and
+  \ `[if]`-``[else]``-`[then]`, until either the word
+  \ ``[else]`` or the  word `[then]` has  been parsed and
+  \ discarded. If the  parse area  becomes exhausted, it is
+  \ refilled as with `refill`.
+  \
+  \ }doc
+
 : [if] ( f "ccc" -- ) 0= if postpone [else] then ; immediate
 
-: [then] ( -- ) ; immediate
+  \ doc{
+  \
+  \ [if] ( f "ccc" -- )
+  \
+  \ If _flag_ is true, do nothing. Otherwise, parse and discard
+  \ space-delimited words from the parse area, including nested
+  \ occurrences of ``[if]``-`[then]`, and
+  \ ``[if]``-`[else]`-`[then]`, until either the word `[else]`
+  \ or the  word `[then]` has  been parsed and  discarded. If
+  \ the  parse area  becomes exhausted, it is refilled as with
+  \ `refill`.
+  \
+  \ ``[if]`` is an `immediate` word.
+  \
+  \ See also: `?\`, `?(`.
+  \
+  \ }doc
+
+: [then] ( -- ) ; immediate ?)
+
+  \ doc{
+  \
+  \ [then] ( -- )
+  \
+  \ Do nothing. ``[then]`` is parsed and recognized by `[if]`.
+  \
+  \ ``[then]`` is an `immediate` word.
+  \
+  \ }doc
 
 ( body>name name>body link>name name>link name<name name>name )
 
 [unneeded] body>name
-?\ need body>  : body>name ( pfa -- nt ) body> >name ;
+?\ need body> : body>name ( pfa -- nt ) body> >name ;
+
+  \ doc{
+  \
+  \ body>name ( pfa -- nt )
+  \
+  \ Get _nt_ from its _pfa_.
+  \
+  \ See also: `name>body`, `link>name`.
+  \
+  \ }doc
 
 [unneeded] name>body
-?\ need >body  : name>body ( nt -- pfa ) name> >body ;
+?\ need >body : name>body ( nt -- pfa ) name> >body ;
+
+  \ doc{
+  \
+  \ name>body ( nt -- pfa )
+  \
+  \ Get _pfa_ from its _nt_.
+  \
+  \ See also: `body>name`.
+  \
+  \ }doc
 
 [unneeded] link>name
-?\ need alias  ' cell+ alias link>name ( nt -- pfa )
+?\ need alias ' cell+ alias link>name ( nt -- pfa )
+
+  \ doc{
+  \
+  \ link>name ( lfa -- nt )
+  \
+  \ Get _nt_ from its _lfa_.
+  \
+  \ See also: `name>link`.
+  \
+  \ }doc
 
 [unneeded] name>link
-?\ need alias  ' cell- alias name>link ( nt -- pfa )
+?\ need alias ' cell- alias name>link ( nt -- lfa )
 
-[unneeded] name<name dup
-?\ need name>link
-?\ : name<name ( nt1 -- nt2 ) name>link far@ ;
+  \ doc{
+  \
+  \ name>link ( nt -- lfa )
+  \
+  \ Get _lfa_ from its _nt_.
+  \
+  \ See also: `link>name`.
+  \
+  \ }doc
+
+[unneeded] name<name
+?\ need name>link : name<name ( nt1 -- nt2 ) name>link far@ ;
+
+  \ doc{
+  \
+  \ name<name ( nt1 -- nt2 )
+  \
   \ Get the previous _nt2_ from _nt1_.
+  \
+  \ See also: `name>name`.
+  \
+  \ }doc
 
-[unneeded] name>name dup
-?\ need >>name
-?\ : name>name ( nt1 -- nt2 ) name>str + >>name ;
+[unneeded] name>name
+?\ need >>name : name>name ( nt1 -- nt2 ) name>str + >>name ;
+
+  \ doc{
+  \
+  \ name>name ( nt1 -- nt2 )
+  \
   \ Get the next _nt2_ from _nt1_.
+  \
+  \ See also: `name<name`.
+  \
+  \ }doc
 
 ( >>link name>> >>name >body body> '' [''] )
 
@@ -90,6 +189,36 @@
   \ inc hl
   \ jp pushhl
 
+  \ doc{
+  \
+  \ >body  ( xt -- dfa )
+  \
+  \ _dfa_ is the data-field address corresponding to _xt_.
+  \
+  \ If _xt_ is for a word defined by `create`, _dfa_ is the
+  \ address that `here` would have returned had it been
+  \ executed immediately after the execution of the `create`
+  \ that defined _xt_.
+  \
+  \ If _xt_ is for a word defined by `variable`, `2variable`,
+  \ `cvariable`, `constant`, `2constant` and `cconstant`, _dfa_
+  \ is the address that holds their value.
+  \
+  \ If _xt_ is for a word defined by `:`, _dfa_ is the address
+  \ of its compiled definition.
+  \
+  \ If _xt_ is for a word defined by `code`, _dfa_ makes no
+  \ sense.
+  \
+  \ _dfa_ is always in data space.
+  \
+  \ Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
+  \ Forth-2012 (CORE).
+  \
+  \ See also: `body>`.
+  \
+  \ }doc
+
 [unneeded] body>
 ?\ code body> E1 c, 2B c, 2B c, 2B c, jppushhl, end-code
   \ ( pfa -- xt )
@@ -98,6 +227,17 @@
   \ dec hl
   \ dec hl
   \ jp pushhl
+
+  \ doc{
+  \
+  \ body>  ( dfa -- xt )
+  \
+  \ _xt_ is the execution token corresponding to the data-field
+  \ address _dfa_.
+  \
+  \ See also: `>body`.
+  \
+  \ }doc
 
 [unneeded] '' ?( need need-here need-here name>>
 : '' ( "name" -- xtp ) defined dup ?defined name>> ; ?)
@@ -115,9 +255,9 @@
   \ its execution token. But ``''`` can do it:
 
   \ ----
-  \ ' drop alias abandon
-  \ ' abandon >name .name       \ this prints "drop"
-  \ '' abandon >>name .name     \ this prints "abandon"
+  \ ' drop alias discard
+  \ ' discard >name .name       \ this prints "drop"
+  \ '' discard >>name .name     \ this prints "discard"
   \ ----
 
   \ See also: `['']`, `'`.
@@ -437,7 +577,7 @@ variable here-backup
 [unneeded] possibly ?(
 
 : possibly ( "name" -- )
-  defined ?dup if  name> execute  then ; ?)
+  defined ?dup if name> execute then ; ?)
 
   \ doc{
   \
@@ -451,7 +591,7 @@ variable here-backup
 [unneeded] exec ?(
 
 : exec ( "name" -- i*x )
-  defined ?dup 0= #-13 ?throw  name> execute ; ?)
+  defined ?dup 0= #-13 ?throw name> execute ; ?)
 
   \ doc{
   \
@@ -775,7 +915,7 @@ variable warnings  warnings on
 
   \ doc{
   \
-  \ string-param ( -- ca len )
+  \ string-parameter ( -- ca len )
   \
   \ Return a string compiled after the calling word.
   \
@@ -918,5 +1058,10 @@ variable warnings  warnings on
   \ 2017-02-27: Improve documentation.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-04-16: Improve documentation.
+  \
+  \ 2017-04-17: Fix and improve documentation. Improve needing
+  \ of `[if]`, `[else]`, `[then]`.
 
   \ vim: filetype=soloforth

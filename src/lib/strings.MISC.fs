@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704010022
+  \ Last modified: 201704172323
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -408,7 +408,9 @@ code uppers ( ca len -- )
   \
   \ }doc
 
-( lowers )
+( lowers #spaces #chars )
+
+[unneeded] lowers ?(
 
 code lowers ( ca len -- )
   D1 c, E1 c, here 7A c, B3 c, CA c, next , 7E c,
@@ -419,7 +421,7 @@ code lowers ( ca len -- )
   \   or e
   \   jp z,next
   \   ld a,(hl)
-  lower_ call, 77 c, 23 c, 1B c, C3 c, , end-code
+  lower_ call, 77 c, 23 c, 1B c, C3 c, , end-code ?)
   \   call lower_routine
   \   ld (hl),a
   \   inc hl
@@ -435,8 +437,6 @@ code lowers ( ca len -- )
   \ See also: `uppers`, `lower`.
   \
   \ }doc
-
-( #spaces #chars )
 
 [unneeded] #spaces ?( need under+
 
@@ -643,6 +643,7 @@ code lowers ( ca len -- )
   \ `[unneeded]` is not defined yet at that point.
 
 [unneeded] chop
+
 ?\ : chop ( ca len -- ca' len' ) 1- swap char+ swap ;
 
   \ Credit:
@@ -690,7 +691,10 @@ code lowers ( ca len -- )
   \
   \ }doc
 
+( counted>stringer resize-stringer )
+
 [unneeded] counted>stringer ?(
+
 : counted>stringer ( ca1 len1 -- ca2 )
   dup 1+ allocate-stringer dup >r place r> ; ?)
 
@@ -707,6 +711,8 @@ code lowers ( ca len -- )
 
 ( string/ char-in-string? char-position? ruler )
 
+[unneeded] string/ ?(
+
 code string/ ( ca1 len1 len2 -- ca2 len2 )
   D9 c, C1 c, D1 c, E1 c, 19 c, A7 c, ED c, 42 c,
     \                             ; T  B
@@ -718,7 +724,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
     \ add hl,de                   ; 11 01
     \ and a         ; cy=0        ; 04 01
     \ sbc hl,bc     ; hl=ca2      ; 15 02
-  E5 c, C5 c, D9 c, jpnext, end-code
+  E5 c, C5 c, D9 c, jpnext, end-code ?)
     \ push hl                     ; 11 01
     \ push bc                     ; 11 01
     \ exx           ; restore IP  ; 04 01
@@ -802,7 +808,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \
   \ }doc
 
-[unneeded] sconstants ?( need array> need sconstants-does>
+[unneeded] sconstants ?( need array>
 
 : sconstants ( 0 ca[n]..ca[1] "name" -- n )
   create  0 begin  swap ?dup  while  , 1+  repeat
@@ -972,5 +978,10 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \ 2017-04-01: Remove the `/counted-string` constant, which
   \ now is available in <environment-question.fs>, after the
   \ improvement in `environment?`.
+  \
+  \ 2017-04-16: Fix requirements of `sconstants`.
+  \
+  \ 2017-04-17: Compact the code, saving one block. Fix needing
+  \ of `string/`.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703131957
+  \ Last modified: 201704161738
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -54,7 +54,7 @@ variable last-locatable  blocks/disk 1- last-locatable !
   \ A variable that holds the number of the first block to be
   \ searched by `located` and its descendants.
   \
-  \ See also: `last-locatable`.
+  \ See also: `last-locatable`, `need-from`.
   \
   \ }doc
 
@@ -167,6 +167,8 @@ defer located ( ca len -- block | false ) -->
   \
   \ This is a deferred word whose default action is
   \ `(located)`.
+  \
+  \ See also: `need-from`.
   \
   \ }doc
 
@@ -683,5 +685,7 @@ need get-drive
   \ 2017-03-13: Update names including "rec" to "sector(s)";
   \ update names including "blk" to "block(s)".  Improve
   \ documentation.
+  \
+  \ 2017-04-16: Improve documentation.
 
   \ vim: filetype=soloforth

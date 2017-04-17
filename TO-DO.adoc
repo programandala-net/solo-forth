@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201704171809
+// Last modified 201704172256
 
 // Application development {{{1
 == Application development ==
@@ -457,6 +457,11 @@ additional link.
 // Documentation {{{1
 == Documentation ==
 
+.2017-04-17:
+
+Change notation "A variable that holds x" to "A variable. _a_ is the
+address of a cell/double cell/byte containing x". It's clearer.
+
 .2017-04-16:
 
 Document the folllowing words: `>>link name>> >>name >body body>`.
@@ -575,7 +580,7 @@ Common notation for:
 - text coordinates: "col row" --> "x y"?
 - graphic coordinates: "x y" --> "gx gy"?
 
-.2016-06-01:
+.2016-06-01, 2017-04-17:
 
 Change the stack notation back to classic Forth?:
 
@@ -586,13 +591,16 @@ Change the stack notation back to classic Forth?:
 
 And change also:
 
-- xtp -> cfaa
+- xtp -> cfaa/cfap
 
 The problem with the standard notation is it does not provide
 alternatives to _pfa_ and _lfa_, because they are system dependent.
 This makes the notations _xt_, _nt_, _pfa_, _lfa_ look heterogeneous.
 Beside, _xt_ and _nt_ are abstract terms, while _cfa_ and _nfa_ are
 precise definitions for the implemention.
+
+Anyway, _dfa_ is better than _pfa_, because somehow it resembles _data
+space_, where the address is.
 
 .2016-05-11:
 
@@ -1997,6 +2005,17 @@ Finish the conversion of 128K sound explosions. More details in the source.
 // Strings {{{1
 == Strings ==
 
+.2017-04-17:
+
+It seems the only way to move `stringer` to `limit` (making it easier
+to reconfigure by the application, without wasting its original space)
+is modify `find-name-from` to page in the default bank before fetching
+every character...
+
+.2017-04-17:
+
+Make `allocate-stringer` return an _ior_.
+
 .2017-01-27:
 
 Generalize `parse-esc-string` and `(parse-esc-string)` to accept a
@@ -2027,8 +2046,7 @@ NOTE: Milestone: 0.14.0
 
 Choose a clear convention for suffixes ">str" and ">string". Depending on the
 location of the string (circular string buffer, `pad` or another temporary
-area)? Another option: "stringer" (after renaming the circular string buffer,
-as planned).
+area)? Another option: "stringer".
 
 `X>string` :: string in the circular string buffer
 `X>stringer` :: string in the circular string buffer
