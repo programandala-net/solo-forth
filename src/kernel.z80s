@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201704172256
+; Last modified: 201704181557
 
 include version.z80s
 
@@ -2616,7 +2616,7 @@ push_a:
 ; See in `stringer` an example how to move and resize the
 ; `stringer`.
 ;
-; See also: `+stringer`, `empty-stringer`.
+; See also: `+stringer`, `empty-stringer`, `default-stringer'.
 ;
 ; }doc
 
@@ -2664,6 +2664,9 @@ push_a:
 ;   \ Create a new, 1024-byte `stringer` in data space.
 ; ----
 
+; The default ``stringer`` can be restored by
+; `default-stringer`.
+;
 ; See also: `!>`, `/stringer`, `empty-stringer`, `+stringer`,
 ; `unused-stringer`, `?stringer`, `allocate-stringer`,
 ; `>stringer`.
@@ -2780,10 +2783,32 @@ question_stringer_.enough:
 ; : empty-stringer ( -- ) /stringer +stringer ! ;
 ; ----
 
+; See also: `default-stringer`.
+;
 ; }doc
 
   dw slash_stringer_,plus_stringer_,store_
   dw exit_
+
+; ----------------------------------------------
+  _colon_header default_stringer_,'default-stringer'
+
+; doc{
+;
+; default-stringer  ( -- )
+;
+; Set the default values of `stringer` and `/stringer`.
+; ``default-stringer`` is executed by `cold`.
+;
+; }doc
+
+  dw lit_,stringer,lit_,stringer_pfa,store_
+  dw lit_,stringer_size,lit_,slash_stringer_pfa,store_
+  dw empty_stringer_
+  dw exit_
+
+  ; XXX TODO -- Rewrite in Z80 to save some bytes. Jump to
+  ; `empty-stringer` at the end.
 
 ; ----------------------------------------------
   _colon_header forward_mark_,'>mark'
@@ -11417,8 +11442,8 @@ warm_start:
   ; Set the first drive as the current one.
   dw first_drive_,set_drive_
 
-  ; Init the circular string buffer.
-  dw empty_stringer_
+  ; Restore the default stringer.
+  dw default_stringer_
 
   ; Init the user variables.
   dw lit_,default_user_variables_start ; from
