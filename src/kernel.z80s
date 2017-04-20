@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201704181557
+; Last modified: 201704201202
 
 include version.z80s
 
@@ -4085,19 +4085,22 @@ skip.end:
   _jp_next
 
 ; ----------------------------------------------
-  _constant_header mode32_max_char_,'mode32-max-char'
+  _variable_header last_font_char_,'last-font-char'
 
 ; doc{
 ;
-; mode32-max-char ( -- ca )
+; last-font-char ( -- ca )
 ;
-; Address _ca_ holds the code of the highest character that
-; `mode32-emit` will print , using the ROM routine. Higher
-; character are printed by `emit-udg`.
+; Address _ca_ holds the code of the last character displayed
+; from the current font by the current action of `emit`.  Higher
+; characters are managed apart, usually displayed by `emit-udg`.
 ;
-; Note that this is a character variable, which must be set
-; with `c!`.  Its default value is 127. The following table
-; shows the effect of other values:
+; At the moment, only `mode32-emit` checks this value.
+; Eventually, also the alternative modes will use it.
+;
+; Note that this is a character variable, which must be set with
+; `c!`.  Its default value is 127. The following table shows the
+; effect of other values:
 
 ; |===
 ; | Value | Effect
@@ -4126,7 +4129,7 @@ skip.end:
 ;
 ; }doc
 
-  dw mode32_emit.max_char
+  db 127
 
 ; ----------------------------------------------
   _code_header mode32_emit_,'mode32-emit'
@@ -4138,18 +4141,17 @@ skip.end:
 ; Send character _c_ to the current channel.
 ;
 ; ``mode32-emit`` is the default action of `emit`: By default,
-; characters 0..127 are printed from the current font and
-; characters 128..255 are printed from the current UDG set.
-; These ranges can be changed with `mode32-max-char`.
+; characters 0..127 are displayed from the current font and
+; characters 128..255 are displayed from the current UDG set by
+; `emit-udg`.  These ranges can be changed with `last-font-char`.
 ;
-; See also: `emit-udg`, `set-font`, `set-udg`.
+; See also: `set-font`, `set-udg`.
 ;
 ; }doc
 
   pop hl ; L = character
   push bc ; save the Forth IP
-mode32_emit.max_char: equ $+1
-  ld a,127 ; max character printed from the font
+  ld a,(last_font_char_pfa_) ; max character printed from the font
   cp l ; is character L in range?
   jr z,mode32_emit.l ; if equals, print it from the font
   jr c,emit_udg.l ; if greater, print it from the UDG set
@@ -4178,11 +4180,11 @@ mode32_emit.l
 ; used as well in order to calculate the address of the
 ; corresponding character bitmap in the UDG set.
 ;
-; See also: `set-udg`, `emit`, `mode32-emit`, `mode32-max-char`.
+; See also: `set-udg`, `emit`, `mode32-emit`, `last-font-char`.
 ;
 ; }doc
 
-  pop hl ; HL = UDG (0..255)
+  pop hl ; HL = UDG
   push bc ; save the Forth IP
 emit_udg.l
   ld de,(sys_udg)
@@ -5854,6 +5856,9 @@ two_store.into_hl_pointer:
 ;
 ; ``set-font`` is used by all screen modes.  The character
 ; bitmap _a_ points to depends on the mode.
+;
+; The last char used from the font can be configured by
+; `last-font-char`.
 ;
 ; See also: `get-font`, `rom-font`, `default-font`, `mode32`,
 ; `mode42`, `mode64`.
@@ -11482,7 +11487,7 @@ cold.hash_words:
 
   ; Set the screen to its default status:
   _literal 127
-  dw mode32_max_char_,c_store_
+  dw last_font_char_pfa_,c_store_
   dw display_,default_font_,default_colors_
 
   ; Print the greeting message:

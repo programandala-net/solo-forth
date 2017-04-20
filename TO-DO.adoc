@@ -1,11 +1,11 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-04-19
+:revdate: 2017-04-20
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201704191824
+// Last modified 201704201206
 
 // Application development {{{1
 == Application development ==
@@ -1772,11 +1772,6 @@ Adapt from Gforth: `noname`, analogous to `nextname`.
 
 // Printing {{{1
 == Printing ==
-
-.2017-04-19:
-
-Convert `mode32-max-char` to an actual `cvariable` called
-`emit-max`, in order to use it in other modes.
 
 .2017-04-19:
 
