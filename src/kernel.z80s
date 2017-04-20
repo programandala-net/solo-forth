@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201704201202
+; Last modified: 201704201544
 
 include version.z80s
 
@@ -4151,7 +4151,7 @@ skip.end:
 
   pop hl ; L = character
   push bc ; save the Forth IP
-  ld a,(last_font_char_pfa_) ; max character printed from the font
+  ld a,(last_font_char_pfa) ; max character printed from the font
   cp l ; is character L in range?
   jr z,mode32_emit.l ; if equals, print it from the font
   jr c,emit_udg.l ; if greater, print it from the UDG set
@@ -11487,7 +11487,7 @@ cold.hash_words:
 
   ; Set the screen to its default status:
   _literal 127
-  dw last_font_char_pfa_,c_store_
+  dw last_font_char_,c_store_
   dw display_,default_font_,default_colors_
 
   ; Print the greeting message:
@@ -13732,13 +13732,13 @@ system_stack_pointer:
 
 ; doc{
 
-; (mode32-at-xy) ( col row -- )
+; mode32-at-xy ( col row -- )
 ;
 ; Default action of `at-xy`, in mode 32.
 ;
 ; WARNING: The system will crash if the coordinates are out of
-; screen.  For the sake of speed, no check is done.  A wrapper
-; secure word can be written if needed.
+; screen.  For the sake of speed, no check is done.  If needed,
+; the application can use a wrapper word.
 ;
 ; See also: `at-xy`.
 ;
@@ -13762,7 +13762,7 @@ at_pfa.last_line:
   dw mode32_emit_
   dw cr_
   dw dup_
-  dw lit_,sys_df_cc ; address in display file of print position
+  dw lit_,sys_df_cc ; the screen address of the print position
   dw plus_store_
   _literal 33
   dw swap_

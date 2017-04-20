@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201704201322
+// Last modified 201704201350
 
 // Application development {{{1
 == Application development ==
@@ -1750,8 +1750,14 @@ NOTE: Milestone: 0.14.0
 
 Adapt from Gforth: `noname`, analogous to `nextname`.
 
-// Printing {{{1
-== Printing ==
+// Display {{{1
+== Display ==
+
+.2017-04-20:
+
+Change the order of the cursor coordinates embedded in strings, after
+the Forth convention? This is not possible with `mode32-emit`, which
+uses the ROM routine.
 
 .2017-04-19:
 
