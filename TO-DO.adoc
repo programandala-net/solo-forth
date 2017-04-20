@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201704201206
+// Last modified 201704201322
 
 // Application development {{{1
 == Application development ==
@@ -514,7 +514,7 @@ ZX Spectrum.
 
 .2017-02-24:
 
-Add attributes to block quotes. See <lib.sound.48.fs>.
+Add attributes to block quotes. See <sound.48.fs>.
 
 .2017-02-24:
 
@@ -880,6 +880,10 @@ save several blocks of source.
 // Graphics {{{1
 == Graphics ==
 
+.2017-04-20:
+
+Rewrite in Z80 the low-level words of <graphics.coordinates.fs>.
+
 .2017-03-29:
 
 Reorganize relation between `slow-gxy>scra_`, `gxy>scra_` and
@@ -984,9 +988,9 @@ Finish `udg-block`, combining it with the new `grid`.
 Factor `adraw176` to write `aline176`, which uses `set-pixel` and is faster.
 Write a similar alternative to `rdraw`, `rline`.
 
-.2016-12-02:
+.2016-12-02,2017-04-20:
 
-Rewrite in Z80 the low-level words of <printing.color.fs>.
+Rewrite in Z80 the low-level words of <display.attributes.fs>.
 
 .2015-09-05:
 
@@ -1113,11 +1117,10 @@ Rewrite `?shift` in Z80.
 
 Rewrite `du<` in Z80.
 
-.2016-12-30:
+.2016-12-30, 2017-04-20:
 
-NOTE: Milestone: 0.14.0
-
-Remove module <math.number.prefix.fs>.
+Remove module <math.number.prefix.fs>, unless the standard prefixes
+are made optional in the kernel.
 
 .2016-12-28:
 
@@ -1497,28 +1500,9 @@ Study the way v.Forth manages the interrupts and adapt it.
 
 Move words from <chars.fsb> to <strings.misc.fsb>.
 
-.2017-03-28:
-
-- Combine the module <graphics.attr.fs> with <printing.color.fs> or
-  <printing.cursor.fs>.
-- Rename module <printing.color.fs> to <printing.attributes.fs>.
-- Rename module <printing.*> to <print.*>.
-
 .2017-02-22:
 
 Compact and document the module <math.floating_point.rom.fs>.
-
-.2017-02-22:
-
-Make `to` deferred and provide its variants as actions, e.g.
-`slow-(to`, `fast-(to`, `nonparsing-(to`, etc.
-
-Same case: `>name` has a Z80 definition in the kernel and a Forth
-definition in the library.
-
-Same case: `m*`, two definitions in the library.
-
-Same case: bitmasks in <printing.color.fs>.
 
 .2017-02-21:
 
@@ -1540,10 +1524,6 @@ implementation optional.
 
 Words that could be moved to the library, if the `need` tool didn't use them:
 `2over`, `line>string`.
-
-.2016-12-08:
-
-Rename <math.number.print.fs> to <printing.number.fs>.
 
 // Loading {{{1
 == Loading ==

@@ -1,4 +1,4 @@
-  \ graphics.g-emit.fs
+  \ display.g-emit.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html

@@ -1,9 +1,9 @@
-  \ screen_mode.COMMON.fs
+  \ display.modes.COMMON.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704162237
+  \ Last modified: 201704191835
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -26,7 +26,7 @@
 
 ( columns rows set-mode-output )
 
-[unneeded] columns ?\ need value 32 value columns
+[unneeded] columns ?\ need cvalue 32 cvalue columns
 
   \ doc{
   \
@@ -39,7 +39,7 @@
   \
   \ }doc
 
-[unneeded] rows ?\ need value 24 value rows
+[unneeded] rows ?\ need cvalue 24 cvalue rows
 
   \ doc{
   \
@@ -123,5 +123,8 @@ code (banked-mode-output) ( -- )
   \ the changes in the kernel.
   \
   \ 2017-04-16: Improve needing of `set-mode-output`.
+  \
+  \ 2017-04-19: Use `cvalue` instead of `value` for `columns`
+  \ and `rows`.
 
   \ vim: filetype=soloforth

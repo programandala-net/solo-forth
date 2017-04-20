@@ -1,9 +1,9 @@
-  \ printing.cursor.fs
+  \ display.cursor.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703291306
+  \ Last modified: 201704191834
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -38,7 +38,7 @@
   \ }doc
 
 [unneeded] last-column
-?\ need columns : last-column ( -- row  ) columns 1- ;
+?\ need columns : last-column ( -- col ) columns 1- ;
 
   \ doc{
   \
@@ -484,5 +484,7 @@ code xy>attra ( col row -- a )
   \ 2017-03-29: Add `xy>gxy`, `xy>gxy176`.  Move `xy>attra_`,
   \ `xy>attr` and `xy>attra` from the <graphics.attributes.fs>
   \ module, which is deleted. Improve documentation.
+  \
+  \ 2017-04-19: Fix documentation.
 
   \ vim: filetype=soloforth

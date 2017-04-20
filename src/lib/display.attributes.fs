@@ -1,4 +1,4 @@
-  \ printing.color.fs
+  \ display.attributes.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
@@ -9,7 +9,7 @@
   \ ===========================================================
   \ Description
 
-  \ Words related to color.
+  \ Words related to attributes.
 
   \ ===========================================================
   \ Author

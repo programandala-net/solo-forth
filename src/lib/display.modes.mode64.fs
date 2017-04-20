@@ -1,4 +1,4 @@
-  \ screen_mode.64.fs
+  \ display.modes.mode64.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html

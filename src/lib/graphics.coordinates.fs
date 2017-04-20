@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201704201257
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2017.
+  \ Marcos Cruz (programandala.net), 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -26,8 +26,8 @@
 ( g-xy g-x g-y g-at-xy g-at-x g-at-y g-home )
 
 
-[unneeded] g-xy dup ?\ need os-coordx need os-coordy
-?\ : g-xy ( -- gx gy ) os-coordx c@ os-coordy c@ ;
+[unneeded] g-xy ?( need os-coordx need os-coordy
+: g-xy ( -- gx gy ) os-coordx c@ os-coordy c@ ; ?)
 
   \ doc{
   \
@@ -122,10 +122,14 @@
   \ ===========================================================
   \ Change log
 
-  \ 2017-02-01: Add `g-xy`, `g-x`, `g-y`, `g-at-xy`, `g-at-x`,
-  \ `g-at-y`, `g-home`.
+  \ 2016-04-23: First version: `g-x`, `g-y`, `g-xy`, `g-at-x`,
+  \ `g-at-y`, `g-at-xy`, `g-home`.
+  \
+  \ 2017-02-01: Rewrite with a different approach. Document.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-04-20: Improve needing of `g-xy`.
 
   \ vim: filetype=soloforth
 
