@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201704201950
+; Last modified: 201704202009
 
 include version.z80s
 
@@ -4169,18 +4169,10 @@ skip.end:
 mode32_emit.l
   ld a,l ; A =character
 mode32_emit.a
-  call print_a
-  pop bc ; restore the Forth IP
-  _jp_next
-
-print_a:
-
-  ; Print character in the A register to the current channel via
-  ; the ROM.
-
   ld (iy+sys_scr_ct_offset),$FF ; no scroll message
   rst $10
-  ret
+  pop bc ; restore the Forth IP
+  _jp_next
 
 ; XXX TODO -- Add multitasker's `pause` when available.
 
@@ -4194,7 +4186,7 @@ print_a:
 ; Send character _c_ to the current channel, calling the ROM
 ; routine at $0010, and assuming the current font contains
 ; characters 0..255. The trick is done by modifying the
-; character code moving the font address accordingly before
+; character code and moving the font address accordingly before
 ; calling the ROM routine, depending on the character range. As
 ; a result, the ROM routine treats character ranges 128..223 and
 ; 224..255 as 32..127 and 32..63 respectively.
@@ -4232,7 +4224,7 @@ print_a:
 
 mode32iso_emit.224:
   ; character 224..255
-  sub 192  ; convert character range to 32..127
+  sub 192  ; convert character range to 32..63
   ld bc,192*8 ; offset for the font address
 
 mode32iso_emit.display
@@ -4244,7 +4236,8 @@ mode32iso_emit.display
   push hl ; save the font address
   add hl,bc ; apply the offset
   ld (sys_chars),hl ; update the font address
-  call print_a ; print character
+  ld (iy+sys_scr_ct_offset),$FF ; no scroll message
+  rst $10
   pop hl
   ld (sys_chars),hl ; restore the font address
   pop bc ; restore the Forth IP
