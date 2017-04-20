@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703131954
+  \ Last modified: 201704182150
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -201,7 +201,7 @@ need !p need sound-register-port need sound-write-port
 
 [unneeded] get-mixer
 
-?\ need @sound : get-mixer ( b -- ) 7 @sound ;
+?\ need @sound : get-mixer ( -- b ) 7 @sound ;
 
   \ doc{
   \
@@ -236,7 +236,7 @@ need !p need sound-register-port need sound-write-port
 
 [unneeded] -mixer
 
-?\ need !mixer : -mixer ( -- ) %111111 !mixer ;
+?\ need set-mixer : -mixer ( -- ) %111111 set-mixer ;
 
   \ doc{
   \
@@ -245,7 +245,7 @@ need !p need sound-register-port need sound-write-port
   \ Disable the noise and tone mixers for the three channels of
   \ the AY-3-8912 sound generator.
   \
-  \ See also: `!mixer`, `@mixer`, `silence`.
+  \ See also: `set-mixer`, `get-mixer`, `silence`.
   \
   \ }doc
 
@@ -253,6 +253,19 @@ need !p need sound-register-port need sound-write-port
 
 : silence ( -- )
   -mixer 0 0 !volume 0 1 !volume 0 2 !volume ; ?)
+
+  \ doc{
+  \
+  \ silence ( -- )
+  \
+  \ Execute `-mixer` to disable the noise and tone mixers for
+  \ the three channels of the AY-3-8912 sound generator. Then
+  \ set the volume of the three channels to zero.
+  \
+  \ See also: `!volume`.
+  \
+  \ }doc
+
 
 [unneeded] noise ?\ need !sound  : noise ( -- ) 7 7 !sound ;
 
@@ -281,7 +294,7 @@ variable len  variable tempo  variable octave  variable volume
 
 : note ( n "name" -- )
   create  ,  does>   @ octave @ * 16 /  1 freq tones
-                     tempo @ len @ * ms shutup ;
+                     tempo @ len @ * ms -mixer ;
 
 523 note c  554 note c# 583 note d  622 note d#
 659 note e  698 note f  740 note f# 784 note g
@@ -545,7 +558,7 @@ decimal
 need sound  hex
 
 [unneeded] applause
-?\ 00 00 00 00 00 00 1E 40 0F 10 0F 00 07 18 sound aplausse
+?\ 00 00 00 00 00 00 1E 40 0F 10 0F 00 07 18 sound applause
 
 [unneeded] hammer
 ?\ 1B 00 09 00 00 00 1F C8 10 10 10 00 6B 10 sound hammer
@@ -635,5 +648,10 @@ decimal
   \ Add `get-mixer`, `set-mixer`.  Improve documentation.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-04-18: Fix needing of `applause`. Improve
+  \ documentation. Fix references to `!mixer` and `@mixer`:
+  \ they are `set-mixer` and `get-mixer`. Update old reference
+  \ to `shutup`, now `-mixer`.
 
   \ vim: filetype=soloforth
