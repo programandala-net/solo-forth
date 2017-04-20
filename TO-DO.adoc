@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201704201350
+// Last modified 201704201953
 
 // Application development {{{1
 == Application development ==
@@ -1752,6 +1752,11 @@ Adapt from Gforth: `noname`, analogous to `nextname`.
 
 // Display {{{1
 == Display ==
+
+.2017-04-20:
+
+Write `mode32udg-emit` to use the full UDG 0..255 as a font, after the
+method used by `mode32iso-emit`.
 
 .2017-04-20:
 
