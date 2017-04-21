@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201704202009
+; Last modified: 201704211642
 
 include version.z80s
 
@@ -4097,7 +4097,7 @@ skip.end:
 ; depending on the actual implementation of `emit`, which is a
 ; deferred word.
 ;
-; At the moment, only `mode32-emit` checks this value.
+; At the moment, only `mode-32-emit` checks this value.
 ; Eventually, also the alternative modes will use it.
 ;
 ; Note that this is a character variable, which must be set with
@@ -4114,18 +4114,18 @@ skip.end:
   db 127
 
 ; ----------------------------------------------
-  _code_header mode32_emit_,'mode32-emit'
+  _code_header mode_32_emit_,'mode-32-emit'
 
 ; doc{
 ;
-; mode32-emit ( c -- )
+; mode-32-emit ( c -- )
 ;
 ; Send character _c_ to the current channel, calling the ROM
 ; routine at $0010.
 ;
-; ``mode32-emit`` is the default action of `emit`.
+; ``mode-32-emit`` is the default action of `emit`.
 ;
-; ``mode32-emit`` uses `last-font-char` the following way:
+; ``mode-32-emit`` uses `last-font-char` the following way:
 ; characters up to and including `last-font-char` (by default,
 ; 0..127) are displayed through the ROM routine, while higher
 ; characters (by default, 128..255) are displayed by `emit-udg`
@@ -4155,6 +4155,10 @@ skip.end:
 ;         no character is printed by `emit-udg`.
 ; |===
 
+; When a standard character set is required, without the ROM
+; interpreting characters 128..255 its own way, `mode-32iso-emit`
+; can be used instead.
+;
 ; See also: `set-font`, `set-udg`.
 ;
 ; }doc
@@ -4163,12 +4167,12 @@ skip.end:
   push bc ; save the Forth IP
   ld a,(last_font_char_pfa) ; max character printed from the font
   cp l ; is character L in range?
-  jr z,mode32_emit.l ; if equals, print it from the font
+  jr z,mode_32_emit.l ; if equals, print it from the font
   jr c,emit_udg.l ; if greater, print it from the UDG set
   ; Otherwise, print it from the font.
-mode32_emit.l
+mode_32_emit.l
   ld a,l ; A =character
-mode32_emit.a
+mode_32_emit.a
   ld (iy+sys_scr_ct_offset),$FF ; no scroll message
   rst $10
   pop bc ; restore the Forth IP
@@ -4177,11 +4181,11 @@ mode32_emit.a
 ; XXX TODO -- Add multitasker's `pause` when available.
 
 ; ----------------------------------------------
-  _code_header mode32iso_emit_,'mode32iso-emit'
+  _code_header mode_32iso_emit_,'mode-32iso-emit'
 
 ; doc{
 ;
-; mode32iso-emit ( c -- )
+; mode_32iso-emit ( c -- )
 ;
 ; Send character _c_ to the current channel, calling the ROM
 ; routine at $0010, and assuming the current font contains
@@ -4191,19 +4195,19 @@ mode32_emit.a
 ; a result, the ROM routine treats character ranges 128..223 and
 ; 224..255 as 32..127 and 32..63 respectively.
 ;
-; ``mode32iso-emit`` is an alternative action of `emit`, useful
+; ``mode-32iso-emit`` is an alternative action of `emit`, useful
 ; when a ISO character set is required (or any character set
 ; with more than 128 characters). A similar result can be
-; obtained with `mode32-emit` and `last-font-char`, by treating
+; obtained with `mode-32-emit` and `last-font-char`, by treating
 ; the characters greater than 128 as UDG, using `set-udg`.  The
-; advantage of `mode32iso-emit` is the ISO font can be managed
+; advantage of `mode-32iso-emit` is the ISO font can be managed
 ; (e.g. built, loaded from disk, allocated, etc.) as a whole,
 ; using only the font address, and reserving the full UDG set
 ; for graphics.
 ;
-; ``mode32iso-emit`` is not affected by `last-font-char`.
+; ``mode-32iso-emit`` is not affected by `last-font-char`.
 ;
-; See also: `mode32-emit`, `set-font`.
+; See also: `mode-32-emit`, `set-font`.
 ;
 ; }doc
 
@@ -4212,22 +4216,22 @@ mode32_emit.a
   ld a,l
   ld bc,0 ; font offset for characters 0..127
   cp 128 ; is the character in range 0..127?
-  jr c,mode32iso_emit.display ; if so, display it and finish
+  jr c,mode_32iso_emit.display ; if so, display it and finish
 
   cp 224 ; is the character in range 128..223?
-  jr nc,mode32iso_emit.224
+  jr nc,mode_32iso_emit.224
 
   ; character 128..223
   sub 96  ; convert character range to 32..127
   ld bc,96*8 ; offset for the font address
-  jr mode32iso_emit.display
+  jr mode_32iso_emit.display
 
-mode32iso_emit.224:
+mode_32iso_emit.224:
   ; character 224..255
   sub 192  ; convert character range to 32..63
   ld bc,192*8 ; offset for the font address
 
-mode32iso_emit.display
+mode_32iso_emit.display
 
   ; Display the character in the A register from the current
   ; font, adding offset BC to the font address.
@@ -4249,11 +4253,11 @@ mode32iso_emit.display
 
   ; ; XXX TMP -- for testing
 
-  ; dw lit_,mode32iso_emit_
+  ; dw lit_,mode_32iso_emit_
   ; dw lit_,emit_
   ; dw defer_store_
   ; dw emit_
-  ; dw lit_,mode32_emit_
+  ; dw lit_,mode_32_emit_
   ; dw lit_,emit_
   ; dw defer_store_
   ; dw exit_
@@ -4273,7 +4277,7 @@ mode32iso_emit.display
 ; used as well in order to calculate the address of the
 ; corresponding character bitmap in the UDG set.
 ;
-; See also: `set-udg`, `emit`, `mode32-emit`, `last-font-char`.
+; See also: `set-udg`, `emit`, `mode-32-emit`, `last-font-char`.
 ;
 ; }doc
 
@@ -4296,7 +4300,7 @@ emit_udg.l
   _jp_next
 
 ; ----------------------------------------------
-  _defer_header emit_,'emit',,mode32_emit_
+  _defer_header emit_,'emit',,mode_32_emit_
 
 ; doc{
 ;
@@ -5953,8 +5957,8 @@ two_store.into_hl_pointer:
 ; The last char used from the font can be configured by
 ; `last-font-char`.
 ;
-; See also: `get-font`, `rom-font`, `default-font`, `mode32`,
-; `mode42`, `mode64`.
+; See also: `get-font`, `rom-font`, `default-font`, `mode-32`,
+; `mode-42`, `mode-64`.
 ;
 ; }doc
 
@@ -7553,7 +7557,7 @@ u_less_than.de_hl:
 ;
 ; }doc
 
-  ; XXX TODO -- Move to the library?  Note: Used by `mode32` in
+  ; XXX TODO -- Move to the library?  Note: Used by `mode-32` in
   ; the library.
 
   dw lastxt_,fetch_
@@ -13667,7 +13671,7 @@ system_stack_pointer:
 ;
 ; A deferred word that activates the default screen mode. It's
 ; set to `noop` until the first mode change is done. Then it's
-; vectored to `mode32`.  It's used by `bye`.
+; vectored to `mode-32`.  It's used by `bye`.
 ;
 ; }doc
 
@@ -13821,19 +13825,17 @@ system_stack_pointer:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header mode32_at_xy_,'mode32-at-xy'
+  _colon_header mode_32_at_xy_,'mode-32-at-xy'
 
 ; doc{
 
-; mode32-at-xy ( col row -- )
+; mode-32-at-xy ( col row -- )
 ;
-; Default action of `at-xy`, in mode 32.
+; Default action of `at-xy`, in `mode-32`.
 ;
 ; WARNING: The system will crash if the coordinates are out of
 ; screen.  For the sake of speed, no check is done.  If needed,
 ; the application can use a wrapper word.
-;
-; See also: `at-xy`.
 ;
 ; }doc
 
@@ -13846,13 +13848,13 @@ system_stack_pointer:
   dw zero_branch_,at_pfa.last_line
   ; not the last row
   _literal 22
-  dw mode32_emit_,mode32_emit_,mode32_emit_
+  dw mode_32_emit_,mode_32_emit_,mode_32_emit_
   dw exit_
 
 at_pfa.last_line:
-  dw one_minus_,dup_,mode32_emit_,mode32_emit_
+  dw one_minus_,dup_,mode_32_emit_,mode_32_emit_
   _literal 0
-  dw mode32_emit_
+  dw mode_32_emit_
   dw cr_
   dw dup_
   dw lit_,sys_df_cc ; the screen address of the print position
@@ -13971,7 +13973,7 @@ attr_cls.a: ; alternative entry point used by `cls`
   ; Execution continues in `at-xy`:
 
 ; ----------------------------------------------
-  _defer_header at_xy_,'at-xy',,mode32_at_xy_
+  _defer_header at_xy_,'at-xy',,mode_32_at_xy_
 
 ; doc{
 ;
@@ -13981,7 +13983,7 @@ attr_cls.a: ; alternative entry point used by `cls`
 ; upper left corner is column zero, row zero.
 ;
 ; ``at-xy`` is a deferred word whose default action is
-; `mode32-at-xy`.
+; `mode-32-at-xy`.
 ;
 ; Origin: Forth-94 (FACILITY), Forth-2012 (FACILITY).
 ;
@@ -13990,20 +13992,20 @@ attr_cls.a: ; alternative entry point used by `cls`
 ; }doc
 
 ; ----------------------------------------------
-  _colon_header mode32_xy_,'mode32-xy'
+  _colon_header mode_32_xy_,'mode-32-xy'
 
 ; doc{
 ;
-; mode32-xy ( -- col row )
+; mode_32-xy ( -- col row )
 ;
-; Return the current column and row, in `mode32`.
+; Return the current column and row, in `mode-32`.
 ;
-; ``mode32-xy`` is the default action of `xy`.
+; ``mode-32-xy`` is the default action of `xy`.
 ;
 ; Definition:
 
 ; ----
-; : (mode32-xy) ( -- col row )
+; : (mode_32-xy) ( -- col row )
 ;   24 23689 c@ -
 ;   33 23688 c@ - dup 32 = if  drop 1+ 0  then  swap ;
 ;   \ 23688 = OS variable S_POSX
@@ -14026,15 +14028,15 @@ attr_cls.a: ; alternative entry point used by `cls`
               ;             in case this word can be reused
               ;             by other modes.
   dw equals_
-  dw zero_branch_,mode32_xy.end
+  dw zero_branch_,mode_32_xy.end
   dw drop_,one_plus_
   _literal 0
-mode32_xy.end:
+mode_32_xy.end:
   dw swap_
   dw exit_
 
 ; ----------------------------------------------
-  _defer_header xy_,'xy',,mode32_xy_
+  _defer_header xy_,'xy',,mode_32_xy_
 
 ; doc{
 ;
@@ -14042,7 +14044,7 @@ mode32_xy.end:
 ;
 ; Return the current column and row of the text cursor.
 ;
-; ``xy`` is a deferred word whose default action is `mode32-xy`.
+; ``xy`` is a deferred word whose default action is `mode-32-xy`.
 ;
 ; See also: `at-xy`.
 ;

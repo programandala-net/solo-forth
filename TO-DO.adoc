@@ -1,11 +1,11 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-04-20
+:revdate: 2017-04-21
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201704201953
+// Last modified 201704211712
 
 // Application development {{{1
 == Application development ==
@@ -1752,6 +1752,14 @@ Adapt from Gforth: `noname`, analogous to `nextname`.
 
 // Display {{{1
 == Display ==
+
+.2017-04-21:
+
+Fix: The default `mode-32` expects _row_ right after control character
+22, and then _col_, i.e in the order used by Sinclair BASIC. But
+`mode-64` and `mode-42` expect them in reverse order.
+
+Update `(at-xy` and its documentation.
 
 .2017-04-20:
 

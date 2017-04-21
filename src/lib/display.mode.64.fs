@@ -1,9 +1,9 @@
-  \ display.modes.mode64.fs
+  \ display.mode.64.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201704211649
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,13 +33,12 @@
 
   \ XXX TODO -- integrate the source of the driver
 
-( mode64 )
+( mode-64 )
 
   \ XXX TMP -- The driver is loaded from disk to memory address
   \ 60000.
 
-need mode32
-need get-drive need drive need file>
+need mode-32 need get-drive need drive need file> need (at-xy
 
 need 4x8font  \ compile the font
 
@@ -47,21 +46,18 @@ get-drive  0 drive set-drive throw
            s" pr64.bin" 0 0 file> throw  \ load the driver
 set-drive throw
 
-[defined] (at-xy)
-?\ : (at-xy) ( col row -- ) 22 emit swap emit emit ;
+: mode-64-xy ( -- col row ) 0 0 ;  \ XXX TODO
 
-: mode64-xy ( -- col row ) 0 0 ;  \ XXX TODO
-
-: mode64 ( -- )
+: mode-64 ( -- )
   [ latestxt ] literal current-mode !
   64 to columns  24 to rows
-  ['] mode64-xy ['] xy defer!
-  ['] (at-xy) ['] at-xy defer!
+  ['] mode-64-xy ['] xy defer!
+  ['] (at-xy ['] at-xy defer!
   4x8font set-font  60000 set-mode-output ;
   \ Set the 64 cpl printing mode: the driver, the font
   \ and `at-xy`.
 
-( mode64 )
+( mode-64 )
 
   \ XXX UNDER DEVELOPMENT
   \ XXX NEW
@@ -71,12 +67,12 @@ need assembler need unresolved
 
   \ XXX TODO use common variables for all modes?
 
-create mode64-at-flag 0 c,
-create mode64-column 0 c,
-create mode64-row 0 c,
-variable mode64-chars
+create mode-64-at-flag 0 c,
+create mode-64-column 0 c,
+create mode-64-row 0 c,
+variable mode-64-chars
 
-code mode64-emit ( -- )
+code mode-64-emit ( -- )
 
   \ XXX TODO --
 
@@ -88,9 +84,9 @@ code mode64-emit ( -- )
 
   end-code
 
-: mode64 ( -- )
-  mode64-chars @ set-font  mode64-emit set-mode-outupt
-  ['] (at-xy) ['] at-xy defer! ;
+: mode-64 ( -- )
+  mode-64-chars @ set-font  mode-64-emit set-mode-outupt
+  ['] (at-xy ['] at-xy defer! ;
 
 ( 4x8font )
 
@@ -194,5 +190,8 @@ decimal
   \
   \ 2017-02-21: Need `unresolved`, which now is optional, not
   \ part of the assembler.
+  \
+  \ 2017-04-21: Rename module and words after the new
+  \ convention for display modes.
 
   \ vim: filetype=soloforth

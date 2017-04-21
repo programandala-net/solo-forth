@@ -1,9 +1,9 @@
-  \ display.modes.fzx-mode.fs
+  \ display.mode.fzx.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703112303
+  \ Last modified: 201704211633
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -26,7 +26,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( fzx-mode )
+( mode-fzx )
 
 need fzx-emit
 
@@ -41,7 +41,7 @@ need fzx-emit
 : fzx-home ( -- ) 0 191 fzx-at-xy ;
   \ : fzx-home ( -- ) 0 fzx-x ! ;  \ XXX TODO
 
-: fzx-mode ( -- )
+: mode-fzx ( -- )
   ['] fzx-emit   ['] emit   defer!
   ['] fzx-at-xy  ['] at-xy  defer!
   ['] fzx-home   ['] home   defer!
@@ -373,5 +373,8 @@ code fzx-emit ( c -- )
   \
   \ 2017-03-11: Need `>amark`, which now is optional, not
   \ included in the assembler by default.
+  \
+  \ 2017-04-21: Rename module and words after the new
+  \ convention for display modes.
 
   \ vim: filetype=soloforth
