@@ -3,18 +3,18 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704211633
+  \ Last modified: 201704231343
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ The screen mode 32.
+  \ The default 32 CPL display mode.
 
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -31,19 +31,26 @@ need columns need rows need set-font need set-mode-output
   [ latestxt ] literal current-mode !
   15360 set-font  2548 set-mode-output
   32 to columns  24 to rows
-  ['] mode-32-xy ['] xy defer!
+  ['] mode-32-emit  ['] emit  defer!
+  ['] mode-32-xy    ['] xy    defer!
   ['] mode-32-at-xy ['] at-xy defer! ;
 
   \ doc{
   \
   \ mode-32 ( -- )
   \
-  \ Set the default printing mode: the 32 cpl ROM routine, the
-  \ ROM font, and the special code for `at-xy` (required to use
-  \ the whole screen).
+  \ Set the default 32 CPL display mode. Usually this is not
+  \ needed by the application, except when any other mode is
+  \ used, e.g.  `mode-32iso`, `mode-42` or `mode-64`.
   \
-  \ ``mode-32`` is loaded when `mode-42` or `mode-64` are
-  \ loaded, in order to make it the default mode.
+  \ When any other mode is loaded, ``mode-32`` is automatically
+  \ loaded and made the default display mode (therefore
+  \ restored by `restore-mode`, which is called by `warm` and
+  \ `cold`).
+  \
+  \ See also: `current-mode`, `set-font`, `set-mode-output`,
+  \ `columns`, `rows`, `mode32-emit`, `mode-32-xy`,
+  \ `mode-32-at-xy`.
   \
   \ }doc
 
@@ -62,5 +69,7 @@ need columns need rows need set-font need set-mode-output
   \
   \ 2017-04-21: Rename module and words after the new
   \ convention for display modes.
+  \
+  \ 2017-04-23: Improve documentation.
 
   \ vim: filetype=soloforth

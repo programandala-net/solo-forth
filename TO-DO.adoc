@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201704211712
+// Last modified 201704212011
 
 // Application development {{{1
 == Application development ==
@@ -1752,6 +1752,11 @@ Adapt from Gforth: `noname`, analogous to `nextname`.
 
 // Display {{{1
 == Display ==
+
+.2017-04-21:
+
+Replace the current `mode-64` with the improved code written by Einar
+Saukas, "64#4". Import its four extra fonts.
 
 .2017-04-21:
 

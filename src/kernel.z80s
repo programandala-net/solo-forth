@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201704211642
+; Last modified: 201704231327
 
 include version.z80s
 
@@ -4179,88 +4179,6 @@ mode_32_emit.a
   _jp_next
 
 ; XXX TODO -- Add multitasker's `pause` when available.
-
-; ----------------------------------------------
-  _code_header mode_32iso_emit_,'mode-32iso-emit'
-
-; doc{
-;
-; mode_32iso-emit ( c -- )
-;
-; Send character _c_ to the current channel, calling the ROM
-; routine at $0010, and assuming the current font contains
-; characters 0..255. The trick is done by modifying the
-; character code and moving the font address accordingly before
-; calling the ROM routine, depending on the character range. As
-; a result, the ROM routine treats character ranges 128..223 and
-; 224..255 as 32..127 and 32..63 respectively.
-;
-; ``mode-32iso-emit`` is an alternative action of `emit`, useful
-; when a ISO character set is required (or any character set
-; with more than 128 characters). A similar result can be
-; obtained with `mode-32-emit` and `last-font-char`, by treating
-; the characters greater than 128 as UDG, using `set-udg`.  The
-; advantage of `mode-32iso-emit` is the ISO font can be managed
-; (e.g. built, loaded from disk, allocated, etc.) as a whole,
-; using only the font address, and reserving the full UDG set
-; for graphics.
-;
-; ``mode-32iso-emit`` is not affected by `last-font-char`.
-;
-; See also: `mode-32-emit`, `set-font`.
-;
-; }doc
-
-  pop hl ; L = character
-  push bc ; save the Forth IP
-  ld a,l
-  ld bc,0 ; font offset for characters 0..127
-  cp 128 ; is the character in range 0..127?
-  jr c,mode_32iso_emit.display ; if so, display it and finish
-
-  cp 224 ; is the character in range 128..223?
-  jr nc,mode_32iso_emit.224
-
-  ; character 128..223
-  sub 96  ; convert character range to 32..127
-  ld bc,96*8 ; offset for the font address
-  jr mode_32iso_emit.display
-
-mode_32iso_emit.224:
-  ; character 224..255
-  sub 192  ; convert character range to 32..63
-  ld bc,192*8 ; offset for the font address
-
-mode_32iso_emit.display
-
-  ; Display the character in the A register from the current
-  ; font, adding offset BC to the font address.
-
-  ld hl,(sys_chars)
-  push hl ; save the font address
-  add hl,bc ; apply the offset
-  ld (sys_chars),hl ; update the font address
-  ld (iy+sys_scr_ct_offset),$FF ; no scroll message
-  rst $10
-  pop hl
-  ld (sys_chars),hl ; restore the font address
-  pop bc ; restore the Forth IP
-  _jp_next
-
-; XXX TODO -- Add multitasker's `pause` when available.
-
-  ; _colon_header e_,'e' ; ( c -- )
-
-  ; ; XXX TMP -- for testing
-
-  ; dw lit_,mode_32iso_emit_
-  ; dw lit_,emit_
-  ; dw defer_store_
-  ; dw emit_
-  ; dw lit_,mode_32_emit_
-  ; dw lit_,emit_
-  ; dw defer_store_
-  ; dw exit_
 
 ; ----------------------------------------------
   _code_header emit_udg_,'emit-udg'
