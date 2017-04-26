@@ -3,14 +3,13 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704211656
+  \ Last modified: 201704211747
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ Words that are common to all screen
-  \ modes.
+  \ Words that are common to all display modes.
 
   \ ===========================================================
   \ Author

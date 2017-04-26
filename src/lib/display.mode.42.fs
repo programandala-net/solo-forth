@@ -5,13 +5,13 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201704211658
+  \ Last modified: 201704211748
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ A 42 CPL screen mode.
+  \ A 42 CPL display mode.
 
   \ ===========================================================
   \ Authors

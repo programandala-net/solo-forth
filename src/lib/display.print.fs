@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201704201609
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,18 +33,25 @@ need last-row need /name
   \ export
 
 variable #printed   \ Printed chars in the current line.
+
 variable #indented   \ Indented chars in the current line.
 
 : printed+ ( u -- ) #printed +! ;
+
 : indented+ ( u -- ) #indented +! ;
-: (.word) ( ca len -- ) dup printed+ type ;
+
+: (.word ( ca len -- ) dup printed+ type ;
+
 : .char ( c -- ) emit 1 printed+ ;
+
 : not-at-home? ( -- 0f ) xy + ;
 
   \ export
 
 : no-printed ( -- ) #printed off #indented off ;
+
 : print-home ( -- ) home no-printed ;
+
 : print-page ( -- ) page print-home ;
 
 : print-start-of-line ( -- )
@@ -68,29 +75,33 @@ variable #indented   \ Indented chars in the current line.
 
   \ export
 
-defer (print-cr) ' (print-cr) ' cr defer!
+defer (print-cr ' (print-cr ' cr defer!
 
-: print-cr print-cr? ?? (print-cr) no-printed ;
+: print-cr print-cr? if (print-cr then no-printed ;
 
 variable print-width
 
   \ hide
 
 : previous-word? ( -- f ) #printed @ #indented @ > ;
-: ?space ( -- ) previous-word? if  bl .char  then ;
-: current-print-width ( -- u ) print-width @ ?dup 0= ?? cols ;
-: too-long? ( u -- f ) 1+ #printed @ + current-print-width > ;
-: .word ( ca len -- )
-  dup too-long? if  print-cr  else  ?space  then  (.word) ;
 
-: (print-indentation) ( u -- )
+: ?space ( -- ) previous-word? if bl .char then ;
+
+: current-print-width ( -- u ) print-width @ ?dup ?exit cols ;
+
+: too-long? ( u -- f ) 1+ #printed @ + current-print-width > ;
+
+: .word ( ca len -- )
+  dup too-long? if print-cr else ?space then (.word ;
+
+: (print-indentation ( u -- )
   dup trm+move-cursor-right dup indented+ printed+ ;  -->
 
 ( print )
 
   \ export
 
-: print-indentation ( u -- ) ?dup ?? (print-indentation) ;
+: print-indentation ( u -- ) ?dup 0exit (print-indentation ;
 
   \ hide
 
@@ -102,12 +113,11 @@ variable print-width
 
 : first-word ( ca1 len1 -- ca2 len2 ca3 len3 ) /name >word ;
 
-: (print) ( ca1 len1 -- ca2 len2 ) first-word .word ;
+: (print ( ca1 len1 -- ca2 len2 ) first-word .word ;
 
   \ export
 
-: print ( ca len --)
-  begin  dup   while  (print)  repeat  2drop ;
+: print ( ca len --) begin dup while (print repeat 2drop ;
 
   \ Suggested usage in the application:
 
@@ -119,5 +129,7 @@ variable print-width
   \ Change log
 
   \ 2017-02-03: Compact the code, saving two blocks.
+  \
+  \ 2017-04-20: Review. Modify layout.
 
   \ vim: filetype=soloforth

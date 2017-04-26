@@ -210,13 +210,13 @@ need ?drive# need block-drive@ need ?block-drive
 
 [unneeded] ?drives
 
-?\ : ?drives ( u -- ) max-drives > #-287 ?throw ;
+?\ : ?drives ( n -- ) max-drives > #-287 ?throw ;
 
   \ doc{
   \
-  \ ?drives ( u -- )
+  \ ?drives ( n -- )
   \
-  \ If _u_ is greater than the maximum number of disk drives,
+  \ If _n_ is greater than the maximum number of disk drives,
   \ throw exception #-287 ("wrong number of drives").
   \
   \ See also: `set-block-drives`.  `?block-drive`, `?drive#`.
@@ -310,5 +310,7 @@ need block-drive@
   \ 2017-03-13: Improve documentation.
   \
   \ 2017-03-28: Fix typo.
+  \
+  \ 2017-04-21: Fix stack notation of `?drives`.
 
   \ vim: filetype=soloforth

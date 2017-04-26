@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704041949
+  \ Last modified: 201704201313
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -251,7 +251,7 @@ need 2nip
     \ ex de,hl
     \ jp pushhlde
 
-( dxor dor dand d10* m* )
+( dxor dor dand d10* )
 
 [unneeded] dxor
 ?\ : dxor ( d1 d2 -- d3 ) rot xor -rot xor swap ;
@@ -418,5 +418,7 @@ need 2nip need cell-bits
   \ 2017-03-29: Update needing of `cell-bits`.
   \
   \ 2017-04-04: Improve documentation.
+  \
+  \ 2017-04-20: Fix index line.
 
   \ vim: filetype=soloforth

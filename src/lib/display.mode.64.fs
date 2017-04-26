@@ -9,12 +9,12 @@
   \ ===========================================================
   \ Description
 
-  \ A 64 CPL screen mode.
+  \ A 64 CPL display mode.
 
   \ ===========================================================
   \ Authors
 
-  \ Author of the original code: Andrew Owen.
+  \ Author of the original code: Andrew Owen, 2007.
   \ Published on the World of Spectrum forum:
   \ http://www.worldofspectrum.org/forums/discussion/14526/redirect/p1
 
