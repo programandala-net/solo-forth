@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201704261925
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -21,7 +21,7 @@
   \ Taylor's "Tetris for terminals".
   \
   \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
-  \ 2015, 2016.
+  \ 2015, 2016, 2017.
 
   \ ===========================================================
   \ Credit
@@ -57,9 +57,10 @@ only forth also definitions
 need random need j need >= need <= need 2/ need value
 need d<> need d= need case need ms need frames@ need yes?
 need begin-stringtable need positional-case: need tab
-need >body need vocabulary need randomize
+need >body need randomize need flash.
 
-vocabulary tt  also tt definitions  decimal
+wordlist dup constant tt-wordlist
+         dup >order set-current  decimal
 
 bl bl 2constant empty
   \ An empty position of the pit.
@@ -67,10 +68,10 @@ bl bl 2constant empty
 variable wiping
   \ If true, wipe brick, else draw brick.
 
-2 constant col0  0 constant row0
+2 cconstant col0  0 cconstant row0
   \ Position of the pit, not including the frame.
 
-14 constant wide  22 constant deep
+14 cconstant wide  22 cconstant deep
   \ Size of pit, not including the frame.
   \ Wide in stones; deep in rows.
 
@@ -85,7 +86,7 @@ variable wiping
   \ c5 = pause key
   \ c6 = quit key
 
-7 constant edit-char
+7 cconstant edit-char
 
 : actual-cursor-keys ( -- c1 c2 c3 c4 c5 c6 )
   8 9 11 10 bl edit-char ;
@@ -117,7 +118,7 @@ variable wiping
 
 ( tt )
 
-6 constant max-keyset
+6 cconstant max-keyset
   \ Maximum number of the keyset (first is zero).
 
 variable keyset
@@ -229,7 +230,7 @@ create 'pit /pit allot
 ( tt )
 
 : bottom-msg ( addr cnt -- )
-  deep over 2/ wide swap - 2/ position 1 flash type 0 flash ;
+  deep over 2/ wide swap - 2/ position 1 flash. type 0 flash. ;
   \ Output a message at the bottom of the pit.
 
 : draw-line ( line -- )
@@ -282,7 +283,7 @@ end-stringtable
   ." Original ANS Forth code written" cr
   ." by Dirk Uwe Zoller, 1994." cr
   ." Ported to Solo Forth" cr
-  ." by Marcos Cruz, 2015." cr cr
+  ." by Marcos Cruz, 2015-2017." cr cr
   show-keys ;
   \ Display some explanations.
 
@@ -298,7 +299,7 @@ end-stringtable
 
 ( tt )
 
-23 constant score-row
+23 cconstant score-row
 
 : at-score ( col -- ) score-row at-xy ;
   \ Set cursor at column _col_ of the score row.
@@ -377,7 +378,7 @@ create bricks  ' brick1 ,  ' brick2 ,  ' brick3 ,  ' brick4 ,
 
 create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 
-32 constant /brick
+32 cconstant /brick
   \ Bytes per brick shape.
 
 : is-brick ( brick -- )
@@ -591,11 +592,11 @@ also forth definitions
 
 : again? ( -- f ) s"  Again? (Y/N) " bottom-msg yes? ;
 
-: start-message ( -- ) ." Type RUN to start tt" cr ;
+: start-message ( -- ) ." Type TT to run" cr ;
 
 : end-message ( -- ) 0 23 at-xy cr start-message ;
 
-: run ( -- )
+: tt ( -- )
   show-help
   begin  initialize play-game again? 0=  until
   draw-bottom end-message ;
@@ -627,5 +628,8 @@ only forth definitions
   \
   \ 2017-02-19: Replace `do`, which has been moved to the
   \ library, with `?do`.
+  \
+  \ 2017-04-26: Use `cconstant`. Use `wordlist` instead of
+  \ `vocabulary`. Replace old `flash` with `flash.`.
 
   \ vim: filetype=soloforth

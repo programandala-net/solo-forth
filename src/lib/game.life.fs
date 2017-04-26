@@ -3,9 +3,9 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ XXX UNDER DEVELOPMENT
+  \ XXX UNDER DEVELOPMENT -- not ready yet
 
-  \ Last modified: 201702220020
+  \ Last modified: 201704261915
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -21,7 +21,7 @@
   \ Version for kForth: K. Myneny, 2001-12-26.
   \
   \ Version for Solo Forth: Marcos Cruz (programandala.net),
-  \ 2015, 2016.
+  \ 2015, 2016, 2017.
 
   \ ===========================================================
   \ Credit
@@ -51,10 +51,10 @@
 
 need ms need c+! need 2/
 
-1 CHARS CONSTANT /Char
+1 CHARS CCONSTANT /Char
 
   \ the universal pattern
-32 CONSTANT How-Deep  24 CONSTANT How-Wide
+32 CCONSTANT How-Deep  24 CCONSTANT How-Wide
 
 How-Wide How-Deep * CONSTANT Homes
 
@@ -71,7 +71,7 @@ World old  World new
   \ begin hexadecimal numbering
   \ hex xy : x holds life , y holds neighbors count
 
-$10 CONSTANT Alive  \ 0y = not alive
+$10 CCONSTANT Alive  \ 0y = not alive
 
   \ Conway's rules:
   \ a life depends on the number of its next-door neighbors
@@ -102,14 +102,14 @@ $10 CONSTANT Alive  \ 0y = not alive
 
 : Neighbors+! ( -1|0|1 i -- )
   2DUP N W new C+!  2DUP N new C+!  2DUP N E new C+!
-  2DUP   W new C+! (     i      ) 2DUP   E new C+!
+  2DUP   W new C+! (     i      )   2DUP   E new C+!
   2DUP S W new C+!  2DUP S new C+!       S E new C+! ;
 
 : Bureau-of-Vital-Statistics ( -1|1 i -- )
   2DUP Home+!  Neighbors+! ;
 
   \ mortal coils
-'?' CONSTANT Soul  BL CONSTANT Body
+'?' CCONSTANT Soul  BL CCONSTANT Body
 
 -->
 
@@ -152,7 +152,7 @@ $10 CONSTANT Alive  \ 0y = not alive
 
   \ the primal state
 : Innocence ( -- )
-  Homes 0 DO  I new C@  Alive /  I Neighbors+!  LOOP ;
+  Homes 0 ?DO  I new C@  Alive /  I Neighbors+!  LOOP ;
 
   \ children become parents
 : Passes ( -- ) 0 new  0 old  Homes  CMOVE ;
@@ -167,7 +167,7 @@ $10 CONSTANT Alive  \ 0y = not alive
   R@  -  2/  old
   R>  CMOVE
   0 old  Homes 0
-  DO  COUNT BL <>
+  ?DO  COUNT BL <>
       DUP IF  Soul I Home  THEN  Alive AND  I new C!
   LOOP  DROP  Serpent Innocence Passes ;
 
@@ -179,10 +179,10 @@ $10 CONSTANT Alive  \ 0y = not alive
 
   \ the human element
 
-100 CONSTANT Ideas
+100 CCONSTANT Ideas
 : Dreams ( -- ) Ideas MS ;
 
-100 CONSTANT Images
+100 CCONSTANT Images
 : Meditation ( -- ) Images MS ;
 
   \ free will
@@ -191,7 +191,7 @@ $10 CONSTANT Alive  \ 0y = not alive
   IF  DROP KEY  DUP BL = IF  Creation  THEN  THEN ;
 
   \ environmental dependence
-7 CONSTANT Escape
+7 CCONSTANT Escape
 
   \ history
 : Goes-On ( -- )
@@ -202,6 +202,10 @@ $10 CONSTANT Alive  \ 0y = not alive
 : Life ( -- ) Creation Goes-On ;
 
   \ Life
+
+: run-message ( -- ) cr ." Type LIFE to run" cr ;
+
+run-message
 
   \ ===========================================================
   \ Change log
@@ -215,5 +219,8 @@ $10 CONSTANT Alive  \ 0y = not alive
   \
   \ 2016-05-02: Compact two blocks to save space in the
   \ library.
+  \
+  \ 2017-04-26: Add `run-message`. Use `cconstant`. Replace
+  \ `do` with `?do`.
 
   \ vim: filetype=soloforth

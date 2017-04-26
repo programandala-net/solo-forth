@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703280051
+  \ Last modified: 201704261833
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -94,7 +94,7 @@
   \
   \ }doc
 
-[unneeded] udg: ?( need udg! ?(
+[unneeded] udg: ?( need udg!
 
 : udg: ( b0..b7 c "name" -- ) dup cconstant udg! ; ?)
 
@@ -781,5 +781,7 @@ unused code udg-at-xy-display ( x y c -- )
   \
   \ 2017-03-28: Move `xy>scra` and `xy>scra_` to the
   \ <printing.cursor.fs> module.
+  \
+  \ 2017-04-26: Fix needing of `udg:`.
 
   \ vim: filetype=soloforth

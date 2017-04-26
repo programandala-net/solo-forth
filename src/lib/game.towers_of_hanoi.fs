@@ -3,9 +3,9 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ XXX UNDER DEVELOPMENT
+  \ XXX UNDER DEVELOPMENT -- not ready yet
 
-  \ Last modified: 201702220020
+  \ Last modified: 201704261942
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -38,10 +38,13 @@
 
 only forth definitions
 
-need don't need ms need mode64 need alloted need recurse
-need vocabulary
+need ms need mode-64 need alloted need recurse
 
-vocabulary hanoi  also hanoi definitions
+  \ XXX FIXME -- 2017-04-26: `mode-64` loads the code from
+  \ disk. Therefore it can not be "needed" without confirmir
+  \ disk 0 is in the first drive.
+
+wordlist dup constant hanoi-wordlist dup >order set-current
 
 variable slowness  1000 slowness !
   \ ms delay between screen updates
@@ -133,7 +136,7 @@ decimal
 
   0 11 at-xy ;
 
-mode64 page
+mode-64 page
   \  <-------------------------->
   .( Towers of Hanoi) cr
   .( Type 'n run' to play where) cr
@@ -153,5 +156,7 @@ mode64 page
   \
   \ 2017-02-19: Replace `do`, which has been moved to the
   \ library, with `?do`.
+  \
+  \ 2017-04-26: Check and update.
 
   \ vim: filetype=soloforth

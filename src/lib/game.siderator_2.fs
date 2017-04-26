@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201704261910
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -11,13 +11,13 @@
 
   \ The sample game Siderator 2.
 
-  \ XXX UNDER DEVELOPMENT
+  \ XXX UNDER DEVELOPMENT -- not ready yet
 
   \ ===========================================================
   \ Author
 
   \ Marcos Cruz (programandala.net), 2009, 2010, 2013, 2015,
-  \ 2016.
+  \ 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -34,18 +34,18 @@
   \ XXX FIXME -- 2016-08-05: now stars appear at the middle of
   \ the screen
 
-( siderator )
+( siderator-2 )
 
 only forth definitions  decimal
 
 need random need randomize need udg: need inkey
 need between need ocr need frames@ need inverse
-need j need between need rows need last-column
-need last-row need vocabulary
-need cyan need white need set-ink
+need j need between need rows need last-column need last-row
+need cyan need white need set-ink need set-bright
+need /udg need set-udg need get-udg need rom-font
 
-vocabulary siderator
-also siderator definitions
+wordlist dup constant siderator-2-wordlist
+         dup >order set-current
 
   \ Game variables and constants:
 
@@ -53,29 +53,27 @@ variable x          variable speed
 variable parsecs    variable record  record off
 
 999 constant max-speed
-'5' constant left-key  '8' constant right-key
-
-  \ System variables and addresses:
-
-8192 constant 'screen \ XXX OLD
+'5' cconstant left-key  '8' cconstant right-key
 
   \ Common words:
 
 : pause ( -- ) begin  inkey  until ;  -->
 
-( siderator )
+( siderator-2 )
 
   \ Graphics
 
-15360 constant charset  \ ROM charset
+5 cconstant udgs  udgs /udg * constant /udg-set
 
-: char>a ( c -- a ) 8 * charset + ;
+create udg-set /udg-set allot  udg-set set-udg
 
-: udg>a ( c -- a ) 128 - 8 * os-udg @ + ;
+: char>a ( c -- a ) /udg * rom-font + ;
+
+: udg>a ( c -- a ) /udg * get-udg + ;
 
 : char>udg ( c0 c1 -- ) swap char>a swap udg>a 8 cmove ;
 
-128 constant star0-udg  '*' star0-udg char>udg
+0 cconstant star0-udg  '*' star0-udg char>udg
 
 %00011000
 %00001000
@@ -84,12 +82,11 @@ variable parsecs    variable record  record off
 %00011000
 %00001000
 %00011000
-%00010000 129 udg: star1-udg  -->
+%00010000 1 udg: star1-udg  -->
 
-( siderator )
+( siderator-2 )
 
-130 constant star2-udg
-'|' star2-udg char>udg
+2 constant star2-udg '|' star2-udg char>udg
 
 %00001000
 %00000000
@@ -98,9 +95,9 @@ variable parsecs    variable record  record off
 %00001000
 %00000000
 %00001000
-%00000000 131 udg: star3-udg  -->
+%00000000 3 udg: star3-udg  -->
 
-( siderator )
+( siderator-2 )
 
 %10000001
 %10000001
@@ -109,9 +106,9 @@ variable parsecs    variable record  record off
 %11111111
 %01100110
 %00111100
-%00011000 132 udg: craft-udg  -->
+%00011000 4 udg: craft-udg  -->
 
-( siderator )
+( siderator-2 )
 
   \ Keyboard
 
@@ -119,11 +116,9 @@ variable parsecs    variable record  record off
 
 : pressed? ( c -- f ) inkey = ;
 
-: left ( col -- col' )
-  left-key pressed? + first-column max ;
+: left ( col -- col' ) left-key pressed? + first-column max ;
 
-: right ( col -- col' )
-  right-key pressed? - last-column min ;
+: right ( col -- col' ) right-key pressed? - last-column min ;
 
 : rudder ( -- ) x @ right left x ! ;
 
@@ -135,13 +130,13 @@ variable parsecs    variable record  record off
 
 : .star ( c -- )
   [ last-column 1+ ] literal random last-row at-xy
-  1 bright. emit 0 bright. ;
+  true set-bright emit-udg false set-bright ;
 
 : stars/speed ( -- n ) speed @ #stars 1- max-speed */ 1+ ;
 
 : scroll ( -- ) star-coords at-xy cr cr ;  -->
 
-( siderator )
+( siderator-2 )
 
 : .stars ( -- )
   stars/speed dup [ star0-udg 1- ] literal + swap 0
@@ -162,7 +157,7 @@ rows 2 / constant craft-y
 : -craft ( -- ) at-craft space ;
 
 : .craft ( -- )
-  at-craft craft-udg cyan set-ink emit white set-ink ;
+  at-craft craft-udg cyan set-ink emit-udg white set-ink ;
 
   \ Speed, parsecs, record
 
@@ -172,7 +167,7 @@ rows 2 / constant craft-y
 
 : .speed ( -- ) ." Speed:" speed @ .datum ;  -->
 
-( siderator )
+( siderator-2 )
 
 : +speed ( u1 -- u2 )
   dup 10 / 1 max  parsecs @ 4 mod 0= abs *  + max-speed min ;
@@ -192,17 +187,17 @@ rows 2 / constant craft-y
 : blast-delay ( -- ) 32 0  ?do  loop ;
 
 : (blast) ( -- )
-  .craft blast-delay at-craft star0-udg emit blast-delay ;
+  .craft blast-delay at-craft star0-udg emit-udg blast-delay ;
 
 : blast ( -- ) 256 0  ?do  (blast)  loop ;
 
 : halt ( -- )
   32 0  ?do  24 0 ?do
-    i j ocr star= if  i j at-xy  star0-udg emit  then
+    i j ocr star= if  i j at-xy  star0-udg emit-udg  then
   loop  loop ;  -->
   \ XXX TODO
 
-( siderator )
+( siderator-2 )
 
 : safe? ( -- f ) craft-coords swap ocr star<> ;
 
@@ -221,11 +216,9 @@ rows 2 / constant craft-y
 : about ( -- )
   cr ." Siderator 2: Jugdement Day"  cr
   cr ." By programandala.net"
-  cr ." Version: 0.1.0+20160325" ;
+  cr ." Version: 0.2.0+20170426" ; -->
 
--->
-
-( siderator )
+( siderator-2 )
 
 : objective ( -- )
   cr ." Your objective is to travel as"
@@ -246,7 +239,7 @@ rows 2 / constant craft-y
 
 : wait ( -- ) cr cr ." Press any key to start." pause ;  -->
 
-( siderator )
+( siderator-2 )
 
   \ Init
 
@@ -259,12 +252,17 @@ rows 2 / constant craft-y
 : 4+- ( n1 -- n2 ) 9 random 4 - + ;
 
 : init ( -- )
-  frames@ s>d randomize  udg-ocr
+  frames@ s>d randomize
   init-screen  15 4+- x ! parsecs off  speed off ;
 
-: run ( -- )
-  init  begin  -craft scroll  faster farther .info  continue?
-        while  rudder .craft .stars delay  repeat  game-over ;
+: run-message ( -- ) cr ." Type SIDERATOR-2 to run" cr ;
+
+: siderator-2 ( -- )
+  init  begin   -craft scroll  faster farther .info  continue?
+        while   rudder .craft .stars delay
+        repeat  game-over run-message ;
+
+run-message
 
   \ ===========================================================
   \ Change log
@@ -289,5 +287,10 @@ rows 2 / constant craft-y
   \
   \ 2017-02-19: Replace `do`, which has been moved to the
   \ library, with `?do`.
+  \
+  \ 2017-04-26: Replace `bright.` with `set-bright`. Update the
+  \ main words after the name of the game. Add `run-message`.
+  \ Use `wordlist` instead of `vocabulary`. Update numbering of
+  \ UDGs.
 
   \ vim: filetype=soloforth

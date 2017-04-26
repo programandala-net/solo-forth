@@ -3,7 +3,9 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ XXX UNDER DEVELOPMENT
+
+  \ Last modified: 201704261936
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -17,22 +19,24 @@
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ ===========================================================
+  \ Credit
+
+  \ Based on code from Leo Brodie's _Starting Forth_, ANSized
+  \ by Benjamin Hoyt in 1997.
+
+  \ ===========================================================
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ ===========================================================
+
+  \ XXX TODO -- Instructions.
+  \ XXX TODO -- Check the end condition.
+
 ( toe )
-
-  \ XXX UNDER DEVELOPMENT
-
-  \ 2015-11-24: Changes.
-
-  \ Credit:
-  \
-  \ Based on code from Leo Brodie's _Starting Forth_, ANSized
-  \ by Benjamin Hoyt in 1997.
 
 9 constant squares
 
@@ -43,7 +47,9 @@ create board  squares allot
 : clear ( -- ) board squares erase ;  clear
 
 : >square ( square -- ca ) board + ;
+
 : square@ ( square -- c ) >square c@ ;
+
 : square! ( c square -- ) >square c! ;
 
 : bar ( -- ) ." | " ;
@@ -78,7 +84,11 @@ create board  squares allot
   \ ===========================================================
   \ Change log
 
+  \ 2015-11-24: Changes.
+  \
   \ 2017-02-19: Replace `do`, which has been moved to the
   \ library, with `?do`.
+  \
+  \ 2017-04-26: Improve file header.
 
   \ vim: filetype=soloforth
