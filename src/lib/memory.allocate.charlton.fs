@@ -1,9 +1,9 @@
-  \ memory.alocate.charlton.fs
+  \ memory.allocate.charlton.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201704161540
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,7 +33,7 @@
   \ The heap is maintained as a doubly linked ordered circular
   \ list of nodes with an additional field noting the size of
   \ each node and whether it is in use. The size of the heap is
-  \ specified by the constant `heapsize`. the constant
+  \ specified by the constant `/heap`. the constant
   \ `hysteresis` controls the amount of spare space that is
   \ added to an allocation, to reduce the need for block moves
   \ during resizing.
@@ -64,7 +64,7 @@
   \ Copyright Gordon Charlton, 1994-09-12.
 
   \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
-  \ 2015, 2016.
+  \ 2015, 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -84,43 +84,50 @@
   \ Tell me how much you like it.  <gordon at charlton dot
   \ demon dot co dot uk>
 
-( heap )
+  \ ===========================================================
 
+( charlton-heap-wordlist )
 
-  \ XXX REMARK: 1614 bytes used
+  \ XXX REMARK (old): 1614 bytes used
 
-  \ XXX TODO use top of memory instead of dictionary space?
-  \ problem: memory banks could not be used at the same time.
+get-order get-current only forth definitions
+
+  \ --------------------------------------------
+  \ **1** Requirements
+
+need max-n need heap
+
+wordlist dup constant charlton-heap-wordlist
+         dup set-current >order
+
+  \ doc{
   \
-  \ XXX TODO use a memory bank instead of dictionary space?
-  \ problem: only words below 0xC000 could manipulate the heap.
+  \ charlton-heap-wordlist ( -- wid )
+  \
+  \ _wid_ is the word-list identifier of the word list that
+  \ holds the words the memory `heap` implementation adapted
+  \ from code written by Gordon Charlton (1994-09-12).
+  \
+  \ ``need charlton-heap-wordlist`` is used to load the memory
+  \ heap implementation and configure `allocate`, `resize`,
+  \ `free` and `empty-heap` accordingly.
+  \
+  \ An alternative, simpler and smaller implementation of the
+  \ memory heap is provided by `gil-heap-wordlist`.
+  \
+  \ The actual heap must be created with `allot-heap`,
+  \ `limit-heap`, `farlimit-heap` or `bank-heap`, which are
+  \ independent from the heap implemention.
+  \
+  \ }doc
 
-also forth definitions
-need vocabulary need wid-of
-vocabulary heap-voc  wid-of heap-voc constant heap-wordlist
-also heap-voc definitions
-
-  \ XXX TODO -- alternative
-  \ forth-wordlist set-current
-  \ wordlist heap-wordlist
-
-  \ **1** General Purpose Extensions
-
-0 1 2 um/mod nip 1- constant maxpos
-  \ XXX TODO use `environment?` instead when available
-
-  \ The largest positive single length integer.
-
+  \ --------------------------------------------
   \ **2** Heap Creation
 
-  \ ANSI Heap  --  Constants
+  \ ............................
+  \ Constants
 
-256 cells constant heapsize
-
-  \ Number of address units of data space that the heap
-  \ occupies.
-
-4 cells 1- constant hysteresis
+4 cells 1- cconstant hysteresis
 
   \ Node lengths are rounded up according to the value of
   \ `hysteresis` to reduce the number of block moves during
@@ -128,7 +135,7 @@ also heap-voc definitions
   \ less than a power of two and at least equal to one less
   \ than the size of a cell.
 
-3 cells constant headsize
+3 cells cconstant headsize
 
   \ A node on the heap consists of a three cell head followed
   \ by a variable length data space. The first cell in the head
@@ -139,7 +146,7 @@ also heap-voc definitions
   \ circular list. There is no special notation to indicate an
   \ empty list, as this situation cannot occur.
 
-: adjustsize ( n -- n)  headsize +  hysteresis or  1+ ;
+: adjustsize ( n1 -- n2 ) headsize + hysteresis or 1+ ;
 
   \ The amount of space that is requested for a node needs
   \ adjusting to include the length of the head, and to
@@ -149,9 +156,10 @@ also heap-voc definitions
 
   \ The size of the smallest possible node.
 
-  \ ANSI Heap  --  Structure
+  \ ............................
+  \ Structure
 
-create sentinel  here cell+ ,  maxpos ,  0 ,  0 ,
+create sentinel  here cell+ ,  max-n ,  0 ,  0 ,
 
   \ A dummy node used to speed up searching the heap. The
   \ search, which is for a node larger than or equal to the
@@ -161,43 +169,56 @@ create sentinel  here cell+ ,  maxpos ,  0 ,  0 ,
   \ the previous node (ie the sentinel) should be. This is a
   \ special value that indicates the search has failed.
 
-create heap  heapsize allot
-
-  \ The heap is as described in `headsize`.
-
 variable nextnode
 
   \ Searching is done using a "nextfit" algorithm. `nextnode`
   \ points to the most recently allocated node to indicate
   \ where the next search is to start from.
 
-: >size ( a1 -- a2)  cell+ ;
+: >size ( a1 -- a2 ) cell+ ;
 
   \ Move from the "next" cell in the node head to the "size"
   \ cell. Within the word set nodes are referred to by the
   \ address of the "next" cell.  Externally they are referred
   \ to by the address of the start of the data field.
 
-: >prev ( a1 -- a2)  cell+ cell+ ;  -->
+: >prev ( a1 -- a2 ) cell+ cell+ ;  -->
 
   \ Move from the "next" cell to the "previous" cell.
 
-( heap )
+( charlton-heap-wordlist )
 
-: init-heap ( -- )
-  heap dup nextnode !  dup dup !  dup heapsize  over >size !
+: charlton-empty-heap ( -- )
+  heap dup nextnode !  dup dup !  dup /heap  over >size !
   >prev ! ;
+
+  \ doc{
+  \
+  \ charlton-empty-heap ( -- )
+  \
+  \ Empty the current `heap`, which was created by
+  \ `allot-heap`, `limit-heap`, `bank-heap` or `farlimit-heap`.
+  \
+  \ ``charlton-empty-heap`` is the action of `empty-heap` in
+  \ the memory `heap` implementation adapted from code written
+  \ by Gordon Charlton, whose words are defined in
+  \ `charlton-heap-wordlist`.
+  \
+  \ See also: `charlton-allocate`, `charlton-resize`,
+  \ `charlton-free`.
+  \
+  \ }doc
 
   \ Initially the heap contains only one node, which is the
   \ same size as the heap. Both the "next" cell and the
   \ "previous" cell point to the "next" cell, as does
   \ `nextnode`.
 
-init-heap
-
+  \ --------------------------------------------
   \ **3** Heap Allocation
 
-  \ ANSI Heap  --  List Searching
+  \ ............................
+  \ List Searching
 
 : attach ( a -- )
   >prev @  dup sentinel rot !  sentinel >prev ! ;
@@ -225,7 +246,7 @@ init-heap
   \ test for failure. `search` assumes the sentinel is in
   \ place.
 
-: detach ( a)  dup >prev @ ! ;
+: detach ( a -- ) dup >prev @ ! ;
 
   \ Remake the link from the node prior to the one specified to
   \ the one specified. This will remove the sentinel if it is
@@ -240,8 +261,8 @@ init-heap
   \ `nextnode`, the sentinal temporarily attached, the search
   \ proceeded with and the sentinel detached.
 
-
-  \ ANSI Heap  --  Head Creation
+  \ ............................
+  \ Head Creation
 
 : fits ( size a -- f ) >size @ swap -  overhead  < ;
 
@@ -258,12 +279,12 @@ init-heap
 
 : next! ( a -- ) nextnode ! ;  -->
 
-( heap )
+( charlton-heap-wordlist )
 
   \ Make the specified node the starting node for future
   \ searches of the node list.
 
-: sizes! ( size a -- a)  2dup + >r  >size 2dup @ swap -
+: sizes! ( size a -- a ) 2dup + >r  >size 2dup @ swap -
                          r@ >size !   swap negate swap !  r> ;
 
   \ Given a free node (_a_), reduce its size to that
@@ -284,31 +305,52 @@ init-heap
 
   \ ANSI heap  --  Node Construction  ALLOCATE
 
-: newnode ( size a)  tuck sizes!  links! ;
+: newnode ( size a -- ) tuck sizes!  links! ;
 
   \ Given a free node at _a_ split it into an in-use node of
   \ the specified size and a new free node above the in-use
   \ node.
 
-: makenode ( size a)
+: makenode ( size a -- )
   2dup fits if  togglesize drop  else  newnode  then ;
 
   \ Given a free node at a make an in-use node of the
   \ specified size and free the remainder, if there is any
   \ usable space left.
 
-forth-wordlist set-current
-
-: allocate ( u -- a ior ) dup 0<
+: charlton-allocate ( u -- a ior ) heap-in dup 0<
   if    #-59
-  else  adjustsize  dup findspace dup
-        if    dup next!  tuck makenode  headsize +  0
-        else  drop #-59  then
-  then ;
+  else  adjustsize dup findspace dup
+        if    dup next! tuck makenode headsize + 0
+        else  drop #-59 then
+  then  heap-out ; -->
 
   \ Note: #-59 = `allocate` error code
 
-heap-wordlist set-current  -->
+  \ doc{
+  \
+  \ charlton-allocate ( u -- a ior )
+  \
+  \ Allocate _u_ address units of contiguous data space. The
+  \ data-space pointer is unaffected by this operation. The
+  \ initial content of the allocated space is undefined.
+  \
+  \ If the allocation succeeds, _a_ is the aligned starting
+  \ address of the allocated space and _ior_ is zero.
+  \
+  \ If the operation fails, _a_ does not represent a valid
+  \ address and _ior_ is #-59.
+  \
+  \ ``charlton-allocate`` is the action of `allocate` in the
+  \ memory `heap` implementation adapted from code written by
+  \ Gordon Charlton, whose words are defined in
+  \ `charlton-heap-wordlist`.
+  \
+  \ See also: `charlton-resize`, `charlton-free`.
+  \
+  \ }doc
+
+  \ Original description:
 
   \ Make an in-use node with a data field at least _u_ address
   \ units long.  Return the address of the data field and an
@@ -317,12 +359,13 @@ heap-wordlist set-current  -->
   \ standard specifies that the argument to `allocate` is
   \ unsigned. As the implementation uses the sign bit of the
   \ size field for its own purposes any request for an amount
-  \ of space greater than `maxpos` must fail. As this would be
+  \ of space greater than `max-n` must fail. As this would be
   \ a request for half the addressable memory or more this is
   \ not unreasonable.
 
-( heap )
+( charlton-heap-wordlist )
 
+  \ --------------------------------------------
   \ **4** Releasing Space
 
   \ ANSI heap  --  Head Destruction
@@ -365,12 +408,11 @@ heap-wordlist set-current  -->
   \ Combine the node specified with the node above it. Merge
   \ the sizes, merge the lengths and jiggle.
 
+  \ ............................
+  \ Node Removal
 
-  \ ANSI Heap  --  Node Removal
-
-: ?merge ( a1 a2)
-  >size @ 0> if    dup dup @  u< if  dup merge  then
-             then  drop ;
+: ?merge ( a1 a2 -- )
+  >size @ 0> if dup dup @ u< if dup merge then then drop ;
 
   \ Merge the node at _a1_ with the one above it on two
   \ conditions, firstly that the node at _a2_ is free, and
@@ -392,54 +434,73 @@ heap-wordlist set-current  -->
   \ Merge the specified node with the one preceding it, if the
   \ preceding node is free.
 
-forth-wordlist set-current
+: charlton-free ( a -- ior )
+  heap-in headsize - dup togglesize dup ?mergenext ?mergeprev 0
+  heap-out ;
+  
+  \ doc{
+  \
+  \ charlton-free ( a -- ior )
+  \
+  \ Return the contiguous region of data space indicated by _a_
+  \ to the system for later allocation. _a_ shall indicate a
+  \ region of data space that was previously obtained by
+  \ `charlton-allocate` or `charlton-resize`.
+  \
+  \ As there is no compelling reason for this to fail, _ior_ is
+  \ zero.
+  \
+  \ ``charlton-free`` is the action of `free` in the memory
+  \ `heap` implementation adapted from code written by Gordon
+  \ Charlton, whose words are defined in
+  \ `charlton-heap-wordlist`.
+  \
+  \ }doc
 
-: free ( a -- ior)
-  headsize -  dup togglesize  dup ?mergenext  ?mergeprev  0 ;
-
-heap-wordlist set-current
-
+  \ Original description:
+  \
   \ Mark the specified in-use word as free, and merge with any
   \ adjacent free space. As this is a standard word _a_ is the
   \ address of the data field rather than the "next" field. As
   \ there is no compelling reason for this to fail the ior is
   \ zero.
 
-
+  \ --------------------------------------------
   \ **5** Resizing Allocated Space
 
-  \ ANSI Heap  --  Node Repairing
+  \ ............................
+  \ Node Repairing
 
 variable stash
 
-  \ the `resize` algorithm is simplified and made faster by
+  \ The `resize` algorithm is simplified and made faster by
   \ assuming that it will always succeed. `stash` holds the
   \ minimum information required to make good when it fails.
 
-: savelink ( a)  @ stash ! ;  -->
+: savelink ( a -- ) @ stash ! ;
 
-  \ saves the contents of the `>next` field of the node being
+  \ Save the contents of the `>next` field of the node being
   \ `resize`d in `stash` (above).
 
-( heap )
-
-: restorelink ( a)  stash @  swap ! ;
+: restorelink ( a -- ) stash @ swap ! ;
 
   \ Converse operation to `savelink` (above).
 
-: fixprev ( a)  dup >prev @ ! ;
+: fixprev ( a -- ) dup >prev @ ! ; -->
 
   \ The `>next` field of the node prior to the node being
   \ `resize`d should point to the node being `resize`d. it may
   \ very well do already, but this makes sure.
 
-: fixnext ( a)  dup @ >prev ! ;
+( charlton-heap-wordlist )
+
+: fixnext ( a -- ) dup @ >prev ! ;
 
   \ The `>prev` field of the node after the node resized may
   \ need correcting.  This corrects it whether it needs it or
   \ not.  (Its quicker just to do it than to check first.)
 
-: fixlinks ( a)  dup fixprev  dup fixnext  @ fixnext ;
+: fixlinks ( a -- ) dup fixprev  dup fixnext  @ fixnext ;
 
   \ `resize` may very well merge its argument node with the
   \ previous one. It may very well merge that with the next
@@ -458,10 +519,10 @@ variable stash
   \ they are sexless and (2) which half is parent and which
   \ child?)
 
-: fixsize ( a -- ) dup >size @ 0>
-  if  dup @  2dup <
-      if    over - swap >size !  else  2drop  then
-  else  drop  then ;
+: fixsize ( a -- )
+  dup >size @ 0> if   dup @ 2dup <
+                      if over - swap >size ! else 2drop then
+                 else drop then ;
 
   \ Reconstruct the size field of a node from the address of
   \ the head and the contents of the `>next` field provided
@@ -476,8 +537,8 @@ variable stash
   \ one passed as an argument to `resize` (damaged by
   \ `?mergenext`) and its predecessor (damaged by `?mergeprev`).
 
-: repair ( a -- ) dup restorelink  dup fixlinks  dup fixsizes
-                   togglesize ;
+: repair ( a -- )
+  dup restorelink dup fixlinks dup fixsizes togglesize ;
 
   \ Make good the damage done by `resize`. Restore the `>next`
   \ field, fix the links, fix the size fields and mark the node
@@ -488,8 +549,8 @@ variable stash
   \ wrong node. This is not serious, so I have chosen to ignore
   \ it.
 
-
-  \ ANSI Heap  --  Node Movement
+  \ ............................
+  \ Node Movement
 
 : toobig? ( a size -- f ) swap  >size @  > ;
 
@@ -497,17 +558,15 @@ variable stash
   \ specified size.
 
 : copynode ( a1 a2 -- )
-  over >size @  headsize -  rot  headsize + rot rot move ; -->
+  over >size @  headsize -  rot  headsize + rot rot move ;
 
   \ Move the contents of the data field of the node at _a1_
   \ to the data field at _a2_. Assumes _a2_ is large
   \ enough. It will be.
 
-( heap )
-
-: enlarge ( a1 size -- a2 ior)
+: enlarge ( a1 size -- a2 ior )
   over ?mergeprev  allocate dup >r
-  if  swap repair  else  tuck copynode  then  r> ;
+  if  swap repair  else  tuck copynode  then  r> ; -->
 
   \ Make a new node of the size specified. Copy the data field
   \ of _a1_ to the new node. Merge the node at a1 with
@@ -520,10 +579,12 @@ variable stash
   \ field, not the head. If the allocation fails repair the
   \ damage done by removing the node at _a1_.
 
+( charlton-heap-wordlist )
 
-  \ ANSI Heap  --  Node Restructuring
+  \ ............................
+  \ Node Restructuring
 
-: adjust ( a1 size1 -- a2 size2)
+: adjust ( a1 size1 -- a2 size2 )
   adjustsize >r  headsize -  dup savelink  dup togglesize
   dup ?mergenext r> ;
 
@@ -537,31 +598,72 @@ variable stash
   \ information is first saved to put the heap back as it was,
   \ if necessary.  Now we are ready to get down to business.
 
+: charlton-resize ( a1 u -- a2 ior )
+  heap-in dup 0< if    drop #-61  \ `resize` error code
+                 else  adjust  2dup toobig?
+                       if enlarge
+                       else over makenode headsize + 0 then
+                 then  heap-out ;
+
+  \ doc{
+  \
+  \ charlton-resize ( a1 u -- a2 ior )
+  \
+  \ Change the allocation of the contiguous data space starting
+  \ at the address _a1_, previously allocated  by
+  \ `charlton-allocate` or ``charlton-resize``, to _u_ address
+  \ units. _u_ may be either larger or smaller than the current
+  \ size of the region. The data-space pointer is unaffected by
+  \ this operation.
+  \
+  \ If the operation succeeds, _a2_ is  the aligned starting
+  \ address of  _u_ address units of allocated  memory and
+  \ _ior_ is zero.  _a2_ may be,  but need not be,  the same as
+  \ _a1_.  If they are  not the same,  the values contained in
+  \ the region at _a1_ are copied to _a2_, up to the minimum
+  \ size of either of  the two regions. If they are the same,
+  \ the values contained in the region are preserved to the
+  \ minimum of _u_ or the original size. If _a2_ is not the
+  \ same as _a1_, the region of memory at _a1_ is returned to
+  \ the system according to the operation of `free`.
+  \
+  \ If the operation fails, _a2_ equals _a1_, the region of
+  \ memory at _a1_ is unaffected, and  _ior_ is #-61.
+  \
+  \ ``charlton-resize`` is the action of `resize` in the memory
+  \ `heap` implementation adapted from code written by Gordon
+  \ Charlton, whose words are defined in
+  \ `charlton-heap-wordlist`.
+  \
+  \ }doc
+
+  \ Original description:
+  \
+  \ Resize the node at _a1_ to the specified size _u_. Return
+  \ the address of the resized node _a2_ along with an _ior_ of
+  \ zero if successful and #-61 if not. _a2_ may be the same
+  \ as, or different to, _a1_.  If _ior_ is non-zero then _a2_
+  \ is not meaningful. Being a standard word the arguments need
+  \ adjusting to the internal representation on entry, and back
+  \ again on exit. If after the first merge the requested size
+  \ is still too large to reuse the specified node then it is
+  \ moved to a larger node and the specified node released. If,
+  \ on the other hand the request is not too big for the node,
+  \ then we remake the node at the right length, and free any
+  \ space at the top using `makenode`, which has just the right
+  \ functionality.  In this case the ior is zero. As this is a
+  \ standard word it takes an unsigned size argument, but
+  \ excessive requests fail automatically, as with
+  \ `charlton-allocate`.
+
 forth-wordlist set-current
 
-: resize ( a1 u -- a2 ior)
-  dup 0<  if  drop -61  \ `resize` error code
-          else  adjust  2dup toobig?
-                if enlarge
-                else  over makenode headsize +  0  then
-          then ;
+need empty-heap ' charlton-empty-heap ' empty-heap defer!
+need allocate   ' charlton-allocate   ' allocate   defer!
+need resize     ' charlton-resize     ' resize     defer!
+need free       ' charlton-free       ' free       defer!
 
-  \ Resize the node at _a1_ to the specified size. Return
-  \ the address of the resized node _a2_ along with an _ior_
-  \ of zero if successful and -61 if not. _a2_ may be the
-  \ same as, or different to, _a1_.  If _ior_ is non-zero
-  \ then _a2_ is not meaningful. Being a standard word the
-  \ arguments need adjusting to the internal representation on
-  \ entry, and back again on exit. If after the first merge the
-  \ requested size is still too large to reuse the specified
-  \ node then it is moved to a larger node and the specified
-  \ node released. If, on the other hand the request is not too
-  \ big for the node, then we remake the node at the right
-  \ length, and free any space at the top using `makenode`,
-  \ which has just the right functionality.  In this case the
-  \ ior is zero. As this is a standard word it takes an
-  \ unsigned size argument, but excessive requests fail
-  \ automatically, as with `allocate`.
+set-current set-order
 
   \ ===========================================================
   \ Change log
@@ -573,5 +675,17 @@ forth-wordlist set-current
   \
   \ 2016-12-30: Compact the code, saving three blocks. Change
   \ the stack notation after the convention used in Solo Forth.
+  \
+  \ 2017-03-30: Improve documentation.
+  \
+  \ 2017-04-01: Use `wordlist` instead of `vocabulary`. Use the
+  \ `max-n` constant instead of calculating `maxpos`.
+  \
+  \ 2017-04-09: Improve documentation. Use `heap-in` and
+  \ `heap-out`.  Add the "charlton-" prefix to the interface
+  \ words, which are the actions associated to the standard
+  \ words.
+  \
+  \ 2017-04-16: Improve documentation.
 
   \ vim: filetype=soloforth
