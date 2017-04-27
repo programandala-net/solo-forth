@@ -7,7 +7,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201704271919
+// Last modified 201704272010
 
 // tag::description[]
 
@@ -23,7 +23,7 @@ system (in theory, other kind of operating system could be used as
 well).
 
 Solo Forth is a complete Forth system. Therefore it can be used as a
-stand-alone Forth System on a ZX Spectrum emulator or the real
+stand-alone Forth system on a ZX Spectrum emulator or the real
 computer, without any limitation, but that's not its goal. Its goal is
 to be used as the last step of the development process, i.e. to
 compile and debug a Forth program on a ZX Spectrum emulator. The
@@ -410,3 +410,7 @@ The following sections are planned for a future version:
 Beside, in a next version of the manual, all Forth words will be links
 to the glossary entries. At the moment, only Forth words mentioned in
 the glossary are cross references.
+
+NOTE: Glossary cross references to Forth words that contain a
+backslash, or that are included in code examples, are corrupted. This
+problem will be fixed in a future version.

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704172318
+  \ Last modified: 201704271956
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -26,7 +26,28 @@
 ( [false] [true] [if] [else] [then] )
 
 [unneeded] [true]  ?\  0 constant [false] immediate
+
+  \ doc{
+  \
+  \ [true]  ( -- true )
+  \
+  \ ``[true]`` is an `immediate` word.
+  \
+  \ See also: `[false]`, `true`.
+  \
+  \ }doc
+
 [unneeded] [false] ?\ -1 constant [true]  immediate
+
+  \ doc{
+  \
+  \ [false]  ( -- false )
+  \
+  \ ``[false]`` is an `immediate` word.
+  \
+  \ See also: `[true]`, `false`.
+  \
+  \ }doc
 
   \ Note: `[if]` uses 132 bytes of data space (not including
   \ `str=`).
@@ -49,11 +70,15 @@
   \ [else] ( "ccc" -- )
   \
   \ Parse and discard space-delimited words from the parse
-  \ area, including nested occurrences of `[if]`-`[then]`, and
-  \ `[if]`-``[else]``-`[then]`, until either the word
+  \ area, including nested occurrences of ``[if] ... [then]``,
+  \ and ``[if] ... [else] ... [then]``, until either the word
   \ ``[else]`` or the  word `[then]` has  been parsed and
   \ discarded. If the  parse area  becomes exhausted, it is
   \ refilled as with `refill`.
+  \
+  \ Origin: Forth-94 (TOOLS EXT), Forth-2012 (TOOLS EXT).
+  \
+  \ See also: `[if]`.
   \
   \ }doc
 
@@ -65,13 +90,14 @@
   \
   \ If _flag_ is true, do nothing. Otherwise, parse and discard
   \ space-delimited words from the parse area, including nested
-  \ occurrences of ``[if]``-`[then]`, and
-  \ ``[if]``-`[else]`-`[then]`, until either the word `[else]`
-  \ or the  word `[then]` has  been parsed and  discarded. If
-  \ the  parse area  becomes exhausted, it is refilled as with
-  \ `refill`.
+  \ occurrences of ``[if] ... [then]``, and ``[if] ... [else]
+  \ ... [then]``, until either the word `[else]` or the  word
+  \ `[then]` has  been parsed and  discarded. If the  parse
+  \ area  becomes exhausted, it is refilled as with `refill`.
   \
   \ ``[if]`` is an `immediate` word.
+  \
+  \ Origin: Forth-94 (TOOLS EXT), Forth-2012 (TOOLS EXT).
   \
   \ See also: `?\`, `?(`.
   \
@@ -86,6 +112,8 @@
   \ Do nothing. ``[then]`` is parsed and recognized by `[if]`.
   \
   \ ``[then]`` is an `immediate` word.
+  \
+  \ Origin: Forth-94 (TOOLS EXT), Forth-2012 (TOOLS EXT).
   \
   \ }doc
 
@@ -1063,5 +1091,7 @@ variable warnings  warnings on
   \
   \ 2017-04-17: Fix and improve documentation. Improve needing
   \ of `[if]`, `[else]`, `[then]`.
+  \
+  \ 2017-04-27: Improve documentation.
 
   \ vim: filetype=soloforth
