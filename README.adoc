@@ -1,13 +1,13 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-03-12
+:revdate: 2017-04-27
 :toc:
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201703121700
+// Last modified 201704271919
 
 // tag::description[]
 
@@ -22,12 +22,18 @@ Spectrum 128 using a ZX Spectrum emulator on a GNU/Linux operating
 system (in theory, other kind of operating system could be used as
 well).
 
-Solo Forth can be used also as a stand-alone Forth System on a ZX
-Spectrum emulator or the real computer, but that's not its goal.
+Solo Forth is a complete Forth system. Therefore it can be used as a
+stand-alone Forth System on a ZX Spectrum emulator or the real
+computer, without any limitation, but that's not its goal. Its goal is
+to be used as the last step of the development process, i.e. to
+compile and debug a Forth program on a ZX Spectrum emulator. The
+sources of the Forth program are edited on the host operating system
+and converted to Forth block disk images by tools that run on the host
+operating system.
 
 == Main features
 
-- Fast Direct Threaded Code (DTC) implementation.
+- Fast DTC (Direct Threaded Code) implementation.
 - A kernel as small as possible.
 - Dictionary in banked memory, separated from code and data space.
 - Transparent access to banked memory.
@@ -38,16 +44,36 @@ Spectrum emulator or the real computer, but that's not its goal.
 
 // end::description[]
 
+// tag::name[]
+
+// == Name
+
+// XXX TODO --
+
+// end::name[]
+
 // tag::history[]
 
 == History and current status
 
-The development started on 2015-05-30, from the
-http://programandala.net/en.program.abersoft_forth[disassembled code
-of Abersoft Forth], a tape-based fig-Forth 1.1 for ZX Spectrum 48.
+The development of Solo Forth started on 2015-05-30, from the
+http://programandala.net/en.program.abersoft_forth.html[disassembled
+code of Abersoft Forth], a tape-based fig-Forth 1.1 for ZX Spectrum
+48.
 
-As of 2017-03-10 Solo Forth is under active development. It's very
-stable, and it's being used to develop two projects in Forth.
+The http://github.com/programandala-net/solo-forth[GitHub
+repository,role="external"] was created on 2016-03-13 from the
+development backups, in order to preserve the change history from the
+very beginning.  Besides, there's a
+http://programandala.net/en.program.solo_forth.history.html[development
+history until v0.12.0 (2016-12-31)].
+
+At the time of writing (2017-04-27) Solo Forth is under active
+development. It's very stable, and it's being used to develop two
+projects in Forth:
+http://programandala.net/en.program.nuclear_waste_invaders.html[Nuclear
+Waste Invaders] and
+http://programandala.net/en.program.black_flag.html[Black Flag].
 
 // end::history[]
 
@@ -59,7 +85,7 @@ stable, and it's being used to develop two projects in Forth.
 Solo Forth needs a ZX Spectrum or compatible computer with disk drives
 and at least 128 KiB of RAM.  Therefore it can not run on the original
 ZX Spectrum 48, but in theory it could be used to develop Forth
-programs that can run on it.
+programs for it.
 
 .Supported computers and disk operating systems
 |===
@@ -105,7 +131,7 @@ memory, beside many other new features.
 Porting the G+DOS version of Solo Forth to http://worldofsam.org[SAM
 Coupé,role="external"] (the powerful quite compatible cousin of ZX
 Spectrum) would not be a trivial task, because of the quite different
-OS and memory paging, but feasible.
+OS and memory bank switching, but feasible.
 
 === Summary of the DOS support
 
@@ -113,7 +139,7 @@ OS and memory paging, but feasible.
 
 // tag::gplusdos_support_summary[]
 
-G+DOS is the best supported DOS at the moment. Blocks disks are fully
+G+DOS is the best supported DOS at the moment. Block disks are fully
 supported, but some file-management words are not implemented yet,
 especially the standard Forth words.
 
@@ -123,7 +149,7 @@ especially the standard Forth words.
 
 // tag::trdos_support_summary[]
 
-TR-DOS is well supported. Blocks disks are fully supported, but many
+TR-DOS is well supported. Block disks are fully supported, but many
 file-management words are not implemented yet, especially the standard
 Forth words.
 
@@ -133,14 +159,19 @@ Forth words.
 
 // tag::plus3dos_support_summary[]
 
+
+NOTE: The +3DOS support does not work fine because of a recently
+introduced bug, which will be fixed in version 0.14.0.
+
 The +3DOS support is still basic. Only the first drive can be used for
-blocks disks and most file-management words are not implemented yet,
+block disks and most file-management words are not implemented yet,
 but standard Forth words are better supported than on G+DOS or TR-DOS.
 
 // end::plus3dos_support_summary[]
 
 // tag::tree[]
 
+[id=_tree]
 == Directory tree
 
 The project directory has the following structure:
@@ -188,7 +219,17 @@ disks/*/disk_2_games.*
 disks/*/disk_3_workbench.*
 ....
 
-The subdirectory name and the filename extension depend on the DOS.
+The subdirectory and the filename extension depend on the DOS, as
+follows:
+
+|===
+| DOS    | Subdirectory | Filename extension
+
+| G+DOS  | gplusdos     | mgt
+| TR-DOS | trdos        | trd
+| +3DOS  | plus3dos     | dsk
+|===
+
 
 - Disk 0 is the boot disk. It contains the BASIC loader, the Solo
   Forth binary, some addons (i.e. compiled code that is not part of
@@ -199,10 +240,11 @@ The subdirectory name and the filename extension depend on the DOS.
   contain all the executables, and the right one will be selected
   automatically).
 - Disk 1 contains the sources of the library.
-- Disk 2 contains some little sample games.
+- Disk 2 contains some little sample games, most of them under
+  development.
 - Disk 3 contains tests and benchmarks used during the development.
 
-WARNING: Disks 1, 2 and 3 are Forth blocks disks: They contain the
+WARNING: Disks 1, 2 and 3 are Forth block disks: They contain the
 source Forth blocks directly on the disk sectors, without any file
 system.  Therefore their contents can not be accessed with ordinary
 DOS commands.
@@ -314,6 +356,9 @@ DOS commands.
 [id=_library]
 == The library
 
+NOTE: The library can not be used on +3DOS because of a recently
+introduced bug, which will be fixed in version 0.14.0.
+
 The library disk contains the source code in Forth blocks, written
 directly on the disk sectors, without any filesystem.  In order to use
 the library, follow these steps:
@@ -345,12 +390,23 @@ the library, follow these steps:
 
 == Documentation
 
-A HTML manual is included in the <doc> directory.  It is automatically
-built from the source files, which are fully documented, and from
-secondary files as well, like this README file, which in fact is an
-extract from the manual.
+A HTML manual is included in the <doc> directory (actually, there are
+three versions of the manual, one for each supported DOS, but at the
+moment the only difference is the glossary).  The manual is
+automatically built from the source files, which are almost fully
+documented, and from secondary files as well, like this README file,
+which in fact is an extract from the manual.
 
-The manual is a work in progress. At the moment it contains the basic
-information and a complete glossary with cross references.  A section
-to describe the contents of the library modules is under development.
+The manual is a work in progress. At the moment it contains only the
+basic information required to use the Forth system and an almost
+complete glossary with cross references.
 
+The following sections are planned for a future version:
+
+- A reference guide by subject, e.g. graphics, sound, blocks, files,
+  control flow structures, etc.
+- A description of the library modules.
+
+Beside, in a next version of the manual, all Forth words will be links
+to the glossary entries. At the moment, only Forth words mentioned in
+the glossary are cross references.

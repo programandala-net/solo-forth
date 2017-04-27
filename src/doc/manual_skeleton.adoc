@@ -1,12 +1,12 @@
 = Solo Forth %VERSION% %DOS%
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-03-11
+:revdate: 2017-04-27
 :toc:
 :toclevels: 1
 :toc-placement!:
 :linkattrs:
 
-// Last modified 201703131933
+// Last modified 201704271919
 
 toc::[]
 
@@ -35,10 +35,10 @@ include::../README.adoc[tags=gplusdos_support_summary]
 ==== Rationale
 
 G+DOS was the first target (in fact, the only planned target at the
-beginning), and it's also the platform of choice for development of
+beginning), and it's also the author's platform of choice to develop
 projects in Solo Forth, because of its excellent features:
 
-- Very fast disk operations.
+- Fast disk operations.
 - Big disk capacity (800 KiB for Forth blocks or 780 KiB for files).
 - It uses only the RAM of the Plus D interface.
 
@@ -59,7 +59,8 @@ some interesting features:
   interesting choice in some cases. For example, to compile a program
   from the third drive, using the library on the second drive during
   the process, and also reading or manipulating the files on the first
-  drive; or just to use a total of 2544 Forth blocks (636*4).
+  drive (for example, graphics); or just to use a total of 2544 Forth
+  blocks (`636 4 *`).
 - TR-DOS is the DOS used by all of the Russian ZX Spectrum powerful
   clones: The Pentagon and Scorpion series are the best known among
   them.
@@ -72,13 +73,9 @@ include::../README.adoc[tags=plus3dos_support_summary]
 
 ==== Rationale
 
-+3DOS is also slower than G+DOS, and somehow its by-design kind of
-compatibility with CP/M is an issue. Also, it uses 16 KiB of banked
-memory.
-
-But the features and API of +3DOS are excellent and very well
-documented. And anyway it's the door to support the more advanced
-IDEDOS and ResiDOS in the future.
++3DOS uses 16 KiB of banked memory, but their features and API are
+excellent and very well documented. Besides, it's the door to support
+the more advanced IDEDOS and ResiDOS in the future.
 
 === Comparative of DOS support
 
@@ -139,10 +136,16 @@ on each DOS.
 
 Solo Forth can be downloaded from two sites:
 
-- http://programandala.net/en.program.solo_forth.html[Solo Forth home
-  page]
-- http://github.com/programandala-net/solo-forth[Solo Forth repository
-  in GitHub,role="external"]
+// XXX FIXME -- Asciidoctor bug?
+//
+// The following text creates a link with text
+// "Solo Forth repository":
+//
+//- http://github.com/programandala-net/solo-forth[Solo Forth repository
+//  in GitHub,role="external"]
+
+- http://programandala.net/en.program.solo_forth.html[Solo Forth home page]
+- http://github.com/programandala-net/solo-forth[Solo Forth repository in GitHub,role="external"]
 
 // == Directory tree
 
@@ -166,8 +169,8 @@ and the full capacity of the disks can be used to store the Forth
 blocks.
 
 All this means the MGT disk images actually are identical to Forth
-blocks files, as used by modern Forth systems.  Therefore, for
-example, they can be browsed with a Forth blocks editor.
+block files, as used by modern Forth systems.  Therefore, for example,
+they can be browsed with a Forth block editor.
 
 .TRD
 
@@ -178,10 +181,10 @@ metadata. But, contrary to G+DOS, TR-DOS needs the system track (track
 sector-level access. That's why only 636 KiB can be used for Forth
 blocks, 4 KiB (one track) less than the maximum capacity.
 
-Anyway, TRD disk images can be browsed with a Forth blocks editor,
-with the following restriction: blocks 0..3 will be shown as garbage
-(they are track 0 of the disk), while the actual first Forth block of
-the disk (block 0) will be shown as block 4.
+Anyway, TRD disk images can be browsed with a Forth block editor, with
+the following restriction: blocks 0..3 will be shown as garbage (they
+are track 0 of the disk), while the actual first Forth block of the
+disk (block 0) will be shown as block 4.
 
 .DSK
 
@@ -192,7 +195,7 @@ format of the disk, the tracks and the sectors...
 On +3DOS, sector 0 of track 0 can not be used for Forth blocks,
 because it must contain the disk specification, even for sector-level
 access.  Since the size of a sector is 512 B, only one Forth block is
-lost because of this.
+lost because of this restriction.
 
 // == How to run
 
@@ -260,7 +263,7 @@ sources for a regular expression: <tools/search_library>,
 <tools/search_kernel> and <tools/search_source> (to search all files
 in the <src> directory).
 
-The scripts use `ack`. In order to usu the more common `grep`, edit
+The scripts use `ack`. In order to use the more common `grep`, edit
 the files.  `ack` and `grep` are compatible.
 
 Their first parameter is the regular expression. An optional second
@@ -279,9 +282,70 @@ tools/search_library "code\s+\S+\s+\("
 
 == How to use the additional source disks
 
-Section pending.
+When the needed source is in a different disk than the library,
+`set-block-drives` must be used first in order to configure the drives
+used as block drives, and their order. For example, this is the case
+when you want to try the simple sample games from
+<disks/\*/disk_2_games.\*> or the benchmarks and tests from
+<disks/\*/disk_3_workbench.\*>.
 
-// == How to write Forth programs
+The following example is for G+DOS.  First, "Insert" the file
+<disks/gplusdos/disk_1_library.mgt> as disk 1.  Then, "Insert" the
+file <disks/gplusdos/disk_2_games.mgt> as disk 2. Then enter the
+following commands to load the Pong game:
+
+----
+cold \ just to start from scratch, if needed
+1 load \ load the `need` utility from the library
+need set-block-drives
+2 1 2 set-block-drives
+need pong
+----
+
+Note the last parameter of `set-block-drives` is the number of the
+drives used as block drives. The last but one parameter is the
+identifier of the first drive used for blocks. Note also G+DOS uses
+drive identifiers 1 and 2; TR-DOS uses 0, 1, 2 and 3; +3DOS uses
+letters 'A' and 'B'.  See the glossary entry of `set-block-drives` for
+more details.
+
+[id=_test]
+== How to test and benchmark
+
+Besides many little specific tests and benchmarks used during the
+development of Solo Forth probably not interesting for the application
+programmer, disk image number 3 (called "workbench") contains also and
+adapted version of the Hayes test and some known benchmarks.
+
+First, in order to access disk image number 3, follow these steps:
+
+. <<_run,Run Solo Forth>> or enter `cold` to start from scratch.
+. "Insert" the file <disks/\*/disk_1_library.\*> (the <<_disks,actual
+  subdirectory and filename>> depend on your DOS) into the first disk
+  drive of your emulated machine, if it's not already "inserted".
+. "Insert" the file <disks/\*/disk_3_workbench.\*> (the
+  <<_disks,actual subdirectory and filename>> depend on your DOS) into
+  the second disk drive of your emulated machine, if it's not already
+  "inserted".
+. Enter command `1 load` to load the `need` tool.
+. Enter command `need set-block-drives` to load `set-block-drives`.
+. Depending on your DOS, configure the block drives as follows:
+  ** On G+DOS: `2 1 2 set-block-drives`
+  ** On TR-DOS: 1 0 2 set-block-drives`
+  ** On +3DOS: 'B' 'A' 2 set-block-drives`
+
+Now the first two disk drives are used as block drives, and `need`
+will search both of them as configured: first the first one (the
+library), then the second one (the benchmarks and tests).
+
+Second, depending on the code you want to run, enter the corresponding
+command:
+
+. `need hayes-test`
+. `need byte-magazine-benchmark`
+. `need interface-age-benchmark`
+. `need vector-loop-benchmark`
+. `need all-benchmarks` to run all the three benchmarks above
 
 [id=_write]
 == How to write Forth programs
@@ -292,7 +356,7 @@ extract all the required information from the <Makefile> of Solo
 Forth.
 
 The only difference between <<__rebuild,building Solo Forth>> and
-building a Forth program is the contents of disk 0 (the boot disk), if
+building a Forth program is the content of disk 0 (the boot disk), if
 needed, and the library modules included in disk 1 (the library disk),
 which usually also contains the source of the program.  If the program
 does not need to use the disk at run-time, you can simply copy the
@@ -304,13 +368,20 @@ option of your ZX Spectrum emulator.
 Some simple little games are provided as examples, in <<_disks,disk
 3>>.  Some of them are not finished yet.
 
-In order to try and fix the Forth system during its development, two
-more complex game projects are being developed at the same time.  One
-of them has been published:
-http://programandala.net/en.program.black_flag.html[Black Flag]
-(http://github.com/programandala-net/black-flag[Black Flag in
-GitHub]).  It's not finished, but it can be useful as an example of
-development with Solo Forth.
+In order to try, improve and fix the Forth system during its
+development, two more complex game projects are being developed at the
+same time:
+
+- http://programandala.net/en.program.black_flag.html[Black Flag]
+  (http://github.com/programandala-net/black-flag[Black Flag in
+  GitHub]).
+- http://programandala.net/en.program.nuclear_waste_invaders.html[Nuclear
+  Waste Invaders]
+  (http://github.com/programandala-net/nuclear-waste-invaders[Nuclear
+  Waste Invaders in GitHub]).
+
+They are not finished yet, but they can be useful as examples of
+program development with Solo Forth.
 
 // [id=_vim]
 // == Vim support

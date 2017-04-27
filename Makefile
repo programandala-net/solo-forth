@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201703121700
+# Last modified: 201704271937
 
 # ==============================================================
 # Author
@@ -198,7 +198,7 @@ cleantmp:
 
 .PHONY: cleandoc
 cleandoc:
-	-rm -f doc/*.html doc/*.adoc tmp/doc.*
+	-rm -f doc/*.html tmp/doc.*
 
 .PHONY: doc
 doc: gplusdosdoc plus3dosdoc trdosdoc
@@ -775,7 +775,7 @@ backgrounds/current.scr: backgrounds/current.pbm
 # ----------------------------------------------
 # Documentation for G+DOS
 
-doc/solo_forth_for_gplusdos_manual.html: \
+doc/gplusdos_solo_forth_manual.html: \
 	tmp/doc.gplusdos.manual.adoc \
 	README.adoc
 	asciidoctor --out-file=$@ $<
@@ -801,12 +801,12 @@ tmp/doc.gplusdos.manual.adoc: \
 	cat $^ > $@
 
 .PHONY: gplusdosdoc
-gplusdosdoc: doc/solo_forth_for_gplusdos_manual.html
+gplusdosdoc: doc/gplusdos_solo_forth_manual.html
 
 # ----------------------------------------------
 # Documentation for +3DOS
 
-doc/solo_forth_for_plus3dos_manual.html: \
+doc/plus3dos_solo_forth_manual.html: \
 	tmp/doc.plus3dos.manual.adoc \
 	README.adoc
 	asciidoctor --out-file=$@ $<
@@ -831,12 +831,12 @@ tmp/doc.plus3dos.manual.adoc: \
 	cat $^ > $@
 
 .PHONY: plus3dosdoc
-plus3dosdoc: doc/solo_forth_for_plus3dos_manual.html
+plus3dosdoc: doc/plus3dos_solo_forth_manual.html
 
 # ----------------------------------------------
 # Documentation for TR-DOS
 
-doc/solo_forth_for_trdos_manual.html: \
+doc/trdos_solo_forth_manual.html: \
 	tmp/doc.trdos.manual.adoc \
 	README.adoc
 	asciidoctor --out-file=$@ $<
@@ -861,7 +861,7 @@ tmp/doc.trdos.manual.adoc: \
 	cat $^ > $@
 
 .PHONY: trdosdoc
-trdosdoc: doc/solo_forth_for_trdos_manual.html
+trdosdoc: doc/trdos_solo_forth_manual.html
 
 # ==============================================================
 # Backup
@@ -1078,3 +1078,6 @@ oldbackup:
 # 2017-03-12: Add draft rules to include the library, as a
 # block file, in the boot disk images. Rename <bin/sys/> to
 # </bin/dos/>.
+#
+# 2017-04-27: Rename the final HTML files of the manual. Update
+# the `cleandoc` rule.
