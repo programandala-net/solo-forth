@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201704231327
+; Last modified: 201704262018
 
 include version.z80s
 
@@ -4132,6 +4132,7 @@ skip.end:
 ; from the current UDG set.  The following table shows the
 ; effect of changing the value of `last-font-char`:
 
+; [cols="1,9"]
 ; |===
 ; | Value | Effect
 ;
@@ -4145,10 +4146,6 @@ skip.end:
 ; | 162 | Characters 0..162 are printed by the ROM
 ;         (this range includes also the 128-BASIC UDG set 144..162,
 ;         corresponding to UDG characters 0..18 in Solo Forth);
-;         characters 163..255 are printed by `emit-udg`.
-; | 164 | Characters 0..164 are printed by the ROM
-;         (this range includes also the 48-BASIC UDG set 144..164,
-;         corresponding to UDG characters 0..20 in Solo Forth);
 ;         characters 163..255 are printed by `emit-udg`.
 ; | 255 | Characters 0..255 are printed by the ROM
 ;         (this range includes also the 128-BASIC tokens);
@@ -13914,7 +13911,7 @@ attr_cls.a: ; alternative entry point used by `cls`
 
 ; doc{
 ;
-; mode_32-xy ( -- col row )
+; mode-32-xy ( -- col row )
 ;
 ; Return the current column and row, in `mode-32`.
 ;

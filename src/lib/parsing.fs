@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703191629
+  \ Last modified: 201704271706
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -150,7 +150,7 @@ need-here execute-parsing
   \
   \ }doc
 
-[uneeded] [char]  ?(
+[unneeded] [char]  ?(
 
 : [char] ( "name" -- c )
   char postpone cliteral ; immediate compile-only ?)
@@ -287,5 +287,7 @@ need-here execute-parsing
   \ 2017-03-13: Improve documentation.
   \
   \ 2017-03-19: Add `parse-name-thru`. Improve documentation.
+  \
+  \ 2017-04-27: Fix needing of `[char]`.
 
   \ vim: filetype=soloforth
