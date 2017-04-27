@@ -1,9 +1,9 @@
-  \ benchmark.vector-loop.fs
+  \ meta.benchmark.vector-loop.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220028
+  \ Last modified: 201704271853
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -115,6 +115,7 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
   ." Vector */   " cr ;
 
 : vector-loop-benchmark ( -- )
+  cr ." Vector Loop Benchmark:" cr
   vecload  cr bench0 bench1 bench2 bench3 bench4 ;
 
   cr
@@ -123,7 +124,7 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
   .( benchmarks type:) cr
   .(   vector-loop-benchmarks ) cr
 
-  \ 2015-12-24
+  \ 2015-12-24:
   \
   \ Benchmark     Frames (1 frame = 50th of second)
   \ ---------     -----------------------------------
@@ -135,7 +136,7 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
   \ Vector /      149002 (1.0)  127495 (0.85)
   \ Vector */     178854 (1.0)  154480 (0.86)
 
-  \ 2016-03-16
+  \ 2016-03-16:
   \
   \ Benchmark     Frames (1 frame = 50th of second)
   \ ---------     -----------------------------------
@@ -149,9 +150,18 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
 
   \ [1] Changed only in the kernel.
 
+  \                    Frames (1 frame = 50th of second)
+  \                    ----------------------------------
+  \ Date       Vector:   noop      +      *      /     */
+  \ ----------         ------ ------ ------ ------ ------
+  \ 2017-04-27           8214  45270  89108 125102 152674
+
   \ ===========================================================
   \ Change log
 
   \ 2016-12-30: Compact the code, saving one block.
+  \
+  \ 2017-04-27: Rename the file in order to move the code to
+  \ the "workbench" disk image. Display title.
 
   \ vim: filetype=soloforth

@@ -1,9 +1,10 @@
-  \ benchmark.interface-age.fs
+  \ meta.benchmark.interface-age.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221226
+  \ Last modified: 201704271853
+  \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
@@ -55,6 +56,8 @@ need bench{ need 2/
 ( interface-age-benchmark )
 
 : interface-age-benchmark ( n -- )
+  cr ." Interface Age Benchmark:" cr
+  dup u. ." iterations..." cr
   bench{ (interface-age-benchmark) }bench. ;
 
   cr
@@ -66,7 +69,7 @@ need bench{ need 2/
   .( iterations. The original code) cr
   .( used 5000 iterations.) cr
 
-  \ 2015-12-24
+  \ 2015-12-24:
   \
   \ Times Frames (1 frame = 50th of second)
   \ ----- -----------------------------------
@@ -74,7 +77,7 @@ need bench{ need 2/
   \       ------------  ------------
   \ 05000 80091 (1.00)  72445 (0.90)
 
-  \ 2016-03-16 XXX TODO --
+  \ 2016-03-16:
   \
   \ Times Frames (1 frame = 50th of second)
   \ ----- --------------------------------------
@@ -84,7 +87,15 @@ need bench{ need 2/
   \
   \ [1] Changed only in the kernel.
 
-( Interface Age Benchmark program )
+  \ Date        Times  Frames Note
+  \ ----------- ------ ------ -----------------------------
+  \ 2015-12-24    5000  80091 ITC (old)
+  \ 2015-12-24    5000  72445 DTC (new)
+  \ 2016-03-16    5000  72445 `jp pushhl` (old)
+  \ 2016-03-16    5000  71914 `push hl + jp (ix)` (new, kernel only)
+  \ 2017-04-27    5000  68017
+
+( interface-age-benchmark )
 
   \ XXX TODO -- test
 
@@ -104,5 +115,14 @@ need bench{ need 2/
     loop
     if  4 .r  else  drop  then
   loop  drop cr ." Finished " ;
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-12-24. Modify `(interface-age-benchmark)`: no
+  \ printing.
+  \
+  \ 2017-04-27: Rename the file in order to move the code to
+  \ the "workbench" disk image. Display title.
 
   \ vim: filetype=soloforth

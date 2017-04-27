@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703292330
+  \ Last modified: 201704271804
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -399,6 +399,93 @@ code ms ( u -- )
   \
   \ }doc
 
+( bench{ }bench }bench. bench. benched )
+
+  \ Credit:
+  \
+  \ Code adapted from Forth Dimensions (volume 17, number 4
+  \ page 11, 1995-11).
+
+  \ System-dependent timing routines.
+
+need reset-frames need frames@
+
+: bench{ ( -- ) reset-frames ;
+
+  \ doc{
+  \
+  \ bench{ ( -- )
+  \
+  \ Start timing, setting the system frames counter to zero.
+  \
+  \ See also: `}bench`, `reset-frames`.
+  \
+  \ }doc
+
+: }bench ( -- d ) frames@ ;
+
+  \ doc{
+  \
+  \ }bench ( -- d ) frames@ ;
+  \
+  \ Return the current value of the system frames counter.
+  \
+  \ See also: `bench{`, `frames@`, `bench.`, `}bench.`.
+  \
+  \ }doc
+
+: bench. ( d -- ) 2dup d. ." frames (" 50 m/ nip . ." s) " ;
+
+  \ doc{
+  \
+  \ bench. ( d -- )
+  \
+  \ Print the timing result _d_.
+  \
+  \ See also: `bench{`, `}bench`, `}bench.`.
+  \
+  \ }doc
+
+: }bench. ( -- ) frames@ bench. ;
+
+  \ doc{
+  \
+  \ }bench. ( -- )
+  \
+  \ Stop timing and print the result.
+  \
+  \ See also: `bench{`, `}bench`, `bench.`.
+  \
+  \ }doc
+
+: benched ( xt n -- d )
+  bench{ 0 ?do  dup execute  loop  }bench rot drop ;
+
+  \ doc{
+  \
+  \ benched ( xt n -- d )
+  \
+  \ Execute _n_ times the benchmark _xt_ and return the timer
+  \ result _d_.
+  \
+  \ See also: `bench{`, `}bench`, `benched.`.
+  \
+  \ }doc
+
+: benched. ( xt n -- )
+  bench{ 0 ?do  dup execute  loop  }bench. drop ;
+
+  \ doc{
+  \
+  \ benched. ( xt n -- d )
+  \
+  \ Execute _n_ times the benchmark _xt_ and print the
+  \ result.
+  \
+  \ See also: `bench{`, `}bench.`, `benched`.
+  \
+  \ }doc
+
   \ ===========================================================
   \ Change log
 
@@ -448,5 +535,8 @@ code ms ( u -- )
   \
   \ 2017-03-29: Fix needing of `frames!`. Improve needing of
   \ time and date words. Improve documentation.
+  \
+  \ 2017-04-27: Move `bench{` and friends here from the
+  \ <benchmark.fs>, which is deleted.
 
   \ vim: filetype=soloforth
