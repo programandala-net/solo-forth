@@ -1,7 +1,7 @@
 # Ignore ZX Spectrum disk images:
-*.dsk
-*.mgt
-*.trd
+#*.dsk
+#*.mgt
+#*.trd
 
 # Ignore ZX Spectrum emulator snapshots:
 *.sna
@@ -12,7 +12,15 @@
 _meta/
 
 # Ignore the documentation:
-doc/*.adoc
-doc/*.html
+#doc/*.html
+
+# Ignore some files which are not ready for the next prerelease:
+bin/fonts/mini.f64
+bin/fonts/nbot.f64
+bin/fonts/omn1.f64
+bin/fonts/omn2.f64
+bin/fonts/owen.f64
+src/addons/64-4.z80s
+src/lib/display.mode.42rt.fs
 
 # vim: filetype=config
