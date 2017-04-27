@@ -1,7 +1,7 @@
 # Ignore ZX Spectrum disk images:
-#*.dsk
-#*.mgt
-#*.trd
+*.dsk
+*.mgt
+*.trd
 
 # Ignore ZX Spectrum emulator snapshots:
 *.sna
@@ -12,7 +12,7 @@
 _meta/
 
 # Ignore the documentation:
-#doc/*.html
+doc/*.html
 
 # Ignore some files which are not ready for the next prerelease:
 bin/fonts/mini.f64
