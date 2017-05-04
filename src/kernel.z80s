@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201704262018
+; Last modified: 201705041707
 
 include version.z80s
 
@@ -1249,8 +1249,8 @@ if 1 ; abase
 ;
 ; abase ( -- a )
 ;
-; A variable used by `asm` to save the current value of `base`
-; in assembler definitions.
+; A variable used by `asm`.  _a_ is the address of a cell where
+; the current value of `base` is preserved.
 ;
 ; }doc
 
@@ -1591,10 +1591,10 @@ endif
 ;
 ; far-banks ( -- ca )
 ;
-; Address of an array of four bytes. It holds the four memory
-; banks used as a virtual 64-KiB continuous space, called "far
-; memory". Every byte holds the bank number used for a 16-KiB
-; range of addresses, as follows:
+; _ca_ is the address of an array of four bytes. It holds the
+; four memory banks used as a virtual 64-KiB continuous space,
+; called "far memory". Every byte holds the bank number used for
+; a 16-KiB range of addresses, as follows:
 
 ; |===
 ; | Offset | Address range | Bank
@@ -1770,8 +1770,9 @@ question_previous_bank:
 ;
 ; bank-index ( -- ca )
 ;
-; A byte variable that holds the bank index (0..3) calculated by
-; the latest execution of `far`
+; A byte variable. _ca_ is the address of an address unit
+; containing the bank index (0..3) calculated by the latest
+; execution of `far`
 ;
 ; See also: `far-banks`, `bank`, `banks`.
 ;
@@ -2410,12 +2411,26 @@ endif
 ; parse-string ( Compilation: c "ccc<char>" -- )
 ;              ( Interpretation: c "ccc<char>" -- ca len )
 ;              ( Run-time:  -- ca len )
+
+; Parse _ccc_ delimited by character _c_.  If interpreting, copy
+; the parsed string to the `stringer` and return it as _ca len_.
+; If compiling, compile the parsed string and return it at
+; run-time as _ca len_.
+;
+; WARNING: ``parse-string`` is a state-smart word.
+;
+; Definition:
+
+; ----
+; : parse-string ( Compilation: c "ccc<char>" -- )
+;                ( Interpretation: c "ccc<char>" -- ca len )
+;                ( Run-time:  -- ca len )
+;   parse compiling? if postpone sliteral exit then >stringer ;
+; ----
+
+; See also: `compiling?`, `sliteral`, `>stringer`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
-
-  ; XXX WARNING -- State-smart.
 
   dw parse_ ; ( ca len )
   dw compiling_question_
@@ -2432,13 +2447,15 @@ parse_string.interpreting:
 
 ; doc{
 ;
-; clit ( -- )
+; clit ( -- b )
 ;
-; See also: `cliteral`, `lit`, `2lit`.
+; Return _b_, which was compiled by `cliteral` after ``clit``.
+;
+; ``clit`` is a `compile-only` word.
+;
+; See also: `lit`, `2lit`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ld a,(bc)
   inc bc
@@ -2452,11 +2469,16 @@ push_a:
 
 ; doc{
 ;
-; 2lit ( -- )
+; 2lit ( -- x1 x2 )
+;
+; Return _x1 x2_, which was compiled by `2literal` after
+; ``2lit``.
+;
+; ``2lit`` is a `compile-only` word.
+;
+; See also: `lit`, `clit`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ld a,(bc)
   ld l,a
@@ -2477,11 +2499,15 @@ push_a:
 
 ; doc{
 ;
-; lit ( -- )
+; lit ( -- x )
+;
+; Return _x_, which was compiled by `literal` after ``lit``.
+;
+; ``lit`` is a `compile-only` word.
+;
+; See also: `clit`, `2lit`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ld a,(bc)
   ld l,a
@@ -2610,7 +2636,7 @@ push_a:
 ;
 ; /stringer ( -- n )
 ;
-; A constant that holds the maximum size of the `stringer`, in
+; A constant. _n_ is the maximum size of the `stringer`, in
 ; characters.
 ;
 ; See in `stringer` an example how to move and resize the
@@ -2629,9 +2655,10 @@ push_a:
 ;
 ; +stringer ( -- a )
 ;
-; A variable that holds the pointer of the `stringer`, i.e. an
-; offset to its first free address. The offset equals the number
-; of free characters in the `stringer`.
+; A variable. _a_ is the address of a cell containing the
+; pointer of the `stringer`, i.e. an offset to its first free
+; address. The offset equals the number of free characters in
+; the `stringer`.
 ;
 ; See also: `empty-stringer`.
 ;
@@ -2888,11 +2915,22 @@ question_stringer_.enough:
 
 ; doc{
 ;
-; , ( -- )
+; , ( x -- )
+;
+; Reserve one cell of data space and store _x_ in the cell.
+;
+; Definition:
+
+; ----
+; : , ( x -- ) here ! cell allot ;
+; ----
+
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `2,`, `c,`, `here`, `!`, `cell`, `allot`.
 ;
 ; }doc
-
-; XXX TODO -- document
 
   dw here_,store_,cell_,allot_
   dw exit_
@@ -3547,7 +3585,8 @@ to_number.end:
 ; is a deferred word used in `number?`. Its default action is
 ; `standard-number-point?`, which only allows the period.
 ;
-; See also: `classic-number-point?`, `extended-number-point?`.
+; See also: `classic-number-point?`, `extended-number-point?`,
+; `dpl`.
 ;
 ; }doc
 
@@ -3963,26 +4002,26 @@ find_name.loop_exit:
 ;
 ; case-sensitive ( -- a )
 ;
-; A variable that holds a flag that turns case-sensitive mode on and
-; off.
+; A variable. _a_ is the address of a cell containing a flag
+; that turns case-sensitive mode on and off.
 ;
-; When the contents of `case-sensitive` are zero, case-sensitive mode
-; is off (this is the default): the name of new words defined will be
-; stored in lowercase into the dictionary; and any name
-; searched for in the dictionary will be converted to lowercase first
-; (the conversion is done at low level, not affecting the name string
-; passed as parameter).
+; When the contents of `case-sensitive` are zero, case-sensitive
+; mode is off (this is the default): the name of new words
+; defined will be stored in lowercase into the dictionary; and
+; any name searched for in the dictionary will be converted to
+; lowercase first (the conversion is done at low level, not
+; affecting the name string passed as parameter).
 ;
-; When the contents of `case-sensitive` are non-zero, case-sensitive
-; mode is on: the name of new words defined will be stored as they are
-; parsed from the input stream, without modification; and any name
-; searched for in the dictionary will not be modified, therefore it
-; will be found only if it's identical to the name stored in the
-; definition header.
+; When the contents of `case-sensitive` are non-zero,
+; case-sensitive mode is on: the name of new words defined will
+; be stored as they are parsed from the input stream, without
+; modification; and any name searched for in the dictionary will
+; not be modified, therefore it will be found only if it's
+; identical to the name stored in the definition header.
 ;
-; WARNING: Words that are defined when case-sensitive mode is on, and
-; that have uppercase characters in their names, will not be found
-; when case-sensitive mode is off.
+; WARNING: Words that are defined when case-sensitive mode is
+; on, and that have uppercase characters in their names, will
+; not be found when case-sensitive mode is off.
 ;
 ; }doc
 
@@ -4091,8 +4130,9 @@ skip.end:
 ;
 ; last-font-char ( -- ca )
 ;
-; Address _ca_ holds the code of the last character displayed
-; from the current font by the current action of `emit`.  Higher
+; A byte variable. _ca_ is the address of an address unit
+; containing the code of the last character displayed from the
+; current font by the current action of `emit`.  Higher
 ; characters are managed apart, usually displayed by `emit-udg`,
 ; depending on the actual implementation of `emit`, which is a
 ; deferred word.
@@ -4100,12 +4140,8 @@ skip.end:
 ; At the moment, only `mode-32-emit` checks this value.
 ; Eventually, also the alternative modes will use it.
 ;
-; Note that this is a character variable, which must be set with
-; `c!`.  Its default value is 127.
-
-; Note that `emit-udg` prints characters 0..255 from the
-; current UDG set. This is different from Sinclair BASIC, where
-; UDG code 164 is the first one in the UDG set.
+; ``last-font-char`` is a character variable, which must be set
+; with `c!`.  Its default value is 127.
 ;
 ; See also: `set-font`, `set-udg`.
 ;
@@ -4188,9 +4224,9 @@ mode_32_emit.a
 ; by `os-udg`.
 ;
 ; NOTE: The usual parameter is _c_ (0..255), but no check is
-; done. If a 16-bit value _n_ is received instead, it will be
-; used as well in order to calculate the address of the
-; corresponding character bitmap in the UDG set.
+; done: If a 16-bit value _n_ is received instead, it will be
+; used to calculate the address of the corresponding character
+; bitmap in the UDG set.
 ;
 ; See also: `set-udg`, `emit`, `mode-32-emit`, `last-font-char`.
 ;
@@ -4219,11 +4255,19 @@ emit_udg.l
 
 ; doc{
 ;
-; emit ( c -- )
+; emit ( x -- )
+;
+; Display character _x_.
+;
+; ``emit`` is a deferred word whose default action is
+; `mode-32-emit`.
+;
+; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
+; Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `emit-udg`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
 ; ----------------------------------------------
   _variable_header printing_,'printing'
@@ -4266,15 +4310,16 @@ emit_udg.l
 ;
 ; key-translation-table ( -- a )
 ;
-; A variable that holds the address of the current key
-; translation table, used by `key`.
+; A variable. _a_ is the address of a cell containing the
+; address of the current key translation table, used by `key`.
 ;
 ; The table consists of pairs of characters. The first one is
 ; the character that has to be translated and the second one is
 ; its translation. The table is finished with a zero.
 ;
 ; The default table makes it possible to access the following
-; characters with Symbol Shift: '[', ']', '~', '|', '\', '{' and '}'.
+; characters with Symbol Shift: '[', ']', '~', '|', '\', '{' and
+; '}'.
 ;
 ; }doc
 
@@ -4328,20 +4373,16 @@ translate_char.begin:
   ld a,(hl) ; translate char
   ret
 
+; ----------------------------------------------
 if 0 ; XXX UNDER DEVELOPMENT
 
   ; improved version with support for chained tables
 
-; ----------------------------------------------
   _colon_header translate_char_,'translate-char'
 
-; doc{
 ;
 ; translate-char ( c1 -- c2 )
 ;
-; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ; XXX TODO
 
@@ -4358,13 +4399,11 @@ translate_char.do_it
 ; ----------------------------------------------
   _code_header paren_translate_char_,'(translate-char)'
 
-; doc{
 ;
 ; (translate-char) ( c1 ca -- c1 false | c2 true )
 ;
-; }doc
 
-  ; XXX TODO -- Finish the documentation.
+  ; XXX TODO
 
   pop hl  ; ca
   pop de  ; c1
@@ -4437,6 +4476,8 @@ endif
 ; Is the break key pressed? ``break-key?`` is a deferred word
 ; whose default action is `default-break-key?`.
 ;
+; See also: `key?`.
+;
 ; }doc
 
 ; ----------------------------------------------
@@ -4446,12 +4487,24 @@ endif
 ;
 ; key? ( -- f )
 ;
+; If a character is available, return _true_. Otherwise, return
+; _false_. If non-character keyboard events are available before
+; the first valid character, they are discarded and are
+; subsequently unavailable. The character is returned by the
+; next execution of `key`.
+;
+; After ``key?`` returns with a value of _true_, subsequent
+; executions of ``key?`` prior to  the execution of `key` also
+; return true, without discarding keyboard events.
+;
 ; Origin: Forth-94 (FACILITY), Forth-2012 (FACILITY).
 ;
 ; }doc
 
-  ; XXX -- This version works only when the system interrupts
-  ; are on.
+  ; XXX TODO -- Update when `ekey` is implemented.
+
+  ; XXX REMARK -- This version works only when the system
+  ; interrupts are on.
 
   bit 5,(iy+$01) ; new key available? (system variable FLAGS)
   jp z,false_
@@ -4462,11 +4515,12 @@ endif
 
 ; doc{
 ;
-; cursor-char ( -- a )
+; cursor-char ( -- ca )
 ;
-; A byte variable that holds the character code of the cursor
-; used by `xkey`. Note this is a character variable, thus it has to
-; be fetched with `c@` and modified with `c!`.
+; A byte variable. _ca_ is the address of an address unit
+; containing the character code of the cursor used by `xkey`.
+; Note this is a character variable, thus it has to be fetched
+; with `c@` and modified with `c!`.
 ;
 ; }doc
 
@@ -4479,11 +4533,14 @@ endif
 ;
 ; key ( -- c )
 ;
+; Receive one character _c_, a member of the defined character
+; set. Keyboard events that do not correspond to such characters
+; are discarded until a valid character is received, and those
+; events are subsequently unavailable.
+;
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   call wait_for_key
   call translate_char.a ; XXX TODO
@@ -4611,11 +4668,19 @@ wait_for_key:
 
 ; doc{
 ;
-; cmove> ( ca len u -- )
+; cmove> ( ca1 ca2 u -- )
+;
+; If _u_ is greater than zero, copy _u_ consecutive characters
+; from the data space  starting at _ca1_ to that starting at
+; _ca2_, proceeding character-by-character from higher addresses
+; to lower addresses.
+;
+; Origin: Forth-83 (Required Word Set), Forth-94 (STRING),
+; Forth-2012 (STRING).
+;
+; See also: `cmove`, `move`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ; XXX REMARK -- Not used in the kernel, but moving it to the
   ; library would be a problem.
@@ -4633,11 +4698,19 @@ wait_for_key:
 
 ; doc{
 ;
-; cmove ( ca len u -- )
+; cmove ( ca1 ca2 u -- )
+;
+; If _u_ is greater than zero, copy _u_ consecutive characters
+; from the data space  starting at _ca1_ to that starting at
+; _ca2_, proceeding character-by-character from lower addresses
+; to higher addresses.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (STRING), Forth-2012 (STRING).
+;
+; See also: `cmove>`, `move`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   exx
   pop bc
@@ -4652,11 +4725,20 @@ wait_for_key:
 
 ; doc{
 ;
-; move ( a1 a2 len -- )
+; move ( a1 a2 u -- )
+;
+; If _u_ is greater than zero, copy the contents of _u_
+; consecutive address units at _a1_ to the _u_ consecutive
+; address units at _a2_. After ``move`` completes, the _u_
+; consecutive address units at _a2_ contain exactly what the _u_
+; consecutive address units at _a1_ contained before the move.
+;
+; See also: `cmove`, `cmove>`.
+;
+; Origin: Forth-83 (Uncontrolled Reference Words), Forth-94
+; (STRING), Forth-2012 (STRING).
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   exx
   pop bc
@@ -4867,7 +4949,8 @@ u_m_slash_mod.4:
 ;
 ; up ( -- a )
 ;
-; A variable. _a_ holds the address of the user area pointer.
+; A variable. _a_ is the address of a cell containing the user
+; area pointer.
 ;
 ; Origin: fig-Forth.
 ;
@@ -4897,13 +4980,17 @@ u_m_slash_mod.4:
 ;
 ; np ( -- a )
 ;
-; Address that holds the name-space pointer, which points to
-; the next free address where the next word header will be
-; stored.
+; A variable. _a_ is the address of a cell containing the
+; name-space pointer, which points to the next free address
+; where the next word header will be stored.
+;
+; Name space is in "far memory": a 64-KiB memory formed by 4
+; configurable memory banks.
+;
+; See also: `np0`, `np@`, `dp`, `far-banks`.
 ;
 ; }doc
 
-  ; XXX TODO -- Finish the documentation. (Far memory).
   ; XXX TODO -- User variable?
 
   dw names_pointer
@@ -4915,9 +5002,10 @@ u_m_slash_mod.4:
 ;
 ; np0 ( -- a )
 ;
+; Return the bottom (initial) address of the name-space pointer
+; `np`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   dw names_pointer_bottom
 
@@ -4928,7 +5016,14 @@ u_m_slash_mod.4:
 ;
 ; np@ ( -- a )
 ;
-; Fetch the content of the name-space pointer.
+; Fetch the content of the name-space pointer `np`.
+;
+; ``np@`` is written in Z80. Its equivalent definition in Forth
+; is the following:
+;
+; ----
+; : np@ ( -- a ) np @ ;
+; ----
 ;
 ; }doc
 
@@ -4944,7 +5039,14 @@ u_m_slash_mod.4:
 ;
 ; np! ( a -- )
 ;
-; Store _a_ into the name-space pointer.
+; Store _a_ into the name-space pointer `np`.
+;
+; ``np!`` is written in Z80. Its equivalent definition in Forth
+; is the following:
+;
+; ----
+; : np! ( a -- ) np ! ;
+; ----
 ;
 ; }doc
 
@@ -4952,8 +5054,6 @@ u_m_slash_mod.4:
   ;
   ; XXX TODO -- Move to the library? (used in the modules of
   ; `-transient` and `marker`).
-
-  ; XXX TODO -- Finish the documentation.
 
   pop hl
   ld (names_pointer),hl
@@ -4985,11 +5085,15 @@ u_m_slash_mod.4:
 ;
 ; sp@ ( -- a )
 ;
-; Fetch the content of the stack pointer.
+; Fetch the content of the stack pointer. _a_ is the address of
+; the top of the stack just before ``sp@`` was executed.
+;
+; Origin: fig-Forth, Forth-79 (Reference Word Set), Forth-83
+; (Controlled Reference Words).
+;
+; See also: `sp!`, `sp0`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ld hl,$0000
   add hl,sp
@@ -5006,8 +5110,6 @@ u_m_slash_mod.4:
 ;
 ; }doc
 
-  ; XXX TODO -- Finish the documentation.
-
   pop hl
   ld sp,hl
   _jp_next
@@ -5021,10 +5123,14 @@ u_m_slash_mod.4:
 ;
 ; Address of the return stack pointer.
 ;
+; See also: `rp@`, `rp!`.
+;
 ; }doc
 
   ; XXX TODO -- convert to user variable
-  ; XXX TODO -- Finish the documentation.
+  ;
+  ; XXX TODO -- Finish the documentation: details of the return
+  ; stack.
 
   dw return_stack_pointer
 
@@ -5037,9 +5143,16 @@ u_m_slash_mod.4:
 ;
 ; Fetch the content of the return stack pointer.
 ;
+; ``rp@`` is written in Z80. Its equivalent definition in Forth
+; is the following:
+;
+; ----
+; : rp@ ( -- a ) rp @ ;
+; ----
+;
+; See also: `rp`, `rp!`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ld hl,(return_stack_pointer)
   _jp_pushhl
@@ -5053,9 +5166,16 @@ u_m_slash_mod.4:
 ;
 ; Store _a_ into the return stack pointer.
 ;
+; ``rp!`` is written in Z80. Its equivalent definition in Forth
+; is the following:
+;
+; ----
+; : rp! ( a -- ) rp ! ;
+; ----
+;
+; See also: `rp`, `rp@`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   pop hl
   ld (return_stack_pointer),hl
@@ -5068,11 +5188,14 @@ u_m_slash_mod.4:
 ;
 ; >r ( x -- ) ( R: -- x )
 ;
+; Move _x_ from the data stack to the return stack.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
 ; See also: `r>`, `r@`, 2>r`,
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   pop de
 to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
@@ -5091,11 +5214,14 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ;
 ; r> ( -- x ) ( R: x -- )
 ;
+; Move _x_ from the return stack to the data stack.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
 ; See also: `>r`, `r@`, `2r>`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ld hl,(return_stack_pointer)
   ld e,(hl)
@@ -5113,11 +5239,13 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ;
 ; rdrop ( R: x -- )
 ;
+; Remove _x_ from the return stack.
+;
 ; See also: `r@`, `drop`.
 ;
+; Origin: Comus.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ld hl,(return_stack_pointer)
   inc hl
@@ -5132,11 +5260,14 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ;
 ; 2>r ( x1 x2 -- ) ( R: -- x1 x2 )
 ;
+; Move _x1 x2_ from the data stack to the return stack.
+; Semantically equivalent to ``swap >r >r``.
+;
+; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+;
 ; See also: `2r>`, `2r@`, `>r`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ld hl,(return_stack_pointer)
   ld de,-cell*2
@@ -5151,11 +5282,14 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ;
 ; 2r> ( -- x1 x2 ) ( R: x1 x2 -- )
 ;
+; Move _x1 x2_ from the return stack to the data stack.
+; Semantically equivalent to ``r> r> swap``.
+;
+; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+;
 ; See also: `2>r`, `2r@`, `r>`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ld hl,(return_stack_pointer)
   push hl
@@ -5171,11 +5305,14 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ;
 ; 2r@ ( -- x1 x2 ) ( R: x1 x2 -- x1 x2 )
 ;
+; Copy _x1 x2_ from the return stack to the data stack.
+; Semantically equivalent to ``r> r> 2dup >r >r swap``.
+;
+; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+;
 ; See also: `2>r`, `2r>`, `r@`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ; XXX TODO -- Move to the library?  Use `' 2@ 1+` to calculate
   ; the jump address.
@@ -5190,11 +5327,14 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ;
 ; r@ ( -- x ) ( R: x -- x )
 ;
+; Copy _x_ from the return stack to the data stack.
+;
+; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
+; Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
 ; See also. `>r`, `r>`, `rdrop`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ld hl,(return_stack_pointer)
   jp fetch.hl
@@ -5340,11 +5480,14 @@ true_if_cy:
 ;
 ; + ( n1|u1 n2|u2 -- n3|u3 )
 ;
-; See also: `d+`.
+; Add _n1|u1_ to _n2|u2_, giving the sum _n3|u3_.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `d+`, `2+`, `1+`, `-`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   pop de
   pop hl
@@ -5593,9 +5736,14 @@ endif
 ;
 ; over ( x1 x2 -- x1 x2 x1 )
 ;
+; Place a copy of _x1_ on top of the stack.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `dup`, `swap`, `2over`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   pop de
   pop hl
@@ -5609,9 +5757,14 @@ endif
 ;
 ; drop ( x -- )
 ;
+; Remove _x_ from the stack.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `2drop`, `nip`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   pop hl
   _jp_next
@@ -5623,9 +5776,14 @@ endif
 ;
 ; swap ( x1 x2 -- x2 x1 )
 ;
+; Exchange the top two stack items.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `2swap`, `over`, `tuck`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   pop hl
   ex (sp),hl
@@ -6008,9 +6166,9 @@ do_colon:
 ;
 ; noname? ( -- a )
 ;
-; A variable that holds a flag: Was the word being defined
-; created by `:noname`? ``noname?`` is set by `:noname` and
-; reset by `;`.
+; A variable. _a_ is the address of a cell containing a flag:
+; Was the word being defined created by `:noname`? ``noname?``
+; is set by `:noname` and reset by `;`.
 ;
 ; }doc
 
@@ -6096,11 +6254,17 @@ do_colon:
 
 ; doc{
 ;
-; cconstant ( b "name" -- )
+; cconstant ( c "name" -- )
+;
+; Parse _name_. Create a definition for _name_ that will place
+; _c_ on the stack. _name_ is referred to as a "c-constant".
+;
+; Origin: Comus.
+;
+; See also: `constant`, `2constant`, `c!>`, `cconst`,
+; `[cconst]`, `cvalue`, `cvariable`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   dw create_,c_comma_
   dw paren_semicolon_code_
@@ -6137,9 +6301,16 @@ c_fetch.hl:
 ;
 ; constant ( x "name" -- )
 ;
+; Parse _name_. Create a definition for _name_ that will place
+; _x_ on the stack. _name_ is referred to as a "constant".
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `2constant`, `cconstant`, `!>`, `const`, `[const]`,
+; `value`, `variable`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   dw create_,comma_
   dw paren_semicolon_code_
@@ -6298,9 +6469,14 @@ do_user:
 ;
 ; c/l ( -- c )
 ;
+; _c_ is the number of characters per line in a `block` source:
+; 64.
+;
+; See also: `l/scr`.
+;
 ; }doc
 
-  ; XXX TODO -- Finish the documentation.
+  ; XXX TODO -- Rename to `chars/line`.
 
   db characters_per_line
 
@@ -6311,9 +6487,13 @@ do_user:
 ;
 ; l/scr ( -- c )
 ;
+; _c_ is the number of lines per `block` source: 16.
+;
+; See also: `c/l`.
+;
 ; }doc
 
-  ; XXX TODO -- Finish the documentation.
+  ; XXX TODO -- Rename to `lines/block`.
 
   db lines_per_screen
 
@@ -6324,7 +6504,10 @@ do_user:
 ;
 ; disk-buffer ( -- a )
 ;
-; Address of the disk buffer, which is a cell that holds its id.
+; A constant. _a_ is the address of the disk `buffer`. The cell
+; pointed by _a_ contains the disk buffer identifier.
+;
+; See also: `buffer-data`.
 ;
 ; }doc
 
@@ -6337,7 +6520,9 @@ do_user:
 ;
 ; buffer-data ( -- ca )
 ;
-; Address of the disk buffer contents.
+; A constant. _ca_ is the address of the disk `buffer` contents.
+;
+; See also: `disk-buffer`.
 ;
 ; }doc
 
@@ -6352,9 +6537,11 @@ do_user:
 ;
 ; b/buf ( -- c )
 ;
+; _c_ is the number of bytes per `block` `buffer`: 1024.
+;
+; See also: `c/l`, `l/scr`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   dw bytes_per_buffer
 
@@ -6431,6 +6618,8 @@ do_user:
 ; parameter area.  ``+origin`` is used to access or modify the
 ; boot-up parameters at the origin area.
 ;
+; See the details in the source of the kernel.
+;
 ; Origin: fig-Forth.
 ;
 ; }doc
@@ -6448,11 +6637,13 @@ do_user:
 ;
 ; sp0 ( -- a )
 ;
-; User variable that holds the address of the bottom of the data
-; stack.
+; A user variable. _a_ is the address of a cell containing the
+; address of the bottom of the data stack.
 ;
 ; Origin: fig-Forth's ``s0``, Forth-79's ``s0``, Forth-83's
 ; ``s0``.
+;
+; See also: `sp@`, `sp!`.
 ;
 ; }doc
 
@@ -6465,8 +6656,8 @@ do_user:
 ;
 ; rp0 ( -- a )
 ;
-; User variable that holds the address of the bottom of the
-; return stack.
+; A user variable. _a_ is the address of a cell containing the
+; address of the bottom of the return stack.
 ;
 ; Origin: fig-Forth's ``r0``.
 ;
@@ -6487,11 +6678,12 @@ do_user:
 ;
 ; width ( -- a )
 ;
-; User variable that holds the maximum number of letters saved
-; in the compilation of a definition name. It must be 1 thru 31,
-; with a default value of 31. The name character count and its
-; natural characters are saved, up to the value in `width`.  The
-; value may be changed at any time within the above limits.
+; A user variable. _a_ is the address of a cell containing the
+; maximum number of letters saved in the compilation of a
+; definition name. It must be 1 thru 31, with a default value of
+; 31. The name character count and its natural characters are
+; saved, up to the value in `width`.  The value may be changed
+; at any time within the above limits.
 ;
 ; Origin: fig-Forth.
 ;
@@ -6511,9 +6703,9 @@ do_user:
 ;
 ; lastblk ( -- a )
 ;
-; User variable that holds the block number of the block most
-; recently or loaded (with `load` or `continued`). ``lastblk``
-; is used by `reload`.
+; A user variable. _a_ is the address of a cell containing the
+; `block` number of the block most recently or loaded (with
+; `load` or `continued`). ``lastblk`` is used by `reload`.
 ;
 ; }doc
 
@@ -6526,12 +6718,16 @@ do_user:
 ;
 ; last ( -- a )
 ;
-; User variable that holds the name token of the last word
-; defined.
+; A user variable. _a_ is the address of a cell containing the
+; name token of the last word defined.
+;
+; See also: `latest`, `lastxt`.
 ;
 ; }doc
 
   db $0A
+
+  ; XXX TODO -- Ordinary variable?
 
 ; ----------------------------------------------
   _user_variable_header dp_,'dp'
@@ -6557,8 +6753,9 @@ do_user:
 ;
 ; udp ( -- a )
 ;
-; User variable that holds an offset from the start of the
-; current user area to the free space in it.
+; A user variable. _a_ is the address of a cell containing an
+; offset from the start of the current user area to the free
+; space in it.
 ;
 ; }doc
 
@@ -6571,8 +6768,10 @@ do_user:
 ;
 ; lastxt ( -- a )
 ;
-; User variable that holds the execution token of the last word
-; defined.
+; A user variable. _a_ is the address of a cell containing the
+; execution token of the last word defined.
+;
+; See also: `last`.
 ;
 ; }doc
 
@@ -6585,8 +6784,9 @@ do_user:
 ;
 ; >in ( -- a )
 ;
-; A user variable that contains the offset in characters from
-; the start of the input buffer to the start of the parse area.
+; A user variable. _a_ is the address of a cell containing the
+; offset in characters from the start of the input buffer to the
+; start of the parse area.
 ;
 ; }doc
 
@@ -6599,9 +6799,10 @@ do_user:
 ;
 ; blk ( -- a )
 ;
-; User variable that holds the number of the disk block being
-; interpreted. A disk block holds 1024 bytes. One source screen
-; consists of one disk block.
+; A user variable. _a_ is the address of a cell containing the
+; number of the disk `block` being interpreted.
+;
+; See also: `load`, `loading?`, `?loading`.
 ;
 ; }doc
 
@@ -6616,12 +6817,15 @@ do_user:
 ;
 ; scr ( -- a )
 ;
-; User variable that holds the number of the block most recently
-; listed by `list`. ``scr`` is used by the block editors.
+; A user variable. _a_ is the address of a cell containing the
+; number of the `block` most recently listed by `list`. ``scr``
+; is used by the block editors.
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Controlled Reference Words), Forth-94 (BLOCK EXT), Forth-2012
 ; (BLOCK EXT).
+;
+; See also: `editor`.
 ;
 ; }doc
 
@@ -6638,8 +6842,8 @@ do_user:
 ;
 ; catcher ( -- a )
 ;
-; A user variable that holds the return stack pointer for error
-; handling. Used by `throw`.
+; A user variable. _a_ is the address of a cell containing the
+; return stack pointer for error handling. Used by `throw`.
 ;
 ; }doc
 
@@ -6652,10 +6856,13 @@ do_user:
 ;
 ; hld ( -- a )
 ;
-; A user variable that holds the address of the latest character of
-; text during numeric output conversion.
+; A user variable. _a_ is the address of a cell containing the
+; address of the latest character of text during numeric output
+; conversion.
 ;
 ; Origin: fig-Forth.
+;
+; See also: `hold`, `<#`, `#>`.
 ;
 ; }doc
 
@@ -6668,8 +6875,8 @@ do_user:
 ;
 ; current ( -- a )
 ;
-; User variable that holds the word list identifier of the
-; compilation word list.
+; A user variable. _a_ is the address of a cell containing the
+; word list identifier of the compilation word list.
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (System Extension Word Set).
@@ -6687,8 +6894,9 @@ do_user:
 ;
 ; state ( -- a )
 ;
-; User variable that holds the compilation-state flag, which is
-; true when in compilation state, false otherwise.
+; A user variable. _a_ is the address of a cell containing the
+; compilation-state flag, which is _true_ when in compilation
+; state, _false_ otherwise.
 ;
 ; Origin: fig-Forth, Forth-89 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
@@ -6704,7 +6912,13 @@ do_user:
 ;
 ; base ( -- a )
 ;
-; User variable that holds XXX TODO
+; A user variable. _a_ is the address of a cell containing the
+; current number-conversion radix.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `>number`, `number?`.
 ;
 ; }doc
 
@@ -6717,7 +6931,17 @@ do_user:
 ;
 ; dpl ( -- a )
 ;
-; User variable that holds XXX TODO
+; A user variable. _a_ is the address of a cell containing the
+; number of places after the decimal point on double-integer
+; input conversion.
+;
+; If ``dpl`` contains zero, the decimal point is the last
+; character.  The default value of ``dpl`` on single-number
+; input is -1.
+;
+; Origin: fig-Forth, Forth-83 (Uncontrolled Reference Words).
+;
+; See also: `number-point?`, `>number`, `number?`.
 ;
 ; }doc
 
@@ -6730,8 +6954,8 @@ do_user:
 ;
 ; csp ( -- a )
 ;
-; User variable that holds the current data stack position saved
-; by `!csp`.
+; A user variable. _a_ is the address of a cell containing the
+; current data stack position saved by `!csp`.
 ;
 ; Origin: fig-Forth.
 ;
@@ -6748,11 +6972,11 @@ do_user:
 ;
 ; #order ( -- a )
 ;
-; User variable that holds the number of word lists in the
-; search order.
+; A user variable. _a_ is the address of a cell containing the
+; number of word lists in the search `order`.
 ;
 ; See also: `context`, `max-order`, `get-order`, `set-order`,
-; `>order`, `order`.
+; `>order`, `wordlist`.
 ;
 ; }doc
 
@@ -6765,13 +6989,13 @@ do_user:
 ;
 ; context ( -- a )
 ;
-; User variable that holds the search order:  _a_ is the address
-; of an array of cells, whose maximum length is hold in the
-; `max-order` constant, and whose current length is hold in the
-; `#order` variable.  _a_ holds the word list at the top of the
-; search order.
+; A user variable.  _a_ is the address of an array of cells that
+; represent the search `order`; its maximum length is hold in
+; the `max-order` constant, and its current length is hold in
+; the `#order` variable.  _a_ holds the word list at the top of
+; the search order.
 ;
-; See also: `order`, `>order`, `get-order`, `set-order`.
+; See also: `>order`, `get-order`, `set-order`.
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (System Extension Word Set).
@@ -6895,9 +7119,14 @@ source.other:
 ;
 ; 2+ ( n1 -- n2 )
 ;
+; Add 2 to _n1_, according to the operation of `+`, giving _n2_.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set).
+;
+; See also: `2-`, `1+`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
               ;  T  B
               ; -- --
@@ -6932,9 +7161,15 @@ source.other:
 ;
 ; 1- ( n1 -- n2 )
 ;
+; Subtract 1 from _n1_, according to the operation of `-`,
+; giving _n2_.
+;
+; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
+; Set).
+;
+; See also: `1+`, `2-`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   pop hl
   dec hl
@@ -6947,9 +7182,16 @@ source.other:
 ;
 ; char- ( n1 -- n2 )
 ;
+; Subtract the size in address units of a character to _n1_,
+; giving _n2_.
+;
+; ``char-`` is an `alias` of `1-`.
+;
+; Origin: Comus.
+;
+; See also: `char+`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
 ; ----------------------------------------------
   _code_header one_plus_,'1+'
@@ -6958,9 +7200,14 @@ source.other:
 ;
 ; 1+ ( n1 -- n2 )
 ;
+; Add 1 to _n1_, according to the operation of `+`, giving _n2_.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set).
+;
+; See also: `1-`, `2+`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   pop hl
   inc hl
@@ -6973,9 +7220,16 @@ source.other:
 ;
 ; char+ ( n1 -- n2 )
 ;
+; Add the size in address units of a character to _n1_, giving
+; _n2_.
+;
+; ``char+`` is an `alias` of `1+`.
+;
+; Origin: Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `char-`, `chars`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
 ; ----------------------------------------------
   _code_header two_minus_,'2-'
@@ -6983,6 +7237,14 @@ source.other:
 ; doc{
 ;
 ; 2- ( n1 -- n2 )
+;
+; Subtract 2 from _n1_, according to the operation of `-`,
+; giving _n2_.
+;
+; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
+; Set).
+;
+; See also: `2+`, `1-`.
 ;
 ; }doc
 
@@ -7128,9 +7390,20 @@ source.other:
 ;
 ; 2, ( x1 x2 -- )
 ;
-; }doc
+; Definition:
 
-  ; XXX TODO -- Finish the documentation.
+; ----
+; : 2, ( x1 x2 -- ) here 2! [ 2 cells ] literal allot ;
+; ----
+
+; Reserve two cells of data space and store _x1 x2_ in them.
+; _x2_ is stored in the first cell, and _x1_ is stored in the
+; second cell.
+;
+; See also: `,`, `c,`, `here`, `2!`, `cells`, `literal`,
+; `allot`.
+;
+; }doc
 
   dw here_,two_store_
 two_comma.allot:
@@ -7145,9 +7418,22 @@ two_comma.allot:
 ;
 ; c, ( c -- )
 ;
-; }doc
+; Reserve space for one character in the data space and store
+; _c_ in the space.
+;
+; Definition:
 
-  ; XXX TODO -- Finish the documentation.
+; ----
+; : c, ( c -- ) here c! 1 allot ;
+; ----
+
+; Origin: fig-Forth, Forth-79 (Reference Word Set), Forth-83
+; (Controlled Reference Words), Forth-94 (CORE), Forth-2012
+; (CORE).
+;
+; See also: `,`, `2,`, `here`, `c!`, `allot`.
+;
+; }doc
 
   dw here_,c_store_
   _literal 1
@@ -7159,11 +7445,16 @@ two_comma.allot:
 
 ; doc{
 ;
-; - ( n1 -- n2 )
+; - ( n1|u1 n2|u2 -- n3|u3 )
+;
+; Substract _n2|u2_ from _n1|u1_, giving the difference _n3|u3_.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `d-`, `2-`, `1-`, `+`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   pop de
   pop hl
@@ -7303,7 +7594,7 @@ less_than.reverse
 
 ; doc{
 ;
-; u> ( u1 u2 -- > )
+; u> ( u1 u2 -- f )
 ;
 ; _f_ is _true_ if and only if _u1_ is greater than _u2_.
 ;
@@ -7312,8 +7603,6 @@ less_than.reverse
 ; See also: `>`, `u<`, `0>`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   pop hl
 u_greater_than.hl:
@@ -7377,9 +7666,14 @@ u_less_than.de_hl:
 ;
 ; rot ( x1 x2 x3 -- x2 x3 x1 )
 ;
+; Rotate the top three stack entries.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `-rot`, `over`, `tuck`, `swap`, `roll`, `pick`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   pop de
   pop hl
@@ -7393,9 +7687,14 @@ u_less_than.de_hl:
 ;
 ; space ( -- )
 ;
+; Display one space.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `bl`, `emit`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   dw b_l_,emit_
   dw exit_
@@ -7407,9 +7706,14 @@ u_less_than.de_hl:
 ;
 ; ?dup ( x -- 0 | x x )
 ;
+; Duplicate _x_ if it is non-zero.
+;
+; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
+; Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `dup`, `0dup`, `-dup`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   pop hl
   ld a,h
@@ -7428,6 +7732,8 @@ u_less_than.de_hl:
 ; Leave the name token of the last word defined.
 ;
 ; Origin: Gforth.
+;
+; See also: `last`.
 ;
 ; }doc
 
@@ -8106,7 +8412,7 @@ name_to_string.loop_exit:
 ;
 ; ?throw ( f n -- )
 ;
-; If _f_ is non-zero, `throw` exception _n_ 
+; If _f_ is non-zero, `throw` exception _n_
 ;
 ; Definition:
 
@@ -8187,9 +8493,12 @@ name_to_string.loop_exit:
 ;
 ; ?loading ( -- )
 ;
+; If a `block` is not being loaded, i.e., if the content of
+; `blk` is zero, `throw` exception #-265 ("loading only").
+;
+; See also: `loading?`, `load`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   dw loading_question_,zero_equals_
   _question_throw error.loading_only
@@ -8202,9 +8511,12 @@ name_to_string.loop_exit:
 ;
 ; loading? ( -- f )
 ;
+; If a `block` is being loaded, i.e., if the content of
+; `blk` is non-zero, return _true_; else return false.
+;
+; See also: `?loading`, `load`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   dw blk_,fetch_,zero_not_equals_
   dw exit_
@@ -8241,7 +8553,7 @@ name_to_string.loop_exit:
 ; compiled, not executed. _name_ is tipically an `immediate`
 ; word and _namex_ is typically not an `immediate` word.
 ;
-; ``compile`` has been be superseded by `postpone`.
+; ``compile`` has been superseded by `postpone`.
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set).
@@ -8300,11 +8612,22 @@ postpone.end:
 ;
 ; [ ( -- )
 ;
+; Enter interpretation `state`.
+;
 ; ``[`` is an `immediate` word.
 ;
-; }doc
+; Definition:
 
-  ; XXX TODO -- Finish the documentation.
+; ----
+; : [ ( -- ) state off ; immediate
+; ----
+
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `]`.
+;
+; }doc
 
   dw state_,off_
   dw exit_
@@ -8316,9 +8639,20 @@ postpone.end:
 ;
 ; ] ( -- )
 ;
-; }doc
+; Enter compilation `state`.
+;
+; Definition:
 
-  ; XXX TODO -- Finish the documentation.
+; ----
+; : ] ( -- ) state on ;
+; ----
+
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `[`, `]l`, `]2l`, `]cl`, `]1l`.
+;
+; }doc
 
   dw state_,on_
   dw exit_
@@ -8957,11 +9291,17 @@ simple_accept.end
 ; contents. Make the result, whose address is returned by `tib`,
 ; the input buffer. Set `>in` to zero.
 ;
-; Origin: Forth-94 (CORE EXT, obsolescent).
+; The function of ``query`` may be performed with `accept` and
+; `evaluate`.
+;
+; Origin: fig-forth, Forth-79 (Required Word Set), Forth-83
+; (Controlled Reference Words), Forth-94 (CORE EXT,
+; obsolescent).
 ;
 ; }doc
 
-  ; XXX TODO -- Finish the documentation.
+  ; XXX TODO -- Document: `query` didn't work exactly the same
+  ; way in fig-Forth, Forth-79 and Forth-83.
 
 ; XXX OLD -- old descriptions:
 ;
@@ -8989,7 +9329,8 @@ simple_accept.end
 ;
 ; (source-id) ( -- a )
 ;
-; A variable that contains the value returned by `source-id`.
+; A variable. _a_ is the address of a cell containinig the value
+; returned by `source-id`.
 ;
 ; }doc
 
@@ -10317,16 +10658,16 @@ search.failed:
 
 ; doc{
 ;
-; 2literal ( dx -- )
+; 2literal ( x1 x2 -- )
 ;
-; Compile _dx_ in the current definition.
+; Compile _x1 x2_ in the current definition.
 ;
 ; ``2literal`` is an `immediate` and `compile-only` word.
 ;
 ; Definition:
 
 ; ----
-; : 2literal ( dx -- ) postpone 2lit 2, ; immediate compile-only
+; : 2literal ( x1 x2 -- ) postpone 2lit 2, ; immediate compile-only
 ; ----
 
 ; See also: `2lit`, `literal`, `cliteral`, `1literal`, `]2l`.
@@ -11986,7 +12327,7 @@ endif
 
 ; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
 ;
-; See also: `/mod`, `/_`, `/-`, 
+; See also: `/mod`, `/_`, `/-`,
 ;
 ; }doc
 
@@ -14033,20 +14374,17 @@ border.a:
 
 ; doc{
 ;
-; 2constant ( x1 x2 "name -- )
+; 2constant ( x1 x2 "name" -- )
 ;
-; Create a definition for _name_ with the executions semantics
-; defined below:
-;
-; _name_ is referred to as a two-constant.
-;
-; name Execution: ( -- x1 x2 )
-;
-; Place cell pair _x1 x2_ on the stack.
+; Create a definition for _name_ that will place _x1 x2_ on the
+; stack.  _name_ is referred to as a "two-constant".
 ;
 ; Origin: Forth-79 (Double Number Word Set), Forth-83 (Double
 ; Number Extension Word Set), Forth-94 (DOUBLE), Forth-2012
 ; (DOUBLE).
+;
+; See also: `constant`, `cconstant`, `2!>`, `2const`,
+; `[2const]`, `2value`, `2variable`.
 ;
 ; }doc
 
@@ -14129,9 +14467,15 @@ two_fetch.hl:
 ;
 ; 2over ( x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2 )
 ;
+; Copy cell pair _x1 x2_ on top of the stack.
+;
+; Origin: Forth-79 (Double Number Word Set), Forth-83 (Double
+; Number Extension Word Set), Forth-94 (CORE), Forth-2012
+; (CORE).
+;
+; See also: `over`, `2swap`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ; XXX REMARK -- Could be moved to the library, using `' 2@
   ; 1+ jp,` to jump into `2@`, but it's needed in `(located)`.
@@ -14147,9 +14491,18 @@ two_fetch.hl:
 ;
 ; unnest ( R: nest-sys -- )
 ;
+; Discard the calling definition specified by _nest-sys_.
+; Before exiting the current definition, a program shall remove
+; any parameters the calling definition had placed on the return
+; stack.
+;
+; ``unnest`` is an `alias` of `rdrop`.
+;
+; Origin: DX-Forth.
+;
+; See also: `rp`, `exit`, `next`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ; Credit:
   ; http://dxforth.netbay.com.au/unnest.html
