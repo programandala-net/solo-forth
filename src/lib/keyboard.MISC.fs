@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132022
+  \ Last modified: 201705042144
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,83 +33,71 @@
 
 2variable accept-xy       \ coordinates of the edited string
 
-  \ doc{
   \
   \ accept-xy ( -- a )
   \
   \ A double variable that holds the cursor position at the
   \ start of the most recent `accept`.
   \
-  \ }doc
 
 variable accept-buffer    \ address of the edited string
 
-  \ doc{
   \
   \ accept-buffer ( -- a )
   \
   \ A variable that holds the buffer address used by
   \ the latest execution of `accept`.
   \
-  \ }doc
 
 variable /accept          \ max length of the edited string
 
-  \ doc{
   \
   \ /accept ( -- a )
   \
   \ A variable that holds the buffer max length used by
   \ the latest execution of `accept`.
   \
-  \ }doc
 
 variable >accept          \ offset to the cursor position
 
-  \ doc{
   \
   \ >accept ( -- a )
   \
   \ A variable that holds the offset of the cursor in the
   \ string being edited by `accept`.
   \
-  \ }doc
 
 : at-accept ( -- ) accept-xy 2@ at-xy ;
 
-  \ doc{
   \
   \ at-accept ( -- )
   \
   \ Set the cursor position at the start of the most recent
   \ `accept`.
   \
-  \ }doc
 
 variable span
 
-  \ doc{
   \
   \ span ( -- a )
   \
-  \ The address of a variable containing the count of
-  \ characters actually received and stored by the last
-  \ execution of `expect`.
+  \ A variable. _a_ is the address of a cell containing the
+  \ count of characters actually received and stored by the
+  \ last execution of some words.  Originally ``span`` is used
+  \ by ``expect``, which is not implemented in Solo Forth.
   \
-  \ Origin: Forth-83 (Required Word Set), Forth-94 (CORE EXT).
+  \ Origin: Forth-83 (Required Word Set), Forth-94 (CORE EXT,
+  \ obsolescent).
   \
-  \ }doc
 
 : clear-accept ( -- )
   at-accept span @ spaces at-accept  span off ;
 
-  \ doc{
   \
   \ clear-accept ( -- )
   \
   \ Clear the string currently edited by `accept`.
   \
-  \ }doc
 
 : set-accept ( ca1 len1 -- ca1' )
   clear-accept /accept @ min ( ca1 len1' )
@@ -119,14 +107,12 @@ variable span
   smove accept-buffer @ ( ca2 )
   r> + ( ca1' ) ;
 
-  \ doc{
   \
   \ set-accept ( ca1 len1 -- ca1' )
   \
   \ Set string _ca len_ as the string being edited by `accept`.
   \ Return the address _ca1'_ after its last character.
   \
-  \ }doc
 
 ( acceptx )
 
@@ -229,6 +215,8 @@ noop noop noop noop noop noop noop noop noop noop noop noop [
   \ : listing ( -- )
   \   begin  ." bla " nuf?  until  ." Aborted" ;
   \ ----
+  \
+  \ See also: `aborted?`.
   \
   \ }doc
 
@@ -637,5 +625,7 @@ need kk-ports
   \ library, with `?do`.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-05-04: Improve documentation.
 
   \ vim: filetype=soloforth

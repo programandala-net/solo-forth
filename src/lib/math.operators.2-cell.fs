@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704201313
+  \ Last modified: 201705050151
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -166,6 +166,20 @@ need 2nip
 : d< ( d1 d2 -- f )
   rot 2dup = if  2drop u< exit  then  2nip > ; ?)
 
+  \ doc{
+  \
+  \ d< ( d1 d2 -- f )
+  \
+  \ _f_ is true only if and only if _d1_ is less than _d2_.
+  \
+  \ Origin: Forth-79 (Double Number Word Set), Forth-83 (Double
+  \ Number Extension Word Set), Forth-94 (DOUBLE EXT),
+  \ Forth-2012 (DOUBLE EXT).
+  \
+  \ See also: `du<`, `<`, `dmin`.
+  \
+  \ }doc
+
 [unneeded] du< ?(
 
   \ XXX TODO rewrite in Z80
@@ -174,6 +188,20 @@ need 2nip
   rot swap 2dup
   u<  if  2drop 2drop true   exit  then
   -   if  2drop       false  exit  then  u< ; ?)
+
+  \ doc{
+  \
+  \ du< ( ud1 ud2 -- f )
+  \
+  \ _f_ is true only if and only if _du1_ is less than _du2_.
+  \
+  \ Origin: Forth-79 (Double Number Word Set), Forth-83 (Double
+  \ Number Extension Word Set), Forth-94 (DOUBLE EXT),
+  \ Forth-2012 (DOUBLE EXT).
+  \
+  \ See also: `d<`, `<`, `dmin`.
+  \
+  \ }doc
 
 ( d= d<> dmin dmax )
 
@@ -189,18 +217,50 @@ need 2nip
   \ : d= ( d1 d2 -- f ) rot = >r = r> and ;
   \ : d<> ( d1 d2 -- f ) d= 0= ;
 
-  \ Credit:
-  \
-  \ Code of `dmin` and `dmax` from DZX-Forth.
-
 [unneeded] dmin ?(
-: dmin ( d1 d2 -- d1 | d2 )
+: dmin ( d1 d2 -- d3 )
   2over 2over d< 0= if  2swap  then  2drop ; ?)
   \ XXX TODO -- use `d>` when available
+
+  \ Credit:
+  \
+  \ Code from DZX-Forth.
+
+  \ doc{
+  \
+  \ dmin ( d1 d2 -- d3 )
+  \
+  \ _d3_ is the greater of _d1_ and _d2_.
+  \
+  \ Origin: Forth-79 (Double Number Word Set), Forth-83 (Double
+  \ Number Extension Word Set), Forth-94 (DOUBLE), Forth-2012
+  \ (DOUBLE).
+  \
+  \ See also: `dmax`, `min`, `umin`.
+  \
+  \ }doc
 
 [unneeded] dmax ?(
 : dmax ( d1 d2 -- d1 | d2 )
   2over 2over d< if  2swap  then  2drop ; ?)
+
+  \ Credit:
+  \
+  \ Code from DZX-Forth.
+
+  \ doc{
+  \
+  \ dmax ( d1 d2 -- d3 )
+  \
+  \ _d3_ is the lesser of _d1_ and _d2_.
+  \
+  \ Origin: Forth-79 (Double Number Word Set), Forth-83 (Double
+  \ Number Extension Word Set), Forth-94 (DOUBLE), Forth-2012
+  \ (DOUBLE).
+  \
+  \ See also: `dmin`, `max`, `umax`.
+  \
+  \ }doc
 
 ( d- d2* d2/ )
 
@@ -420,5 +480,7 @@ need 2nip need cell-bits
   \ 2017-04-04: Improve documentation.
   \
   \ 2017-04-20: Fix index line.
+  \
+  \ 2017-05-05: Improve documentation.
 
   \ vim: filetype=soloforth

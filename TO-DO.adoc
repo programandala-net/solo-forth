@@ -1,11 +1,11 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-05-03
+:revdate: 2017-05-05
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201705041258
+// Last modified 201705050121
 
 // Application development {{{1
 == Application development ==
@@ -454,6 +454,12 @@ additional link.
 // Documentation {{{1
 == Documentation ==
 
+.2017-05-05:
+
+Use "display" as a device-independent term instead of "print".
+
+Rename the `print` tool.
+
 .2017-05-04:
 
 Add the following note to state-smart words:
@@ -826,6 +832,10 @@ Notes:
 
 // Errors {{{1
 == Errors ==
+
+.2017-05-05:
+
+Use term "throw code" instead of "exception code"?
 
 .2016-11-27:
 
@@ -2023,6 +2033,18 @@ Finish the conversion of 128K sound explosions. More details in the source.
 
 // Strings {{{1
 == Strings ==
+
+.2017-05-04:
+
+Add `shold` (from DX-Forth):
+
+____
+
+SHOLD  ( c-addr u -- )                                A
+
+Add string c-addr u to the beginning of the pictured numeric
+output string.
+____
 
 .2017-04-17:
 

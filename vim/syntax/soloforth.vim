@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-04-16
+" Updated:  2017-05-05
 "
 " See change log at the end of the file.
 
@@ -318,6 +318,7 @@ syn keyword soloforthForth ?executing
 syn keyword soloforthForth ?loading
 syn keyword soloforthForth ?pairs
 syn keyword soloforthForth ?stack
+syn keyword soloforthForth abort-message
 syn keyword soloforthForth body>
 syn keyword soloforthForth body>name
 syn keyword soloforthForth boot
@@ -1173,6 +1174,8 @@ let b:current_syntax = "soloforth"
 "
 " 2017-04-16: Improve the patterns of numbers: only one optional
 " decimal point at the end.
+"
+" 2017-05-05: Add `abort-message`.
 
 " --------------------------------------------------------------
 

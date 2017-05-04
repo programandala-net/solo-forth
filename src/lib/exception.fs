@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201705050048
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -59,11 +59,44 @@
 
 [defined] abort-message ?\ 2variable abort-message
 
-: (abort") ( n -- )
+: (abort") ( x -- )
   r> count rot if  abort-message 2! -2 throw  then + >r ;
+
+  \ doc{
+  \
+  \ (abort")  ( x -- )
+  \
+  \ If _x_ is not zero, perform the function of ``-2 throw``,
+  \ displaying the string that was compiled inline by `abort"`.
+  \
+  \ ``(abort")`` is the run-time procedure compiled by
+  \ `abort"`.
+  \
+  \ See also: `throw`.
+  \
+  \ }doc
 
 : abort" ( Compilation: "ccc<quote>" -- )
   postpone (abort") ," ; immediate compile-only ?)
+
+  \ doc{
+  \
+  \ abort"  Compilation: ( "ccc<quote>" -- )
+  \         Run-time: ( x -- )
+  \
+  \ Compile `(abort")`, parse _ccc_ delimited by a double
+  \ quote and compile it.
+  \
+  \ ``abort"`` is an `immediate` and `compile-only` word.
+  \
+  \ Origin: Forth-79 (Reference Word Set), Forth-83 (Required
+  \ Word Set), Forth-94 (EXCEPTION EXT), Forth-2012 (EXCEPTION
+  \ EXT).
+  \
+  \ See also: `abort-message`, `abort`, `throw`.
+  \
+  \ }doc
+
 
 [unneeded] warning?( ?( need string-parameter
 
@@ -251,6 +284,8 @@ s" Standard error codes" located errors-block !
   \ for system error codes, but `error>ordinal` wasn't updated.
   \
   \ 2017-02-17: Update notation "behaviour" to "action".
+  \
+  \ 2017-05-05: Improve documentation.
 
   \ vim: filetype=soloforth
 

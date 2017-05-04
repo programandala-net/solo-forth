@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705041707
+; Last modified: 201705050151
 
 include version.z80s
 
@@ -4105,7 +4105,7 @@ skip.end:
 
 ; doc{
 ;
-; chan ( n -- )
+; channel ( n -- )
 ;
 ; Open channel _n_ for output.
 ;
@@ -4172,20 +4172,20 @@ skip.end:
 ; |===
 ; | Value | Effect
 ;
-; | 126 | Characters 0..126 are printed by the ROM;
-;         characters 127..255 are printed by `emit-udg`.
-; | 127 | Characters 0..127 are printed by the ROM;
-;         characters 128..255 are printed by `emit-udg`.
-; | 143 | Characters 0..143 are printed by the ROM
+; | 126 | Characters 0..126 are displayed by the ROM;
+;         characters 127..255 are displayed by `emit-udg`.
+; | 127 | Characters 0..127 are displayed by the ROM;
+;         characters 128..255 are displayed by `emit-udg`.
+; | 143 | Characters 0..143 are displayed by the ROM
 ;         (this range includes the block graphics);
-;         characters 144..255 are printed by `emit-udg`.
-; | 162 | Characters 0..162 are printed by the ROM
+;         characters 144..255 are displayed by `emit-udg`.
+; | 162 | Characters 0..162 are displayed by the ROM
 ;         (this range includes also the 128-BASIC UDG set 144..162,
 ;         corresponding to UDG characters 0..18 in Solo Forth);
-;         characters 163..255 are printed by `emit-udg`.
-; | 255 | Characters 0..255 are printed by the ROM
+;         characters 163..255 are displayed by `emit-udg`.
+; | 255 | Characters 0..255 are displayed by the ROM
 ;         (this range includes also the 128-BASIC tokens);
-;         no character is printed by `emit-udg`.
+;         no character is displayed by `emit-udg`.
 ; |===
 
 ; When a standard character set is required, without the ROM
@@ -4198,11 +4198,11 @@ skip.end:
 
   pop hl ; L = character
   push bc ; save the Forth IP
-  ld a,(last_font_char_pfa) ; max character printed from the font
+  ld a,(last_font_char_pfa) ; max character displayed from the font
   cp l ; is character L in range?
-  jr z,mode_32_emit.l ; if equals, print it from the font
-  jr c,emit_udg.l ; if greater, print it from the UDG set
-  ; Otherwise, print it from the font.
+  jr z,mode_32_emit.l ; if equals, display it from the font
+  jr c,emit_udg.l ; if greater, display it from the UDG set
+  ; Otherwise, display it from the font.
 mode_32_emit.l
   ld a,l ; A =character
 mode_32_emit.a
@@ -4220,7 +4220,7 @@ mode_32_emit.a
 ;
 ; emit-udg ( c|n -- )
 ;
-; Print the UDG _c|n_ from the current UDG set, which is pointed
+; Display the UDG _c|n_ from the current UDG set, which is pointed
 ; by `os-udg`.
 ;
 ; NOTE: The usual parameter is _c_ (0..255), but no check is
@@ -4297,6 +4297,9 @@ emit_udg.l
 ; See also: `printer`, `printing`, `page`.
 ;
 ; }doc
+
+  ; XXX TODO -- Rename, because "display" is used as a generic
+  ; term, device-independent.
 
   _literal 2
   dw channel_
@@ -4566,7 +4569,7 @@ endif
 
   push bc
 
-  ; Print cursor:
+  ; Display cursor:
   ld a,(cursor_char_pfa) ; cursor char code
   rst $10
   ld a,backspace_char
@@ -6901,6 +6904,8 @@ do_user:
 ; Origin: fig-Forth, Forth-89 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
+; See also: `compiling?`, `[`, `]`.
+;
 ; }doc
 
   db $1E
@@ -7088,6 +7093,9 @@ endif
 ; doc{
 ;
 ; source ( -- ca len )
+;
+; _ca_ is the address of, and _len_ is the number of characters
+; in, the input buffer.
 ;
 ; Definition:
 
@@ -7556,7 +7564,7 @@ two_comma.allot:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `>`, `u<`, `0<`.
+; See also: `>`, `u<`, `0<`, `min`.
 ;
 ; }doc
 
@@ -7600,7 +7608,7 @@ less_than.reverse
 ;
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See also: `>`, `u<`, `0>`.
+; See also: `>`, `u<`, `0>`, `umax`.
 ;
 ; }doc
 
@@ -7621,7 +7629,7 @@ u_greater_than.hl:
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `<`, `u>`, `0<`.
+; See also: `<`, `u>`, `0<` ,`umin`.
 ;
 ; }doc
 
@@ -7651,7 +7659,7 @@ u_less_than.de_hl:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `<`, `u>`, `0>`.
+; See also: `<`, `u>`, `0>`, `max`.
 ;
 ; }doc
 
@@ -9205,8 +9213,6 @@ minus_trailing.begin:
 ;
 ; simple-accept ( ca1 len1 -- len2 )
 ;
-; Default action of the deferred word `accept`:
-;
 ; Receive a string of at most _len1_ characters.  No characters
 ; are received or transferred if _len1_ is zero.  Display
 ; graphic characters as they are received.
@@ -9218,6 +9224,9 @@ minus_trailing.begin:
 ; The only control key accepted is Delete.
 ;
 ; _len2_ is the length of the string stored at _ca1_.
+;
+; ``simple-accept`` is the default action of the deferred word
+; `accept`.
 ;
 ; Definition:
 
@@ -9237,9 +9246,9 @@ minus_trailing.begin:
 ;   repeat ( bot eot cur c ) drop nip swap - ;
 ; ----
 
+; See also: `query`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ; Credit:
   ;
@@ -10091,9 +10100,18 @@ far_place.copy_char:
 ;
 ; .error-word ( -- )
 ;
-; }doc
+; Display the string identified by the cell pair stored in
+; `parsed-name`, followed by a question mark.
+;
+; Definition:
 
-  ; XXX TODO -- Finish the documentation.
+; ----
+; : .error-word ( -- ) parsed-name 2@ cr type ."  ? " ;
+; ----
+
+; See also: `error`, `.throw`.
+;
+; }doc
 
   dw parsed_name_,two_fetch_,cr_,type_ ; last parsed word
   dw paren_dot_quote_
@@ -10107,9 +10125,10 @@ far_place.copy_char:
 ;
 ; error ( n -- )
 ;
-; Save the error number _n_ into `error-number`, and the current
-; block and line into `error-pos`, to be used by `where`.  Issue
-; error _n_ and restart the system.
+; Save the `throw` code _n_ into `error-number`, and the current
+; block and line into `error-pos`, to be used by `where`.
+; Perform the action required by `throw` code _n_ and restart
+; the system.
 ;
 ; Definition:
 
@@ -10122,7 +10141,15 @@ far_place.copy_char:
 ;   .error-word .throw  (abort) ;
 ; ----
 
+; See also. `.error-word`, `.throw`, `(abort)`.
+;
 ; }doc
+
+  ; XXX TODO -- Factor in two parts: save the data used by
+  ; `where`, and `throw`.
+  ;
+  ; XXX TODO -- Factor the `throw` part using an execution
+  ; table. Maybe some memory can be saved.
 
   dw dup_,error_number_,store_ ; save the error number
   dw to_in_,fetch_,blk_,fetch_,error_pos_,two_store_
@@ -10151,9 +10178,10 @@ error.message:
 ;
 ; abort-message ( -- a )
 ;
+; A double variable. _a_ is the address of a cell pair
+; containing the address and length of the `abort"` message.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   dw 0,0
 
@@ -10164,9 +10192,20 @@ error.message:
 ;
 ; .name ( nt -- )
 ;
-; }doc
+; Display the name of the word identified by _nt_.
+;
+; Definition:
 
-  ; XXX TODO -- Finish the documentation.
+; ----
+; : .name ( nt -- ) name>string type space ;
+; ----
+
+; Note ``.name`` is called ``.id`` or ``id.`` in other Forth
+; systems.
+;
+; See also: `name>string`, `type`, `space`.
+;
+; }doc
 
   ; XXX TODO -- Move to the library.
 
@@ -10197,7 +10236,8 @@ error.message:
 ;
 ; #words ( -- u )
 ;
-; _u_ is the number of words currently defined in the system.
+; _u_ is the number of words currently defined in the system,
+; which is updated by `header,`.
 ;
 ; }doc
 
@@ -11327,15 +11367,24 @@ do_vocabulary:
 ;
 ; ( ( "ccc<paren>" -- )
 ;
-; Parse until a right paren is found.  The number of parsed
-; characters may be zero to the number of characters in the
-; parse area.
+; Parse _ccc_ delimited by a right parenthesis.  The number of
+; characters in _ccc_ may be zero to the number of characters in
+; the parse area.
 ;
 ; ``(`` is an `immediate` word.
 ;
+; Definition:
+;
+; ----
+; : ( ( "ccc<paren>" -- ) ')' parse 2drop ; immediate
+; ----
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `\`, `parse`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   _literal ')'
   dw parse_,two_drop_
@@ -11399,7 +11448,7 @@ question_paren.exit:
 ;
 ; .ok ( -- )
 ;
-; Print "ok". ``.ok`` is the default action of `ok`, the word
+; Display "ok". ``.ok`` is the default action of `ok`, the word
 ; called by `quit` after interpreting a command.
 ;
 ; }doc
@@ -11427,9 +11476,22 @@ question_paren.exit:
 ;
 ; quit ( -- )
 ;
+; Make the terminal the current source and enter interpretation
+; `state`. Then repeat the following:
+;
+; . Accept a line from the input source into the input buffer,
+;   set `>in` to zero and `interpret`.
+; . Execute `ok` to display the system prompt, if in
+;   interpretation `state`.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `terminal>source`, `[`, `abort`.
+;
 ; }doc
 
-  ; XXX TODO -- Finish the documentation.
+  ; XXX TODO -- Add the definition to the documentation.
 
   dw terminal_to_source_
   dw left_bracket_
@@ -11449,7 +11511,10 @@ quit.begin:
 ;
 ; (defer) ( -- )
 ;
-; Default action of an uninitialized deferred word: error.
+; Default action of an uninitialized deferred word: `error`
+; #-261 ("deferred word is uninitialized").
+;
+; See also: `defer`.
 ;
 ; }doc
 
@@ -11464,9 +11529,13 @@ quit.begin:
 ;
 ; defer ( "name" -- )
 ;
-; Create a deferred word.
+; Create a deferred word _name_, whose action can be configured
+; with `defer!` or `is`.  The default action of _name_ is
+; `(defer)`.
 ;
 ; Origin: Forth-2012 (CORE EXT).
+;
+; See also: `defer@`, `action-of`, `>action`.
 ;
 ; }doc
 
@@ -11514,14 +11583,17 @@ quit.begin:
 ;
 ; version ( -- a )
 ;
-; Return an address that holds the Solo Forth version, as
-; follows:
-;
-; +0: major (one byte)
-; +1: minor (one byte)
-; +2: patch (one byte)
-; +3: pre-release (one byte), zero if none
-; +4: build (double-cell number)
+; _a_ is the address of an array containing the Solo Forth
+; version, as follows:
+
+; [horizontal]
+; +0:: major (one byte)
+; +1:: minor (one byte)
+; +2:: patch (one byte)
+; +3:: pre-release (one byte), zero if none
+; +4:: build (double-cell number)
+
+; See also: `.version`.
 ;
 ; }doc
 
@@ -11538,7 +11610,7 @@ quit.begin:
 ;
 ; .version ( -- )
 ;
-; Print the Solo Forth version.
+; Display the Solo Forth `version`.
 ;
 ; }doc
 
@@ -11578,9 +11650,12 @@ if 1 ; developing
 ;
 ; .words ( -- )
 ;
+; Display a message informing about the number of words defined
+; in the system.
+;
+; See also: `#words`, `greeting`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   dw hash_words_,u_dot_
   dw paren_dot_quote_
@@ -11596,7 +11671,7 @@ endif
 ;
 ; greeting ( -- )
 ;
-; Print the boot message.
+; Display the boot message.
 ;
 ; See also: `cold`.
 ;
@@ -11756,6 +11831,14 @@ endif
 ;
 ; warm ( -- )
 ;
+; Do a "warm" restart of the Forth system.
+;
+; Definition:
+;
+; ----
+; : warm ( -- ) display restore-mode page abort ;
+; ----
+;
 ; See also: `cold`.
 ;
 ; }doc
@@ -11764,7 +11847,7 @@ endif
 
   dw display_
   dw restore_mode_
-  dw page_ ; note: this must be after changing the screen mode
+  dw page_ ; note: this must be after `display` and `restore-mode`
   dw abort_
   ; No return from `abort`.
 
@@ -11778,6 +11861,11 @@ warm_start:
 ; doc{
 ;
 ; cold ( -- )
+;
+; Restore the Forth system to its default status, as if it were
+; just started.
+;
+; Origin: fig-Forth.
 ;
 ; See also: `warm`.
 ;
@@ -11843,7 +11931,7 @@ cold.hash_words:
   dw last_font_char_,c_store_
   dw display_,default_font_,default_colors_
 
-  ; Print the greeting message:
+  ; Display the greeting message:
 cold.home:
   dw home_ ; only the first time, to preserve the background
   dw lit_,page_ ; but next time use `page`...
@@ -12064,6 +12152,10 @@ question_d_negate.hl:
 ;
 ; umax ( u1 u2 -- u1 | u2 )
 ;
+; _u3_ is the greater of _u1_ and _u2_.
+;
+; See also: `umin`, `max`, `dmax`, `u>`.
+;
 ; }doc
 
   ; Credit:
@@ -12080,6 +12172,10 @@ question_d_negate.hl:
 ; doc{
 ;
 ; umin ( u1 u2 -- u1 | u2 )
+;
+; _u3_ is the lesser of _u1_ and _u2_.
+;
+; See also: `umax`, `min`, `dmin`, `u<`.
 ;
 ; }doc
 
@@ -12098,9 +12194,14 @@ question_d_negate.hl:
 ;
 ; min ( n1 n2 -- n3 )
 ;
+; _n3_ is the lesser of _n1_ and _n2_.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `max`, `umin`, `dmin`, `<`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ; Credit:
   ; Code from DZX-Forth.
@@ -12117,9 +12218,14 @@ question_d_negate.hl:
 ;
 ; max ( n1 n2 -- n3 )
 ;
+; _n3_ is the greater of _n1_ and _n2_.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `min`, `umax`, `dmax`, `>`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ; Credit:
   ; Code adapted from DZX-Forth.
@@ -12486,7 +12592,7 @@ endif
 ;
 ; .throw# ( n -- )
 ;
-; Print the number of throw error _n_, as a decimal number,
+; Display the number of throw error _n_, as a decimal number,
 ; prefixed with a '#' and followed by a space.
 ;
 ; }doc
@@ -12505,12 +12611,13 @@ endif
 ;
 ; .throw ( n -- )
 ;
-; Deferred word that prints error message _n_. By default it
-; prints only the number.
+; Display a message giving information about the condition
+; associated with the `throw` code _n_.
+;
+; ``.throw` is a deferred word whose default action is
+; `.throw#`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ; Credit:
   ; Name from MPE Forth for TiniARM.
@@ -12522,7 +12629,8 @@ endif
 ;
 ; updated? ( -- f )
 ;
-; Is the current disk buffer marked as modified?
+; _f_ is _true_ if the current disk buffer is marked as
+; modified.
 ;
 ; Definition:
 
@@ -13596,7 +13704,7 @@ hash_s.begin:
 ;
 ; d.r ( d n -- )
 ;
-; Print a signed double number _d_ right justified in a field of
+; Display a signed double number _d_ right justified in a field of
 ; _n_ characters.
 ;
 ; Definition:
@@ -13638,7 +13746,7 @@ hash_s.begin:
 ;
 ; 0.r ( n -- )
 ;
-; Print signed integer _n_ according to current base,
+; Display signed integer _n_ according to current base,
 ; without any trailing blank.
 ;
 ; }doc
@@ -13654,7 +13762,7 @@ hash_s.begin:
 ;
 ; 0d.r ( d -- )
 ;
-; Print signed double integer _d_ according to current base,
+; Display signed double integer _d_ according to current base,
 ; without any trailing blank.
 ;
 ; }doc
@@ -13670,7 +13778,7 @@ hash_s.begin:
 ;
 ; d. ( d -- )
 ;
-; Print signed double integer _d_ according to current base,
+; Display signed double integer _d_ according to current base,
 ; followed by only one blank.
 ;
 ; }doc
@@ -13685,7 +13793,7 @@ hash_s.begin:
 ;
 ; . ( n -- )
 ;
-; Print signed integer _n_ according to current `base`, followed
+; Display signed integer _n_ according to current `base`, followed
 ; by only one blank.
 ;
 ; }doc
@@ -13807,7 +13915,7 @@ if 0
 ;   loop ;
 ; ----
 
-; Read 20 blocks, starting from block _u_, and print the start
+; Read 20 blocks, starting from block _u_, and display the start
 ; of their first lines.  ``blks`` is useful when a new DOS is
 ; implemented, in order to check the disk access calculations.
 
@@ -14113,12 +14221,12 @@ at_pfa.last_line:
   dw mode_32_emit_
   dw cr_
   dw dup_
-  dw lit_,sys_df_cc ; the screen address of the print position
+  dw lit_,sys_df_cc ; the screen address of the display position
   dw plus_store_
   _literal 33
   dw swap_
   dw minus_
-  dw lit_,sys_s_posn ; 33 minus column number for print position
+  dw lit_,sys_s_posn ; 33 minus column number for display position
   dw c_store_
   dw exit_
 
@@ -14317,7 +14425,7 @@ mode_32_xy.end:
 ;
 ; }doc
 
-  ; Deactivate temporary and permanent print flags (over,
+  ; Deactivate temporary and permanent display flags (over,
   ; inverse, contrast ink, contrast paper).
 
   xor a
@@ -14630,9 +14738,18 @@ throw.end:
 ;
 ; (abort) ( -- )
 ;
-; }doc
+; Restart the system by emptying the stack and performing
+; `quit`.
+;
+; Definition:
 
-  ; XXX TODO -- Finish the documentation.
+; ----
+; : (abort) ( -- ) sp0 @ sp! boot quit ;
+; ----
+
+; See also: `boot`.
+;
+; }doc
 
   dw sp0_,fetch_,sp_store_
   dw boot_  ; XXX TODO -- not here?
@@ -14731,6 +14848,8 @@ question_backslash.exit
 ;
 ; Origin: Forth-94 (BLOCK EXT), Forth-2012 (BLOCK EXT).
 ;
+; See also: `(`.
+;
 ; }doc
 
   dw loading_question_ ; input stream from disk?
@@ -14746,6 +14865,8 @@ backslash.loading:
   dw c_slash_l_,swap_,minus_
   dw parsed_
   dw exit_
+
+  ; XXX TODO -- Add the definition to the documentation.
 
 ; ----------------------------------------------
   _colon_header dot_paren_,'.(',immediate
