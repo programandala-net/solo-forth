@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704172323
+  \ Last modified: 201705051507
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -58,10 +58,10 @@
 
   \ doc{
   \
-  \ trim ( ca1 len1 -- ca1' len1' )
+  \ trim ( ca1 len1 -- ca2 len2 )
   \
   \ Remove leading and trailing spaces from a string _ca len1_,
-  \ returning string _ca1' len1'_.
+  \ returning the result string _ca2 len2_.
   \
   \ See also: `-leading`, `-trailing`.
   \
@@ -983,5 +983,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \
   \ 2017-04-17: Compact the code, saving one block. Fix needing
   \ of `string/`.
+  \
+  \ 2017-05-05: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703191228
+  \ Last modified: 201705051618
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -57,7 +57,7 @@ variable anon> ( -- a )
   \
   \ anon
   \   Compilation:  ( n -- )
-  \   Run-time: ( -- a )
+  \   Run-time:     ( -- a )
 
   \
   \ Compilation: Compile a reference to cell _n_ (0 index) of
@@ -77,7 +77,7 @@ variable anon> ( -- a )
 
   \ doc{
   \
-  \ set-anon  ( x[n-1]..x[0] n a -- )
+  \ set-anon ( x[n-1]..x[0] n a -- )
   \
   \ Store the given _n_ cells into the buffer pointed by
   \ `anon>`, which will be accessed by `anon`.
@@ -121,5 +121,7 @@ variable anon> ( -- a )
   \
   \ 2017-03-19: Finish the new version. Update the
   \ documentation.
+  \
+  \ 2017-05-05: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705050048
+  \ Last modified: 201705052211
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -26,24 +26,30 @@
 ( ?compiling ?executing abort" warning" )
 
 [unneeded] ?compiling
-?\ : ?compiling ( -- ) compiling? 0= -14 ?throw ;
+?\ : ?compiling ( -- ) compiling? 0= #-14 ?throw ;
 
   \ doc{
   \
   \ ?compiling ( -- )
   \
-  \ Throw exception #-14 if not compiling.
+  \ If not compiling, `throw` exception #-14 ("interpreting a
+  \ compile-only word").
+  \
+  \ See also: `compile-only`, `?executing`.
   \
   \ }doc
 
 [unneeded] ?executing
-?\ : ?executing ( -- ) compiling? -263 ?throw ;
+?\ : ?executing ( -- ) compiling? #-263 ?throw ;
 
   \ doc{
   \
   \ ?executing ( -- )
   \
-  \ Throw exception #-263 if not executing.
+  \ If not executing, `throw` exception #-263 ("execution
+  \ only").
+  \
+  \ See also: `?compiling`.
   \
   \ }doc
 
@@ -93,10 +99,9 @@
   \ Word Set), Forth-94 (EXCEPTION EXT), Forth-2012 (EXCEPTION
   \ EXT).
   \
-  \ See also: `abort-message`, `abort`, `throw`.
+  \ See also: `abort-message`, `abort`, `throw`, `warning"`.
   \
   \ }doc
-
 
 [unneeded] warning?( ?( need string-parameter
 
@@ -107,27 +112,31 @@
   \
   \ (warning") ( f -- )
   \
-  \ Inner procedure compiled by `warning"`.  If _f_ is not
-  \ zero, print the compiled message; else do nothing.
+  \ If _f_ is not zero, display the in-line string; else do
+  \ nothing.
+  \
+  \ ``(warning")`` is the inner procedure compiled by
+  \ `warning"`.
   \
   \ }doc
 
-: warning"  \ Compilation: ( "ccc<quote>" -- )
-            \ Execution:   ( f -- )
+: warning"
+  \ Compilation: ( "ccc<quote>" -- )
+  \ Execution:   ( f -- )
   postpone (warning") ," ; immediate compile-only ?)
 
   \ doc{
   \
   \ warning"
+  \   Compilation: ( "ccc<quote>" -- )
+  \   Execution:   ( f -- )
+
   \
-  \ Compilation: ( "ccc<quote>" -- )
+  \ Compilation: Parse and compile _ccc_ delimited by a double
+  \ quote.
   \
-  \ Parse and compile a message.
-  \
-  \ Execution:   ( f -- )
-  \
-  \ If _f_ is not zero, print the compiled message; else do
-  \ nothing.
+  \ Execution: If _f_ is not zero, display the compiled message
+  \ _ccc_; else do nothing.
   \
   \ }doc
 
@@ -160,6 +169,8 @@
   \ +n2 =  1..146
   \ ----
 
+  \ See also: `error>line`.
+  \
   \ }doc
 
 : error>line ( -n1 -- n2 )
@@ -173,6 +184,8 @@
   \ Convert error code _-n1_ to line _n2_ relative to the block
   \ that contains the error messages.
   \
+  \ See also: `error>ordinal`.
+  \
   \ }doc
 
 need .line
@@ -184,8 +197,10 @@ s" Standard error codes" located errors-block !
   \
   \ errors-block ( -- a )
   \
-  \ Variable that contains the block that holds the error
-  \ messages.
+  \ A variable. _a_ is the address of a cell containing the
+  \ block that holds the error messages.
+  \
+  \ See also: `.throw-message`.
   \
   \ }doc
 
@@ -200,11 +215,13 @@ s" Standard error codes" located errors-block !
   \
   \ .throw-message ( n -- )
   \
-  \ Extended action of the deferred word `.throw`: Print the
-  \ text of throw error _n_.  The variable
-  \ `errors-block` holds the number of the first
-  \ block where messages are hold. If it contains zero, only
-  \ the error number is printed.
+  \ Extended action of the deferred word `.throw`: Display the
+  \ text of the `throw` exception code _n_.  The variable
+  \ `errors-block` contains the number of the first block where
+  \ messages are hold. If `errors-block` contains zero, only
+  \ the error number is displayed.
+  \
+  \ See also: `error>line`.
   \
   \ }doc
 
@@ -226,7 +243,7 @@ s" Standard error codes" located errors-block !
 
   \ doc{
   \
-  \ catch ( xt -- 0 | err# )
+  \ catch ( i*x xt -- j*x 0 | i*x n )
   \
   \ Push an exception frame on the exception stack and then
   \ execute _xt_ (as with `execute`) in such a way that control
@@ -242,6 +259,8 @@ s" Standard error codes" located errors-block !
   \ given by `throw`.
   \
   \ Origin: Forth-94 (EXCEPTION), Forth-2012 (EXCEPTION).
+  \
+  \ See also: `catcher`.
   \
   \ }doc
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132014
+  \ Last modified: 201705051713
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -202,23 +202,27 @@ code bleep ( duration pitch -- )
   \ instruments I know of and then some. It uses an even
   \ tempered scale with A = 440 Hz.
 
-  \ ....
-  \      C    C#     D    D#     E     F    F#     G    G#     A    A#     B
-  \  0 16.35 17.32 18.35 19.45 20.60 21.83 23.12 24.50 25.96 27.50 29.14 30.87
-  \  1 32.70 34.65 36.71 38.89 41.20 43.65 46.25 49.00 51.91 55.00 58.27 61.74
-  \  2 65.41 69.30 73.42 77.78 82.41 87.31 92.50 98.00 103.8 110.0 116.5 123.5
-  \  3 130.8 138.6 146.8 155.6 164.8 174.6 185.0 196.0 207.7 220.0 233.1 246.9
-  \  4 261.6 277.2 293.7 311.1 329.6 349.2 370.0 392.0 415.3 440.0 466.2 493.9
-  \  5 523.3 554.4 587.3 622.3 659.3 698.5 740.0 784.0 830.6 880.0 932.3 987.8
-  \  6 1047  1109  1175  1245  1319  1397  1480  1568  1661  1760  1865  1976
-  \  7 2093  2217  2349  2489  2637  2794  2960  3136  3322  3520  3729  3951
-  \  8 4186  4435  4699  4978  5274  5588  5920  6272  6645  7040  7459  7902
-  \ ....
+  \ [cols="1,7*"]
+  \ |===
+  \ | Octave | C  | C#      | D       | D#      | E       | F       | F#      | G       | G#      | A       | A#      | B
+  \
+  \ | 0 |   16.35 |   17.32 |   18.35 |   19.45 |   20.60 |   21.83 |   23.12 |   24.50 |   25.96 |   27.50 |   29.14 |   30.87
+  \ | 1 |   32.70 |   34.65 |   36.71 |   38.89 |   41.20 |   43.65 |   46.25 |   49.00 |   51.91 |   55.00 |   58.27 |   61.74
+  \ | 2 |   65.41 |   69.30 |   73.42 |   77.78 |   82.41 |   87.31 |   92.50 |   98.00 |  103.80 |  110.00 |  116.50 |  123.50
+  \ | 3 |  130.80 |  138.60 |  146.80 |  155.60 |  164.80 |  174.60 |  185.00 |  196.00 |  207.70 |  220.00 |  233.10 |  246.90
+  \ | 4 |  261.60 |  277.20 |  293.70 |  311.10 |  329.60 |  349.20 |  370.00 |  392.00 |  415.30 |  440.00 |  466.20 |  493.90
+  \ | 5 |  523.30 |  554.40 |  587.30 |  622.30 |  659.30 |  698.50 |  740.00 |  784.00 |  830.60 |  880.00 |  932.30 |  987.80
+  \ | 6 | 1047.00 | 1109.00 | 1175.00 | 1245.00 | 1319.00 | 1397.00 | 1480.00 | 1568.00 | 1661.00 | 1760.00 | 1865.00 | 1976.00
+  \ | 7 | 2093.00 | 2217.00 | 2349.00 | 2489.00 | 2637.00 | 2794.00 | 2960.00 | 3136.00 | 3322.00 | 3520.00 | 3729.00 | 3951.00
+  \ | 8 | 4186.00 | 4435.00 | 4699.00 | 4978.00 | 5274.00 | 5588.00 | 5920.00 | 6272.00 | 6645.00 | 7040.00 | 7459.00 | 7902.00
+  \ |===
 
   \ The octave number is in the left column so to find the
   \ frequency of middle C which is C4, look down the "C" column
   \ til you get to the "4" row : so middle C is 261.6 Hz.
   \ ___________________________________________________________
+
+  \ XXX TODO -- Include the previus table into the manual.
 
 [unneeded] middle-octave ?(
 
@@ -282,10 +286,10 @@ here    ' drop    ,
   \
   \ octave-changer ( -- a )
   \
-  \ Execution table that contains the three execution tokens
-  \ used to calculate the frequency of notes from any octave.
-  \ _a_ is the address of the second execution token (cell
-  \ offset 0).
+  \ _a_ is the address of an execution table that contains the
+  \ three execution tokens used to calculate the frequency of
+  \ notes from any octave.  _a_ is the address of the second
+  \ execution token (cell offset 0).
   \
   \ See also: `change-octave`, `beep>dhz`, `middle-octave`.
   \
@@ -322,9 +326,9 @@ need polarity need octave-changer need array>
   \
   \ -beep>note ( -n1 -- -n2 +n3 )
   \
-  \ Convert a Sinclair BASIC BEEP's negative pitch _-n1_ to its
-  \ corresponding note _+n3_ (0..11) in octave _-n2_, being
-  \ zero the middle octave.
+  \ Convert a negative pitch _-n1_ of Sinclair BASIC's ``BEEP``
+  \ to its corresponding note _+n3_ (0..11) in octave _-n2_,
+  \ being zero the middle octave.
   \
   \ See also: `beep>note`, `+beep>note`, `/octave`.
   \
@@ -338,9 +342,9 @@ need polarity need octave-changer need array>
   \
   \ +beep>note ( +n1 -- +n2 +n3 )
   \
-  \ Convert a Sinclair BASIC BEEP's positive pitch _+n1_ to its
-  \ corresponding note _+n3_ (0..11) in octave _+n2_, being
-  \ zero the middle octave.
+  \ Convert a positive pitch _+n1_ of Sinclair BASIC's
+  \ ``BEEP`` to its corresponding note _+n3_ (0..11) in octave
+  \ _+n2_, being zero the middle octave.
   \
   \ See also: `beep>note`, `-beep>note`, `/octave`.
   \
@@ -355,12 +359,12 @@ need polarity need octave-changer need array>
   \
   \ beep>note ( n1 -- n2 +n3 )
   \
-  \ Convert a Sinclair BASIC BEEP's pitch _n1_ to its
+  \ Convert a pitch _n1_ of Sinclair BASIC's ``BEEP`` to its
   \ corresponding note _+n3_ (0..11) in octave _n2_, being zero
   \ the middle octave.
   \
-  \ See also: `-beep>note`, `+beep>note`, `beep>dhz`, `beep>bleep`,
-  \ `beep`, `/octave`.
+  \ See also: `-beep>note`, `+beep>note`, `beep>dhz`,
+  \ `beep>bleep`, `beep`, `/octave`.
   \
   \ }doc
 
@@ -381,7 +385,7 @@ need beep>note need note>dhz need change-octave
   \
   \ beep>dhz ( n -- u )
   \
-  \ Convert a Sinclair BASIC BEEP's pitch _n_ to its
+  \ Convert a pitch _n_ of Sinclair BASIC's ``BEEP`` to its
   \ corresponding frequency in dHz (tenths of hertzs) _u_.
   \
   \ See also: `beep>note`, `beep>bleep`, `beep`.
@@ -400,7 +404,7 @@ need beep>dhz need dhz>bleep
   \ beep>bleep ( duration1 pitch1 -- pitch2 duration2 )
   \
   \ Convert _duration1_ and _pitch1_, which are equivalent to
-  \ the parameters used by Sinclar BASIC's BEEP command, to
+  \ the parameters used by Sinclar BASIC's ``BEEP`` command, to
   \ _pitch2_ and _duration2_, which are the parameters required
   \ by `bleep`.
   \
@@ -632,5 +636,7 @@ code white-noise ( u -- )
   \ 2017-02-24: Improve documentation markup.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-05-05: Improve documentation.
 
   \ vim: filetype=soloforth

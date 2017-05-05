@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703131956
+  \ Last modified: 201705051942
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -47,7 +47,7 @@ code -branch ( n -- )
   \
   \ ``-branch`` is compiled by `+if` and `+until`.
   \
-  \ See also: `+while`.
+  \ See also: `branch`, `?branch`, `0branch`, `+branch`.
   \
   \ }doc
 
@@ -71,7 +71,7 @@ code +branch ( n -- )
   \
   \ ``+branch`` is compiled by `-if` and `-until`.
   \
-  \ See also: `-while`.
+  \ See also: `branch`, `?branch`, `0branch`, `-branch`.
   \
   \ }doc
 
@@ -91,6 +91,8 @@ code +branch ( n -- )
   \ 2017-02-17: Update cross references.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-05-05: Improve documentation.
 
   \ vim: filetype=soloforth
 

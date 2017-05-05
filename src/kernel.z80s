@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705051353
+; Last modified: 201705052323
 
 include version.z80s
 
@@ -1878,6 +1878,13 @@ far.hl.mod:
 ; If the cell stored at _a_ is zero, do nothing.  Otherwise
 ; execute it as an execution token.
 ;
+; `perform` is written in Z80. Its equivalent definition in
+; Forth is the following:
+
+; ----
+; : perform ( a  -- ) @ ?dup if execute then ;
+; ----
+
 ; NOTE: ``perform`` is called ``@execute`` in other Forth systems.
 ;
 ; See also: `execute`.
@@ -1941,11 +1948,11 @@ endif
 ;
 ; An alias of `noop` that is defined only in the G+DOS version
 ; of Solo Forth.  Its goal is to be used to check the DOS the
-; application is running on.
+; application is running on, using `defined` or `[defined]`.
 ;
 ; ``g+dos`` is an `immediate` word.
 ;
-; See also: `dos`, `tr-dos`, `+3dos`, `defined`, `[defined]`.
+; See also: `dos`, `tr-dos`, `+3dos`.
 ;
 ; }doc
 
@@ -1960,11 +1967,11 @@ endif
 ;
 ; An alias of `noop` that is defined only in the TR-DOS version
 ; of Solo Forth.  Its goal is to be used to check the DOS the
-; application is running on.
+; application is running on, using `defined` or `[defined]`.
 ;
 ; ``tr-dos`` is an `immediate` word.
 ;
-; See also: `dos`, `g+dos`, `+3dos`, `defined`, `[defined]`.
+; See also: `dos`, `g+dos`, `+3dos`.
 ;
 ; }doc
 
@@ -1979,11 +1986,11 @@ endif
 ;
 ; An alias of `noop` that is defined only in the +3DOS version
 ; of Solo Forth.  Its goal is to be used to check the DOS the
-; application is running on.
+; application is running on, using `defined` or `[defined]`.
 ;
 ; ``+3dos`` is an `immediate` word.
 ;
-; See also: `dos`, `tr-dos`, `g+dos`, `defined`, `[defined]`.
+; See also: `dos`, `tr-dos`, `g+dos`.
 ;
 ; }doc
 
@@ -2417,9 +2424,10 @@ endif
 
 ; doc{
 ;
-; parse-string ( Compilation: c "ccc<char>" -- )
-;              ( Interpretation: c "ccc<char>" -- ca len )
-;              ( Run-time:  -- ca len )
+; parse-string
+;   Compilation:    ( c "ccc<char>" -- )
+;   Interpretation: ( c "ccc<char>" -- ca len )
+;   Run-time:       ( -- ca len )
 
 ; Parse _ccc_ delimited by character _c_.  If interpreting, copy
 ; the parsed string to the `stringer` and return it as _ca len_.
@@ -2431,9 +2439,9 @@ endif
 ; Definition:
 
 ; ----
-; : parse-string ( Compilation: c "ccc<char>" -- )
-;                ( Interpretation: c "ccc<char>" -- ca len )
-;                ( Run-time:  -- ca len )
+; : parse-string \ Compilation:    ( c "ccc<char>" -- )
+;                \ Interpretation: ( c "ccc<char>" -- ca len )
+;                \ Run-time:       ( -- ca len )
 ;   parse compiling? if postpone sliteral exit then >stringer ;
 ; ----
 
@@ -2851,7 +2859,7 @@ question_stringer_.enough:
 
 ; doc{
 ;
-; >mark ( -- orig )
+; >mark ( C: -- orig )
 ;
 ; Compile space in the dictionary for a branch address which
 ; will later be resolved by `>resolve`.
@@ -2859,7 +2867,15 @@ question_stringer_.enough:
 ; Used at the source of a forward branch.  Typically used after
 ; either `branch`, `0branch` or `?branch`.
 ;
+; Definition:
+
+; ----
+; : >mark ( C: -- orig ) here 0 , ;
+; ----
+
 ; Origin: Forth-83 (System Extension Word Set).
+;
+; See also: `<mark`.
 ;
 ; }doc
 
@@ -2873,12 +2889,20 @@ question_stringer_.enough:
 
 ; doc{
 ;
-; >resolve ( orig -- )
+; >resolve ( C: orig -- )
 ;
 ; Resolve a forward branch by placing the address of the current
 ; data-space pointer into the space compiled by `>mark`.
 ;
+; Definition:
+
+; ----
+; : >resolve ( C: orig -- ) here swap ! ;
+; ----
+
 ; Origin: Forth-83 (System Extension Word Set).
+;
+; See also: `here`, `<resolve`.
 ;
 ; }doc
 
@@ -2892,12 +2916,12 @@ question_stringer_.enough:
 ;
 ; here ( -- a )
 ;
-; Return the address of the data-space pointer.
+; _a_ is the data-space pointer.
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `limit`, `unused`, `there`.
+; See also: `dp`, `limit`, `unused`, `there`.
 ;
 ; }doc
 
@@ -2909,13 +2933,17 @@ question_stringer_.enough:
 
 ; doc{
 ;
-; <mark ( -- a )
+; <mark ( C: -- a )
 ;
-; Leave the address of the current data-space pointer, as the
-; the destination of a backward branch.  _a_ is typically
-; only used by `<resolve` to compile a branch address.
+; _a_ is the current data-space pointer, to be used as the
+; destination of a backward branch.  _a_ is typically only used
+; by `<resolve` to compile a branch address.
+;
+; ``<mark`` is an `alias` of `here`.
 ;
 ; Origin: Forth-83 (System Extension Word Set).
+;
+; See also: `>mark`, `begin`.
 ;
 ; }doc
 
@@ -2951,6 +2979,16 @@ question_stringer_.enough:
 ;
 ; compile, ( xt -- )
 ;
+; Append the execution semantics of the definition represented
+; by _xt_ to the execution semantics of the current definition.
+;
+; ``compile,`` is the compilation equivalent of `execute`.
+;
+; Since Solo Forth is a threaded-code implementation,
+; ``compile,`` is an `alias` of `,`.
+;
+; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+;
 ; }doc
 
 ; ----------------------------------------------
@@ -2958,12 +2996,14 @@ question_stringer_.enough:
 
 ; doc{
 ;
-; <resolve ( dest -- )
+; <resolve ( C: dest -- )
 ;
 ; Resolve a backward branch.  Compile a branch address using
 ; _dest_, the address left by `<mark`,  as the destination
 ; address.  Used at the source of a backward branch after either
 ; `branch` or `?branch` or `0branch`.
+;
+; ``<resolve`` is an `alias` of `,`.
 ;
 ; Origin: Forth-83 (System Extension Word Set).
 ;
@@ -3002,8 +3042,8 @@ question_stringer_.enough:
 ; ?branch ( f -- )
 ;
 ; A run-time procedure to branch conditionally. If  _f_ is not
-; false (not zero), the following in-line address is copied to
-; IP to branch forward or backward.
+; not zero, the following in-line address is copied to IP to
+; branch forward or backward.
 ;
 ; NOTE: This is not Forth-83's ``?branch``, which is equivalent
 ; to fig-Forth's ``0branch``, which is a more logical name to
@@ -3231,7 +3271,7 @@ paren_do.de_hl:
 ;
 ; i ( -- n|u ) ( R: do-sys -- do-sys )
 ;
-; Return a copy of the current (innermost) loop index.
+; Return a copy of the current (innermost) `loop` index.
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
@@ -3267,12 +3307,12 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
 ;
 ; leave ( -- ) ( R: loop-sys -- )
 ;
-; Discard the `loop` control parameters for the current nesting level.
-; Continue execution immediately following the innermost syntactically
-; enclosing `loop` or `+loop`.
+; Discard the `loop` control parameters for the current nesting
+; level.  Continue execution immediately following the innermost
+; syntactically enclosing `loop` or `+loop`.
 ;
-; Origin: Forth-83 (Required Word Set), Forth-94 (CORE), Forth-2012
-; (CORE).
+; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
+; Forth-2012 (CORE).
 ;
 ; See also: `?leave`, `unloop`, `do`, `?do`, `+loop`.
 ;
@@ -3590,9 +3630,10 @@ to_number.end:
 ;
 ; number-point? ( c -- f )
 ;
-; Is character _c_ a valid point in a number?  ``number-point?``
-; is a deferred word used in `number?`. Its default action is
-; `standard-number-point?`, which only allows the period.
+; _f_ is true if character _c_ is a valid point in a number.
+; ``number-point?`` is a deferred word used in `number?`. Its
+; default action is `standard-number-point?`, which only allows
+; the period.
 ;
 ; See also: `classic-number-point?`, `extended-number-point?`,
 ; `dpl`.
@@ -3606,8 +3647,8 @@ to_number.end:
 ;
 ; standard-number-point? ( c -- f )
 ;
-; Is character _c_ a valid point in a number?  The only allowed
-; point is period.
+; _f_ is true if if character _c_ is a valid point in a number.
+; The only allowed point is period.
 ;
 ; ``standard-number-point?`` is the default action of the
 ; deferred word `number-point?`, which is used in `number?`.
@@ -3768,9 +3809,8 @@ number_question.end:
 ;
 ; char? ( ca len -- c true | false )
 ;
-; Is the string _ca len_ the representation of a character?
-; If so return the character _c_ and true; else return
-; false.
+; If the string _ca len_ is the representation of a character,
+; return the character _c_ and _true_; else return _false_.
 ;
 ; Definition:
 
@@ -4468,7 +4508,7 @@ endif
 ;
 ; default-break-key? ( -- f )
 ;
-; Is the default break key (Shift+Space) pressed?
+; _f_ is true if the default break key (Shift+Space) is pressed.
 ; ``default-break-key?`` is the default action of the deferred
 ; word `break-key?`.
 ;
@@ -4485,8 +4525,8 @@ endif
 ;
 ; break-key? ( -- f )
 ;
-; Is the break key pressed? ``break-key?`` is a deferred word
-; whose default action is `default-break-key?`.
+; _f_ is true if the break key is pressed. ``break-key?`` is a
+; deferred word whose default action is `default-break-key?`.
 ;
 ; See also: `key?`.
 ;
@@ -6255,7 +6295,9 @@ do_colon:
 ; Definition:
 
 ; ----
-; : ; ( -- ) postpone exit finish-code ;
+; : ; \ Compilation: ( -- )
+;     \ Run-time:    ( -- ) ( R: nest-sys -- )
+;   postpone exit finish-code ;
 ; ----
 
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
@@ -6476,7 +6518,15 @@ do_user:
 
 ; doc{
 ;
-; bl ( -- b )
+; bl ( -- c )
+;
+; _c_ is the character value for a space.
+;
+; Because space is used throughout Forth as the standard
+; delimiter, ``bl`` is the only way a program has to find and
+; use the character value of a space.
+;
+; See also: `space`, `emit`.
 ;
 ; }doc
 
@@ -7060,7 +7110,7 @@ endif
 ;
 ; /tib ( -- n )
 ;
-; Maximum size of the terminal input buffer,
+; _n_ is the maximum size of the terminal input buffer,
 ;
 ; See also: `tib`, `#tib`.
 ;
@@ -7124,7 +7174,7 @@ endif
 
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `input-buffer`, `set-source`, `blk`.
+; See also: `input-buffer`, `set-source`, `blk`, `stream`.
 ;
 ; }doc
 
@@ -7948,7 +7998,7 @@ to_name.next:
 ;
 ; banks ( -- n )
 ;
-; Return the number of 16-KiB RAM memory banks:
+; _n_ is the number of 16-KiB RAM memory banks:
 ;
 ; |===
 ; | Computer          | Banks
@@ -8437,7 +8487,7 @@ name_to_string.loop_exit:
 ;
 ; ?throw ( f n -- )
 ;
-; If _f_ is non-zero, `throw` exception _n_
+; If _f_ is non-zero, `throw` exception code _n_
 ;
 ; Definition:
 
@@ -8485,7 +8535,11 @@ name_to_string.loop_exit:
 ; : executing? ( -- f ) state @ 0= ;
 ; ----
 
+; See also: `?executing`.
+;
 ; }doc
+
+  ; XXX TODO -- Rewrite after `compiling?` to save a cell.
 
   dw state_,fetch_,zero_equals_
   dw exit_
@@ -8519,7 +8573,7 @@ name_to_string.loop_exit:
 ; ?loading ( -- )
 ;
 ; If a `block` is not being loaded, i.e., if the content of
-; `blk` is zero, `throw` exception #-265 ("loading only").
+; `blk` is zero, `throw` exception code #-265 ("loading only").
 ;
 ; See also: `loading?`, `load`.
 ;
@@ -8768,7 +8822,10 @@ postpone.end:
 ;
 ; word-length-mask ( -- b )
 ;
-; Constant that holds the bitmask _b_ of the word length.
+; _b_ is the bitmask of the word length.
+;
+; See also: `smudge-mask`, `immediate-mask`,
+; `compile-only-mask`.
 ;
 ; }doc
 
@@ -8781,7 +8838,10 @@ postpone.end:
 ;
 ; smudge-mask ( -- b )
 ;
-; Constant that holds the bitmask of the `smudge` bit.
+; _b_ is the bitmask of the `smudge` bit.
+;
+; See also: `word-length-mask`, `immediate-mask`,
+; `compile-only-mask`.
 ;
 ; }doc
 
@@ -8864,7 +8924,7 @@ base_store:
 ;
 ; does>
 ;   Compilation: ( -- )
-;   Run-time: ( -- ) ( R: nest-sys1 -- )
+;   Run-time:    ( -- ) ( R: nest-sys -- )
 ;
 ; Define the execution-time action of a word created by a
 ; high-level defining word.  Used in the form:
@@ -8890,7 +8950,8 @@ base_store:
 ; Definition:
 
 ; ----
-; : does> ( -- )
+; : does> \ Compilation: ( -- )
+;         \ Run-time:    ( -- ) ( R: nest-sys -- )
 ;   postpone (;code) docolon call, ; immediate compile-only
 ; ----
 
@@ -9055,9 +9116,10 @@ type.loop_exit
 
 ; doc{
 ;
-; -trailing ( ca1 len1 -- ca1 len2 )
+; -trailing ( ca1 len1 -- ca2 len2 )
 ;
-; Adjust the length of a string to suppress the trailing blanks.
+; Adjust the length of a string _ca1 len1_ to suppress the
+; trailing blanks, returning the result _ca2 len2_.
 ;
 ; If _len_ is greater  than zero, _len2_ is  equal to _len1_
 ; less the number of spaces  at the end of  the character string
@@ -9071,7 +9133,7 @@ type.loop_exit
 ;
 ; }doc
 
-  ; XXX TODO -- Could be moved to the library, except
+  ; XXX TODO -- Can not be moved to the library, because
   ; `new-needed-word` needs it.
 
   pop de
@@ -9097,12 +9159,18 @@ minus_trailing.begin:
 
 ; doc{
 ;
-; -leading ( ca len -- ca' len' )
+; -leading ( ca1 len1 -- ca2 len2 )
 ;
-; Adjust the start and length of a string to suppress the
-; leading blanks.
+; Adjust the start and length of a string _ca1 len1_ to suppress
+; the leading blanks, returning the result _ca2 len2_.
 ;
-; See also: `-trailing`, `trim`.
+; Definition:
+
+; ----
+; : -leading ( ca len -- ca' len' ) bl skip ;
+; ----
+
+; See also: `-trailing`, `trim`, `bl`, `skip`.
 ;
 ; }doc
 
@@ -9116,7 +9184,8 @@ minus_trailing.begin:
 ;
 ; (.") ( -- )
 ;
-; Type the compiled string that follows.
+; Type the compiled string that follows. ``(.")`` is the
+; run-time procedure compiled by `."`.
 ;
 ; Definition:
 
@@ -9124,6 +9193,8 @@ minus_trailing.begin:
 ; : (.") ( -- ) r@ count dup char+ r> + >r type ;
 ; ----
 
+; See also: `,"`, `type`, `count`.
+;
 ; }doc
 
   dw r_fetch_,count_ ; ( ca len )
@@ -9133,7 +9204,7 @@ minus_trailing.begin:
   ; XXX TODO --
   ;   `r@ count dup char+ r> + >r` is what `slit` does, but
   ;   calling `slit` here can not work.
-  ;   see `string-param` in the library for a possible factor
+  ;   See `string-param` in the library for a possible factor
 
   dw exit_
 
@@ -9153,6 +9224,8 @@ minus_trailing.begin:
 ; : ," ( -- ) '"' parse s, ;
 ; ----
 
+; See also: `parse`, `s,`.
+;
 ; }doc
 
   ; Credit:
@@ -9168,15 +9241,12 @@ minus_trailing.begin:
 ; doc{
 ;
 ; ."
-;
-; Compilation: ( "ccc<quote>" -- )
-;
-; Parse "ccc" delimited by a double-quote. Append the run-time
-; semantics given below to the current definition.
-;
-;       Run-time: ( -- )
-;
-; Display "ccc".
+;   Compilation: ( "ccc<quote>" -- )
+;   Run-time: ( -- )
+
+; Parse "ccc" delimited by a double-quote and compile the
+; corresponding string and the execution procedure `(.")`, which
+; will display it at run-time.
 ;
 ; ``."`` is an `immediate` and `compile-only` word.
 ;
@@ -9188,6 +9258,8 @@ minus_trailing.begin:
 
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
 ; Forth-2012 (CORE).
+;
+; See also: `s"`, `.(`, `,"`.
 ;
 ; }doc
 
@@ -9422,8 +9494,14 @@ simple_accept.end
 ;
 ; block? ( u -- f )
 ;
-; Is _u_ a valid block number?
+; _f_ is true if _u_ is a valid `block` number.
 ;
+; Definition:
+
+; ----
+; : block? ( u -- f ) max-blocks u< ;
+; ----
+
 ; }doc
 
   dw max_blocks_,u_less_than_
@@ -9531,8 +9609,8 @@ fill.done:
 ; blank ( ca len -- )
 ;
 ; If _len_ is greater than zero, store the character value for
-; space in _len_ consecutive character positions of memory
-; beginning at _ca_.
+; space (`bl`) in _len_ consecutive character positions of
+; memory beginning at _ca_.
 ;
 ; Origin: Forth-94 (STRING), Forth-2012 (STRING).
 ;
@@ -9558,6 +9636,8 @@ fill.done:
 ; : hold ( c -- ) -1 hld +!  hld @ c! ;
 ; ----
 
+; See also: `holds`.
+;
 ; }doc
 
   dw lit_,-1,hld_,plus_store_ ; decrement `hld`
@@ -9571,10 +9651,13 @@ fill.done:
 ;
 ; /hold ( -- len )
 ;
-; A character constant that returns the length of the pictured
-; output string buffer, which is located right below `pad`.
+; _len_ is the length of the pictured output string buffer,
+; which is located right below `pad`.
 ;
-; See also: `hld`, `/pad`.
+; ``/hold`` is a character constant; its default value is 68. It
+; may be changed by `c!>`.
+;
+; See also: `hld`, `<#`, `/pad`.
 ;
 ; }doc
 
@@ -9614,7 +9697,15 @@ fill.done:
 ;
 ; stream ( -- ca len )
 ;
-; Return the address and length of the remaining stream source.
+; String _ca len_ is the the remaining stream `source`.
+;
+; Definition:
+
+; ----
+; : stream ( -- ca len ) source >in @ /string ;
+; ----
+
+; See also: `>in`, `/string`.
 ;
 ; }doc
 
@@ -9775,7 +9866,7 @@ parse.end:
 ;
 ; ?name-too-short ( ca len -- )
 ;
-; If name _ca len_ is empty, throw exception #-16.
+; If name _ca len_ is empty, `throw` exception code #-16.
 ;
 ; See also: `header`.
 ;
@@ -10143,9 +10234,20 @@ far_place.copy_char:
 ; error ( n -- )
 ;
 ; Save the `throw` code _n_ into `error-number`, and the current
-; block and line into `error-pos`, to be used by `where`.
-; Perform the action required by `throw` code _n_ and restart
-; the system.
+; block and line into `error-pos`, to be used by `where`.  Then
+; perform the action required by `throw` code _n_ as follows:
+;
+; If _n_ is minus-one (-1), execute `(abort)`.
+;
+; If _n_ is minus-two (-2), perform the function `abort"`,
+; displaying the message associated with the `abort"` that
+; generated the `throw`.
+;
+; Otherwise, execute `.error-word` and `.throw` to give
+; information about the  condition associated with the `throw`
+; code _n_. Subsequently, execute `(abort)`.
+;
+; ``error`` is a factor of `throw`.
 ;
 ; Definition:
 
@@ -10158,8 +10260,6 @@ far_place.copy_char:
 ;   .error-word .throw  (abort) ;
 ; ----
 
-; See also. `.error-word`, `.throw`, `(abort)`.
-;
 ; }doc
 
   ; XXX TODO -- Factor in two parts: save the data used by
@@ -10344,7 +10444,7 @@ endif
 ; is created, the data-space pointer (returned by `here`),
 ; points to the first byte of __name__'s data field.  When
 ; _name_ is subsequently executed, the address of the first byte
-; of __name__'s data field is left on the stack. 
+; of __name__'s data field is left on the stack.
 ;
 ; ``create`` does not allocate data space in __name__'s data
 ; field. Reservation of data field space is tipically done with
@@ -10484,15 +10584,15 @@ compare.end:
 ;
 ; str= ( ca1 len1 ca2 len2 -- f )
 ;
-; Is string _ca1 len1_ lexicographically equal to string _ca2
-; len2_?
+; _f_ is true if string _ca1 len1_ is lexicographically equal to
+; string _ca2 len2_.
 ;
 ; Definition:
-;
+
 ; ----
 ; : str= ( ca1 len1 ca2 len2 -- f ) compare 0= ;
 ; ----
-;
+
 ; See also: `str<`, `str>`, `compare`.
 ;
 ; }doc
@@ -10640,7 +10740,7 @@ search.failed:
 ;
 ; byte? ( x -- f )
 ;
-; Is _x_ an 8-bit number?
+; _f_ is true if _x_ is an 8-bit number. Used by `1literal`.
 ;
 ; }doc
 
@@ -10729,7 +10829,7 @@ search.failed:
 ;   immediate compile-only
 ; ----
 
-; See also: `2literal`, `]1l`.
+; See also: `2literal`, `]1l`, `byte?`.
 ;
 ; }doc
 
@@ -10775,21 +10875,23 @@ if 1 ; developing
 endif
 
 ; ----------------------------------------------
+if 0
+
+  ; XXX UNDER DEVELOPMENT
+
   _colon_header question_dictionary_,'?dictionary'
 
-; doc{
 ;
 ; ?dictionary ( -- )
 ;
-; Issue an error message if the dictionary is out of bounds.
+; `throw` an error if the dictionary is out of bounds.
 ;
-; }doc
-
-  ; XXX UNDER DEVELOPMENT
 
   _literal 0 ; XXX TMP
   _question_throw error.dictionary_overflow
   dw exit_
+
+endif
 
 ; ----------------------------------------------
   _colon_header question_stack_,'?stack'
@@ -10798,7 +10900,7 @@ endif
 ;
 ; ?stack ( -- )
 ;
-; Issue an error message if the data stack is out of bounds.
+; `throw` an error if the data stack is out of bounds.
 ;
 ; Origin: fig-Forth.
 ;
@@ -10822,7 +10924,7 @@ endif
 ;
 ; ?rstack ( -- )
 ;
-; Issue an error message if the return stack is out of bounds.
+; `throw` an error if the return stack is out of bounds.
 ;
 ; Origin: fig-Forth's ``?stack``.
 ;
@@ -10857,11 +10959,36 @@ endif
 ; ----------------------------------------------
   _colon_header not_understood_,'not-understood'
 
+; doc{
+;
+; not-understood ( -- )
+;
+; `throw` exception code #-256 ("not understood").
+;
+; ``not-understood`` is used in `interpret-table`.
+;
+; See also: `compilation-only`.
+;
+; }doc
+
   _literal error.not_understood
   dw throw_ ; no return from this `throw`
 
 ; ----------------------------------------------
   _colon_header compilation_only_,'compilation-only'
+
+; doc{
+;
+; compilation-only ( -- )
+;
+; `throw` exception code #-14 ("interpreting a compile-only
+; word").
+;
+; ``compilation-only`` is used in `interpret-table`.
+;
+; See also: `not-understood`, `?compiling`.
+;
+; }doc
 
   _literal error.compilation_only
   dw throw_ ; no return from this `throw`
@@ -10873,7 +11000,7 @@ endif
 ;
 ; nest-source ( R: -- source-sys )
 ;
-; _source-sys_ describe the current source specification for
+; _source-sys_ describes the current source specification for
 ; later use by `unnest-source`.
 ;
 ; Definition:
@@ -10886,7 +11013,7 @@ endif
 ;   >in @ >r
 ;   blk @ >r
 ;   #tib @ >r
-;   >r  ; compile-only
+;   >r ; compile-only
 ; ----
 
 ; }doc
@@ -10912,7 +11039,7 @@ endif
 ; unnest-source ( R: source-sys -- )
 ;
 ; Restore the source specification described by _source-sys_,
-; left by `nest-source`.
+; which was left by `nest-source`.
 ;
 ; Definition:
 
@@ -10949,11 +11076,29 @@ endif
 ;
 ; interpret-table ( -- a )
 ;
-; Return the address of the execution table used by `interpret`.
-; The table contains 13 vectors.  The behaviour of the Forth
-; text interpreter can be changed by replacing these vectors.
-; See the kernel source for details on the position and function
-; of the vectors.
+; _a_ is the zero-offset address of the execution table used by
+; `interpret`.  The table contains 13 vectors.  The behaviour of
+; the Forth text interpreter can be changed by replacing these
+; vectors.  The structure and contents of the execution table is
+; the following:
+
+; |===
+; | Cell offset | Execution token or zero | Condition
+;
+; | -6          | `execute`               | Compile an immediate and compile-only word
+; | -5          | `compile,`              | Compile a compile-only word
+; | -4          | `execute`               | Compile an immediate word
+; | -3          | `compile,`              | Compile an ordinary word
+; | -2          | `2literal`              | Compile a 2-cell number
+; | -1          | `1literal`              | Compile a 1-cell number
+; |  0          | `not-understood`        | Not a number (error)
+; |  1          | 0                       | Interpret a 1-cell number (do nothing)
+; |  2          | 0                       | Interpret a 2-cell number (do nothing)
+; |  3          | `execute`               | Interpret an ordinary word
+; |  4          | `execute`               | Interpret an immediate word
+; |  5          | `compilation-only`      | Interpret a compile-only word (error)
+; |  6          | `compilation-only`      | Interpret an immediate and compile-only word (error)
+; |===
 ;
 ; }doc
 
@@ -10984,11 +11129,11 @@ interpret_table.0:
 ; interpret ( -- )
 ;
 ; The text interpreter which sequentially executes or compiles
-; text from the input stream (terminal or disk) depending on
-; `state`. if the word name cannot be found after a search of
-; the `context` search order it is converted to a number
-; according to the current `base`.  That also failing, an error
-; message will be given.
+; text from the current input `stream` `source`, (terminal or
+; disk) depending on `state`. If the word name cannot be found
+; in the search `order` it is converted to a number by
+; `number?`, according to the current `base`.  That also
+; failing, an `error` will happen.
 ;
 ; The actions of the text interpreter are determined by the
 ; configuration of `interpret-table`.
@@ -11058,10 +11203,10 @@ interpret.end:
 ;
 ; immediate-mask ( -- b )
 ;
-; Constant that holds the bitmask of the precedence bit, set by
-; `immediate`.
+; _b_ is the bitmask of the precedence bit, set by `immediate`.
 ;
-; See also: `compile-only-mask`.
+; See also: `compile-only-mask`, `smudge-mask`,
+; `word-length-mask`.
 ;
 ; }doc
 
@@ -11148,7 +11293,7 @@ endif
 ;
 ; immediate? ( nt -- f )
 ;
-; Is the word _nt_ immediate?
+; _f_ is true if the word _nt_ is immediate.
 ;
 ; Definition:
 ;
@@ -11170,15 +11315,16 @@ endif
 ;
 ; name>immediate? ( nt -- xt f )
 ;
-; Is the word _nt_ immediate?
+; _f_ is true if the word _nt_ is immediate.  _xt_ is the
+; corresponding execution token of _nt_.
 ;
 ; Definition:
-;
+
 ; ----
 ; : name>immediate? ( nt -- xt f ) dup name> swap immediate? ;
 ; ----
-;
-; See also: `immediate?`.
+
+; See also: `immediate?`, `name>`.
 ;
 ; }doc
 
@@ -11196,7 +11342,7 @@ endif
 ; Constant that holds the bitmask of the compile-only bit, set
 ; by `compile-only`.
 ;
-; See also: `immediate-mask`.
+; See also: `immediate-mask`, `smudge-mask`, `word-length-mask`.
 ;
 ; }doc
 
@@ -11217,7 +11363,8 @@ endif
 ; : compile-only ( -- ) compile-only-mask latest lex! ;
 ; ----
 
-; See also: `compile-only?`,  `immediate`.
+; See also: `compile-only?`, `compile-only-mask`, `?compiling`,
+; `lex!`, `immediate`.
 ;
 ; }doc
 
@@ -11231,8 +11378,14 @@ endif
 ;
 ; compile-only? ( nt -- f )
 ;
-; Is the word _nt_ compile-only?
+; _f_ is true if the word _nt_ is compile-only.
 ;
+; Definition:
+
+; ----
+; : compile-only? ( nt -- f ) compile-only-mask lex? ;
+; ----
+
 ; See also: `compile-only`, `immediate?`.
 ;
 ; }doc
@@ -13207,7 +13360,7 @@ block.end:
 ;
 ; ?defined ( f -- )
 ;
-; If _f_ is false, throw exception code #-13 (not found).
+; If _f_ is false, `throw` exception code #-13 (not found).
 ;
 ; }doc
 
@@ -13315,7 +13468,8 @@ block.end:
 
 ; doc{
 ;
-; ['] ( Compilation: "name" -- )
+; [']
+;   Compilation: ( "name" -- )
 ;
 ; Compilation: If _name_ is found in the current search order,
 ; compile its execution token as a literal, else throw an
@@ -13326,7 +13480,7 @@ block.end:
 ; Definition:
 
 ; ----
-; : ['] ( Compilation: "name" -- )
+; : ['] \ Compilation: ( "name" -- )
 ;   ' postpone literal  ; immediate
 ; ----
 
@@ -13345,39 +13499,100 @@ block.end:
 
 ; doc{
 ;
-; begin ( -- dest )
+; begin
+;   Compilation: ( C: -- dest )
+;   Run-time:    ( -- )
 ;
-; ``begin`` is an `immediate` and `compile-only` word.
+; Mark the start of a sequence for repetitive execution, leaving
+; _dest_ to be resolved by the corresponding `until`, `again` or
+; `repeat`.
+;
+; ``begin`` is an `immediate` and `compile-only` `alias` of
+; `<mark`.
+;
+; Definition:
+
+; ----
+; ' <mark alias begin immediate compile-only
+;   \ Compilation: ( C: -- dest )
+;   \ Run-time:    ( -- )
+; ----
+
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `while`, `do`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
 ; ----------------------------------------------
   _alias_header then_,'then',immediate+compile_only,forward_resolve_
 
 ; doc{
 ;
-; then ( orig -- )
+; then
+;   Compilation: ( C: orig -- )
+;   Run-time:    ( -- )
+
 ;
-; ``then`` is an `immediate` and `compile-only` word.
+; Resolve the forward reference _orig_, usually left by `if` or
+; `while`.
+;
+; ``then`` is an `immediate` and `compile-only` `alias` of
+; `>resolve`.
+;
+; Definition:
+
+; ----
+; ' >resolve alias then immediate compile-only
+;   \ Compilation: ( C: orig -- )
+;   \ Run-time:    ( -- )
+; ----
+
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `else`, `ahead`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
 ; ----------------------------------------------
   _colon_header until_,'until',immediate+compile_only
 
 ; doc{
 ;
-; until ( dest -- )
+; until
+;   Compilation: ( C: dest -- )
+;   Run-time:    ( f -- )
+
+;
+; Compilation: Compile a conditional `0branch` to the backward
+; reference _dest_, usually left by `begin`.
+;
+; Run-time: If _f_ is zero, continue execution at the location
+; specified by _dest_.
 ;
 ; ``until`` is an `immediate` and `compile-only` word.
 ;
+; Definition:
+
+; ----
+; : until
+;   \ Compilation: ( C: dest -- )
+;   \ Run-time:    ( f -- )
+;   compile 0branch <resolve ; immediate compile-only
+; ----
+
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `again`, `repeat`, `<resolve`, `compile`, `0until`,
+; `-until`, `+until`.
+;
 ; }doc
 
-  ; XXX TODO -- Finish the documentation.
+  ; XXX TODO -- Finish the documentation: _f_ --> _x_, also for
+  ; `0until` and `-until`.
 
   dw compile_,zero_branch_
   dw backward_resolve_
@@ -13388,16 +13603,35 @@ block.end:
 
 ; doc{
 ;
-; again ( dest -- )
+; again
+;   Compilation: ( C: dest -- )
+;   Run-time:    ( -- )
+
 ;
-; End of an infinite loop.  Compile an unconditional jump
-; instruction to branch backward to _dest_.
+; Compilation: Compile an unconditional `branch`
+; to the backward reference _dest_, usually left by `begin`.
+;
+; Run-time: Continue execution at the location specified by
+; _dest_.
 ;
 ; ``again`` is an `immediate` and `compile-only` word.
 ;
-; }doc
+; Definition:
 
-  ; XXX TODO -- Finish the documentation.
+; ----
+; : again
+;   \ Compilation: ( C: dest -- )
+;   \ Run-time:    ( -- )
+;   compile branch <resolve ; immediate compile-only
+; ----
+
+; Origin: fig-Forth, Forth-79 (Reference Word Set), Forth-83
+; (Uncontrolled Reference Words), Forth-94 (CORE EXT),
+; Forth-2012 (CORE EXT).
+;
+; See also: `until`, `repeat`.
+;
+; }doc
 
   dw compile_,branch_
   dw backward_resolve_
@@ -13409,17 +13643,34 @@ block.end:
 ; doc{
 ;
 ; repeat
+;   Compilation: ( C: orig dest -- )
+;   Run-time:    ( -- )
+
 ;
-;   Compilation: ( orig dest -- )
+; Compilation: Compile an unconditional `branch` to the backward
+; reference _dest_, usually left by `begin`.  Resolve the
+; forward reference _orig_, usually left by `while`.
 ;
-; Compile `branch` to jump back to `begin`.  Resolve also  the
-; branching offset required by `while`.
+; Run-time: Continue execution at the location specified by
+; _dest_.
 ;
 ; ``repeat`` is an `immediate` and `compile-only` word.
 ;
-; }doc
+; Definition:
 
-  ; XXX TODO -- Finish the documentation.
+; ----
+; : repeat
+;   \ Compilation: ( C: orig dest -- )
+;   \ Run-time:    ( -- )
+;   again then ; immediate compile-only
+; ----
+
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `again`, `then`, `until`.
+;
+; }doc
 
   dw again_ ; unconditional branch back to `begin`
   dw then_ ; resolve the forward branching needed by `while`
@@ -13430,13 +13681,35 @@ block.end:
 
 ; doc{
 ;
-; if ( Compilation: -- orig ) ( Run-time: x -- )
+; if
+;   \ Compilation: ( C: -- orig )
+;   \ Run-time:    ( f -- )
+
+;
+; Compilation: Compile a conditional `0branch` and put the
+; location _orig_ of its unresolved destination on the
+; control-flow stack, to be resolved by `else` or `then`.
+;
+; Run-time: If _f_ is zero, continue execution at the location
+; specified by the resolution of _orig_.
 ;
 ; ``if`` is an `immediate` and `compile-only` word.
 ;
-; }doc
+; Definition:
 
-  ; XXX TODO -- Finish the documentation.
+; ----
+; : if
+;   \ Compilation: ( C: -- orig )
+;   \ Run-time:    ( f -- )
+;   compile 0branch >mark ; immediate compile-only
+; ----
+
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `again`, `until`, `ahead`, `0if`, `-if`, `+if`.
+;
+; }doc
 
   dw compile_,zero_branch_
 if.do:
@@ -13446,19 +13719,35 @@ if.do:
 ; ----------------------------------------------
   _colon_header ahead_,'ahead',immediate+compile_only
 
+
 ; doc{
 ;
 ; ahead
 ;   Compilation: ( C: -- orig )
-;   Run-time: ( -- )
+;   Run-time:    ( -- )
+
+;
+; Compilation: Compile an unconditional `branch` and put the
+; location _orig_ of its unresolved destination on the
+; control-flow stack.
+;
+; Run-time: Continue execution at the location specified by the
+; resolution of _orig_.
 ;
 ; ``ahead`` is an `immediate` and `compile-only` word.
 ;
+; Definition:
+
+; ----
+; : ahead
+;   \ Compilation: ( C: -- orig )
+;   \ Run-time:    ( -- )
+;   compile branch >mark ; immediate compile-only
+; ----
+
 ; Origin: Forth-94 (TOOLS EXT), Forth-2012 (TOOLS EXT).
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   dw compile_,branch_,forward_mark_
   dw exit_
@@ -13468,16 +13757,39 @@ if.do:
 
 ; doc{
 ;
-; else ( orig1 -- orig2 )
+; else
+;   Compilation: ( orig1 -- orig2 )
+;   Run-time:    ( -- )
+
+;
+; Compilation: Put the location of a new unresolved forward
+; reference _orig2_ onto the control-flow stack, usually to be
+; resolved by `then`.  Resolve the forward reference _orig1_,
+; usually left by `if`.
+;
+; Run-time: Continue execution at the location specified by the
+; resolution of _orig2_.
 ;
 ; ``else`` is an `immediate` and `compile-only` word.
 ;
+; Definition:
+
+; ----
+; : else
+;   \ Compilation: ( C: orig1 -- orig2 )
+;   \ Run-time:    ( -- )
+;   ahead cs-swap then ; immediate compile-only
+; ----
+
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `ahead`, `cs-swap`.
+;
 ; }doc
 
-  ; XXX TODO -- Finish the documentation.
-
   dw ahead_
-  dw swap_ ; XXX TODO `cs-swap`
+  dw swap_ ; XXX TODO -- `cs-swap`, an alias defined in the library
   dw then_
   dw exit_
 
@@ -13486,16 +13798,39 @@ if.do:
 
 ; doc{
 ;
-; while ( dest -- orig dest )
+; while
+;   Compilation: ( C: dest -- orig dest )
+;   Run-time:    ( f -- )
+
+; Compilation: Put the location of a new unresolved forward
+; reference _orig_ onto the control-flow stack, under the
+; existing _dest_. Usually _orig_ and _dest_ are resolved by
+; `repeat`.
+;
+; Run-time: If _f_ is zero, continue execution at the location
+; specified by the resolution of _orig_.
 ;
 ; ``while`` is an `immediate` and `compile-only` word.
 ;
+; Definition:
+
+; ----
+; : while
+;   \ Compilation: ( C: dest -- orig dest )
+;   \ Run-time:    ( f -- )
+;   postpone if cs-swap ; immediate compile-only
+; ----
+
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `if`, `cs-swap`, `postpone`, `0while`, `-while`,
+; `+while`.
+;
 ; }doc
 
-  ; XXX TODO -- Finish the documentation.
-
   dw if_
-  dw swap_ ; XXX TODO `cs-swap`
+  dw swap_ ; XXX TODO -- `cs-swap`, an alias defined in the library
   dw exit_
 
 ; ----------------------------------------------
@@ -13569,7 +13904,16 @@ emits.loop_exit:
 ; Initialize the pictured numeric output process:
 ; Set `hld` to its initial value, right below `pad`.
 ;
-; See also: `hld` `pad`.
+; Definition:
+
+; ----
+; : <# ( -- ) pad hld ! ;
+; ----
+
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `/hold`, `#>`, `#`, `#s`, `hold`, `holds`, `sign`.
 ;
 ; }doc
 
@@ -13583,9 +13927,22 @@ emits.loop_exit:
 ;
 ; #> ( xd -- ca len )
 ;
-; }doc
+; End the pictured numeric output conversion that was started by
+; `<#`: Drop _xd_ and make the pictured numeric output string
+; available as the string _ca len_.
+;
+; Definition:
 
-  ; XXX TODO -- Finish the documentation.
+; ----
+; : #> ( xd -- ca len ) 2drop hld @ pad over - ;
+; ----
+
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `#`, `#s`, `hold`, `hld`, `sign`, `pad`.
+;
+; }doc
 
   dw two_drop_
   dw hld_,fetch_
@@ -13630,7 +13987,8 @@ sign.end:
 ;
 ; Convert a number to its character digit: 0..9A..Z.
 ;
-; Definition:
+; ``>digit`` is written in Z80. Its equivalent definition if
+; Forth is the following:
 
 ; ----
 ; : >digit ( n -- c )
@@ -13658,21 +14016,28 @@ to_digit.end
 
 ; doc{
 ;
-; # ( d1 -- d2 )
+; # ( ud1 -- ud2 )
 ;
-; Divide _d1_ by current base.  The remainder is converted to
-; an ASCII character and appended to the output text string.
-; The quotient _d2_ is left on stack.
+; Divide _ud1_ by the number in `base`, giving the quotient
+; _ud2_ and the remainder _n_. (_n_ is the least significant
+; digit of _ud1_.)  Convert _n_ to external form and add the
+; resulting character to the beginning of the pictured numeric
+; output string that was started by `<#`.
+;
+; ``#`` is tipically used between `<#` and `#>`.
 ;
 ; Definition:
 
 ; ----
-; : # ( d1 -- d2 ) base @ ud/mod rot >digit hold ;
+; : # ( ud1 -- ud2 ) base @ ud/mod rot >digit hold ;
 ; ----
 
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `hold`, `ud/mod`, `>digit`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   dw base_,fetch_
   dw u_d_slash_mod_,rot_,to_digit_,hold_
@@ -13725,9 +14090,11 @@ to_digit.end
 ;
 ; -rot ( x1 x2 x3 -- x3 x1 x2 )
 ;
+; Rotate the top three stack entries in reverse order.
+;
+; See also: `rot`, `over`, `tuck`, `swap`, `roll`, `pick`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ; Credit:
   ;
@@ -13744,11 +14111,22 @@ to_digit.end
 
 ; doc{
 ;
-; #S ( d1 -- d2 )
+; #s ( ud1 -- ud2 )
+;
+; Convert one digit of _ud1_ according to the rule for `#`.
+; Continue conversion until the quotient is zero. _ud2_ is zero.
+; Used between `<#` and `#>`.
+;
+; Definition:
+
+; ----
+; #s ( ud1 -- ud2 ) begin # 2dup or 0until ;
+; ----
+
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
 hash_s.begin:
   dw hash_,two_dup_,or_
@@ -13762,8 +14140,10 @@ hash_s.begin:
 ;
 ; d.r ( d n -- )
 ;
-; Display a signed double number _d_ right justified in a field of
-; _n_ characters.
+; Display _d_ right aligned in a field _n_ characters wide. If
+; the number of characters required to display _d_ is greater
+; than _n_, all digits are displayed with no leading spaces in a
+; field as wide as necessary.
 ;
 ; Definition:
 
@@ -13772,9 +14152,15 @@ hash_s.begin:
 ;   >r tuck dabs <# #s rot sign #> over - spaces type ;
 ; ----
 
+; Origin: fig-Forth, Forth-79 (Double Number Word Set), Forth-83
+; (Double Number Extension Word Set)footnote:[In Forth-83, if
+; the number of characters required to display _d_ is greater
+; than _n_, an error condition exists, which depends on the
+; system.], Forth-94 (DOUBLE), Forth-2012 (DOUBLE).
+;
+; See also: `ud.r`, `.r`, `0d.r`, `<#`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   dw to_r_ ; save _n_
   dw tuck_  ; save the high part of _d_ to calculate the sign
@@ -13790,9 +14176,27 @@ hash_s.begin:
 ;
 ; .r ( n1 n2 -- )
 ;
-; }doc
+; Display _n1_ right aligned in a field _n2_ characters wide. If
+; the number of characters required to display _n1_ is greater
+; than _n2_, all digits are displayed with no leading spaces in
+; a field as wide as necessary.
+;
+; Definition:
 
-  ; XXX TODO -- Finish the documentation.
+; ----
+; : .r ( n1 n2 -- ) >r s>d r> d.r ;
+; ----
+
+; Origin: Forth-79 (Reference Word Set)footnote:[In Forth-79, if
+; _n2_ is less than 1, no leading blanks are supplied.],
+; Forth-83 (Controlled Reference Word)footnote:[In Forth-83, if
+; the number of characters required to display _n1_ is greater
+; than _n2_, an error condition exists, which depends on the
+; system.], Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+;
+; See also: `u.r`, `d.r`, `0.r`, `s>d`.
+;
+; }doc
 
   dw to_r_,s_to_d_,from_r_,d_dot_r_
   dw exit_
@@ -13804,8 +14208,16 @@ hash_s.begin:
 ;
 ; 0.r ( n -- )
 ;
-; Display signed integer _n_ according to current base,
-; without any trailing blank.
+; Display _n_ according to current base, without any trailing
+; blank.
+;
+; Definition:
+;
+; ----
+; : 0.r ( n -- ) 0 .r ;
+; ----
+;
+; See also: `.r`.
 ;
 ; }doc
 
@@ -13820,8 +14232,18 @@ hash_s.begin:
 ;
 ; 0d.r ( d -- )
 ;
-; Display signed double integer _d_ according to current base,
-; without any trailing blank.
+; Display _d_ according to current base, without any trailing
+; blank.
+;
+; ``0d.r`` is a factor of `d.`.
+;
+; Definition:
+
+; ----
+; : 0d.r ( d -- ) 0 d.r ;
+; ----
+
+; See also: `d.r`.
 ;
 ; }doc
 
@@ -13836,8 +14258,11 @@ hash_s.begin:
 ;
 ; d. ( d -- )
 ;
-; Display signed double integer _d_ according to current base,
-; followed by only one blank.
+; Display _d_ according to current base, followed by one blank.
+;
+; Origin: fig-Forth, Forth-79 (Double Number Word Set), Forth-83
+; (Double Number Extension Word Set), Forth-94 (DOUBLE),
+; Forth-2012 (DOUBLE).
 ;
 ; }doc
 
@@ -13851,8 +14276,10 @@ hash_s.begin:
 ;
 ; . ( n -- )
 ;
-; Display signed integer _n_ according to current `base`, followed
-; by only one blank.
+; Display signed integer _n_ according to current `base`,
+; followed by one blank.
+;
+; See also: `?`.
 ;
 ; }doc
 
@@ -13866,19 +14293,46 @@ hash_s.begin:
 ;
 ; ? ( a -- )
 ;
+; Display the 1-cell signed integer stored at _a_, using the
+; format of `.`.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-94
+; (TOOLS), Forth-2012 (TOOLS).
+;
 ; }doc
 
-  ; XXX TODO -- Finish the documentation.
+  ; XXX TODO -- Move to the library, or convert to code and make
+  ; it run into `.` to save some bytes.
 
   dw fetch_,dot_
   dw exit_
 
 ; ----------------------------------------------
+if 1 ; developing
   _colon_header u_dot_,'u.'
 
-  _literal 0
-  dw d_dot_
+  ; XXX TODO -- Move to the library.
+
+; u. ( u -- )
+;
+; Display _u_ in free field format.
+;
+; Definition:
+
+; ----
+; : u. ( u -- ) s>d ud. ;
+; ----
+
+; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
+; Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `u.r`, `ud.`, `.`.
+
+  _literal 0 ; XXX TODO -- `s>d`
+  dw d_dot_ ; XXX TODO -- `ud.`
   dw exit_
+
+endif
 
 ; ----------------------------------------------
 if 1 ; developing
@@ -14042,12 +14496,14 @@ page.display:
 ;
 ; os-sp ( -- a )
 ;
+; _a_ is the address of a cell containing a copy of the OS stack
+; pointer, which is saved when the Forth system is entered from
+; BASIC, and then restored by `(bye)` before returning to BASIC.
+;
 ; }doc
 
-  ; XXX TODO -- Finish the documentation.
-
-  ; XXX TMP -- For debugging of the TR-DOS support.
-  ; Formerly this was done in `(bye)`.
+  ; XXX TMP -- For debugging of the TR-DOS support.  Formerly
+  ; the OS stack pointer was stored in the code of `(bye)`.
 
 system_stack_pointer:
   dw 0
@@ -14059,9 +14515,14 @@ system_stack_pointer:
 ;
 ; (bye) ( -- )
 ;
+; Restore the two lower lines of the screen, as expected by
+; BASIC, set interrupt mode 1, restore the OS stack pointer,
+; restore the alternate HL Z80 register, and finally force a
+; "STOP" BASIC error in order to return control to the host OS.
+;
+; ``(bye)`` is the final low-level procedure of `bye`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ld (iy+sys_df_sz_offset),$02 ; restore lines of the lower screen
 
@@ -14104,9 +14565,20 @@ system_stack_pointer:
 ;
 ; bye ( -- )
 ;
-; }doc
+; Return control to the host OS.
+;
+; Definition:
 
-  ; XXX TODO -- Finish the documentation.
+; ----
+; : bye ( -- ) save-mode default-mode (bye) ;
+; ----
+
+; Origin: Forth-94 (TOOLS EXT), Forth-2012 (TOOLS EXT).
+;
+; See also: `save-mode`, `default-mode`, `(bye)`, `warm`,
+; `cold`.
+;
+; }doc
 
   dw save_mode_
   dw default_mode_
@@ -14120,9 +14592,15 @@ system_stack_pointer:
 ;
 ; 2drop ( x1 x2 -- )
 ;
+; Remove cell pair _x1 x2_ from the stack.
+;
+; Origin: Forth-79 (Double Number Word Set), Forth-83 (Double
+; Number Extension Word Set), Forth-94 (CORE), Forth-2012
+; (CORE).
+;
+; See also: `drop`, `nip`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   pop hl
   pop hl
@@ -14135,9 +14613,15 @@ system_stack_pointer:
 ;
 ; 2swap ( x1 x2 x3 x4 -- x3 x4 x1 x2 )
 ;
+; Exchange the top two cell pairs.
+;
+; Origin: Forth-79 (Double Number Word Set), Forth-83 (Double
+; Number Extension Word Set), Forth-94 (CORE), Forth-2012
+; (CORE).
+;
+; See also: `swap`, `2over`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ; Credit:
   ; Code adapted from Z88 CamelForth
@@ -14683,7 +15167,7 @@ two_fetch.hl:
 ; Return control to the calling definition, specified by
 ; _nest-sys_.
 ;
-; Before executing `exit` within a do-loop, a program shall
+; Before executing `exit` within a `loop`, a program shall
 ; discard the loop-control parameters by executing `unloop`.
 ;
 ; ``exit`` is compiled by `;`.
@@ -14694,6 +15178,8 @@ two_fetch.hl:
 ; Origin: fig-Forth's ``;s``, Forth-79 (Required Word Set),
 ; Forth-83 (Required Word Set), Forth-94 (CORE), Forth-2012
 ; (CORE).
+;
+; See also: `?exit`, `0exit`, `-exit`, `+exit`.
 ;
 ; }doc
 
@@ -14720,10 +15206,10 @@ two_fetch.hl:
 ; ``?exit`` can not be used within a `loop`. Use ``if unloop
 ; exit then`` instead.
 ;
-; In Solo Forth ``?exit`` can be used in interpretation mode to
-; stop the interpretation of a block.
+; ``?exit`` can be used in interpretation mode to stop the
+; interpretation of a block.
 ;
-; See also: `0exit`, `-exit`, `+exit`.
+; See also: `exit`, `0exit`, `-exit`, `+exit`.
 ;
 ; }doc
 
@@ -14741,12 +15227,27 @@ two_fetch.hl:
 
 ; doc{
 ;
-; throw ( n -- )
+; throw ( k*x n -- k*x | i*x n )
+;
+; If _n_ is zero, drop it and continue. Otherwise, pop the
+; topmost exception frame from the exception stack, along with
+; everything on the return stack above that frame.  Then restore
+; the input source specification in use before the corresponding
+; `catch` and adjust the depths of all stacks so that they are
+; the same as the depths saved in the exception frame (_i_ is
+; the same number as the _i_ in the input arguments to the
+; corresponding `catch`), put _n_ on top of the data stack, and
+; transfer control to a point just after the `catch` that pushed
+; that exception frame.
+;
+; If the top of the stack is non-zero and there is no exception
+; frame on the exception stack, i.e. the content of `catcher` is
+; zero, `error` is executed with _n_ on top of the stack.
 ;
 ; Definition:
 
 ; ----
-; : throw ( n -- )
+; : throw ( k*x n -- k*x | i*x n )
 ;   ?dup if
 ;     catcher @ ?dup 0=   \ no catcher?
 ;     if  error  then     \ `error` does not return
@@ -14763,8 +15264,6 @@ two_fetch.hl:
 ; Origin: Forth-94 (EXCEPTION), Forth-2012 (EXCEPTION).
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ; Credit:
   ; Code from DZX-Forth.
@@ -14805,7 +15304,7 @@ throw.end:
 ; : (abort) ( -- ) sp0 @ sp! boot quit ;
 ; ----
 
-; See also: `boot`.
+; See also: `error`, `abort`, `boot`.
 ;
 ; }doc
 
@@ -14821,9 +15320,23 @@ throw.end:
 ;
 ; abort ( -- )
 ;
-; }doc
+; Empty the data stack and perform the function of `quit`, which
+; includes emptying the return stack, without displaying a
+; message.
+;
+; Definition:
 
-  ; XXX TODO -- Finish the documentation.
+; ----
+; abort ( -- ) -1 throw ;
+; ----
+
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE, EXCEPTION EXT),
+; Forth-2012 (CORE, EXCEPTION EXT).
+;
+; See also: `(abort)`, `abort"`, `throw`, `error`.
+;
+; }doc
 
   _literal -1
   dw throw_ ; no return from this `throw`
@@ -14833,26 +15346,32 @@ throw.end:
 
 ; doc{
 ;
-; s" ( Compilation: "ccc<quote>" -- )
-;    ( Interpretation: "ccc<quote>" -- ca len )
-;    ( Run-time:  -- ca len )
+; s"
+;   \ Compilation:    ( "ccc<quote>" -- )
+;   \ Interpretation: ( "ccc<quote>" -- ca len )
+;   \ Run-time:       ( -- ca len )
+;
+; Parse _ccc_ delimited by a double quote.  If interpreting, copy
+; the parsed string to the `stringer` and return it as _ca len_.
+; If compiling, compile the parsed string and return it at
+; run-time as _ca len_.
 ;
 ; ``s"`` is an `immediate` word.
 ;
 ; Definition:
 
 ; ----
-; : s" ( Compilation: "ccc<quote>" -- )
-;      ( Interpretation: "ccc<quote>" -- ca len )
-;      ( Run-time:  -- ca len )
+; : s" \ Compilation:    ( "ccc<quote>" -- )
+;      \ Interpretation: ( "ccc<quote>" -- ca len )
+;      \ Run-time:       ( -- ca len )
 ;   '"' parse-string  ; immediate
 ; ----
 
-; See also: `s\"`, `s'`, `s""`.
+; Origin: Forth-94 (CORE, FILE), Forth-2012 (CORE, FILE).
+;
+; See also: `parse-string`, `s\"`, `s'`, `s""`, `."`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   _literal '"'
   dw parse_string_
@@ -14933,11 +15452,16 @@ backslash.loading:
 ;
 ; .( ( "ccc<paren>" -- )
 ;
+; Parse and display _ccc_ delimited by a right parenthesis.
+;
 ; ``.(`` is an `immediate` word.
 ;
+; Origin: Forth-83 (Required Word Set), Forth-94 (CORE EXT),
+; Forth-2012 (CORE EXT).
+;
+; See also: `."`, `(`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   _literal ')'
   dw parse_,type_

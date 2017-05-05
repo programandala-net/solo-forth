@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702280001
+  \ Last modified: 201705051939
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,52 +23,68 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-  \ XXX TODO -- Compilation stack comments.
-
 ( +if +while +until +exit )
 
 [unneeded] +if ?( need -branch
 
-: +if ( n -- )
+: +if
+  \ Compilation: ( C: -- orig )
+  \ Run-time:    ( f -- )
   postpone -branch >mark ; immediate compile-only ?)
 
   \ doc{
   \
-  \ +if ( n -- )
+  \ +if
+  \   Compilation: ( C: -- orig )
+  \   Run-time:    ( f -- )
   \
   \ Faster and smaller alternative to the idiom `0>= if`.
   \
   \ ``+if`` is an `immediate` and `compile-only` word.
   \
+  \ See also: `if`, `0if`, `-if`, `-branch`.
+  \
   \ }doc
 
 [unneeded] +while ?( need +if need cs-swap
 
-: +while ( n -- )
+: +while
+  \ Compilation: ( C: dest -- orig dest )
+  \ Run-time:    ( f -- )
   postpone +if  postpone cs-swap ; immediate compile-only ?)
 
   \ doc{
   \
   \ +while ( n -- )
+  \   Compilation: ( C: dest -- orig dest )
+  \   Run-time:    ( f -- )
   \
   \ Faster and smaller alternative to the idiom `0>= while`.
   \
   \ ``+while`` is an `immediate` and `compile-only` word.
   \
+  \ See also: `while`, `0while`, `-while`.
+  \
   \ }doc
 
 [unneeded] +until ?( need -branch
 
-: +until ( n -- )
+: +until
+  \ Compilation: ( C: dest -- )
+  \ Run-time:    ( f -- )
   postpone -branch <resolve ; immediate compile-only ?)
 
   \ doc{
   \
-  \ +until ( n -- )
+  \ +until
+  \   Compilation: ( C: dest -- )
+  \   Run-time:    ( f -- )
   \
   \ Faster and smaller alternative to the idiom `0>= until`.
   \
   \ ``+until`` is an `immediate` and `compile-only` word.
+  \
+  \ See also: `until`, `0until`, `-until`, `-branch`.
   \
   \ }doc
 
@@ -85,14 +101,16 @@ code +exit ( n -- ) ( R: nest-sys | -- nest-sys | )
   \
   \ +exit ( n -- ) ( R: nest-sys | -- nest-sys | )
   \
-  \ If _n_ is positive, return control to the calling definition,
-  \ specified by _nest-sys_.
+  \ If _n_ is positive, return control to the calling
+  \ definition, specified by _nest-sys_.
   \
-  \ `+exit` is not intended to be used within a do-loop. Use
-  \ `0>= if unloop exit then` instead.
+  \ `+exit` is not intended to be used within a `loop`.  Use
+  \ ``0>= if unloop exit then`` instead.
   \
-  \ In Solo Forth `+exit` can be used in interpretation mode to
-  \ stop the interpretation of a block.
+  \ ``+exit`` can be used in interpretation mode to stop the
+  \ interpretation of a block.
+  \
+  \ See also: `exit`, `?exit`, `0exit`, `-exit`.
   \
   \ }doc
 
@@ -110,6 +128,8 @@ code +exit ( n -- ) ( R: nest-sys | -- nest-sys | )
   \ interpretation.
   \
   \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-05-05: Improve documentation.
 
   \ vim: filetype=soloforth
 

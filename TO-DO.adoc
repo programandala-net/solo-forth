@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201705051352
+// Last modified 201705052311
 
 // Application development {{{1
 == Application development ==
@@ -453,6 +453,11 @@ additional link.
 
 // Documentation {{{1
 == Documentation ==
+
+.2017-05-05:
+
+Update stack notation and description of `if`, `while`, `until` and
+its variants after Forth-2012 (using _x_ instead of _f_)?
 
 .2017-05-05:
 
@@ -1101,6 +1106,16 @@ does nothing, as expected.
 
 // Maths {{{1
 == Maths ==
+
+.2017-05-05:
+
+Convert `?` to code and make it run into `.`. This will save some
+bytes.
+
+.2017-05-05:
+
+Convert `base.` into a complete definer, in order to make it more
+versatile. Then document it.
 
 .2017-05-05:
 
@@ -1802,6 +1817,11 @@ Adapt from Gforth: `noname`, analogous to `nextname`.
 // Display {{{1
 == Display ==
 
+.2017-05-05:
+
+Write the definitive version of `u.` in the library. The current one
+is temporary, for debugging.
+
 .2017-04-21:
 
 Replace the current `mode-64` with the improved code written by Einar
@@ -2045,6 +2065,10 @@ calls.
 
 // Sound {{{1
 == Sound ==
+
+.2017-05-05:
+
+Include the Note Frequencies table into the manual.
 
 .2017-01-24:
 
