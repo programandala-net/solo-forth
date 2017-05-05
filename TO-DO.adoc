@@ -456,6 +456,11 @@ additional link.
 
 .2017-05-05:
 
+Complete the range of 48-bit and 64-bit numbers in the _Stack notation
+symbols_ table of the manual.
+
+.2017-05-05:
+
 Use "display" as a device-independent term instead of "print".
 
 Rename the `print` tool.
@@ -475,14 +480,20 @@ backslash, or that are included in code examples, are corrupted.
 
 .2017-04-17:
 
+NOTE: Milestone: 0.14.0
+
 Change notation "A variable that holds x" to "A variable. _a_ is the
 address of a cell/double cell/byte containing x". It's clearer.
 
 .2017-04-16:
 
+NOTE: Milestone: 0.14.0
+
 Document the folllowing words: `>>link name>> >>name >body body>`.
 
 .2017-03-17:
+
+NOTE: Milestone: 0.14.0
 
 Finish documentation of <flow.case.fs>.
 
@@ -493,10 +504,14 @@ corresponding library modules.
 
 .2017-03-13:
 
+NOTE: Milestone: 0.14.0
+
 Add the corresponding English names to words that need them, e.g.
 "next-screen" for `-->`.
 
 .2017-03-10:
+
+NOTE: Milestone: 0.14.0
 
 Add cross references to the original versions of alternative stack
 words, e.g. `-dup`, and alternative control flow words, e.g. `-if`.
@@ -518,11 +533,12 @@ included in the glossary with a link to the section.
 
 .2017-02-27:
 
-Document <locals.anon.fs>, <flow.select.fs>,
-<flow.dijktstra.fs>.
-<flow.case.fs>.
-<flow.begincase.fs>.
-<flow.doer.fs>, `abort"`, `is`, `[is]`, `<is>`.
+Document 
+<flow.select.fs>,
+<flow.dijktstra.fs>,
+<flow.case.fs>,
+<flow.begincase.fs>,
+<flow.doer.fs>, `is`, `[is]`, `<is>`.
 
 .2017-02-27:
 
