@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704042019
+  \ Last modified: 201705051353
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -55,7 +55,7 @@ code under+ ( n1|u1 x n2|u2 -- n3|u3 x )
 
   \ Origin: Comus.
   \
-  \ See also: `+under`.
+  \ See also: `+under` ,`+`.
   \
   \ }doc
 
@@ -89,7 +89,7 @@ code +under ( n1|u1 n2|u2 x -- n3|u3 x )
 
   \ Origin: Comus.
   \
-  \ See also: `under+`
+  \ See also: `under+`, `+`.
   \
   \ }doc
 
@@ -198,6 +198,8 @@ code +under ( n1|u1 n2|u2 x -- n3|u3 x )
   \ gcd ( n1 n2 -- n3 )
   \
   \ _n3_ is the greatest common divisor of _n1_ and _n2_.
+  \
+  \ See also: `/`, `mod`.
   \
   \ }doc
 
@@ -471,13 +473,13 @@ code lshift ( x1 u -- x2 )
   \
   \ lshift ( x1 u -- x2 )
   \
-  \ Perform a logical left shift of _u_ bit-places on _x_,
+  \ Perform a logical left shift of _u_ bit-places on _x1_,
   \ giving _x2_. Put zeroes into the least significant  bits
   \ vacated by the shift.
   \
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
   \
-  \ See also: `rshift`, `?shift`.
+  \ See also: `rshift`, `?shift`, `clshift`.
   \
   \ }doc
 
@@ -502,7 +504,7 @@ code rshift ( x1 u -- x2 )
   \
   \ rshift ( x1 u -- x2 )
   \
-  \ Perform a logical right shift of _u_ bit-places on _x_,
+  \ Perform a logical right shift of _u_ bit-places on _x1_,
   \ giving _x2_. Put zeroes into the most significant  bits
   \ vacated by the shift.
   \
@@ -550,6 +552,18 @@ code clshift ( b1 u -- b2 )
     \ jp z,push_a
     \ add a,a
     \ jp begin
+
+  \ doc{
+  \
+  \ clshift ( b1 u -- b2 )
+  \
+  \ Perform a logical left shift of _u_ bit-places on _b1_,
+  \ giving _b2_. Put zeroes into the least significant  bits
+  \ vacated by the shift.
+  \
+  \ See also: `lshift`.
+  \
+  \ }doc
 
 [unneeded] crshift ?(
 
@@ -917,7 +931,7 @@ need sqrt need d2* need cell-bits
 
   \ doc{
   \
-  \ /_mod ( n1 n2 -- n3 )
+  \ _mod ( n1 n2 -- n3 )
   \
   \ Divide _n1_ by _n2_ (doing a floored division), giving the
   \ remainder _n3_.
@@ -1068,7 +1082,7 @@ code split ( x -- b1 b2 )
   \
   \ Origin: IsForth.
   \
-  \ See also: `join`.
+  \ See also: `join`, `flip`.
   \
   \ }doc
 
@@ -1091,7 +1105,7 @@ code join ( b1 b2 -- x )
   \
   \ Origin: IsForth.
   \
-  \ See also: `split`.
+  \ See also: `split`, `flip`.
   \
   \ }doc
 
@@ -1218,5 +1232,7 @@ code join ( b1 b2 -- x )
   \ to access any of them.  Update needing of `cell-bits`.
   \
   \ 2017-04-04: Improve documentation.
+  \
+  \ 2017-05-05: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705050151
+; Last modified: 201705051353
 
 include version.z80s
 
@@ -2007,9 +2007,18 @@ endif
 ;
 ; asm ( -- )
 ;
-; Enter the assembler mode.
+; Enter the assembly mode. Push `assembler-wordlist` on the
+; search `order`.
 ;
-; See also: `end-asm`, `code`, `init-asm`.
+; Definition:
+
+; ----
+; : asm ( -- )
+;   !csp init-asm base @ abase ! hex assembler-wordlist >order ;
+; ----
+
+; See also: `assembler`, `end-asm`, `code`, `init-asm`, `abase`,
+; `!csp`, `hex`.
 ;
 ; }doc
 
@@ -2368,9 +2377,9 @@ if 1 ; assembler_core_in_kernel
 ; assembler-wordlist ( -- wid )
 ;
 ; Return _wid_, the identifier of the word list that includes
-; the words defined as part of the assembler.
+; the words defined as part of the `assembler`.
 ;
-; See also: `assembler`, `wordlist`, `set-order`, `forth-wordlist`,
+; See also: `wordlist`, `set-order`, `forth-wordlist`,
 ; `root-wordlist`.
 ;
 ; }doc
@@ -3760,8 +3769,8 @@ number_question.end:
 ; char? ( ca len -- c true | false )
 ;
 ; Is the string _ca len_ the representation of a character?
-; If so return the character _c_ and _true_; else return
-; _false_.
+; If so return the character _c_ and true; else return
+; false.
 ;
 ; Definition:
 
@@ -4490,13 +4499,13 @@ endif
 ;
 ; key? ( -- f )
 ;
-; If a character is available, return _true_. Otherwise, return
-; _false_. If non-character keyboard events are available before
+; If a character is available, return true. Otherwise, return
+; false. If non-character keyboard events are available before
 ; the first valid character, they are discarded and are
 ; subsequently unavailable. The character is returned by the
 ; next execution of `key`.
 ;
-; After ``key?`` returns with a value of _true_, subsequent
+; After ``key?`` returns with a value of true, subsequent
 ; executions of ``key?`` prior to  the execution of `key` also
 ; return true, without discarding keyboard events.
 ;
@@ -4785,6 +4794,8 @@ move.do:
 ;
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
+; See also: `m*`, `*`, `d*`.
+;
 ; }doc
 
   ; Credit:
@@ -4806,6 +4817,8 @@ move.do:
 ; remainder _u2_.  All values and arithmetic are unsigned.
 ;
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `/mod`, `du/mod`, `mod`, `*/mod`.
 ;
 ; }doc
 
@@ -4864,7 +4877,7 @@ u_m_slash_mod.4:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `or`, `xor`, `negate`, `0=`.
+; See also: `or`, `xor`, `negate`, `0=`, `dand`.
 ;
 ; }doc
 
@@ -4890,7 +4903,7 @@ u_m_slash_mod.4:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `and`, `xor`, `negate`, `0=`.
+; See also: `and`, `xor`, `negate`, `0=`, `dor`.
 ;
 ; }doc
 
@@ -4916,7 +4929,7 @@ u_m_slash_mod.4:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `or`, `and`, `negate`, `0=`.
+; See also: `or`, `and`, `negate`, `0=`, `dxor`.
 ;
 ; }doc
 
@@ -5349,7 +5362,7 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ;
 ; 0= ( x -- f )
 ;
-; _f_ is _true_ if and only if _x_ is equal to zero.
+; _f_ is true if and only if _x_ is equal to zero.
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
@@ -5390,7 +5403,7 @@ zero_equals.hl:
 ;
 ; false ( -- false )
 ;
-; Return a _false_ flag, a single-cell value with all bits
+; Return a false flag, a single-cell value with all bits
 ; clear.
 ;
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
@@ -5406,7 +5419,7 @@ zero_equals.hl:
 ;
 ; 0<> ( x -- f )
 ;
-; _f_ is _true_ if and only if _x_ is not equal to zero.
+; _f_ is true if and only if _x_ is not equal to zero.
 ;
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
@@ -5427,7 +5440,7 @@ zero_equals.hl:
 ;
 ; 0< ( x -- f )
 ;
-; _f_ is _true_ if and only if _n_ is less than zero.
+; _f_ is true if and only if _n_ is less than zero.
 ;
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE), Forth-2012 (CORE).
@@ -5460,7 +5473,7 @@ true_if_cy:
 ;
 ; 0> ( n -- f )
 ;
-; _f_ is _true_ if and only if _n_ is greater than zero.
+; _f_ is true if and only if _n_ is greater than zero.
 ;
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
@@ -5488,7 +5501,7 @@ true_if_cy:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `d+`, `2+`, `1+`, `-`.
+; See also: `m+`, `d+`, `2+`, `1+`, `-`.
 ;
 ; }doc
 
@@ -5506,7 +5519,11 @@ true_if_cy:
 ;
 ; Add _d2|ud2_ to _d1|ud1_, giving the sum _d3|ud3_.
 ;
-; See also: `+`.
+; Origin: Forth-79 (Double Number Word Set), Forth-83 (Double
+; Number Extension Word Set), Forth-94 (DOUBLE), Forth-2012
+; (DOUBLE).
+;
+; See also: `d-`, `+`, `dmax`.
 ;
 ; }doc
 
@@ -5870,7 +5887,7 @@ endif
 ;
 ; off ( a -- )
 ;
-; Store _false_ at _a_.
+; Store false at _a_.
 ;
 ; Origin: Comus.
 ;
@@ -5889,7 +5906,7 @@ endif
 ;
 ; on ( a -- )
 ;
-; Store _true_ at _a_.
+; Store true at _a_.
 ;
 ; Origin: Comus.
 ;
@@ -5909,8 +5926,8 @@ endif
 ; c@and? ( b ca -- f )
 ;
 ; Fetch the caracter at _ca_ and do a bit-by-bit logical "and"
-; of it with _b_. Return _false_ if the result is zero, else
-; _true_.
+; of it with _b_. Return false if the result is zero, else
+; true.
 ;
 ; See also: `c@and`.
 ;
@@ -6898,8 +6915,8 @@ do_user:
 ; state ( -- a )
 ;
 ; A user variable. _a_ is the address of a cell containing the
-; compilation-state flag, which is _true_ when in compilation
-; state, _false_ otherwise.
+; compilation-state flag, which is true when in compilation
+; state, false otherwise.
 ;
 ; Origin: fig-Forth, Forth-89 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
@@ -7477,7 +7494,7 @@ two_comma.allot:
 ;
 ; <> ( x1 x2 -- f )
 ;
-; _f_ is _true_ only and only if _x1_ is not bit-for-bit the
+; _f_ is true only and only if _x1_ is not bit-for-bit the
 ; same as _x1_.
 ;
 ; Origin: Forth-79 (Reference Word Set), Forth-83 (Uncontrolled
@@ -7501,7 +7518,7 @@ two_comma.allot:
 ;
 ; = ( x1 x2 -- f )
 ;
-; _f_ is _true_ only and only if _x1_ is bit-for-bit the same as
+; _f_ is true only and only if _x1_ is bit-for-bit the same as
 ; _x1_.
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
@@ -7543,7 +7560,7 @@ two_comma.allot:
 ;
 ; true ( -- true )
 ;
-; Return a _true_ flag, a single-cell value with all its bits
+; Return a true flag, a single-cell value with all its bits
 ; set (equivalent to -1).
 ;
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
@@ -7559,7 +7576,7 @@ two_comma.allot:
 ;
 ; < ( n1 n2 -- f )
 ;
-; _f_ is _true_ if and only if _n1_ is less than _n2_.
+; _f_ is true if and only if _n1_ is less than _n2_.
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
@@ -7604,7 +7621,7 @@ less_than.reverse
 ;
 ; u> ( u1 u2 -- f )
 ;
-; _f_ is _true_ if and only if _u1_ is greater than _u2_.
+; _f_ is true if and only if _u1_ is greater than _u2_.
 ;
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
@@ -7624,7 +7641,7 @@ u_greater_than.hl:
 ;
 ; u< ( u1 u2 -- f )
 ;
-; _f_ is _true_ if and only if _u1_ is less than _u2_.
+; _f_ is true if and only if _u1_ is less than _u2_.
 ;
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE), Forth-2012 (CORE).
@@ -7654,7 +7671,7 @@ u_less_than.de_hl:
 ;
 ; > ( n1 n2 -- f )
 ;
-; _f_ is _true_ if and only if _n1_ is greater than _n2_.
+; _f_ is true if and only if _n1_ is greater than _n2_.
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
@@ -8520,7 +8537,7 @@ name_to_string.loop_exit:
 ; loading? ( -- f )
 ;
 ; If a `block` is being loaded, i.e., if the content of
-; `blk` is non-zero, return _true_; else return false.
+; `blk` is non-zero, return true; else return false.
 ;
 ; See also: `?loading`, `load`.
 ;
@@ -9958,7 +9975,7 @@ far_lowers.end:
 ;
 ; Find name _ca len_.  If the definition is
 ; not found after searching the active search
-; order, return _false_, else return _true_.
+; order, return false, else return true.
 ;
 ; Definition:
 
@@ -10322,10 +10339,26 @@ endif
 ; doc{
 ;
 ; create ( "name" -- )
+
+; Parse _name_.  Create  a definition for _name_.  After _name_
+; is created, the data-space pointer (returned by `here`),
+; points to the first byte of __name__'s data field.  When
+; _name_ is subsequently executed, the address of the first byte
+; of __name__'s data field is left on the stack. 
+;
+; ``create`` does not allocate data space in __name__'s data
+; field. Reservation of data field space is tipically done with
+; `allot`.
+;
+; The execution semantics of _name_ may be expanded by using
+; `does>`.
+;
+; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
+; Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `,`, `c,`, `2,`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ; XXX TODO -- factor `header reveal` to `visible-header`?
   ; This phrase is used also by `defer` and `alias`.
@@ -10346,9 +10379,20 @@ if 1 ; assembler_core_in_kernel
 ;
 ; code ( "name -- )
 ;
-; }doc
+; Parse _name_. Create a definition for _name_, called a code
+; definition, and execute `asm` to enter assembly mode.
+;
+; Definition:
 
-  ; XXX TODO -- Finish the documentation.
+; ----
+; : code ( "name -- ) header asm ;
+; ----
+
+; Origin: Forth-79 (Assembler Word Set), Forth-83 (Assembler
+; Extension Word Set), Forth-94 (TOOLS EXT), Forth-2012 (TOOLS
+; EXT).
+;
+; }doc
 
   dw header_,asm_
   dw exit_
@@ -11031,7 +11075,7 @@ interpret.end:
 ; lex? ( nt b -- f )
 ;
 ; Test the bits at _nt_ specified by the bitmask _b_.
-; Return _true_ if the result is non-zero, else return _false_.
+; Return true if the result is non-zero, else return false.
 ;
 ; See also: `lex!`, `immediate?`, `compile-only?`.
 ;
@@ -11831,19 +11875,20 @@ endif
 ;
 ; warm ( -- )
 ;
-; Do a "warm" restart of the Forth system.
+; Do a "warm" restart of the Forth system: Make the `display`
+; the current output device, restore the previous display mode
+; (in case ``warm`` is automatically executed after reentering
+; from BASIC), clear the screen and `abort`.
 ;
 ; Definition:
-;
+
 ; ----
 ; : warm ( -- ) display restore-mode page abort ;
 ; ----
-;
-; See also: `cold`.
+
+; See also: `cold`, `restore-mode`, `page`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   dw display_
   dw restore_mode_
@@ -11862,16 +11907,14 @@ warm_start:
 ;
 ; cold ( -- )
 ;
-; Restore the Forth system to its default status, as if it were
-; just started.
+; Restore the Forth system to its default status, i.e. as if it
+; were just booted the first time.
 ;
 ; Origin: fig-Forth.
 ;
 ; See also: `warm`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ; XXX TODO -- Make `cold` a code word in order to save space
   ; from basic init operations, e.g. modifying memory. Then
@@ -12223,7 +12266,7 @@ question_d_negate.hl:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `min`, `umax`, `dmax`, `>`.
+; See also: `min`, `umax`, `dmax`, `0max`, `>`.
 ;
 ; }doc
 
@@ -12248,7 +12291,7 @@ max.2:
 ;
 ; m* ( n1 n2 -- d )
 ;
-; Multiply _n1_ by _n2_ producing the result _d_.
+; Multiply _n1_ by _n2_, giving the result _d_.
 ;
 ; Definition:
 
@@ -12260,6 +12303,8 @@ max.2:
 ; ----
 
 ; Origin: fig-Forth, Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `*`, `um*`, `d*`, `?dnegate`.
 ;
 ; }doc
 
@@ -12295,16 +12340,28 @@ endif
 ;
 ; A mixed magnitude math operator which leaves the signed
 ; remainder _n2_ and signed quotient _n3_ from a double number
-; dividend and divisor _n1_.
+; dividend _d_ and divisor _n1_.
 ;
-; ``m/`` is deferred and by default its action is `sm/rem`, so
+; ``m/`` is a deferred word whose default action is `sm/rem`, so
 ; it does a symmetric division (the  remainder takes its sign
-; from the dividend), as in fig-Forth.  It can be set to execute
-; `fm/mod` instead.
+; from the dividend), as in fig-Forth and Forth-79.  It can be
+; set to execute `fm/mod` instead.
 ;
 ; ``m/`` is executed by all other division operators.  Therefore
 ; setting it to execute either `sm/rem` or `fm/mod` will change
 ; the behaviour of all division operators.
+;
+; Rationale:
+;
+; The Forth-79 Standard specifies that the signed division
+; operators (`/`, `/mod`, `mod`, `*/mod`, and `*/`) round
+; non-integer quotients towards zero (symmetric division).
+; Forth-83 changed the semantics of these operators to round
+; towards negative infinity (floored division).  To resolve this
+; issue, Forth-94 and Forth-2012 permit to supply either floored
+; or symmetric operators, and include a floored division
+; primitive (`fm/mod`), and a symmetric division primitive
+; (`sm/rem`).
 ;
 ; Origin: fig-Forth.
 ;
@@ -12372,11 +12429,12 @@ endif
 ;
 ; Multiply _n1|u1_ by _n2|u2_ giving the product _n3|u3_.
 ;
-; Origin: fig-Forth, Forth-79, Forth-83, Forth-94, Forth-2012.
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `m*`, `um*`, `d*`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
 if 1
 
@@ -12405,13 +12463,12 @@ endif
 ; Divide _n1_ by _n2_, giving the remainder _n3_ and the
 ; quotient _n4_.
 ;
-; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-94
+; (CORE), Forth-2012 (CORE).
 ;
-; See also: `du/mod`.
+; See also: `m/`, `du/mod`, `/`, `mod`, `/-rem`, `/_mod`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   dw to_r_,s_to_d_,from_r_,m_slash_
   dw exit_
@@ -12431,13 +12488,12 @@ endif
 ; : / ( n1 n2 -- n3 ) /mod nip ;
 ; ----
 
-; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-94
+; (CORE), Forth-2012 (CORE).
 ;
-; See also: `/mod`, `/_`, `/-`,
+; See also: `m/`, `/mod`, `/_`, `/-`, `gcd`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ; Credit:
   ; Code from Abersoft Forth.
@@ -12452,7 +12508,7 @@ endif
 ;
 ; mod ( n1 n2 -- n3 )
 ;
-; Divide _n1_ by _n2_, giving the single-cell remainder _n3_.
+; Divide _n1_ by _n2_, giving the remainder _n3_.
 ;
 ; Definition:
 
@@ -12460,13 +12516,12 @@ endif
 ; : mod ( n1 n2 -- n3 ) /mod drop ;
 ; ----
 
-; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-94
+; (CORE), Forth-2012 (CORE).
 ;
-; See also: `/mod`, `/_mod`, `/-rem`.
+; See also: `m/`, `/mod`, `/_mod`, `/-rem`, `gcd`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ; Credit:
   ; Code from Abersoft Forth.
@@ -12491,13 +12546,12 @@ endif
 ; : */mod ( n1 n2 n3 -- n4 n5 ) >r m* r> m/ ;
 ; ----
 
-; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-94
+; (CORE), Forth-2012 (CORE).
 ;
 ; See also: `/mod`, `*/`, `*/_mod`, `*/-rem`, `m*`, `m/`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   ; Credit:
   ; Code from Abersoft Forth.
@@ -12521,13 +12575,14 @@ endif
 ; : */ ( n1 n2 n3 -- n4 ) */mod nip ;
 ; ----
 
-; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-94
+; (CORE), Forth-2012 (CORE).
 ;
-; See also: `*/mod`, `m*/`, `*`, `/`, '*/_mod`, `*/-rem`.
+; See also: `*/mod`, `m*/`, `*`, `/`, '*/_`, `*/-`.
 ;
 ; }doc
 
-  ; XXX TODO -- Finish the documentation.
+  ; XXX TODO -- Move to the library?
 
   ; Credit:
   ; Code from Abersoft Forth.
@@ -12574,13 +12629,13 @@ endif
 ;
 ; dec. ( n -- )
 ;
-; Display _n_ as a signed decimal number, followed by one space.
+; Display _n_ as a signed decimal number, followed by a space.
+;
+; Origin: Gforth.
 ;
 ; See also: `hex.`, `bin.`, `.`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   dw base_,fetch_,swap_,decimal_,dot_,base_,store_
   dw exit_
@@ -12592,12 +12647,12 @@ endif
 ;
 ; .throw# ( n -- )
 ;
-; Display the number of throw error _n_, as a decimal number,
+; Display the number of `throw` code _n_, as a decimal number,
 ; prefixed with a '#' and followed by a space.
 ;
+; ``.throw#` is the default action of `.throw`.
+;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   dw paren_dot_quote_
   _string "\r#" ; carriage return and hash
@@ -12629,7 +12684,7 @@ endif
 ;
 ; updated? ( -- f )
 ;
-; _f_ is _true_ if the current disk buffer is marked as
+; _f_ is true if the current disk buffer is marked as
 ; modified.
 ;
 ; Definition:
@@ -12807,27 +12862,27 @@ free_buffer.end:
 
 ; doc{
 ;
-; buffer ( n -- a )
+; buffer ( u -- a )
 ;
-; Assign the block buffer to block _n_.   If the contents of the
+; Assign the `block` buffer to block _u_.   If the contents of the
 ; buffer were marked as updated, it is written to the disk.  The
-; block _n_ is not read from the disk.  The address _a_ left on
+; block _u_ is not read from the disk.  The address _a_ left on
 ; stack is the first cell in the buffer for data storage.
 ;
 ; Definition:
 
 ; ----
-; : buffer ( n -- a )
+; : buffer ( u -- a )
 ;   dup buffer-block =
 ;   if drop else free-buffer then buffer-data ;
 ; ----
 
-; See also: `block`, `buffer-block`, `free-buffer`,
-; `buffer-data`.
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `buffer-block`, `free-buffer`, `buffer-data`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   dw dup_,buffer_block_,equals_
   dw zero_branch_,buffer.not_equals
@@ -12848,7 +12903,7 @@ buffer.end:
 ; block ( u -- a )
 
 ; If the block _u_ is already in memory, leave the address _a_
-; of the first cell in the disk buffer for data storage.
+; of the first cell in the disk `buffer` for data storage.
 ;
 ; If the block _u_ is not already in memory, transfer it from
 ; disk to the buffer.  If the block occupying that buffer has
@@ -12866,12 +12921,13 @@ buffer.end:
 ;   then  buffer-data ;
 ; ----
 
-; See also: `buffer`, `buffer-block`, `save-buffers`,
-; `read-block`, `disk-buffer`, `buffer-data`.
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `buffer-block`, `save-buffers`, `read-block`,
+; `disk-buffer`, `buffer-data`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation.
 
   dw dup_,buffer_block_,equals_
   dw zero_branch_,block.not_equals
@@ -12897,6 +12953,8 @@ block.end:
 ; systems.
 ;
 ; Origin: eForth.
+;
+; See also: `split`, `join`.
 ;
 ; }doc
 

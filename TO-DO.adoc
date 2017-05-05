@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201705050121
+// Last modified 201705051352
 
 // Application development {{{1
 == Application development ==
@@ -1085,6 +1085,14 @@ does nothing, as expected.
 
 // Maths {{{1
 == Maths ==
+
+.2017-05-05:
+
+Finish `crshift`.
+
+.2017-05-05:
+
+Fix `dsqrt`.
 
 .2017-03-29:
 
