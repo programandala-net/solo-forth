@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705061656
+  \ Last modified: 201705062050
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -164,7 +164,7 @@ code d0= ( d -- f )
   \ add hl,de
   \ ld a,h
   \ or l
-  C2 c, ' false , 2B c, jppushhl, end-code
+  C2 c, ' false , 2B c, jppushhl, end-code ?)
   \ jp nz,false_
   \ dec hl ; HL = true
   \ _jp_pushhl
@@ -198,9 +198,7 @@ code d0= ( d -- f )
   \
   \ }doc
 
-[unneeded] d< ?(
-
-need 2nip
+[unneeded] d< ?( need 2nip
 
 : d< ( d1 d2 -- f )
   rot 2dup = if  2drop u< exit  then  2nip > ; ?)
