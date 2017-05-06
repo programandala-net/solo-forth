@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705051347
+  \ Last modified: 201705060234
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -155,7 +155,19 @@ need tum* need t+ need t- need tum/ need d2* need lshift
   \
   \ Code from DZX-Forth.
 
-[unneeded] d0= ?\ : d0= ( d -- f ) or 0= ;
+[unneeded] d0= ?(
+
+code d0= ( d -- f )
+  E1 c, D1 c, 19 c, 78 04 + c, B0 05 + c,
+  \ pop hl
+  \ pop de
+  \ add hl,de
+  \ ld a,h
+  \ or l
+  C2 c, ' false , 2B c, jppushhl, end-code
+  \ jp nz,false_
+  \ dec hl ; HL = true
+  \ _jp_pushhl
 
   \ doc{
   \
@@ -163,6 +175,13 @@ need tum* need t+ need t- need tum/ need d2* need lshift
   \
   \ _f_ is true if and only if _d_ is equal to zero.
   \
+  \ ``d0=`` is written in Z80. Its equivalent definition in
+  \ Forth is the following:
+
+  \ ----
+  \ : d0= ( d -- f ) + 0= ;
+  \ ----
+
   \ See also: `0=`.
   \
   \ }doc
@@ -600,5 +619,7 @@ need 2nip need cell-bits
   \ 2017-04-20: Fix index line.
   \
   \ 2017-05-05: Improve documentation.
+  \
+  \ 2017-05-06: Rewrite `d0=` in Z80.
 
   \ vim: filetype=soloforth

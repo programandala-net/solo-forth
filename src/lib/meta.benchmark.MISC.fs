@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704041948
+  \ Last modified: 201705060234
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -2492,6 +2492,86 @@ need slow-pixels need fast-pixels
   \ Notes:
   \ (1) Version 0.10.0-pre.81+20161015.
 
+( d0=-bench )
+
+need bench{ need }bench.
+
+: o-d0= ( d -- f ) or 0= ;  : +-d0= ( d -- f ) + 0= ;
+
+code c1-d0= ( d -- f )
+  E1 c, D1 c, 19 c, 78 04 + c, B0 05 + c,
+  \ pop hl
+  \ pop de
+  \ add hl,de
+  \ ld a,h
+  \ or l
+  CA c, ' true , ' false jp, end-code
+  \ jp z,true_
+  \ jp false_
+
+code c2-d0= ( d -- f )
+  E1 c, D1 c, 19 c, 78 04 + c, B0 05 + c,
+  \ pop hl
+  \ pop de
+  \ add hl,de
+  \ ld a,h
+  \ or l
+  C2 c, ' false , 2B c, jppushhl, end-code
+  \ jp nz,false_
+  \ dec hl ; HL = true
+  \ _jp_pushhl
+
+-->
+
+( d0=-bench )
+
+: run-true ( -- ) cr ." d0= benchmark with true results" cr
+  65535 dup cr ." or:"
+            bench{ 0 ?do 0 0 o-d0= drop loop }bench.
+        dup cr ."  +:"
+            bench{ 0 ?do 0 0 +-d0= drop loop }bench.
+        dup cr ." c1:"
+            bench{ 0 ?do 0 0 c1-d0= drop loop }bench.
+            cr ." c2:"
+            bench{ 0 ?do 0 0 c2-d0= drop loop }bench. ; -->
+
+( d0=-bench )
+
+: run-false ( -- ) cr ." d0= benchmark with false results" cr
+  65535 dup cr ." or:"
+            bench{ 0 ?do 0 1 o-d0= drop loop }bench.
+        dup cr ."  +:"
+            bench{ 0 ?do 0 1 +-d0= drop loop }bench.
+        dup cr ." c1:"
+            bench{ 0 ?do 0 1 c1-d0= drop loop }bench.
+            cr ." c2:"
+            bench{ 0 ?do 0 1 c2-d0= drop loop }bench. ; -->
+
+( d0=-bench )
+
+: run-alt ( -- ) cr ." d0= benchmark with alternate results" cr
+  65535 dup cr ." or:"
+            bench{ 0 ?do 0 i 1 and o-d0= drop loop }bench.
+        dup cr ."  +:"
+            bench{ 0 ?do 0 i 1 and +-d0= drop loop }bench.
+        dup cr ." c1:"
+            bench{ 0 ?do 0 i 1 and c1-d0= drop loop }bench.
+            cr ." c2:"
+            bench{ 0 ?do 0 i 1 and c2-d0= drop loop }bench. ;
+
+  \ 2017-05-06:
+  \
+  \ Benchmark results in frames (1 frame = 50th of second).
+
+  \
+  \ `or 0=` `+ 0=`      c1 (*)      c2 (*) Note
+  \ ------- ------ ----------- ----------- ----------
+  \     896    879  532 (0.60)  525 (0.59) run-true
+  \     897    879  546 (0.62)  533 (0.60) run-false
+  \    1178   1170  831 (0.71)  827 (0.70) run-alt
+
+  \ * The figure in parens is the percentage of `+ 0=`.
+
   \ ===========================================================
   \ Change log
 
@@ -2582,5 +2662,7 @@ need slow-pixels need fast-pixels
   \ `sqrt-bench`.
   \
   \ 2017-04-04: Improve comments.
+  \
+  \ 2017-05-06: Add `d0=-bench`.
 
   \ vim: filetype=soloforth

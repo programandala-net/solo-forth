@@ -1,11 +1,11 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-05-05
+:revdate: 2017-05-06
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201705052311
+// Last modified 201705061330
 
 // Application development {{{1
 == Application development ==
@@ -192,6 +192,12 @@ convention.
 
 // Interpreter/compiler {{{1
 == Interpreter/compiler ==
+
+.2017-05-06:
+
+NOTE: Milestone: 0.14.0
+
+Rewrite `compiling?` and `interpreting?` in Z80.
 
 .2017-03-28:
 
@@ -453,6 +459,16 @@ additional link.
 
 // Documentation {{{1
 == Documentation ==
+
+.2017-05-06:
+
+Review and homogenize the layout of "Compilation" and "Run-time" stack
+notations.
+
+.2017-05-05:
+
+Include the description of the attribute OS variables into the related
+words, or into a section of the manual.
 
 .2017-05-05:
 
@@ -1395,6 +1411,10 @@ Floating-point words `flit`, `fliteral`. From PFE: `fround>s`, `ftrunc>s`
 // Memory {{{1
 == Memory ==
 
+.2017-05-06:
+
+Should `cold` restore the default values of `limit` and `farlimit`?
+
 .2017-04-09:
 
 Improve `(heap-in` and `(heap-out` to preserve the current bank
@@ -1816,6 +1836,13 @@ Adapt from Gforth: `noname`, analogous to `nextname`.
 
 // Display {{{1
 == Display ==
+
+.2017-05-06:
+
+NOTE: Milestone: 0.14.0
+
+Select the `gigatype` style with a character variable, not with a
+parameter.
 
 .2017-05-05:
 
