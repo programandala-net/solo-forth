@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201703132023
+  \ Last modified: 201705062203
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -45,38 +45,159 @@
 
 ( float float+ float- floats )
 
-5 constant float
+5 cconstant float
+
+  \ doc{
+  \
+  \ float ( -- n )
+  \
+  \ _n_ is the size in address units of a floating-point
+  \ number.
+  \
+  \ See also: `floats`, `float+`, `float-`.
+  \
+  \ }doc
 
 : float+ ( fa1 -- fa2 ) float + ;
+
+  \ doc{
+  \
+  \ float+ ( fa1 -- fa2 )
+  \
+  \ Add the size in address units of a floating-point number to
+  \ _fa1_, giving _fa2_.
+  \
+  \ See also: `float-`, `float`, `floats`.
+  \
+  \ }doc
+
 : float- ( fa1 -- fa2 ) float - ;
+
+  \ doc{
+  \
+  \ float- ( fa1 -- fa2 )
+  \
+  \ Subtract the size in address units of a floating-point
+  \ number from _fa1_, giving _fa2_.
+  \
+  \ See also: `float+`, `float`, `floats`.
+  \
+  \ }doc
+
 : floats ( n1 -- n2 ) float * ;
+
+  \ doc{
+  \
+  \ floats ( n1 -- n2 )
+  \
+  \ _n2_ is the size in address units of _n1_ floating-point
+  \ numbers.
+  \
+  \ See also: `float`, `float+`, `float-`.
+  \
+  \ }doc
 
 ( fp0 fp (fp@ fp@ empty-fs fdepth )
 
-need float
+need float need float-
 
 23651 constant fp0  \ STKBOT system variable
+
+  \ doc{
+  \
+  \ fp0  ( -- a )
+  \
+  \ _a_ is the address of a cell containing the bottom address
+  \ of the floating-point stack. _a_ is the STKBOT variable of
+  \ the OS.
+  \
+  \ NOTE: The floating-point stack (which is the OS calculator
+  \ stack) grows towards higher memory.
+  \
+  \ See also: `fp`.
+  \
+  \ }doc
+
 23653 constant fp   \ STKEND system variable
 
-  \ Note: The calculator stack grows towards higher memory, and
-  \ `fp` points to the first free position, therefore above top
-  \ of stack.
+  \ doc{
+  \
+  \ fp  ( -- a )
+  \
+  \ _a_ is the address of a cell containing the floating-point
+  \ stack pointer. _a_ is the STKEND variable of the OS.
+  \
+  \ NOTE: The floating-point stack (which is the OS calculator
+  \ stack) grows towards higher memory, and ``fp`` points to
+  \ the first free position, therefore above top of stack.
+  \
+  \ See also: `fp@`, `fp0`.
+  \
+  \ }doc
 
-: (fp@ ( -- a ) fp @ ;
+: (fp@ ( -- fa ) fp @ ;
 
-: fp@ ( -- a ) (fp@ float - ;
+  \ doc{
+  \
+  \ (fp@ ( -- fa )
+  \
+  \ _fa_ is the address above the top of the floating-point
+  \ stack. ``(fp@``  is a factor of `fp@`.
+  \
+  \ See also: `fp`.
+  \
+  \ }doc
+
+: fp@ ( -- fa ) (fp@ float- ;
+
+  \ doc{
+  \
+  \ fp@ ( -- fa )
+  \
+  \ _fa_ is the address of the top of the floating-point stack.
+  \
+  \ See also: `fp`.
+  \
+  \ }doc
 
 : empty-fs ( -- ) fp0 @ fp ! ;
 
-: fdepth ( -- n ) (fp@ fp0 @ - float / ;
+  \ doc{
+  \
+  \ empty-fs ( -- )
+  \
+  \ Empty the floating-point stack, by storing the content of
+  \ `fp0` into `fp`.
+  \
+  \ }doc
+
+: fdepth ( -- +n ) (fp@ fp0 @ - float / ;
+
+  \ doc{
+  \
+  \ fdepth ( -- +n )
+  \
+  \ _+n_ is the number of values contained on the
+  \ floating-point stack.
+  \
+  \ See also: `fp0`, `(fp@` ,`float`.
+  \
+  \ }doc
 
 ( f>flag )
 
 need (f>s
 
 : f>flag ( -- f ) ( F: rf -- ) (f>s negate ;
+
+  \ doc{
+  \
+  \ f>flag ( -- f ) ( F: rf -- )
+  \
   \ Convert a floating-poing flag _rf_ (1|0) to an actual flag
   \ _f_ in the data stack.
+  \
+  \ }doc
 
 ( end-calculator-flag )
 
@@ -86,11 +207,20 @@ macro end-calculator-flag ( -- f ) ( F: 1|0 -- )
   [ calculator-wordlist >order ] end-calculator [ previous ]
   ['] f>flag call-xt  jpnext, endm
 
-  \ Exit the ROM calculator and convert a flag calculated by
-  \ it (_1|0_) to a well-formed flag on the data stack.
+  \ doc{
   \
-  \ This macro is a common factor of all floating point logical
-  \ operators.
+  \ end-calculator-flag ( -- f ) ( F: 1|0 -- )
+  \
+  \ A Z80 `macro` that compiles code to exit the ROM calculator
+  \ and convert a flag calculated by it (_1|0_) to a
+  \ well-formed flag on the data stack.
+  \
+  \ ``end-calculator-flag`` is a common factor of all
+  \ floating-point logical operators.
+  \
+  \ See also: `calculator-command`.
+  \
+  \ }doc
 
 ( calculator-command )
 
@@ -111,8 +241,10 @@ need calculator
   \
   \ calculator-command ( b -- )
   \
-  \ Compile the assembler instructions needed to execute the
+  \ Compile the assembly instructions needed to execute the
   \ _b_ command of the ROM calculator.
+  \
+  \ See also: `end-calculator-flag`.
   \
   \ }doc
 
@@ -128,7 +260,7 @@ need calculator-command need f>flag need call-xt
   \
   \ calculator-command>flag ( b -- )
   \
-  \ Compile the assembler instructions needed to execute the
+  \ Compile the assembly instructions needed to execute the
   \ _b_ command of the ROM calculator and to return the
   \ floating-point result as a flag on the data stack.
   \
@@ -276,51 +408,51 @@ code f>= ( -- f ) ( F: r1 r2 -- )
 need calculator need end-calculator-flag
 
 code f0< ( -- f ) ( F: r -- )
-  calculator  0<  end-calculator-flag end-code
+  calculator |0< end-calculator-flag end-code
 
 code f0= ( -- f ) ( F: r -- )
-  calculator  0=  end-calculator-flag end-code
+  calculator |0= end-calculator-flag end-code
 
 code f0<> ( -- f ) ( F: r -- )
-  calculator  0= 0=  end-calculator-flag end-code
+  calculator |0= |0= end-calculator-flag end-code
 
 code f0> ( -- f ) ( F: r -- )
-  calculator  0>  end-calculator-flag end-code
+  calculator |0> end-calculator-flag end-code
 
 ( fdrop fdup fswap fover )
 
 need calculator
 
 code fdrop ( F: r -- )
-  calculator  drop  end-calculator  jpnext, end-code
+  calculator |drop end-calculator  jpnext, end-code
 
 code fdup ( F: r -- r r )
-  calculator  dup  end-calculator  jpnext, end-code
+  calculator |dup end-calculator  jpnext, end-code
 
 code fswap ( F: r1 r2 -- r2 r1 )
-  calculator  swap  end-calculator  jpnext, end-code
+  calculator |swap end-calculator  jpnext, end-code
 
 code fover ( F: r1 r2 -- r1 r2 r1 )
-  calculator  over  end-calculator  jpnext, end-code
+  calculator |over end-calculator  jpnext, end-code
 
 ( f2dup f2drop )
 
 code f2dup ( F: r -- r r )
-  calculator  2dup  end-calculator  jpnext, end-code
+  calculator |2dup end-calculator  jpnext, end-code
 
 code f2drop ( F: r -- )
-  calculator  drop drop  end-calculator  jpnext, end-code
+  calculator |drop |drop end-calculator  jpnext, end-code
 
 ( fnip ftuck )
 
 need calculator
 
 code fnip ( F: r1 r2 -- r2 )
-  calculator  swap drop  end-calculator  jpnext,
+  calculator |swap |drop end-calculator  jpnext,
   end-code
 
 code ftuck ( F: r1 r2 -- r2 r1 r2 )
-  calculator  2 >mem swap 2 mem>  end-calculator  jpnext,
+  calculator 2 |>mem |swap 2 |mem> end-calculator  jpnext,
   end-code
 
 ( frot -frot )
@@ -329,12 +461,12 @@ need calculator
 
 code frot ( F: r1 r2 r3 -- r2 r3 r1 )
   calculator
-    1 >mem drop swap 1 mem> swap
+    1 |>mem |drop |swap 1 |mem> |swap
   end-calculator  jpnext, end-code
 
 code -frot ( F: r1 r2 r3 -- r3 r1 r2 )
   calculator
-    swap 1 >mem drop swap 1 mem>
+    |swap 1 |>mem |drop |swap 1 |mem>
   end-calculator  jpnext, end-code
 
 ( f+ f- f* f/ ?f/ fmod )
@@ -342,16 +474,16 @@ code -frot ( F: r1 r2 r3 -- r3 r1 r2 )
 need calculator need fdup need f0=
 
 code f+ ( F: r1 r2 -- r3 )
-  calculator  +  end-calculator  jpnext, end-code
+  calculator |+ end-calculator  jpnext, end-code
 
 code f- ( F: r1 r2 -- r3 )
-  calculator  -  end-calculator  jpnext, end-code
+  calculator |- end-calculator  jpnext, end-code
 
 code f* ( F: r1 r2 -- r3 )
-  calculator  *  end-calculator  jpnext, end-code
+  calculator |* end-calculator  jpnext, end-code
 
 code f/ ( F: r1 r2 -- r3 )
-  calculator  /  end-calculator  jpnext, end-code
+  calculator |/ end-calculator  jpnext, end-code
   \ XXX FIXME -- when _r2_ is zero, the calculator issues
   \ "number too big" BASIC error, what crashes the system.  A
   \ safe alternative `?f/` is provided.
@@ -361,32 +493,32 @@ code f/ ( F: r1 r2 -- r3 )
   \ is thrown.
 
 code fmod ( F: r1 -- r2 )
-  calculator  mod  end-calculator  jpnext, end-code
+  calculator |mod end-calculator  jpnext, end-code
 
 ( fmax )
 
 need calculator need calculator-command
 
 code fmax ( F: r1 r2 -- r1|r2 )
-  calculator  2dup  end-calculator
+  calculator |2dup end-calculator
   0C calculator-command ( F: r1 r2 rf -- )
     \ `no-grtr` ROM calculator command
   calculator
-    if    drop ( F: r1 )
-    else  swap drop ( F: r2 )
-    then
+    |if    |drop ( F: r1 )
+    |else  |swap |drop ( F: r2 )
+    |then
   end-calculator  jpnext, end-code
 
   \ XXX OLD -- Original, simpler version. The problem is the
-  \ calculator's `>`. See the calculator module for details of
+  \ calculator's `|>`. See the calculator module for details of
   \ the problem.
 
   \ code fmax ( F: r1 r2 -- r1|r2 )
   \   calculator
-  \     2dup > ( F: r1 r2 rf -- )
-  \     if    drop ( F: r1 )
-  \     else  swap drop ( F: r2 )
-  \     then
+  \     |2dup |> ( F: r1 r2 rf -- )
+  \     |if    |drop ( F: r1 )
+  \     |else  |swap |drop ( F: r2 )
+  \     |then
   \   end-calculator  jpnext, end-code
 
 ( fmin )
@@ -394,25 +526,25 @@ code fmax ( F: r1 r2 -- r1|r2 )
 need calculator need calculator-command
 
 code fmin ( F: r1 r2 -- r1|r2 )
-  calculator  2dup  end-calculator
+  calculator |2dup end-calculator
   0D calculator-command ( F: r1 r2 rf -- )
     \ `no-less` ROM calculator command
   calculator
-    if    drop ( F: r1 )
-    else  swap drop ( F: r2 )
-    then
+    |if    |drop ( F: r1 )
+    |else  |swap |drop ( F: r2 )
+    |then
   end-calculator  jpnext, end-code
 
   \ XXX OLD -- Original, simpler version. The problem is the
-  \ calculator's `<`. See the calculator module for details of
+  \ calculator's `|<`. See the calculator module for details of
   \ the problem.
 
   \ code fmin ( F: r1 r2 -- r1|r2 )
   \   calculator
-  \     2dup < ( F: r1 r2 rf -- )
-  \     if    drop ( F: r1 )
-  \     else  swap drop ( F: r2 )
-  \     then
+  \     |2dup |< ( F: r1 r2 rf -- )
+  \     |if    |drop ( F: r1 )
+  \     |else  |swap |drop ( F: r2 )
+  \     |then
   \   end-calculator  jpnext, end-code
 
 ( fsgn fabs fnegate )
@@ -420,20 +552,20 @@ code fmin ( F: r1 r2 -- r1|r2 )
 need calculator
 
 code fsgn ( F: r1 -- -1|0|1 )
-  calculator  sgn  end-calculator  jpnext, end-code
+  calculator |sgn end-calculator  jpnext, end-code
 
 code fabs ( F: r1 -- r2 )
-  calculator  abs  end-calculator  jpnext, end-code
+  calculator |abs end-calculator  jpnext, end-code
 
 code fnegate ( F: r1 -- r2 )
-  calculator  negate  end-calculator  jpnext, end-code
+  calculator |negate end-calculator  jpnext, end-code
 
 ( fln ?fln flnp1 ?flnp1 fexp f** fsqrt ?fsqrt )
 
 need calculator need fdup need f0< need f<=
 
 code fln ( F: r1 -- r2 )
-  calculator  ln  end-calculator  jpnext, end-code
+  calculator |ln end-calculator  jpnext, end-code
   \ XXX FIXME -- The ROM calculator checks that the argument is
   \ a positive non-zero number (address $3713). If not, it
   \ throws a BASIC error "invalid argument", what crashes the
@@ -444,21 +576,20 @@ code fln ( F: r1 -- r2 )
   \ zero, an exception is thrown.
 
 code flnp1 ( F: r1 -- r2 )
-  calculator  one + fln  end-calculator  jpnext, end-code
+  calculator |1 |+ |fln end-calculator  jpnext, end-code
 
-: ?flnp1 ( F: r1 -- r2 )
-  fdup f1 fnegate f<= #-46 ?throw fln ;
+: ?flnp1 ( F: r1 -- r2 ) fdup f1 fnegate f<= #-46 ?throw fln ;
   \ Safe version of `flnp1`. If _r1_ is less than or equal to
   \ negative one, an exception is thrown.
 
 code fexp ( F: r1 -- r2 )
-  calculator  exp  end-calculator  jpnext, end-code
+  calculator |exp end-calculator  jpnext, end-code
 
 code f** ( F: r1 -- r2 )
-  calculator  **  end-calculator  jpnext, end-code
+  calculator |** end-calculator  jpnext, end-code
 
 code fsqrt ( F: r1 -- r2 )
-  calculator  sqrt  end-calculator  jpnext, end-code
+  calculator |sqrt end-calculator  jpnext, end-code
   \ XXX FIXME -- when _r1_ is negative, the calculator issues
   \ "invalid argument" BASIC error, what crashes the system.  A
   \ safe alternative `?fsqrt` is provided.
@@ -472,19 +603,19 @@ code fsqrt ( F: r1 -- r2 )
 need calculator
 
 code f0 ( F: -- r )
-  calculator  zero  end-calculator  jpnext, end-code
+  calculator |0 end-calculator  jpnext, end-code
 
 code f1 ( F: -- r )
-  calculator  one  end-calculator  jpnext, end-code
+  calculator |1 end-calculator  jpnext, end-code
 
 code fhalf ( F: -- r )
-  calculator  half  end-calculator  jpnext, end-code
+  calculator |half end-calculator  jpnext, end-code
 
 code fpi2/ ( F: -- r )
-  calculator  pi2/  end-calculator  jpnext, end-code
+  calculator |pi2/ end-calculator  jpnext, end-code
 
 code f10 ( F: -- r )
-  calculator  ten  end-calculator  jpnext, end-code
+  calculator |10 end-calculator  jpnext, end-code
 
 ( (f>s )
 
@@ -507,7 +638,7 @@ code (f>s ( -- n ) ( F: r -- )
 need calculator need fnegate need fdup need (f>s need f0<
 
 code frestack ( F: r -- r' )
-  calculator  re-stack  end-calculator  jpnext, end-code
+  calculator |re-stack end-calculator  jpnext, end-code
   \ Restack an integer in full floating-point form.
 
 code b>f ( b -- ) ( F: -- r )
@@ -624,22 +755,22 @@ need float need f! need f@
 need calculator
 
 code facos ( F: r1 -- r2 )
-  calculator  acos  end-calculator  jpnext, end-code
+  calculator |acos end-calculator  jpnext, end-code
 
 code fasin ( F: r1 -- r2 )
-  calculator  asin  end-calculator  jpnext, end-code
+  calculator |asin end-calculator  jpnext, end-code
 
 code fatan ( F: r1 -- r2 )
-  calculator  atan  end-calculator  jpnext, end-code
+  calculator |atan end-calculator  jpnext, end-code
 
 code fcos ( F: r1 -- r2 )
-  calculator  cos  end-calculator  jpnext, end-code
+  calculator |cos end-calculator  jpnext, end-code
 
 code fsin ( F: r1 -- r2 )
-  calculator  sin  end-calculator  jpnext, end-code
+  calculator |sin end-calculator  jpnext, end-code
 
 code ftan ( F: r1 -- r2 )
-  calculator  tan  end-calculator  jpnext, end-code
+  calculator |tan end-calculator  jpnext, end-code
 
 ( (f. f. )
 
@@ -693,7 +824,7 @@ need fdepth need float need float+ need .depth
 need calculator need fdup need fsgn need f* need f+
 
 code floor ( F: r1 -- r2 )
-  calculator  int  end-calculator  jpnext, end-code
+  calculator |int end-calculator  jpnext, end-code
 
   \ doc{
   \
@@ -704,11 +835,13 @@ code floor ( F: r1 -- r2 )
   \
   \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
   \
+  \ See also: `ftrunc`, `fround`.
+  \
   \ }doc
 
 
 code ftrunc ( F: r1 -- r2 )
-  calculator  truncate  end-calculator  jpnext, end-code
+  calculator |truncate end-calculator  jpnext, end-code
 
   \ doc{
   \
@@ -718,6 +851,8 @@ code ftrunc ( F: r1 -- r2 )
   \ zero" rule, giving _r2_.
   \
   \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
+  \
+  \ See also: `fround` ,`floor`.
   \
   \ }doc
 
@@ -743,20 +878,125 @@ code ftrunc ( F: r1 -- r2 )
   \
   \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
   \
+  \ See also: `ftrunc`, `floor`.
+  \
   \ }doc
 
 ( falign faligned sfalign sfaligned dfalign dfaligned )
 
-need alias
+[unneeded] falign
+?\ need alias ' noop alias falign    ( -- )       immediate
 
-' noop alias falign    ( -- )       immediate
-' noop alias faligned  ( a -- fa )  immediate
+  \ doc{
+  \
+  \ falign ( -- )
+  \
+  \ If the data space is not float aligned, reserve enough
+  \ space to make it so.
+  \
+  \ In Solo Forth, ``falign`` does nothing: it's an `immediate`
+  \ `alias` of `noop`.
+  \
+  \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
+  \
+  \ See also: `faligned`, `sfalign`, `dfalign`, `float`.
+  \
+  \ }doc
 
-' noop alias sfalign   ( -- )       immediate
-' noop alias sfaligned ( a -- dfa ) immediate
+[unneeded] faligned
+?\ need alias ' noop alias faligned  ( a -- fa )  immediate
 
-' noop alias dfalign   ( -- )       immediate
-' noop alias dfaligned ( a -- dfa ) immediate
+  \ doc{
+  \
+  \ faligned ( a -- fa )
+  \
+  \ _fa_ is the first float-aligned address greater than or
+  \ equal to _a_
+  \
+  \ In Solo Forth, ``faligned`` does nothing: it's an
+  \ `immediate` `alias` of `noop`.
+  \
+  \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
+  \
+  \ See also: `falign`, `sfaligned`, `dfaligned`, `float`.
+  \
+  \ }doc
+
+[unneeded] sfalign
+?\ need alias ' noop alias sfalign   ( -- )       immediate
+
+  \ doc{
+  \
+  \ sfalign ( -- )
+  \
+  \ If the data space is not single-float aligned, reserve
+  \ enough space to make it so.
+  \
+  \ In Solo Forth, ``sfalign`` does nothing: it's an `immediate`
+  \ `alias` of `noop`.
+  \
+  \ Origin: Forth-94 (FLOATING EXT), Forth-2012 (FLOATING EXT).
+  \
+  \ See also: `sfaligned`, `falign`, `dfalign`, `float`.
+  \
+  \ }doc
+
+[unneeded] sfaligned
+?\ need alias ' noop alias sfaligned ( a -- dfa ) immediate
+
+  \ doc{
+  \
+  \ sfaligned ( a -- fa )
+  \
+  \ _fa_ is the first single-float-aligned address greater than
+  \ or equal to _a_
+  \
+  \ In Solo Forth, ``sfaligned`` does nothing: it's an
+  \ `immediate` `alias` of `noop`.
+  \
+  \ Origin: Forth-94 (FLOATING EXT), Forth-2012 (FLOATING EXT).
+  \
+  \ See also: `sfalign`, `faligned`, `dfaligned`, `float`.
+  \
+  \ }doc
+
+[unneeded] dfalign
+?\ need alias ' noop alias dfalign   ( -- )       immediate
+
+  \ doc{
+  \
+  \ dfalign ( -- )
+  \
+  \ If the data space is not double-float aligned, reserve
+  \ enough space to make it so.
+  \
+  \ In Solo Forth, ``dfalign`` does nothing: it's an `immediate`
+  \ `alias` of `noop`.
+  \
+  \ Origin: Forth-94 (FLOATING EXT), Forth-2012 (FLOATING EXT).
+  \
+  \ See also: `dfaligned`, `falign`, `sfalign`, `float`.
+  \
+  \ }doc
+
+[unneeded] dfaligned
+?\ need alias ' noop alias dfaligned ( a -- dfa ) immediate
+
+  \ doc{
+  \
+  \ dfaligned ( a -- fa )
+  \
+  \ _fa_ is the first double-float-aligned address greater than
+  \ or equal to _a_
+  \
+  \ In Solo Forth, ``dfaligned`` does nothing: it's an
+  \ `immediate` `alias` of `noop`.
+  \
+  \ Origin: Forth-94 (FLOATING EXT), Forth-2012 (FLOATING EXT).
+  \
+  \ See also: `dfalign`, `faligned`, `sfaligned`, `float`.
+  \
+  \ }doc
 
   \ ===========================================================
   \ Change log
@@ -798,5 +1038,8 @@ need alias
   \ 2017-02-17: Update cross references.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-05-06: Update the ROM calculator commands, which have
+  \ been renamed. Improve documentation.
 
   \ vim: filetype=soloforth

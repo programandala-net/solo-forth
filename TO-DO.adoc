@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201705061711
+// Last modified 201705062356
 
 // Application development {{{1
 == Application development ==
@@ -1396,7 +1396,7 @@ Document floating point.
 .2016-04-22:
 
 Idea: Use the ROM calculator memories (0..5) as floating-point non-recursive
-locals. Problem: some calculator's words use them (eg. `over`).  They could be
+locals. Problem: some calculator's words use them (eg. `|over`).  They could be
 recursive, because their address can be changed with the system variable MEM;
 they could be pointed to a frame in the return stack.
 
@@ -1405,8 +1405,8 @@ The ROM allocates 6*5 bytes, but 32*5 can be used.
 
 .2016-04-19:
 
-Floating-point words `flit`, `fliteral`. From PFE: `fround>s`, `ftrunc>s`
-(being `f>s` a synonym), `1/f`, `f^2`, `f^n`, `f2/`, `f2*`.
+Floating-point words `flit`, `fliteral`. From PFE: `fround>s`,
+`ftrunc>s` (being `f>s` a synonym), `1/f`, `f^2`, `f^n`, `f2/`, `f2*`.
 
 // Memory {{{1
 == Memory ==

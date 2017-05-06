@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201702220020
+  \ Last modified: 201705062352
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -40,8 +40,8 @@
   \
   \ XXX TODO -- Test everything.
   \
-  \ XXX TODO -- Document.
-  \
+  \ XXX TODO -- Improve documentation: Add more details to some
+  \ calculator commands.
 
 ( calculator )
 
@@ -49,148 +49,540 @@ need alias
 
 wordlist constant calculator-wordlist
 
-: calculator ( -- )
-  calculator-wordlist >order  $C5 c, $EF c, ;
-  \ Add `calculator-wordlist` to the search order and
-  \ compile the assembler instructions to start the ROM
+  \ doc{
+  \
+  \ calculator-wordlist  ( -- wid )
+  \
+  \ The word list that contains the `calculator` commands.
+  \
+  \ }doc
+
+: calculator ( -- ) calculator-wordlist >order $C5 c, $EF c, ;
+
+  \ doc{
+  \
+  \ calculator ( -- )
+  \
+  \ Start compilation of ROM calculator commands: Add
+  \ `calculator-wordlist` to the search `order` and compile the
+  \ following assembly instructions to start the ROM
   \ calculator:
+
   \ ----
   \ push bc ; save the Forth IP
   \ rst $28 ; call the ROM calculator
   \ ----
 
+  \ See also: `end-calculator`.
+  \
+  \ }doc
+
 calculator-wordlist >order
 get-current  calculator-wordlist set-current
 
 : end-calc ( -- ) $38 c, ;
-  \ Compile the `end-calc` ROM calculator command.
+
+  \ doc{
+  \
+  \ end-calc ( -- )
+  \
+  \ Compile the ``end-calc`` ROM `calculator` command:
+
   \ ----
   \ db $38 ; exit the ROM calculator
   \ ----
 
+  \ See also: `end-calculator`.
+  \
+  \ }doc
+
 : end-calculator ( -- ) previous end-calc $C1 c, ;
-  \ Restore the search order and
-  \ compile the assembler instructions to exit the ROM calculator:
+
+  \ doc{
+  \
+  \ end-calculator ( -- )
+  \
+  \ Stop compiling ROM `calculator` commands: Restore the
+  \ search order and compile the following assembly
+  \ instructions to exit the ROM calculator:
+
   \ ----
   \ db $38 ; `end-calc` ROM calculator command
   \ pop bc ; restore the Forth IP
   \ ----
 
--->
-
-( calculator )
-
-: + ( -- ) $0F c, ;
-  \ Compile the `addition` ROM calculator command.
-: - ( -- ) $03 c, ;
-  \ Compile the `subtract` ROM calculator command.
-
-: * ( -- ) $04 c, ;
-  \ Compile the `multiply` ROM calculator command.
-: / ( -- ) $05 c, ;
-  \ Compile the `division` ROM calculator command.
-: mod ( -- ) $32 c, ;
-  \ Compile the `n-mod-m` ROM calculator command.
-
-: ** ( -- ) $06 c, ;
-  \ Compile the `to-power` ROM calculator command.
-: sqrt ( -- ) $28 c, ;
-  \ Compile the `sqr` ROM calculator command.
+  \ See also: `end-calc`.
+  \
+  \ }doc
 
 -->
 
 ( calculator )
 
-: negate ( -- ) $1B c, ;
-  \ Compile the `negate` ROM calculator command.
-: sgn ( -- ) $29 c, ;
-  \ Compile the `sgn` ROM calculator command.
-: abs ( -- ) $2A c, ;
-  \ Compile the `abs` ROM calculator command.
+: |+ ( -- ) $0F c, ;
 
-: int ( -- ) $27 c, ;
-  \ Compile the `int` ROM calculator command.
-: truncate ( -- ) $3A c, ;
-  \ Compile the `truncate` ROM calculator command.
+  \ doc{
+  \
+  \ |+ ( -- )
+  \
+  \ Compile the ``addition`` ROM `calculator` command.
+  \
+  \ See also: `|-`.
+  \
+  \ }doc
 
-: re-stack ( r -- r' ) $3D c, ;
-  \ Compile the `re-stack` ROM calculator command.
+: |- ( -- ) $03 c, ;
 
-: zero ( -- ) $A0 c, ;
+  \ doc{
+  \
+  \ |- ( -- )
+  \
+  \ Compile the ``subtract`` ROM `calculator` command.
+  \
+  \ See also: `|+`.
+  \
+  \ }doc
+
+: |* ( -- ) $04 c, ;
+
+  \ doc{
+  \
+  \ |* ( -- )
+  \
+  \ Compile the ``multiply`` ROM `calculator` command.
+  \
+  \ See also: `|\`, `|**`.
+  \
+  \ }doc
+
+: |/ ( -- ) $05 c, ;
+
+  \ doc{
+  \
+  \ |/ ( -- )
+  \
+  \ Compile the ``division`` ROM `calculator` command.
+  \
+  \ See also: `|mod`, `|*`.
+  \
+  \ }doc
+
+: |mod ( -- ) $32 c, ;
+
+  \ doc{
+  \
+  \ |mod ( -- )
+  \
+  \ Compile the ``n-mod-m`` ROM `calculator` command.
+  \
+  \ See also: `|\`.
+  \
+  \ }doc
+
+: |** ( -- ) $06 c, ;
+
+  \ doc{
+  \
+  \ |** ( -- )
+  \
+  \ Compile the ``to-power`` ROM `calculator` command.
+  \
+  \ See also: `|sqrt`, `|*`.
+  \
+  \ }doc
+
+: |sqrt ( -- ) $28 c, ;
+
+  \ doc{
+  \
+  \ |sqrt ( -- )
+  \
+  \ Compile the ``sqr`` ROM `calculator` command.
+  \
+  \ See also: `|**`.
+  \
+  \ }doc
+
+-->
+
+( calculator )
+
+: |negate ( -- ) $1B c, ;
+
+  \ doc{
+  \
+  \ |negate ( -- )
+  \
+  \ Compile the ``negate`` ROM `calculator` command.
+  \
+  \ See also: `|abs`, `|sgn`.
+  \
+  \ }doc
+
+: |sgn ( -- ) $29 c, ;
+
+  \ doc{
+  \
+  \ |sgn ( -- )
+  \
+  \ Compile the ``sgn`` ROM `calculator` command.
+  \
+  \ See also: `|abs`, `|negate`.
+  \
+  \ }doc
+
+: |abs ( -- ) $2A c, ;
+
+  \ doc{
+  \
+  \ |abs ( -- )
+  \
+  \ Compile the ``abs`` ROM `calculator` command.
+  \
+  \ See also: `|sgn`, `|int`, `|truncate`.
+  \
+  \ }doc
+
+: |int ( -- ) $27 c, ;
+
+  \ doc{
+  \
+  \ |int ( -- )
+  \
+  \ Compile the ``int`` ROM `calculator` command.
+  \
+  \ See also: `|abs`, `|truncate`.
+  \
+  \ }doc
+
+: |truncate ( -- ) $3A c, ;
+
+  \ doc{
+  \
+  \ |truncate ( -- )
+  \
+  \ Compile the ``truncate`` ROM `calculator` command.
+  \
+  \ See also: `|abs`, `|int`.
+  \
+  \ }doc
+
+: |re-stack ( r -- r' ) $3D c, ;
+
+  \ doc{
+  \
+  \ |re-stack ( r -- r' )
+  \
+  \ Compile the ``re-stack`` ROM `calculator` command.
+  \
+  \ }doc
+
+: |0 ( -- ) $A0 c, ;
+
+  \ doc{
+  \
+  \ |0 ( -- )
+  \
   \ Compile the ROM calculator command that stacks 0.
-: one ( -- ) $A1 c, ;
+  \
+  \ See also: `|half`, `|1`, `|10`, `|pi2/`.
+  \
+  \ }doc
+
+: |1 ( -- ) $A1 c, ;
+
+  \ doc{
+  \
+  \ |1 ( -- )
+  \
   \ Compile the ROM calculator command that stacks 1.
-: half ( -- ) $A2 c, ;
+  \
+  \ See also: `|0`, `|half`, `|10`, `|pi2/`.
+  \
+  \ }doc
+
+: |half ( -- ) $A2 c, ;
+
+  \ doc{
+  \
+  \ |half ( -- )
+  \
   \ Compile the ROM calculator command that stacks 1/2.
-: pi2/ ( -- ) $A3 c, ;
+  \
+  \ See also: `|0`, `|1`, `|10`, `|pi2/`.
+  \
+  \ }doc
+
+: |pi2/ ( -- ) $A3 c, ;
+
+  \ doc{
+  \
+  \ |pi2/ ( -- )
+  \
   \ Compile the ROM calculator command that stacks pi/2.
-: ten ( -- ) $A4 c, ;
+  \
+  \ See also: `|0`, `|half`, `|1`, `|10`, `|acos`, `|asin`,
+  \ `|atan`, `|sin`, `|cos`, `|tan`.
+  \
+  \ }doc
+
+: |10 ( -- ) $A4 c, ;
+
+  \ doc{
+  \
+  \ |10 ( -- )
+  \
   \ Compile the ROM calculator command that stacks 10.
+  \
+  \ See also: `|0`, `|half`, `|1`, `|pi2/`.
+  \
+  \ }doc
 
 -->
 
 ( calculator )
 
-: ln ( -- ) $25 c, ;
-  \ Compile the `ln` ROM calculator command.
-: exp ( -- ) $26 c, ;
-  \ Compile the `exp` ROM calculator command.
+: |ln ( -- ) $25 c, ;
 
-: acos ( -- ) $23 c, ;
-  \ Compile the `acos` ROM calculator command.
-: asin ( -- ) $22 c, ;
-  \ Compile the `asin` ROM calculator command.
-: atan ( -- ) $24 c, ;
-  \ Compile the `atan` ROM calculator command.
-: cos ( -- ) $20 c, ;
-  \ Compile the `cos` ROM calculator command.
-: sin ( -- ) $1F c, ;
-  \ Compile the `sin` ROM calculator command.
-: tan ( -- ) $21 c, ;
-  \ Compile the `tan` ROM calculator command.
+  \ doc{
+  \
+  \ |ln ( -- )
+  \
+  \ Compile the ``ln`` ROM `calculator` command.
+  \
+  \ See also: `|exp`.
+  \
+  \ }doc
+
+: |exp ( -- ) $26 c, ;
+
+  \ doc{
+  \
+  \ |exp ( -- )
+  \
+  \ Compile the ``exp`` ROM `calculator` command.
+  \
+  \ See also: `|ln`.
+  \
+  \ }doc
+
+: |acos ( -- ) $23 c, ;
+
+  \ doc{
+  \
+  \ |acos ( -- )
+  \
+  \ Compile the ``acos`` ROM `calculator` command.
+  \
+  \ See also: `|asin`, `|atan`, `|cos`, `|sin`, `|tan`,
+  \ `|pi2/`.
+  \
+  \ }doc
+
+: |asin ( -- ) $22 c, ;
+
+  \ doc{
+  \
+  \ |asin ( -- )
+  \
+  \ Compile the ``asin`` ROM `calculator` command.
+  \
+  \ See also: `|acos`, `|atan`, `|cos`, `|sin`, `|tan`,
+  \ `|pi2/`.
+  \
+  \ }doc
+
+: |atan ( -- ) $24 c, ;
+
+  \ doc{
+  \
+  \ |atan ( -- )
+  \
+  \ Compile the ``atan`` ROM `calculator` command.
+  \
+  \ See also: `|acos`, `|asin`, `|cos`, `|sin`, `|tan`,
+  \ `|pi2/`.
+  \
+  \ }doc
+
+: |cos ( -- ) $20 c, ;
+
+  \ doc{
+  \
+  \ |cos ( -- )
+  \
+  \ Compile the ``cos`` ROM `calculator` command.
+  \
+  \ See also: `|acos`, `|asin`, `|atan`, `|sin`, `|tan`,
+  \ `|pi2/`.
+  \
+  \ }doc
+
+: |sin ( -- ) $1F c, ;
+
+  \ doc{
+  \
+  \ |sin ( -- )
+  \
+  \ Compile the ``sin`` ROM `calculator` command.
+  \
+  \ See also: `|acos`, `|asin`, `|atan`, `|cos`, `|tan`,
+  \ `|pi2/`.
+  \
+  \ }doc
+
+: |tan ( -- ) $21 c, ;
+
+  \ doc{
+  \
+  \ |tan ( -- )
+  \
+  \ Compile the ``tan`` ROM `calculator` command.
+  \
+  \ See also: `|acos`, `|asin`, `|atan`, `|cos`, `|sin`,
+  \ `|pi2/`.
+  \
+  \ }doc
 
 -->
 
 ( calculator )
 
-: drop ( -- ) $02 c, ;
-  \ Compile the `delete` ROM calculator command.
 
-: dup ( -- ) $31 c, ;
-  \ Compile the `duplicate` ROM calculator command.
+: |drop ( -- ) $02 c, ;
 
-: swap ( -- ) $01 c, ;
-  \ Compile the `exchange` ROM calculator command.
+  \ doc{
+  \
+  \ |drop ( -- )
+  \
+  \ Compile the ``delete`` ROM `calculator` command.
+  \
+  \ See also: `|dup`, `|swap`, `|over`, `|2dup`.
+  \
+  \ }doc
 
-: >mem ( n -- ) $C0 [ also forth ] + [ previous ] c, ;
-  \ Compile the `st-mem` ROM calculator command for memory
-  \ number _n_ (0..5). Note: The floating-point stack TOS is
-  \ copied, not moved.
+: |dup ( -- ) $31 c, ;
 
-: mem> ( n -- ) $E0 [ also forth ] + [ previous ] c, ;
-  \ Compile the `get-mem` ROM calculator command for memory
+  \ doc{
+  \
+  \ |dup ( -- )
+  \
+  \ Compile the ``duplicate`` ROM `calculator` command.
+  \
+  \ See also: `|drop`, `|swap`, `|over`, `|2dup`.
+  \
+  \ }doc
+
+: |swap ( -- ) $01 c, ;
+
+  \ doc{
+  \
+  \ |swap ( -- )
+  \
+  \ Compile the ``exchange`` ROM `calculator` command.
+  \
+  \ See also: `|drop`, `|dup`, `|over`, `|2dup`.
+  \
+  \ }doc
+
+: |>mem ( n -- ) $C0 + c, ;
+
+  \ doc{
+  \
+  \ |>mem ( n -- )
+  \
+  \ Compile the ``st-mem`` ROM `calculator` command for memory
   \ number _n_ (0..5).
+  \
+  \ NOTE: ``st-mem`` copies the floating-point stack TOS to the
+  \ the calculator memory number _n_, but does not remove it
+  \ from the floating-point stack.
+  \
+  \ }doc
 
-: over ( -- )
-  2 >mem drop 1 >mem 2 mem> 1 mem> ;
-  \ Compile the ROM calculator commands to do `over`.
+: |mem> ( n -- ) $E0 + c, ;
 
-: 2dup ( -- )
-  2 >mem drop 1 >mem drop 1 mem> 2 mem>  1 mem> 2 mem> ;
-  \ Compile the ROM calculator commands to do `2dup`.
+  \ doc{
+  \
+  \ |mem> ( n -- )
+  \
+  \ Compile the ``get-mem`` ROM `calculator` command for memory
+  \ number _n_ (0..5).
+  \
+  \ }doc
+
+: |over ( -- ) 2 |>mem |drop 1 |>mem 2 |mem> 1 |mem> ;
+
+  \ doc{
+  \
+  \ |over ( -- )
+  \
+  \ Compile the ROM calculator commands to do `over`, using
+  \ `|>mem` and `|mem>` (calculator memory positions 1 and 2
+  \ are used).
+  \
+  \ See also: `|drop`, `|dup`, `|swap`, `|2dup`.
+  \
+  \ }doc
+
+: |2dup ( -- ) 2 |>mem |drop 1 |>mem |drop
+               1 |mem> 2 |mem> 1 |mem> 2 |mem> ;
+
+  \ doc{
+  \
+  \ |2dup ( -- )
+  \
+  \ Compile the ROM `calculator` commands to do `2dup`, using
+  \ `|>mem` and `|mem>` (calculator memory positions 1 and 2
+  \ are used).
+  \
+  \ See also: `|drop`, `|dup`, `|swap`, `|over`.
+  \
+  \ }doc
 
 -->
 
 ( calculator )
 
-: 0= ( -- ) $30 c, ;
-  \ Compile the `not` ROM calculator command.
 
-: 0< ( -- ) $36 c, ;
-  \ Compile the `less-0` ROM calculator command.
+: |0= ( -- ) $30 c, ;
 
-: 0> ( -- ) $37 c, ;
-  \ Compile the `greater-0` ROM calculator command.
+  \ doc{
+  \
+  \ |0= ( -- )
+  \
+  \ Compile the ``not`` ROM `calculator` command.
+  \
+  \ See also: `|0<`, `|0>`, `|=`, `|<>`, `|>`, `|<`, `|<=`,
+  \ `|>=`.
+  \
+  \ }doc
+
+: |0< ( -- ) $36 c, ;
+
+  \ doc{
+  \
+  \ |0< ( -- )
+  \
+  \ Compile the ``less-0`` ROM `calculator` command.
+  \
+  \ See also: `|0=`, `|0>`, `|=`, `|<>`, `|>`, `|<`, `|<=`,
+  \ `|>=`.
+  \
+  \ }doc
+
+: |0> ( -- ) $37 c, ;
+
+  \ doc{
+  \
+  \ |0> ( -- )
+  \
+  \ Compile the ``greater-0`` ROM `calculator` command.
+  \
+  \ See also: `|0=`, `|0<`, `|=`, `|<>`, `|>`, `|<`, `|<=`,
+  \ `|>=`.
+  \
+  \ }doc
 
 -->
 
@@ -241,87 +633,248 @@ get-current  calculator-wordlist set-current
   \ string comparison. But in BASIC, at this point register B
   \ contains the command.
 
-: = ( -- ) $0E c, ;
-  \ Compile the `nos-eql` ROM calculator command.
+: |= ( -- ) $0E c, ;
 
-: <> ( -- ) $0B c, ;
-  \ Compile the `nos-neql` ROM calculator command.
-
-: > ( -- ) $0C c, ;
-  \ Compile the `no-grtr` ROM calculator command.
-
-: < ( -- ) $0D c, ;
-  \ Compile the `no-less` ROM calculator command.
-
-: <= ( -- ) $09 c, ;
-  \ Compile the `no-l-eql` ROM calculator command.
-
-: >= ( -- ) $0A c, ;
-  \ Compile the `no-gr-eql` ROM calculator command.
-
--->
-
-( calculator )
-
-: ?branch ( -- ) $00 c, ;
-  \ Compile the `jump-true` ROM calculator command.
-
-: 0branch ( -- ) 0= ?branch ;
-  \ Compile the ROM calculator commands to do a branch if
-  \ the TOS of the calculator stack is zero.
-
-: branch ( -- ) $33 c, ;
-  \ Compile the `jump` ROM calculator command.
-
--->
-
-( calculator )
-
-: >mark ( -- a ) here 0 c, ;
-
-  \ Compile space for the displacement of a ROM calculator
-  \ forward branch which will later be resolved by
-  \ `>resolve`.
+  \ doc{
   \
-  \ Typically used after either `branch` or
-  \ `?branch`.
+  \ |= ( -- )
+  \
+  \ Compile the ``nos-eql`` ROM `calculator` command.
+  \
+  \ WARNING: This calculator command doesn't work fine when
+  \ used from Forth. See its source file for details.
+  \
+  \ See also: `|0=`, `|0<`, `|0>`, `|<>`, `|>`, `|<`, `|<=`,
+  \ `|>=`.
+  \
+  \ }doc
 
-: from-here ( a -- n )
-  here [ also forth ] swap - [ previous ] ;
+: |<> ( -- ) $0B c, ;
+
+  \ doc{
+  \
+  \ |<> ( -- )
+  \
+  \ Compile the ``nos-neql`` ROM `calculator` command.
+  \
+  \ WARNING: This calculator command doesn't work fine when
+  \ used from Forth. See its source file for details.
+  \
+  \ See also: `|0=`, `|0<`, `|0>`, `|=`, `|>`, `|<`, `|<=`,
+  \ `|>=`.
+  \
+  \ }doc
+
+: |> ( -- ) $0C c, ;
+
+  \ doc{
+  \
+  \ |> ( -- )
+  \
+  \ Compile the ``no-grtr`` ROM `calculator` command.
+  \
+  \ WARNING: This calculator command doesn't work fine when
+  \ used from Forth. See its source file for details.
+  \
+  \ See also: `|0=`, `|0<`, `|0>`, `|=`, `|<>`, `|<`, `|<=`,
+  \ `|>=`.
+  \
+  \ }doc
+
+: |< ( -- ) $0D c, ;
+
+  \ doc{
+  \
+  \ |< ( -- )
+  \
+  \ Compile the ``no-less`` ROM `calculator` command.
+  \
+  \ WARNING: This calculator command doesn't work fine when
+  \ used from Forth. See its source file for details.
+  \
+  \ See also: `|0=`, `|0<`, `|0>`, `|=`, `|<>`, `|>`, `|<=`,
+  \ `|>=`.
+  \
+  \ }doc
+
+: |<= ( -- ) $09 c, ;
+
+  \ doc{
+  \
+  \ |<= ( -- )
+  \
+  \ Compile the ``no-l-eql`` ROM `calculator` command.
+  \
+  \ WARNING: This calculator command doesn't work fine when
+  \ used from Forth. See its source file for details.
+  \
+  \ See also: `|0=`, `|0<`, `|0>`, `|=`, `|<>`, `|>`, `|<`,
+  \ `|>=`.
+  \
+  \ }doc
+
+: |>= ( -- ) $0A c, ;
+
+  \ doc{
+  \
+  \ |>= ( -- )
+  \
+  \ Compile the ``no-gr-eql`` ROM `calculator` command.
+  \
+  \ WARNING: This calculator command doesn't work fine when
+  \ used from Forth. See its source file for details.
+  \
+  \ See also: `|0=`, `|0<`, `|0>`, `|=`, `|<>`, `|>`, `|<`,
+  \ `|<=`.
+  \
+  \ }doc
+
+-->
+
+( calculator )
+
+: |?branch ( -- ) $00 c, ;
+
+  \ doc{
+  \
+  \ |?branch ( -- )
+  \
+  \ Compile the ``jump-true`` ROM `calculator` command.
+  \
+  \ See also: `|0branch`, `|branch`.
+  \
+  \ }doc
+
+: |0branch ( -- ) |0= |?branch ;
+
+  \ doc{
+  \
+  \ |0branch ( -- )
+  \
+  \ Compile ROM `calculator` commands `|0=` and `|?branch` to
+  \ do a jump when the TOS of the calculator stack is zero.
+  \
+  \ See also: `|branch`, `|?branch`.
+  \
+  \ }doc
+
+: |branch ( -- ) $33 c, ;
+
+  \ doc{
+  \
+  \ |branch ( -- )
+  \
+  \ Compile the ``jump`` ROM `calculator` command.
+  \
+  \ See also: `|0branch`, `|?branch`.
+  \
+  \ }doc
+
+-->
+
+( calculator )
+
+: |>mark ( -- a ) here 0 c, ;
+
+  \ doc{
+  \
+  \ |>mark ( -- a )
+  \
+  \ Compile space for the displacement of a ROM `calculator`
+  \ forward branch which will later be resolved by `|>resolve`.
+  \
+  \ Typically used before either `|branch`, `|?branch` or
+  \ `|0branch`.
+  \
+  \ }doc
+
+: |from-here ( a -- n ) here swap - ;
+
+  \ doc{
+  \
+  \ |from-here ( a -- n )
+  \
   \ Calculate the displacement _n_ from the current data-space
-  \ pointer to address _a_.
-
-: >resolve ( a -- )
-  [ also forth ] dup [ previous ] from-here
-  [ also forth ] swap [ previous ] c! ;
-
-  \ Resolve a ROM calculator forward branch by placing the
-  \ displacement to the current position into the space
-  \ compiled by `>mark`.
-
-' here alias <mark ( -- a )
-
-  \ Leave the address of the current data-space pointer as the
-  \ destination of a ROM calculator backward branch which will
-  \ later be resolved by `<resolve`.
+  \ pointer to address _a_. Used by `|>resolve` and
+  \ `|<resolve`.
   \
-  \ Typically used before either `branch` or `?branch`.
+  \ }doc
 
-: <resolve ( a -- ) from-here c, ;
+: |>resolve ( a -- ) dup |from-here swap c! ;
 
-  \ Resolve a ROM calculator backward branch by compiling the
-  \ displacement from the current position to address _a_,
-  \ which was left by `<mark`.
+  \ doc{
+  \
+  \ |>resolve ( orig -- )
+  \
+  \ Resolve a ROM `calculator` forward branch by storing the
+  \ displacement from _orig_ to the current position into
+  \ _orig_, which was left by `|>mark`.
+  \
+  \ }doc
 
-: if ( -- a ) 0branch >mark ;
+' here alias |<mark ( -- dest )
 
-: else ( a1 -- a2 )
-  branch >mark [ also forth ] swap [ previous ] >resolve ;
+  \ doc{
+  \
+  \ |<mark ( -- dest )
+  \
+  \ Leave the address _dest_ of the current data-space pointer
+  \ as the destination of a ROM `calculator` backward branch
+  \ which will later be resolved by `|<resolve`.
+  \
+  \ Typically used before either `|branch`, `|?branch` or
+  \ `|0branch`.
+  \
+  \ }doc
 
-' >resolve alias then ( a -- )
+: |<resolve ( dest -- ) |from-here c, ;
+
+  \ doc{
+  \
+  \ |<resolve ( dest -- )
+  \
+  \ Resolve a ROM `calculator` backward branch by compiling the
+  \ displacement from the current position to address _dest_,
+  \ which was left by `|<mark`.
+  \
+  \ }doc
+
+: |if ( -- a ) |0branch |>mark ;
+
+  \ doc{
+  \
+  \ |if ( -- orig )
+  \
+  \ Compile a ROM `calculator` conditional `|0branch` and put
+  \ the address _orig_ of its destination address on the stack,
+  \ to be resolved by `|else` or `|then`.
+  \
+  \ }doc
+
+: |else ( orig1 -- orig2 ) |branch |>mark swap |>resolve ;
+
+  \ doc{
+  \
+  \ |else ( orig1 -- orig2 )
+  \
+  \ Put the location of a new unresolved forward reference
+  \ _orig2_ onto the stack, to be resolved by `|then`.  Resolve
+  \ the forward reference _orig1_, left by `|if`.
+  \
+  \ }doc
+
+' |>resolve alias |then ( orig -- )
+
+  \ doc{
+  \
+  \ |then ( orig -- )
+  \
+  \ Resolve the forward reference _orig_, left by `|else` or
+  \ `|if`.
+  \
+  \ }doc
 
 set-current  previous
-  \ restore the current word list and the search order
 
   \ ===========================================================
   \ Change log
@@ -344,5 +897,10 @@ set-current  previous
   \ calculator operators be found by `need` instead of the
   \ integer ones, because this module comes before the integer
   \ operators in the library disk.
+  \
+  \ 2017-05-06: Add a "|" prefix to all calculator commands.
+  \ This makes the code clearer, makes search order changes
+  \ unnecessary and makes a single glossary possible.  Update,
+  \ improve and complete the documentation.
 
   \ vim: filetype=soloforth
