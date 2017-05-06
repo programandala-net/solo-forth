@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704171807
+  \ Last modified: 201705062207
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -341,31 +341,43 @@ h push, #4 call, al# h pop, h pop, d pop, b pop, 02 a ld#,
   \ (gigatype ( ca len a1 a2 -- )
   \
   \ If _len_ is greater than zero, display text string _ca len_
-  \ at screen address _a1_ using style data table _a2_.
+  \ at screen address _a1_ using the current fonts, doubled
+  \ pixels (16x16 pixels per character) and modifying the
+  \ characters on the fly after style data table _a2_.
   \
-  \ ``(gigatype`` is written in Z80 and it's a factor of
-  \ `gigatype`.
+  \ ``(gigatype`` is written in Z80 and it's the low-level
+  \ procedure of `gigatype`.
+  \
+  \ }doc
+
+create gigatype-style 0 c,
+
+  \ doc{
+  \
+  \ gigatype-style ( -- ca )
+  \
+  \ _ca_ is the address of a byte containing the font style
+  \ used by `gigatype` (0..7).
   \
   \ }doc
 
 need xy>scra need array>
 
-: gigatype ( ca len n -- )
-  xy xy>scra swap gigatype-styles array> @ (gigatype ;
+: gigatype ( ca len -- )
+  xy xy>scra
+  gigatype-style c@ gigatype-styles array> @ (gigatype ;
 
   \ doc{
   \
-  \ gigatype ( ca len n -- )
+  \ gigatype ( ca len -- )
   \
   \ If _len_ is greater than zero, display text string _ca len_
-  \ as a title with style _n_ (0..7), at the current cursor
-  \ coordinates. ``gigatype`` displays characters from the
-  \ current font, with doubled pixels (16x16 pixels per
-  \ character) and modifying them on the fly after a given
-  \ style _n_.  The text is combined with the current content
-  \ of the screen, as if `overprint` were active. The current
-  \ attribute, set by `attr!` and other words, is used to color
-  \ the text.
+  \ using the current font, with doubled pixels (16x16 pixels
+  \ per character) and modifying the characters on the fly
+  \ after the style stored in `gigatype-style`.  The text is
+  \ combined with the current content of the screen, as if
+  \ `overprint` were active. The current attribute, set by
+  \ `attr!` and other words, is used to color the text.
   \
   \ Usage example:
 
@@ -373,7 +385,8 @@ need xy>scra need array>
   \ : demo ( -- )
   \   cls
   \   8 0 ?do
-  \     17 0 i 3 * tuck at-xy s" GIGATYPE" i gigatype
+  \     i gigatype-style c!
+  \     17 0 i 3 * tuck at-xy s" GIGATYPE" gigatype
   \                     at-xy ." style "   i .
   \   loop
   \   key drop home ;
@@ -798,17 +811,16 @@ need xy>scra need array>
 
 need gigatype need 2/
 
-: gigatype-title ( ca1 len1 n -- )
-  >r 32 over 2* - 2/ xy nip at-xy r> gigatype ;
+: gigatype-title ( ca len -- )
+  32 over 2* - 2/ xy nip at-xy gigatype ;
 
   \ doc{
   \
-  \ gigatype-title ( ca1 len1 n -- )
+  \ gigatype-title ( ca len -- )
   \
   \ If _len1_ is greater than zero, display the character
-  \ string _ca1 len1_ at the center of the current row (the
-  \ current column is not used), using `gigatype` and its style
-  \ number _n_.
+  \ string _ca len_ at the center of the current row (the
+  \ current column is not used), using `gigatype`.
   \
   \ WARNING: `gigatype` prints double-size (16x16 pixels)
   \ characters.  Therefore, the maximum value of _len1_ is 16
@@ -817,7 +829,7 @@ need gigatype need 2/
   \ mode is `mode32` (32 characters per line), which is the
   \ default one.
   \
-  \ See also: `type-center-field`.
+  \ See also: `gigatype-style`, `type-center-field`.
   \
   \ }doc
 
@@ -834,6 +846,11 @@ need gigatype need 2/
   \ 2017-04-17: Add `gigatype-title` (a simpler but enough
   \ implementation of `gigatype-center`, which has been
   \ discarded). Improve documentation.
+  \
+  \ 2017-05-06: Move the `gigatype` style from the stack to
+  \ `gigatype-style`. This makes the usage simpler and
+  \ compatible with the ordinary `type`. Update and improve
+  \ documentation.
 
   \ vim: filetype=soloforth
 

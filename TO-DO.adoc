@@ -1094,13 +1094,13 @@ Change: modify `expect` after Spectrum Forth-83.
 
 Use `_jump` macros at the end of `umax`, `umin`, `dabs`, `abs`, etc.
 
-.2016-04-24:
+.2016-04-24, 2017-05-06:
 
-Words that can be moved to the library: `catch`, `?\`,
-`[defined]`, `[undefined]`, `umin`, `umax`...
+Words that can be moved to the library: `[defined]`,
+`[undefined]`, `umin`, `umax`...
 
-Study how to move `line>string` and `undefined?` to the library.  They are not
-used in the kernel, but they are needed by the `need` utility.
+Study how to move `line>string` and `undefined?` to the library.  They
+are not used in the kernel, but they are needed by the `need` utility.
 
 .2016-05-06:
 
@@ -1623,7 +1623,6 @@ give problems with recursion.
 
 Improve `load-app`: save and restore the source, in order to continue loading
 after `load-app`. This way, several programs can be loaded this way.
-Also, rename it to `load-program`.
 
 .2016-12-30:
 
@@ -1777,6 +1776,12 @@ for machine code routines.
 NOTE: Milestone: 0.14.0
 
 Rename `?name-too-short` to `?empty-name`, or `?no-name`.
+
+.2017-01-06:
+
+NOTE: Milestone: 0.14.0
+
+Rename `load-app` to `load-program`.
 
 .2017-01-02:
 
