@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201704271937
+# Last modified: 201705070045
 
 # ==============================================================
 # Author
@@ -44,6 +44,9 @@
 # 	http://programandala.net/en.program.glosara.html
 
 # head (from the GNU coreutils)
+
+# htmldoc (by Michael Sweet)
+# 	http://www.htmldoc.org
 
 # mkmgt (by Marcos Cruz)
 # 	http://programandala.net/en.program.mkmgt.html
@@ -198,7 +201,7 @@ cleantmp:
 
 .PHONY: cleandoc
 cleandoc:
-	-rm -f doc/*.html tmp/doc.*
+	-rm -f doc/*.html doc/*.pdf tmp/doc.*
 
 .PHONY: doc
 doc: gplusdosdoc plus3dosdoc trdosdoc
@@ -763,6 +766,16 @@ backgrounds/current.scr: backgrounds/current.pbm
 # ----------------------------------------------
 # Common rules
 
+%.pdf: %.html
+	htmldoc \
+		--book \
+		--no-toc \
+		--linkcolor blue \
+		--header " t " \
+		--footer "  1" \
+		--format pdf14 \
+		$< > $@
+
 %.html: %.adoc
 	asciidoctor --out-file=$@ $<
 
@@ -801,7 +814,7 @@ tmp/doc.gplusdos.manual.adoc: \
 	cat $^ > $@
 
 .PHONY: gplusdosdoc
-gplusdosdoc: doc/gplusdos_solo_forth_manual.html
+gplusdosdoc: doc/gplusdos_solo_forth_manual.html doc/gplusdos_solo_forth_manual.pdf
 
 # ----------------------------------------------
 # Documentation for +3DOS
@@ -831,7 +844,7 @@ tmp/doc.plus3dos.manual.adoc: \
 	cat $^ > $@
 
 .PHONY: plus3dosdoc
-plus3dosdoc: doc/plus3dos_solo_forth_manual.html
+plus3dosdoc: doc/plus3dos_solo_forth_manual.html doc/plus3dos_solo_forth_manual.pdf
 
 # ----------------------------------------------
 # Documentation for TR-DOS
@@ -861,7 +874,7 @@ tmp/doc.trdos.manual.adoc: \
 	cat $^ > $@
 
 .PHONY: trdosdoc
-trdosdoc: doc/trdos_solo_forth_manual.html
+trdosdoc: doc/trdos_solo_forth_manual.html doc/trdos_solo_forth_manual.pdf
 
 # ==============================================================
 # Backup
@@ -956,7 +969,7 @@ oldbackup:
 #
 # 2016-04-13: Improved: the BASIC loader is patched with the
 # current memory addresses, extracted from the Z80 symbols
-# file. Updated the requirements and the license.
+# file.  Updated the requirements and the license.
 #
 # 2016-04-16: Fix: the patching of the loader didn't work after
 # `make clean`, because a prerequisite was missing.
@@ -1081,3 +1094,5 @@ oldbackup:
 #
 # 2017-04-27: Rename the final HTML files of the manual. Update
 # the `cleandoc` rule.
+#
+# 2017-05-07: Create a PDF from the HTML manual, using htmldoc.

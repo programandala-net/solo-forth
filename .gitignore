@@ -13,6 +13,7 @@ _meta/
 
 # Ignore the documentation:
 doc/*.html
+doc/*.pdf
 
 # Ignore some files which are not ready for the next prerelease:
 bin/fonts/mini.f64
