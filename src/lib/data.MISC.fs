@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132006
+  \ Last modified: 201705052335
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -32,20 +32,11 @@
   \
   \ buffer: ( u "name" -- )
   \
-  \ Create a  definition for _name_, with  the execution
-  \ semantics defined below. Reserve  _u_ address units of data
-  \ space at an aligned address.
-  \
-  \ `buffer:` provides a means of defining an uninitialized
-  \ buffer.
-  \
-  \ Execution of _name_:
-  \
-  \ name ( -- a )
-  \
-  \ _a_ is the address of the  space reserved by `buffer:` when
-  \ it  defined _name_. The program is responsible  for
-  \ initializing the contents.
+  \ Define a named uninitialized buffer as follows: Reserve _u_
+  \ address units of data space at an aligned address.  Create
+  \ a definition for _name_ that will return the address of the
+  \ space reserved by ``buffer:`` when it defined _name_.  The
+  \ program is responsible for initializing the contents.
   \
   \ Origin: Forth-2012 (CORE EXT).
   \
@@ -216,5 +207,7 @@ need alias ' @ alias link@ ( node1 -- node2 )
   \ references.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-05-05: Improve documentation.
 
   \ vim: filetype=soloforth

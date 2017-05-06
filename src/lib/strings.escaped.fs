@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132049
+  \ Last modified: 201705052356
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -54,6 +54,7 @@ dup >order set-current case-sensitive @ case-sensitive on
   \
   \ Conversion rules:
 
+  \ [cols="8,8,16"]
   \ |===
   \ | Escaped | Name | ASCII characters
   \
@@ -508,5 +509,7 @@ need parse-char need char>string
   \ 2017-03-12: Update mentions to the `stringer`.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-05-05: Improve documentation.
 
   \ vim: filetype=soloforth

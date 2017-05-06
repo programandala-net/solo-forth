@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705060234
+  \ Last modified: 201705061656
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -539,6 +539,8 @@ code m+ ( d1|ud1 n -- d2|ud2 )
   \ intermediate result _t_.  Divide _t_ by _+n2_ giving the
   \ double-cell quotient _d2_.
   \
+  \ Origin: Forth-94 (DOUBLE), Forth-2012 (DOUBLE).
+  \
   \ See also: `*/`, `m*`.
   \
   \ }doc
@@ -620,6 +622,6 @@ need 2nip need cell-bits
   \
   \ 2017-05-05: Improve documentation.
   \
-  \ 2017-05-06: Rewrite `d0=` in Z80.
+  \ 2017-05-06: Rewrite `d0=` in Z80. Improve documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704231355
+  \ Last modified: 201705052330
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -256,7 +256,7 @@ code brighty ( b1 -- b2 )
   \ : brighty ( b1 -- b2 ) bright-mask or ;
   \ ----
 
-  \ See also: `papery`, `flashy`.
+  \ See also: `bright-mask`, `papery`, `flashy`.
   \
   \ }doc
 
@@ -281,7 +281,7 @@ code flashy ( b1 -- b2 )
   \ : flashy ( b1 -- b2 ) flash-mask or ;
   \ ----
 
-  \ See also: `papery`, `brighty`.
+  \ See also: `flash-mask`, `papery`, `brighty`.
   \
   \ }doc
 
@@ -1213,5 +1213,7 @@ create (0-9-color. ( -- a ) asm
   \ 2017-03-29: Fix comments.
   \
   \ 2017-04-23: Improve documentation.
+  \
+  \ 2017-05-05: Improve documentation.
 
   \ vim: filetype=soloforth
