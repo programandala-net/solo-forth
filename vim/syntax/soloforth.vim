@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-05-05
+" Updated:  2017-05-06
 "
 " See change log at the end of the file.
 
@@ -509,6 +509,7 @@ syn keyword soloforthOperator fm/mod
 syn keyword soloforthOperator invert
 syn keyword soloforthOperator lshift
 syn keyword soloforthOperator m*
+syn keyword soloforthOperator m*/
 syn keyword soloforthOperator m+
 syn keyword soloforthOperator m/
 syn keyword soloforthOperator max
@@ -1176,6 +1177,8 @@ let b:current_syntax = "soloforth"
 " decimal point at the end.
 "
 " 2017-05-05: Add `abort-message`.
+"
+" 2017-05-06: Add `m*/ 
 
 " --------------------------------------------------------------
 
