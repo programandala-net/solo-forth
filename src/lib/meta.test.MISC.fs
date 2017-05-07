@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071837
+  \ Last modified: 201705080007
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -34,8 +34,8 @@ need baden-sqrt need newton-sqrt need printer
   32768 0 ?do
     i newton-sqrt i baden-sqrt 2dup <>
     if  i 6 .r space 11 .r space 11 .r cr else 2drop then
-    break-key? if display ." Break." cr leave then
-  loop display ." End."  ;
+    break-key? if terminal ." Break." cr leave then
+  loop terminal ." End."  ;
 
 ( menu-test )
 
@@ -1284,5 +1284,8 @@ blk @ 1+ blk @ 2+ thru
   \ `menu-test`, `sqrt-test`.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2017-05-08: Update: `display` has been renamed to
+  \ `terminal` in the kernel.
 
   \ vim: filetype=soloforth

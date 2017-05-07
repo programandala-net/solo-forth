@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201704261936
+  \ Last modified: 201705080005
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -67,7 +67,7 @@ create board  squares allot
 
 ( toe )
 
-: display ( -- )
+: .board ( -- )
   home
   squares 0 ?do
     i if    i 3 mod  0= if  dashes  else  bar  then
@@ -78,8 +78,8 @@ create board  squares allot
 
 : play ( square player -- ) swap 1- limited square! ;
 
-: x ( square -- ) player-x play  display ;
-: o ( square -- ) player-o play  display ;
+: x ( square -- ) player-x play  .board ;
+: o ( square -- ) player-o play  .board ;
 
   \ ===========================================================
   \ Change log
@@ -90,5 +90,7 @@ create board  squares allot
   \ library, with `?do`.
   \
   \ 2017-04-26: Improve file header.
+  \
+  \ 2017-05-08: Rename `display` to `.board`.
 
   \ vim: filetype=soloforth

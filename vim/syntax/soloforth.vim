@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-05-06
+" Updated:  2017-05-08
 "
 " See change log at the end of the file.
 
@@ -364,7 +364,6 @@ syn keyword soloforthGraphics bright.
 syn keyword soloforthGraphics cls
 syn keyword soloforthGraphics default-colors
 syn keyword soloforthGraphics default-mode
-syn keyword soloforthGraphics display
 syn keyword soloforthGraphics flash.
 syn keyword soloforthGraphics ink.
 syn keyword soloforthGraphics inverse
@@ -376,6 +375,7 @@ syn keyword soloforthGraphics restore-mode
 syn keyword soloforthGraphics save-mode
 syn keyword soloforthGraphics set-pixel
 syn keyword soloforthGraphics test-pixel
+syn keyword soloforthGraphics terminal
 syn keyword soloforthGraphics toggle-pixel
 syn keyword soloforthGraphics xy
 syn keyword soloforthHardware !p
@@ -1178,7 +1178,9 @@ let b:current_syntax = "soloforth"
 "
 " 2017-05-05: Add `abort-message`.
 "
-" 2017-05-06: Add `m*/ 
+" 2017-05-06: Add `m*/
+"
+" 2017-05-08: Update: Rename `display` to `terminal`.
 
 " --------------------------------------------------------------
 

@@ -1,11 +1,11 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-05-06
+:revdate: 2017-05-08
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201705071916
+// Last modified 201705080001
 
 // Application development {{{1
 == Application development ==
@@ -1539,23 +1539,17 @@ clock.
 
 ....
 
-.2015-06-10:
+.2015-06-10, 2015-09-22, 2017-05-07:
 
-Adapt this word from Spectrum Forth-83, which uses it in `cold` and
-`query`:
+Add a word to do `terminal` and init the keyboard and `tib`, similar
+to the following word from Spectrum Forth-83, which uses it in `cold`
+and `query`:
 
 ----
   : TERMINAL ( --- )
     LIT PKEY (KEY) !    \ Set default handler for KEY.
     >S ;                \ And initialize screen output.
 ----
-
-.2015-09-22 2017-05-07:
-
-Add `console` to do `display` and init the keyboard and `tib` (see
-Spectrum Forth-83).
-
-Or use other name and rename `display` to `console`.
 
 // Multitasking {{{1
 == Multitasking ==
@@ -1760,10 +1754,6 @@ for the end user.
 
 // Names {{{1
 == Names ==
-
-.2017-05-07:
-
-Rename `display` to `console`.
 
 .2017-05-06:
 

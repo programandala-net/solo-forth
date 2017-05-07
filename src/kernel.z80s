@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705072353
+; Last modified: 201705072359
 
 include version.z80s
 
@@ -4158,7 +4158,7 @@ skip.end:
 ;
 ; Open channel _n_ for output.
 ;
-; See also: `display`, `printer`, `printing`.
+; See also: `terminal`, `printer`, `printing`.
 ;
 ; }doc
 ;
@@ -4326,7 +4326,7 @@ emit_udg.l
 ; printing ( -- a )
 ;
 ; _a_ is the address of a cell containing the printer flag.
-; ``printing`` is set by `printer`, reset by `display` and
+; ``printing`` is set by `printer`, reset by `terminal` and
 ; checked by `page`. ``printing`` should not be changed directly
 ; by the application.
 ;
@@ -4335,13 +4335,13 @@ emit_udg.l
   dw false
 
 ; ----------------------------------------------
-  _colon_header display_,'display'
+  _colon_header terminal_,'terminal'
 
 ; doc{
 ;
-; display ( -- )
+; terminal ( -- )
 ;
-; Select the display as output.
+; Select the terminal as output.
 ;
 ; See also: `printer`, `printing`, `page`.
 ;
@@ -12064,7 +12064,7 @@ endif
 ;
 ; warm ( -- )
 ;
-; Do a "warm" restart of the Forth system: Make the `display`
+; Do a "warm" restart of the Forth system: Make the `terminal`
 ; the current output device, restore the previous display mode
 ; (in case ``warm`` is automatically executed after reentering
 ; from BASIC), clear the screen and `abort`.
@@ -12079,9 +12079,9 @@ endif
 ;
 ; }doc
 
-  dw display_
+  dw terminal_
   dw restore_mode_
-  dw page_ ; note: this must be after `display` and `restore-mode`
+  dw page_ ; note: this must be after `terminal` and `restore-mode`
   dw abort_
   ; No return from `abort`.
 
@@ -12161,7 +12161,7 @@ cold.hash_words:
   ; Set the screen to its default status:
   _literal 127
   dw last_font_char_,c_store_
-  dw display_,default_font_,default_colors_
+  dw terminal_,default_font_,default_colors_
 
   ; Display the greeting message:
 cold.home:
