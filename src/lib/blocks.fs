@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704010010
+  \ Last modified: 201705080055
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -203,7 +203,7 @@
   \
   \ }doc
 
-( lineblock>source lineload load-app )
+( lineblock>source lineload load-program )
 
 [unneeded] lineblock>source [unneeded] lineload and
 ?\ : lineblock>source ( n u -- ) blk !  c/l * >in ! ;
@@ -237,57 +237,63 @@
   \
   \ }doc
 
-[unneeded] load-app ?( need locate  variable loading-app
+[unneeded] load-program ?( need locate
+
+variable loading-program
 
   \ doc{
   \
-  \ loading-app ( -- a )
+  \ loading-program ( -- a )
   \
-  \ A variable that holds a flag: Is an application being
-  \ loaded?  This flag is modified by `load-app` and `end-app`.
+  \ _a_ is the address of a cell containing a flag: Is an
+  \ application being loaded?  This flag is modified by
+  \ `load-program` and `end-program`.
   \
   \ }doc
 
-: end-app ( -- ) loading-app off ; end-app
+: end-program ( -- ) loading-program off ; end-program
 
   \ doc{
   \
-  \ end-app ( -- )
+  \ end-program ( -- )
   \
-  \ Mark the end of an application that is being loaded by
-  \ `load-app`.
+  \ Mark the end of a program that is being loaded by
+  \ `load-program`.
   \
-  \ See also: `loading-app`.
+  \ See also: `loading-program`.
   \
   \ }doc
 
-  \ : load-app ( "name" -- )
-  \   loading-app on
-  \   blocks/disk locate ?do   loading-app @ 0= ?leave  i load
-  \                      loop  end-app ; ?)
+  \ : load-program ( "name" -- )
+  \   loading-program on
+  \   blocks/disk locate ?do   loading-program @ 0= ?leave  i load
+  \                      loop  end-program ; ?)
   \   \ XXX OLD -- incompatible with words that use `refill`
 
-: load-app ( "name" -- )
-  loading-app on  locate blk !
-  begin   loading-app @  blk @ blocks/disk <  and  while
+: load-program ( "name" -- )
+  loading-program on  locate blk !
+  begin   loading-program @  blk @ blocks/disk <  and  while
           blk @ (load) 1 blk +!
-  repeat  end-app ; ?)
+  repeat  end-program ; ?)
 
   \ doc{
   \
-  \ load-app ( "name" -- )
+  \ load-program ( "name" -- )
   \
-  \ Load an application.  An application is a set of blocks
-  \ that are loaded as a whole. They don't have block headers
-  \ except the first one, which contains _name_, and therefore
-  \ they don't have internal requisites.  Applications don't
-  \ need `-->` or any other word to change the loading: The
-  \ loading starts from the first block of the disk that has
-  \ _name_ in its header (surrounded by spaces), and continues
-  \ until the last block of the disk or until `end-app` is
-  \ executed.
+  \ Load a program, i.e. a set of blocks that are loaded as a
+  \ whole. The blocks of a program don't have block headers
+  \ except the first one, which contains _name_. Therefore
+  \ programs can not have internal requisites, i.e. they use
+  \ `need` only to load from the library, which must be before
+  \ the blocks of the program on the disk or disks.
   \
-  \ See also: `loading-app`.
+  \ Programs don't need `-->` or any similar word to control
+  \ the loading of blocks: The loading starts from the first
+  \ block of the disk that has _name_ in its header (surrounded
+  \ by spaces), and continues until the last block of the disk
+  \ or until `end-program` is executed.
+  \
+  \ See also: `loading-program`.
   \
   \ }doc
 
@@ -331,5 +337,8 @@
   \ 2017-03-13: Improve documentation.
   \
   \ 2017-04-01: Fix documentation.
+  \
+  \ 2017-05-08: Rename `load-app` to `load-program`, and so the
+  \ related words. Improve documentation.
 
   \ vim: filetype=soloforth

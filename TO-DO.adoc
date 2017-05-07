@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201705080017
+// Last modified 201705080104
 
 // Application development {{{1
 == Application development ==
@@ -124,7 +124,7 @@ mentioned), but it was in Forth-79 and Forth-83, and it's in Gforth.
 NOTE: Milestone: 0.14.0
 
 Rewrite all small code words in Z80 opcodes, without assembler.
-1xamples: `lshift`, `(g-emit)` and family, `f!`, `f@`,
+examples: `lshift`, `(g-emit)` and family, `f!`, `f@`,
 `get-drive`, `set-drive`, `(delete-file)`, `n>r`, `nr>`,
 `d-`, `@dos`, `c@dos`...
 
@@ -928,10 +928,10 @@ New: `.files` (from Pygmy Forth).
 
 Extract the games, make them independent projects?
 
-.2016-05-13, 2017-01-13:
+.2016-05-13, 2017-01-13, 2017-05-08:
 
-Convert the sample games to .fs.  and load them with `load-app`.  This will
-save several blocks of source.
+Convert the sample games to .fs.  and load them with `load-program`.
+This will save several blocks of source.
 
 // Graphics {{{1
 == Graphics ==
@@ -1609,10 +1609,11 @@ the blocks, and do the search directly in the buffer, without the
 `line>string` step. It will be faster, but it's lower level and may
 give problems with recursion.
 
-.2017-01-06:
+.2017-01-06, 2017-05-08:
 
-Improve `load-app`: save and restore the source, in order to continue loading
-after `load-app`. This way, several programs can be loaded this way.
+Improve `load-program`: save and restore the source, in order to
+continue loading after `load-program`. This way, several programs can
+be loaded this way.
 
 .2016-12-30:
 
@@ -1767,12 +1768,6 @@ NOTE: Milestone: 0.14.0
 
 Rename `?name-too-short` to `?empty-name`, or `?no-name`.
 
-.2017-01-06:
-
-NOTE: Milestone: 0.14.0
-
-Rename `load-app` to `load-program`.
-
 .2017-01-02:
 
 Improve definition names in the `ocr` module: Use "font" instead of
@@ -1793,17 +1788,6 @@ lines in the library.
 // Optimizations {{{1
 == Optimizations ==
 
-.2017-02-04 2017-03-12:
-
-Rewrite `hide` in Z80, move it before `hidden` and use this one as
-its tail code.
-
-Rewrite `reveal` in Z80, move it before `revelead` and use this one as
-its tail code.
-
-Problem: `last` is a user variable, so to fetch it from machine code
-more operations are needed.
-
 .2017-02-04:
 
 NOTE: Milestone: 0.14.0
@@ -1818,14 +1802,14 @@ to save space. For example, the patching of `cold.home`.
 // Parsing {{{1
 == Parsing ==
 
-.2016-05-13, 2017-02-22:
+.2016-05-13, 2017-02-22, 2017-05-08:
 
 Improve `?(` with `refill`, to cross block boundaries?  This would be
-needed  for `load-app`.
+needed  for `load-program`.
 
-.2016-06-01:
+.2016-06-01, 2017-05-08:
 
-When loading an app with `load-app`, make `(` behave like in the
+When loading a program with `load-program`, make `(` behave like in the
 Forth-2012 FILE word set.
 
 .2015-10-15:

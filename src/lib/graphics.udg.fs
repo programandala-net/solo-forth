@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704261833
+  \ Last modified: 201705080056
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -143,8 +143,8 @@ here anon> ! 3 cells allot
   \ character _c_ (0..255).  The maximum _width_ is 7 (imposed
   \ by the size of Forth source blocks). _height_ has no
   \ maximum, as the UDG block can ocuppy more than one Forth
-  \ block (provided the Forth block have no index line, i.e.
-  \ `load-app` is used to load the source).
+  \ block (provided the Forth block has no index line, i.e.
+  \ `load-program` is used to load the source).
   \
   \ The scans can be formed by binary digits, by the characters
   \ hold in `udg-blank` and `udg-dot`, or any combination of
@@ -252,7 +252,7 @@ create udg-blank '.' c,  create udg-dot 'X' c,
   \ in order to allow UDG blocks span on several Forth blocks,
   \ ignoring the index line.
   \
-  \ But anyway this is not needed when `load-app` is used.
+  \ But anyway this is not needed when `load-program` is used.
 
 need parse-name-thru
 
@@ -303,8 +303,8 @@ here anon> ! 3 cells allot
   \ and _height_ are in characters.  The maximum _width_ is 7
   \ (imposed by the size of Forth source blocks). _height_ has
   \ no maximum, as the UDG block can ocuppy more than one Forth
-  \ block (provided the Forth block have no index line, i.e.
-  \ `load-app` is used to load the source).
+  \ block (provided the Forth block has no index line, i.e.
+  \ `load-program` is used to load the source).
   \
   \ The scans can be formed by binary digits, by the characters
   \ hold in `udg-blank` and `udg-dot`, or any combination of
@@ -783,5 +783,8 @@ unused code udg-at-xy-display ( x y c -- )
   \ <printing.cursor.fs> module.
   \
   \ 2017-04-26: Fix needing of `udg:`.
+  \
+  \ 2017-05-08: Update documentation: `load-app` was renamed
+  \ to `load-program`.
 
   \ vim: filetype=soloforth
