@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702261230
+  \ Last modified: 201705071838
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -46,7 +46,7 @@ need u.r
   \
   \ fyi ( -- )
   \
-  \ Print information about the current status of the Forth
+  \ Display information about the current status of the Forth
   \ system.
   \
   \ }doc
@@ -62,6 +62,8 @@ need u.r
   \
   \ 2017-02-26: Update "hp" notation to "np", after the changes
   \ in the kernel.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth
 

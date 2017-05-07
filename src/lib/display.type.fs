@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704171806
+  \ Last modified: 201705071833
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -93,7 +93,7 @@
   \
   \ padding-spaces ( len1 len2 -- )
   \
-  \ If _len2_ minus _len1_ is a positive number, print that
+  \ If _len2_ minus _len1_ is a positive number, display that
   \ number of spaces; else do nothing.
   \
   \ See also: `type-left-field`.
@@ -269,5 +269,7 @@ constant type-center-field-cases
   \
   \ 2017-03-17: Improve documentation, after the implementation
   \ of `gigatype-title`.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth

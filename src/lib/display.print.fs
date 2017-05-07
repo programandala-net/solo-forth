@@ -3,13 +3,13 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704201609
+  \ Last modified: 201705071832
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ Tool to print left justified texts.
+  \ Tool to display left justified texts.
 
   \ ===========================================================
   \ Author
@@ -131,5 +131,7 @@ variable print-width
   \ 2017-02-03: Compact the code, saving two blocks.
   \
   \ 2017-04-20: Review. Modify layout.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705042144
+  \ Last modified: 201705071835
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -128,15 +128,15 @@ need at-accept need set-accept need toggle-capslock
 : .acceptx ( -- )
 
   accept-buffer @ >accept @ at-accept type
-    \ Print the start of the string, before the cursor.
+    \ Display the start of the string, before the cursor.
 
   1 inverse  >accept @ span @ <
   if accept-buffer @ >accept @ + c@ emit  else  space  then
   0 inverse
-    \ Print the cursor.
+    \ Display the cursor.
 
   accept-buffer @ span @ >accept @ 1+ min /string type ;
-    \ Print the end of the string, after the cursor.
+    \ Display the end of the string, after the cursor.
 
 : accept-edit ( -- ) clear-accept init-accept ;
 : accept-left ( -- ) ;
@@ -627,5 +627,7 @@ need kk-ports
   \ 2017-03-13: Improve documentation.
   \
   \ 2017-05-04: Improve documentation.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth

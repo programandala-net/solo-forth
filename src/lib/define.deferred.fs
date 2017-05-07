@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703140028
+  \ Last modified: 201705071751
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -44,7 +44,7 @@
 
   \ doc{
   \
-  \ defers ( Compilation: "name" -- )
+  \ defers ( "name" -- )
   \
   \ Compile the present contents of the deferred word "name"
   \ into the current definition. I.e. this produces static
@@ -90,9 +90,10 @@
 
 [unneeded] action-of ?exit
 
-: action-of \ Interpretation: ( "name" -- xt )
-            \ Compilation:    ( "name" -- )
-            \ Runtime:        ( -- xt )
+: action-of
+  \ Interpretation: ( "name" -- xt )
+  \ Compilation:    ( "name" -- )
+  \ Run-time:       ( -- xt )
   ' compiling? if    postpone literal postpone defer@
                else  defer@  then ; immediate
   \ doc{
@@ -100,7 +101,7 @@
   \ action-of ( -- )
   \   Interpretation: ( "name" -- xt )
   \   Compilation:    ( "name" -- )
-  \   Runtime:        ( -- xt )
+  \   Run-time:       ( -- xt )
   \
 
   \ .Interpretation
@@ -165,5 +166,7 @@
   \ 2017-03-14: Improve documuntation.  Improve needing of
   \ `<is>`, `[is]` and `is`. Update name: `>defer` to
   \ `>action`.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702280013
+  \ Last modified: 201705071821
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -127,8 +127,9 @@ code call ( a -- )
 
 [unneeded] ?repeat ?( need cs-dup
 
-: ?repeat ( Compilation: dest -- dest )
-           ( Execution:   f -- )
+: ?repeat
+  \ Compilation: ( dest -- dest )
+  \ Run-time:    ( f -- )
   cs-dup  postpone until ; immediate ?)
 
   \ Credit:
@@ -144,8 +145,9 @@ code call ( a -- )
 
   \ doc{
   \
-  \ ?repeat ( Compilation: dest -- dest )
-  \          ( Execution:   f -- )
+  \ ?repeat
+  \   Compilation: ( dest -- dest )
+  \   Run-time:    ( f -- )
   \
   \ An alternative exit point for `begin until` loops.
   \
@@ -197,12 +199,12 @@ code call ( a -- )
 
 [unneeded] ?? ?(
 
-: ?? ( Compilation: "name" -- ) ( Runtime: f -- )
+: ?? \ Compilation: ( "name" -- ) Runtime: ( f -- )
   postpone if
   defined ( nt | 0 ) ?dup 0= -13 ?throw
   name>immediate? ( xt f ) if  execute  else  compile,  then
   postpone then
- ;  immediate compile-only ?)
+  ; immediate compile-only ?)
 
   \ Credit:
   \
@@ -210,19 +212,19 @@ code call ( a -- )
 
   \ The original code was written two ways:
 
-  \ : ?? ( Compilation: "name" -- ) ( Runtime: f -- )
+  \ : ?? \ Compilation: ( "name" -- ) Runtime: ( f -- )
   \   s" if" evaluate  bl word count evaluate
   \   s" then" evaluate
   \ ;  immediate
 
-  \ : ?? ( Compilation: "name" -- ) ( Runtime: f -- )
+  \ : ?? \ Compilation: ( "name" -- ) Runtime: ( f -- )
   \   postpone if bl word count evaluate  postpone then
   \ ;  immediate
 
   \ XXX OLD -- This first version used `postpone` and
   \ `compile,` instead of `evaluate`.
 
-  \ : ?? ( Compilation: "name" -- ) ( Runtime: f -- )
+  \ : ?? \ Compilation: ( "name" -- ) Runtime: ( f -- )
   \   postpone if
   \   parse-name find-name 0= -13 ?throw compile,
   \   postpone then
@@ -230,7 +232,7 @@ code call ( a -- )
 
   \ XXX OLD -- simpler:
 
-  \ : ?? ( Compilation: "name" -- ) ( Runtime: f -- )
+  \ : ?? \ Compilation: ( "name" -- ) Runtime: ( f -- )
   \  postpone if  ' compile,  postpone then
   \ ;  immediate
 
@@ -255,9 +257,10 @@ code call ( a -- )
   \ doc{
   \
   \ ??
-  \   ( Compilation: "name" -- )
-  \   ( Runtime: f -- )
+  \   Compilation: ( "name" -- )
+  \   Run-time:    ( f -- )
   \
+
   \ ``??`` is an `immediate` and `compile-only` word.
   \
   \ Compilation:
@@ -266,7 +269,7 @@ code call ( a -- )
   \ If not found, throw exception #-13. If found and it's an
   \ `immediate` word, execute it, else compile it.
   \
-  \ Runtime:
+  \ Run-time:
   \
   \ If _f_ is not zero, execute _name_, which was compiled.
   \
@@ -293,9 +296,9 @@ code call ( a -- )
 
 [unneeded] retry ?( need name>body
 
-: retry ( Compilation: -- ) ( Run-time: -- )
+: retry ( -- )
   latest name>body postpone again
- ; immediate compile-only ?)
+  ; immediate compile-only ?)
 
   \ doc{
   \
@@ -311,13 +314,15 @@ code call ( a -- )
 
 [unneeded] ?retry ?( need retry
 
-: ?retry ( Compilation: -- ) ( Run-time: f -- )
+: ?retry \ Compilation: ( -- ) Run-time: ( f -- )
   postpone if  postpone retry  postpone then
  ; immediate compile-only ?)
 
   \ doc{
   \
-  \ ?retry ( Compilation: -- ) ( Run-time: f -- )
+  \ ?retry
+  \   \ Compilation: ( -- )
+  \   \ Run-time:    ( f -- )
   \
   \ Do a conditional branch to the start of the word.
   \
@@ -384,5 +389,7 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ 2017-02-17: Update cross references.
   \
   \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth

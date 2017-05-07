@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705051507
+  \ Last modified: 201705071801
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -673,7 +673,7 @@ code lowers ( ca len -- )
   \ }doc
 
 [unneeded] s' ?\ : s'  ''' parse-string ; immediate
-  \ ( Compilation: "ccc<char>" -- ) ( Run-time:  -- ca len )
+  \ Compilation: ( "ccc<char>" -- ) Run-time:  ( -- ca len )
 
   \ Credit:
   \
@@ -681,7 +681,9 @@ code lowers ( ca len -- )
 
   \ doc{
   \
-  \ s' ( Compilation: "ccc<char>" -- ) ( Run-time:  -- ca len )
+  \ s'
+  \   Compilation: ( "ccc<char>" -- )
+  \   Run-time:    ( -- ca len )
   \
   \ Identical to the standard word `s"`, but using single
   \ quote as delimiter. A simple alternative to `s\"` when only
@@ -985,5 +987,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \ of `string/`.
   \
   \ 2017-05-05: Improve documentation.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth

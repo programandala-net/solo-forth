@@ -3,13 +3,13 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132343
+  \ Last modified: 201705071831
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ Words to print characters at high resolution coordinates.
+  \ Words to display characters at high resolution coordinates.
 
   \ ===========================================================
   \ Author
@@ -240,5 +240,7 @@ create g-emit_ ( -- a ) asm
   \ the changes in the kernel.
   \
   \ 2017-03-13: Update name: `(pixel-addr)` to `gxy>scra_`.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth

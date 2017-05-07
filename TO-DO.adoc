@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201705062356
+// Last modified 201705071916
 
 // Application development {{{1
 == Application development ==
@@ -481,8 +481,6 @@ Complete the range of 48-bit and 64-bit numbers in the _Stack notation
 symbols_ table of the manual.
 
 .2017-05-05:
-
-Use "display" as a device-independent term instead of "print".
 
 Rename the `print` tool.
 
@@ -1552,10 +1550,12 @@ Adapt this word from Spectrum Forth-83, which uses it in `cold` and
     >S ;                \ And initialize screen output.
 ----
 
-.2015-09-22:
+.2015-09-22 2017-05-07:
 
 Add `console` to do `display` and init the keyboard and `tib` (see
 Spectrum Forth-83).
+
+Or use other name and rename `display` to `console`.
 
 // Multitasking {{{1
 == Multitasking ==
@@ -1760,6 +1760,10 @@ for the end user.
 
 // Names {{{1
 == Names ==
+
+.2017-05-07:
+
+Rename `display` to `console`.
 
 .2017-05-06:
 

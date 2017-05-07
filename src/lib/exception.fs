@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705052211
+  \ Last modified: 201705071821
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -82,13 +82,16 @@
   \
   \ }doc
 
-: abort" ( Compilation: "ccc<quote>" -- )
+: abort"
+  \ Compilation: ( "ccc<quote>" -- )
+  \ Run-time:    ( x -- )
   postpone (abort") ," ; immediate compile-only ?)
 
   \ doc{
   \
-  \ abort"  Compilation: ( "ccc<quote>" -- )
-  \         Run-time: ( x -- )
+  \ abort"
+  \   Compilation: ( "ccc<quote>" -- )
+  \   Run-time:    ( x -- )
   \
   \ Compile `(abort")`, parse _ccc_ delimited by a double
   \ quote and compile it.
@@ -132,11 +135,14 @@
   \   Execution:   ( f -- )
 
   \
-  \ Compilation: Parse and compile _ccc_ delimited by a double
-  \ quote.
+  \ Compilation:
   \
-  \ Execution: If _f_ is not zero, display the compiled message
-  \ _ccc_; else do nothing.
+  \ Parse and compile _ccc_ delimited by a double quote.
+  \
+  \ Execution:
+  \
+  \ If _f_ is not zero, display the compiled message _ccc_;
+  \ else do nothing.
   \
   \ }doc
 
@@ -305,6 +311,8 @@ s" Standard error codes" located errors-block !
   \ 2017-02-17: Update notation "behaviour" to "action".
   \
   \ 2017-05-05: Improve documentation.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth
 

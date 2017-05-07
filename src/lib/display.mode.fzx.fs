@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704211633
+  \ Last modified: 201705071832
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -88,7 +88,7 @@ create (fzx-emit) ( -- )
   asm
 
   \ Input:
-  \  A = character to print
+  \  A = character to display
 
   fzx-flags h ldp#,  \ initial address of local variables
   m dec,  \ check fzx-flags value by decrementing it
@@ -147,7 +147,7 @@ create (fzx-emit) ( -- )
 
   \ UNDEF_CHAR:
 
-  '?' 20 - a ld#,  \ print '?' instead of invalid character
+  '?' 20 - a ld#, \ display '?' instead of an invalid character
 
     rthen
 
@@ -376,5 +376,7 @@ code fzx-emit ( c -- )
   \
   \ 2017-04-21: Rename module and words after the new
   \ convention for display modes.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth

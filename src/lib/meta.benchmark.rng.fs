@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201705071837
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -43,10 +43,10 @@ create sample  /sample allot
   \ in the sample.
 
 : sampled%. ( u -- ) #sampled u% 0.r ." %" ;
-  \ Print _u_ sampled numbers as a percentage.
+  \ Display _u_ sampled numbers as a percentage.
 
 : .sampled ( u -- ) dup u. ." (" sampled%. ." )" ;
-  \ Print _u_ as the number of sampled numbers.
+  \ Display _u_ as the number of sampled numbers.
 
 : report ( ca len -- ) type sampled .sampled cr ;
 
@@ -68,11 +68,11 @@ need 2rdrop
 defer rng ( n -- 0..n-1 )
 
 : pixels%. ( u -- ) #pixels u% 0.r ." %" ;
-  \ Print _u_ pixels as a percentage of the maximum number of
+  \ Display _u_ pixels as a percentage of the maximum number of
   \ pixels.
 
 : .pixels ( u -- ) dup u. ." pixels (" pixels%. ." )" ;
-  \ Print _u_ as the number of pixels.
+  \ Display _u_ as the number of pixels.
 
 : .title ( ca len -- ) ." Code: " type ;
 
@@ -82,14 +82,14 @@ defer .cycles ( -- )
 
 : (.cycles) ( -- )
   cycles ?  s" cycles" cycles @ 1 = + type ;
-  \ Print the number of cycles.
+  \ Display the number of cycles.
 
 : .time ( d -- ) bench. ." per cycle" cr ;
 
 : .result ( ca len d -- )
   2>r pixels >r  .title cr  r> .pixels cr
   2r> .time .cycles ;  -->
-  \ Calculate and print the result of the benchmark.
+  \ Calculate and display the result of the benchmark.
   \ _d_ is the time in frames; _ca len_ is the title.
 
 ( rng-pix-bench )
@@ -1454,5 +1454,7 @@ code libzx-crnd ( -- b )
   \
   \ 2017-02-19: Replace `do`, which has been moved to the
   \ library, with `?do`.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth

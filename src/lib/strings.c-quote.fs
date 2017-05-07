@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702272344
+  \ Last modified: 201705071810
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,6 +33,7 @@
   \ Data space used: 43 bytes.
 
 : cslit ( -- ca ) r@ dup c@ 1+ r> + >r ;
+
   \ doc{
   \
   \ cslit ( -- ca )
@@ -46,32 +47,41 @@
   \
   \ }doc
 
-: csliteral ( ca len -- )
+: csliteral
+  \ Compilation: ( ca len -- )
+  \ Run-time:    ( -- ca )
   compile cslit s, ; immediate compile-only
+
   \ doc{
   \
-  \ csliteral ( Compilation: "ccc<quote>" -- ) ( Run-time: -- ca )
+  \ csliteral
+  \   Compilation: ( ca1 len1 -- )
+  \   Run-time:    ( -- ca2 )
+
   \
-  \ Compile a string _ca len_ which at run-time will
-  \ be returned as a counted string.
+  \ Compile `cslit` and string _ca1 len1_ in the current
+  \ definition.  At run-time `cslit` will return string _ca1
+  \ len1_ as a counted string _ca2_.
   \
   \ ``csliteral`` is an `immediate` and `compile-only` word.
   \
-  \ See also: `sliteral`, `cslit`.
+  \ See also: `sliteral`.
   \
   \ }doc
 
-: c" ( Compilation: "ccc<quote>" -- )
-      ( Run-time: -- ca )
+: c" \ Compilation: ( "ccc<quote>" -- ) Run-time: ( -- ca )
   '"' parse postpone csliteral ; immediate compile-only
+
   \ doc{
   \
-  \ c" ( Compilation: "ccc<quote>" -- ) ( Run-time: -- ca )
+  \ c"
+  \   Compilation: ( "ccc<quote>" -- )
+  \   Run-time:    ( -- ca )
+
   \
-  \ Parse a string delimited by double quotes and
-  \ compile it into the current definition.
-  \ At run-time the string will be returned as a
-  \ counted string _ca_.
+  \ Parse a string _ccc_ delimited by double quotes and compile it
+  \ into the current definition.  At run-time the string will
+  \ be returned as a counted string _ca_.
   \
   \ ``c"`` is an `immediate` and `compile-only` word.
   \
@@ -86,8 +96,7 @@ exit
   \ This is an alternative system-independent definition of
   \ `csliteral`.
 
-: csliteral ( Compilation: ca len -- )
-             ( Run-time: -- ca )
+: csliteral \ Compilation: ( ca len -- ) Run-time: ( -- ca )
   2>r postpone ahead here 2r> s, >r postpone then
   r> postpone literal ; immediate compile-only
   \ Credit:
@@ -109,5 +118,7 @@ exit
   \ definition of `csliteral` only as a reference.
   \
   \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth

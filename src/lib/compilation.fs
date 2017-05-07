@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704271956
+  \ Last modified: 201705071827
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -294,11 +294,12 @@
 
 [unneeded] [''] ?( need need-here need-here ''
 : ['']  '' postpone literal ; immediate compile-only ?)
-  \ ( Compilation: "name" -- )
+  \ Compilation: ( "name" -- )
 
   \ doc{
   \
-  \ [''] ( Compilation: "name" -- )
+  \ ['']
+  \   Compilation: ( "name" -- )
 
   \
   \ If _name_ is found in the current search order, compile its
@@ -417,12 +418,14 @@ need >>name need name>name need name>>
 
 [unneeded] [comp'] ?( need need-here need-here comp'
 
-: [comp'] ( Compilation: "name" -- ) ( Run-time: -- x xt )
+: [comp'] \ Compilation: ( "name" -- ) Run-time: ( -- x xt )
   comp' postpone 2literal ; immediate compile-only ?)
 
   \ doc{
   \
-  \ [comp'] ( Compilation: "name" -- ) ( Run-time: -- x xt )
+  \ [comp']
+  \   Compilation: ( "name" -- )
+  \   Run-time:    ( -- x xt )
   \
   \ Compilation token _x xt_ represents the compilation
   \ semantics of _name_.
@@ -845,7 +848,7 @@ variable warnings  warnings on
   \ Alternative action for the deferred word `warn`.  If the
   \ contents of the user variable `warnings` is not zero and
   \ the word name _ca len_ is already defined in the current
-  \ compilation word list, print throw error #-257, without
+  \ compilation word list, display `throw` error #-257, without
   \ actually throwing an error.
   \
   \ See: `warnings`, `warn-throw`, `warn.message`, `?warn`.
@@ -866,7 +869,7 @@ variable warnings  warnings on
   \ Alternative action for the deferred word `warn`.  If the
   \ contents of the user variable `warnings` is not zero and
   \ the word name _ca len_ is already defined in the current
-  \ compilation word list, print a warning message.
+  \ compilation word list, display a warning message.
   \
   \ See: `warnings`, `warn.throw`, `warn-throw`, `?warn`.
   \
@@ -1093,5 +1096,7 @@ variable warnings  warnings on
   \ of `[if]`, `[else]`, `[then]`.
   \
   \ 2017-04-27: Improve documentation.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth

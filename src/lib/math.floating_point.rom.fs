@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201705062203
+  \ Last modified: 201705071836
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -815,7 +815,7 @@ need fdepth need float need float+ need .depth
   (fp@ fp0 @ ?do
     i dup cr u. float bounds ?do  i c@ 4 .r  loop
   float +loop  cr ." Top" cr ;
-  \ XXX TODO -- improve: print the top at the top
+  \ XXX TODO -- improve: display the top at the top
 
 : dump-fs ( -- ) fdepth dup .depth 0> if  (dump-fs  then ;
 
@@ -1041,5 +1041,7 @@ code ftrunc ( F: r1 -- r2 )
   \
   \ 2017-05-06: Update the ROM calculator commands, which have
   \ been renamed. Improve documentation.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth

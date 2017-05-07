@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201705071839
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -40,7 +40,7 @@
   \
   \ where ( -- )
   \
-  \ Print information about the last error: block number, line
+  \ Display information about the last error: block number, line
   \ number and a picture of where it occurred. If the error was
   \ in the command line, nothing is printed.
   \
@@ -69,5 +69,7 @@
   \ when using floppy disks, but block numbers are unsigned).
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth

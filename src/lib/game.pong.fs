@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201704261815
+  \ Last modified: 201705071835
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -235,21 +235,21 @@ variable ball-frame  first-ball-frame ball-frame !
   bottom-line-attr racket2-x erase-racket ;
   \ Erase racket of player 2.
 
-: (print-points) ( n y -- )
+: (.points) ( n y -- )
   0 swap at-xy s>d <# # # # #>
   black set-ink sync type white set-ink ;
-  \ Print the points of a player.
+  \ Display the points of a player.
 
-: print-points1 ( -- )
-  points1 @ racket1-y (print-points) show-racket1 ;
-  \ Print the points of player 1.
+: .points1 ( -- )
+  points1 @ racket1-y (.points) show-racket1 ;
+  \ Display the points of player 1.
 
-: print-points2 ( -- )
-  points2 @ racket2-y (print-points) show-racket2 ;
-  \ Print the points of player 2.
+: .points2 ( -- )
+  points2 @ racket2-y (.points) show-racket2 ;
+  \ Display the points of player 2.
 
-: print-points ( -- ) print-points1 print-points2 ;
-  \ Print the points of both players.
+: .points ( -- ) .points1 .points2 ;
+  \ Display the points of both players.
 
 : change-x ( -- ) %10 direction ctoggle ;
   \ Change the x direction of the ball.
@@ -291,10 +291,10 @@ variable ball-frame  first-ball-frame ball-frame !
 
 : ready ( -- ) reset-rackets reset-ball ;
 
-: score-player1 ( -- ) 1 points1 +! print-points1 ;
+: score-player1 ( -- ) 1 points1 +! .points1 ;
   \ Increase player 1's points by one.
 
-: score-player2 ( -- ) 1 points2 +! print-points2 ;
+: score-player2 ( -- ) 1 points2 +! .points2 ;
   \ Increase player 2's points by one.
 
 [defined] 8* ?\ : 8* ( n1 -- n2 ) 2* 2* 2* ;
@@ -368,7 +368,7 @@ variable racket2-delay
   \ Draw the line of the arena.
 
 : arena ( -- )
-  cls  frame arena-line show-rackets print-points show-ball ;
+  cls  frame arena-line show-rackets .points show-ball ;
   \ Draw the arena.
 
 : ?move-racket1 ( -- )
@@ -528,5 +528,7 @@ run-message
   \ 2017-04-26: Replace old `udg[` with `udg-group`. Add
   \ `run-message` to show the message not only after
   \ compilation, but also to restart a new game.
+  \
+  \ 2017-05-07: Rename `print-points` and friends to `.points`.
 
   \ vim: filetype=soloforth

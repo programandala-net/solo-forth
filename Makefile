@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201705070045
+# Last modified: 201705071814
 
 # ==============================================================
 # Author
@@ -771,6 +771,7 @@ backgrounds/current.scr: backgrounds/current.pbm
 		--book \
 		--no-toc \
 		--linkcolor blue \
+		--linkstyle plain \
 		--header " t " \
 		--footer "  1" \
 		--format pdf14 \

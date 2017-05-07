@@ -35,15 +35,15 @@
 
 variable times-xt  \ the _xt_ executed by `times`
 
-: times ( n -- )
+: times ( u -- )
   rp@ @  dup cell+ rp@ !  @ times-xt !
   0 ?do  times-xt perform  loop ; compile-only ?)
 
   \ doc{
   \
-  \ times ( n -- )
+  \ times ( u -- )
   \
-  \ Repeat the next compiled instruction _n_ times.  If _n_ is
+  \ Repeat the next compiled instruction _u_ times.  If _u_ is
   \ zero, continue executing the following instruction.
   \
   \ ``times`` is useful to implement complicated math
@@ -60,6 +60,8 @@ variable times-xt  \ the _xt_ executed by `times`
   \ : blinking ( -- ) 100 times blink  ." Done" cr ;
   \ ----
 
+  \ Origin: cmForth's ``repeats``.
+  \
   \ See also: `dtimes`, `executions`.
   \
   \ }doc

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132023
+  \ Last modified: 201705071833
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -783,7 +783,7 @@ code (file>screen) ( -- ior )
     d h ldp,
     rbegin lbyte hook, d stap,
             \ a l ld, d push, b push, 1744 call, b pop, d pop,
-              \ print HL
+            \ display HL
             d incp, b decp, b a ld, c or,
     z? runtil dos-out,
     \ rbegin
@@ -792,8 +792,9 @@ code (file>screen) ( -- ior )
 
   rthen b pop, next ix ldp#, af push, ' dosior>ior jp, end-code
         \ restore the Forth registers and save the ior
-  \ Print a file on the screen, line by line, using the data
-  \ hold in UFIA.
+
+  \ Display the contents of a file on the screen, line by line,
+  \ using the data hold in UFIA.
 
 : file>screen ( ca len -- ior )
   0 0 2swap set-code-file (file>screen) ;
@@ -810,14 +811,16 @@ code g.100h ( u -- )
   h pop, b push,
   h push, patch hook, h pop, 1744 call, dos-out,
   b pop,  next ix ldp#,  jpnext, end-code
-  \ Print _u_ using a routine of the Plus D ROM, paging it
+
+  \ Display _u_ using a routine of the Plus D ROM, paging it
   \ with a hook.
 
 code g.100i ( u -- )
   h pop, b push,
   dos-in, 1744 call, dos-out,
   b pop,  next ix ldp#,  jpnext, end-code
-  \ Print _u_ using a routine of the Plus D ROM, paging it
+
+  \ Display _u_ using a routine of the Plus D ROM, paging it
   \ with an `in` instruction.
 
 ( cd3 )
@@ -1439,5 +1442,7 @@ code (rename-file ( -- ior )
   \ opcodes. Improve documentation.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth

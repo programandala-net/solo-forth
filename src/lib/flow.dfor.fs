@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702272359
+  \ Last modified: 201705071738
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,20 +25,7 @@
 
 ( dfor dstep di )
 
-: (dstep) ( R: x d -- x d' )
-
-  \ doc{
-  \
-  \ (dstep) ( R: x d -- x d' | x )
-  \
-  \ The run-time procedure compiled by `dstep`.
-  \
-  \ If the loop index _ud_ is zero, discard it and continue
-  \ execution after the loop. Otherwise decrement the loop
-  \ index and continue execution at the beginning of the loop.
-  \
-  \ }doc
-
+: (dstep) ( R: x ud -- x ud' )
   r>  \ save the return address
   2r> 2dup or  \ is the index zero?
   if    -1. d+ 2>r
@@ -48,13 +35,26 @@
   then  >r ;
     \ restore the return address
 
-: dfor ( d -- ) postpone 2>r <mark ; immediate compile-only
+  \ doc{
+  \
+  \ (dstep) ( R: x ud -- x ud' | x )
+  \
+  \ The run-time procedure compiled by `dstep`.
+  \
+  \ If the loop index _ud_ is zero, discard it and continue
+  \ execution after the loop. Otherwise decrement the loop
+  \ index and continue execution at the beginning of the loop.
+  \
+  \ }doc
+
+: dfor ( ud -- ) postpone 2>r <mark ; immediate compile-only
 
   \ doc{
   \
   \ dfor
-  \
-  \ Compilation: ( R: -- dest ) Run-time: ( d -- )
+  \   Compilation: ( R: -- dest )
+  \   Run-time: ( ud -- )
+
   \
   \ Start of a ``dfor``..`dstep` loop, that will iterate _ud+1_
   \ times, starting with _du_ and ending with 0.
@@ -74,18 +74,19 @@
   \
   \ dstep
   \   Compilation: ( dest -- )
-  \   Run-time:    ( R: ud -- ud' )
+  \   Run-time:    ( R: ud -- ud' | )
+
   \
   \ ``dstep`` is an `immediate` and `compile-only` word.
   \
-  \ Compilation: ( dest -- )
+  \ Compilation:
   \
   \ Append the run-time semantics given below to the current
-  \ definition. Resolve the destination of `dfor`.
+  \ definition. Resolve the destination _dest_ of `dfor`.
   \
-  \ Run-time: ( R: ud -- ud' )
+  \ Run-time:
   \
-  \ If the loop index is zero, discard the loop parameters and
+  \ If the loop index _ud_ is zero, discard the loop parameters and
   \ continue execution after the loop. Otherwise decrement the
   \ loop index and continue execution at the beginning of the
   \ loop.
@@ -119,5 +120,7 @@ need alias
   \ 2016-11-26: Improve `(dstep)`.
   \
   \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth

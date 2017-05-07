@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705052114
+  \ Last modified: 201705071832
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -84,7 +84,7 @@
   \
   \ ud. ( ud -- )
   \
-  \ Print an usigned double number _ud_.
+  \ Display an usigned double number _ud_.
   \
   \ See also: `ud.r`, `d.`, `u.`.
   \
@@ -399,5 +399,7 @@ need base' need base> need binary
   \ 2017-02-25: Improve documentation.
   \
   \ 2017-05-05: Improve documentation.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth

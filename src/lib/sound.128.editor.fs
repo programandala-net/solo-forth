@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221412
+  \ Last modified: 201705071838
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -49,7 +49,7 @@ variable sound  variable register
   play-key emit ."           - play" cr
   ." left/right - decrease/increase value" cr
   ." up/down    - previous/next register" cr ;
-  \ XXX TODO -- print name of control keys
+  \ XXX TODO -- Display the name of control keys.
 
 -->
 
@@ -76,20 +76,20 @@ create label  , , , , , , , , , , , , , ,  -->
 ( edit-sound )
 
 : .label ( n -- ) cells label + perform ;
-  \ Print the label of register _n_.
+  \ Display the label of register _n_.
 
 : .register ( n -- )
   >r 0 r@ at-xy  sound @ r@ + c@ 4 .r  space r> .label cr ;
 
 : .menu-register ( n -- )
   dup register @ = inverse  .register  0 inverse ;
-  \ Print register _n_ of the currently edited sound.
+  \ Display register _n_ of the currently edited sound.
 
 : .sound ( -- ) /sound 0 ?do  i .menu-register  loop ;
-  \ Print the data of the currently edited sound.
+  \ Display the data of the currently edited sound.
 
 : register@ ( -- n ) register @ dup .register ;
-  \ Print the currently edited register on its position,
+  \ Display the currently edited register on its position,
   \ without inverse video, and return its value.
 
 : register! ( n -- ) dup register ! .menu-register ;
@@ -146,5 +146,7 @@ set-current  previous
   \
   \ 2017-02-19: Replace `do`, which has been moved to the
   \ library, with `?do`.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth

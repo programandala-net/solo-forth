@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703292305
+  \ Last modified: 201705071837
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -179,13 +179,13 @@ need anon  here anon> ! 5 cells allot
 
 : run5  ( x[n-1]..x[0] n -- )
   set-anon cr
-  [ 0 ] anon ?                   \ print first parameter
-  123 [ 0 ] anon ! [ 0 ] anon ?  \ print 123
-  [ 1 ] anon ?                   \ print second parameter
-  [ 2 ] anon ?                   \ print third parameter
-  555 [ 2 ] anon ! [ 2 ] anon ?  \ print 555
-  [ 3 ] anon ?                   \ print fourth parameter
-  [ 4 ] anon ? ;                 \ print fifth parameter
+  [ 0 ] anon ?                   \ display first parameter
+  123 [ 0 ] anon ! [ 0 ] anon ?  \ display 123
+  [ 1 ] anon ?                   \ display second parameter
+  [ 2 ] anon ?                   \ display third parameter
+  555 [ 2 ] anon ! [ 2 ] anon ?  \ display 555
+  [ 3 ] anon ?                   \ display fourth parameter
+  [ 4 ] anon ? ;                 \ display fifth parameter
 
 400 300 200 100 000 5 run5
 
@@ -1282,5 +1282,7 @@ blk @ 1+ blk @ 2+ thru
   \
   \ 2017-03-29: Add `orthodraw-test`, `ortholine-test`,
   \ `menu-test`, `sqrt-test`.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth

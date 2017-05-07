@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703291656
+  \ Last modified: 201705071830
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -123,10 +123,11 @@ variable /tabulate  8 /tabulate !
   \
   \ tab ( -- )
   \
-  \ Emit a tabulate character (character code 6), which moves
-  \ the print position to the next 16-character column.
+  \ `emit` a `'tab'` (character code 6), so that the next
+  \ character displayed will appear at the next 16-character
+  \ column.
   \
-  \ See also: `'tab'`, `tabulate`.
+  \ See also: `tabulate`.
   \
   \ }doc
 
@@ -210,5 +211,7 @@ variable /tabulate  8 /tabulate !
   \ 2017-02-17: Update cross references.
   \
   \ 2017-03-29: Improve documentation.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth

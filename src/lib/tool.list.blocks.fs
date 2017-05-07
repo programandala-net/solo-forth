@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703130119
+  \ Last modified: 201705071840
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -43,8 +43,9 @@
   \
   \ .line# ( n -- )
   \
-  \ Print line number _n_ right-aligned in a field whose width
-  \ depends on the current radix (decimal, hex or binary).
+  \ Display line number _n_ right-aligned in a field whose
+  \ width depends on the current radix (decimal, hex or
+  \ binary).
   \
   \ }doc
 
@@ -55,7 +56,7 @@
   \
   \ .line ( n1 n2 -- )
   \
-  \ Print line _n1_ from block _n2_, without trailing spaces.
+  \ Display line _n1_ from block _n2_, without trailing spaces.
   \
   \ Origin: fig-Forth.
   \
@@ -141,8 +142,8 @@ need .line need nuf? need list-line need ?leave
   \
   \ .index ( u -- )
   \
-  \ Print the first line of the block _u_, which conventionally
-  \ contains a comment with a title.
+  \ Display the first line of the block _u_, which
+  \ conventionally contains a comment with a title.
   \
   \ }doc
 
@@ -155,7 +156,7 @@ need .line need nuf? need list-line need ?leave
   \
   \ index ( u1 u2 -- )
   \
-  \ Print the first line of each block over the range from
+  \ Display the first line of each block over the range from
   \ _u1_ to _u2_, which conventionally contains a comment with
   \ a title.
   \
@@ -180,9 +181,9 @@ need .index need contains need nuf? need ?leave
   \
   \ index-like ( u1 u2 "name" -- )
   \
-  \ Print the first line of each block over the range from _u1_
-  \ to _u2_, which conventionally contains a comment with a
-  \ title, as long as the string _name_ is included in the
+  \ Display the first line of each block over the range from
+  \ _u1_ to _u2_, which conventionally contains a comment with
+  \ a title, as long as the string _name_ is included in the
   \ line. The string comparison is case-sensitive.
   \
   \ See also: `index`, `index-ilike`.
@@ -203,9 +204,9 @@ need .index need contains need nuf? need ?leave
   \
   \ index-ilike ( u1 u2 "name" -- )
   \
-  \ Print the first line of each block over the range from _u1_
-  \ to _u2_, which conventionally contains a comment with a
-  \ title, as long as the string _name_ is included in the
+  \ Display the first line of each block over the range from
+  \ _u1_ to _u2_, which conventionally contains a comment with
+  \ a title, as long as the string _name_ is included in the
   \ line. The string comparison is case-insensitive.
   \
   \ See also: `index`, `index-like`.
@@ -473,5 +474,7 @@ need list-lines
   \
   \ 2017-03-13: Update names including "rec" to "sector(s)";
   \ update names including "blk" to "block(s)".
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth

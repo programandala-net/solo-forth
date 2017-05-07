@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705052330
+  \ Last modified: 201705071828
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1108,9 +1108,9 @@ create (0-9-color. ( -- a ) asm
   \
   \ (0-1-8-color. ( n c -- )
   \
-  \ Print control character _c_. Then convert _n_ to the set 0,
-  \ 1 and 8 and print it as a character. The conversion of _n_
-  \ is done as follows:
+  \ `emit` control character _c_. Then convert _n_ to the set
+  \ 0, 1 and 8 and `emit` it. The conversion of _n_ is done as
+  \ follows:
 
   \ - 0, 1 and 8 are not changed.
   \ - 2, 4 and 6 are converted to 0.
@@ -1215,5 +1215,7 @@ create (0-9-color. ( -- a ) asm
   \ 2017-04-23: Improve documentation.
   \
   \ 2017-05-05: Improve documentation.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth

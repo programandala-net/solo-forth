@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132019
+  \ Last modified: 201705071840
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -45,7 +45,7 @@
   \
   \ (.word ( nt -- )
   \
-  \ Default action of `.word`: print the name of the
+  \ Default action of `.word`: display the name of the
   \ definition _nt_ and execute `tab`.
   \
   \ }doc
@@ -177,5 +177,7 @@
   \ Update cross references.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth

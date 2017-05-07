@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201705071800
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -77,32 +77,32 @@
   \ XXX TODO -- probably, common factor with `endcase`
 
 : endselect  postpone drop  thens ; immediate
-  \ ( Compilation: 0 a'1 ... a'n -- ) ( Run-time: x0 -- )
+  \ Compilation: ( 0 a'1 ... a'n -- ) Run-time: ( x0 -- )
 
 : when
-  \ ( Compilation: 0 orig1..orign -- )
-  \ ( Run-time: xxx )
+  \ Compilation: ( 0 orig1..orign -- )
+  \ Run-time:    ( xxx )
   postpone else  >r >r >r  thens  r> r> r>  postpone drop
  ; immediate
   \ XXX TODO stack
 
 : continue
-  \ ( Compilation: xxx )
-  \ ( Run-time: xxx )
+  \ Compilation: ( xxx )
+  \ Run-time:    ( xxx )
   >r >r >r thens  0  r> r> r> ; immediate
   \ XXX TODO stack
 
 : equal
-  \ ( Compilation: -- orig )
-  \ ( Run-time: x0 x1 -- )
+  \ Compilation: ( -- orig )
+  \ Run-time:    ( x0 x1 -- )
   postpone over  postpone -  postpone if ; immediate
 
 : (range) ( x0 x1 x2 -- x0 f )
   2>r dup 2r> over - -rot - u< ;
 
 : range
-  \ ( Compilation: -- orig )
-  \ ( Run-time: x0 x1 x2 -- x0 f )
+  \ Compilation: ( -- orig )
+  \ Run-time:    ( x0 x1 x2 -- x0 f )
   postpone (range)  postpone if ; immediate  -->
 
   \ ===========================================================
@@ -114,5 +114,7 @@
   \ 2016-12-30: Compact the code, saving one block.
   \
   \ 2017-01-23: Move `select-test` to the tests module.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth

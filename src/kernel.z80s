@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705060006
+; Last modified: 201705062057
 
 include version.z80s
 
@@ -2933,11 +2933,11 @@ question_stringer_.enough:
 
 ; doc{
 ;
-; <mark ( C: -- a )
+; <mark ( C: -- dest )
 ;
-; _a_ is the current data-space pointer, to be used as the
-; destination of a backward branch.  _a_ is typically only used
-; by `<resolve` to compile a branch address.
+; _dest_ is the current data-space pointer, to be used as the
+; destination of a backward branch.  _dest_ is typically only
+; used by `<resolve` to compile a branch address.
 ;
 ; ``<mark`` is an `alias` of `here`.
 ;
@@ -6091,7 +6091,7 @@ two_store.into_hl_pointer:
 ; `last-font-char`.
 ;
 ; See also: `get-font`, `rom-font`, `default-font`, `mode-32`,
-; `mode-42`, `mode-64`.
+; `mode-32iso`, `mode-42`, `mode-64`.
 ;
 ; }doc
 
@@ -6295,8 +6295,9 @@ do_colon:
 ; Definition:
 
 ; ----
-; : ; \ Compilation: ( -- )
-;     \ Run-time:    ( -- ) ( R: nest-sys -- )
+; : ;
+;   \ Compilation: ( -- )
+;   \ Run-time:    ( -- ) ( R: nest-sys -- )
 ;   postpone exit finish-code ;
 ; ----
 
@@ -10734,9 +10735,14 @@ search.failed:
 
 ; doc{
 ;
-; sliteral ( ca len -- )
+; sliteral
+;   Compilation: ( ca1 len1 -- )
+;   Run-time:    ( -- ca2 len1 )
+
 ;
-; Compile string _ca len _ in the current definition.
+; Compile `slit` and string _ca len_ in the current definition.
+; At run-time `slit` will return string _ca1 len1_ as _ca2
+; len1_.
 ;
 ; ``sliteral`` is an `immediate` and `compile-only` word.
 ;
@@ -10747,6 +10753,7 @@ search.failed:
 ;   postpone slit s,  ; immediate compile-only
 ; ----
 
+; See also: `slit`, `s,`, `csliteral`.
 ;
 ; }doc
 

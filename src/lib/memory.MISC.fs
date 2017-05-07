@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704091812
+  \ Last modified: 201705070022
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -45,7 +45,7 @@ code -! ( n|u a -- )
   \
   \ -! ( n|u a -- )
   \
-  \ Subtract n|u from the single-cell number at _a_.
+  \ Subtract _n|u_ from the single-cell number at _a_.
   \
   \ See also: `+!`, `1-!`, `c-!`.
   \
@@ -676,5 +676,7 @@ code ctoggle ( b ca -- )
   \ alias of `count`.
   \
   \ 2017-04-09: Fix needing of `bit>mask` and family.
+  \
+  \ 2017-05-07: Fix markup in documentation.
 
   \ vim: filetype=soloforth

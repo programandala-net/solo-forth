@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702280009
+  \ Last modified: 201705071821
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -28,10 +28,10 @@
 
 ( [: ;] )
 
-: [:  \ Compilation: ( -- orig xt )
+: [: \ Compilation: ( -- orig xt )
   postpone ahead  latestxt here lastxt !
   docolon [ assembler-wordlist >order ] call, [ previous ]
- ; immediate compile-only
+  ; immediate compile-only
 
   \ doc{
   \
@@ -66,8 +66,9 @@
   \ the start of the present quotation or any of the containing
   \ quotations.
 
-: ;]  \ Compilation: ( orig xt1 -- )
-      \ Run-time:   ( -- xt2 )
+: ;]
+  \ Compilation: ( orig xt1 -- )
+  \ Run-time:    ( -- xt2 )
   lastxt !  postpone exit  dup >resolve
   cell+ postpone literal ; immediate compile-only
 
@@ -75,14 +76,14 @@
   \
   \ ;]
   \   Compilation: ( orig xt1 -- )
-  \   Run-time: ( -- xt2 )
+  \   Run-time:    ( -- xt2 )
   \
 
   \ End a quotation started by `[:`.
   \
   \ ``;]`` is an `immediate` and `compile-only` word.
   \
-  \ Compilation: ( orig xt1 -- )
+  \ Compilation:
   \
   \ End the current nested definition, and resume compilation
   \ to the previous (containing) current definition, identified
@@ -90,7 +91,7 @@
   \ Append the following run-time to the (containing) current
   \ definition:
   \
-  \ Run-time: ( -- xt2 )
+  \ Run-time:
   \
   \ _xt2_ is the execution token of the nested definition.
   \
@@ -111,5 +112,7 @@
   \ 2017-02-27: Improve documentation.
   \
   \ 2017-03-18: Improve documentation.
+  \
+  \ 2017-05-07: Improve documentation.
 
   \ vim: filetype=soloforth
