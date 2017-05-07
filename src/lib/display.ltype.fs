@@ -1,9 +1,9 @@
-  \ display.print.fs
+  \ display.ltype.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071832
+  \ Last modified: 201705080017
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,7 +23,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( print )
+( ltype )
 
   \ XXX UNDER DEVELOPMENT
   \ Adapted from Galope <print.fs>.
@@ -32,32 +32,32 @@ need last-row need /name
 
   \ export
 
-variable #printed   \ Printed chars in the current line.
+variable #ltyped   \ chars displayed in the current line.
 
 variable #indented   \ Indented chars in the current line.
 
-: printed+ ( u -- ) #printed +! ;
+: ltyped+ ( u -- ) #ltyped +! ;
 
 : indented+ ( u -- ) #indented +! ;
 
-: (.word ( ca len -- ) dup printed+ type ;
+: (.word ( ca len -- ) dup ltyped+ type ;
 
-: .char ( c -- ) emit 1 printed+ ;
+: .char ( c -- ) emit 1 ltyped+ ;
 
 : not-at-home? ( -- 0f ) xy + ;
 
   \ export
 
-: no-printed ( -- ) #printed off #indented off ;
+: no-ltyped ( -- ) #ltyped off #indented off ;
 
-: print-home ( -- ) home no-printed ;
+: ltype-home ( -- ) home no-ltyped ;
 
-: print-page ( -- ) page print-home ;
+: ltype-page ( -- ) page ltype-home ;
 
-: print-start-of-line ( -- )
-  #printed @ trm+move-cursor-left no-printed ;
+: ltype-start-of-line ( -- )
+  #ltyped @ trm+move-cursor-left no-ltyped ;
 
-  \ : print-cr ( -- ) not-at-home? if  cr  then  no-printed ;
+  \ : ltype-cr ( -- ) not-at-home? if  cr  then  no-ltyped ;
   \ XXX OLD first version
 
   \ hide
@@ -65,43 +65,43 @@ variable #indented   \ Indented chars in the current line.
 : at-last-start-of-line? ( -- f )
   xy last-row = swap 0= and ;  -->
 
-( print )
+( ltype )
 
 : not-at-start-of-line? ( -- f ) column 0<> ;
 
-: print-cr? ( -- f ) not-at-home? not-at-start-of-line? and ;
+: ltype-cr? ( -- f ) not-at-home? not-at-start-of-line? and ;
   \ XXX FIXME -- 2012-09-30 what this was for?:
   \ at-last-start-of-line? 0= or
 
   \ export
 
-defer (print-cr ' (print-cr ' cr defer!
+defer (ltype-cr ' (ltype-cr ' cr defer!
 
-: print-cr print-cr? if (print-cr then no-printed ;
+: ltype-cr ltype-cr? if (ltype-cr then no-ltyped ;
 
-variable print-width
+variable ltype-width
 
   \ hide
 
-: previous-word? ( -- f ) #printed @ #indented @ > ;
+: previous-word? ( -- f ) #ltyped @ #indented @ > ;
 
 : ?space ( -- ) previous-word? if bl .char then ;
 
-: current-print-width ( -- u ) print-width @ ?dup ?exit cols ;
+: current-ltype-width ( -- u ) ltype-width @ ?dup ?exit cols ;
 
-: too-long? ( u -- f ) 1+ #printed @ + current-print-width > ;
+: too-long? ( u -- f ) 1+ #ltyped @ + current-ltype-width > ;
 
 : .word ( ca len -- )
-  dup too-long? if print-cr else ?space then (.word ;
+  dup too-long? if ltype-cr else ?space then (.word ;
 
-: (print-indentation ( u -- )
-  dup trm+move-cursor-right dup indented+ printed+ ;  -->
+: (ltype-indentation ( u -- )
+  dup trm+move-cursor-right dup indented+ ltyped+ ;  -->
 
-( print )
+( ltype )
 
   \ export
 
-: print-indentation ( u -- ) ?dup 0exit (print-indentation ;
+: ltype-indentation ( u -- ) ?dup 0exit (ltype-indentation ;
 
   \ hide
 
@@ -113,17 +113,17 @@ variable print-width
 
 : first-word ( ca1 len1 -- ca2 len2 ca3 len3 ) /name >word ;
 
-: (print ( ca1 len1 -- ca2 len2 ) first-word .word ;
+: (ltype ( ca1 len1 -- ca2 len2 ) first-word .word ;
 
   \ export
 
-: print ( ca len --) begin dup while (print repeat 2drop ;
+: ltype ( ca len --) begin dup while (ltype repeat 2drop ;
 
   \ Suggested usage in the application:
 
   \ 4 value indentation
   \ : paragraph ( ca len -- )
-  \   print-cr indentation print-indentation print ;
+  \   ltype-cr indentation ltype-indentation ltype ;
 
   \ ===========================================================
   \ Change log
@@ -133,5 +133,8 @@ variable print-width
   \ 2017-04-20: Review. Modify layout.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2017-05-08: Rename "print" to "ltype" in all words,
+  \ including the filename of the module.
 
   \ vim: filetype=soloforth
