@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705062057
+; Last modified: 201705072353
 
 include version.z80s
 
@@ -10388,8 +10388,8 @@ error.message:
 ;
 ; header, ( ca len -- )
 ;
-; Create a definition header in the names space using the
-; name _ca len_ and hide it by setting its smudge bit.
+; Create a definition header in the names space using the name
+; _ca len_ and hide it by setting its `smudge` bit.
 ;
 ; The execution token pointer of the new header points to the
 ; data space pointer.
@@ -11700,27 +11700,36 @@ question_paren.exit:
 ;
 ; quit ( -- )
 ;
-; Make the terminal the current source and enter interpretation
-; `state`. Then repeat the following:
+; Empty the return stack, make the terminal the current source
+; and enter interpretation `state`. Then repeat the following:
 ;
-; . Accept a line from the input source into the input buffer,
+; - Accept a line from the input source into the input buffer,
 ;   set `>in` to zero and `interpret`.
-; . Execute `ok` to display the system prompt, if in
-;   interpretation `state`.
+; - Display the system prompt, if in interpretation `state`.
 ;
+; Definition:
+
+; ----
+; : quit ( -- )
+;   rp0 @ rp!  postpone [
+;   begin
+;     cr query interpret
+;     interpreting? if ok then
+;   again ;
+; ----
+
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `terminal>source`, `[`, `abort`.
+; See also: `[`, `query`, `interpret`, `ok`,
+; `abort
 ;
 ; }doc
 
-  ; XXX TODO -- Add the definition to the documentation.
-
-  dw terminal_to_source_
+  dw rp0_,fetch_,rp_store_
+  ; dw terminal_to_source_ ; XXX OLD -- Done in `query`
   dw left_bracket_
 quit.begin:
-  dw rp0_,fetch_,rp_store_
   dw cr_,query_ ; XXX TMP ; XXX TODO
   dw interpret_
   dw compiling_question_
