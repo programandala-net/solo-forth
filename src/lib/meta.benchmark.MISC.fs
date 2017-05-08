@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705060234
+  \ Last modified: 201705080154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -2572,6 +2572,49 @@ code c2-d0= ( d -- f )
 
   \ * The figure in parens is the percentage of `+ 0=`.
 
+( d=-bench )
+
+need bench{ need }bench.
+
+: d<>(2) ( xd1 xd2 -- f ) rot <> if 2drop true exit then <> ;
+: d=(2n) ( xd1 xd2 -- f ) d<>(2) 0= ;
+: d=(2) ( xd1 xd2 -- f ) rot <> if 2drop false exit then = ;
+
+: d=(1)   ( xd1 xd2 -- f ) rot = >r = r> and ;
+: d<>(1n) ( xd1 xd2 -- f ) d=(1) 0= ;
+: d<>(1) ( xd1 xd2 -- f ) rot <> >r <> r> or ;
+
+-->
+
+( d=-bench )
+
+: run ( -- )
+  cr ." d= benchmark" cr  65535
+  dup cr ." d=(1)  :"
+  bench{ 0 ?do 0. 0. d=(1)  0. 1. d=(1)  2drop loop }bench.
+  dup cr ." d=(2n) :"
+  bench{ 0 ?do 0. 0. d=(2n)  0. 1. d=(2n)  2drop loop }bench.
+  dup cr ." d=(2)  :"
+  bench{ 0 ?do 0. 0. d=(2) 0. 1. d=(2) 2drop loop }bench.
+  dup cr ." d<>(1n):"
+  bench{ 0 ?do 0. 0. d<>(1n) 0. 1. d<>(1n) 2drop loop }bench.
+  dup cr ." d<>(2) :"
+  bench{ 0 ?do 0. 0. d<>(2) 0. 1. d<>(2) 2drop loop }bench.
+      cr ." d<>(1) :"
+  bench{ 0 ?do 0. 0. d<>(1) 0. 1. d<>(1) 2drop loop }bench. ;
+
+  \ 2017-05-08:
+  \
+  \ Benchmark results in frames (1 frame = 50th of second).
+
+  \ d=(1) d=(2n) d=(2) d<>(1n) d<>(2) d<>(1)
+  \ ----- ------ ----- ------- ------ ------
+  \  2967   3159  2426    3703   2442   2980
+  \
+  \ Combinations:
+  \ d=(1) + d<>(1n) = 2967 + 3703 = 6670
+  \ d=(2n) + d<>(2) = 3159 + 2442 = 5601
+
   \ ===========================================================
   \ Change log
 
@@ -2664,5 +2707,7 @@ code c2-d0= ( d -- f )
   \ 2017-04-04: Improve comments.
   \
   \ 2017-05-06: Add `d0=-bench`.
+  \
+  \ 2017-05-08: Add `d=-bengh`.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705062050
+  \ Last modified: 201705080119
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -242,7 +242,7 @@ code d0= ( d -- f )
 
 ( d= d<> dmin dmax )
 
-[unneeded] d= ?\ : d= ( xd1 xd2 -- f ) d<> 0= ;
+[unneeded] d= ?\ need d<> : d= ( xd1 xd2 -- f ) d<> 0= ;
   \ XXX TODO -- rewrite in Z80
 
   \ doc{
@@ -256,13 +256,8 @@ code d0= ( d -- f )
   \ }doc
 
 [unneeded] d<>
-?\ : d<> ( d1 d2 -- f ) rot <> if  2drop true exit  then  <> ;
+?\ : d<> ( xd1 xd2 -- f ) rot <> if 2drop true exit then <> ;
   \ XXX TODO -- rewrite in Z80
-
-  \ XXX OLD
-  \ XXX TODO benchmark
-  \ : d= ( xd1 xd2 -- f ) rot = >r = r> and ;
-  \ : d<> ( xd1 xd2 -- f ) d= 0= ;
 
   \ doc{
   \
@@ -621,5 +616,7 @@ need 2nip need cell-bits
   \ 2017-05-05: Improve documentation.
   \
   \ 2017-05-06: Rewrite `d0=` in Z80. Improve documentation.
+  \
+  \ 2017-05-08: Fix needing of `d=`.
 
   \ vim: filetype=soloforth
