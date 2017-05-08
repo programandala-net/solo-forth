@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201705080155
+// Last modified 201705081346
 
 // Application development {{{1
 == Application development ==
@@ -457,6 +457,12 @@ additional link.
 
 // Documentation {{{1
 == Documentation ==
+
+.2017-05-08:
+
+NOTE: Milestone: 0.14.0
+
+Use "data field (address)" instead of "parameter field (address)".
 
 .2017-05-06:
 

@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705072359
+; Last modified: 201705081343
 
 include version.z80s
 
@@ -1249,8 +1249,8 @@ if 1 ; abase
 ;
 ; abase ( -- a )
 ;
-; A variable used by `asm`.  _a_ is the address of a cell where
-; the current value of `base` is preserved.
+; _a_ is the address of a cell where the current value of `base`
+; is preserved by `asm`.
 ;
 ; }doc
 
@@ -1267,9 +1267,15 @@ endif
 ;
 ; end-asm ( -- )
 ;
-; Exit the assembler mode started by `asm`.
+; Exit the `assembler` mode started by `asm`.
 ;
-; See also: `end-code`.
+; Definition:
+
+; ----
+; : end-asm ( -- ) ?csp previous abase @ base ! ;
+; ----
+
+; See also: `end-code`, `?csp`, `previous`, `abase`, `base`.
 ;
 ; }doc
 
@@ -1290,7 +1296,7 @@ endif
 ;
 ; end-code ( -- )
 ;
-; Terminates a code definition started by `code` or `;code`.
+; Terminate a code definition started by `code` or `;code`.
 ;
 ; Definition:
 
@@ -1314,8 +1320,8 @@ endif
 ;
 ; lower_ ( -- a )
 ;
-; Return address _a_ of a routine that converts to uppercase the
-; ASCII character holad in the A register.
+; _a_ is the address of a routine that converts to uppercase the
+; ASCII character hold in the A register.
 ;
 ; See also: `lower`, `upper_`.
 ;
@@ -1330,13 +1336,13 @@ endif
 ;
 ; next ( -- a )
 ;
-; Return the address _a_ of the main entry point of the Forth
-; inner interpreter.  It is the address Forth words jump to at
-; the end.  The code at _a_ executes the word whose execution
-; token is in the address pointed by the Forth IP (the Z80 BC
+; _a_ is the address of the main entry point of the Forth inner
+; interpreter.  It is the address Forth words jump to at the
+; end.  The code at _a_ executes the word whose execution token
+; is in the address pointed by the Forth IP (the Z80 BC
 ; register).
 ;
-; In Solo Forth, the Z80 IX register holds _a_, which must be
+; In Solo Forth, the Z80 IX register contains _a_, which must be
 ; preserved across Forth words.
 ;
 ; See also: `pushhl`, `pushhlde`, `pusha`.
@@ -1352,7 +1358,7 @@ endif
 ;
 ; pusha ( -- a )
 ;
-; Return address _a_ of a secondary entry point of the Forth
+; _a_ is the address of a secondary entry point of the Forth
 ; inner interpreter.  The code at _a_ pushes the A register onto
 ; the stack and then continues at the address returned by
 ; `next`.
@@ -1370,7 +1376,7 @@ endif
 ;
 ; pushhl ( -- a )
 ;
-; Return address _a_ of a secondary entry point of the Forth
+; _a_ is the address of a secondary entry point of the Forth
 ; inner interpreter.  The code at _a_ pushes the HL register
 ; onto the stack and then continues at the address returned by
 ; `next`.
@@ -1388,7 +1394,7 @@ endif
 ;
 ; pushhlde ( -- a )
 ;
-; Return address _a_ of a secondary entry point of the Forth
+; _a_ is the address of a secondary entry point of the Forth
 ; inner interpreter.  The code at _a_ pushes the DE and HL
 ; registers onto the stack and then continues at the address
 ; returned by `next`.
@@ -1410,7 +1416,7 @@ endif
 ;
 ; fetchhl ( -- a )
 ;
-; Return address _a_ of a secondary entry point in the code of
+; _a_ is the address of a secondary entry point in the code of
 ; `@`.  The code at _a_ fetches the cell pointed by the HL
 ; register, pushes it onto the stack and then continues at the
 ; address returned by `next`.
@@ -1673,7 +1679,7 @@ question_next_bank:
   ; Note: the address of this routine is returned by
   ; `?next-bank_`, a constant defined in the assembler
   ; word list in the <memory.far.fsb> module of the library, so
-  ; code words can call it.
+  ; `code` words can call it.
 
   ld a,h
   cp $C0 ; is HL below $C000?
@@ -1749,7 +1755,7 @@ question_previous_bank:
   ; Note: the address of this routine is returned by
   ; `?previous-bank_`, a constant defined in the assembler
   ; word list in the <memory.far.fsb> module of the library, so
-  ; code words can call it.
+  ; `code` words can call it.
 
   ld a,h
   cp $C0 ; is HL below $C000?
@@ -1809,21 +1815,18 @@ question_previous_bank:
 
 far.hl:
 
-  ; Convert a far-memory address ($0000..$FFFF) to its
-  ; actual equivalent ($C000..$FFFF) and page in the
-  ; corresponding memory bank.
+  ; Convert a far-memory address ($0000..$FFFF) to its actual
+  ; equivalent ($C000..$FFFF) and page in the corresponding
+  ; memory bank.
   ;
-  ; Input:
-  ;   HL = far-memory address ($0000..$FFFF)
-  ; Output:
-  ;   HL = actual memory address ($C000..$FFFF)
-  ;   A = corrupted
-  ;   DE = corrupted
+  ; Input: HL = far-memory address ($0000..$FFFF) Output: HL =
+  ; actual memory address ($C000..$FFFF) A = corrupted DE =
+  ; corrupted
   ;
-  ; Note: the address of this routine is returned by
-  ; `far-hl_`, a constant defined in the assembler word
-  ; list in the <memory.far.fsb> module of the library, so code
-  ; words can call it.
+  ; Note: the address of this routine is returned by `far-hl_`,
+  ; a constant defined in the assembler word list in the
+  ; <memory.far.fsb> module of the library, so `code` words can
+  ; call it.
 
   ld e,h
   srl e
@@ -1928,7 +1931,7 @@ call_ix:
 ;
 ; noop_ ( -- a )
 ;
-; Return address _a_ of a routine that does nothing, except
+; _a_ is the address of a routine that does nothing, except
 ; executing a Z80 ``ret`` to return.
 ;
 ; See also: `noop`.
@@ -1947,8 +1950,8 @@ endif
 ; g+dos ( -- )
 ;
 ; An alias of `noop` that is defined only in the G+DOS version
-; of Solo Forth.  Its goal is to be used to check the DOS the
-; application is running on, using `defined` or `[defined]`.
+; of Solo Forth.  Its goal is to check the DOS a program is
+; running on, using `defined` or `[defined]`.
 ;
 ; ``g+dos`` is an `immediate` word.
 ;
@@ -1966,8 +1969,8 @@ endif
 ; tr-dos ( -- )
 ;
 ; An alias of `noop` that is defined only in the TR-DOS version
-; of Solo Forth.  Its goal is to be used to check the DOS the
-; application is running on, using `defined` or `[defined]`.
+; of Solo Forth.  Its goal is to check the DOS a program is
+; running on, using `defined` or `[defined]`.
 ;
 ; ``tr-dos`` is an `immediate` word.
 ;
@@ -1985,8 +1988,8 @@ endif
 ; +3dos ( -- )
 ;
 ; An alias of `noop` that is defined only in the +3DOS version
-; of Solo Forth.  Its goal is to be used to check the DOS the
-; application is running on, using `defined` or `[defined]`.
+; of Solo Forth.  Its goal is to check the DOS a program is
+; running on, using `defined` or `[defined]`.
 ;
 ; ``+3dos`` is an `immediate` word.
 ;
@@ -2014,7 +2017,7 @@ endif
 ;
 ; asm ( -- )
 ;
-; Enter the assembly mode. Push `assembler-wordlist` on the
+; Enter the `assembler` mode. Push `assembler-wordlist` on the
 ; search `order`.
 ;
 ; Definition:
@@ -2024,7 +2027,7 @@ endif
 ;   !csp init-asm base @ abase ! hex assembler-wordlist >order ;
 ; ----
 
-; See also: `assembler`, `end-asm`, `code`, `init-asm`, `abase`,
+; See also: `end-asm`, `code`, `init-asm`, `abase`,
 ; `!csp`, `hex`.
 ;
 ; }doc
@@ -2694,8 +2697,8 @@ push_a:
 ; which is the circular string buffer used by all string
 ; operations.
 ;
-; The application can move and resize the ``stringer`` if
-; needed. Example:
+; A program can move and resize the ``stringer`` if needed.
+; Example:
 
 ; ----
 ; stringer /stringer 2constant old-stringer
@@ -4328,7 +4331,7 @@ emit_udg.l
 ; _a_ is the address of a cell containing the printer flag.
 ; ``printing`` is set by `printer`, reset by `terminal` and
 ; checked by `page`. ``printing`` should not be changed directly
-; by the application.
+; by the program.
 ;
 ; }doc
 
@@ -5426,8 +5429,8 @@ zero_equals.hl:
 ;
 ; 0 ( -- 0 )
 ;
-; Return _0_. ``0`` is not a constant, but a code word, which is
-; faster.
+; Return _0_. ``0`` is not a `constant`, but a `code` word,
+; which is faster.
 ;
 ; See also: `-1`, `1`, `2`, `false`.
 ;
@@ -6364,7 +6367,7 @@ c_fetch.hl:
 ;
 ; constant ( x "name" -- )
 ;
-; Parse _name_. Create a definition for _name_ that will place
+; Parse _name_. `create` a definition for _name_ that will place
 ; _x_ on the stack. _name_ is referred to as a "constant".
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
@@ -6412,18 +6415,26 @@ fetch.hl:
 ;
 ; variable ( "name" -- )
 ;
-; Parse _name_.  Create a definition for _name_ with the execution
-; semantics defined below. Reserve one cell of data space.
+; Parse _name_.  Create a definition for _name_, which is
+; referred to as a "variable".  `allot` one cell of data space,
+; the data field of _name_, to hold the contents of the
+; variable. When _name_ is later executed, the address of its
+; data field is placed on the stack.
 ;
-; _name_ is referred to as a variable.
+; The program is responsible for initializing the contents of
+; the variable.
 ;
-;          name Execution: ( -- a )
+; Definition:
+
+; ----
+; : variable ( "name" -- ) create cell allot ;
+; ----
+
+; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
+; Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; _a_ is the address of the reserved cell. A program is responsible
-; for initializing the contents of the reserved cell.
-;
-; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word Set),
-; Forth-94 (CORE), Forth-2012 (CORE).
+; See also: `create`, `cell`, `cvariable`, `2variable`,
+; `constant`.
 ;
 ; }doc
 
@@ -6471,8 +6482,8 @@ do_user:
 ;
 ; 1 ( -- 1 )
 ;
-; Return _1_. ``1`` is not a constant, but a code word, which is
-; faster.
+; Return _1_. ``1`` is not a `constant`, but a `code` word,
+; which is faster.
 ;
 ; See also: `-1`, `0`, `2`.
 ;
@@ -6488,8 +6499,8 @@ do_user:
 ;
 ; 2 ( -- 2 )
 ;
-; Return _2_. ``2`` is not a constant, but a code word, which is
-; faster.
+; Return _2_. ``2`` is not a `constant`, but a `code` word,
+; which is faster.
 ;
 ; See also: `-1`, `0`, `1`, `cell`.
 ;
@@ -7093,7 +7104,7 @@ endif
 ;
 ; tib ( -- a )
 ;
-; Return address _a_ of the terminal input buffer.
+; _a_ is the address of the terminal input buffer.
 ;
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE EXT,
 ; obsolescent).
@@ -7594,8 +7605,8 @@ two_comma.allot:
 ;
 ; -1 ( -- -1 )
 ;
-; Return _-1_. ``-1`` is not a constant, but a code word, which
-; is faster.
+; Return _-1_. ``-1`` is not a `constant`, but a `code` word,
+; which is faster.
 ;
 ; See also: `0`, `1`, `2`, `true`.
 ;
@@ -7805,11 +7816,17 @@ u_less_than.de_hl:
 ;
 ; latest ( -- nt )
 ;
-; Leave the name token of the last word defined.
+; _nt_ is the name token of the last word defined is the system.
 ;
+; Definition:
+
+; ----
+; : latest ( -- nt ) last @ ;
+; ----
+
 ; Origin: Gforth.
 ;
-; See also: `last`.
+; See also: `last`, `current-latest`.
 ;
 ; }doc
 
@@ -7823,10 +7840,8 @@ u_less_than.de_hl:
 ;
 ; current-latest ( -- nt )
 ;
-; Leave the name token of the topmost word in the current
-; compilation word list.  ``current-latest`` is different from
-; `latest`, which returns the name token of the latest word
-; defined in the system.
+; _nt_ is the name token of the topmost word in the current
+; compilation word list.
 ;
 ; Definition:
 
@@ -7835,6 +7850,8 @@ u_less_than.de_hl:
 ; ----
 
 ; Origin: fig-Forth's ``latest``.
+;
+; See also: `latest`.
 ;
 ; }doc
 
@@ -8043,10 +8060,10 @@ banks: equ (pentagon+scorpion+128*(!(pentagon || scorpion) and 1))/16
 ;
 ; ram ( -- n )
 ;
-; Return the total RAM size _n_ in kibibytes.
+; _n_ is the total RAM size in kibibytes.
 ;
-; NOTE: The RAM size includes the 8 KiB of the Plus D interface,
-; if present.
+; NOTE: On G+DOS, the RAM size includes the 8 KiB of the Plus D
+; interface.
 ;
 ; See also: `banks`.
 ;
@@ -8079,7 +8096,7 @@ bank.default:
   ; Output:
   ;   A E corrupted
 
-  ; WARNING -- In order to make this routine usable by code
+  ; WARNING -- In order to make this routine usable by `code`
   ; words, its address is returned by the
   ; `default-bank_` constant, which is defined in the
   ; library. The actual address is calculated using an offset
@@ -8102,7 +8119,7 @@ bank.e:
   ;   A = corrupted
   ;   D = corrupted (only on Pentagon 512 and Pentagon 1024)
 
-  ; WARNING -- In order to make this routine usable by code
+  ; WARNING -- In order to make this routine usable by `code`
   ; words, its address is returned by the `e-bank_`
   ; constant, which is defined in the library. The actual
   ; address is calculated using an offset from the execution
@@ -8771,6 +8788,12 @@ postpone.end:
 ;
 ; Reveal the `latest` definition by resetting its `smudge` bit.
 ;
+; Definition:
+
+; ----
+; : reveal ( -- ) latest revealed ;
+; ----
+
 ; See also: `revealed`, `hide`.
 ;
 ; }doc
@@ -8801,7 +8824,13 @@ postpone.end:
 ;
 ; Hide the definition _nt_ by setting its `smudge` bit.
 ;
-; See also: `revealed`, `hide`.
+; Definition:
+
+; ----
+; : hidden ( nt -- ) smudge-mask swap lex! ;
+; ----
+
+; See also: `revealed`, `hide`, `smudge-mask`, `lex!`.
 ;
 ; }doc
 
@@ -8817,7 +8846,13 @@ postpone.end:
 ;
 ; Hide the `latest` definition by setting its `smudge` bit.
 ;
-; See also: `reveal`, `hidden`.
+; Definition:
+
+; ----
+; : hide ( -- ) latest hidden ;
+; ----
+
+; See also: `hidden`, `reveal`.
 ;
 ; }doc
 
@@ -8905,7 +8940,7 @@ base_store:
 ; (;code) ( -- ) ( R: a -- )
 ;
 ; Rewrite the code field of the most recently defined high-level
-; word (it can not be a code word) to point to the following
+; word (it can not be a `code` word) to point to the following
 ; machine code sequence.
 ;
 ; ``(;code)`` is the run-time procedure compiled by `;code` and
@@ -8975,7 +9010,7 @@ base_store:
 ; Run-time:
 ;
 ; Replace the execution semantics of the  most recent
-; definition, referred to  as name, with the _name_ execution
+; definition, referred to as _name_, with the _name_ execution
 ; semantics given  below. Return  control  to the  calling
 ; definition  specified  by _nest-sys1_.
 ;
@@ -9686,8 +9721,9 @@ fill.done:
 ;
 ; pad ( -- ca )
 ;
-; Return the address of a transient region that can be used to hold
-; data for intermediate processing. It's a fixed offset above `here`.
+; _ca_ is the address of a transient region that can be used to
+; hold data for intermediate processing. It's a fixed offset
+; (`/hold` address units) above `here`.
 ;
 ;
 ; Definition:
@@ -9696,10 +9732,11 @@ fill.done:
 ; : pad ( -- ca ) here /hold + ;
 ; ----
 
-; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83 (Required
-; Word Set), Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE EXT), Forth-2012 (CORE
+; EXT).
 ;
-; See also: `/pad`, `/hold`.
+; See also: `/pad`.
 ;
 ; }doc
 
@@ -10501,7 +10538,7 @@ if 1 ; assembler_core_in_kernel
 ; code ( "name -- )
 ;
 ; Parse _name_. Create a definition for _name_, called a code
-; definition, and execute `asm` to enter assembly mode.
+; definition, and execute `asm` to enter `assembler` mode.
 ;
 ; Definition:
 
@@ -11784,7 +11821,7 @@ quit.begin:
 ;
 ; >action ( xt -- a )
 ;
-; Return the address _a_ that holds the execution token
+; Return the address _a_ that contains the execution token
 ; currently associated to the deferred word _xt_.
 ;
 ; See also: `defer`, `action-of`, `defer!`, `defer@`.
@@ -12105,7 +12142,7 @@ warm_start:
 ;
 ; }doc
 
-  ; XXX TODO -- Make `cold` a code word in order to save space
+  ; XXX TODO -- Make `cold` a `code` word in order to save space
   ; from basic init operations, e.g. modifying memory. Then
   ; continue execution into a colon word called `(cold)`, which
   ; finishes the high-level tasks.
@@ -12943,8 +12980,7 @@ endif
 ; Return the block _n_ associated with the disk buffer.
 ;
 ; ---
-; : buffer-block ( -- n )
-;   buffer-id $7FFF literal and ;
+; : buffer-block ( -- n ) buffer-id $7FFF literal and ;
 ; ---
 ;
 ; See also: `buffer-id`, `buffer`, `block`.
@@ -14735,10 +14771,16 @@ system_stack_pointer:
 ;
 ; unused ( -- u )
 ;
-; Return the amount of space remaining in the region addressed
+; _u_ is the amount of space remaining in the region addressed
 ; by `here`, in address units.  This region includes the
-; transient spaces addressed by `pad` and `hold`
+; transient spaces addressed by `pad` and `hold`.
 ;
+; Definition:
+
+; ----
+; : unused ( -- u ) limit @ here - ;
+; ----
+
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
 ; See also: `limit`, `farunused`.
@@ -14758,6 +14800,12 @@ system_stack_pointer:
 ; Return the amount of far-memory space remaining in the region
 ; addressed by `np`, in address units.
 ;
+; Definition:
+
+; ----
+; : farunused ( -- u ) farlimit @ np @ - ;
+; ----
+
 ; See also: `farlimit`, `unused`.
 ;
 ; }doc
@@ -14776,7 +14824,7 @@ system_stack_pointer:
 ;
 ; WARNING: The system will crash if the coordinates are out of
 ; screen.  For the sake of speed, no check is done.  If needed,
-; the application can use a wrapper word.
+; the program can use a wrapper word.
 ;
 ; }doc
 
@@ -15061,8 +15109,9 @@ border.a:
 ;
 ; 2constant ( x1 x2 "name" -- )
 ;
-; Create a definition for _name_ that will place _x1 x2_ on the
-; stack.  _name_ is referred to as a "two-constant".
+; Parse _name_. `create` a definition for _name_ that will place
+; _x1 x2_ on the stack.  _name_ is referred to as a
+; "two-constant".
 ;
 ; Origin: Forth-79 (Double Number Word Set), Forth-83 (Double
 ; Number Extension Word Set), Forth-94 (DOUBLE), Forth-2012
@@ -15124,23 +15173,31 @@ two_fetch.hl:
 ;
 ; 2variable ( "name" -- )
 ;
-; Parse _name_.  Create a definition for _name_ with the
-; execution semantics defined below. Reserve two consecutive
-; cells of data space.
+; Parse _name_.  `create` a definition for _name_, which is
+; referred to as a "two-variable".  `allot` two cells of data space,
+; the data field of _name_, to hold the contents of the
+; two-variable. When _name_ is later executed, the address of its
+; data field is placed on the stack.
 ;
-; _name_ is referred to as a two-variable.
+; The program is responsible for initializing the contents of
+; the two-variable.
 ;
-; name Execution: ( -- a )
-;
-; _a_ is the address of the first (lower address) cell of two
-; consecutive cells. A program is responsible for
-; initializing the contents.
-;
+; Definition:
+
+; ----
+; : 2variable ( "name" -- ) create [ 2 cells ] literal allot ;
+; ----
+
 ; Origin: Forth-79 (Double Number Word Set), Forth-83 (Double
 ; Number Extension Word Set), Forth-94 (DOUBLE), Forth-2012
 ; (DOUBLE).
 ;
+; See also: `cells`, `literal`, `variable`, `2variable`,
+; `2constant`.
+;
 ; }doc
+
+  ; XXX TODO -- Move to the library?
 
   dw create_
   dw branch_,two_comma.allot
