@@ -3,13 +3,16 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704271853
+  \ Last modified: 201705081351
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
   \ The Vector-Loop benchmark.
+  \
+  \ Unless otherwise stated, benchmark results were obtained on
+  \ a ZX Spectrum 128 with G+DOS, emulated by Fuse.
 
   \ ===========================================================
   \ Authors
@@ -163,5 +166,7 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
   \
   \ 2017-04-27: Rename the file in order to move the code to
   \ the "workbench" disk image. Display title.
+  \
+  \ 2017-05-08: Improve module description.
 
   \ vim: filetype=soloforth

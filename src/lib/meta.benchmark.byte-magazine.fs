@@ -3,13 +3,16 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704271853
+  \ Last modified: 201705081352
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
   \ BYTE Magazine benchmark.
+  \
+  \ Unless otherwise stated, benchmark results were obtained on
+  \ a ZX Spectrum 128 with G+DOS, emulated by Fuse.
 
   \ ===========================================================
   \ License
@@ -127,5 +130,7 @@ need bench{ need do
   \
   \ 2017-04-27: Rename the file in order to move the code to
   \ the "workbench" disk image.
+  \
+  \ 2017-05-08: Improve module description.
 
   \ vim: filetype=soloforth

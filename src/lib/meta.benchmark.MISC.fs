@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705080154
+  \ Last modified: 201705081350
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -12,6 +12,9 @@
   \ Misc benchmarks written during the development of Solo
   \ Forth in order to choose from different implementation
   \ options.
+  \
+  \ Unless otherwise stated, benchmark results were obtained on
+  \ a ZX Spectrum 128 with G+DOS, emulated by Fuse.
 
   \ ===========================================================
   \ Author
@@ -2709,5 +2712,7 @@ need bench{ need }bench.
   \ 2017-05-06: Add `d0=-bench`.
   \
   \ 2017-05-08: Add `d=-bengh`.
+  \
+  \ 2017-05-08: Improve module description.
 
   \ vim: filetype=soloforth
