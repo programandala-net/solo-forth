@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705081343
+; Last modified: 201705091015
 
 include version.z80s
 
@@ -135,6 +135,11 @@ size_optimization: equ false
 developing: equ true
   ; true = include some words needed during the development
   ; false = don't
+
+; next_after_do_colon: equ false
+  ; true = New: the inner interpreter is right after the colon
+  ;        nesting, saving one jump
+  ; false = Old: the inner interpreter is apart
 
 ; ==============================================================
 ; Symbols
@@ -350,7 +355,7 @@ _header: macro _base_label,_name,_flags,_xt
   ; Name token:
   _base_label##nt: equ $-bank_start
 
-  ; Length byte with optional immediate bit:
+  ; Length byte with optional flags:
 
   if nul _flags
     db _address_after_name-_name_address
@@ -1189,6 +1194,10 @@ endif
 ; ==============================================================
 ; Inner interpreter
 
+if 0 ; next_after_do_colon_or_exit
+
+else
+
 push_hlde:
   push de
 push_hl:
@@ -1211,6 +1220,8 @@ execute_hl:
   ; Forth: PC <-- (W)
   ; Z80:   pc <-- (HL)
   jp (hl)
+
+endif
 
 ; ==============================================================
 ; Dictionary
@@ -1654,6 +1665,11 @@ endif
 
   pop hl
   call question_next_bank
+
+if 0 ; next_after_docolon_or_exit
+push_hl: ; XXX TMP --
+endif
+
   _jp_pushhl
 
 question_next_bank:
@@ -1918,8 +1934,8 @@ far.hl.mod:
 ; }doc
 
 jp_next:
-do_create:
-do_variable:
+do_create:    ; XXX TODO -- move to `next`
+do_variable:  ; XXX TODO -- move to `next`
 call_ix:
 
   _jp_next
@@ -2512,7 +2528,12 @@ push_a:
   ld a,(bc)
   ld d,a ; DE = low part
   inc bc
+if 0 ; next_after_docolon_or_exit
+  push de
+  _jp_pushhl
+else
   jp push_hlde
+endif
 
 ; ----------------------------------------------
   _code_header lit_,'lit',compile_only
@@ -4847,7 +4868,12 @@ move.do:
   pop de
   pop hl
   call hl_multiplied_by_de_to_hlde_unsigned
+if 0 ; next_after_docolon_or_exit
+  push de
+  _jp_pushhl
+else
   jp push_hlde
+endif
 
 ; ----------------------------------------------
   _code_header u_m_slash_mod_,'um/mod'
@@ -5739,11 +5765,19 @@ else
   ld a,$00                                      ;  07 02
   sbc a,h     ; two's complement with carry     ;  04 01
   ld h,a                                        ;  04 01
+if 0 ; next_after_docolon_or_exit
+  push de                                       ;  10 03
+  _jp_pushhl                                    ;  11 01 push hl
+                                                ;  08 02 jp (ix)
+                                                ; --- --
+                                                ; 106 23 Total
+else
   jp push_hlde                                  ;  10 03
                                                 ;  11 00 push de
                                                 ;  11 00 push hl
                                                 ; --- --
                                                 ; 109 20 Total
+endif
 
 endif
 
@@ -5790,7 +5824,12 @@ endif
   pop hl
   pop de
   push hl
+if 0 ; next_after_docolon_or_exit
+  push de
+  _jp_pushhl
+else
   jp push_hlde
+endif
 
 ; ----------------------------------------------
   _code_header over_,'over'
@@ -5811,7 +5850,12 @@ endif
   pop de
   pop hl
   push hl
+if 0 ; next_after_docolon_or_exit
+  push de
+  _jp_pushhl
+else
   jp push_hlde
+endif
 
 ; ----------------------------------------------
   _code_header drop_,'drop'
@@ -5894,7 +5938,12 @@ endif
   pop de
   push de
   push hl
+if 0 ; next_after_docolon_or_exit
+  push de
+  _jp_pushhl
+else
   jp push_hlde
+endif
 
 ; ----------------------------------------------
   _code_header plus_store_,'+!'
@@ -6193,6 +6242,8 @@ store.de_into_hl_pointer:
 ;
 ; }doc
 
+; XXX TODO -- Finish documentation: simplify.
+
 if 0 ; XXX TMP -- for debugging
   dw cr_
   dw blk_,fetch_,dot_
@@ -6220,7 +6271,33 @@ do_colon:
   ld (return_stack_pointer),hl
   ; Then point it to the pfa of the word that called here
   pop bc ; BC=pfa
+
+if 0 ; next_after_do_colon
+
+; next: ; XXX OLD
+  ; Execute the word whose xt is in the address pointed by the BC register.
+  ; Forth: W  <-- (IP)
+  ; Z80:   HL <-- (BC)
+  ld a,(bc)
+  ld l,a
+  inc bc ; inc IP
+  ld a,(bc)
+  ld h,a
+  inc bc ; inc IP
+  ; BC = address of the next xt
+  ; HL = xt
+
+; execute_hl: ; XXX OLD
+  ; Execute the word whose xt is in the HL register.
+  ; Forth: PC <-- (W)
+  ; Z80:   pc <-- (HL)
+  jp (hl)
+
+else
+
   _jp_next
+
+endif
 
 ; ----------------------------------------------
   _variable_header noname_question_,'noname?'
@@ -7765,7 +7842,12 @@ u_less_than.de_hl:
   pop de
   pop hl
   ex (sp),hl
+if 0 ; next_after_docolon_or_exit
+  push de
+  _jp_pushhl
+else
   jp push_hlde
+endif
 
 ; ----------------------------------------------
   _colon_header space_,'space'
@@ -12280,17 +12362,33 @@ if size_optimization
 
 else
 
-  ; 13 bytes
-
   _code_header s_to_d_,'s>d'
 
   ld hl,0
   pop de
   ld a,d
   or a
+
+if 0 ; next_after_docolon_or_exit
+
+  ; 14 bytes
+
+  jp p,push_hlde ; jump if positive ; XXX TODO --
+  ;jp p,$+4 ; jump if positive ; XXX TMP --
+  dec hl
+push_hlde:
+  push de
+  _jp_pushhl
+
+else
+
+  ; 13 bytes
+
   jp p,push_hlde ; jump if positive
   dec hl
   jp push_hlde
+
+endif
 
 endif
 
@@ -12553,7 +12651,12 @@ else
   pop de
   pop hl
   call hl_multiplied_by_de_to_hlde_signed
+if 0 ; next_after_docolon_or_exit
+  push de
+  _jp_pushhl
+else
   jp push_hlde
+endif
 
 endif
 
@@ -14176,7 +14279,12 @@ to_digit.end
   pop de
   ex (sp),hl
   ex de,hl
+if 0 ; next_after_docolon_or_exit
+  push de
+  _jp_pushhl
+else
   jp push_hlde
+endif
 
 ; ----------------------------------------------
   _colon_header hash_s_,'#s'
@@ -14710,11 +14818,20 @@ system_stack_pointer:
   push de ; x3        ;  11 01
   push hl ; x4        ;  11 01
   exx                 ;  04 01
+
+if 0 ; next_after_docolon_or_exit
+  push de             ; 11 01
+  _jp_pushhl          ; 11 01 push hl
+                      ; 08 02 jp (ix)
+                      ; --- --
+                      ; 108 14 Total
+else
   jp push_hlde        ;  10 03
                       ;  11 00 push de
                       ;  11 00 push hl
                       ; --- --
                       ; 110 13 Total
+endif
 
 ; ----------------------------------------------
   _variable_header limit_,'limit'
@@ -15160,11 +15277,20 @@ two_fetch.hl:
   ld h,(hl)     ; 07  1
   ld l,a        ; 04  1 ; HL = high part
   ex de,hl      ; 04  1
+
+if 0 ; next_after_docolon_or_exit
+  push de       ; 11  1
+  _jp_pushhl    ; 11  1 ; push hl
+                ; 08  2 ; jp (ix)
+                ; -- --
+                ; 84 13 Total
+else
   jp push_hlde  ; 10  3
                 ; 11  0 ; push de
                 ; 11  0 ; push hl
                 ; -- --
                 ; 86 12 Total
+endif
 
 ; ----------------------------------------------
   _colon_header two_variable_,'2variable'
@@ -15281,7 +15407,33 @@ two_fetch.hl:
   ld b,(hl)
   inc hl
   ld (return_stack_pointer),hl
+
+if 0 ; next_after_exit
+
+next:
+  ; Execute the word whose xt is in the address pointed by the BC register.
+  ; Forth: W  <-- (IP)
+  ; Z80:   HL <-- (BC)
+  ld a,(bc)
+  ld l,a
+  inc bc ; inc IP
+  ld a,(bc)
+  ld h,a
+  inc bc ; inc IP
+  ; BC = address of the next xt
+  ; HL = xt
+
+execute_hl:
+  ; Execute the word whose xt is in the HL register.
+  ; Forth: PC <-- (W)
+  ; Z80:   pc <-- (HL)
+  jp (hl)
+
+else
+
   _jp_next
+
+endif
 
 ; ----------------------------------------------
   _code_header question_exit_,'?exit'

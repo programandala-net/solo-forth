@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705061729
+  \ Last modified: 201705090240
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -52,9 +52,12 @@ variable intResult
   repeat
   r> drop drop }bench. ;
 
-  \ Date        Frames    Seconds
-  \ ----------  ------ ----------
-  \ 2017-05-06    1295      25.90
+  \ Date       Frames Seconds Note
+  \ ---------- ------ ------- -------------------------------
+  \ 2017-05-06   1295   25.90
+  \ 2017-05-09   1290   25.80 `next` routine after `do_colon`
+  \ 2017-05-09   1259   25.18 `next` routine after `exit`
+  \ 2017-05-09   1258   25.16 `next` routine after both of them
 
 ( fib1-bench )
 
@@ -83,9 +86,12 @@ need bench{ need }bench. need recurse need do
 : fib2-bench ( -- )
   bench{ 1000 0 do i fib2 drop loop }bench. ;
 
-  \ Date        Frames Seconds
-  \ ----------  ------ -------
-  \ 2017-05-06    4412   88.24
+  \ Date       Frames Seconds Note
+  \ ---------- ------ ------- -------------------------------
+  \ 2017-05-06   4412   88.24
+  \ 2017-05-09   4386   87.72 `next` routine after `do_colon`
+  \ 2017-05-09   4270   85.40 `next` routine after `exit`
+  \ 2017-05-09   4271   85.42 `next` routine after both of them
 
 ( nesting-bench )
 
@@ -103,18 +109,31 @@ need bench{ need }bench.
 : 22th 21th 21th ; : 23th 22th 22th ; : 24th 23th 23th ;
 : 25th 24th 24th ;
 
-: 32million ( -- ) cr ." 32 million nest/unnest operations" cr
+: 32million ( -- ) cr ." 32 million nest/unnest operations:" cr
                    bench{ 25th }bench. ;
 
-: 1million ( -- ) cr ."  1 million nest/unnest operations" cr
+: 1million ( -- ) cr ." 1 million nest/unnest operations:" cr
                   bench{ 20th }bench. ;
 
 cr .( Enter 1million or 32million) cr
 
-  \ Date        Frames Seconds Benchmark
-  \ ----------  ------ ------- ---------
-  \ 2017-05-06    8282  167.64 1million
-  \ 2017-05-06  268231 5364.62 32million
+  \ 1million :
+
+  \ Date        Frames Seconds Comp. Note
+  \ ----------  ------ ------- ----- -------------------------------
+  \ 2017-05-06    8382  167.64  1.00
+  \ 2017-05-09    8070  161.40  0.96 `next` routine after `do_colon`
+  \ 2017-05-09    8007  160.14  0.95 `next` routine after `exit`
+  \ 2017-05-09    7719  154.38  0.93 `next` routine after both of them
+
+  \ 32million :
+
+  \ Date        Frames Seconds Comp. Note
+  \ ----------  ------ ------- ----- -------------------------------
+  \ 2017-05-06  268231 5364.62  1.00
+  \ 2017-05-09  258249 5164.99  0.96 `next` routine after `do_colon`
+  \ 2017-05-09  256226 5124.52  0.95 `next` routine after `exit`
+  \ 2017-05-09  246994 4939.88  0.92 `next` routine after both of them
 
 ( memmove-bench )
 
@@ -139,9 +158,12 @@ variable buf2 here bufsize 1+ allot buf2 !
 : memmove-bench ( -- )
   bench{ test-cmove test-cmove> test-move> test-<move }bench. ;
 
-  \ Date        Frames Seconds
-  \ ----------  ------ -------
-  \ 2017-05-06     522   10.44
+  \ Date       Frames Seconds Note
+  \ ---------- ------ ------- -------------------------------
+  \ 2017-05-06    522   10.44
+  \ 2017-05-09    521   10.42 `next` routine after `do_colon`
+  \ 2017-05-09    522   10.44 `next` routine after `exit`
+  \ 2017-05-09    521   10.42 `next` routine after both of them
 
 ( countbits-bench )
 
@@ -166,9 +188,12 @@ variable cnt
   \ XXX TODO -- Confirm the original source. It reads `8192
   \ do`.
 
-  \ Date        Frames Seconds
-  \ ----------  ------ -------
-  \ 2017-05-06    8882  177.64
+  \ Date       Frames Seconds Note
+  \ ---------- ------ ------- -------------------------------
+  \ 2017-05-06   8882  177.64
+  \ 2017-05-09   8849  176.98 `next` routine after `do_colon`
+  \ 2017-05-09   8725  174.50 `next` routine after `exit`
+  \ 2017-05-09   8688  173.76 `next` routine after both of them
 
 ( sieve-bench )
 
@@ -190,9 +215,12 @@ need bench{ need }bench. need do
     then
   loop . ." Primes" cr }bench. ;
 
-  \ Date        Frames Seconds
-  \ ----------  ------ -------
-  \ 2017-05-06     420    8.40
+  \ Date       Frames Seconds Note
+  \ ---------- ------ ------- -------------------------------
+  \ 2017-05-06    420    8.40
+  \ 2017-05-09    419    8.38 `next` routine after `do_colon`
+  \ 2017-05-09    409    8.18 `next` routine after `exit`
+  \ 2017-05-09    410    8.20 `next` routine after both of them
 
 ( gcd1-bench )
 
@@ -214,9 +242,12 @@ need bench{ need }bench. need do need j
     100 0 do 100 0 do j i (gcd1-bench drop loop loop
   }bench. ;
 
-  \ Date        Frames Seconds
-  \ ----------  ------ -------
-  \ 2017-05-06    2166   43.32
+  \ Date       Frames Seconds Note
+  \ ---------- ------ ------- -------------------------------
+  \ 2017-05-06   2166   43.32
+  \ 2017-05-09   2159   43.18 `next` routine after `do_colon`
+  \ 2017-05-09   2098   41.96 `next` routine after `exit`
+  \ 2017-05-09   2097   41.94 `next` routine after both of them
 
 ( gcd2-bench )
 
@@ -239,9 +270,12 @@ need bench{ need }bench. need d0= need j
   100 0 do 100 0 do j i (gcd2-bench drop loop loop
   }bench. ;
 
-  \ Date        Frames Seconds
-  \ ----------  ------ -------
-  \ 2017-05-06    2761   55.22
+  \ Date       Frames Seconds Note
+  \ ---------- ------ ------- -------------------------------
+  \ 2017-05-06   2761   55.22
+  \ 2017-05-09   2740   54.80 `next` routine after `do_colon`
+  \ 2017-05-09   2666   53.32 `next` routine after `exit`
+  \ 2017-05-09   2665   53.30 `next` routine after both of them
 
 ( takeuchi-bench )
 
@@ -265,9 +299,12 @@ decimal
 : takeuchi-bench ( -- )
   bench{ 0 1000 0 do drop 18 12 6 tak loop }bench. ;
 
-  \ Date        Frames Seconds
-  \ ----------  ------ -------
-  \ 2017-05-06      25    0.50
+  \ Date       Frames Seconds Note
+  \ ---------- ------ ------- -------------------------------
+  \ 2017-05-06     25    0.50
+  \ 2017-05-09     25    0.50 `next` routine after `do_colon`
+  \ 2017-05-09     25    0.50 `next` routine after `exit`
+  \ 2017-05-09     25    0.50 `next` routine after both of them
 
 ( 6502emu-bench )
 
@@ -367,9 +404,12 @@ create testcode
 
   \ XXX TODO -- Confirm "&6502" means decimal 6502.
 
-  \ Date        Frames Seconds
-  \ ----------  ------ -------
-  \ 2017-05-06   94384 1887.68
+  \ Date       Frames Seconds Comp. Note
+  \ ---------- ------ ------- ----- ---------------------------------
+  \ 2017-05-06  94384 1887.68  1.00
+  \ 2017-05-09  93825 1876.50  0.99 `next` routine after `do_colon`
+  \ 2017-05-09  90843 1816.86  0.96 `next` routine after `exit`
+  \ 2017-05-09  90348 1806.96  0.95 `next` routine after both of them
 
   \ ===========================================================
   \ Change log
@@ -378,6 +418,9 @@ create testcode
   \ https://theultimatebenchmark.org/ and run them.
   \
   \ 2017-05-08: Improve module description.
+  \
+  \ 2017-05-09: Run the benchmarks to test moving/copying the
+  \ code of `next` in the kernel and note the results.
 
   \ vim: filetype=soloforth
 

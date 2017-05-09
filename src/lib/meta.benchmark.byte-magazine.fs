@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705081352
+  \ Last modified: 201705090155
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -11,8 +11,9 @@
 
   \ BYTE Magazine benchmark.
   \
-  \ Unless otherwise stated, benchmark results were obtained on
-  \ a ZX Spectrum 128 with G+DOS, emulated by Fuse.
+  \ Unless otherwise stated, the benchmark was run on a ZX
+  \ Spectrum 128 with G+DOS, emulated by Fuse, and the results
+  \ are shown in system frames (1 frame = 50th of second).
 
   \ ===========================================================
   \ License
@@ -118,6 +119,10 @@ need bench{ need do
   \ 2016-03-16  52161 `jp pushhl` (old)
   \ 2016-03-16  51635 `push hl + jp (ix)` (new, kernel only)
   \ 2017-04-27  49270
+  \ 2017-05-09  49271 `next` routine apart
+  \ 2017-05-09  49127 `next` routine after `do_colon`
+  \ 2017-05-09  47571 `next` routine after `exit`
+  \ 2017-05-09  47379 `next` routine after both of them
 
   \ ===========================================================
   \ Change log
@@ -132,5 +137,8 @@ need bench{ need do
   \ the "workbench" disk image.
   \
   \ 2017-05-08: Improve module description.
+  \
+  \ 2017-05-09: Run the benchmark to test moving/copying the
+  \ code of `next` in the kernel and note the results.
 
   \ vim: filetype=soloforth

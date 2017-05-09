@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705081351
+  \ Last modified: 201705090228
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -11,8 +11,9 @@
 
   \ The Vector-Loop benchmark.
   \
-  \ Unless otherwise stated, benchmark results were obtained on
-  \ a ZX Spectrum 128 with G+DOS, emulated by Fuse.
+  \ Unless otherwise stated, the benchmark was run on a ZX
+  \ Spectrum 128 with G+DOS, emulated by Fuse, and the results
+  \ are shown in system frames (1 frame = 50th of second).
 
   \ ===========================================================
   \ Authors
@@ -125,7 +126,7 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
   \  <------------------------------>
   .( To run the vector loop) cr
   .( benchmarks type:) cr
-  .(   vector-loop-benchmarks ) cr
+  .(   vector-loop-benchmark ) cr
 
   \ 2015-12-24:
   \
@@ -153,11 +154,23 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
 
   \ [1] Changed only in the kernel.
 
-  \                    Frames (1 frame = 50th of second)
-  \                    ----------------------------------
-  \ Date       Vector:   noop      +      *      /     */
-  \ ----------         ------ ------ ------ ------ ------
-  \ 2017-04-27           8214  45270  89108 125102 152674
+  \            Vectors
+  \            ------------------------------
+  \ Date       noop     +     *      /     */
+  \ ---------- ---- ----- ----- ------ ------
+  \ 2017-04-27 8214 45270 89108 125102 152674
+
+
+  \ Test moving/copying the code of `next` in the kernel:
+
+  \            Vectors                        `next` routine
+  \            ------------------------------ -----------------
+  \ Date       noop     +     *      /     */
+  \ ---------- ---- ----- ----- ------ ------
+  \ 2017-05-08 8215 45268 89654 125102 152690 apart
+  \ 2017-05-08 8215 44776 88480 124294 151922 after `do_colon`
+  \ 2017-05-09 8069 43515 86526 121295 148621 after `exit`
+  \ 2017-05-09 8068 42912 86166 120871 148333 after both of them
 
   \ ===========================================================
   \ Change log
@@ -167,6 +180,9 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
   \ 2017-04-27: Rename the file in order to move the code to
   \ the "workbench" disk image. Display title.
   \
-  \ 2017-05-08: Improve module description.
+  \ 2017-05-08: Improve module description. Fix typo.
+  \
+  \ 2017-05-09: Run the benchmark to test moving/copying the
+  \ code of `next` in the kernel and note the results.
 
   \ vim: filetype=soloforth

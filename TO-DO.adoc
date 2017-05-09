@@ -1,11 +1,11 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-05-08
+:revdate: 2017-05-09
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201705081346
+// Last modified 201705090236
 
 // Application development {{{1
 == Application development ==
@@ -1087,6 +1087,46 @@ Change: modify `expect` after Spectrum Forth-83.
 
 // Kernel {{{1
 == Kernel ==
+
+.2017-05-08, 2017-05-09:
+
+Move the inner interpreter right after the `do_colon` routine, or
+`exit` or both, to save the jump (10 T) each. This means Z80 entry
+points `push_hlde` and `push_hl` will need a jump or will have to be
+removed.
+
+About `push_hlde`:
+
+|===
+| Z80 instructions                | B | Jump penalty in T
+
+| `jp push_hlde`                  | 3 | 10
+| `push hl`, `push de`, `jp (ix)` | 4 |  8
+
+|===
+
+There are only 13 jumps to `push_hlde` in the kernel, and 7 in the
+library.
+
+About `push_hl`:
+
+This case is easier, because the current Z80 macro `_jp_pusshl`
+compiles `push hl` and `jp (ix)`, which is faster than `jp pushhl` and
+needs the same number of bytes.  Some direct jumps to the `pushhl`
+entry point are needed, but they can be easily redirected to any
+address where `_jp_pushhl` is used.  Therefore, the `pushhl` entry
+point can be moved from the `next` entry point without any speed or
+memory penalty.
+
+|===
+| Position of the `exit` routine    | Free data space
+
+| apart                             | 32234
+| after `do_colon`                  | 32227
+| after `exit`                      | 32227
+| after `do_colon` and after `exit` | 32222
+|===
+
 
 .2016-10-27:
 
