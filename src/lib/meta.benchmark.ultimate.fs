@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705090240
+  \ Last modified: 201705091046
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -120,20 +120,29 @@ cr .( Enter 1million or 32million) cr
   \ 1million :
 
   \ Date        Frames Seconds Comp. Note
-  \ ----------  ------ ------- ----- -------------------------------
-  \ 2017-05-06    8382  167.64  1.00
-  \ 2017-05-09    8070  161.40  0.96 `next` routine after `do_colon`
-  \ 2017-05-09    8007  160.14  0.95 `next` routine after `exit`
-  \ 2017-05-09    7719  154.38  0.93 `next` routine after both of them
+  \ ----------  ------ ------- ----- ----
+  \ 2017-05-06    8382  167.64  1.00  (1)
+  \ 2017-05-09    8070  161.40  0.96  (2)
+  \ 2017-05-09    8007  160.14  0.95  (3)
+  \ 2017-05-09    7719  154.38  0.93  (4)
 
   \ 32million :
 
   \ Date        Frames Seconds Comp. Note
-  \ ----------  ------ ------- ----- -------------------------------
-  \ 2017-05-06  268231 5364.62  1.00
-  \ 2017-05-09  258249 5164.99  0.96 `next` routine after `do_colon`
-  \ 2017-05-09  256226 5124.52  0.95 `next` routine after `exit`
-  \ 2017-05-09  246994 4939.88  0.92 `next` routine after both of them
+  \ ----------  ------ ------- ----- ----
+  \ 2017-05-06  268231 5364.62  1.00  (1)
+  \ 2017-05-09  258249 5164.99  0.96  (2)
+  \ 2017-05-09  256226 5124.52  0.95  (3)
+  \ 2017-05-09  246994 4939.88  0.92  (4)
+  \ 2017-05-09  246993 4939.86  0.92  (5)
+
+  \ Notes:
+  \
+  \ 1: `next` routine apart
+  \ 2: `next` routine after `do_colon`
+  \ 3: `next` routine after `exit`
+  \ 4: `next` routine after both of them
+  \ 5: `next` routine after both of them but `push_hlde` preserved
 
 ( memmove-bench )
 

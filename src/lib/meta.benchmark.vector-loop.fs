@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705090228
+  \ Last modified: 201705091100
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -163,16 +163,25 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
 
   \ Test moving/copying the code of `next` in the kernel:
 
-  \            Vectors                        `next` routine
+  \            Vectors                        Note
   \            ------------------------------ -----------------
   \ Date       noop     +     *      /     */
   \ ---------- ---- ----- ----- ------ ------
-  \ 2017-05-08 8215 45268 89654 125102 152690 apart
-  \ 2017-05-08 8215 44776 88480 124294 151922 after `do_colon`
-  \ 2017-05-09 8069 43515 86526 121295 148621 after `exit`
-  \ 2017-05-09 8068 42912 86166 120871 148333 after both of them
+  \ 2017-05-08 8215 45268 89654 125102 152690 (1)
+  \ 2017-05-08 8215 44776 88480 124294 151922 (2)
+  \ 2017-05-09 8069 43515 86526 121295 148621 (3)
+  \ 2017-05-09 8068 42912 86166 120871 148333 (4)
+  \ 2017-05-09 8068 43044 87000 122022 149426 (5)
 
-  \ ===========================================================
+  \ Notes:
+  \
+  \ 1: `exit` apart
+  \ 2: `exit` after `do_colon`
+  \ 3: `exit` after `exit`
+  \ 4: `exit` after both of them
+  \ 5: `exit` after both of them but with `push_hlde` preserved
+
+   \ ===========================================================
   \ Change log
 
   \ 2016-12-30: Compact the code, saving one block.
