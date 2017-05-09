@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703112302
+  \ Last modified: 201705091231
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -77,7 +77,7 @@ code nr> ( -- x1..xn n ) ( R: x1..xn n -- )
   rrepeat
   rp sthl, exx,
   0000 h ldp#, >aresolve
-  jppushhl,
+  h push, jpnext,
   end-code
 
   \ doc{
@@ -193,5 +193,7 @@ code dup>r ( x -- x ) ( R: -- x )
   \
   \ 2017-03-11: Need `>aresolve` and `>amark`, which now are
   \ optional, not included in the assembler by default.
+  \
+  \ 2017-05-09: Remove `jppushhl,`.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703212114
+  \ Last modified: 201705091231
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,12 +27,13 @@
 
 [unneeded] array> ?(
 code array> ( n a1 -- a2 )
-  D1 c, E1 c, 29 c, 19 c, jppushhl, end-code ?)
+  D1 c, E1 c, 29 c, 19 c, E5 c, jpnext, end-code ?)
   \ pop de
   \ pop hl
   \ add hl,hl
   \ add hl,de
-  \ jp pushhl
+  \ push hl
+  \ _jp_next
 
   \ doc{
   \
@@ -53,13 +54,14 @@ code array> ( n a1 -- a2 )
 
 [unneeded] 2array> ?(
 code 2array> ( n a1 -- a2 )
-  D1 c, E1 c, 29 c, 29 c, 19 c, jppushhl, end-code ?)
+  D1 c, E1 c, 29 c, 29 c, 19 c, E5 c, jpnext, end-code ?)
   \ pop de
   \ pop hl
   \ add hl,hl
   \ add hl,hl
   \ add hl,de
-  \ jp pushhl
+  \ push hl
+  \ _jp_next
 
   \ doc{
   \
@@ -97,6 +99,8 @@ code 2array> ( n a1 -- a2 )
   \ 2017-03-13: Improve documentation.
   \
   \ 2017-03-21: Improve documentation.
+  \
+  \ 2017-05-09: Remove `jppushhl,`.
 
   \ vim: filetype=soloforth
 

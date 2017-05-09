@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071827
+  \ Last modified: 201705091211
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -209,13 +209,14 @@
 ?\ : >>name ( xtp -- nt ) cell+ cell+ ;
 
 [unneeded] >body
-?\ code >body  E1 c, 23 c, 23 c, 23 c, jppushhl, end-code
+?\ code >body  E1 c, 23 c, 23 c, 23 c, E5 c, jpnext, end-code
   \ ( xt -- pfa )
   \ pop hl
   \ inc hl
   \ inc hl
   \ inc hl
-  \ jp pushhl
+  \ push hl
+  \ _jp_next
 
   \ doc{
   \
@@ -248,13 +249,14 @@
   \ }doc
 
 [unneeded] body>
-?\ code body> E1 c, 2B c, 2B c, 2B c, jppushhl, end-code
+?\ code body> E1 c, 2B c, 2B c, 2B c, E5 c, jpnext, end-code
   \ ( pfa -- xt )
   \ pop hl
   \ dec hl
   \ dec hl
   \ dec hl
-  \ jp pushhl
+  \ push hl
+  \ _jp_next
 
   \ doc{
   \
@@ -1098,5 +1100,7 @@ variable warnings  warnings on
   \ 2017-04-27: Improve documentation.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2017-05-09: Remove `jppushhl,`.
 
   \ vim: filetype=soloforth

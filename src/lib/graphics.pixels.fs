@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705091118
+  \ Last modified: 201705091240
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -666,7 +666,7 @@ code scra>attra ( a1 -- a2 )
     \ and $03 ; range is now 0..2
     \ or $58 ; form correct high byte for third of screen
     \ ld h,a
-  jppushhl, end-code ?)
+  E5 c, jpnext, end-code ?)
 
   \ Credit:
   \
@@ -868,6 +868,6 @@ need gxy>attra
   \ 2017-03-29: Use `call,` and `jp,`, which are in the kernel,
   \ instead of opcodes. Improve documentation.
   \
-  \ 2017-05-09: Remove `jp pushhlde` from `gxy176>scra`.
+  \ 2017-05-09: Remove `jp pushhlde`. Remove `jppushhl,`.
 
   \ vim: filetype=soloforth

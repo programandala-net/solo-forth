@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071837
+  \ Last modified: 201705091230
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -476,8 +476,8 @@ code jml-rnd ( -- u )
   os-seed fthl, h push,
   h addp, h addp, h addp, h addp, h addp, h addp,
   d pop, d addp, 0029 d ldp#, d addp,
-  os-seed sthl,
-  jppushhl,
+  os-seed sthl, h push,
+  jpnext,
   end-code
 
 : jml-random ( n -- 0..n-1 ) jml-rnd um* nip ;
@@ -537,7 +537,7 @@ code mb-rnd ( -- u )
   0 sbc#, d sbcp,
   0 d ld#, d sbc, a e ld, d sbcp,
   c? rif  h incp,  rthen
-  os-seed sthl, jppushhl, end-code
+  os-seed sthl, h push, jpnext, end-code
 
 : mb-random ( n -- 0..n-1 ) mb-rnd um* nip ;
 
@@ -713,11 +713,12 @@ code zh-rnd ( -- u )
     \ add hl,hl
     \ add hl,hl
     \ add hl,de
-  h inc, h incp, os-seed sthl, jppushhl, end-code
+  h inc, h incp, os-seed sthl, h push, jpnext, end-code
     \ inc h
     \ inc hl
     \ ld (seed),hl
-    \ jp push_hl
+    \ push hl
+    \ _jp_next
 
 : zh-random ( n -- 0..n-1 ) zh-rnd um* nip ;
 
@@ -1320,7 +1321,7 @@ code libzx-crnd ( -- b )
     \ ld (hl), a ; save this number
     \ XXX REMARK -- original code is not optimized
 
-  b pop, 0 h ld#, a l ld, jppushhl, end-code
+  b pop, 0 h ld#, a l ld, h push, jpnext, end-code
 
 : libzx-rng-pix-bench ( -- )
   3 rom-pointer !  33 os-seed c!
@@ -1456,5 +1457,7 @@ code libzx-crnd ( -- b )
   \ library, with `?do`.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2017-05-09: Remove `jppushhl,`.
 
   \ vim: filetype=soloforth

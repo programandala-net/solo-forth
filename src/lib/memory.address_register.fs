@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702231739
+  \ Last modified: 201705091228
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -63,9 +63,10 @@ code a! ( a -- ) E1 c, 22 c, a , jpnext, end-code
   \
   \ }doc
 
-code a@ ( -- a ) 2A c, a , jppushhl, end-code
+code a@ ( -- a ) 2A c, a , E5 c, jpnext, end-code
     \ ld hl,(address_register)
-    \ jp pushhl
+    \ push hl
+    \ _jp_next
 
   \ doc{
   \
@@ -102,14 +103,15 @@ code !a ( x -- ) D1 c, 2A c, a , 70 03 + c, 23 c, 70 02 + c,
   \ }doc
 
 [unneeded] @a ?(
-code @a ( -- x ) 2A c, a , 5E c, 23 c, 66 c, 68 03 + c,
-                 jppushhl, end-code ?)
+code @a ( -- x ) 2A c, a , 5E c, 23 c, 66 c, 68 03 + c, E5 c,
+                 jpnext, end-code ?)
     \ ld hl,(address_register)
     \ ld e,(hl)
     \ inc hl
     \ ld h,(hl)
     \ ld l,e
-    \ jp pushhl
+    \ push hl
+    \ _jp_next
 
   \ doc{
   \
@@ -140,12 +142,13 @@ code c!a ( c -- ) D1 c, 2A c, a , 70 03 + c, jpnext,
   \ }doc
 
 [unneeded] c@a ?(
-code c@a ( -- c ) 2A c, a , 6E c, 26 c, 00 c, jppushhl,
+code c@a ( -- c ) 2A c, a , 6E c, 26 c, 00 c, E5 c, jpnext,
                   end-code ?)
     \ ld hl,(address_register)
     \ ld l,(hl)
     \ ld h,0
-    \ jp pushhl
+    \ push hl
+    \ _jp_next
 
   \ doc{
   \
@@ -276,5 +279,7 @@ code c@a+ ( -- c ) 2A c, a , 5E c, 23 c, 16 c, 00 c,
   \
   \ 2017-02-23: Fix notation of cross references in
   \ documentation.
+  \
+  \ 2017-05-09: Remove `jppushhl,`.
 
   \ vim: filetype=soloforth

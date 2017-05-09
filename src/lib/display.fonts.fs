@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132047
+  \ Last modified: 201705091222
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,9 +27,11 @@
 
 [unneeded] get-font ?( need os-chars
 
-code get-font ( -- a ) 2A c, os-chars , jppushhl, end-code ?)
+code get-font ( -- a )
+  2A c, os-chars , E5 c, jpnext, end-code ?)
   \ ld hl, (sys_chars)
-  \ jp pushhl
+  \ push hl
+  \ _jp_next
 
   \ doc{
   \
@@ -237,5 +239,7 @@ code outlet-autochars ( a -- )
   \ `rom-font` from the UDG module.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-05-09: Remove `jppushl,`.
 
   \ vim: filetype=soloforth

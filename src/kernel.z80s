@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705091155
+; Last modified: 201705091204
 
 include version.z80s
 
@@ -511,15 +511,6 @@ _literal: macro _n
 _jp_next: macro
 
   jp (ix)
-
-  endm
-
-_jp_pushhl macro
-
-  ; Faster (2 T) than `jp push_hl`, and same size (3 B):
-
-  push hl
-  _jp_next
 
   endm
 
@@ -1380,28 +1371,6 @@ endif
   dw fetch.hl
 
 ; ----------------------------------------------
-  _colon_header jppushhl_comma_,'jppushhl,'
-
-; doc{
-;
-; jppushhl, ( -- )
-;
-; Compile a Z80 jump to `pushhl`.
-;
-; Actually two instructions are compiled: ``push hl`` and ``jp
-; (ix)`` (the IX register holds the address returned by `next`).
-; The execution of these instructions is faster than an absolute
-; jump to a push, and they need 3 bytes, same as a jump.
-;
-; See also: `jp,`, `pushhl`.
-;
-; }doc
-
-  _literal $E5 ; opcode `push hl`
-  dw c_comma_
-  dw branch_,jpnext_comma_pfa
-
-; ----------------------------------------------
   _colon_header jpnext_comma_,'jpnext,'
 
 ; doc{
@@ -1606,10 +1575,8 @@ endif
 
   pop hl
   call question_next_bank
-
-push_hl: ; XXX TMP --
-
-  _jp_pushhl
+  push hl
+  _jp_next
 
 question_next_bank:
 
@@ -1685,7 +1652,8 @@ new_bank:
 
   pop hl
   call question_previous_bank
-  _jp_pushhl
+  push hl
+  _jp_next
 
 question_previous_bank:
 
@@ -1766,7 +1734,8 @@ question_previous_bank:
 
   pop hl
   call far.hl
-  _jp_pushhl
+  push hl
+  _jp_next
 
 far.hl:
 
@@ -2437,7 +2406,8 @@ parse_string.interpreting:
 push_a:
   ld l,a
   ld h,0
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _code_header two_lit_,'2lit',compile_only
@@ -2468,7 +2438,9 @@ push_a:
   ld d,a ; DE = low part
   inc bc
   push de
-  _jp_pushhl
+push_hl:
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _code_header lit_,'lit',compile_only
@@ -2491,7 +2463,8 @@ push_a:
   ld a,(bc)
   ld h,a
   inc bc
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _constant_header default_bank_hash_,'default-bank#'
@@ -2603,7 +2576,8 @@ push_a:
 ; }doc
 
   ld hl,(plus_stringer_pfa)
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _constant_header slash_stringer_,'/stringer'
@@ -3948,7 +3922,8 @@ find_name_from.result: equ $+1
 find_name_from.ip: equ $+1
   ld bc,$0000 ; restore the Forth IP
 
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _colon_header find_name_,'find-name'
@@ -4609,7 +4584,8 @@ xkey.translate:
   rst $10
 
   pop bc
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _code_header wait_for_key_,'discard-key'
@@ -4804,7 +4780,8 @@ move.do:
   pop hl
   call hl_multiplied_by_de_to_hlde_unsigned
   push de
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _code_header u_m_slash_mod_,'um/mod'
@@ -4889,7 +4866,8 @@ u_m_slash_mod.4:
   ld a,d
   and h
   ld h,a
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _code_header or_,'or'
@@ -4915,7 +4893,8 @@ u_m_slash_mod.4:
   ld a,d
   or h
   ld h,a
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _code_header xor_,'xor'
@@ -4941,7 +4920,8 @@ u_m_slash_mod.4:
   ld a,d
   xor h
   ld h,a
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _constant_header slash_user_,'/user'
@@ -5046,7 +5026,8 @@ u_m_slash_mod.4:
   ; XXX TODO -- remove?
 
   ld hl,(names_pointer)
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _code_header np_store_,'np!'
@@ -5113,7 +5094,8 @@ u_m_slash_mod.4:
 
   ld hl,$0000
   add hl,sp
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _code_header sp_store_,'sp!'
@@ -5171,7 +5153,8 @@ u_m_slash_mod.4:
 ; }doc
 
   ld hl,(return_stack_pointer)
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _code_header rp_store_,'rp!'
@@ -5394,7 +5377,8 @@ zero_equals.hl:
 ; }doc
 
   ld hl,0
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _alias_header false_,'false',,zero_
@@ -5508,7 +5492,8 @@ true_if_cy:
   pop de
   pop hl
   add hl,de
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _code_header d_plus_,'d+'
@@ -5571,7 +5556,8 @@ true_if_cy:
   ld a,l
   cpl
   ld l,a
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _code_header negate_,'negate'
@@ -5593,8 +5579,8 @@ if 0 ; XXX OLD
 
   pop hl          ; 10 01
   call negate_hl  ; 17 03
-  _jp_pushhl      ; 11 01 ; push hl
-                  ; 08 02 ; jp (ix)
+  push hl         ; 11 01
+  _jp_next        ; 08 02 ; jp (ix)
                   ; -- --
                   ; 46 07
 
@@ -5669,8 +5655,8 @@ if size_optimization
   push    hl        ; negated low part          ;  11 01
   ld      hl,$0000                              ;  10 03
   sbc     hl,de     ; HL = negated high part    ;  15 02
-  _jp_pushhl                                    ;  11 01 push hl
-                                                ;  08 02 jp (ix)
+  push    hl                                    ;  11 01
+  _jp_next                                      ;  08 02 jp (ix)
                                                 ; --- --
                                                 ; 125 19 Total
 else
@@ -5697,8 +5683,8 @@ else
   sbc a,h     ; two's complement with carry     ;  04 01
   ld h,a                                        ;  04 01
   push de                                       ;  10 01
-  _jp_pushhl                                    ;  11 01 push hl
-                                                ;  08 02 jp (ix)
+  push hl                                       ;  11 01
+  _jp_next                                      ;  08 02 jp (ix)
                                                 ; --- --
                                                 ; 106 21 Total
 
@@ -5727,7 +5713,8 @@ endif
 
   pop hl
   pop de
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _code_header tuck_,'tuck'
@@ -5748,7 +5735,8 @@ endif
   pop de
   push hl
   push de
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _code_header over_,'over'
@@ -5770,7 +5758,8 @@ endif
   pop hl
   push hl
   push de
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _code_header drop_,'drop'
@@ -5809,7 +5798,8 @@ endif
 
   pop hl
   ex (sp),hl
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _code_header dup_,'dup'
@@ -5830,7 +5820,8 @@ endif
 
   pop hl
   push hl
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _code_header two_dup_,'2dup'
@@ -5854,7 +5845,8 @@ endif
   push de
   push hl
   push de
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _code_header plus_store_,'+!'
@@ -6338,7 +6330,8 @@ do_c_constant:
 c_fetch.hl:
   ld l,(hl)
   ld h,$00
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _colon_header constant_,'constant'
@@ -6453,7 +6446,8 @@ do_user:
   ld d,$00        ; DE = index of the user variable
   ld hl,(up_pfa)  ; HL = address of the user area (the value of `up`)
   add hl,de       ; HL = address of the user variable
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _code_header one_,'1'
@@ -6470,7 +6464,8 @@ do_user:
 ; }doc
 
   ld hl,1
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _code_header two_,'2'
@@ -6487,7 +6482,8 @@ do_user:
 ; }doc
 
   ld hl,2
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _alias_header cell_,'cell',,two_
@@ -7200,8 +7196,8 @@ source.other:
   pop hl      ; 10 01
   inc hl      ; 06 01
   inc hl      ; 06 01
-  _jp_pushhl  ; 11 01 push hl
-              ; 08 02 jp (ix)
+  push hl     ; 11 01
+  _jp_next    ; 08 02 jp (ix)
               ; -- --
               ; 41 06 Total
 
@@ -7240,7 +7236,8 @@ source.other:
 
   pop hl
   dec hl
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _alias_header char_minus_,'char-',,one_minus_
@@ -7278,7 +7275,8 @@ source.other:
 
   pop hl
   inc hl
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _alias_header char_plus_,'char+',,one_plus_
@@ -7318,7 +7316,8 @@ source.other:
   pop hl
   dec hl
   dec hl
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _alias_header cell_minus_,'cell-',,two_minus_
@@ -7363,7 +7362,8 @@ source.other:
 
   pop hl
   add hl,hl
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _alias_header cells_,'cells',,two_star_
@@ -7527,7 +7527,8 @@ two_comma.allot:
   pop hl
   and a
   sbc hl,de
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _code_header not_equals_,'<>'
@@ -7593,7 +7594,8 @@ two_comma.allot:
 ; }doc
 
   ld hl,-1
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _alias_header true_,'true',,minus_one_
@@ -7704,7 +7706,8 @@ u_less_than.de_hl:
   sbc a,a         ; propagate Fc through A
   ld h,a
   ld l,a          ; HL = $0000 (false) or $FFFF (true)
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _code_header greater_than_,'>'
@@ -7746,7 +7749,8 @@ u_less_than.de_hl:
   pop hl
   ex (sp),hl
   push de
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _colon_header space_,'space'
@@ -7788,7 +7792,8 @@ u_less_than.de_hl:
   or l
   jp z,push_hl
   push hl
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _colon_header latest_,'latest'
@@ -7974,7 +7979,8 @@ to_name.end:
   ; HL = nt or zero
   call bank.default ; page in the default memory bank
   pop bc ; restore Forth IP
-  _jp_pushhl
+  push hl
+  _jp_next
 
 to_name.next:
   ld hl,(to_name.xtp) ; xtp
@@ -9802,7 +9808,8 @@ fill.done:
   ex (sp),hl              ; (SP)=len2 HL=ca1
   add hl,de               ; HL=ca2
   ex (sp),hl              ; (SP)=ca2 HL=len2
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _colon_header parsed_,'parsed'
@@ -10614,7 +10621,8 @@ compare.end:
   dec hl                 ; 0
   jp z,push_hl           ; jump if string1 equals string2
   dec hl                 ; -1
-  _jp_pushhl             ; string2 is longer than string2
+  push hl                ; string2 is longer than string2
+  _jp_next
 
 ; ----------------------------------------------
   _colon_header str_equals_,'str='
@@ -12273,7 +12281,8 @@ else
   dec hl
 s_to_d.end
   push de
-  _jp_pushhl
+  push hl
+  _jp_next
 
 endif
 
@@ -12537,7 +12546,8 @@ else
   pop hl
   call hl_multiplied_by_de_to_hlde_signed
   push de
-  _jp_pushhl
+  push hl
+  _jp_next
 
 endif
 
@@ -13174,7 +13184,8 @@ block.end:
   ld a,h
   ld h,l
   ld l,a
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _colon_header save_buffers_,'save-buffers'
@@ -14065,7 +14076,8 @@ sign.end:
 to_digit.end
   add a,$30
   ld l,a
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _colon_header hash_,'#'
@@ -14161,7 +14173,8 @@ to_digit.end
   ex (sp),hl
   ex de,hl
   push de
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _colon_header hash_s_,'#s'
@@ -14696,8 +14709,8 @@ system_stack_pointer:
   push hl ; x4        ;  11 01
   exx                 ;  04 01
   push de             ;  11 01
-  _jp_pushhl          ;  11 01 push hl
-                      ;  08 02 jp (ix)
+  push hl             ;  11 01
+  _jp_next            ;  08 02 jp (ix)
                       ; --- --
                       ; 108 14 Total
 
@@ -15146,8 +15159,8 @@ two_fetch.hl:
   ld l,a        ; 04  1 ; HL = high part
   ex de,hl      ; 04  1
   push de       ; 11  1
-  _jp_pushhl    ; 11  1 ; push hl
-                ; 08  2 ; jp (ix)
+  push hl       ; 11  1
+  _jp_next      ; 08  2 ; jp (ix)
                 ; -- --
                 ; 84 13 Total
 

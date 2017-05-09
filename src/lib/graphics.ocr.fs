@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703112301
+  \ Last modified: 201705091223
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -133,7 +133,7 @@ code ocr ( col line -- n )
 
   \ end:
   2 unresolved @ >rresolve  0 h ld#, b l ld,
-  b pop, jppushhl, end-code
+  b pop, h push, jpnext, end-code
 
   \ Credit:
   \
@@ -235,5 +235,7 @@ code ocr ( col line -- n )
   \
   \ 2017-03-11: Need `>amark`, which now is optional, not
   \ included in the assembler by default.
+  \
+  \ 2017-05-09: Remove `jppushhl,`.
 
   \ vim: filetype=soloforth

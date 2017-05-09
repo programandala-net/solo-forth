@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705080056
+  \ Last modified: 201705091223
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -460,9 +460,10 @@ code set-udg ( a -- ) E1 c, 22 c, os-udg , jpnext, end-code ?)
 
 [unneeded] get-udg ?( need os-udg
 
-code get-udg ( -- a ) 2A c, os-udg , jppushhl, end-code ?)
+code get-udg ( -- a ) 2A c, os-udg , E5 c, jpnext, end-code ?)
   \ ld hl, (sys_udg)
-  \ jp pushhl
+  \ push hl
+  \ _jp_next
 
   \ doc{
   \
@@ -786,5 +787,7 @@ unused code udg-at-xy-display ( x y c -- )
   \
   \ 2017-05-08: Update documentation: `load-app` was renamed
   \ to `load-program`.
+  \
+  \ 2017-05-09: Remove `jppushhl,`
 
   \ vim: filetype=soloforth

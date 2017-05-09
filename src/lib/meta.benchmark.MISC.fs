@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705081350
+  \ Last modified: 201705091229
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -2519,10 +2519,11 @@ code c2-d0= ( d -- f )
   \ add hl,de
   \ ld a,h
   \ or l
-  C2 c, ' false , 2B c, jppushhl, end-code
+  C2 c, ' false , 2B c, E5 c, jpnext, end-code
   \ jp nz,false_
   \ dec hl ; HL = true
-  \ _jp_pushhl
+  \ push hl
+  \ _jp_next
 
 -->
 
@@ -2714,5 +2715,7 @@ need bench{ need }bench.
   \ 2017-05-08: Add `d=-bengh`.
   \
   \ 2017-05-08: Improve module description.
+  \
+  \ 2017-05-09: Remove `jppushhl,`.
 
   \ vim: filetype=soloforth

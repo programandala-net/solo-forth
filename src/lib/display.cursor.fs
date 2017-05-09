@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704191834
+  \ Last modified: 201705091248
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -132,6 +132,8 @@
 
 [unneeded] xy>scra_ ?( need assembler
 
+  \ XXX TODO -- Rewrite in Z80 opcodes.
+
 create xy>scra_ ( -- a ) asm
 
   b a ld, %11000 and#, #64 add#, a d ld, b a ld, %111 and#,
@@ -180,10 +182,12 @@ create xy>scra_ ( -- a ) asm
 
 [unneeded] xy>scra ?( need assembler need xy>scra_
 
+  \ XXX TODO -- Rewrite in Z80 opcodes.
+
 code xy>scra ( x y -- a )
 
   h pop, l a ld, h pop, b push, a b ld, l c ld,
-  xy>scra_ call, exde, b pop, jppushhl, end-code ?)
+  xy>scra_ call, exde, b pop, h push, jpnext, end-code ?)
 
   \ pop hl
   \ ld a,l
@@ -194,7 +198,8 @@ code xy>scra ( x y -- a )
   \ call cursor_addr
   \ ex de,hl         ; HL = screen address
   \ pop bc           ; restore Forth IP
-  \ jp push_hl
+  \ push hl
+  \ _jp_next
 
   \ doc{
   \
@@ -262,13 +267,15 @@ create xy>scra_ ( -- a ) asm
 
 code xy>scra ( x y -- a )
 
-  h pop, d pop, l d ld, xy>scra_ call, jppushhl, end-code ?)
+  h pop, d pop, l d ld, xy>scra_ call, h push,
 
   \ pop hl           ; L = y coordinate
   \ pop de           ; E = x coordinate
   \ ld d,l           ; D = y coordinate
   \ call cursor_addr
-  \ jp push_hl
+  \ push hl
+  jpnext, end-code ?)
+  \ _jp_next
 
   \ xy>scra ( x y -- a )
   \
@@ -293,11 +300,12 @@ code xy>gxy ( x y -- gx gy )
   \ add hl,hl
   \ add hl,hl
   \ add hl,hl
-  3E c, #191 c, 95 c, 6F c, jppushhl, end-code ?)
+  3E c, #191 c, 95 c, 6F c, E5 c, jpnext, end-code ?)
   \ ld a,191
   \ sub l
   \ ld l,a
-  \ _jp_pushl
+  \ push hl
+  \ _jp_next
 
   \ doc{
   \
@@ -326,11 +334,12 @@ code xy>gxy176 ( x y -- gx gy )
   \ add hl,hl
   \ add hl,hl
   \ add hl,hl
-  3E c, #175 c, 95 c, 6F c, jppushhl, end-code ?)
+  3E c, #175 c, 95 c, 6F c, E5 c, jpnext, end-code ?)
   \ ld a,175
   \ sub l
   \ ld l,a
-  \ _jp_pushl
+  \ push hl
+  \ _jp_next
 
   \ doc{
   \
@@ -393,15 +402,16 @@ create xy>attra_ ( -- a ) asm
 [unneeded] xy>attr ?( need xy>attra_
 
 code xy>attr ( col row -- b )
-  D1 c, E1 c, 55 c, xy>attra_ call, 6E c, 26 c, 00 c,
+  D1 c, E1 c, 55 c, xy>attra_ call, 6E c, 26 c, 00 c, E5 c,
     \ pop de ; E = row
     \ pop hl
     \ ld d,l ; D = col
     \ call attr_addr
     \ ld l,(hl)
     \ ld h,0 ; HL = attribute
-  jppushhl, end-code ?)
-    \ jp pushhl
+    \ push hl
+  jpnext, end-code ?)
+    \ _jp_next
 
   \ doc{
   \
@@ -417,12 +427,13 @@ code xy>attr ( col row -- b )
 [unneeded] xy>attra ?( need xy>attra_
 
 code xy>attra ( col row -- a )
-  D1 c, E1 c, 55 c, xy>attra_ call, jppushhl, end-code ?)
+  D1 c, E1 c, 55 c, xy>attra_ call, E5 c, jpnext, end-code ?)
     \ pop de ; E = row
     \ pop hl
     \ ld d,l ; D = col
     \ call attr_addr
-    \ jp pushhl
+    \ push hl
+    \ _jp_next
 
   \ doc{
   \
@@ -486,5 +497,7 @@ code xy>attra ( col row -- a )
   \ module, which is deleted. Improve documentation.
   \
   \ 2017-04-19: Fix documentation.
+  \
+  \ 2017-05-09: Remove `jppushhl,`.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071828
+  \ Last modified: 201705091218
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -238,10 +238,11 @@
 [unneeded] brighty ?(
 
 code brighty ( b1 -- b2 )
-  E1 c, CB c, C0 6 8 * + 5 + c, jppushhl, end-code ?)
+  E1 c, CB c, C0 6 8 * + 5 + c, E5 c, jpnext, end-code ?)
   \ pop hl
   \ set 6,l
-  \ jp pushhl
+  \ push hl
+  \ _jp_next
 
   \ doc{
   \
@@ -263,10 +264,11 @@ code brighty ( b1 -- b2 )
 [unneeded] flashy ?(
 
 code flashy ( b1 -- b2 )
-  E1 c, CB c, C0 7 8 * + 5 + c, jppushhl, end-code ?)
+  E1 c, CB c, C0 7 8 * + 5 + c, E5 c, jpnext, end-code ?)
   \ pop hl
   \ set 7,l
-  \ jp pushhl
+  \ push hl
+  \ _jp_next
 
   \ doc{
   \
@@ -479,9 +481,10 @@ code mask+attr@ ( -- b1 b2 )
   \ ld de,(sys_attr_t)
   \ ld l,d
   \ push hl
-  68 03 + c, jppushhl, end-code ?)
+  68 03 + c, E5 c, jpnext, end-code ?)
   \ ld l,e
-  \ _jp_pushhl
+  \ push hl
+  \ _jp_next
 
   \ doc{
   \
@@ -1217,5 +1220,7 @@ create (0-9-color. ( -- a ) asm
   \ 2017-05-05: Improve documentation.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2017-05-09: Remove `jppushhl,`.
 
   \ vim: filetype=soloforth

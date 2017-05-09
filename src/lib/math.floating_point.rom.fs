@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201705071836
+  \ Last modified: 201705091241
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -623,14 +623,15 @@ code f10 ( F: -- r )
   \ avoid a circular `need`.
 
 code (f>s ( -- n ) ( F: r -- )
-  C5 c,  CD c, 2DA2 ,
+  C5 c, CD c, 2DA2 ,
     \ push bc
     \ call $2DA2 ; FP_TO_BC ROM routine
-  60 00 + c,  68 01 + c,  C1 c,  jppushhl,
+  60 00 + c, 68 01 + c,  C1 c, E5 c, jpnext,
     \ ld h,b
     \ ld l,c
     \ pop bc
-    \ jp push_hl
+    \ push hl
+    \ _jp_next
   end-code
 
 ( frestack b>f u>f s>f f>s )
@@ -1043,5 +1044,7 @@ code ftrunc ( F: r1 -- r2 )
   \ been renamed. Improve documentation.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2017-05-09: Remove `jppushhl,`.
 
   \ vim: filetype=soloforth

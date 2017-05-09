@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705091116
+  \ Last modified: 201705091238
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -312,10 +312,11 @@ code 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
     \ pop hl
     \ ld a,h
     \ or l
-  C2 c, pushhl ,  E5 c,  jppushhl, end-code ?)
+  C2 c, pushhl , E5 c, E5 c, jpnext, end-code ?)
     \ jp z,push_hl
     \ push hl
-    \ jp push_hl
+    \ push hl
+    \ _jp_next
 
   \ doc{
   \
@@ -328,13 +329,14 @@ code 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
   \ }doc
 
 [unneeded] -dup ?( code -dup ( x -- x | x x )
-  E1 c,  CB c, 7C c,  C2 c, pushhl ,  E5 c,  jppushhl,
+  E1 c,  CB c, 7C c,  C2 c, pushhl , E5 c, E5 c, jpnext,
   end-code ?)
     \ pop hl
     \ bit 7,h ; negative?
     \ jp z,push_hl
     \ push hl
-    \ jp push_hl
+    \ push hl
+    \ _jp_next
 
   \ doc{
   \
@@ -513,6 +515,6 @@ code >false ( x -- false ) E1 c, ' false jp, end-code ?)
   \
   \ 2017-03-21: Improve documentation.
   \
-  \ 2017-05-09: Remove `jp pushhlde` from `2nip` and `nup`.
+  \ 2017-05-09: Remove `jp pushhlde`. Remove `jppushhl,`.
 
   \ vim: filetype=soloforth
