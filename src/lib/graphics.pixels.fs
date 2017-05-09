@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703291240
+  \ Last modified: 201705091118
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -206,8 +206,10 @@ code gxy176>scra ( gx gy -- n a )
   \ pop bc
   \ ld d,0
   \ ld e,a
-  pushhlde jp, end-code ?)
-  \ jp push_hlde
+  D5 c, E5 c, jpnext, end-code ?)
+  \ push de
+  \ push hl
+  \ _jp_next
 
   \ doc{
   \
@@ -230,11 +232,13 @@ code gxy>scra ( gx gy -- n a )
   \ ld b,l ; b=gy
   \ ld c,e ; c=gx
   \ call pixel_addr
-  C1 c, 16 c, 0 c,  58 07 + c, pushhlde jp, end-code ?)
+  C1 c, 16 c, 0 c,  58 07 + c, D5 c, E5 c, jpnext, end-code ?)
   \ pop bc
   \ ld d,0
   \ ld e,a
-  \ jp push_hlde
+  \ push de
+  \ push hl
+  \ _jp_next
 
   \ doc{
   \
@@ -863,5 +867,7 @@ need gxy>attra
   \
   \ 2017-03-29: Use `call,` and `jp,`, which are in the kernel,
   \ instead of opcodes. Improve documentation.
+  \
+  \ 2017-05-09: Remove `jp pushhlde` from `gxy176>scra`.
 
   \ vim: filetype=soloforth

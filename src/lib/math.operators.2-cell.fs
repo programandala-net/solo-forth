@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705080119
+  \ Last modified: 201705091136
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -357,8 +357,10 @@ code d0= ( d -- f )
     \ rl e
     \ rl d
     \ ex de,hl
-  pushhlde jp, end-code ?)
-    \ jp pushhlde
+  D5 c, E5 c, jpnext, end-code ?)
+    \ push de
+    \ push hl
+    \ _jp_next
 
   \ Credit:
   \
@@ -379,17 +381,18 @@ code d0= ( d -- f )
 
 [unneeded] d2/ ?( code d2/ ( xd1 -- xd2 )
 
-  E1 c, D1 c,  CB c, 2C c,  CB c, 1C c,  CB c, 1D c,
+  E1 c, D1 c, CB c, 2C c, CB c, 1C c, CB c, 1D c,
     \ pop hl
     \ pop de
     \ sra h
     \ rr h
     \ rr l
-  CB c, 1A c,  CB c, 1B c,  EB c,  pushhlde jp, end-code ?)
+  CB c, 1A c, CB c, 1B c, D5 c, E5 c, jpnext, end-code ?)
     \ rr d
     \ rr e
-    \ ex de,hl
-    \ jp pushhlde
+    \ push de
+    \ push hl
+    \ _jp_next
 
   \ Credit:
   \
@@ -618,5 +621,9 @@ need 2nip need cell-bits
   \ 2017-05-06: Rewrite `d0=` in Z80. Improve documentation.
   \
   \ 2017-05-08: Fix needing of `d=`.
+  \
+  \ 2017-05-09: Remove `jp pushhlde` from `d2*` and `d2/`. fix
+  \ `d2/` (the high and low parts of the result were in wrong
+  \ order).
 
   \ vim: filetype=soloforth

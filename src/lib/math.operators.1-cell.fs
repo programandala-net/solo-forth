@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705051353
+  \ Last modified: 201705091120
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1066,8 +1066,10 @@ code split ( x -- b1 b2 )
     \ ld e,l
     \ ld l,h
     \ ld h,0
-  C3 c, pushhlde , end-code ?)
-    \ jp push_hlde
+  D5 c, E5 c, jpnext, end-code ?)
+    \ push de
+    \ push hl
+    \ _jp_next
 
   \ Credit:
   \
@@ -1234,5 +1236,7 @@ code join ( b1 b2 -- x )
   \ 2017-04-04: Improve documentation.
   \
   \ 2017-05-05: Improve documentation.
+  \
+  \ 2017-05-09: Remove `jp pushhlde` from `split.
 
   \ vim: filetype=soloforth
