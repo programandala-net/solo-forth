@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705100011
+  \ Last modified: 201705100026
 
   \ ===========================================================
   \ Description
@@ -23,7 +23,36 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( << >> )
+( pushhlde << >> )
+
+[unneeded] pushhlde ?(
+
+get-current assembler-wordlist dup >order set-current
+
+pushhl 1- constant pushhlde
+
+previous set-current ?)
+
+  \ doc{
+  \
+  \ pushhlde ( -- a )
+  \
+  \ _a_ is the address of a secondary entry point of the Forth
+  \ inner interpreter.  The code at _a_ pushes the DE and HL
+  \ registers onto the stack and then continues at the address
+  \ returned by `next`.
+  \
+  \ NOTE: DE is pushed first, so HL is left on top of the
+  \ stack.  This is equivalent to pushing the double number
+  \ formed by both registers, being HL the high part and DE the
+  \ lower part.
+  \
+  \ ``pushhlde`` is useful for exiting from a `code` word using
+  \ an absolute conditional jump.
+  \
+  \ See also: `pusha`, `pushhl`.
+  \
+  \ }doc
 
 [unneeded] << [unneeded] >> and ?(
 
@@ -97,6 +126,8 @@ need c@+ need for need 16hex. need 8hex.
   \
   \ 2017-05-09: Rename the file. Finish, test and document the
   \ code of `<<` and `>>`.
+  \
+  \ 2017-05-10: Add `pushhlde`.
 
   \ vim: filetype=soloforth
 

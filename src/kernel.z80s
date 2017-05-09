@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705091657
+; Last modified: 201705100030
 
 include version.z80s
 
@@ -1328,7 +1328,11 @@ endif
 ; the stack and then continues at the address returned by
 ; `next`.
 ;
-; See also: `pushhl`.
+; ``pusha`` is useful for exiting from a `code` word using an
+; absolute conditional jump, or to save the bytes needed to
+; prepare an 8-bit register to be pushed on the stack.
+;
+; See also: `pushhl`, `pushhlde`.
 ;
 ; }doc
 
@@ -1346,7 +1350,10 @@ endif
 ; onto the stack and then continues at the address returned by
 ; `next`.
 ;
-; See also: `pusha`.
+; ``pushhl`` is useful for exiting from a `code` word using an
+; absolute conditional jump.
+;
+; See also: `pusha`, `pushhlde`.
 ;
 ; }doc
 
@@ -2440,10 +2447,16 @@ push_a:
   ld a,(bc)
   ld d,a ; DE = low part
   inc bc
+push_hlde:
   push de
 push_hl:
   push hl
   _jp_next
+
+  ; XXX WARNING -- In the library the `pushhlde` constant gets
+  ; its value from `pushhl`, which depends on the `push_hl`
+  ; label above. Therefore, the offset between both labels must
+  ; be preserved here.
 
 ; ----------------------------------------------
   _code_header lit_,'lit',compile_only
