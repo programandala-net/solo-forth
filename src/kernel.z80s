@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705091646
+; Last modified: 201705091657
 
 include version.z80s
 
@@ -11706,6 +11706,9 @@ do_vocabulary:
 ;
 ; }doc
 
+  ; XXX TODO -- Move `0exit` from the library to replace `0=
+  ; ?exit`? Same in `save-buffers`.
+
   dw zero_equals_,question_exit_
 question_paren.begin:
   dw parse_name_,dup_
@@ -13240,6 +13243,9 @@ block.end:
 ;
 ; }doc
 
+  ; XXX TODO -- Move `0exit` from the library to replace `0=
+  ; ?exit`? Same in `?(`.
+
   dw updated_question_,zero_equals_ ; not updated?
   dw question_exit_ ; exit if not updated
   ; Updated
@@ -13255,7 +13261,7 @@ block.end:
 ; set-source ( ca len -- )
 ;
 ; Set the memory zone _ca len_ as the current source by pointing
-; the input buffer to it.
+; `input-buffer` to it.
 ;
 ; Definition:
 
@@ -13263,8 +13269,7 @@ block.end:
 ; : set-source ( ca len -- ) input-buffer 2! >in off ;
 ; ----
 
-; See also: `input-buffer`, `>in`, `terminal>source`,
-; `block>source`.
+; See also: `>in`, `terminal>source`, `block>source`.
 ;
 ; }doc
 
@@ -13304,7 +13309,7 @@ block.end:
 ;
 ; block>source ( u -- )
 ;
-; Set block _u_ as the current source.
+; Set `block` _u_ as the current source.
 ;
 ; Definition:
 

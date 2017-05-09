@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705091230
+  \ Last modified: 201705092024
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -63,6 +63,7 @@
   \
   \ Found here (2015-12-13):
   \ http://web.archive.org/web/20060707001752/http://www.tinyboot.com/index.html
+  \ http://web.archive.org/web/20060714230130/http://tinyboot.com:80/rng.txt
 
 [unneeded] random-range  ?( need random
 
@@ -342,6 +343,6 @@ code crnd ( -- b )
   \ and improve documentation. Rewrite `fast-rnd` and `crnd`
   \ with Z80 opcodes.
   \
-  \ 2017-05-09: Remove `jppushhl,`.
+  \ 2017-05-09: Remove `jppushhl,`. Improve documentation.
 
   \ vim: filetype=soloforth

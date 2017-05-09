@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705091240
+  \ Last modified: 201705091516
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -667,6 +667,8 @@ code scra>attra ( a1 -- a2 )
     \ or $58 ; form correct high byte for third of screen
     \ ld h,a
   E5 c, jpnext, end-code ?)
+    \ push hl
+    \ _jp_next
 
   \ Credit:
   \

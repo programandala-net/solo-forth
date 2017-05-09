@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705091227
+  \ Last modified: 201705091519
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -625,7 +625,7 @@ need 2nip need cell-bits
   \
   \ 2017-05-08: Fix needing of `d=`.
   \
-  \ 2017-05-09: Remove `jp pushhlde` from `d2*` and `d2/`. fix
+  \ 2017-05-09: Remove `jp pushhlde` from `d2*` and `d2/`. Fix
   \ `d2/` (the high and low parts of the result were in wrong
   \ order).  Remove `jppushhl,`.
 
