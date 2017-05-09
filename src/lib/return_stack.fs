@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705091231
+  \ Last modified: 201705091327
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -95,6 +95,7 @@ code nr> ( -- x1..xn n ) ( R: x1..xn n -- )
 ( rdepth r'@ 2rdrop dup>r )
 
 [unneeded] rdepth
+
 ?\ : rdepth ( -- n ) rp@ rp0 @ - [ cell negate ] literal / ;
 
   \ Credit:
@@ -103,7 +104,12 @@ code nr> ( -- x1..xn n ) ( R: x1..xn n -- )
 
   \ doc{
   \
-  \ rdepth ( -- n )
+  \ rdepth ( -- +n )
+  \
+  \ _+n_ is the number of single-cell values contained in the
+  \ return stack.
+  \
+  \ See also: `rp0`, `rp`, `depth`, `fdepth`.
   \
   \ }doc
 
@@ -112,16 +118,23 @@ code nr> ( -- x1..xn n ) ( R: x1..xn n -- )
   \ `r'@` by Wil Baden.
 
 [unneeded] r'@ ?(
-: r'@ ( -- x1 ) ( R: x1 x2 -- x1 x2 )
-  r> 2r@ drop swap >r ; ?)
+
+: r'@ ( -- x1 ) ( R: x1 x2 -- x1 x2 ) r> 2r@ drop swap >r ; ?)
+
+  \ XXX TODO -- Rewrite in Z80.
 
   \ doc{
   \
   \ r'@ ( -- x1 ) ( R: x1 x2 -- x1 x2 )
   \
+  \ Fetch _x1_ from the return stack.
+  \
+  \ See also: `r@`.
+  \
   \ }doc
 
 [unneeded] 2rdrop ?(
+
 code 2rdrop ( R: x1 x2 -- )
   2A c, rp , 11 c, 02 cells , 19 c, 22 c, rp ,
     \ ld hl,(return_stack_pointer)
@@ -131,14 +144,18 @@ code 2rdrop ( R: x1 x2 -- )
   jpnext, end-code ?)
     \ jp next
 
-
   \ doc{
   \
   \ 2rdrop ( R: x1 x2 -- )
   \
+  \ Remove _x1 x2_ from the return stack.
+  \
+  \ See also: `rdrop`,`2drop`.
+  \
   \ }doc
 
 [unneeded] dup>r ?(
+
 code dup>r ( x -- x ) ( R: -- x )
   D1 c, D5 c, ' >r 1+ jp, end-code ?)
     \ pop de
@@ -153,7 +170,12 @@ code dup>r ( x -- x ) ( R: -- x )
   \
   \ dup>r ( x -- x ) ( R: -- x )
   \
-  \ A faster alternative to the idiom `dup >r`.
+  \ Move a copy of _x_ to the return stack.  ``dup>r`` is a
+  \ faster alternative to the idiom `dup >r`.
+  \
+  \ Origin: IsForth.
+  \
+  \ See also: `dup`, >r`.
   \
   \ }doc
 
@@ -194,6 +216,6 @@ code dup>r ( x -- x ) ( R: -- x )
   \ 2017-03-11: Need `>aresolve` and `>amark`, which now are
   \ optional, not included in the assembler by default.
   \
-  \ 2017-05-09: Remove `jppushhl,`.
+  \ 2017-05-09: Remove `jppushhl,`. Improve documentation.
 
   \ vim: filetype=soloforth

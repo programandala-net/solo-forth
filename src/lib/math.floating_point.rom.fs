@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201705091241
+  \ Last modified: 201705091327
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -180,7 +180,9 @@ need float need float-
   \ _+n_ is the number of values contained on the
   \ floating-point stack.
   \
-  \ See also: `fp0`, `(fp@` ,`float`.
+  \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
+  \
+  \ See also: `fp0`, `(fp@` ,`float`, `depth`, `rdepth`.
   \
   \ }doc
 
@@ -1045,6 +1047,6 @@ code ftrunc ( F: r1 -- r2 )
   \
   \ 2017-05-07: Improve documentation.
   \
-  \ 2017-05-09: Remove `jppushhl,`.
+  \ 2017-05-09: Remove `jppushhl,`. Improve documentation.
 
   \ vim: filetype=soloforth

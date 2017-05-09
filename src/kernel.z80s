@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705091204
+; Last modified: 201705091327
 
 include version.z80s
 
@@ -1354,6 +1354,9 @@ endif
 
 ; ----------------------------------------------
   _constant_header fetchhl_,'fetchhl'
+
+  ; XXX TODO -- Move to the library. Calculate the address from
+  ; the xt of `@`.
 
 ; doc{
 ;
@@ -3314,6 +3317,8 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
 
   ; XXX TODO -- Move to the library (it's used by `.s`, which
   ; will be removed from the kernel after the development).
+  ; The code `paren_loop.continue` is shared with `(loop)`, so
+  ; it must be duplicated.
 
   ; Credit:
   ; Code adapted from spectrum Forth-83.
@@ -5192,7 +5197,7 @@ u_m_slash_mod.4:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `r>`, `r@`, 2>r`,
+; See also: `r>`, `r@`, 2>r`, `dup>r`.
 ;
 ; }doc
 
@@ -5314,7 +5319,8 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ; }doc
 
   ; XXX TODO -- Move to the library?  Use `' 2@ 1+` to calculate
-  ; the jump address.
+  ; the jump address. Problem: `rp` will be converted to a user
+  ; variable.
 
   ld hl,(return_stack_pointer)
   jp two_fetch.hl
@@ -5331,7 +5337,7 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also. `>r`, `r>`, `rdrop`.
+; See also. `>r`, `r>`, `rdrop`, `r'@`.
 ;
 ; }doc
 
@@ -5814,7 +5820,7 @@ endif
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; See also: `?dup`, `2dup`, `tuck`, `over`, `0dup`, `-dup`,
-; `nup`, `3dup`.
+; `nup`, `3dup`, `dup>r`.
 ;
 ; }doc
 
@@ -10917,10 +10923,30 @@ search.failed:
 ; ----------------------------------------------
 if 1 ; developing
 
-  ; XXX TMP -- only during the development, then remove (it's
-  ; in the library)
+  ; XXX TODO -- Move to the library.
+  ; XXX TMP -- only during the development
 
   _colon_header depth_,'depth'
+
+; doc{
+;
+; depth  ( -- +n )
+;
+; _+n_ is the number of single-cell values contained in the data
+; stack before _+n_ was placed on the stack.
+;
+; Definition:
+
+; ----
+; : depth  ( -- +n ) sp@ sp0 @ - [ cell negate ] literal / ;
+; ----
+
+; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
+; Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `sp@`, sp0`, `cell`, `rdepth`, `fdepth`.
+;
+; }doc
 
   dw sp_fetch_,sp0_,fetch_,minus_,lit_,-2,slash_
   dw exit_
