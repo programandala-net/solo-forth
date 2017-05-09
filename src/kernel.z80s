@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705100030
+; Last modified: 201705100054
 
 include version.z80s
 
@@ -11883,17 +11883,17 @@ quit.begin:
 
 ; doc{
 ;
-; version ( -- a )
+; version ( -- ca )
 ;
-; _a_ is the address of an array containing the Solo Forth
-; version, as follows:
+; _ca_ is the address of a 9-byte data table containing the Solo
+; Forth version, as follows:
 
 ; [horizontal]
 ; +0:: major (one byte)
 ; +1:: minor (one byte)
 ; +2:: patch (one byte)
-; +3:: pre-release (one byte), zero if none
-; +4:: build (double-cell number)
+; +3:: pre-release (one cell), zero if none
+; +5:: build (double-cell number)
 
 ; See also: `.version`.
 ;
@@ -11902,7 +11902,7 @@ quit.begin:
   db version_major
   db version_minor
   db version_patch
-  db version_prerelease
+  dw version_prerelease
   dw version_build_high_part,version_build_low_part
 
 ; ----------------------------------------------
@@ -11917,28 +11917,27 @@ quit.begin:
 ; }doc
 
   dw version_
-  dw dup_,c_fetch_,zero_dot_r_
 
-  ; XXX TODO -- factor these repeated parts to a nonamed word,
-  ; but only two cells would be saved:
-  _literal '.'
-  dw emit_
-  dw one_plus_,dup_,c_fetch_,zero_dot_r_
+  dw count_,zero_dot_r_ ; major
 
   _literal '.'
   dw emit_
-  dw one_plus_,dup_,c_fetch_,zero_dot_r_
+  dw count_,zero_dot_r_ ; minor
 
-  dw one_plus_
+  _literal '.'
+  dw emit_
+  dw count_,zero_dot_r_ ; patch
+
 if version_prerelease
   dw paren_dot_quote_
   _string "-pre."
-  dw dup_,c_fetch_,zero_dot_r_
+  dw dup_,fetch_,zero_dot_r_ ; prerelease
 endif
-dot_version.build
+
   _literal '+'
   dw emit_
-  dw one_plus_,two_fetch_,d_dot_
+  dw cell_plus_,two_fetch_,d_dot_ ; build
+
   dw exit_
 
 ; ----------------------------------------------
@@ -11980,7 +11979,7 @@ endif
 ; }doc
 
   dw paren_dot_quote_
-  _string "Solo Forth\rv"
+  _string "Solo Forth\r"
   dw dot_version_
   dw dos_,type_
   dw paren_dot_quote_
