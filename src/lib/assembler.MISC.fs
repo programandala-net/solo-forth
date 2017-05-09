@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705091336
+  \ Last modified: 201705100011
 
   \ ===========================================================
   \ Description
@@ -25,32 +25,78 @@
 
 ( << >> )
 
-[unneeded] << [unneeded] >> and (?
-
-  \ XXX UNDER DEVELOPMENT
-
-  \ Tool to dump assembled code to screen.
+[unneeded] << [unneeded] >> and ?(
 
   \ Credit:
   \
+  \ Code adapted from Pygmy Forth 1.7 for DOS.
+  \
   \ Original code by Frank Sergeant, for Pygmy Forth.
-  \ Code adapted from Pygmy Forth.
+  \
+  \ See the license at <http://pygmy.utoh.org/license.html>.
 
-need @c+ need for
+need c@+ need for need 16hex. need 8hex.
 
-: << ( -- a depth ) here depth ;
+: << ( -- ca n ) here depth ;
 
-: >> ( a depth -- )
-  depth 1- - #-258 ?throw cr base @ >r hex
-  dup 4 u.r space  here over - for  c@+ 3 u.r  step drop
-  r> base !  space ; ?)
+  \ doc{
+  \
+  \ << ( -- ca +n )
+  \
+  \ Mark the start of a code zone to be dumped by `>>`.  _ca_
+  \ is the current data-pointer and _+n_ is the current
+  \ `depth`. Both of them are used by `>>`. See `>>` for a
+  \ usage example.
+  \
+  \ Origin: Pygmy Forth.
+  \
+  \ }doc
+
+: >> ( ca n -- )
+  depth 1- <> #-258 ?throw
+  cr dup 16hex. here over - for  c@+ 8hex.  step drop ; ?)
+
+  \ doc{
+  \
+  \ >> ( ca +n -- )
+  \
+  \ Display starting address _ca_ as a 16-bit hexadecimal
+  \ number. Then dump the code compiled in data space from _ca_
+  \ to the current data-space pointer, in hexadecimal. _+n_ is
+  \ used for error checking. _ca_ and _+n_ were left by _<<_.
+  \
+  \ ``<<`` and `>>` allow you to dump short (or long) snippets
+  \ of assembly code to the screen for your inspection. If you
+  \ want to see how a piece of assembly code gets assembled,
+  \ just put it between the brackets.
+  \
+  \ Usage example:
+
+  \ ----
+  \ create useless-code-routine ( -- a )
+  \   asm  << C9 c, >> end-asm
+  \
+  \ need assembler
+  \
+  \ code useless-code-word ( n1 -- n1 )
+  \   << h pop, h incp, h decp, h push, jpnext, >>
+  \ end-code
+  \ ----
+
+  \ Origin: Pygmy Forth.
+  \
+  \ See also: `dump`, `wdump`, `assembler`.
+  \
+  \ }doc
 
   \ ===========================================================--
   \ Change log
 
-  \ 2015, 2016: Unfinished conversion of Pygmy Forth's `>>`.
+  \ 2015, 2016: Unfinished conversion of Pygmy Forth's `<<` and
+  \ `>>`.
   \
-  \ 2017-05-09: Rename the file.
+  \ 2017-05-09: Rename the file. Finish, test and document the
+  \ code of `<<` and `>>`.
 
   \ vim: filetype=soloforth
 

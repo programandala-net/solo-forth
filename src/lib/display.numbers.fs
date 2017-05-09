@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071832
+  \ Last modified: 201705092051
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -271,7 +271,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
   \
   \ Display _d_ as an unsigned 8-bit hexadecimal number.
   \
-  \ See also: `8bin.`, `16hex.`, `16hex.`, `hex.`, `hex`.
+  \ See also: `8bin.`, `16hex.`, `hex.`, `hex`.
   \
   \ }doc
 
@@ -401,5 +401,7 @@ need base' need base> need binary
   \ 2017-05-05: Improve documentation.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2017-05-09: Fix typo.
 
   \ vim: filetype=soloforth
