@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705091327
+; Last modified: 201705091646
 
 include version.z80s
 
@@ -637,9 +637,9 @@ _ctype: macro
 _chk: macro _message
   if debugging
     _echo _message
-    dw base_,fetch_,to_r_,hex_
-    dw cr_,dot_s_
-    dw from_r_,base_,store_
+    ; dw base_,fetch_,to_r_,hex_
+    dw cr_,u_dot_s_
+    ; dw from_r_,base_,store_
   endif
   endm
 
@@ -11233,12 +11233,12 @@ if 1 ; developing
   dw question_r_stack_
 endif
   dw parse_name_  ; ( ca len )
-  ; _chk_type 'after parse-name' ; XXX INFORMER
+  ; _brk_type 'after parse-name' ; XXX INFORMER
   dw dup_ ; end of stream?
   dw zero_branch_,interpret.end ; if so, finish
 
   dw find_name_ ; ( nt | 0 )
-  ; _chk 'after find-name' ; XXX INFORMER
+  ; _brk 'after find-name' ; XXX INFORMER
   dw question_dup_ ; found?
   dw zero_branch_,interpret.word_not_found
 
@@ -11255,12 +11255,13 @@ interpret.do_it:
   ; ( +n )
   ; Execute element _+n_ of `interpret-table`,
   ; depending on `state`.
-  ;_brk 'do it' ; XXX INFORMER
+  ; _brk 'do it' ; XXX INFORMER
   dw compiling_question_,question_negate_,cells_
+  ; _brk 'before interpret-table' ; XXX INFORMER
   _literal interpret_table.0
-  ;_brk 'before +' ; XXX INFORMER
+  ; _brk 'before +' ; XXX INFORMER
   dw plus_,perform_
-  ; _chk 'after perform' ; XXX INFORMER
+  ; _brk 'after perform' ; XXX INFORMER
   dw branch_,interpret.begin
 
 interpret.word_not_found:
@@ -13315,18 +13316,6 @@ block.end:
 ; `lineblock>source`.
 ;
 ; }doc
-
-  ; XXX INFORMER {{{
-  ; _literal '['
-  ; dw emit_
-  ; dw dup_,base_,fetch_
-  ; _literal 10
-  ; dw base_,store_
-  ; dw swap_,dot_,base_,store_
-  ; _literal ']'
-  ; dw emit_
-  ; XXX INFORMER }}}
-
 
   dw blk_,store_,to_in_,off_
   dw exit_

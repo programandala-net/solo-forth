@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201703280147
+; Last modified: 201705091638
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -165,7 +165,8 @@ push_dos_ior:
   jp c,false_   ; no error
   call dosior_to_ior
   ; HL = error code
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ------------------------------
 
@@ -373,7 +374,8 @@ _code_header dosior_to_ior_,'dosior>ior'
 
   pop hl
   call dosior_to_ior.hl
-  _jp_pushhl
+  push hl
+  _jp_next
 
 dosior_to_ior:
 
@@ -423,7 +425,8 @@ dosior_to_ior.hl:
   pop de
   pop hl
   ld h,e
-  _jp_pushhl
+  push hl
+  _jp_next
 
 ; ----------------------------------------------
   _colon_header sector_hash_to_dos_,'sector#>dos'
@@ -1276,5 +1279,8 @@ endif ; defined plus3dos
 ; `sector#>dos` from it. Improve documentation.
 ;
 ; 2017-03-28: Fix and improve documentation.
+;
+; 2017-05-09: Replace `_jp_pushhl` with `push hl` and
+; `_jp_next`.
 
 ; vim: filetype=z80:textwidth=64
