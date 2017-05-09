@@ -1088,6 +1088,11 @@ Change: modify `expect` after Spectrum Forth-83.
 // Kernel {{{1
 == Kernel ==
 
+.2017-05-09:
+
+Convert `fetchhl` to `jpfetchhl,`? The address is used only once, this
+way.
+
 .2017-05-08, 2017-05-09:
 
 Remove `push_hl`:

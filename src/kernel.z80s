@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705091059
+; Last modified: 201705091155
 
 include version.z80s
 
@@ -1319,7 +1319,7 @@ endif
 ; In Solo Forth, the Z80 IX register contains _a_, which must be
 ; preserved across Forth words.
 ;
-; See also: `pushhl`, `pushhlde`, `pusha`.
+; See also: `pushhl`, `pusha`.
 ;
 ; }doc
 
@@ -1337,7 +1337,7 @@ endif
 ; the stack and then continues at the address returned by
 ; `next`.
 ;
-; See also: `pushhl`, `pushhlde`.
+; See also: `pushhl`.
 ;
 ; }doc
 
@@ -1355,33 +1355,11 @@ endif
 ; onto the stack and then continues at the address returned by
 ; `next`.
 ;
-; See also: `pushhlde`, `pusha`.
+; See also: `pusha`.
 ;
 ; }doc
 
   dw push_hl
-
-; ----------------------------------------------
-  _constant_header pushhlde_,'pushhlde'
-
-; doc{
-;
-; pushhlde ( -- a )
-;
-; _a_ is the address of a secondary entry point of the Forth
-; inner interpreter.  The code at _a_ pushes the DE and HL
-; registers onto the stack and then continues at the address
-; returned by `next`.
-;
-; NOTE: DE is pushed first, so HL is left on top of the stack.
-; This is equivalent to pushing the double number formed by both
-; registers, being HL the high part and DE the lower part.
-;
-; See also: `pushhl`, `pusha`.
-;
-; }doc
-
-  dw push_hlde
 
 ; ----------------------------------------------
   _constant_header fetchhl_,'fetchhl'
@@ -12291,9 +12269,9 @@ else
   pop de
   ld a,d
   or a
-  jp p,push_hlde ; jump if positive
+  jp p,s_to_d.end ; jump if positive
   dec hl
-push_hlde:
+s_to_d.end
   push de
   _jp_pushhl
 
