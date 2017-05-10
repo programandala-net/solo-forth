@@ -5,26 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201705100028
-
-// Application development {{{1
-== Application development ==
-
-.2017-02-25:
-
-Move words that applications don't need (e.g. `greeting`, `.unused`,
-`version`...) to the top of the kernel definitions. Then write a word
-that removes all of them, including itself, and sets the new values of
-the pointers. This way, the application can execute that word right at
-the start of the compilation in order to get that extra memory.
-
-.2017-02-25:
-
-Options to make it easier to share code with other systems:
-
-- Add `solo-forth` as an immediate alias of `noop`.
-- Add `solo-forth` to the enviromental queries, to return the version
-  (like Gforth).
+// Last modified 201705100104
 
 // Assembler {{{1
 == Assembler ==
@@ -152,7 +133,7 @@ Make `cold` set `set-block-drives` to the default value.
 
 .2017-02-11:
 
-Fix: Crash when loading `mode64` or `mode42`. It seems a return stack
+Fix: Crash when loading `mode-64` or `mode-42`. It seems a return stack
 problem.
 
 .2017-01-11, 2017-01-24, 2017-01-25:
@@ -448,6 +429,192 @@ word list and from newest to oldest word... But the process should
 examine all words of the system, and keep the _nt_ of the oldest word
 this the _xt_ that is searched for. This is slow, but saves the
 additional link.
+
+// Display {{{1
+== Display ==
+
+.2017-05-06:
+
+NOTE: Milestone: 0.14.0
+
+Select the `gigatype` style with a character variable, not with a
+parameter.
+
+.2017-05-05:
+
+Write the definitive version of `u.` in the library. The current one
+is temporary, for debugging.
+
+.2017-04-21:
+
+Replace the current `mode-64` with the improved code written by Einar
+Saukas, "64#4". Import its four extra fonts.
+
+.2017-04-21:
+
+Fix: The default `mode-32` expects _row_ right after control character
+22, and then _col_, i.e in the order used by Sinclair BASIC. But
+`mode-64` and `mode-42` expect them in reverse order.
+
+Update `(at-xy` and its documentation.
+
+.2017-04-20:
+
+Write `mode32udg-emit` to use the full UDG 0..255 as a font, after the
+method used by `mode32iso-emit`.
+
+.2017-04-20:
+
+Change the order of the cursor coordinates embedded in strings, after
+the Forth convention? This is not possible with `mode32-emit`, which
+uses the ROM routine.
+
+.2017-04-19:
+
+Convert the ISO standard 64-cpl fonts included in mikroprint to the
+format used by the current implementation of `mode64`.
+
+.2017-04-17:
+
+Import `center-type` from _Nuclear Waste Invaders_ and rename and
+modify `gigatype-center` accordingly.
+
+.2017-04-16:
+
+Convert `columns` and `rows` to character constants.
+
+.2017-03-15:
+
+Convert `previous-mode` and `current-mode` to deferred words; then
+remove `save-mode` and `restore-mode`. Calculate the gain in bytes and
+simplicity.
+
+This changes implies moving `defer@` to the kernel.
+
+.2017-02-25:
+
+The Forth Standard requires standard ASCII.  An alternative to
+non-standard character 96 is needed.
+
+- Detect it in `emit` and change the font only to print it,
+  temporarily?  This will ruin alternative fonts.
+- Simpler: Provide an alternative standard font in disk.
+
+.2017-02-25:
+
+Add '$' prefix to `hex.`, '%' to `bin.` and '#' to `dec.`.
+
+.2017-02-04:
+
+Rename `mode32-emit` to `mode32-rom-emit` and write an alternative
+word `mode32-iso-emit` to print characters 128..255 also from the
+current font.  This will make it possible to use 8-bit character sets.
+
+.2017-01-18, 2017-02-04:
+
+Current versions of `type-right-field` and `type-center-field` use
+spaces. This creates a banner.
+
+Write alternative versions that move the cursor position instead.
+
+Choose shorter names:
+
+|===
+| Current name        | New name        | Common name with factored execution table
+
+| `type-left-field`   | `<type-field`   | `left-type type-field`
+| `type-center-field` | `<type-field>`  | `center-type type-field`
+| `type-right-field`  | `type-field>`   | `right-type type-field`
+|===
+
+Using the execution table as parameter has a problem:
+`type-left-field` does not use execution table. Besides, the execution
+tables will be different for the future set of words that type without
+padding spaces, so finally the number of different words will grow
+anyway.
+
+.2017-01-02:
+
+Adapt the banked screen mode (which uses the unfinsihed implementation
+of a code bank for addons) to far memory or remove it.
+
+.2016-12-30:
+
+Combine `clear-block` and family with the text windows.
+
+.2016-12-24, 2017-02-03:
+
+Windows:
+
+- Scroll support, with configurable pause.
+- Rewrite `wcls` in Z80, or use `spaces` instead of `type`
+- Save and restore windows, in Z80.
+
+.2016-12-20:
+
+Move `.0000` and `.00` from the time module to the printing module, and factor
+them for double numbers.
+
+.2016-11-26:
+
+NOTE: Milestone: 0.14.0
+
+Make `type-ascii` configurable: store the common char in a character variable.
+In fact, it would be enough to write `emit-ascii`, because `emit` is deferred,
+and use `type`.
+
+Make `type` deferred, to be configured as `fartype` or other when needed.
+
+.2016-11-21:
+
+Add support for more control characters to alternative version of `mode64`.
+
+.2016-11-21:
+
+In mode 32, one `cr` does nothing when the cursor is at the end of a line.
+That is the default behaviour in Sinclair BASIC. The driver of `mode42` works
+the same way.  But the driver of `mode64` always prints the carriage return,
+increasing the line number. Somehow the behaviour must be unified in all
+modes. The behaviour of `mode64` seems more logical.
+
+.2016-10-28:
+
+NOTE: Milestone: 0.14.0
+
+Simplify `u.r`.
+
+.2016-08-11:
+
+Remove the 64 cpl font from the library (4 blocks), and use the binary file
+(336 bytes) instead? Or provide the file as an alternative.
+
+.2015-09-05:
+
+There's an example how to change and restore a channel in print-42, by
+Ricardo Serral Wigge. Beside, it supports many (all?) control
+characters, unlike the implementation by Andy Jenkinson.
+
+.2015-09-11:
+
+Idea: screen modes table?
+
+- 0: 32 cpl original (ROM routines)
+- 1: 32 cpl improved (bold, italic).
+- 3: 36 cpl
+- 4: 42 cpl
+- 5: 51 cpl
+- 6: 64 cpl
+
+It seems more versatile to create one word to select every mode and provide a
+common user interface to row, column, cpl, window...
+
+.2016-10-27:
+
+Add `vemits`, inspired by TI BASIC's `call vchar()`.
+
+.2016-04-17:
+
+Improve tab control.
 
 // Documentation {{{1
 == Documentation ==
@@ -1444,13 +1611,15 @@ Add `get-far-banks`, `set-far-banks`.
 Idea to support memory larger than 128 KiB, provided Pentagon and
 Scorpion:
 
-Of course, `far-banks` can be configured by the application, any time,
+Of course, `far-banks` can be configured by the program, any time,
 to use a different set of banks.
 
 But there could be an optional, similar system to use 32-bit
 addresses... `farfar-banks`, `vfar-banks`, `32far-banks`.
 
 .2017-01-26:
+
+NOTE: Milestone: 0.14.0
 
 Rewrite `exchange`, `cexchange`, `!exchange`  and `c!exchange` in Z80.
 
@@ -1677,7 +1846,7 @@ need( word1 word2 word3 word4
 seems the best option.
 
 Problem: `need(` should use `refill`, in case the list is splitted
-between two blocks of the application, where no block headers are
+between two blocks of the program, where no block headers are
 used.
 
 .2016-11-19, 2016-12-29:
@@ -1828,191 +1997,24 @@ NOTE: Milestone: 0.14.0
 
 Adapt from Gforth: `noname`, analogous to `nextname`.
 
-// Display {{{1
-== Display ==
+// Program development {{{1
+== Program development ==
 
-.2017-05-06:
+.2017-02-25, 2017-05-10:
 
-NOTE: Milestone: 0.14.0
-
-Select the `gigatype` style with a character variable, not with a
-parameter.
-
-.2017-05-05:
-
-Write the definitive version of `u.` in the library. The current one
-is temporary, for debugging.
-
-.2017-04-21:
-
-Replace the current `mode-64` with the improved code written by Einar
-Saukas, "64#4". Import its four extra fonts.
-
-.2017-04-21:
-
-Fix: The default `mode-32` expects _row_ right after control character
-22, and then _col_, i.e in the order used by Sinclair BASIC. But
-`mode-64` and `mode-42` expect them in reverse order.
-
-Update `(at-xy` and its documentation.
-
-.2017-04-20:
-
-Write `mode32udg-emit` to use the full UDG 0..255 as a font, after the
-method used by `mode32iso-emit`.
-
-.2017-04-20:
-
-Change the order of the cursor coordinates embedded in strings, after
-the Forth convention? This is not possible with `mode32-emit`, which
-uses the ROM routine.
-
-.2017-04-19:
-
-Convert the ISO standard 64-cpl fonts included in mikroprint to the
-format used by the current implementation of `mode64`.
-
-.2017-04-17:
-
-Import `center-type` from _Nuclear Waste Invaders_ and rename and
-modify `gigatype-center` accordingly.
-
-.2017-04-16:
-
-Convert `columns` and `rows` to character constants.
-
-.2017-03-15:
-
-Convert `previous-mode` and `current-mode` to deferred words; then
-remove `save-mode` and `restore-mode`. Calculate the gain in bytes and
-simplicity.
-
-This changes implies moving `defer@` to the kernel.
+Move words that programs don't need (e.g. `greeting`, `.unused`,
+`version`...) to the top of the kernel definitions. Then write a word
+to remove all of them, including itself, and sets the new values of
+the pointers. This way, the program can get rid of all of them at the
+start of the compilation and get some extra memory.
 
 .2017-02-25:
 
-The Forth Standard requires standard ASCII.  An alternative to
-non-standard character 96 is needed.
+Options to make it easier to share code with other systems:
 
-- Detect it in `emit` and change the font only to print it,
-  temporarily?  This will ruin alternative fonts.
-- Simpler: Provide an alternative standard font in disk.
-
-.2017-02-25:
-
-Add '$' prefix to `hex.`, '%' to `bin.` and '#' to `dec.`.
-
-.2017-02-04:
-
-Rename `mode32-emit` to `mode32-rom-emit` and write an alternative
-word `mode32-iso-emit` to print characters 128..255 also from the
-current font.  This will make it possible to use 8-bit character sets.
-
-.2017-01-18, 2017-02-04:
-
-Current versions of `type-right-field` and `type-center-field` use
-spaces. This creates a banner.
-
-Write alternative versions that move the cursor position instead.
-
-Choose shorter names:
-
-|===
-| Current name        | New name        | Common name with factored execution table
-
-| `type-left-field`   | `<type-field`   | `left-type type-field`
-| `type-center-field` | `<type-field>`  | `center-type type-field`
-| `type-right-field`  | `type-field>`   | `right-type type-field`
-|===
-
-Using the execution table as parameter has a problem:
-`type-left-field` does not use execution table. Besides, the execution
-tables will be different for the future set of words that type without
-padding spaces, so finally the number of different words will grow
-anyway.
-
-.2017-01-02:
-
-Adapt the banked screen mode (which uses the unfinsihed implementation
-of a code bank for addons) to far memory or remove it.
-
-.2016-12-30:
-
-Combine `clear-block` and family with the text windows.
-
-.2016-12-24, 2017-02-03:
-
-Windows:
-
-- Scroll support, with configurable pause.
-- Rewrite `wcls` in Z80, or use `spaces` instead of `type`
-- Save and restore windows, in Z80.
-
-.2016-12-20:
-
-Move `.0000` and `.00` from the time module to the printing module, and factor
-them for double numbers.
-
-.2016-11-26:
-
-NOTE: Milestone: 0.14.0
-
-Make `type-ascii` configurable: store the common char in a character variable.
-In fact, it would be enough to write `emit-ascii`, because `emit` is deferred,
-and use `type`.
-
-Make `type` deferred, to be configured as `fartype` or other when needed.
-
-.2016-11-21:
-
-Add support for more control characters to alternative version of `mode64`.
-
-.2016-11-21:
-
-In mode 32, one `cr` does nothing when the cursor is at the end of a line.
-That is the default behaviour in Sinclair BASIC. The driver of `mode42` works
-the same way.  But the driver of `mode64` always prints the carriage return,
-increasing the line number. Somehow the behaviour must be unified in all
-modes. The behaviour of `mode64` seems more logical.
-
-.2016-10-28:
-
-NOTE: Milestone: 0.14.0
-
-Simplify `u.r`.
-
-.2016-08-11:
-
-Remove the 64 cpl font from the library (4 blocks), and use the binary file
-(336 bytes) instead? Or provide the file as an alternative.
-
-.2015-09-05:
-
-There's an example how to change and restore a channel in print-42, by
-Ricardo Serral Wigge. Beside, it supports many (all?) control
-characters, unlike the implementation by Andy Jenkinson.
-
-.2015-09-11:
-
-Idea: screen modes table?
-
-- 0: 32 cpl original (ROM routines)
-- 1: 32 cpl improved (bold, italic).
-- 3: 36 cpl
-- 4: 42 cpl
-- 5: 51 cpl
-- 6: 64 cpl
-
-It seems more versatile to create one word to select every mode and provide a
-common user interface to row, column, cpl, window...
-
-.2016-10-27:
-
-Add `vemits`, inspired by TI BASIC's `call vchar()`.
-
-.2016-04-17:
-
-Improve tab control.
+- Add `solo-forth` as an immediate alias of `noop`.
+- Add `solo-forth` to the enviromental queries, to return the version
+  (like Gforth).
 
 // Project tree {{{1
 == Project tree ==
@@ -2020,13 +2022,15 @@ Improve tab control.
 // Stacks {{{1
 == Stacks ==
 
-.2017-03-29:
+.2017-03-29, 2017-05-10:
 
 Use the code of `rp@` as storage of the pointer. This save one cell
 from the parameter area of the kernel. Or use any `ld
 hl,(return_stack_pointer)` of a more used word, to make the most from
 the 10 saved T-cycles. `>r` is a good candidate. Better yet, the
 `do_colon` part of `:`. Better yet, `exit`.
+
+But this change would be incompatible with multitasking.
 
 .2017-03-21:
 
@@ -2038,11 +2042,11 @@ Add `+dup` and other missing members of the alternative sets.
 
 .2017-01-20:
 
-Make the return stack grow toward high memory and move it below the data stack.
-This way both stacks can share a common free space.  This is an advantage
-because you can have programs which need quite some return stack depth, but few
-data elements - or the inverse.  "Stack overflow" means both pointers cross.
-The idea was taken from 4tH:
+Make the return stack grow toward high memory and move it below the
+data stack.  This way both stacks can share a common free space.  This
+is an advantage because you can have programs which need quite some
+return stack depth, but few data elements - or the inverse.  "Stack
+overflow" means both pointers cross.  The idea was taken from 4tH:
 
 ....
 Message-ID: <57f3f915bash75@news.xs4all.nl>
@@ -2118,7 +2122,7 @@ ____
 .2017-04-17:
 
 It seems the only way to move `stringer` to `limit` (making it easier
-to reconfigure by the application, without wasting its original space)
+to reconfigure by the program, without wasting its original space)
 is modify `find-name-from` to page in the default bank before fetching
 every character...
 

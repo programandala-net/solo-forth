@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705091211
+  \ Last modified: 201705101727
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -438,7 +438,7 @@ need >>name need name>name need name>>
   \
   \ }doc
 
-( there ?pairs [compile] smudge smudged )
+( there ?pairs [compile] smudge smudged no-exit )
 
 [unneeded] there ?\ : there ( a -- ) dp ! ;
 
@@ -524,6 +524,55 @@ need >>name need name>name need name>>
   \ Origin: fig-Forth.
   \
   \ See also: `smudged`.
+  \
+  \ }doc
+
+[unneeded] no-exit ?\ : no-exit ( -- ) cell negate allot ;
+
+  \ Credit:
+  \
+  \ Code from Pygmy Forth's `recover`:
+  \
+  \ Copyright (c) 2004 Frank C. Sergeant
+  \ Freely available under a modified BSD/MIT/X license.
+  \ Details at http://pygmy.utoh.org/license.html.
+
+  \ doc{
+  \
+  \ no-exit  ( -- )
+  \
+  \ Recover the data-space cell used by the `exit` compiled by
+  \ the `;` of the latest colon definition. ``no-exit`` can be
+  \ used after a colon definition that contains and end-less
+  \ loop, or exits only through an explicit `exit`, `quit` or
+  \ other means. In such cases the `exit` compiled by `;` can
+  \ never be reached, so its space is wasted. 
+  \
+  \ Usage examples:
+
+  \ ----
+  \ : forever ( -- )
+  \   begin ." Forever! " again ; no-exit
+  \
+  \ : maybe-forever ( -- )
+  \   begin ." Forever? " break-key? until quit ; no-exit
+  \ ----
+
+  \ The same effect can be achieved by replacing `;` with `[`
+  \ and `finish-code`:
+
+  \ ----
+  \ : forever ( -- )
+  \   begin ." Forever!" again [ finish-code
+  \
+  \ : maybe-forever ( -- )
+  \   begin ." Forever? " break-key? until quit [ finish-code
+  \ ----
+
+  \ `finish-code` is factor of `;`. It's not an `immediate`
+  \ word, so `[` is needed to enter interpretation `state`.
+
+  \ Origin: Pygmy Forth's ``recover``.
   \
   \ }doc
 
@@ -1102,5 +1151,7 @@ variable warnings  warnings on
   \ 2017-05-07: Improve documentation.
   \
   \ 2017-05-09: Remove `jppushhl,`.
+  \
+  \ 2017-05-10: Add `no-exit`.
 
   \ vim: filetype=soloforth

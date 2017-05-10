@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705100054
+; Last modified: 201705101732
 
 include version.z80s
 
@@ -6252,7 +6252,7 @@ do_colon:
 
 ; Origin: Gforth.
 ;
-; See also: `reveal`, `noname?`, `?csp`, `[`.
+; See also: `reveal`, `noname?`, `?csp`, `[`, `no-exit`.
 ;
 ; }doc
 
@@ -6302,8 +6302,7 @@ do_colon:
 ;
 ; }doc
 
-  dw compile_,exit_
-  dw finish_code_
+  dw compile_,exit_,finish_code_
   dw exit_
 
 ; ----------------------------------------------
@@ -15292,7 +15291,9 @@ two_fetch.hl:
 ; Before executing ``exit`` within a `loop`, a program shall
 ; discard the loop-control parameters by executing `unloop`.
 ;
-; ``exit`` is compiled by `;`.
+; ``exit`` is compiled by `;`. When words contain and endless
+; loop, the space used by ``exit`` can be recovered using
+; `no-exit`.
 ;
 ; In Solo Forth ``exit`` can be used in interpretation mode to
 ; stop the interpretation of a block, like fig-Forth's ``;s``.
