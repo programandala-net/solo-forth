@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705101732
+; Last modified: 201705101933
 
 include version.z80s
 
@@ -14235,6 +14235,33 @@ hash_s.begin:
   dw exit_
 
 ; ----------------------------------------------
+  _code_header zero_d_dot_r_,'0d.r'
+
+; doc{
+;
+; 0d.r ( d -- )
+;
+; Display _d_ according to current base, with no leading or
+; trailing spaces.  ``d0.r`` is a faster alternative to the
+; idiom ``0 d.r``.
+;
+; ``0d.r`` is written in Z80. Its equivalent definition in Forth
+; is the following:
+
+; ----
+; : 0d.r ( d -- ) 0 d.r ;
+; ----
+
+; See also: `d.r`, `0.r`.
+;
+; }doc
+
+  ld hl,0
+  push hl
+
+  ; Execution continues in `d.r`:
+
+; ----------------------------------------------
   _colon_header d_dot_r_,'d.r'
 
 ; doc{
@@ -14271,6 +14298,33 @@ hash_s.begin:
   dw exit_
 
 ; ----------------------------------------------
+  _code_header zero_dot_r_,'0.r'
+
+; doc{
+;
+; 0.r ( n -- )
+;
+; Display _n_ according to current base, with no leading or
+; trailing spaces.  ``0.r`` is a faster alternative to the idiom
+; ``0 .r``.
+;
+; ``0.r`` is written in Z80. Its equivalent definition in Forth
+; is the following:
+
+; ----
+; : 0.r ( n -- ) 0 .r ;
+; ----
+
+; See also: `.r`, `0d.r`.
+;
+; }doc
+
+  ld hl,0
+  push hl
+
+  ; Execution continues in `.r`:
+
+; ----------------------------------------------
   _colon_header dot_r_,'.r'
 
 ; doc{
@@ -14300,56 +14354,6 @@ hash_s.begin:
 ; }doc
 
   dw to_r_,s_to_d_,from_r_,d_dot_r_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header zero_dot_r_,'0.r'
-
-; doc{
-;
-; 0.r ( n -- )
-;
-; Display _n_ according to current base, without any trailing
-; blank.
-;
-; Definition:
-;
-; ----
-; : 0.r ( n -- ) 0 .r ;
-; ----
-;
-; See also: `.r`.
-;
-; }doc
-
-  _literal 0
-  dw dot_r_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header zero_d_dot_r_,'0d.r'
-
-; doc{
-;
-; 0d.r ( d -- )
-;
-; Display _d_ according to current base, without any trailing
-; blank.
-;
-; ``0d.r`` is a factor of `d.`.
-;
-; Definition:
-
-; ----
-; : 0d.r ( d -- ) 0 d.r ;
-; ----
-
-; See also: `d.r`.
-;
-; }doc
-
-  _literal 0
-  dw d_dot_r_
   dw exit_
 
 ; ----------------------------------------------

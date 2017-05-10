@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201705101826
+// Last modified 201705101934
 
 // Assembler {{{1
 == Assembler ==
@@ -1930,6 +1930,10 @@ for the end user.
 
 // Names {{{1
 == Names ==
+
+.2017-05-10:
+
+Find better names for `0.r` and `0d.r`.
 
 .2017-05-10:
 
