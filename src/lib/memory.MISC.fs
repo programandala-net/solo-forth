@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705070022
+  \ Last modified: 201705101815
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -39,13 +39,13 @@ code -! ( n|u a -- )
     \ ld a,(hl)
     \ sbc a,d
     \ ld (hl),a
-    \ jp next
+    \ _jp_next
 
   \ doc{
   \
   \ -! ( n|u a -- )
   \
-  \ Subtract _n|u_ from the single-cell number at _a_.
+  \ Subtract _n|u_ from the single-cell number stored at _a_.
   \
   \ See also: `+!`, `1-!`, `c-!`.
   \
@@ -60,13 +60,13 @@ code c+! ( c ca -- )
     \ ld a,e
     \ add a,(hl)
     \ ld (hl),a
-    \ jp next
+    \ _jp_next
 
   \ doc{
   \
   \ c+! ( c ca - )
   \
-  \ Add _c_ to the char at _ca_
+  \ Add _c_ to the character stored at _ca_
   \
   \ See also: `c-!`, `c1+!`, `+!`.
   \
@@ -81,13 +81,13 @@ code c-! ( c ca -- )
     \ ld a,(hl)
     \ sub e
     \ ld (hl),a
-    \ jp next
+    \ _jp_next
 
   \ doc{
   \
   \ c-! ( c ca - )
   \
-  \ Subtract _c_ from the char at _ca_
+  \ Subtract _c_ from the character stored at _ca_
   \
   \ See also: `c+!`, `c1-!`, `-!`.
   \
@@ -99,13 +99,13 @@ code c-! ( c ca -- )
 ?\ code c1+! ( ca -- ) E1 c, 34 c, jpnext, end-code
     \ pop hl
     \ inc (hl)
-    \ jp next
+    \ _jp_next
 
   \ doc{
   \
   \ c1+! ( ca - )
   \
-  \ Increment the char at _ca_.
+  \ Increment the character stored at _ca_.
   \
   \ See also: `c1-!`, `c+!`, `1+!`.
   \
@@ -115,13 +115,13 @@ code c-! ( c ca -- )
 ?\ code c1-! ( ca -- ) E1 c, 35 c, jpnext, end-code
     \ pop hl
     \ dec (hl)
-    \ jp next
+    \ _jp_next
 
   \ doc{
   \
   \ c1-! ( ca - )
   \
-  \ Decrement the char at _ca_.
+  \ Decrement the character stored at _ca_.
   \
   \ See also: `c1+!`, `c-!`, `1-!`.
   \
@@ -140,13 +140,13 @@ code 1+! ( a -- )
     \ ld (hl),d
     \ dec hl
     \ ld (hl),e
-    \ jp next
+    \ _jp_next
 
   \ doc{
   \
   \ 1+! ( a - )
   \
-  \ Increment the single-cell number at _a_.
+  \ Increment the single-cell number stored at _a_.
   \
   \ See also: `c1+!`, `1-!`, `+!`.
   \
@@ -165,13 +165,13 @@ code 1-! ( a -- )
     \ ld (hl),d
     \ dec hl
     \ ld (hl),e
-    \ jp next
+    \ _jp_next
 
   \ doc{
   \
   \ 1-! ( a - )
   \
-  \ Decrement the single-cell number at _a_.
+  \ Decrement the single-cell number stored at _a_.
   \
   \ See also: `1+!`, `c1-!`, `-!`.
   \
@@ -433,7 +433,7 @@ code ctoggle ( b ca -- )
     \ ld a,(hl)
     \ xor e
     \ ld (hl),a
-    \ jp next
+    \ _jp_next
 
   \ doc{
   \
@@ -460,8 +460,21 @@ code ctoggle ( b ca -- )
   \
   \ }doc
 
-[unneeded] c!exchange
-?\ : c!exchange ( c1 ca -- c2 ) dup c@ rot rot c! ;
+[unneeded] c!exchange ?(
+
+code c!exchange ( c1 ca -- c2 )
+  D9 c, E1 c, C1 c, 7E c, 16 c, 00 c, 58 07 + c, D5 c,
+  \ exx
+  \ pop hl ; ca
+  \ pop bc ; C = c1
+  \ ld a,(hl)
+  \ ld d,0
+  \ ld e,a
+  \ push de
+  71 c, D9 c, jpnext, end-code ?)
+  \ ld (hl),c
+  \ exx
+  \ _jp_next
 
   \ doc{
   \
@@ -469,6 +482,13 @@ code ctoggle ( b ca -- )
   \
   \ Store _c1_ into _ca_ and return its previous contents _c2_.
   \
+  \ ``c!exchange`` is written in Z80. An equivalent definition
+  \ in Forth is the following:
+
+  \ ----
+  \ : c!exchange ( c1 ca -- c2 ) dup c@ rot rot c! ;
+  \ ----
+
   \ See also: `!exchange`, `cexchange`.
   \
   \ }doc
@@ -544,7 +564,7 @@ code ctoggle ( b ca -- )
   \
   \ /! ( n a -- )
   \
-  \ Divide _n_ by the single-cell number at _a_ and store
+  \ Divide _n_ by the single-cell number stored at _a_ and store
   \ the quotient in _a_
   \
   \ See also: `2/!`, `*!`, `+!`, `-!`.
@@ -557,7 +577,7 @@ code ctoggle ( b ca -- )
   \
   \ *! ( n|u a -- )
   \
-  \ Multiply _n|u_ by the single-cell number at _a_ and store
+  \ Multiply _n|u_ by the single-cell number stored at _a_ and store
   \ the product in _a_
   \
   \ See also: `2*!` `/!`, `+!`, `-!`.
@@ -570,7 +590,7 @@ code ctoggle ( b ca -- )
   \
   \ 2*! ( a -- )
   \
-  \ Do a `2*` shift to the single-cell number at _a_.
+  \ Do a `2*` shift to the single-cell number stored at _a_.
   \
   \ See also: `2/!`, `2*`.
   \
@@ -582,7 +602,7 @@ code ctoggle ( b ca -- )
   \
   \ 2/! ( a -- )
   \
-  \ Do a `2/` shift to the single-cell number at _a_.
+  \ Do a `2/` shift to the single-cell number stored at _a_.
   \
   \ See also: `2*!`, `2/`.
   \
@@ -596,14 +616,28 @@ code ctoggle ( b ca -- )
   \
   \ exchange ( a1 a2 -- )
   \
-  \ Exchange the cells stored in _a1_ and _a2_.
+  \ Exchange the cells stored at _a1_ and _a2_.
   \
   \ See also: `cexchange`, `!exchange`.
   \
   \ }doc
 
-[unneeded] cexchange ?exit
-: cexchange ( ca1 ca2 -- ) 2dup c@ swap c@  rot c! swap c! ;
+[unneeded] cexchange ?(
+
+code cexchange ( ca1 ca2 -- )
+  D9 c, E1 c, D1 c, 7E c, 47 c, 1A c, 77 c, 78 c, 12 c, D9 c,
+  \ exx
+  \ pop hl
+  \ pop de
+  \ ld a,(hl)
+  \ ld b,a
+  \ ld a,(de)
+  \ ld (hl),a
+  \ ld a,b
+  \ ld (de),a
+  \ exx
+  jpnext, end-code ?)
+  \ _jp_next
 
   \ doc{
   \
@@ -611,6 +645,13 @@ code ctoggle ( b ca -- )
   \
   \ Exchange the characters stored in _ca1_ and _ca2_.
   \
+  \ ``cexchange`` is written in Z80. An equivalent definition
+  \ in Forth is the following:
+  \ 
+  \ ----
+  \ : cexchange ( ca1 ca2 -- ) 2dup c@ swap c@ rot c! swap c! ;
+  \ ----
+
   \ See also: `exchange`, `c!exchange`.
   \
   \ }doc
@@ -678,5 +719,8 @@ code ctoggle ( b ca -- )
   \ 2017-04-09: Fix needing of `bit>mask` and family.
   \
   \ 2017-05-07: Fix markup in documentation.
+  \
+  \ 2017-05-10: Improve documentation. Rewrite `cexchange` and
+  \ `c!exchange` in Z80.
 
   \ vim: filetype=soloforth

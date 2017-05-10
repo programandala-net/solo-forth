@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201705100104
+// Last modified 201705101826
 
 // Assembler {{{1
 == Assembler ==
@@ -1621,7 +1621,7 @@ addresses... `farfar-banks`, `vfar-banks`, `32far-banks`.
 
 NOTE: Milestone: 0.14.0
 
-Rewrite `exchange`, `cexchange`, `!exchange`  and `c!exchange` in Z80.
+Rewrite `exchange` and `!exchange` in Z80.
 
 .2017-01-24:
 
@@ -1930,6 +1930,12 @@ for the end user.
 
 // Names {{{1
 == Names ==
+
+.2017-05-10:
+
+Rename `c!exchange` to `c!@`?
+
+Rename `!exchange` to `!@`?
 
 .2017-05-06:
 
