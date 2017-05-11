@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201702221359
+  \ Last modified: 201705111908
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -29,7 +29,7 @@
 
 ( code-bank )
 
-need save-here need call need there
+need save-here need call need there need bank-start
 
 variable cp  bank-start cp !  \ code pointer
 
@@ -69,5 +69,8 @@ variable code-bank#  3 code-bank# !
   \
   \ 2016-06-01: Update: `there` was moved from the kernel to
   \ the library.
+  \
+  \ 2017-05-11: Add `need bank-start`, since `bank-start` has
+  \ been moved to the library.
 
   \ vim: filetype=soloforth

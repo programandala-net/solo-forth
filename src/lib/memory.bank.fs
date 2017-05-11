@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201705111910
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,10 +23,12 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( get-default-bank set-default-bank )
+( get-default-bank set-default-bank /bank bank-start )
 
 
-: get-default-bank ( -- +n ) default-bank# c@ ;
+[unneeded] get-default-bank
+
+?\ : get-default-bank ( -- +n ) default-bank# c@ ;
 
   \ doc{
   \
@@ -40,7 +42,9 @@
   \
   \ }doc
 
-: set-default-bank ( +n -- ) default-bank# c! ;
+[unneeded] set-default-bank
+
+?\ : set-default-bank ( +n -- ) default-bank# c! ;
 
   \ doc{
   \
@@ -51,6 +55,31 @@
   \
   \ See also: `get-default-bank`, `default-bank`, `bank`,
   \ `banks`.
+  \
+  \ }doc
+
+[unneeded] /bank ?\ $4000 constant /bank
+
+  \ doc{
+  \
+  \ /bank ( -- n )
+  \
+  \ _n_ is the size in bytes of a memory bank: $4000.
+  \
+  \ See also: `bank-start`.
+  \
+  \ }doc
+
+[unneeded] bank-start ?\ $C000 constant bank-start
+
+  \ doc{
+  \
+  \ bank-start ( -- a )
+  \
+  \ _a_ is the memory address where banks are paged in: $C000.
+  \
+  \ See also: `/bank`, `bank`, `banks`, `far-banks`,
+  \ `default-bank`.
   \
   \ }doc
 
@@ -76,5 +105,7 @@
   \ 2017-01-05: Remove old system bank words `!s` and `c!s`.
   \
   \ 2017-02-21: Improve documentation.
+  \
+  \ 2017-05-11: Move `/bank` and `bank-start` from the kernel.
 
   \ vim: filetype=soloforth

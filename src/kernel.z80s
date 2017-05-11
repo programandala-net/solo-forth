@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705111414
+; Last modified: 201705111909
 
 include version.z80s
 
@@ -2501,41 +2501,6 @@ push_hl:
   ; XXX TMP --
 
   dw address_of_default_bank
-
-; ----------------------------------------------
-  _constant_header slash_bank_,'/bank'
-
-  ; XXX TODO -- Move to the library.
-
-; doc{
-;
-; /bank ( -- n )
-;
-; _n_ is the size in bytes of a memory bank: $4000.
-;
-; See also: `bank-start`.
-;
-; }doc
-
-  dw bank_size
-
-; ----------------------------------------------
-  _constant_header bank_start_,'bank-start'
-
-  ; XXX TODO -- Move to the library.
-
-; doc{
-;
-; bank-start ( -- a )
-;
-; _a_ is the memory address where banks are paged in: $C000.
-;
-; See also: `/bank`, `bank`, `banks`, `far-banks`,
-; `default-bank`.
-;
-; }doc
-
-  dw bank_start
 
 ; ----------------------------------------------
   _code_header bank_,'bank'
