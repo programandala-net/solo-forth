@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705091229
+  \ Last modified: 201705111626
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1041,9 +1041,9 @@ need bench{ need }bench.
   bench{  0 ?do  i cvar c!  loop  }bench. ;
 
 : run ( u -- ) cr dup ." value     " value-bench cr
-                    dup ." cvalue    " cvalue-bench cr
-                    dup ." variable  " variable-bench cr
-                        ." cvariable " cvariable-bench cr ;
+                  dup ." cvalue    " cvalue-bench cr
+                  dup ." variable  " variable-bench cr
+                      ." cvariable " cvariable-bench cr ;
 
   \ Date            Times Frames (1 frame = 50th of second)
   \ --------------  ----- -------------------------------------
@@ -1357,7 +1357,7 @@ defer num?
 
 ( dummy-needed )
 
-( buffer-benchmark-1 )
+( buffer-bench1 )
 
   2 load need reset-frames
   reset-frames
@@ -1371,7 +1371,7 @@ defer num?
 
   frames@ cr .( Frames ) d. cr
 
-  \ 2015-11-04
+  \ 2015-11-04:
 
   \ Benchmark: Locate and load 16 times empty block #457.
 
@@ -1381,7 +1381,7 @@ defer num?
   \       ---------------- ----------------
   \    16             6323       8621 (136%)
 
-( buffer-benchmark-2 )
+( buffer-bench2 )
 
   2 load need reset-frames  reset-frames
 
@@ -1418,7 +1418,7 @@ defer num?
   \ (1) First method: `next-name` is a double variable that may
   \ hold a string to be used as name by the next defining word.
   \ `header` always checks this string and, if it's not empty,
-  \ uses it instead of parsing and then emptis it.
+  \ uses it instead of parsing and then empties it.
   \
   \ (2) Second method (written after Gforth): `nextname` stores
   \ a string into the double variable `nextname-string`, and
@@ -1428,9 +1428,9 @@ defer num?
   \ method is more versatile and, beside, words with emtpy
   \ names can be created.
 
-( header-benchmark )
+( 143-header-bench )
 
-need bench{ bench{ : w ; : w ; : w ; : w ;
+need bench{ need }bench. bench{ : w ; : w ; : w ; : w ;
 : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
 : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
 : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
@@ -1446,7 +1446,7 @@ need bench{ bench{ : w ; : w ; : w ; : w ;
 : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
 : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; }bench.
 
-  \ Benchmark: interpretation of many source blocks from disk.
+  \ Benchmark: Create 143 empty colon words.
 
   \ ===========================================================
   \ Date       Condition             Bytes free   Frames (=20ms)
@@ -1473,7 +1473,7 @@ need bench{ bench{ : w ; : w ; : w ; : w ;
   \
   \ (4) Same as (1) but with zero-length name check.
 
-( header-benchmark )
+( 15120-header-bench )
 
 need bench{ blk @ 1+ constant b bench{ b load
 b load b load b load b load b load b load b load b load b load
@@ -1491,7 +1491,8 @@ b load b load b load b load b load b load b load b load b load
 b load b load b load b load b load b load b load b load b load
 b load b load b load b load b load b load b load b load }bench.
 
-  \ Benchmark: interpretation of many source blocks from disk.
+  \ Benchmark: Create 15120 empty colon words, loading 170 a
+  \ block that contains 120 definitions.
 
   \ ===========================================================
   \ Date       Condition             Bytes free   Frames (=20ms)
@@ -1516,7 +1517,7 @@ b load b load b load b load b load b load b load b load }bench.
   \ method is more versatile and, beside, words with emtpy
   \ names can be created.
 
-( header-benchmark )
+( 15120-header-bench )
 
 : foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ;
 : foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ;
@@ -1534,9 +1535,9 @@ b load b load b load b load b load b load b load b load }bench.
 : foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ;
 : foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ;
 
-( interpret-benchmark )
+( interpret-[#-bench )
 
-  \ Compare two versions of `interpret`.
+  \ Benchmark `interpret` interpreting numbers
 
   need bench{  bench{
 
@@ -1570,9 +1571,9 @@ b load b load b load b load b load b load b load b load }bench.
 
   \ 1 frame = 50th of second
 
-( interpret-benchmark )
+( interpret-]#-bench )
 
-  \ Compare two versions of `interpret`.
+  \ Benchmark `interpret` compiling numbers
 
   need bench{  bench{
 
@@ -1606,9 +1607,9 @@ b load b load b load b load b load b load b load b load }bench.
 
   \ 1 frame = 50th of second
 
-( interpret-benchmark )
+( interpret-[name-bench )
 
-  \ Compare two versions of `interpret`.
+  \ Benchmark `interpret` interpreting words
 
   need bench{  bench{
 
@@ -1647,9 +1648,9 @@ noop noop noop noop noop noop noop noop noop noop noop noop
 
   \ 1 frame = 50th of second
 
-( interpret-benchmark )
+( interpret-]name-bench )
 
-  \ Compare two versions of `interpret`.
+  \ Benchmark `interpret` compiling words
 
   need bench{  bench{
 
@@ -2717,5 +2718,9 @@ need bench{ need }bench.
   \ 2017-05-08: Improve module description.
   \
   \ 2017-05-09: Remove `jppushhl,`.
+  \
+  \ 2017-05-10: Improve some benchmark names.
+  \
+  \ 2017-05-11: Improve some benchmark names.
 
   \ vim: filetype=soloforth
