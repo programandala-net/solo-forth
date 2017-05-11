@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-05-08
+" Updated:  2017-05-10
 "
 " See change log at the end of the file.
 
@@ -73,6 +73,8 @@ syn keyword soloforthCharacterInput span
 syn keyword soloforthCharacterInput tib
 syn keyword soloforthCharacterOutput .
 syn keyword soloforthCharacterOutput .r
+syn keyword soloforthCharacterOutput 0.r
+syn keyword soloforthCharacterOutput 0d.r
 syn keyword soloforthCharacterOutput bl
 syn keyword soloforthCharacterOutput cr
 syn keyword soloforthCharacterOutput d.
@@ -254,6 +256,7 @@ syn keyword soloforthFlow begin
 syn keyword soloforthFlow branch
 syn keyword soloforthFlow case
 syn keyword soloforthFlow catch
+syn keyword soloforthFlow catcher
 syn keyword soloforthFlow cold
 syn keyword soloforthFlow do
 syn keyword soloforthFlow don't
@@ -623,23 +626,26 @@ syn keyword soloforthWordlists vocabulary
 syn keyword soloforthWordlists wordlist
 syn keyword soloforthWordlists words
 
-" Assembler words (defined in the kernel):
+" Basic assembler words:
+
+syn keyword soloforthAssembler code
+syn keyword soloforthAssembler end-code
 
 syn keyword soloforthAssembler asm
-syn keyword soloforthAssembler call,
-syn keyword soloforthAssembler code
 syn keyword soloforthAssembler end-asm
-syn keyword soloforthAssembler end-code
-syn keyword soloforthAssembler fetchhl
-syn keyword soloforthAssembler jp,
+
+syn keyword soloforthAssembler macro
+syn keyword soloforthAssembler endm
+
 syn keyword soloforthAssembler jpnext,
-syn keyword soloforthAssembler jppushhl,
+
 syn keyword soloforthAssembler next
 syn keyword soloforthAssembler pusha
 syn keyword soloforthAssembler pushhl
 syn keyword soloforthAssembler pushhlde
+syn keyword soloforthAssembler fetchhl
 
-" Assembler words:
+" Assembler instructions:
 
 syn keyword soloforthAssembler ?call,
 syn keyword soloforthAssembler ?jp,
@@ -658,6 +664,7 @@ syn keyword soloforthAssembler and,
 syn keyword soloforthAssembler andx,
 syn keyword soloforthAssembler bit,
 syn keyword soloforthAssembler bitx,
+syn keyword soloforthAssembler call,
 syn keyword soloforthAssembler ccf,
 syn keyword soloforthAssembler clr,
 syn keyword soloforthAssembler cp#,
@@ -672,8 +679,6 @@ syn keyword soloforthAssembler decx,
 syn keyword soloforthAssembler di,
 syn keyword soloforthAssembler djnz,
 syn keyword soloforthAssembler ei,
-syn keyword soloforthAssembler end,
-syn keyword soloforthAssembler endm
 syn keyword soloforthAssembler exaf,
 syn keyword soloforthAssembler exde,
 syn keyword soloforthAssembler exsp,
@@ -693,6 +698,7 @@ syn keyword soloforthAssembler inbc,
 syn keyword soloforthAssembler inc,
 syn keyword soloforthAssembler incp,
 syn keyword soloforthAssembler incx,
+syn keyword soloforthAssembler jp,
 syn keyword soloforthAssembler jphl,
 syn keyword soloforthAssembler jpix,
 syn keyword soloforthAssembler jr,
@@ -701,13 +707,12 @@ syn keyword soloforthAssembler ld,
 syn keyword soloforthAssembler ldai,
 syn keyword soloforthAssembler ldd,
 syn keyword soloforthAssembler lddr,
-syn keyword soloforthAssembler ldia,
 syn keyword soloforthAssembler ldi,
+syn keyword soloforthAssembler ldia,
 syn keyword soloforthAssembler ldir,
 syn keyword soloforthAssembler ldp#,
 syn keyword soloforthAssembler ldp,
 syn keyword soloforthAssembler ldsp,
-syn keyword soloforthAssembler macro
 syn keyword soloforthAssembler neg,
 syn keyword soloforthAssembler nop,
 syn keyword soloforthAssembler or#,
@@ -744,11 +749,11 @@ syn keyword soloforthAssembler set,
 syn keyword soloforthAssembler setx,
 syn keyword soloforthAssembler sla,
 syn keyword soloforthAssembler slax,
+syn keyword soloforthAssembler sll,
+syn keyword soloforthAssembler sllx,
 syn keyword soloforthAssembler sra,
 syn keyword soloforthAssembler srax,
-syn keyword soloforthAssembler sll,
 syn keyword soloforthAssembler srl,
-syn keyword soloforthAssembler sllx,
 syn keyword soloforthAssembler srlx,
 syn keyword soloforthAssembler st#x,
 syn keyword soloforthAssembler sta,
@@ -1181,6 +1186,10 @@ let b:current_syntax = "soloforth"
 " 2017-05-06: Add `m*/
 "
 " 2017-05-08: Update: Rename `display` to `terminal`.
+"
+" 2017-05-10: Update the assembler. Add `0.r` and `0d.r`.
+"
+" 2017-05-11: Add `catcher`.
 
 " --------------------------------------------------------------
 
