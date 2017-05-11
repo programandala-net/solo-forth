@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703131955
+  \ Last modified: 201705102138
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -53,10 +53,10 @@ get-current assembler-wordlist dup >order set-current
   \ Address of the `far.hl` routine of the kernel, which
   \ converts the far-memory address ($0000..$FFFF) hold in the
   \ HL register to its actual equivalent ($C000..$FFFF) and
-  \ pages in the correspondent memory bank.
+  \ pages in the corresponding memory bank.
   \
   \ This is the routine called by `far`. `far-hl_` is
-  \ used in code words.
+  \ used in `code` words.
   \
 
   \ Input:
@@ -78,17 +78,17 @@ get-current assembler-wordlist dup >order set-current
   \
   \ ?next-bank_ ( -- a )
   \
-  \ Address of the `question_next_bank` routine of the kernel,
-  \ which does the following:
+  \ Address of the ``question_next_bank`` routine of the
+  \ kernel, which does the following:
   \
   \ If the actual far-memory address ($C000..$FFFF) in the HL
   \ register has increased to the next bank ($0000..$3FFF),
-  \ convert it to the correspondent actual address
+  \ convert it to the corresponding actual address
   \ ($C000..$FFFF) in the next bank and page in the next bank,
   \ else do nothing.
   \
-  \ This is the routine called by `?next-bank`.
-  \ `?next-bank_` is used in code words.
+  \ This is the routine called by `?next-bank`.  `?next-bank_`
+  \ is used in `code` words.
   \
 
   \ Input:
@@ -98,7 +98,7 @@ get-current assembler-wordlist dup >order set-current
   \
   \ Output when HL is above the paged bank:
   \
-  \ - HL = correspondent address in the next bank, which is paged in
+  \ - HL = corresponding address in the next bank, which is paged in
   \ - A corrupted
   \ - D = 0
   \ - E = bank
@@ -120,17 +120,17 @@ get-current assembler-wordlist dup >order set-current
   \
   \ ?previous-bank_ ( -- a )
   \
-  \ Address of the `question_previous_bank` routine of the
+  \ Address of the ``question_previous_bank`` routine of the
   \ kernel, which does the followig:
   \
   \ If the actual far-memory address ($C000..$FFFF) in the HL
   \ register has decreased to the previous bank ($8000..$BFFF),
-  \ convert it to the correspondent actual address
+  \ convert it to the corresponding actual address
   \ ($C000..$FFFF) in the previous bank and page in the next
   \ bank, else do nothing.
   \
   \ This is the routine called by `?previous-bank`.
-  \ `?previous-bank_` is used in code words.
+  \ `?previous-bank_` is used in `code` words.
   \
 
   \ Input:
@@ -140,7 +140,7 @@ get-current assembler-wordlist dup >order set-current
   \
   \ Output when HL is below the paged bank:
   \
-  \ - HL = correspondent address in the previous bank, which is paged in
+  \ - HL = corresponding address in the previous bank, which is paged in
   \ - A corrupted
   \ - D = 0
   \ - E = bank
@@ -379,8 +379,8 @@ code !bank ( x a n -- )
   \
   \ !bank ( x a n -- )
   \
-  \ Store cell _x_ into address _a_ ($C000..$FFFF) of bank _n_
-  \ (0..7).
+  \ Store cell _x_ into address _a_ ($C000..$FFFF) of `bank`
+  \ _n_.
   \
   \ ``!bank`` is written in Z80. Its equivalent definition in
   \ Forth is the following:
@@ -389,6 +389,8 @@ code !bank ( x a n -- )
   \ : !bank ( x a n -- ) bank ! default-bank ;
   \ ----
 
+  \ See also: `@bank`, `c!bank`.
+  \
   \ }doc
 
 [unneeded] !bank ?( need e-bank_
@@ -406,8 +408,7 @@ code c!bank ( c ca n -- ) D1 c, e-bank_ call,
   \
   \ c!bank ( c ca n -- )
   \
-  \ Store _c_ into address _ca_ ($C000..$FFFF) of bank _n_
-  \ (0..7).
+  \ Store _c_ into address _ca_ ($C000..$FFFF) of `bank` _n_.
   \
   \ ``c!bank`` is written in Z80. Its equivalent definition in
   \ Forth is the following:
@@ -416,6 +417,8 @@ code c!bank ( c ca n -- ) D1 c, e-bank_ call,
   \ : c!bank ( c ca n -- ) bank c! default-bank ;
   \ ----
 
+  \ See also: `c@bank`, `!bank`.
+  \
   \ }doc
 
 [unneeded] @bank ?( need e-bank_
@@ -437,8 +440,7 @@ code @bank ( a n -- x )
   \
   \ @bank ( a n -- x )
   \
-  \ Fetch _x_ from address _a_ ($C000..$FFFF) of bank _n_
-  \ (0..7).
+  \ Fetch _x_ from address _a_ ($C000..$FFFF) of `bank` _n_.
   \
   \ ``@bank`` is written in Z80. Its equivalent definition in
   \ Forth is the following:
@@ -447,6 +449,8 @@ code @bank ( a n -- x )
   \ : @bank ( a n -- x ) bank @ default-bank ;
   \ ----
 
+  \ See also: `!bank`, `c@bank`.
+  \
   \ }doc
 
 [unneeded] c@bank ?( need e-bank_
@@ -465,13 +469,15 @@ code c@bank ( ca n -- c ) D1 c, e-bank_ call,
   \
   \ c@bank ( ca n -- c )
   \
-  \ Fetch _c_ from address _ca_ ($C000..$FFFF) of bank _n_ (0..7).
+  \ Fetch _c_ from address _ca_ ($C000..$FFFF) of `bank` _n_.
 
   \ ----
   \ : c@bank ( ca n -- c )
   \   bank c@ default-bank ;
   \ ----
 
+  \ See also: `c!bank`, `@bank`.
+  \
   \ }doc
 
   \ ===========================================================
@@ -526,5 +532,7 @@ code c@bank ( ca n -- c ) D1 c, e-bank_ call,
   \ the changes in the kernel.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-05-10: Improve documentation.
 
   \ vim: filetype=soloforth

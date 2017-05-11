@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201705101934
+// Last modified 201705102144
 
 // Assembler {{{1
 == Assembler ==
@@ -1645,6 +1645,8 @@ Write far-memory versions of some of the following words from the
 ----
 
 .2016-11-13:
+
+NOTE: Milestone: 0.14.0
 
 Remove `get-default-bank` and `set-default-bank`.
 

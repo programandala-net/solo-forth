@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705101933
+; Last modified: 201705111414
 
 include version.z80s
 
@@ -2489,11 +2489,12 @@ push_hl:
 ;
 ; default-bank# ( -- ca )
 ;
-; An 8-bit variable holding the value of the default bank.  Note
-; this variable must be set with `c!` and fetched with `c@`.
+; _ca_ is the address of an address unit containing the value of
+; the default `bank` paged in at $C000..$FFFF. Its default value
+; is zero.
 ;
 ; See also: `set-default-bank`, `get-default-bank`, `banks`,
-; `bank`, `far-banks`.
+; `far-banks`.
 ;
 ; }doc
 
@@ -2549,7 +2550,6 @@ push_hl:
 ;
 ; The range of _n_ depends on the computer:
 
-
 ; |===
 ; | Computer        | Memory banks
 ;
@@ -2563,7 +2563,7 @@ push_hl:
 ; | Pentagon 1024    >| 0..63
 ; |===
 
-; See also: `banks`, `far-banks`.
+; See also: `default-bank`, `banks`, `far-banks`.
 ;
 ; }doc
 
@@ -5901,8 +5901,15 @@ endif
 ;
 ; off ( a -- )
 ;
-; Store false at _a_.
+; Store `false` at _a_.
 ;
+; ``off`` is written in Z80. Its equivalent definition in Forth
+; is the following:
+
+; ----
+; : off ( a -- ) false swap ! ;
+; ----
+
 ; Origin: Comus.
 ;
 ; }doc
@@ -5920,8 +5927,15 @@ endif
 ;
 ; on ( a -- )
 ;
-; Store true at _a_.
+; Store `true` at _a_.
 ;
+; ``on`` is written in Z80. Its equivalent definition in Forth
+; is the following:
+
+; ----
+; : on ( a -- ) true swap ! ;
+; ----
+
 ; Origin: Comus.
 ;
 ; }doc
@@ -6406,9 +6420,9 @@ fetch.hl:
 ;
 ; variable ( "name" -- )
 ;
-; Parse _name_.  Create a definition for _name_, which is
-; referred to as a "variable".  `allot` one cell of data space,
-; the data field of _name_, to hold the contents of the
+; Parse _name_.  `create` a definition for _name_, which is
+; referred to as a "variable".  `allot` one `cell` of data
+; space, the data field of _name_, to hold the contents of the
 ; variable. When _name_ is later executed, the address of its
 ; data field is placed on the stack.
 ;
@@ -6424,8 +6438,7 @@ fetch.hl:
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `create`, `cell`, `cvariable`, `2variable`,
-; `constant`.
+; See also: `cvariable`, `2variable`, `constant`.
 ;
 ; }doc
 
@@ -6919,7 +6932,8 @@ do_user:
 ; catcher ( -- a )
 ;
 ; A user variable. _a_ is the address of a cell containing the
-; return stack pointer for error handling. Used by `throw`.
+; return stack pointer for error handling. Used by `throw` and
+; `catch`.
 ;
 ; }doc
 
@@ -6996,7 +7010,7 @@ do_user:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `>number`, `number?`.
+; See also: `>number`, `number?`, `abase`.
 ;
 ; }doc
 
@@ -7234,7 +7248,6 @@ source.other:
 ;
 ; }doc
 
-
 ; ----------------------------------------------
   _code_header one_minus_,'1-'
 
@@ -7352,7 +7365,6 @@ source.other:
 ; See also: `cell`, `cell+`, `cells`, `cell/`.
 ;
 ; }doc
-
 
 ; ----------------------------------------------
   _code_header two_star_,'2*'
@@ -8085,10 +8097,10 @@ ram_kib: equ banks*16+(8*(gplusdos and 1))
 ;
 ; default-bank ( -- )
 ;
-; Page in the default memory bank, wich can be configured with
+; Page in the default memory `bank`, wich can be configured with
 ; `default-bank#`, at $C000..$FFFF.
 ;
-; See also: `set-default-bank`, `get-default-bank`, `bank`, `banks`.
+; See also: `set-default-bank`, `get-default-bank`, `banks`.
 ;
 ; }doc
 
@@ -8225,7 +8237,6 @@ if scorpion=256
   ;     other bits clear
   ; E = bits 0..2 are the lower bits of the bank number,
   ;     other bits clear
-
 
   ld a,(sys_bankm) ; get the saved status of BANKM
   and %11111000    ; clear bits used by 128 KiB computers
@@ -8487,8 +8498,9 @@ name_to_string.loop_exit:
 ;
 ; !csp ( -- )
 ;
-; Save the the current data stack position, `sp@`, into `csp`,
-; to be checked later by `?csp`.
+; Save the current data stack position, `sp@`, into `csp`, to be
+; checked later by `?csp`.  ``!csp`` is used by `:`, `:noname`
+; and `asm` for error checking.
 ;
 ; Definition:
 
@@ -10571,19 +10583,21 @@ endif
 ; compare ( ca1 len1 ca2 len2 -- n )
 ;
 ; Compare the string _ca1 len1_ to the string _ca2 len2_. The
-; strings are compared, beginning at the given addresses,
-; character by character, up to the length of the shorter string
-; or until a difference is found. If the two strings are
-; identical, _n_ is zero. If the two strings are identical up to
-; the length of the shorter string, _n_ is minus-one (-1) if
-; _len1_ is less than _len2_ and one (1) otherwise. If the two
-; strings are not identical up to the length of the shorter
-; string, _n_ is minus-one (-1) if the first non-matching
-; character in the string _ca1 len1_ has a lesser numeric value
-; than the corresponding character in the string _ca2 len2_ and
-; one (1) otherwise.
+; strings are compared, beginning at the given addresses _ca1_
+; and _ca2_, character by character, up to the length of the
+; shorter string or until a difference is found. If the two
+; strings are identical, _n_ is zero. If the two strings are
+; identical up to the length of the shorter string, _n_ is
+; minus-one (-1) if _len1_ is less than _len2_ and one (1)
+; otherwise. If the two strings are not identical up to the
+; length of the shorter string, _n_ is minus-one (-1) if the
+; first non-matching character in the string _ca1 len1_ has a
+; lesser numeric value than the corresponding character in the
+; string _ca2 len2_ and one (1) otherwise.
 ;
 ; Origin: Forth-94 (STRING), Forth-2012 (STRING).
+;
+; See also: `str=`, `str<`, `str>`.
 ;
 ; }doc
 
@@ -10678,6 +10692,8 @@ compare.end:
 ; is _ca1 len1_.
 ;
 ; Origin: Forth-94 (STRING), Forth-2012 (STRING).
+;
+; See also: `compare`, `hunt`.
 ;
 ; }doc
 
@@ -13817,7 +13833,6 @@ if.do:
 ; ----------------------------------------------
   _colon_header ahead_,'ahead',immediate+compile_only
 
-
 ; doc{
 ;
 ; ahead
@@ -13961,7 +13976,6 @@ if.do:
   push hl           ; 11 01
                     ; -- --
                     ; 40 05 Total
-
 
   ; Execution continues in `emits`:
 

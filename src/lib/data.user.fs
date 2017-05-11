@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201705111617
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,23 +25,23 @@
 
 ( ucreate ?user uallot user 2user )
 
-[unneeded] ucreate
-?\ : ucreate ( "name" -- ) udp @ (user) ;
+[unneeded] ucreate ?\ : ucreate ( "name" -- ) udp @ (user) ;
 
   \ doc{
   \
   \ ucreate ( "name" -- )
   \
-  \ Create a header _name_ which points to the first available
-  \ offset within the user area.  Execution of _name_ leaves
-  \ its absolute user area storage address. No user space is
-  \ allocated.
+  \ Parse _name. Create a header _name_ which points to the
+  \ first available offset within the user area.  When _name_
+  \ is later executed, its absolute user area storage address
+  \ is placed on the stack.  No user space is allocated.
   \
   \ See also: `uallot`, `user`, `2user`, `?user`.
   \
   \ }doc
 
 [unneeded] ?user ?(
+
 : ?user ( -- )
   udp @ dup /user > #-279 ?throw  0< #-280 ?throw ; ?)
   \ Error codes: #-279: user area overflow
@@ -51,14 +51,15 @@
   \
   \ ?user ( -- )
   \
-  \ Throw an exception if the user area pointer is out of
+  \ `throw` an exception if the user area pointer is out of
   \ bounds.
   \
-  \ See also: `ucreate`, `uallot`, `user`, `2user`.
+  \ See also: `udp`, `/user`.
   \
   \ }doc
 
 [unneeded] uallot ?( need ?user
+
 : uallot ( n -- ) udp +! ?user ; ?)
 
   \ doc{
@@ -72,26 +73,30 @@
   \ if the user-data pointer is out of bounds after the
   \ operation.
   \
-  \ See also: `ucreate`, `?user`, `user`, `2user`.
+  \ See also: `udp`, `ucreate`, `?user`, `user`, `2user`.
   \
   \ }doc
 
 [unneeded] user ?( need ucreate need uallot
+
 : user ( "name" -- ) ucreate cell uallot ; ?)
 
   \ doc{
   \
   \ user ( n "name" -- )
   \
-  \ Create a user variable _name_ in the first available offset
-  \ within the user area.  Execution of _name_ leaves its
-  \ absolute user area storage address.
+  \ Parse _name_. Create a user variable _name_ in the first
+  \ available offset within the user area.
+  \ When _name_ is
+  \ later executed, its absolute user area storage address is
+  \ placed on the stack.
   \
   \ See also: `2user`, `ucreate`, `uallot`, `?user`.
   \
   \ }doc
 
 [unneeded] 2user ?( need ucreate need uallot
+
 : 2user ( "name" -- )
   ucreate [ 2 cells ] literal uallot ; ?)
 
@@ -99,9 +104,10 @@
   \
   \ 2user ( "name" -- )
   \
-  \ Create a user double variable _name_ in the first available
-  \ offset within the user area.  Execution of _name_ leaves
-  \ its absolute user area storage address.
+  \ Parse _name_. Create a user double variable _name_ in the
+  \ first available offset within the user area.  When _name_
+  \ is later executed, its absolute user area storage address
+  \ is placed on the stack.
   \
   \ See also: `user`, `ucreate`, `uallot`, `?user`.
   \
@@ -124,5 +130,7 @@
   \ conditional interpretation.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-05-11: Improve documentation.
 
   \ vim: filetype=soloforth
