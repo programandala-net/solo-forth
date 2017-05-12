@@ -1,16 +1,15 @@
-  \ graphics.blocks.fs
+  \ graphics.rectangle.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132015
+  \ Last modified: 201705120118
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ Words which manipulate screen blocks
-  \ (windows)
+  \ Words that draw rectangles.
 
   \ ===========================================================
   \ Author
@@ -24,11 +23,11 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( clear-block )
+( wipe-rectangle )
 
 need assembler
 
-code clear-block ( column row width height -- )
+code wipe-rectangle ( column row width height -- )
 
   exx, 0000 ix ldp#, sp addix,
     \ exx ; save the Forth IP
@@ -65,7 +64,7 @@ code clear-block ( column row width height -- )
   rbegin
     \ delete_bitmap:
     d push, d h ldp, d incp, 00 m ld#, b push, c dec,
-      \ push de     ; save the address of the block scan
+      \ push de     ; save the address of the rectangle scan
       \ ld l,e
       \ ld h,d      ; HL = origin, start of the scan
       \ inc de      ; DE = destination
@@ -117,19 +116,19 @@ code clear-block ( column row width height -- )
 
   \ doc{
   \
-  \ clear-block ( column row width height -- )
+  \ wipe-rectangle ( column row width height -- )
   \
-  \ Clear a screen block at the given character coordinates and
+  \ Clear a screen rectangle at the given character coordinates and
   \ of the given size in characters.  Only the bitmap is
   \ cleared. The color attributes remain unchanged.
   \
   \ }doc
 
-( color-block )
+( color-rectangle )
 
 need assembler
 
-code color-block ( column row width height color -- )
+code color-rectangle ( column row width height color -- )
 
   exx, 0 ix ldp#, sp addix,
     \ exx           ; save the Forth IP
@@ -205,19 +204,19 @@ code color-block ( column row width height color -- )
 
   \ doc{
   \
-  \ color-block ( column row width height color -- )
+  \ color-rectangle ( column row width height color -- )
   \
-  \ Color a screen block at the given character coordinates and
+  \ Color a screen rectangle at the given character coordinates and
   \ of the given size in characters.  Only the color attributes
   \ are changed; the bitmap remains unchanged.
   \
   \ }doc
 
-( wipe-block )
+( clear-rectangle )
 
 need assembler
 
-code wipe-block ( column row width height color -- )
+code clear-rectangle ( column row width height color -- )
 
   exx,  0 ix ldp#, sp addix,
     \ exx ; save the Forth IP
@@ -243,7 +242,7 @@ code wipe-block ( column row width height color -- )
     \ ld a,d        ; column
     \ and 24
     \ or 64
-    \ ld d,a        ; DE = top left address of the block
+    \ ld d,a        ; DE = top left address of the rectangle
   #4 ix c ftx, #2 ix a ftx, a add, a add, a add, a b ld,
     \ ld c,(ix+4)   ; width
     \ ld a,(ix+2)   ; height
@@ -255,7 +254,7 @@ code wipe-block ( column row width height color -- )
   rbegin
     \ delete_bitmap:
     d push, d h ldp, d incp, 0 m ld#, b push, c dec,
-      \ push de     ; save the address of the block scan
+      \ push de     ; save the address of the rectangle scan
       \ ld l,e
       \ ld h,d      ; HL = origin, start of the scan
       \ inc de      ; DE = destination
@@ -288,7 +287,7 @@ code wipe-block ( column row width height color -- )
   rstep  -->
     \ djnz delete_bitmap
 
-( wipe-block )
+( clear-rectangle )
 
   #6 ix a ftx, #22 d ld#, a add, a add, a add, a add,
     \ ld a,(ix+6)   ; row
@@ -351,19 +350,19 @@ code wipe-block ( column row width height color -- )
 
   \ doc{
   \
-  \ wipe-block ( column row width height color -- )
+  \ clear-rectangle ( column row width height color -- )
   \
-  \ Wipe a screen block at the given character coordinates and
+  \ Wipe a screen rectangle at the given character coordinates and
   \ of the given size in characters.  The bitmap is erased and
   \ the color attributes are changed with the given color.
   \
-  \ ``wipe-block`` is written in assembler and it combines the
-  \ functions of `clear-block` and `color-block`. It may be
+  \ ``clear-rectangle`` is written in assembler and it combines the
+  \ functions of `wipe-rectangle` and `color-rectangle`. It may be
   \ defined also this way (with slower but much smaller code):
 
   \ ----
-  \ : wipe-block ( column row width height color -- )
-  \   >r 2over 2over clear-block r> color-block ;
+  \ : clear-rectangle ( column row width height color -- )
+  \   >r 2over 2over wipe-rectangle r> color-rectangle ;
   \ ----
 
   \ }doc
@@ -380,5 +379,11 @@ code wipe-block ( column row width height color -- )
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-05-12: Rename the module and the words: Change "block"
+  \ to "rectangle". Exchange the functions of `clear-rectangle`
+  \ and `wipe-rectangle`, to make `clear-rectangle` consistent
+  \ with `cls` ("clear screen"), because `clear-rectangle` is
+  \ going to be used as a factor of `wcls`.
 
   \ vim: filetype=soloforth

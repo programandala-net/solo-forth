@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201705111909
+// Last modified 201705122319
 
 // Assembler {{{1
 == Assembler ==
@@ -432,6 +432,14 @@ additional link.
 
 // Display {{{1
 == Display ==
+
+.2017-05-12:
+
+Finish `ltype`.
+
+Make `wltype` simpler and faster.
+
+Write `wtype`.
 
 .2017-05-06:
 
@@ -1105,6 +1113,38 @@ This will save several blocks of source.
 
 // Graphics {{{1
 == Graphics ==
+
+.2017-05-12:
+
+Use names "-box" instead of "-rectangle"?
+
+- A set to draw line boxes with graphic resolution.
+- A set to manipulate the contents of boxes, with caracter resolution.
+  This set can be reused by the text windows.
+
+.2017-05-12:
+
+From HARTFORTH (a Forth-79 compiler for TRS-80, by A.M. Graham, 1983):
+
+....
+
+GSET            x y ->               Set graphics bit at co-ordinates x,y.
+
+GCLR            x y ->               Clear graphics bit at co-ordinates x,y.
+
+G?              x y -> f             f=1 if graphics bit at x,y is set,
+                                   f=0 otherwise.
+
+HLINE           x y l ->             Draw a horizontal line of length l from
+                                   co-ordinates x,y.
+
+VLINE           x y l ->             Draw a vertical line of length l from
+                                   co-ordinates x,y; l may be negative in
+                                   both HLINE and VLINE.
+
+BOX             x1 y1 x2 y2 ->       Draw a rectangular box, top left corner
+                                   at x1,y1; bottom right corner at x2,y2.
+....
 
 .2017-04-20:
 
@@ -1938,6 +1978,11 @@ for the end user.
 // Names {{{1
 == Names ==
 
+.2017-05-12:
+
+Rename `flip` to `swab`? `swab` was the name used by LaForth, c. 1980.
+Its origin seems to be a PDP-11 mnemonic for "swap byte".
+
 .2017-05-10:
 
 Find better names for `0.r` and `0d.r`.
@@ -2038,6 +2083,22 @@ Options to make it easier to share code with other systems:
 
 // Stacks {{{1
 == Stacks ==
+
+.2017-05-12:
+ 
+From LaForth:
+
+----
+: put ( x n -- ) 2+ 2* sp@  + ! ;
+  \ Store _x_ at the _n_ item of the stack.
+  \ Example `-1 0 put` will replace TOS with -1
+----
+
+----
+: put ( x n -- ) cell+ cells sp@ + ! ;
+: get ( x n -- ) cell+ cells sp@ + @ ; \ = pick
+----
+
 
 .2017-03-29, 2017-05-10:
 
@@ -2219,6 +2280,11 @@ Make the tape words return a standard _ior_.
 
 // Time {{{1
 == Time ==
+
+.2017-05-12:
+
+Words to adapt from LaForth (chapter 9 of the documentation): `cdn`,
+`dmy`, `wends`, `wdays`.
 
 .2017-03-29:
 
