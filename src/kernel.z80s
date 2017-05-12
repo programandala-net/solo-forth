@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705111909
+; Last modified: 201705121952
 
 include version.z80s
 
@@ -6592,6 +6592,11 @@ do_user:
 ; b/buf ( -- c )
 ;
 ; _c_ is the number of bytes per `block` `buffer`: 1024.
+;
+; Origin: fig-Forthfootnote[In fig-Forth the size of each disk
+; buffer was the size of a disk sector, usually 128 bytes by the
+; time.], Forth-79 (Reference Word Set), Forth-83 (Uncontrolled
+; Reference Words).
 ;
 ; See also: `c/l`, `l/scr`.
 ;
@@ -13190,8 +13195,8 @@ block.end:
 ;
 ; Exchange the low and high bytes within _x1_, resulting _x2_.
 ;
-; NOTE: ``flip`` is called ``><`` or ``cswap`` in other Forth
-; systems.
+; NOTE: ``flip`` is called ``><``, ``cswap`` or ``swab``, in
+; other Forth systems.
 ;
 ; Origin: eForth.
 ;
@@ -13201,6 +13206,10 @@ block.end:
 
   ; Credit:
   ; The name "flip" was borrowed from eForth.
+
+  ; XXX REMARK -- `><` is in Forth-79 (Word Reference Set) and
+  ; Forth-83 (Uncontrolled Reference Words); `swab` is in
+  ; LaForth (c. 1980).
 
   pop hl
   ld a,h
@@ -14214,6 +14223,39 @@ hash_s.begin:
   dw exit_
 
 ; ----------------------------------------------
+  _colon_header d_to_str_,'d>str'
+
+; doc{
+;
+; d>str ( d>str -- ca len )
+;
+; Convert _d_ to string _ca len_ in the pictured numeric output
+; string buffer.
+;
+; ``d>str`` is a factor of `d.r`.
+;
+; Definition:
+
+; ----
+; : d>str ( d -- ca len ) tuck dabs <# #s rot sign #> ;
+; ----
+
+; WARNING: The pictured numeric output string buffer is a
+; transient region (with maximum size `/hold` bytes below `pad`,
+; and start pointed by `hld`). Therefore the string _ca len_
+; must be used or preserved before the buffer is moved or
+; overwritten.
+;
+; See also: `<#`, `#s`, `sign` ,`#>`, `>stringer`, `,s`,
+; `cmove`.
+;
+; }doc
+
+  dw tuck_  ; save the high part of _d_ to calculate the sign
+  dw d_abs_,less_hash_,hash_s_,rot_,sign_,hash_greater_
+  dw exit_
+
+; ----------------------------------------------
   _code_header zero_d_dot_r_,'0d.r'
 
 ; doc{
@@ -14255,8 +14297,7 @@ hash_s.begin:
 ; Definition:
 
 ; ----
-; : d.r ( d n -- )
-;   >r tuck dabs <# #s rot sign #> over - spaces type ;
+; : d.r ( d n -- ) >r d>str r> over - spaces type ;
 ; ----
 
 ; Origin: fig-Forth, Forth-79 (Double Number Word Set), Forth-83
@@ -14265,13 +14306,12 @@ hash_s.begin:
 ; than _n_, an error condition exists, which depends on the
 ; system.], Forth-94 (DOUBLE), Forth-2012 (DOUBLE).
 ;
-; See also: `ud.r`, `.r`, `0d.r`, `<#`.
+; See also: `d>str`, `ud.r`, `.r`, `0d.r`, `<#`.
 ;
 ; }doc
 
   dw to_r_ ; save _n_
-  dw tuck_  ; save the high part of _d_ to calculate the sign
-  dw d_abs_,less_hash_,hash_s_,rot_,sign_,hash_greater_
+  dw d_to_str_
   dw from_r_,over_,minus_,spaces_ ; preceding blanks
   dw type_
   dw exit_
