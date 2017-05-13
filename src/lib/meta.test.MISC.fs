@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705080007
+  \ Last modified: 201705131346
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -22,6 +22,25 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( wtype-test )
+
+need where need window need attr@ need attr!
+need wltype need wtype need wblank
+
+8 1 21 22 window dup constant test-window current-window !
+
+: wipe ( -- ) attr@ >r 56 attr! wblank r> attr! ;
+
+: quit? ( -- f ) key lower 'y' = ;
+
+: wtype-test ( -- )
+  wipe begin s" Hi, it's wtype. Should I quit? " wtype quit?
+       until ;
+
+: wltype-test ( -- )
+  wipe begin s" Hi, it's wltype. Should I quit? " wltype quit?
+       until ;
 
 ( sqrt-test )
 
@@ -1287,5 +1306,7 @@ blk @ 1+ blk @ 2+ thru
   \
   \ 2017-05-08: Update: `display` has been renamed to
   \ `terminal` in the kernel.
+  \
+  \ 2017-05-13: Add `wtype-test` and `wltype-test`.
 
   \ vim: filetype=soloforth

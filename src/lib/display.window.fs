@@ -3,14 +3,13 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705111535
+  \ Last modified: 201705131346
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ Basic implementation of text windows, which use specific
-  \ printing words and share the global color attributes.
+  \ A basic implementation of text windows.
 
   \ ===========================================================
   \ Author
@@ -24,7 +23,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( window set-window )
+( window )
 
 need +field-opt-0124 need cfield:
 
@@ -40,8 +39,19 @@ cconstant /window
   \
   \ /window ( -- n )
   \
-  \ _n_ is the data size in bytes of a `window`.
+  \ _n_ is the size in bytes of a `window` data structure:
+
+  \ |===
+  \ | Byte offset | Description
   \
+  \ | +0          | x cursor coordinate
+  \ | +1          | y cursor coordinate
+  \ | +2          | window left x coordinate on screen
+  \ | +3          | window top y coordinate on screen
+  \ | +4          | width in columns
+  \ | +5          | heigth in rows
+  \ |===
+
   \ }doc
 
 variable current-window
@@ -52,8 +62,6 @@ variable current-window
   \
   \ A variable. _a_ is the address of a cell containing the
   \ address of the `current-window`.
-  \
-  \ See also: `set-window`.
   \
   \ }doc
 
@@ -135,53 +143,46 @@ variable current-window
   \
   \ }doc
 
-( window set-window )
+( window )
 
-: window ( x0 y0 columns rows "name" -- )
-  create  0 c, 0 c, 2swap swap c, c, swap c, c, ;
+: window ( x0 y0 columns rows -- a )
+  here >r 0 c, 0 c, 2swap swap c, c, swap c, c, r> ;
 
-  \ doc{
-  \
-  \ window ( x0 y0 columns rows "name" -- )
-  \
-  \ Create a window called _name_: _x0 y0_ is the position of
-  \ its top left corner on the screen, and _columns rows_ is
-  \ its size in characters.  Its cursor position is set to its
-  \ top left corner.
-  \
-  \ Later execution of _name_ will leave the address of its
-  \ data structure on the stack:
-
-  \ |===
-  \ | Byte offset | Description
-  \
-  \ | +0          | x cursor coordinate
-  \ | +1          | y cursor coordinate
-  \ | +2          | window left x coordinate on screen
-  \ | +3          | window top y coordinate on screen
-  \ | +4          | width in columns
-  \ | +5          | heigth in rows
-  \ |===
-
-  \ See also: `set-window`, `reset-window`, `current-window`,
-  \ `wx`, `wy`, `wx0`, `wy0`, `wcolumns`, `wrows.
-  \
-  \ }doc
-
-: set-window ( a -- ) current-window ! ;
+  \ XXX TODO -- Remove all the `swap` and reorder the data
+  \ structure accordingly? Three cells will be saved, but the
+  \ order of the fields will look strange.
 
   \ doc{
   \
-  \ set-window ( a -- )
+  \ window ( col row columns rows -- a )
   \
-  \ Make `window` _a_ the `current-window`.
+  \ Create a window definition with top left corner at _col
+  \ row_, with a width _columns_ and a height _rows_ (both in
+  \ characters).  The internal cursor position of the window in
+  \ set to its top left corner.  _a_ is the address of the
+  \ window data structure, which is described in `/window`.
+  \
+  \ Windows do not use standard output words like `emit` and
+  \ `type`. Instead, they use specific words named with the "w"
+  \ prefix: `wemit`, `wtype`, `wcls`, etc.
+  \
+  \ NOTE: At the moment there's no word to display numbers in a
+  \ window. Therefore numbers must be converted to strings
+  \ first and displayed with `wemit`.
+  \
+  \ WARNING: At the moment windows are not aware of display
+  \ modes that dont't use 32 characters per line (e.g.
+  \ `mode-64`, `mode-42`). If windows are used when such mode
+  \ is active, the layout of the output will be wrong.
+  \
+  \ See also: `current-window`, `wx`, `wy`, `wx0`, `wy0`,
+  \ `wcolumns`, `wrows`.
   \
   \ }doc
 
-( wspace wemit wfreecolumns (wat-xy wat-xy at-wxy )
+( wspace wemit wfreecolumns (wat-xy wat-xy at-wxy whome )
 
-[unneeded] wspace
-?\ need wemit  : wspace ( -- ) bl wemit ;
+[unneeded] wspace ?\ need wemit : wspace ( -- ) bl wemit ;
 
   \ doc{
   \
@@ -194,6 +195,7 @@ variable current-window
   \ }doc
 
 [unneeded] wemit ?( need char>string need wtype
+
 : wemit ( c -- ) char>string wtype ; ?)
 
   \ doc{
@@ -202,24 +204,39 @@ variable current-window
   \
   \ Display character _c_ in the `current-window`.
   \
-  \ See also: `emit`.
+  \ See also: `wtype`, `wspace`, `emit`.
+  \
+  \ }doc
+
+[unneeded] wspace ?\ need wemit : wspace ( -- ) bl wemit ;
+
+  \ doc{
+  \
+  \ wemit ( c -- )
+  \
+  \ Display one space in the `current-window`.
+  \
+  \ See also: `wemit`, `space`.
   \
   \ }doc
 
 [unneeded] wfreecolumns ?( need window
+
 : wfreecolumns ( -- n ) wcolumns c@ wx c@ - ; ?)
 
   \ doc{
   \
   \ wfreecolumns ( -- n )
   \
-  \ Return the number _n_ of free columns in the current
-  \ line of the `current-window`.
+  \ _n_ is the number of free columns in the current line of
+  \ the `current-window`.
+  \
+  \ See also: `wcolumns`.
   \
   \ }doc
 
-
 [unneeded] (wat-xy ?( need window need under+
+
 : (wat-xy ( col row -- ) wx0 c@ under+ wy0 c@ + at-xy ; ?)
 
   \ doc{
@@ -235,7 +252,8 @@ variable current-window
   \ }doc
 
 [unneeded] wat-xy ?( need window need (wat-xy
-: wat-xy ( col row -- ) 2dup wy c! wx c!  (wat-xy ; ?)
+
+: wat-xy ( col row -- ) 2dup wy c! wx c! (wat-xy ; ?)
 
   \ doc{
   \
@@ -250,6 +268,7 @@ variable current-window
   \ }doc
 
 [unneeded] at-wxy ?( need window need (wat-xy
+
 : at-wxy ( -- ) wx c@ wy c@ (wat-xy ; ?)
 
   \ doc{
@@ -259,14 +278,11 @@ variable current-window
   \ Set the cursor coordinates to the `current-window` cursor
   \ coordinates.
   \
-  \ See also: `wat-xy`.
+  \ See also: `wat-xy`, `at-xy`.
   \
   \ }doc
 
-( whome wcr ?wcr reset-window wcls )
-
-[unneeded] whome
-?\ need wat-xy  : whome ( -- ) 0 0 wat-xy ;
+[unneeded] whome ?\ need wat-xy  : whome ( -- ) 0 0 wat-xy ;
 
   \ doc{
   \
@@ -279,11 +295,13 @@ variable current-window
   \
   \ }doc
 
+( wcr ?wcr wcls wstamp wblank )
+
+
 [unneeded] wcr ?( need window need whome
 
-: wcr ( -- )
-  wy c@ dup wrows c@ 1- =
-  if  drop whome exit  then  1+ wy c! 0 wx c! ; ?)
+: wcr ( -- ) wy c@ dup wrows c@ 1- =
+             if drop whome exit then 1+ wy c! 0 wx c! ; ?)
 
   \ XXX TODO -- scroll instead of `whome`
 
@@ -298,11 +316,12 @@ variable current-window
   \ cursor is set to the top left corner with `whome`. In a
   \ future version of the code, the window will be scrolled.
   \
-  \ See also: `?wcr`.
+  \ See also: `?wcr`, `wcr`.
   \
   \ }doc
 
 [unneeded] ?wcr ?( need window need wcr
+
 : ?wcr ( -- ) wx c@ 0= ?exit wcr ; ?)
 
   \ doc{
@@ -321,53 +340,85 @@ variable current-window
   \
   \ }doc
 
-[unneeded] reset-window ?(
+[unneeded] wcls ?(
 
-need columns need rows need set-window
+need window need clear-rectangle need attr@ need whome
 
-: reset-window ( -- ) 0 0 columns rows set-window ; ?)
+: wcls ( -- ) wx0 c@ wy0 c@ wcolumns c@ wrows c@ attr@
+              clear-rectangle whome ; ?)
 
-  \ doc{
+  \ XXX TODO -- Factor the fetching.
   \
-  \ reset-window ( -- )
-  \
-  \ Set the `current-window` to use the full screen.
-  \
-  \ }doc
-
-[unneeded] wcls ?( need window need whome need ruler
-
-: wcls ( -- ) bl wcolumns c@ ruler ( ca len )
-  wy0 c@ wrows c@ bounds ?do   2dup wx0 c@ i at-xy type
-                         loop  2drop  whome ; ?)
+  \ XXX TODO -- Write `attr-wcls` and rewrite `wcls` after it,
+  \ like `cls` and `attr-cls`.
 
   \ doc{
   \
   \ wcls ( -- )
   \
-  \ Clear the `current-window`.
+  \ Clear the `current-window` with the current attribute and
+  \ reset its cursor position at the upper left corner (column
+  \ 0, row 0).
   \
-  \ See also: `cls`.
+  \ See also: `wblank`, `attr@`, `whome`, `clear-rectangule`,
+  \ `cls`.
   \
   \ }doc
 
-( wltype )
+[unneeded] wstamp ?( need window need ruler
 
-need window need at-wxy need wfreecolumns need wcr need ?wcr
-
-: +wx ( n -- )
-  wx c@ + dup wx c! wcolumns c@ = if  wcr  then ;
+: wstamp ( c -- ) wcolumns c@ ruler ( ca len )
+  wy0 c@ wrows c@ bounds ?do  2dup wx0 c@ i at-xy type
+                         loop 2drop ; ?)
 
   \ doc{
   \
-  \ +wx ( n -- )
+  \ wstamp ( c -- )
   \
-  \ Add _n_ character positions to the column cursor coordinate
-  \ of the current window.
+  \ Fill the `current-window` by displaying as many characters
+  \ _c_ as needed, starting from the top left corner.
+  \ The cursor position of the window is not changed.
+  \
+  \ See also: `wblank`, `wcls`, `wemit`.
   \
   \ }doc
 
-variable wtyped
+[unneeded] wblank
+
+?\ need wstamp need whome : wblank ( -- ) bl wstamp whome ;
+
+  \ doc{
+  \
+  \ wblank ( -- )
+  \
+  \ Fill the `current-window` by displaying as many blanks
+  \ (character `bl`) as needed, starting from the top left
+  \ corner of the `window`. Finally, reset the cursor position
+  \ of the window at the upper left corner (column 0, row 0).
+  \
+  \ ``wblank`` is a slower but lighter alternative to `wcls`.
+  \
+  \ See also: `wstamp`, `whome`, `wspace`.
+  \
+  \ }doc
+
+( wx+! wtyped wtype+ /wtype free/wtype )
+
+[unneeded] wx+! ?( need window need wcr
+
+: wx+! ( n -- )
+  wx c@ + dup wx c! wcolumns c@ = if wcr then ; ?)
+
+  \ doc{
+  \
+  \ wx+! ( n -- )
+  \
+  \ Add _n_ character positions to the column cursor coordinate
+  \ of the current `window`. ``wx+!`` is a factor of `wtype+`.
+  \
+  \ }doc
+
+[unneeded] wtyped ?\ variable wtyped
 
   \ doc{
   \
@@ -375,55 +426,107 @@ variable wtyped
   \
   \ A variable. _a_ is the address o a cell containing a flag
   \ indicating if a space-delimited substring was found and
-  \ printed in the `current-window`. Otherwise, the string must
-  \ be broken in order to fit the current line of the `window`.
-  \ 
+  \ displayed in the `current-window`. Otherwise, the string
+  \ must be broken in order to fit the current line of the
+  \ `window`.
+  \
   \ ``wtyped`` is used by `wtype+` and `wltype`.
   \
   \ }doc
 
-: wtype+ ( ca len -- ) tuck type +wx wtyped on ;
+[unneeded] wtype+ ?( need wx+! need wtyped
+
+: wtype+ ( ca len -- ) tuck type wx+! wtyped on ; ?)
 
   \ doc{
   \
   \ wtype+ ( ca len -- )
   \
-  \ Type string _ca len_ in the `current-window` and update the
-  \ `window` coordinates accordingly.
+  \ Display string _ca len_ in the `current-window` and update
+  \ the `window` coordinates accordingly.
   \
   \ }doc
 
-: /wltype ( ca len len1 n -- ca' len' )
-  >r >r over r> at-wxy wtype+ r> /string ;
+[unneeded] /wtype ?( need at-wxy need wtype+
+
+: /wtype ( ca len len1 n -- ca' len' )
+  >r >r over r> at-wxy wtype+ r> /string ; ?)
 
   \ doc{
   \
-  \ /wltype ( ca len len1 n -- ca' len' )
+  \ /wtype ( ca len len1 n -- ca' len' )
   \
-  \ Type the first  _len1_ characters of string _ca len_ in the
-  \ `current-window`, then remove the first _n_ characters from
-  \ the string, returning the result string _ca' len'_.
+  \ Display the first  _len1_ characters of string _ca len_ in
+  \ the `current-window`, then remove the first _n_ characters
+  \ from the string, returning the result string _ca' len'_.
   \
-  \ ``/wltype`` is a factor of `wltype`.
+  \ ``/wtype`` is a factor of `wltype`.
+  \
+  \ See also: `free/wtype`.
   \
   \ }doc
 
-: wltype ( ca len -- ) wtyped off
-  begin  dup wfreecolumns >  while
-    0 wfreecolumns do  over i + c@ bl =
-                       if  i dup 1+ /wltype leave  then
-                   -1 +loop
-    wtyped @ if    ?wcr wtyped off
-             else  wfreecolumns dup /wltype  then
-  repeat  at-wxy wtype+ ;
+[unneeded] free/wtype ?( need wfreecolumns need at-wxy
+                         need wtype+
+
+: free/wtype ( ca len -- ca' len' )
+  2dup wfreecolumns min dup >r at-wxy wtype+ r> /string ; ?)
+
+  \ doc{
+  \
+  \ free/wtype ( ca len -- ca' len' )
+  \
+  \ Display in the `current-window` as many characters of
+  \ string _ca len_ as fit in the current line, then remove
+  \ them from the string, returning the result string _ca'
+  \ len'_.
+  \
+  \ ``free/wtype`` is a factor of `wltype` and `wtype`.
+  \
+  \ See also: `/wtype`.
+  \
+  \ }doc
+
+( wtype wltype )
+
+[unneeded] wtype ?( need wfreecolumns need free/wtype
+                    need at-wxy need wtype+
+
+: wtype ( ca len -- )
+  begin dup while free/wtype repeat 2drop ; ?)
+
+  \ doc{
+  \
+  \ wtype ( ca len -- )
+  \
+  \ Display string _ca len_ in the `current-window`.
+  \
+  \ See also: `wltype`, `wemit`, `ltype`.
+  \
+  \ }doc
+
+[unneeded] wltype ?( need wtyped need wfreecolumns
+                     need ?wcr need at-wxy need wtype+
+                     need /wtype need free/wtype
+
+: wltype ( ca len -- )
+  wtyped off begin dup wfreecolumns > while
+               0 wfreecolumns ?do  over i + c@ bl =
+                                if i dup 1+ /wtype leave then
+                            -1 +loop
+               wtyped @ if ?wcr wtyped off else free/wtype then
+             repeat at-wxy wtype+ ; ?)
+
+  \ XXX TODO -- Simpler and faster. Use `scan`.
 
   \ doc{
   \
   \ wltype ( ca len -- )
   \
-  \ Type string _ca len_ in the `current-window`, left justified.
+  \ Display string _ca len_ in the `current-window`, left
+  \ justified.
   \
-  \ See also: `wemit`, `ltype`.
+  \ See also: `wtype`, `wemit`, `ltype`.
   \
   \ }doc
 
@@ -446,8 +549,19 @@ variable wtyped
   \ 2017-02-17: Fix markup in documentation.  Update cross
   \ references.
   \
-  \ 2017-05-11: Improve documentation.  Rename `+wc` to `+wx`.
+  \ 2017-05-11: Improve documentation.  Rename `+wc` to `wx+!`.
   \ Rename `wtype` to `wltype`, to be consistent `with `ltype`.
   \ Rename `/wtype` to `/wltype`.
+  \
+  \ 2017-05-12: Convert the slow `wcls` to `wblank` and factor
+  \ `wstamp` from it. Rewrite `wcls` as a wrapper of
+  \ `clear-rectangle`. Remove `reset-window` and `set-window`.
+  \ Remove `create` from `window`: return the data address
+  \ instead. Add `wspace`. Add `wtype`. Rename ` Rename
+  \ `/wltype` back to `/wtype`. Write simpler alternative to
+  \ `wtype`. Add `free/wtype` and tests.
+  \
+  \ 2017-05-13: Fix `free/wtype`. Try the tests. Move them to
+  \ the tests module.
 
   \ vim: filetype=soloforth

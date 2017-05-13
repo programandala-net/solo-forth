@@ -1,11 +1,11 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-05-11
+:revdate: 2017-05-13
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201705122319
+// Last modified 201705131351
 
 // Assembler {{{1
 == Assembler ==
@@ -1113,6 +1113,18 @@ This will save several blocks of source.
 
 // Graphics {{{1
 == Graphics ==
+
+.2017-05-13:
+
+From BBL:
+
+----
+plot ( x y color -- )
+line ( x1 x2 y1 y2 color -- )
+get-color ( x y -- color )
+circe ( x y radius color -- )
+fill-shape ( x y fill-color boundary-color -- )
+----
 
 .2017-05-12:
 
