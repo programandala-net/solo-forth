@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705091243
+  \ Last modified: 201705121654
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -202,6 +202,9 @@ code +under ( n1|u1 n2|u2 x -- n3|u3 x )
   \ See also: `/`, `mod`.
   \
   \ }doc
+
+  \ 2017-05-12: A variant, adapted from LaForth:
+  \ : gcd ( n1 n2 -- n3 ) begin swap over mod 0= until ;
 
 ( odd? even? )
 

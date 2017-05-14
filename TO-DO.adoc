@@ -1,11 +1,11 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-05-13
+:revdate: 2017-05-14
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201705131351
+// Last modified 201705141923
 
 // Assembler {{{1
 == Assembler ==
@@ -1113,6 +1113,10 @@ This will save several blocks of source.
 
 // Graphics {{{1
 == Graphics ==
+
+.2017-05-13:
+
+Rewrite a faster `gxy>attra` in Z80. Also `gxy>attr`.
 
 .2017-05-13:
 

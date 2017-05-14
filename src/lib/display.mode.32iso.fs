@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704231335
+  \ Last modified: 201705141926
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -59,25 +59,30 @@ need assembler need os-chars
 code mode-32iso-emit ( c -- )
 
 h pop, b push, l a ld, 0 b ldp#, #128 cp#, nc? rif
-  \   pop hl ; L = character
-  \   push bc ; save the Forth IP
+  \   pop hl                       ; L = character
+  \   push bc                      ; save the Forth IP
   \   ld a,l
-  \   ld bc,0 ; font offset for characters 0..127
-  \   cp 128 ; is the character in range 0..127?
+  \   ld bc,0                      ; font offset for characters 0..127
+  \   cp 128                       ; is the character in range 0..127?
   \   jr c,mode_32iso_emit.display ; if so, display it and finish
 
   #224 cp#, c? rif #96 sub#, #96 8 * b ldp#,
                relse #192 sub#, #192 8 * b ldp#, rthen
-  \   cp 224 ; is the character in range 128..223?
+  \   cp 224                    ; is the character in range 128..223?
   \   jr nc,mode_32iso_emit.224
+
   \   ; character 128..223
-  \   sub 96  ; convert character range to 32..127
-  \   ld bc,96*8 ; offset for the font address
+
+  \   sub 96                     ; convert character range to 32..127
+  \   ld bc,96*8                 ; offset for the font address
   \   jr mode_32iso_emit.display
+
   \ mode_32iso_emit.224:
+
   \   ; character 224..255
-  \   sub 192  ; convert character range to 32..63
-  \   ld bc,192*8 ; offset for the font address
+
+  \   sub 192                     ; convert character range to 32..63
+  \   ld bc,192*8                 ; offset for the font address
 
   \ mode_32iso_emit.display:
 rthen
@@ -87,15 +92,15 @@ rthen
 
 os-chars h ftp, h push, b addp, os-chars h stp, FF 52 iy st#x,
   \   ld hl,(sys_chars)
-  \   push hl ; save the font address
-  \   add hl,bc ; apply the offset
-  \   ld (sys_chars),hl ; update the font address
+  \   push hl                       ; save the font address
+  \   add hl,bc                     ; apply the offset
+  \   ld (sys_chars),hl             ; update the font address
   \   ld (iy+sys_scr_ct_offset),$FF ; no scroll message
   \   rst $10
 10 rst, h pop, os-chars h stp, b pop, jpnext, end-code
   \   pop hl
   \   ld (sys_chars),hl ; restore the font address
-  \   pop bc ; restore the Forth IP
+  \   pop bc            ; restore the Forth IP
   \   _jp_next
 
   \ XXX TODO -- Add multitasker's `pause` when available.
@@ -144,6 +149,8 @@ os-chars h ftp, h push, b addp, os-chars h stp, FF 52 iy st#x,
   \ Write `mode-32iso`.
   \
   \ 2017-04-23: Improve documentation.
+  \
+  \ 2017-05-14: Improve layout of the Z80 source comments.
 
   \ vim: filetype=soloforth
 

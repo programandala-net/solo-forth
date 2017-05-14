@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705121952
+; Last modified: 201705141535
 
 include version.z80s
 
@@ -466,8 +466,8 @@ _two_variable_header: macro _base_label,_name,_flags
 
 _string: macro text
 
-  local _first ; address of the first char of the name
-  local _next  ; address after the last char of the name
+  local _first ; address of the first character of the name
+  local _next  ; address after the last character of the name
   db _next-_first ; length byte
   _first: db text
   _next:
@@ -3424,7 +3424,7 @@ digit.test_value:
 ;
 ; number-base ( ca len -- ca' len' n )
 ;
-; If the first char of string _ca len_ is a radix prefix,
+; If the first character of string _ca len_ is a radix prefix,
 ; return its value _n_ and the updated string _ca' len'_ (which
 ; does not include the radix prefix).  Otherwise return _ca
 ; len_ untouched and the current value of `base` _n_.
@@ -3609,9 +3609,9 @@ to_number.end:
 ;
 ;   dup 0= if  2drop 0 exit  then  \ reject empty strings
 ;
-;   2dup char? if  nip nip 1 exit  then  \ char format
+;   2dup char? if  nip nip 1 exit  then  \ character format
 ;
-;   over c@ number-point?  \ first char is a point?
+;   over c@ number-point?  \ first character is a point?
 ;   if  2drop 0 exit  then  \ is so, reject the string
 ;
 ;   base @ >r  number-base base ! ( R: radix )
@@ -3623,7 +3623,7 @@ to_number.end:
 ;     over c@ number-point? 0=   \ invalid point?
 ;     if  2drop 2drop rdrop r> base ! 0 exit  then
 ;
-;     dup dpl @ =   \ previous char was a point?
+;     dup dpl @ =   \ previous character was a point?
 ;     if  2drop 2drop rdrop r> base ! 0 exit  then
 ;
 ;     dup 1- dpl !  \ update the position of the last point
@@ -3653,9 +3653,9 @@ number_question.reject:
   dw exit_
 
 number_question.try_char:
-  dw two_dup_,char_question_ ; a char?
+  dw two_dup_,char_question_ ; a character?
   dw zero_branch_,number_question.try_initial_point
-  ; return the char code
+  ; return the character code
   dw nip_,nip_
   _literal 1
   dw exit_
@@ -3873,7 +3873,7 @@ find_name_from.not_a_match:
 
 find_name_from.compare_characters:
   ; Lengths match, compare the characters.
-  inc hl ; point to the first char of the name
+  inc hl ; point to the first character of the name
   call question_next_bank
 find_name_from.string_address: equ $+1
   ld de,$0000 ; string address
@@ -4008,16 +4008,16 @@ find_name.loop_exit:
 ; }doc
 
   exx
-  pop de ; E = char searched for
+  pop de ; E = character searched for
   pop bc ; len1, count
   ld a,c
   or b ; empty string?
   jr z,scan.nothing ; if so, exit
   pop hl ; ca1
-  ld a,e ; A = char searched for
+  ld a,e ; A = character searched for
   cpir ; scan until match or count=0
   jr nz,scan.no_match
-  dec hl ; point to match char
+  dec hl ; point to match character
   inc bc ; adjust the count
 scan.no_match:
   push hl
@@ -4044,20 +4044,20 @@ scan.nothing:
 ; Code adapted and modified from CamelForth.
 
   exx
-  pop de ; E = char searched for
+  pop de ; E = character searched for
   pop bc ; len1
   ld a,c
   or b ; empty string?
   jr z,skip.end ; if so, exit
   pop hl ; ca1
-  ld a,e ; A = char searched for
+  ld a,e ; A = character searched for
 skip.begin:
   cpi
-  jr nz,skip.mismatch ; char mismatch, exit
+  jr nz,skip.mismatch ; character mismatch, exit
   jp pe,skip.begin ; count not exhausted
   jr skip.done ; count 0, no mismatch
 skip.mismatch:
-  dec hl ; point at mismatch char
+  dec hl ; point at mismatch character
   inc bc ; adjust the count
 skip.done:
   push hl
@@ -4297,7 +4297,7 @@ emit_udg.l
 default_key_translation_table:
 
 ;  dw 0 ; no chained table ; XXX TODO
-              ; Symbol Shift + Letter --> new char
+              ; Symbol Shift + Letter --> new character
   db $C6,'[' ; "Y" 198 ($C6) "AND"  --> 091 ($5B) "["
   db $C5,']' ; "U" 197 ($C5) "OR"   --> 093 ($5D) "]"
   db $E2,'~' ; "A" 226 ($E2) "STOP" --> 126 ($7E) "~"
@@ -4316,8 +4316,8 @@ default_key_translation_table:
 ;
 ; translate-char ( c1 -- c1 | c2 )
 ;
-; Translate char _c1_ using the current keyboard decoding table,
-; pointed by `key-translation-table`.
+; Translate character _c1_ using the current keyboard decoding
+; table, pointed by `key-translation-table`.
 ;
 ; }doc
 
@@ -4331,15 +4331,15 @@ translate_char.a:
   dec hl
 translate_char.begin:
   inc hl    ; next record of the table
-  ld e,(hl) ; char that must be translated, or zero
+  ld e,(hl) ; character that must be translated, or zero
   inc e     ; is it...
   dec e     ; zero? (=end of table?)
   ret z
   cp e      ; match?
-  inc hl    ; point to the char transalation
+  inc hl    ; point to the character transalation
   jr nz,translate_char.begin ; no match yet, continue
   ; match
-  ld a,(hl) ; translate char
+  ld a,(hl) ; translate character
   ret
 
 ; ----------------------------------------------
@@ -4493,7 +4493,7 @@ endif
 ;
 ; }doc
 
-  db $5F ; char code
+  db $5F ; character code
 
 ; ----------------------------------------------
   _code_header key_,'key'
@@ -4524,7 +4524,7 @@ endif
 ;
 ; Show a cursor, wait for the next terminal key struck; if it's
 ; the caps lock key, toggle caps and keep waiting; else leave
-; the char code of the key struck.
+; the character code of the key struck.
 ;
 ; }doc
 
@@ -4536,7 +4536,7 @@ endif
   push bc
 
   ; Display cursor:
-  ld a,(cursor_char_pfa) ; cursor char code
+  ld a,(cursor_char_pfa) ; cursor character code
   rst $10
   ld a,backspace_char
   rst $10
@@ -6040,7 +6040,7 @@ two_store.into_hl_pointer:
 ; ``set-font`` is used by all screen modes.  The character
 ; bitmap _a_ points to depends on the mode.
 ;
-; The last char used from the font can be configured by
+; The last character used from the font can be configured by
 ; `last-font-char`.
 ;
 ; See also: `get-font`, `rom-font`, `default-font`, `mode-32`,
@@ -9178,7 +9178,7 @@ minus_trailing.begin:
   ld a,l
   or h                    ; exhausted?
   jp z,push_hl
-  dec de                  ; next char
+  dec de                  ; next character
   ld a,(de)
   cp ' '                  ; space?
   jp nz,push_hl
@@ -9665,7 +9665,7 @@ fill.done:
 ;
 ; hold ( c -- )
 ;
-; Insert char _c_ into a pictured numeric output string.
+; Insert character _c_ into a pictured numeric output string.
 ; Typically used between `<#` and `#>`.
 ;
 ; Definition:
@@ -10045,11 +10045,12 @@ parse_name.skip:
 
 ascii_lower.a:
 
-  ; Convert the ASCII char in the 'A' register to lowercase.
+  ; Convert the ASCII character in the 'A' register to
+  ; lowercase.
   ;
   ; Note: The address of this routine is returned by the
-  ; `lower_` constant, defined in the
-  ; `assembler-wordlist` word list.
+  ; `lower_` constant, defined in the `assembler-wordlist` word
+  ; list.
 
   cp 'A'
   ret c
@@ -10603,7 +10604,7 @@ compare.char
   jr z,compare.match     ; is so, all chars matched
   ld a,(bc)
   cp (hl)
-  jr nz,compare.no_match ; a char doesn't match
+  jr nz,compare.no_match ; a character doesn't match
   inc hl
   inc bc
   dec de
@@ -10705,9 +10706,9 @@ search.substring:
   exx
   ld a,(hl)
   exx
-  cpir                        ; search for first substring char
+  cpir                        ; search for first substring character
   jr nz,search.failed         ; no match if not found
-  dec hl                      ; backup to matching char
+  dec hl                      ; backup to matching character
   inc bc
   push bc
   exx
@@ -10726,7 +10727,7 @@ search.substring:
 search.char:
   ld a,(de)
   cp (hl)
-  jr nz,search.next_substring ; stop trying if char mismatch
+  jr nz,search.next_substring ; stop trying if character mismatch
   inc de
   inc hl
   dec bc
@@ -10750,7 +10751,7 @@ search.next_substring:
   pop hl
   pop de                      ; restore IP
   exx
-  inc hl                      ; move past first matching char
+  inc hl                      ; move past first matching character
   dec bc
   jr search.substring         ; back for another try
 
