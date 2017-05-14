@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705091516
+  \ Last modified: 201705141928
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -320,7 +320,7 @@ code plot176 ( gx gy -- )
 
 ( set-pixel set-pixel176 )
 
-[unneeded] set-pixel?( need gxy>scra_ need assembler
+[unneeded] set-pixel ?( need gxy>scra_ need assembler
 
 code set-pixel ( gx gy -- )
 
@@ -424,7 +424,7 @@ code set-save-pixel176 ( gx gy -- )
 code reset-pixel ( gx gy -- )
 
   h pop, d pop, b push, l b ld, e c ld, gxy>scra_ call,
-  a b ld, b inc, 1 a ld#, rbegin  rrca,  rstep,
+  a b ld, b inc, 1 a ld#, rbegin  rrca,  rstep
   cpl, m and, a m ld,  \ combine pixel with byte in the screen
   b pop, jpnext, end-code ?)
 
@@ -452,7 +452,7 @@ code reset-pixel ( gx gy -- )
 code reset-pixel176 ( gx gy -- )
 
   h pop, d pop, b push, l b ld, e c ld, gxy176>scra_ call,
-  a b ld, b inc, 1 a ld#, rbegin  rrca,  rstep,
+  a b ld, b inc, 1 a ld#, rbegin  rrca,  rstep
   cpl, m and, a m ld,  \ combine pixel with byte in the screen
   b pop, jpnext, end-code
 
@@ -688,6 +688,8 @@ code scra>attra ( a1 -- a2 )
 
 : gxy>attra ( gx gy -- a ) gxy>scra nip scra>attra ; ?)
 
+  \ XXX TODO -- Rewrite in Z80.
+
   \ doc{
   \
   \ gxy>attra ( gx gy -- a )
@@ -871,5 +873,7 @@ need gxy>attra
   \ instead of opcodes. Improve documentation.
   \
   \ 2017-05-09: Remove `jp pushhlde`. Remove `jppushhl,`.
+  \
+  \ 2017-05-13: Fix needing of `set-pixel` (code typo).
 
   \ vim: filetype=soloforth
