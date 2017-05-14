@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201705141923
+// Last modified 201705141950
 
 // Assembler {{{1
 == Assembler ==
@@ -432,6 +432,11 @@ additional link.
 
 // Display {{{1
 == Display ==
+
+.2017-05-14:
+
+Improve the transition between display modes: Convert the cursor
+coordinates of the previous mode.
 
 .2017-05-12:
 
@@ -1013,6 +1018,10 @@ Move the Z80-symbol constants to the assembler word list.
 
 // +3DOS {{{2
 === +3DOS ===
+
+.2017-05-14:
+
+Check `cat`.
 
 .2017-03-05:
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704211649
+  \ Last modified: 201705142201
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -28,79 +28,783 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-  \ ===========================================================
-  \ To-do
+( (mode-64o-output_ )
 
-  \ XXX TODO -- integrate the source of the driver
 
-( mode-64 )
+  \ Credit:
+  \
+  \ Code adapted from the 4x8 Font Driver written by Andrew
+  \ Owen.
+  \
+  \ http://www.worldofspectrum.org/forums/discussion/14526/redirect/p1
 
-  \ XXX TMP -- The driver is loaded from disk to memory address
-  \ 60000.
+need os-chars need assembler need l:
 
-need mode-32 need get-drive need drive need file> need (at-xy
+create mode-64o-at-flag 0 c, \ XXX TODO -- move to the code
+create mode-64o-column 0 c,  create mode-64o-row 0 c,
 
-need 4x8font  \ compile the font
+also assembler max-labels c@ 9 max-labels c! previous
 
-get-drive  0 drive set-drive throw
-           s" pr64.bin" 0 0 file> throw  \ load the driver
-set-drive throw
+create (mode-64o-output_ ( -- a ) asm
 
-: mode-64-xy ( -- col row ) 0 0 ;  \ XXX TODO
+  \ Input:
+  \   A = character code
 
-: mode-64 ( -- )
+  \ ; 4x8 FONT DRIVER
+  \ ; (c) 2007, 2011 Andrew Owen
+  \ ; optimized by Crisis (to 602 bytes)
+  \ ; http://www.worldofspectrum.org/forums/discussion/14526/redirect/p1
+  \
+  \ ; -----------------------------
+  \ ; Modified by Marcos Cruz in order to integrate the code into
+  \ ; Solo Forth
+  \ ; (http://programandala.net/en.program.solo_forth.html):
+  \
+  \ ; 2015-09-08: Removed the channels stuff. That will be done in
+  \ ; Forth. First changes to add the left control char.
+  \ ;
+  \ ; 2015-09-10: Added left control char. Exchanged column and row
+  \ ; to suit the Forth convention. Added scroll. Separated the
+  \ ; font from the code; now the system variable CHARS is used to
+  \ ; point to the font.
+  \ ;
+  \ ; 2015-09-11: Modified some labels and comments.
+  \
+  \ 2017-05-14: Convert to Forth assembler.
+  \
+  \ ; -----------------------------
+  \
+  \ rom_cl_all:  equ 0x0dfe
+  \ sys_chars:   equ 23606 ; (2) 256 less than address of character set
+  \
+  \ original_font: equ 0 ; flag
+  \
+  \         org     60000
+  \
+  \ print_character:
+  \
+  \         ; Based on code by Tony Samuels from Your Spectrum issue 13, April 85.
+  \
+  \         ; A = character
+  \
+
+  a b ld, mode-64o-at-flag fta, a and, z? rif
+
+  \         ld      b, a            ; save character
+  \         ld      a, (at_flag)    ; value of AT flag
+  \         and     a               ; test against zero
+  \         jr      nz, getcol      ; jump if not
+
+
+    b a ld, 16 cp#, #1 rl# nz? ?jr, FF a ld#,
+  \         ld      a, b            ; restore character
+  \
+  \ check_at:
+  \         cp      0x16            ; test for AT
+  \         jr      nz, check_cr    ; if not test for CR
+  \         ld      a,0xFF          ; next character will be column
+
+    #0 l: mode-64o-at-flag sta, ret,
+
+  \ save_at_flag_and_exit:
+  \         ld      (at_flag), a
+  \         ret
+
+  rthen
+
+  \ getcol:
+
+
+  FE cp#, nz? rif b a ld, #64 cp#, nc? rif #63 a ld#, rthen
+
+  \         cp      0xfe            ; test AT flag
+  \         jr      z, getrow       ; jump if setting row
+  \         ld      a, b            ; restore character
+  \         cp      64              ; greater than 63?
+  \         jr      c, valid_col
+  \         ld      a,63            ; maximum
+  \ valid_col:
+
+    mode-64o-column sta, mode-64o-at-flag h ldp#, m dec, ret,
+
+  \         ld      (col), a        ; store it in col
+  \         ld      hl, at_flag     ; AT flag
+  \         dec     (hl)            ; next character will be row
+  \         ret
+  \
+
+  rthen
+
+  \ getrow:
+
+  b a ld, #24 cp#, nc? rif #23 a ld#, rthen -->
+  \         ld      a, b            ; restore character
+  \         cp      24              ; greater than 23?
+  \         jr      c,valid_row
+  \         ld      a, 23           ; maximum
+  \ valid_row:
+
+( (mode-64o-output_ )
+
+  mode-64o-row sta, a xor, #0 rl# jr,
+  \         ld      (row), a        ; store it in row
+  \         xor     a               ; set a to zero
+  \         jr      save_at_flag_and_exit
+  \
+
+  #1 l: 0D cp#, #2 rl# z? ?jr,
+  \ check_cr:
+  \         cp      0x0D            ; carriage return?
+  \         jr      z, do_cr        ; if so, jump
+  08 cp#, #3 rl# z? ?jr,
+  \         cp      0x08            ; cursor left?
+  \         jr      z, do_left      ; if so, jump
+  #4 call, al#
+  mode-64o-column h ldp#, m inc, m a ld, #64 cp#, nz? ?ret,
+  \         call    print_printable_character
+  \         ld      hl, col         ; increment
+  \         inc     (hl)            ; the column
+  \         ld      a, (hl)         ; get it
+  \         cp      64              ; column 64?
+  \         ret     nz              ; return if not
+
+  #2 l: a xor, mode-64o-column sta,
+  \ do_cr:
+  \         xor     a               ; set A to zero
+  \         ld      (col), a        ; reset column
+  mode-64o-row fta, #23 cp#, 0DFE z? ?jp,
+  \         ld      a, (row)        ; get the row
+  \         cp      23              ; row 23?
+  \         jp      z,rom_cl_all    ; if so, scroll
+  a inc, mode-64o-row sta, ret,
+  \         inc     a               ; increment the row
+  \         ld      (row), a        ; write it back
+  \         ret
+
+  #3 l: mode-64o-column fta, a and, z? rif
+    mode-64o-row fta, a and, z? ?ret,
+  \ do_left:
+  \         ld      a, (col)        ; get the column
+  \         and     a               ; is it zero?
+  \         jr      nz,do_left.same_line
+  \         ; the column is zero
+  \         ld      a, (row)        ; get the row
+  \         and     a               ; is it zero?
+  \         ret z                   ; if so, return
+
+    a dec, mode-64o-row sta, #64 a ld#,
+  \         ; the column is zero
+  \         ; the row is not zero
+  \         dec     a
+  \         ld      (row),a
+  \         ld      a,64            ; last column
+
+  rthen a dec, mode-64o-column sta, ret,
+  \ do_left.same_line:
+  \         dec     a
+  \         ld      (col),a
+  \         ret
+
+  #4 l: rra, a l ld, 0 a ld#, a h ld, exaf, h d ld, l e ld,
+  \ print_printable_character:
+  \
+  \         ; A = printable char
+  \
+  \         rra                     ; divide by two with remainder in carry flag
+  \         ld      l, a            ; char to low byte of HL
+  \         ld      a, 0            ; don't touch carry flag
+  \         ld      h, a            ; clear H
+  \         ex      af, af'         ; save the carry flag
+  \         ld      d, h            ; store HL in DE
+  \         ld      e, l            ; without using the stack
+
+  h addp, h addp, h addp, d sbcp, -->
+  \         add     hl, hl          ; multiply
+  \         add     hl, hl          ; by
+  \         add     hl, hl          ; eight
+  \         sbc     hl, de          ; subtract DE to get original x7
+  \
+
+( (mode-64o-output_ )
+
+  \ ; calculate address of first byte of character map in font
+  \
+  \ if original_font
+  \
+  \         ld      de, font - 0x71 ; offset to FONT
+  \         add     hl, de
+  \
+  \ else
+
+  os-chars d ftp, d addp, h push,
+
+  \         ld      de,(sys_chars)
+  \         add     hl,de
+  \         ; ld      de,0x0071
+  \         ; and     a               ; reset carry flag
+  \         ; sbc     hl,de
+  \
+  \ endif
+  \
+  \         ; HL holds address of first byte of character map in font
+  \         push    hl              ; save font address
+
+  mode-64o-row fta, a b ld, %00011000 and#, a d ld, b a ld,
+  \ ; convert the row to the base screen address
+  \
+  \         ld      a, (row)        ; get the row
+  \         ld      b, a            ; save it
+  \         and     %00011000       ; mask off bit 3-4
+  \         ld      d, a            ; store high byte of offset in D
+  \         ld      a, b            ; retrieve it
+
+  %00000111 and#, rlca, rlca, rlca, rlca, rlca, a e ld,
+  \         and     %00000111       ; mask off bit 0-2
+  \         rlca                    ; shift
+  \         rlca                    ; five
+  \         rlca                    ; bits
+  \         rlca                    ; to the
+  \         rlca                    ; left
+  \         ld      e, a            ; store low byte of offset in E
+  \
+
+  mode-64o-column fta, rra, af push, 40 h ld#, a l ld, d addp,
+  exde, af pop, h pop, 8 b ld#, c? rif
+  \ ; add the column
+  \
+  \         ld      a, (col)        ; get the column
+  \         rra                     ; divide by two with remainder in carry
+  \                                 ; flag
+  \         push    af              ; store the carry flag
+  \         ld      h, 0x40         ; base location
+  \         ld      l, a            ; plus column offset
+  \         add     hl, de          ; add the offset
+  \         ex      de, hl          ; put the result back in DE
+  \
+  \ ; HL now points to the location of the first byte of char data in FONT
+  \ ; DE points to the first byte of the screen address
+  \ ; C holds the offset to the routine
+  \
+  \         pop     af              ; restore column carry flag
+  \         pop     hl              ; restore the font address
+  \         ld      b, 8            ; 8 bytes to write
+  \         jr      nc, odd_col     ; jump if odd column
+  \
+
+  exaf, #5 rl# c? ?jr, #8 rl# jr,
+  \ even_col:
+  \         ex      af, af'         ; restore char position carry flag
+  \         jr      c, l_on_l       ; left char on left col
+  \         jr      r_on_l          ; right char on left col
+
+  rthen exaf, #6 rl# nc? ?jr, #7 rl# jr,
+  \ odd_col:
+  \         ex      af, af'         ; restore char position carry flag
+  \         jr      nc, r_on_r      ; right char on right col
+  \         jr      l_on_r          ; left char on right col
+
+  rbegin m a ld,
+         #5 l: %00001111 and#, a c ld, d ftap,
+               %11110000 and#, c or, d stap, d inc, h incp,
+  rstep ret, -->
+
+  \ ; WRITE A CHARACTER TO THE SCREEN
+  \ ; There are four separate routines
+  \ ; HL points to the first byte of a character in the font
+  \ ; DE points to the first byte of the screen address
+  \
+  \ ; left nibble on left hand side
+  \
+  \ ll_lp:
+  \         ld      a, (hl)         ; get byte of font
+  \
+  \ l_on_l:
+  \         and     %00001111       ; mask area used by new character
+  \         ld      c, a            ; store in c
+  \         ld      a, (de)         ; read byte at destination
+  \         and     %11110000       ; mask off unused half
+  \         or      c               ; combine with background
+  \         ld      (de), a         ; write it back
+  \         inc     d               ; point to next screen location
+  \         inc     hl              ; point to next font data
+  \         djnz    ll_lp           ; loop 8 times
+  \         ret
+
+( (mode-64o-output_ )
+
+  rbegin m a ld,
+  \ ; right nibble on right hand side
+  \
+  \ rr_lp:
+  \         ld      a, (hl)         ; read byte at destination
+  \
+
+  #6 l: %11110000 and#, a c ld, d ftap, %00001111 and#,
+  \ r_on_r:
+  \         and     %11110000       ; mask area used by new character
+  \         ld      c, a            ; store in c
+  \         ld      a, (de)         ; get byte of font
+  \         and     %00001111       ; mask off unused half
+
+  c or, d stap, d inc, h incp, rstep ret,
+  \         or      c               ; combine with background
+  \         ld      (de), a         ; write it back
+  \         inc     d               ; point to next screen location
+  \         inc     hl              ; point to next font data
+  \         djnz    rr_lp           ; loop 8 times
+  \         ret
+
+  rbegin m a ld, rrca, rrca, rrca, rrca,
+  \ ; left nibble on right hand side
+  \
+  \ lr_lp:
+  \         ld      a, (hl)         ; read byte at destination
+  \         rrca                    ; shift right
+  \         rrca                    ; four bits
+  \         rrca                    ; leaving 7-4
+  \         rrca                    ; empty
+
+  #7 l: %11110000 and#, a c ld, d ftap, %00001111 and#,
+  \ l_on_r:
+  \         and     %11110000       ; mask area used by new character
+  \         ld      c, a            ; store in c
+  \         ld      a, (de)         ; get byte of font
+  \         and     %00001111       ; mask off unused half
+
+  c or, d stap, d inc, h incp, rstep ret,
+  \         or      c               ; combine with background
+  \         ld      (de), a         ; write it back
+  \         inc     d               ; point to next screen location
+  \         inc     hl              ; point to next font data
+  \         djnz    lr_lp           ; loop 8 times
+  \         ret
+
+  rbegin m a ld, rlca, rlca, rlca, rlca,
+
+  \ ; right nibble on left hand side
+  \
+  \ rl_lp:
+  \         ld      a, (hl)         ; read byte at destination
+  \         rlca                    ; shift left
+  \         rlca                    ; four bits
+  \         rlca                    ; leaving 3-0
+  \         rlca                    ; empty
+  \
+
+  #8 l: %00001111 and#, a c ld, d ftap, %11110000 and#,
+
+  \ r_on_l:
+  \         and     %00001111       ; mask area used by new character
+  \         ld      c, a            ; store in c
+  \         ld      a, (de)         ; get byte of font
+  \         and     %11110000       ; mask off unused half
+
+  c or, d stap, d inc, h incp, rstep ret, end-asm
+  \         or      c               ; combine with background
+  \         ld      (de), a         ; write it back
+  \         inc     d               ; point to next screen location
+  \         inc     hl              ; point to next font data
+  \         djnz    rl_lp           ; loop 8 times
+  \         ret
+
+also assembler max-labels c! previous
+
+  \ doc{
+  \
+  \ (mode-64o-output_  ( -- a )
+  \
+  \ _a_ is the address of a Z80 routine, the low-level
+  \ `mode-64o` driver, which displays the character in the A
+  \ register. The Forth IP is not preserved.
+  \
+  \ ``mode-64o-output_`` is called by `mode-64o-output_` and
+  \ `mode-64o-emit``.
+  \
+  \ }doc
+
+( mode-64o-output_ mode-64o-emit )
+
+need assembler need (mode-64o-output_
+
+create mode-64o-output_ ( -- a )
+  asm b push, (mode-64o-output_ call, b pop, ret, end-asm
+
+  \ doc{
+  \
+  \ mode-64o-output_ ( -- a )
+  \
+  \ _a_ is the address of a Z80 routine, the entry to
+  \ `mode-64o` driver, which preserves the Forth IP and then
+  \ displays the character in the A register by calling
+  \ `(mode-64o-output_`.
+  \
+  \ }doc
+
+code mode-64o-emit ( c -- )
+  exx, b pop, c a ld, (mode-64o-output_ call,
+  exx, jpnext, end-code
+
+  \ doc{
+  \
+  \ mode-64o-emit ( c -- )
+  \
+  \ Display character _c_ in `mode-64o`, by calling
+  \ `(mode-64o-output_`.
+  \
+  \ ``mode-64o-emit`` is configured by `mode-64o` as the action
+  \ of `emit`.
+  \
+  \ }doc
+
+( mode-64o )
+
+need mode-64o-output_ need mode-64o-emit
+need mode-32 need (at-xy need set-mode-output
+
+: mode-64o-xy ( -- col row )
+  mode-64o-column c@ mode-64o-row c@ ;
+
+  \ doc{
+  \
+  \ mode-64o-xy ( -- col row )
+  \
+  \ Return the current cursor coordinates _col row_ in
+  \ `mode-64o`.
+  \
+  \ }doc
+
+variable mode-64o-font
+
+  \ doc{
+  \
+  \ mode-64o-font ( -- a )
+  \
+  \ A variable. _a_ is the address of a cell containing the
+  \ address of the 4x8-pixel font used by `mode-64o`. Note the
+  \ address of the font must be the address of its character 32
+  \ (space). The size of a 4x8-pixel font is 336 bytes. The
+  \ program is responsible for initializing the contents of
+  \ this variable before executing `mode-64o`.
+  \
+  \ See also: `4x8-font`.
+  \
+  \ }doc
+
+: mode-64o ( -- )
   [ latestxt ] literal current-mode !
-  64 to columns  24 to rows
-  ['] mode-64-xy ['] xy defer!
-  ['] (at-xy ['] at-xy defer!
-  4x8font set-font  60000 set-mode-output ;
-  \ Set the 64 cpl printing mode: the driver, the font
-  \ and `at-xy`.
+  \ $09F4 set-mode-output \ XXX REMARK -- OS default
+  mode-64o-output_ set-mode-output
+  mode-64o-font @ $71 - set-font  64 to columns  24 to rows
+  ['] mode-64o-emit ['] emit  defer!
+  ['] mode-64o-xy   ['] xy    defer!
+  ['] (at-xy        ['] at-xy defer! ;
 
-( mode-64 )
+  \ doc{
+  \
+  \ mode-64o ( -- )
+  \
+  \ Start the 64 CPL display mode based on:
+  \
+  \ ....
+  \ 4x8 FONT DRIVER
+  \ (c) 2007, 2011 Andrew Owen
+  \ optimized by Crisis (to 602 bytes)
+  \ http://www.worldofspectrum.org/forums/discussion/14526/redirect/p1
+  \ ....
+  \
+  \ See also: `mode-64o-emit`, `mode-64o-xy`, `mode-64o-font`.
+  \
+  \ }doc
 
-  \ XXX UNDER DEVELOPMENT
-  \ XXX NEW
-  \ XXX TODO -- integrate the driver
+( mode-64s )
 
-need assembler need unresolved
+  \ Version with integrated driver, adapted from 64#4, written
+  \ by Einar Saukas.
+  \
+  \ XXX UNDER DEVELOPMENT --
+
+need assembler need l:
 
   \ XXX TODO use common variables for all modes?
 
-create mode-64-at-flag 0 c,
-create mode-64-column 0 c,
-create mode-64-row 0 c,
-variable mode-64-chars
+create mode-64s-at-flag 0 c,
+create mode-64s-column 0 c,
+create mode-64s-row 0 c,
+variable mode-64s-chars
 
-code mode-64-emit ( -- )
+create mode-64s-emit_ ( -- a ) asm
 
-  \ XXX TODO --
+  \ Input:
+  \   A = character code
 
-  b a ld,
-  here 1+ 0 unresolved !  \ address of at_flag
-  0 a ld#, a and,
-  z? rif  FF a ld#,  rthen
-  \ check_cr
+  \ ; -----------------------------------------------------------------------------
+  \ ; 64#4 - 4x8 FONT DRIVER FOR 64 COLUMNS (c) 2007, 2011
+  \ ;
+  \ ; Original by Andrew Owen (657 bytes)
+  \ ; Optimized by Crisis (602 bytes)
+  \ ; Reimplemented by Einar Saukas (494 bytes)
+  \ ; -----------------------------------------------------------------------------
 
-  end-code
+  \ ; -----------------------------------------------------------------------------
+  \ ; CHANNEL WRAPPER FOR THE 64-COLUMN DISPLAY DRIVER
+  \ ; Based on code by Tony Samuels from Your Spectrum issue 20, November 1985.
 
-: mode-64 ( -- )
-  mode-64-chars @ set-font  mode-64-emit set-mode-outupt
-  ['] (at-xy ['] at-xy defer! ;
+  0 b ld#, mode-64s-at-flag h ldp#, m dec,
+  {chk_at} rl# m? ?jp {get_col} rl# z? ?jr
 
-( 4x8font )
+  \ CH_ADDR:
+  \         ld      b, 0            ; save a few bytes later using B instead of 0
+  \         ld      hl, AT_FLAG     ; initial address of local variables
+  \         dec     (hl)            ; check AT_FLAG value by decrementing it
+  \         jp      m, CHK_AT       ; expecting a regular character?
+  \         jr      z, GET_COL      ; expecting the AT column?
+  \
+  \ ; -----------------------------------------------------------------------------
+  \ ; UNCOMMENT TO ENABLE STANDARD INVERSE (use INVERSE 1 for inversed characters)
+  \ ;
+  \ ; #ifdef _STANDARD_INVERSE
+  \ ;        dec     (hl)            ; check AT_FLAG value by decrementing it again
+  \ ;        jr      nz, GET_ROW     ; expecting the AT row?
+  \ ;        and     a               ; check INVERSE parameter
+  \ ;        jr      z, SET_INV      ; specified INVERSE zero?
+  \ ;        ld      a, 0x2f         ; opcode for 'CPL'
+  \ ;SET_INV:
+  \ ;        ld      (INV_C), a      ; either 'NOP' or 'CPL'
+  \ ;        ret
+  \ ; #endif _STANDARD_INVERSE
+  \ ; -----------------------------------------------------------------------------
+  \
+
+  #24 cp#, h incp,
+
+  \ GET_ROW:
+  \         cp      24              ; specified row greater than 23?
+  \         jr      nc, ERROR_B     ; error if so
+  \         inc     hl              ; dirty trick to store new row into AT_ROW
+  \ GET_COL:
+  \         cp      64              ; specified column greater than 63?
+  \         jr      nc, ERROR_B     ; error if so
+  \         inc     hl
+  \         ld      (hl), a         ; store new column into AT_COL
+  \         ret
+  \
+
+  \ ERROR_B:
+  \         ld      (hl), b         ; reset AT_FLAG
+  \         rst     8               ; error "B Integer out of range"
+  \         defb    10
+  \
+
+  16 cp#,
+
+  \ CHK_AT:
+  \         cp      0x16            ; specified keyword 'AT'?
+  \
+  \ ; -----------------------------------------------------------------------------
+  \ ; UNCOMMENT TO ENABLE STANDARD INVERSE (use INVERSE 1 for inversed characters)
+  \ ;
+  \ ; #ifdef _STANDARD_INVERSE
+  \ ;        jr      nz, CHK_INV     ; continue otherwise
+  \ ;        ld      (hl), 3         ; change AT_FLAG to expect row value next time
+  \ ;        ret
+  \ ;CHK_INV:
+  \ ;        cp      0x14            ; specified keyword 'INVERSE'?
+  \ ; #endif _STANDARD_INVERSE
+  \ ; -----------------------------------------------------------------------------
+  \
+
+  {chk_cr} rl# nz? ?jr  2 m ld#, ret,
+
+  \         jr      nz, CHK_CR      ; continue otherwise
+  \         ld      (hl), 2         ; change AT_FLAG to expect row value next time
+  \         ret                     ;   (or to expect INVERSE parameter next time)
+  \
+
+  {chk_cr} l: m inc, h incp, 0D cp#, {next_row} rl# z? ?jr,
+
+  \ CHK_CR:
+  \         inc     (hl)            ; increment AT_FLAG to restore previous value
+  \         inc     hl              ; now HL references AT_COL address
+  \         cp      0x0d            ; specified carriage return?
+  \         jr      z, NEXT_ROW     ; change row if so
+  \
+  \ ; -----------------------------------------------------------------------------
+  \ ; UNCOMMENT TO ENABLE FAST COMMA (jump directly to next column multiple of 16)
+  \ ;
+  \ ; #ifdef _FAST_COMMA
+  \ ;        cp      0x06            ; specified comma?
+  \ ;        jr      nz, DRIVER      ; continue otherwise
+  \ ;        ld      a, (hl)
+  \ ;        or      0x0f            ; change column to destination minus 1
+  \ ;        ld      (hl),a
+  \ ;        jr      END_LOOP + 1    ; increment column and row if needed
+  \ ; #endif _FAST_COMMA
+  \ ; -----------------------------------------------------------------------------
+  \
+  \ ; -----------------------------------------------------------------------------
+  \ ; UNCOMMENT TO ENABLE STANDARD COMMA (print spaces until column multiple of 16)
+  \ ;
+  \ ; #ifdef _STANDARD_COMMA
+  \ ;        cp      0x06            ; specified comma?
+  \ ;        jr      nz, DRIVER      ; continue otherwise
+  \ ;LOOP:   ld      a, 32           ; print space
+  \ ;        call    DRIVER
+  \ ;        ret     c               ; stop if row changed (reached column zero)
+  \ ;        ld      a, (hl)
+  \ ;        and     0x0f
+  \ ;        ret     z               ; stop if reached column 16, 32 or 48
+  \ ;        jr      LOOP            ; repeat otherwise
+  \ ; #endif _STANDARD_COMMA
+  \ ; -----------------------------------------------------------------------------
+  \
+  \ ; -----------------------------------------------------------------------------
+  \ ; 64-COLUMN DISPLAY DRIVER
+  \
+
+  h push, a e ld, m c ld,
+
+  \ DRIVER:
+  \
+  \         push    hl              ; save AT_COL address for later
+  \         ld      e, a            ; store character value in E
+  \         ld      c, (hl)         ; store current column in BC
+  \
+  \ ; Check if character font must be rotated, self-modifying the code accordingly
+  \
+  \         xor     c               ; compare BIT 0 from character value and column
+  \         rra
+  \         ld      a, 256-(END_LOOP-SKIP_RLC) ; instruction DJNZ skipping rotation
+  \         jr      nc, NOT_RLC             ; decide based on BIT 0 comparison
+  \         ld      a, 256-(END_LOOP-INIT_RLC) ; instruction DJNZ using rotation
+  \ NOT_RLC:
+  \         ld      (END_LOOP - 1), a       ; modify DJNZ instruction directly
+  \
+  \ ; Check the half screen byte to be changed, self-modifying the code accordingly
+  \
+  \         srl     c               ; check BIT 0 from current column
+  \         ld      a, %00001111    ; mask to change left half of the screen byte
+  \         jr      nc, SCR_LEFT    ; decide based on odd or even column
+  \         cpl                     ; mask to change right half of the screen byte
+  \ SCR_LEFT:
+  \         ld      (SCR_MASK + 1), a   ; modify screen mask value directly
+  \         cpl
+  \         ld      (FONT_MASK + 1), a  ; modify font mask value directly
+  \
+  \ ; Calculate location of the first byte to be changed on screen
+  \ ; The row value is a 5 bits value (0-23), here represented as %000RRrrr
+  \ ; The column value is a 6 bits value (0-63), here represented as %00CCCCCc
+  \ ; Formula: 0x4000 + ((row & 0x18) << 8) + ((row & 0x07) << 5) + (col >> 1)
+  \
+  \         inc     hl              ; now HL references AT_ROW address
+  \         ld      a, (hl)         ; now A = %000RRrrr
+  \         call    0x0e9e          ; now HL = %010RR000rrr00000
+  \         add     hl, bc          ; now HL = %010RR000rrrCCCCC
+  \         ex      de, hl          ; now DE = %010RR000rrrCCCCC
+  \
+  \ ; Calculate location of the character font data in FONT_ADDR
+  \ ; Formula: FONT_ADDR + 7 * INT ((char-32)/2) - 1
+  \
+  \         ld      h, b            ; now HL = char
+  \         srl     l               ; now HL = INT (char/2)
+  \         ld      c, l            ; now BC = INT (char/2)
+  \         add     hl, hl          ; now HL = 2 * INT (char/2)
+  \         add     hl, hl          ; now HL = 4 * INT (char/2)
+  \         add     hl, hl          ; now HL = 8 * INT (char/2)
+  \         sbc     hl, bc          ; now HL = 7 * INT (char/2)
+  \         ld      bc, FONT_ADDR - 0x71
+  \         add     hl, bc          ; now HL = FONT_ADDR + 7 * INT (char/2) - 0x71
+  \
+  \ ; Main loop to copy 8 font bytes into screen (1 blank + 7 from font data)
+  \
+  \         xor     a               ; first font byte is always blank
+  \         ld      b, 8            ; execute loop 8 times
+  \ INIT_RLC:
+  \         rlca                    ; switch position between bits 0-3 and bits 4-7
+  \         rlca
+  \         rlca
+  \         rlca
+  \ SKIP_RLC:
+  \
+  \ ; -----------------------------------------------------------------------------
+  \ ; UNCOMMENT TO ENABLE STANDARD INVERSE
+  \ ;
+  \ ; #ifdef _STANDARD_INVERSE
+  \ ;INV_C:  nop                     ; either 'NOP' or 'CPL'
+  \ ; #endif _STANDARD_INVERSE
+  \ ; -----------------------------------------------------------------------------
+  \
+  \ FONT_MASK:
+  \         and     %11110000       ; mask half of the font byte
+  \         ld      c, a            ; store half of the font byte in C
+  \         ld      a, (de)         ; get screen byte
+  \ SCR_MASK:
+  \         and     %00001111       ; mask half of the screen byte
+  \         or      c               ; combine half screen and half font
+  \         ld      (de), a         ; write result back to screen
+  \         inc     d               ; next screen location
+  \         inc     hl              ; next font data location
+  \         ld      a, (hl)         ; store next font byte in A
+  \         djnz    INIT_RLC        ; repeat loop 8 times
+  \ END_LOOP:
+  \
+  \         pop     hl              ; restore AT_COL address
+  \         inc     (hl)            ; next column
+  \         bit     6, (hl)         ; column lower than 64?
+  \         ret     z               ; return if so
+  \ NEXT_ROW:
+  \         ld      (hl), b         ; reset AT_COL
+  \         inc     hl              ; store AT_ROW address in HL
+  \         inc     (hl)            ; next row
+  \         ld      a, (hl)
+  \         cp      24              ; row lower than 23?
+  \         ret     c               ; return if so
+  \         ld      (hl), b         ; reset AT_ROW
+  \         ret                     ; done!
+  \
+  \ ; -----------------------------------------------------------------------------
+  \ ; LOCAL VARIABLES
+  \
+  \ AT_FLAG:
+  \         defb    0               ; flag to control processing keyword 'AT'
+  \                                 ;   value 2 if received 'AT', expecting row
+  \                                 ;   value 1 if received row, expecting column
+  \                                 ;   value 0 if expecting regular character
+  \ AT_COL:
+  \         defb    0               ; current column position (0-31)
+  \ AT_ROW:
+  \         defb    0               ; current row position (0-23)
+
+
+( mode-64s-emit )
+
+need assembler need mode-64s-emit_
+
+code mode-64s-emit ( c -- )
+  exx, b pop, c a ld, mode-64s-emit_ call,
+  exx, jpnext, end-code
+
+( mode-64s )
+
+need (at-xy need set-mode-output need mode-64s-emit
+
+: mode-64s-xy ( -- col row ) 0 0 ;  \ XXX TODO
+
+: mode-64s ( -- )
+  [ latestxt ] literal current-mode !
+  2548 set-mode-output
+  mode-64s-chars @ set-font
+  64 to columns  24 to rows
+  ['] mode-64s-emit ['] emit  defer!
+  ['] mode-64s-xy   ['] xy    defer!
+  ['] (at-xy       ['] at-xy defer! ;
+
+( 4x8-font )
+
+create 4x8-font ( -- a ) hex
 
   \ Half width 4x8 font.
   \ 336 bytes.
   \ Top row is always zero and not stored.
-
-  \ Credit:
-  \
-  \ Author of the font: Andrew Owen.
-  \ Published on the World of Spectrum forum:
-  \ http://www.worldofspectrum.org/forums/discussion/14526/redirect/p1
-
-create 4x8font  hex
 
 02 c, 02 c, 02 c, 02 c, 00 c, 02 c, 00 c,  \  !
 52 c, 57 c, 02 c, 02 c, 07 c, 02 c, 00 c,  \ "#
@@ -117,7 +821,7 @@ create 4x8font  hex
 22 c, 55 c, 25 c, 53 c, 52 c, 24 c, 00 c,  \ 89
 -->
 
-( 4x8font )
+( 4x8-font )
 
 00 c, 00 c, 22 c, 00 c, 00 c, 22 c, 02 c,  \ :;
 00 c, 10 c, 27 c, 40 c, 27 c, 10 c, 00 c,  \ <=
@@ -135,7 +839,7 @@ create 4x8font  hex
 75 c, 25 c, 25 c, 25 c, 25 c, 22 c, 00 c,  \ TU
 -->
 
-( 4x8font )
+( 4x8-font )
 
 55 c, 55 c, 55 c, 55 c, 27 c, 25 c, 00 c,  \ VW
 55 c, 55 c, 25 c, 22 c, 52 c, 52 c, 00 c,  \ XY
@@ -153,7 +857,7 @@ create 4x8font  hex
 00 c, 00 c, 63 c, 55 c, 55 c, 63 c, 41 c,  \ pq
 -->
 
-( 4x8font )
+( 4x8-font )
 
 00 c, 00 c, 53 c, 66 c, 43 c, 46 c, 00 c,  \ rs
 00 c, 20 c, 75 c, 25 c, 25 c, 12 c, 00 c,  \ tu
@@ -164,6 +868,22 @@ create 4x8font  hex
 56 c, A9 c, 06 c, 04 c, 06 c, 09 c, 06 c,  \ ~?
 
 decimal
+
+  \ Credit:
+  \
+  \ Author of the font: Andrew Owen.
+  \ Published on the World of Spectrum forum:
+  \ http://www.worldofspectrum.org/forums/discussion/14526/redirect/p1
+
+  \ doc{
+  \
+  \ 4x8-font ( -- a )
+  \
+  \ _a_ is the address of a 4x8-pixel font compiled in data
+  \ space (336 bytes used), to be used in `mode-64o` by setting
+  \ `mode-64o-font`.
+  \
+  \ }doc
 
   \ ===========================================================
   \ Change log
@@ -184,14 +904,23 @@ decimal
   \ 2017-02-08: Update the usage of `set-drive`, which now
   \ returns an error result.
   \
-  \ 2017-02-11: Replace old `<file-as-is` with `0 0 file>`, after
-  \ the improvements in the G+DOS module. Use `drive` to make
-  \ the code compatible with any DOS.
+  \ 2017-02-11: Replace old `<file-as-is` with `0 0 file>`,
+  \ after the improvements in the G+DOS module. Use `drive` to
+  \ make the code compatible with any DOS.
   \
   \ 2017-02-21: Need `unresolved`, which now is optional, not
   \ part of the assembler.
   \
   \ 2017-04-21: Rename module and words after the new
   \ convention for display modes.
+  \
+  \ 2017-05-13: Prepare the integration of the driver, both the
+  \ current version, adapted from the original version written
+  \ by Andrew Owen (so far loaded from disk in binary form) and
+  \ its reimplementation written by Einar Saukas.
+  \
+  \ 2017-05-14: Finish the implementation of `mode-64o`. Remove
+  \ its old disk-based version `mode-64`. Improve
+  \ documentation.
 
   \ vim: filetype=soloforth

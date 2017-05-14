@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201705071814
+# Last modified: 201705142148
 
 # ==============================================================
 # Author
@@ -274,20 +274,10 @@ tmp/loader.trdos.bas.tap: \
 # library yet.  Meanwhile, their binary files are included in
 # the boot disk.
 
-# Note: An intermediate file called "pr64.bin" is used, in
-# order to force that filename in the TAP header and therefore
-# also in the disk image.  This file must be in the current
-# directory, because the path specified in the command will be
-# part of the filename in the TAP header.
-
 # XXX WARNING -- 2016-03-19. bin2code returns error 97 when one
 # of the filenames has a path, but it creates the tap file as
 # usual.  A hyphen at the beginning of the target forces
 # `make` to ignore the error.
-
-tmp/pr64.tap: src/addons/pr64.z80s
-	pasmo --tap $< pr64.bin ; \
-	mv pr64.bin $@
 
 tmp/pr42.tap: bin/addons/pr42.bin
 	cd bin/addons/ ; \
@@ -339,7 +329,6 @@ tmp/img.tap: bin/test/img.zx7
 disks/gplusdos/disk_0_boot.mgt: \
 		tmp/loader.gplusdos.bas.tap \
 		tmp/kernel.gplusdos.bin.tap \
-		tmp/pr64.tap \
 		tmp/pr42.tap \
 		bin/fonts/ea5a.f42.tap \
 		tmp/fzx_fonts.tap \
@@ -352,7 +341,6 @@ disks/gplusdos/disk_0_boot.mgt: \
 tmp/disk_0_boot.plus3dos.tap: \
 		tmp/loader.plus3dos.bas.tap \
 		tmp/kernel.plus3dos.bin.tap \
-		tmp/pr64.tap \
 		tmp/pr42.tap \
 		bin/fonts/ea5a.f42.tap \
 		tmp/fzx_fonts.tap \
@@ -371,7 +359,6 @@ disks/plus3dos/disk_0_boot.180.dsk: tmp/disk_0_boot.plus3dos.tap
 tmp/disk_0_boot.trdos.tap: \
 		tmp/loader.trdos.bas.tap \
 		tmp/kernel.trdos.bin.tap \
-		tmp/pr64.tap \
 		tmp/pr42.tap \
 		bin/fonts/ea5a.f42.tap \
 		tmp/fzx_fonts.tap \
@@ -395,7 +382,6 @@ disks/trdos/disk_0_boot.trd: tmp/disk_0_boot.trdos.tap
 tmp/disk_0_boot.trdos.scorpion_zs_256.tap: \
 		tmp/loader.trdos.bas.tap \
 		tmp/kernel.trdos.scorpion_zs_256.bin.tap \
-		tmp/pr64.tap \
 		tmp/pr42.tap \
 		bin/fonts/ea5a.f42.tap \
 		tmp/fzx_fonts.tap
@@ -418,7 +404,6 @@ disks/trdos/disk_0_boot.scorpion_zs_256.trd: tmp/disk_0_boot.trdos.scorpion_zs_2
 tmp/disk_0_boot.trdos.pentagon_512.tap: \
 		tmp/loader.trdos.bas.tap \
 		tmp/kernel.trdos.pentagon_512.bin.tap \
-		tmp/pr64.tap \
 		tmp/pr42.tap \
 		bin/fonts/ea5a.f42.tap \
 		tmp/fzx_fonts.tap
@@ -441,7 +426,6 @@ disks/trdos/disk_0_boot.pentagon_512.trd: tmp/disk_0_boot.trdos.pentagon_512.tap
 tmp/disk_0_boot.trdos.pentagon_1024.tap: \
 		tmp/loader.trdos.bas.tap \
 		tmp/kernel.trdos.pentagon_1024.bin.tap \
-		tmp/pr64.tap \
 		tmp/pr42.tap \
 		bin/fonts/ea5a.f42.tap \
 		tmp/fzx_fonts.tap
@@ -1097,3 +1081,6 @@ oldbackup:
 # the `cleandoc` rule.
 #
 # 2017-05-07: Create a PDF from the HTML manual, using htmldoc.
+#
+# 2017-05-14: Remove the pr64.z80s addon, because it has been
+# integrated into the library.
