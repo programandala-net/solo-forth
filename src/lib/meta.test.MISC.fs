@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705151606
+  \ Last modified: 201705151641
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -40,23 +40,42 @@
 
 need mode-64o need file> need owen-64cpl-font
 
-create f64 336 allot  f64 mode-64o-font !
+create f64 336 allot
 
-: .font ( -- ) 'Z' 1+ 'A' ?do i emit loop space
-               'z' 1+ 'a' ?do i emit loop space
-               '9' 1+ '0' ?do i emit loop cr ;
+: .ascii ( -- ) 128 bl ?do i emit loop ;
 
-: (try-f64 ( ca len -- )
-  mode-64o ." FONT: " type cr .font mode-32 ;
+: .text ( -- )
+  ." A QUICK BROWN FOX JUMPS OVER THE LAZY DOG." cr
+  ." A quick brown fox jumps over the lazy dog." ;
 
-: try-f64 ( ca len -- ) 2dup f64 0 file> throw (try-f64 ;
+defer show-font ( -- )
 
-: f64-test ( -- )
-  page s" mini.f64" try-f64 s" nbot.f64" try-f64
-       s" omn1.f64" try-f64 s" omn2.f64" try-f64
-       s" owen.f64" try-f64
+: try-f64 ( ca1 len1 ca2 len2 -- )
+  mode-64o type space type space cr show-font cr mode-32 ;
+
+: try-f64-file ( ca len -- ) s" File:" 2over f64 0 file> throw
+                             f64 mode-64o-font ! try-f64 ;
+
+-->
+
+( f64-test )
+
+: (f64-test ( -- )
+  page s" mini.f64" try-f64-file cr
+       s" nbot.f64" try-f64-file cr
+       s" omn1.f64" try-f64-file cr
+       s" omn2.f64" try-f64-file cr
+       s" owen.f64" try-f64-file cr
        owen-64cpl-font mode-64o-font !
-       s" owen-64cpl-font" (try-f64 ;
+       s" owen-64cpl-font" s" Word:" try-f64 ;
+
+: continued ( -- )  ." ..." key drop ;
+
+: f64-test1 ( -- ) ['] .ascii ['] show-font defer! (f64-test ;
+
+: f64-test2 ( -- ) ['] .text ['] show-font defer! (f64-test ;
+
+: f64-test ( -- ) f64-test1 continued f64-test2 ;
 
 ( wtype-test )
 
