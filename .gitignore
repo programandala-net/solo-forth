@@ -15,13 +15,12 @@ _meta/
 doc/*.html
 doc/*.pdf
 
-# Ignore some files which are not ready for the next prerelease:
+# Ignore some files which are not ready yet:
 bin/fonts/mini.f64
 bin/fonts/nbot.f64
 bin/fonts/omn1.f64
 bin/fonts/omn2.f64
 bin/fonts/owen.f64
 src/addons/64-4.z80s
-src/lib/display.mode.42rt.fs
 
 # vim: filetype=config
