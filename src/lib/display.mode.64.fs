@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705151218
+  \ Last modified: 201705151319
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -469,7 +469,8 @@ need mode-32 need (at-xy need set-mode-output need >form
   \ mode-64o-xy ( -- col row )
   \
   \ Return the current cursor coordinates _col row_ in
-  \ `mode-64o`.
+  \ `mode-64o`. ``mode-64o-xy`` is the action of `xy` when
+  \ `mode-64o` is active.
   \
   \ }doc
 
@@ -521,7 +522,7 @@ variable mode-64o-font
   \
   \ See also: `current-mode`, `set-font`, `set-mode-output`,
   \ `columns`, `rows`, `mode-64o-emit`, `mode-64o-xy`,
-  \ `mode-64o-font`, `>form`.
+  \ `mode-64o-font`, `>form`, `mode-64o-output_`.
   \
   \ }doc
 

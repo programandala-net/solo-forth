@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201705151216
+// Last modified 201705151309
 
 // Assembler {{{1
 == Assembler ==
@@ -432,6 +432,16 @@ additional link.
 
 // Display {{{1
 == Display ==
+
+.2017-05-15:
+
+Add the 64 CPL binary fonts to disk 0. Rename `4x8-font` after them:
+`owen-64cpl-font`.
+
+.2017-05-15:
+
+Document the control characters accepted by each mode, especially the
+parameters of "at".
 
 .2017-05-15:
 

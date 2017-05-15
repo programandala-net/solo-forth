@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704161248
+  \ Last modified: 201705151136
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -32,11 +32,11 @@
   \
   \ cvalue ( c "name" -- )
   \
-  \ Create a definition _name_ with the following execution
-  \ semantics: place _c_ on the stack.
+  \ Create a definition _name_ with initial value _c_. When
+  \ _name_ is later executed, _c_ will be placed on the stack.
+  \ `to` can be used to assign a new value to _name_.
   \
-  \ See also: `to`, `value`, `2value`, `cconstant`,
-  \ `cvariable`.
+  \ See also: `value`, `2value`, `cconstant`, `cvariable`.
   \
   \ }doc
 
@@ -47,12 +47,13 @@
   \
   \ value ( x "name" -- )
   \
-  \ Create a definition _name_ with the following execution
-  \ semantics: place _x_ on the stack.
+  \ Create a definition _name_ with initial value _x_. When
+  \ _name_ is later executed, _x_ will be placed on the stack.
+  \ `to` can be used to assign a new value to _name_.
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See also: `to`, `cvalue`, `2value`, `constant`, `variable`.
+  \ See also: `cvalue`, `2value`, `constant`, `variable`.
   \
   \ }doc
 
@@ -63,13 +64,13 @@
   \
   \ 2value ( x1 x2 "name" -- )
   \
-  \ Create a definition _name_ with the following execution
-  \ semantics: place _x1 x2_ on the stack.
+  \ Create a definition _name_ with initial value _x1 x2_. When
+  \ _name_ is later executed, _x1 x2_ will be placed on the
+  \ stack.  `to` can be used to assign a new value to _name_.
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See also: `to`, `cvalue`, `value`, `2constant`,
-  \ `2variable`.
+  \ See also: `cvalue`, `value`, `2constant`, `2variable`.
   \
   \ }doc
 
@@ -139,5 +140,7 @@ create to> ' c! , ' ! , ' 2! ,
   \ 2017-04-09: Improve documentation.
   \
   \ 2017-04-16: Improve documentation.
+  \
+  \ 2017-05-15: Improve documentation.
 
   \ vim: filetype=soloforth

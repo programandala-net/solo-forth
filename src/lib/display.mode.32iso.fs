@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705151207
+  \ Last modified: 201705151250
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -40,8 +40,8 @@ variable mode-32iso-font  rom-font bl 8 * + mode-32iso-font !
   \ of the font must be the address of its character 32
   \ (space).
   \
-  \ Its default value is `rom-font` plus 256 (the address of
-  \ the space character in the ROM font).
+  \ The default value of ``mode-32iso-font`` is `rom-font` plus
+  \ 256 (the address of the space character in the ROM font).
   \
   \ }doc
 
