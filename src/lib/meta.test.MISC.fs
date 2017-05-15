@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705131346
+  \ Last modified: 201705151606
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,9 +23,44 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+( f64-test )
+
+  \ Credit:
+  \
+  \ The 64-cpl fonts are part of:
+  \
+  \ 64#4 - 4x8 FONT DRIVER FOR 64 COLUMNS (c) 2007, 2011
+  \
+  \ Original by Andrew Owen (657 bytes)
+  \ Optimized by Crisis (602 bytes)
+  \ Reimplemented by Einar Saukas (494 bytes)
+  \
+  \ https://sites.google.com/site/zxgraph/home/einar-saukas/fonts
+  \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027130
+
+need mode-64o need file> need owen-64cpl-font
+
+create f64 336 allot  f64 mode-64o-font !
+
+: .font ( -- ) 'Z' 1+ 'A' ?do i emit loop space
+               'z' 1+ 'a' ?do i emit loop space
+               '9' 1+ '0' ?do i emit loop cr ;
+
+: (try-f64 ( ca len -- )
+  mode-64o ." FONT: " type cr .font mode-32 ;
+
+: try-f64 ( ca len -- ) 2dup f64 0 file> throw (try-f64 ;
+
+: f64-test ( -- )
+  page s" mini.f64" try-f64 s" nbot.f64" try-f64
+       s" omn1.f64" try-f64 s" omn2.f64" try-f64
+       s" owen.f64" try-f64
+       owen-64cpl-font mode-64o-font !
+       s" owen-64cpl-font" (try-f64 ;
+
 ( wtype-test )
 
-need where need window need attr@ need attr!
+need window need attr@ need attr!
 need wltype need wtype need wblank
 
 8 1 21 22 window dup constant test-window current-window !
@@ -47,9 +82,9 @@ need wltype need wtype need wblank
 need baden-sqrt need newton-sqrt need printer
 
 : run ( -- ) cr ." Printing different results" cr
-                   ." Press BREAK to stop" cr cr printer cr
-                   ." Number baden-sqrt  newton-sqrt" cr
-                   ." ------ ----------- -----------" cr
+                ." Press BREAK to stop" cr cr printer cr
+                ." Number baden-sqrt  newton-sqrt" cr
+                ." ------ ----------- -----------" cr
   32768 0 ?do
     i newton-sqrt i baden-sqrt 2dup <>
     if  i 6 .r space 11 .r space 11 .r cr else 2drop then
@@ -1308,5 +1343,7 @@ blk @ 1+ blk @ 2+ thru
   \ `terminal` in the kernel.
   \
   \ 2017-05-13: Add `wtype-test` and `wltype-test`.
+  \
+  \ 2017-05-15: Add `f64-test`.
 
   \ vim: filetype=soloforth

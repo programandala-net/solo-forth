@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201705142148
+# Last modified: 201705151452
 
 # ==============================================================
 # Author
@@ -302,6 +302,17 @@ tmp/fzx_fonts.tap : $(fzx_fonts)
 	cat $(addsuffix .tap,$(fzx_fonts)) > $@ ; \
 	rm -f $(addsuffix .tap, $(fzx_fonts))
 
+f64_fonts = $(wildcard bin/fonts/*.f64)
+
+tmp/f64_fonts.tap : $(f64_fonts)
+	cd bin/fonts ; \
+	for file in $(notdir $(f64_fonts)); do \
+		bin2code $$file $$file.tap; \
+	done; \
+	cd -
+	cat $(addsuffix .tap,$(f64_fonts)) > $@ ; \
+	rm -f $(addsuffix .tap, $(f64_fonts))
+
 # ==============================================================
 # Compressed test screen
 
@@ -331,6 +342,7 @@ disks/gplusdos/disk_0_boot.mgt: \
 		tmp/kernel.gplusdos.bin.tap \
 		tmp/pr42.tap \
 		bin/fonts/ea5a.f42.tap \
+		tmp/f64_fonts.tap \
 		tmp/fzx_fonts.tap \
 		tmp/img.tap
 	mkmgt $@ bin/dos/gplusdos-sys-2a.tap $^
@@ -343,6 +355,7 @@ tmp/disk_0_boot.plus3dos.tap: \
 		tmp/kernel.plus3dos.bin.tap \
 		tmp/pr42.tap \
 		bin/fonts/ea5a.f42.tap \
+		tmp/f64_fonts.tap \
 		tmp/fzx_fonts.tap \
 		tmp/img.tap
 	cat $^ > $@
@@ -361,6 +374,7 @@ tmp/disk_0_boot.trdos.tap: \
 		tmp/kernel.trdos.bin.tap \
 		tmp/pr42.tap \
 		bin/fonts/ea5a.f42.tap \
+		tmp/f64_fonts.tap \
 		tmp/fzx_fonts.tap \
 		tmp/img.tap
 	cat $^ > $@
@@ -384,6 +398,7 @@ tmp/disk_0_boot.trdos.scorpion_zs_256.tap: \
 		tmp/kernel.trdos.scorpion_zs_256.bin.tap \
 		tmp/pr42.tap \
 		bin/fonts/ea5a.f42.tap \
+		tmp/f64_fonts.tap \
 		tmp/fzx_fonts.tap
 	cat $^ > $@
 
@@ -406,6 +421,7 @@ tmp/disk_0_boot.trdos.pentagon_512.tap: \
 		tmp/kernel.trdos.pentagon_512.bin.tap \
 		tmp/pr42.tap \
 		bin/fonts/ea5a.f42.tap \
+		tmp/f64_fonts.tap \
 		tmp/fzx_fonts.tap
 	cat $^ > $@
 
@@ -428,6 +444,7 @@ tmp/disk_0_boot.trdos.pentagon_1024.tap: \
 		tmp/kernel.trdos.pentagon_1024.bin.tap \
 		tmp/pr42.tap \
 		bin/fonts/ea5a.f42.tap \
+		tmp/f64_fonts.tap \
 		tmp/fzx_fonts.tap
 	cat $^ > $@
 
@@ -1084,3 +1101,13 @@ oldbackup:
 #
 # 2017-05-14: Remove the pr64.z80s addon, because it has been
 # integrated into the library.
+#
+# 2017-05-15: Add 64-cpl fonts from:
+#
+# 	64#4 - 4x8 FONT DRIVER FOR 64 COLUMNS (c) 2007, 2011
+# 	Original by Andrew Owen (657 bytes)
+# 	Optimized by Crisis (602 bytes)
+# 	Reimplemented by Einar Saukas (494 bytes)
+# 	https://sites.google.com/site/zxgraph/home/einar-saukas/fonts
+# 	http://www.worldofspectrum.org/infoseekid.cgi?id=0027130
+

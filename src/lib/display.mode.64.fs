@@ -3,13 +3,13 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705151319
+  \ Last modified: 201705151558
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ A 64 CPL display mode.
+  \ A 64-cpl display mode.
 
   \ ===========================================================
   \ Authors
@@ -487,7 +487,7 @@ variable mode-64o-font
   \ program is responsible for initializing the contents of
   \ this variable before executing `mode-64o`.
   \
-  \ See also: `4x8-font`.
+  \ See also: `owen-64cpl-font`.
   \
   \ }doc
 
@@ -503,7 +503,7 @@ variable mode-64o-font
   \
   \ mode-64o ( -- )
   \
-  \ Start the 64 CPL display mode based on:
+  \ Start the 64-cpl display mode based on:
 
   \ ....
   \ 4x8 FONT DRIVER
@@ -530,6 +530,9 @@ variable mode-64o-font
 
   \ Version with integrated driver, adapted from 64#4, written
   \ by Einar Saukas.
+  \
+  \ https://sites.google.com/site/zxgraph/home/einar-saukas/fonts
+  \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027130
   \
   \ XXX UNDER DEVELOPMENT --
 
@@ -808,9 +811,9 @@ need (at-xy need set-mode-output need mode-64s-emit
   ['] mode-64s-xy   ['] xy    defer!
   ['] (at-xy       ['] at-xy defer! ;
 
-( 4x8-font )
+( owen-64cpl-font )
 
-create 4x8-font ( -- a ) hex
+create owen-64cpl-font ( -- a ) hex
 
   \ Half width 4x8 font.
   \ 336 bytes.
@@ -831,7 +834,7 @@ create 4x8-font ( -- a ) hex
 22 c, 55 c, 25 c, 53 c, 52 c, 24 c, 00 c,  \ 89
 -->
 
-( 4x8-font )
+( owen-64cpl-font )
 
 00 c, 00 c, 22 c, 00 c, 00 c, 22 c, 02 c,  \ :;
 00 c, 10 c, 27 c, 40 c, 27 c, 10 c, 00 c,  \ <=
@@ -849,7 +852,7 @@ create 4x8-font ( -- a ) hex
 75 c, 25 c, 25 c, 25 c, 25 c, 22 c, 00 c,  \ TU
 -->
 
-( 4x8-font )
+( owen-64cpl-font )
 
 55 c, 55 c, 55 c, 55 c, 27 c, 25 c, 00 c,  \ VW
 55 c, 55 c, 25 c, 22 c, 52 c, 52 c, 00 c,  \ XY
@@ -867,7 +870,7 @@ create 4x8-font ( -- a ) hex
 00 c, 00 c, 63 c, 55 c, 55 c, 63 c, 41 c,  \ pq
 -->
 
-( 4x8-font )
+( owen-64cpl-font )
 
 00 c, 00 c, 53 c, 66 c, 43 c, 46 c, 00 c,  \ rs
 00 c, 20 c, 75 c, 25 c, 25 c, 12 c, 00 c,  \ tu
@@ -887,11 +890,13 @@ decimal
 
   \ doc{
   \
-  \ 4x8-font ( -- a )
+  \ owen-64cpl-font ( -- a )
   \
   \ _a_ is the address of a 4x8-pixel font compiled in data
   \ space (336 bytes used), to be used in `mode-64o` by setting
   \ `mode-64o-font`.
+  \
+  \ This font is included also is disk 0 as "owen.f64".
   \
   \ }doc
 
@@ -934,6 +939,7 @@ decimal
   \ `4x8-font`. Improve documentation.
   \
   \ 2017-05-15: Use `>form` for mode transition. Improve
-  \ documentation.
+  \ documentation. Rename `4x8-font` to `owen-64cpl-font`,
+  \ after the filenames of the fonts included in disk 0.
 
   \ vim: filetype=soloforth
