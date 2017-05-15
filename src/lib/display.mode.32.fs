@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704231343
+  \ Last modified: 201705151207
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -26,14 +26,30 @@
 ( mode-32 )
 
 need columns need rows need set-font need set-mode-output
+need >form need rom-font
+
+variable mode-32-font  rom-font bl 8 * + mode-32-font !
+
+  \ doc{
+  \
+  \ mode-32-font ( -- a )
+  \
+  \ A variable. _a_ is the address of a cell containing the
+  \ address of the font used by `mode-32`. Note the address of
+  \ the font must be the address of its character 32 (space).
+  \
+  \ Its default value is `rom-font` plus 256 (the address of
+  \ the space character in the ROM font).
+  \
+  \ }doc
 
 : mode-32 ( -- )
   [ latestxt ] literal current-mode !
-  15360 set-font  2548 set-mode-output
-  32 to columns  24 to rows
+  mode-32-font @ 256 - set-font
+  $09F4 set-mode-output
   ['] mode-32-emit  ['] emit  defer!
-  ['] mode-32-xy    ['] xy    defer!
-  ['] mode-32-at-xy ['] at-xy defer! ;
+  ['] mode-32-at-xy ['] at-xy defer! 32 24 >form
+  ['] mode-32-xy    ['] xy    defer! ;
 
   \ doc{
   \
@@ -50,7 +66,7 @@ need columns need rows need set-font need set-mode-output
   \
   \ See also: `current-mode`, `set-font`, `set-mode-output`,
   \ `columns`, `rows`, `mode32-emit`, `mode-32-xy`,
-  \ `mode-32-at-xy`.
+  \ `mode-32-at-xy`, `>form`.
   \
   \ }doc
 
@@ -71,5 +87,8 @@ need columns need rows need set-font need set-mode-output
   \ convention for display modes.
   \
   \ 2017-04-23: Improve documentation.
+  \
+  \ 2017-05-15: Use `>form` for mode transition. Add
+  \ `mode-32-font`.
 
   \ vim: filetype=soloforth

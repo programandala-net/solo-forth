@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705142201
+  \ Last modified: 201705151218
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -459,7 +459,7 @@ code mode-64o-emit ( c -- )
 ( mode-64o )
 
 need mode-64o-output_ need mode-64o-emit
-need mode-32 need (at-xy need set-mode-output
+need mode-32 need (at-xy need set-mode-output need >form
 
 : mode-64o-xy ( -- col row )
   mode-64o-column c@ mode-64o-row c@ ;
@@ -492,27 +492,36 @@ variable mode-64o-font
 
 : mode-64o ( -- )
   [ latestxt ] literal current-mode !
-  \ $09F4 set-mode-output \ XXX REMARK -- OS default
+  mode-64o-font @ $71 - set-font
   mode-64o-output_ set-mode-output
-  mode-64o-font @ $71 - set-font  64 to columns  24 to rows
   ['] mode-64o-emit ['] emit  defer!
-  ['] mode-64o-xy   ['] xy    defer!
-  ['] (at-xy        ['] at-xy defer! ;
+  ['] (at-xy        ['] at-xy defer! 64 24 >form
+  ['] mode-64o-xy   ['] xy    defer! ;
 
   \ doc{
   \
   \ mode-64o ( -- )
   \
   \ Start the 64 CPL display mode based on:
-  \
+
   \ ....
   \ 4x8 FONT DRIVER
   \ (c) 2007, 2011 Andrew Owen
   \ optimized by Crisis (to 602 bytes)
   \ http://www.worldofspectrum.org/forums/discussion/14526/redirect/p1
   \ ....
+
+  \ The control characters recognized are 8 (left), 13
+  \ (carriage return) and 22 (at).
   \
-  \ See also: `mode-64o-emit`, `mode-64o-xy`, `mode-64o-font`.
+  \ WARNING: the "at" control character is followed by column
+  \ and row, i.e. the order of the coordinates is inverted
+  \ compared to the Sinclair BASIC convention and `mode-32`.
+  \ This will be changed in a later version of the code.
+  \
+  \ See also: `current-mode`, `set-font`, `set-mode-output`,
+  \ `columns`, `rows`, `mode-64o-emit`, `mode-64o-xy`,
+  \ `mode-64o-font`, `>form`.
   \
   \ }doc
 
@@ -920,7 +929,10 @@ decimal
   \ its reimplementation written by Einar Saukas.
   \
   \ 2017-05-14: Finish the implementation of `mode-64o`. Remove
-  \ its old disk-based version `mode-64`. Improve
+  \ its old disk-based version `mode-64`. Rename `4x8font` to
+  \ `4x8-font`. Improve documentation.
+  \
+  \ 2017-05-15: Use `>form` for mode transition. Improve
   \ documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705141926
+  \ Last modified: 201705151207
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,15 +27,31 @@
 ( mode-32iso )
 
 need mode-32 need columns need rows need set-mode-output
-need mode-32iso-emit
+need mode-32iso-emit need form> need rom-font
+
+variable mode-32iso-font  rom-font bl 8 * + mode-32iso-font !
+
+  \ doc{
+  \
+  \ mode-32iso-font ( -- a )
+  \
+  \ A variable. _a_ is the address of a cell containing the
+  \ address of the font used by `mode-32iso`. Note the address
+  \ of the font must be the address of its character 32
+  \ (space).
+  \
+  \ Its default value is `rom-font` plus 256 (the address of
+  \ the space character in the ROM font).
+  \
+  \ }doc
 
 : mode-32iso ( -- )
   [ latestxt ] literal current-mode !
-  2548 set-mode-output
-  32 to columns  24 to rows
+  mode-32iso-font @ 256 - set-font
+  $09F4 set-mode-output \ XXX TODO -- Point to a custom routine
   ['] mode-32iso-emit ['] emit  defer!
-  ['] mode-32-xy      ['] xy    defer!
-  ['] mode-32-at-xy   ['] at-xy defer! ;
+  ['] mode-32-at-xy   ['] at-xy defer! 32 24 >form 
+  ['] mode-32-xy      ['] xy    defer! ;
 
   \ doc{
   \
@@ -48,7 +64,7 @@ need mode-32iso-emit
   \ `mode-32iso-emit` for details.
   \
   \ See also: `current-mode`, `set-font`, `set-mode-output`,
-  \ `columns`, `rows`, `mode-32-xy`, `mode-32-at-xy`.
+  \ `columns`, `rows`, `mode-32-xy`, `mode-32-at-xy`, `>form`.
   \
   \ }doc
 
@@ -151,6 +167,9 @@ os-chars h ftp, h push, b addp, os-chars h stp, FF 52 iy st#x,
   \ 2017-04-23: Improve documentation.
   \
   \ 2017-05-14: Improve layout of the Z80 source comments.
+  \
+  \ 2017-05-15: Use `>form` for mode transition. Add
+  \ `mode-32iso-font`.
 
   \ vim: filetype=soloforth
 

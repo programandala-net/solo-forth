@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704211747
+  \ Last modified: 201705151216
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,7 +23,66 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( (at-xy columns rows set-mode-output )
+( form>xy >form form (at-xy columns rows set-mode-output )
+
+[unneeded] form>xy ?( need columns need rows
+
+: form>xy ( cols rows -- x y )
+  xy swap >r rows */ r> swap >r columns */ r> ; ?)
+
+  \ doc{
+  \
+  \ form>xy ( cols rows -- x y )
+  \
+  \ _x y_ is the new cursor position corresponding to a display
+  \ mode whose `form` is _cols rows_. _x y_ are calculated with
+  \ the values returned by `xy`, `columns` and `rows` in the
+  \ current mode.
+  \
+  \ ``form>xy`` is a factor of `>form`.
+  \
+  \ }doc
+
+[unneeded] >form ?( need form>xy need columns need rows need to
+
+: >form ( cols rows -- )
+  2dup form>xy at-xy to rows to columns ; ?)
+
+  \ doc{
+  \
+  \ >form ( cols rows -- )
+  \
+  \ Adapt the cursor position of the current display mode to a
+  \ display mode whose `form` is _cols rows_.
+  \
+  \ ``>form`` is used by the display modes, e.g. `mode-32` and
+  \ `mode-64o`.
+  \
+  \ NOTE: When ``>form`` is executed, the action of `at-xy`
+  \ must be that of the new mode, but `xy`, `rows` and
+  \ `columns` must still return the values of the current (old)
+  \ mode.
+  \
+  \ }doc
+
+-->
+
+( )
+
+[unneeded] form ?( need columns need rows
+
+: form ( -- cols rows ) columns rows ; ?)
+
+  \ doc{
+  \
+  \ form ( -- cols rows )
+  \
+  \ Number of `columns` and `rows` in the terminal in the
+  \ current display mode (e.g. `mode-32`, `mode-64o`).
+  \
+  \ Origin: Gforth.
+  \
+  \ }doc
 
 [unneeded] (at-xy
 ?\ : (at-xy ( col row -- ) 22 emit swap emit emit ;
@@ -73,11 +132,10 @@
   \
   \ }doc
 
-[unneeded] set-mode-output ?(
-
-need os-chans
+[unneeded] set-mode-output ?( need os-chans
 
 : set-mode-output ( a -- )
+  \ os-chans @ 2dup ! 2dup 5 + ! 15 + ! ; ?) \ XXX OLD
   os-chans @ 2dup ! 2dup 5 + ! 15 + ! ; ?)
 
   \ doc{
@@ -151,5 +209,7 @@ code (banked-mode-output) ( -- )
   \ 2017-04-21: Rename module after the new convention for
   \ display modes.  Add `(at-xy`, which was called `(at-xy)`
   \ and used by `mode-42`, `mode-64` and others.
+  \
+  \ 2017-05-15: Add `form>xy`, `>form` and `form`.
 
   \ vim: filetype=soloforth
