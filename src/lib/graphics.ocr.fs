@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705091223
+  \ Last modified: 201705202219
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,9 +33,10 @@ variable ocr-charset  $3D00 ocr-charset !
   \
   \ ocr-charset ( -- a )
   \
-  \ Variable that holds the address of the first printable char
-  \ in the charset used by `ocr`. By default it contains
-  \ 0x3D00, the address of the space char in the ROM charset.
+  \ A variable. _a_ is the address of a cell containing the
+  \ address of the first printable character in the character
+  \ set used by `ocr`.  By default it contains 0x3D00, the
+  \ address of the space character in the `rom-font`.
   \
   \ The configuration of `ocr`, including this variable, can be
   \ changed by `ascii-ocr` and `udg-ocr`.
@@ -44,16 +45,16 @@ variable ocr-charset  $3D00 ocr-charset !
   \
   \ }doc
 
-here bl c, constant ocr-first
+create ocr-first bl c,
 
   \ doc{
   \
   \ ocr-first ( -- ca )
   \
-  \ A character variable that holds the code of the first
-  \ printable char in the charset used by `ocr`, pointed by
-  \ `ocr-charset`.  By default it contais `bl`, the code of the
-  \ space character.
+  \ A character variable. _ca_ is the address of a byte
+  \ containing the code of the first printable character in the
+  \ character set used by `ocr`, pointed by `ocr-charset`.  By
+  \ default it contais `bl`, the code of the space character.
   \
   \ The configuration of `ocr`, including this variable, can be
   \ changed by `ascii-ocr` and `udg-ocr`.
@@ -62,16 +63,17 @@ here bl c, constant ocr-first
   \
   \ }doc
 
-here 127 bl - c, constant ocr-chars
+create ocr-chars 127 bl - c,
 
   \ doc{
   \
   \ ocr-chars ( -- ca )
   \
-  \ A character variable that holds the number of chars used by
-  \ `ocr`, from the address pointed by `ocr-charset`. By
-  \ default it contais 95, the number of printable ASCII chars
-  \ in the ROM charset.
+  \ A character variable. _ca_ is the address of a byte
+  \ containing the number of characters used by `ocr`, from the
+  \ address pointed by `ocr-charset`. By default it contais 95,
+  \ the number of printable ASCII characters in the ROM
+  \ character set.
   \
   \ The configuration of `ocr`, including this variable, can be
   \ changed by `ascii-ocr` and `udg-ocr`.
@@ -155,13 +157,14 @@ code ocr ( col line -- n )
   \ ocr ( col row -- c | 0 )
   \
   \ Try to recognize the character printed at the given cursor
-  \ coordinates, using the font whose first printable character
-  \ is pointed by the variable `ocr-charset`. The variable
-  \ `ocr-chars` holds the number of characters in the set, and
-  \ `ocr-first` holds the code of its first character.  If
-  \ succesful, return the character number _c_ according to the
-  \ said variables. Otherwise return 0. Inverse characters are
-  \ not recognized.
+  \ coordinates, using the character set whose first printable
+  \ character is pointed by the variable `ocr-charset`. The
+  \ character variable `ocr-chars` contains the number of
+  \ characters in the set, and its counterpart `ocr-first`
+  \ contains the code of its first character.  If succesful,
+  \ return the character number _c_ according to the said
+  \ variables. Otherwise return 0.  Inverse characters are not
+  \ recognized.
   \
   \ Note: The name `ocr` stands for "Optical Character
   \ Recognition".
@@ -185,7 +188,8 @@ code ocr ( col line -- n )
   \ Set `ocr` to work with the current ASCII charset, pointed
   \ by `os-chars`.
   \
-  \ See also: `udg-ocr`, `set-font`.
+  \ See also: `ocr-charset`, `ocr-first`, `ocr-chars`,
+  \ `udg-ocr`, `set-font`.
   \
   \ }doc
 
@@ -199,9 +203,10 @@ code ocr ( col line -- n )
   \ udg-ocr ( n -- )
   \
   \ Set `ocr` to work with the first _n_ chars of the current
-  \ UDG set.
+  \ UDG set, pointed by `os-udg`.
   \
-  \ See also: `ascii-ocr`, `set-udg`.
+  \ See also: `ocr-charset`, `ocr-first`, `ocr-chars`,
+  \ `ascii-ocr`, `set-udg`.
   \
   \ }doc
 
@@ -237,5 +242,9 @@ code ocr ( col line -- n )
   \ included in the assembler by default.
   \
   \ 2017-05-09: Remove `jppushhl,`.
+  \
+  \ 2017-05-20: Improve documentation. Create `ocr-first` and
+  \ `ocr-chars` with `create` instead of `here` and `constant`;
+  \ `create` is a bit faster at run-time.
 
   \ vim: filetype=soloforth

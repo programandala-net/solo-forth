@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705111626
+  \ Last modified: 201705201435
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,6 +27,71 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( create-bench )
+
+need bench{ need }bench.
+
+create try-create 256 c,
+
+here 256 c, constant try-constant
+
+: run ( u -- )
+  cr ." Results for " dup u. ." iterations"
+  dup cr ." create   :"
+  bench{ 0 ?do try-create drop loop }bench.
+      cr ." constant : " 
+  bench{ 0 ?do try-constant drop loop }bench. cr ;
+
+  \ 2017-05-20:
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- ---------------------------------
+  \       create constant
+  \       ------ --------
+  \ 00100      0        1
+  \ 01000      5        6
+  \ 10000     48       56
+  \ 65535    313      363
+
+( .2x1-udg-bench )
+
+need .2x1-udg need .2x1-udg-fast need bench{ need }bench.
+
+: .2x1-udg-old ( c -- ) dup emit-udg 1+ emit-udg ;
+
+: run ( u -- )
+  cls 0 1 at-xy ." Results for " dup u. ." iterations"
+  dup 0 2 at-xy ." .2x1-udg-old :" cr space
+  bench{ 0 ?do 128 .2x1-udg-old home loop }bench
+  0 3 at-xy bench.
+  dup 0 4 at-xy cr ." .2x1-udg :" cr space
+  bench{ 0 ?do 128 .2x1-udg home loop }bench
+  0 5 at-xy bench.
+      0 6 at-xy cr ." .2x1-udg-fast :" cr space
+  bench{ 0 ?do 128 .2x1-udg-fast home loop }bench
+  0 7 at-xy bench. ;
+
+  \ 2017-05-20:
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- ---------------------------------
+  \       .2x1-udg-old .2x1-udg  .2x1-udg-fast
+  \       ------------ --------  -------------
+  \ 00100           10       10             10
+  \ 01000           99       97             97
+  \ 10000          989      968            965
+  \ 65535         6485     6345           6323
+
+  \ Notes:
+  \
+  \ `.2x1-udg` = Wrapper word. The low-level factor is a code
+  \ word that uses a loop to display the two columns of the UDG
+  \ block.
+  \
+  \ `.2x1-udg-fast` = Wrapper word. The low-level factor is a
+  \ code word that uses duplicated code instead of a loop, to
+  \ display the two columns of the UDG block.
 
 ( sqrt-bench )
 
@@ -2722,5 +2787,7 @@ need bench{ need }bench.
   \ 2017-05-10: Improve some benchmark names.
   \
   \ 2017-05-11: Improve some benchmark names.
+  \
+  \ 2017-05-20: Add `.2x1-udg-bench` and `create-bench`.
 
   \ vim: filetype=soloforth
