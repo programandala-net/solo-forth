@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705091223
+  \ Last modified: 201705211618
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -136,7 +136,7 @@ here anon> ! 3 cells allot
 
   \ doc{
   \
-  \ udg-group ( c -- )
+  \ udg-group ( width height c -- )
   \
   \ Parse a group of UDG definitions organized in _width_
   \ columns and _height_ rows, and store them starting from UDG
@@ -179,8 +179,9 @@ create udg-blank '.' c,  create udg-dot 'X' c,
   \
   \ udg-blank  ( -- ca )
   \
-  \ A character variable that holds the characted used by
-  \ `grid` and `g` as a grid blank. By default it's '.'.
+  \ A character variable. _ca_ is the address of a byte
+  \ containing character used by `grid` and `g` as a grid
+  \ blank. By default it's '.'.
   \
   \ See also: `udg-dot`, `udg-scan>binary`.
   \
@@ -190,8 +191,9 @@ create udg-blank '.' c,  create udg-dot 'X' c,
   \
   \ udg-dot  ( -- ca )
   \
-  \ A character variable that holds the characted used by
-  \ `grid` and `g` as a grid blank. By default it's 'X'.
+  \ A character variable. _ca_ is the address of a byte
+  \ containing the character used by `grid` and `g` as a grid
+  \ blank. By default it's 'X'.
   \
   \ See also: `udg-blank`, `udg-scan>binary`.
   \
@@ -222,6 +224,7 @@ create udg-blank '.' c,  create udg-dot 'X' c,
   \ udg-scan>number? ( ca len -- n true | false )
   \
   \ Is UDG scan string _ca len_ a valid binary number?
+  \ If so, return _n_ and _true_; else return _false_.
   \ The string is processed by `udg-scan>binary` first.
   \
   \ See also: `udg-scan>binary`, `udg-scan>number`.
@@ -237,7 +240,7 @@ create udg-blank '.' c,  create udg-dot 'X' c,
   \
   \ If UDG scan string _ca len_, after being processed by
   \ `udg-scan>binary`, is a valid binary number, return the
-  \ result _n_.  Otherwise throw exception #-290 (invalid UDG
+  \ result _n_.  Otherwise `throw` exception #-290 (invalid UDG
   \ scan).
   \
   \ See also: `udg-scan>number?`, `udg-block`, `udg-group`.
@@ -685,6 +688,186 @@ unused code udg-at-xy-display ( x y c -- )
   \
   \ }doc
 
+( .nx1-udg )
+
+  \ XXX UNDER DEVELOPMENT
+
+need assembler need os-attr-p need udg> need xy>scra
+
+code (.nx1-udg ( a1 a2 -- )
+
+exx, h pop, d pop, 2 c ld#, rbegin h push, 8 b ld#,
+  \   exx                            ; preserve the Forth IP
+  \   pop hl                         ; screen address
+  \                                  ; of the top left coordinates
+  \                                  ; of the UDG block
+  \   pop de                         ; address of the first UDG
+  \   ld c,2                         ; columns
+  \ dot_nx1_udg.column:
+  \   push hl
+  \   ld b,8                         ; character scans
+
+rbegin d ftap, a m ld, d incp, h inc, rstep
+  \ dot_nx1_udg.char:
+  \   ld a,(de)
+  \   ld (hl),a
+  \   inc de
+  \   inc h                          ; HL = screen address of the next scan
+  \   djnz dot_nx1_udg.char
+
+h pop, h incp, c dec, z? runtil
+  \   pop hl                         ; current screen address
+  \   inc hl                         ; next column
+  \   dec c                          ; decrement column count
+  \   jr nz,dot_nx1_udg.column       ; jump if not zero
+
+h decp, h a ld, 18 and#, a sra, a sra, a sra, 58 add#, a h ld,
+  \   dec hl                         ; screen address of the second column
+  \   ld a,h
+  \   and $18
+  \   sra a
+  \   sra a
+  \   sra a
+  \   add a,$58
+  \   ld h,a                         ; HL = corresponding attribute address
+
+os-attr-p fta, a m ld, h decp, a m ld, exx, jpnext, end-code
+  \   ld a,(sys_attr_p)
+  \   ld (hl),a
+  \   dec hl                         ; previous (left) attribute
+  \   ld (hl),a
+  \   exx                            ; restore the Forth IP
+  \   _jp_next
+
+: .nx1-udg ( c -- ) udg> xy xy>scra (.nx1-udg ;
+
+( .2x1-udg )
+
+  \ XXX UNDER DEVELOPMENT -- Finished, but the speed is just
+  \ 0.99 of the high-level version used in Nuclear Waste
+  \ Invaders.
+
+need assembler need os-attr-p need udg> need xy>scra
+
+unused  \ XXX TMP --
+
+code (.2x1-udg ( a1 a2 -- )
+
+exx, h pop, d pop, 2 c ld#, rbegin h push, 8 b ld#,
+  \   exx                            ; preserve the Forth IP
+  \   pop hl                         ; screen address
+  \                                  ; of the top left coordinates
+  \                                  ; of the UDG block
+  \   pop de                         ; address of the first UDG
+  \   ld c,2                         ; columns
+  \ dot_2x1_udg.column:
+  \   push hl
+  \   ld b,8                         ; character scans
+
+rbegin d ftap, a m ld, d incp, h inc, rstep
+  \ dot_2x1_udg.char:
+  \   ld a,(de)
+  \   ld (hl),a
+  \   inc de
+  \   inc h                          ; HL = screen address of the next scan
+  \   djnz dot_2x1_udg.char
+
+h pop, h incp, c dec, z? runtil
+  \   pop hl                         ; current screen address
+  \   inc hl                         ; next column
+  \   dec c                          ; decrement column count
+  \   jr nz,dot_2x1_udg.column       ; jump if not zero
+
+h decp, h a ld, 18 and#, a sra, a sra, a sra, 58 add#, a h ld,
+  \   dec hl                         ; screen address of the second column
+  \   ld a,h
+  \   and $18
+  \   sra a
+  \   sra a
+  \   sra a
+  \   add a,$58
+  \   ld h,a                         ; HL = corresponding attribute address
+
+os-attr-p fta, a m ld, h decp, a m ld, exx, jpnext, end-code
+  \   ld a,(sys_attr_p)
+  \   ld (hl),a
+  \   dec hl                         ; previous (left) attribute
+  \   ld (hl),a
+  \   exx                            ; restore the Forth IP
+  \   _jp_next
+
+: .2x1-udg ( c -- ) udg> xy xy>scra (.2x1-udg ;
+
+unused - cr .( Data space used by .2x1-udg : ) u.  cr
+  \ XXX TMP --
+  \ XXX REMARK -- 54 B
+
+( .2x1-udg-fast )
+
+  \ XXX UNDER DEVELOPMENT -- Finished, but the speed is just
+  \ 0.97 of the high-level version used in Nuclear Waste
+  \ Invaders.
+
+need assembler need os-attr-p need udg> need xy>scra
+
+unused  \ XXX TMP --
+
+code (.2x1-udg-fast ( a1 a2 -- )
+
+exx, h pop, d pop,
+  \   exx                            ; preserve the Forth IP
+  \   pop hl                         ; screen address
+  \                                  ; of the top left coordinates
+  \                                  ; of the UDG block
+  \   pop de                         ; address of the first UDG
+
+h push, 8 b ld#, rbegin d ftap, a m ld, d incp, h inc, rstep
+  \   push hl
+  \   ld b,8                         ; character scans
+  \ dot_2x1_udg.char1:
+  \   ld a,(de)
+  \   ld (hl),a
+  \   inc de
+  \   inc h                          ; HL = screen address of the next scan
+  \   djnz dot_2x1_udg.char1
+
+h pop, h push,
+  \   pop hl
+  \   push hl
+h incp, 8 b ld#, rbegin d ftap, a m ld, d incp, h inc, rstep
+  \   inc hl
+  \   ld b,8                         ; character scans
+  \ dot_2x1_udg.char2:
+  \   ld a,(de)
+  \   ld (hl),a
+  \   inc de
+  \   inc h                          ; HL = screen address of the next scan
+  \   djnz dot_2x1_udg.char2
+
+h pop, h a ld, 18 and#, a sra, a sra, a sra, 58 add#, a h ld,
+  \   pop hl                         ; screen address of the first column
+  \   ld a,h
+  \   and $18
+  \   sra a
+  \   sra a
+  \   sra a
+  \   add a,$58
+  \   ld h,a                         ; HL = corresponding attribute address
+
+os-attr-p fta, a m ld, h decp, a m ld, exx, jpnext, end-code
+  \   ld a,(sys_attr_p)
+  \   ld (hl),a
+  \   inc hl                         ; next attribute
+  \   ld (hl),a
+  \   exx                            ; restore the Forth IP
+  \   _jp_next
+
+: .2x1-udg-fast ( c -- ) udg> xy xy>scra (.2x1-udg-fast ;
+
+unused - cr .( Data space used by .2x1-udg-fast : ) u.  cr
+  \ XXX TMP --
+  \ XXX REMARK -- 58 B
+
   \ ===========================================================
   \ Change log
 
@@ -785,9 +968,12 @@ unused code udg-at-xy-display ( x y c -- )
   \
   \ 2017-04-26: Fix needing of `udg:`.
   \
-  \ 2017-05-08: Update documentation: `load-app` was renamed
-  \ to `load-program`.
+  \ 2017-05-08: Update documentation: `load-app` was renamed to
+  \ `load-program`.
   \
   \ 2017-05-09: Remove `jppushhl,`
+  \
+  \ 2017-05-19: Fix and improve documentation. Add `.2x1-udg`
+  \ and draft of `.nx1-udg`.
 
   \ vim: filetype=soloforth

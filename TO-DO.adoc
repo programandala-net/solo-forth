@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201705202220
+// Last modified 201705211616
 
 // Assembler {{{1
 == Assembler ==
@@ -466,22 +466,15 @@ Make `wltype` simpler and faster.
 
 Write `wtype`.
 
-.2017-05-06:
-
-NOTE: Milestone: 0.14.0
-
-Select the `gigatype` style with a character variable, not with a
-parameter.
-
 .2017-05-05:
 
 Write the definitive version of `u.` in the library. The current one
 is temporary, for debugging.
 
-.2017-04-21:
+.2017-04-21, 2017-05-20:
 
-Replace the current `mode-64` with the improved code written by Einar
-Saukas, "64#4". Import its four extra fonts.
+Finish `mode-64s`, the port of "64#4", the the driver written by Einar
+Saukas.  Add its four extra fonts to the library.
 
 .2017-04-21:
 
@@ -495,19 +488,19 @@ Update `(at-xy` and its documentation.
 
 .2017-04-20:
 
-Write `mode32udg-emit` to use the full UDG 0..255 as a font, after the
-method used by `mode32iso-emit`.
+Write `mode-32udg-emit` to use the full UDG 0..255 as a font, after the
+method used by `mode-32iso-emit`.
 
 .2017-04-20:
 
 Change the order of the cursor coordinates embedded in strings, after
-the Forth convention? This is not possible with `mode32-emit`, which
+the Forth convention? This is not possible with `mode-32-emit`, which
 uses the ROM routine.
 
 .2017-04-19:
 
 Convert the ISO standard 64-cpl fonts included in mikroprint to the
-format used by the current implementation of `mode64`.
+format used by the current implementation of `mode-64`.
 
 .2017-04-17:
 
@@ -541,8 +534,8 @@ Add '$' prefix to `hex.`, '%' to `bin.` and '#' to `dec.`.
 
 .2017-02-04:
 
-Rename `mode32-emit` to `mode32-rom-emit` and write an alternative
-word `mode32-iso-emit` to print characters 128..255 also from the
+Rename `mode-32-emit` to `mode-32rom-emit` and write an alternative
+word `mode-32iso-emit` to print characters 128..255 also from the
 current font.  This will make it possible to use 8-bit character sets.
 
 .2017-01-18, 2017-02-04:
@@ -602,26 +595,23 @@ Make `type` deferred, to be configured as `fartype` or other when needed.
 
 .2016-11-21:
 
-Add support for more control characters to alternative version of `mode64`.
+Add support for more control characters to alternative version of
+`mode-64`.
 
 .2016-11-21:
 
-In mode 32, one `cr` does nothing when the cursor is at the end of a line.
-That is the default behaviour in Sinclair BASIC. The driver of `mode42` works
-the same way.  But the driver of `mode64` always prints the carriage return,
-increasing the line number. Somehow the behaviour must be unified in all
-modes. The behaviour of `mode64` seems more logical.
+In `mode-32`, one `cr` does nothing when the cursor is at the end of a
+line.  That is the default behaviour in Sinclair BASIC. The driver of
+`mode-42` works the same way.  But the driver of `mode-64` always
+prints the carriage return, increasing the line number. Somehow the
+behaviour must be unified in all modes. The behaviour of `mode-64`
+seems more logical.
 
 .2016-10-28:
 
 NOTE: Milestone: 0.14.0
 
 Simplify `u.r`.
-
-.2016-08-11:
-
-Remove the 64 cpl font from the library (4 blocks), and use the binary file
-(336 bytes) instead? Or provide the file as an alternative.
 
 .2015-09-05:
 
@@ -1243,9 +1233,12 @@ code on-blue  ( b1 -- b2 )
   h pop, h a ld, blue papery add#, pusha jp,  end-code
 ----
 
-.2017-02-04:
+.2017-02-04, 2017-05-21:
 
-Document the usage of UDG codes greater than 255. `emit-udg` admits them.
+NOTE: Milestone: 0.14.0
+
+Improve the documentation about the usage of UDG codes greater than
+255.  `emit-udg` admits them.
 
 .2017-02-02:
 
