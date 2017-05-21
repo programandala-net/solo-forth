@@ -1,9 +1,9 @@
-  \ flow.conditions.zero.fs
+  \ flow.conditionals.zero.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705091709
+  \ Last modified: 201705211931
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -132,5 +132,7 @@ code 0exit ( f -- ) ( R: nest-sys | -- nest-sys | )
   \ 2017-05-05: Improve documentation.
   \
   \ 2017-05-09: Fix typo.
+  \
+  \ 2017-05-21: Fix typo.
 
   \ vim: filetype=soloforth

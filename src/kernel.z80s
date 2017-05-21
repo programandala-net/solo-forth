@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705151258
+; Last modified: 201705211924
 
 include version.z80s
 
@@ -4186,13 +4186,18 @@ mode_32_emit.a
 ;
 ; emit-udg ( c|n -- )
 ;
-; Display the UDG _c|n_ from the current UDG set, which is pointed
-; by `os-udg`.
+; Display the UDG _c|n_ from the current UDG set, which is
+; pointed by `os-udg`.
 ;
 ; NOTE: The usual parameter is _c_ (0..255), but no check is
 ; done: If a 16-bit value _n_ is received instead, it will be
 ; used to calculate the address of the corresponding character
 ; bitmap in the UDG set.
+;
+; WARNING: ``emit-udg`` gets the cursor position and the current
+; screen address from the OS variables. Therefore, it works only
+; in display modes that use the ROM printing routines and keep
+; those variables updated, like `mode-32` and `mode-32iso`.
 ;
 ; See also: `set-udg`, `emit`, `mode-32-emit`, `last-font-char`.
 ;
