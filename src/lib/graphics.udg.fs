@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705211618
+  \ Last modified: 201705211923
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -121,8 +121,8 @@ here anon> ! 3 cells allot
   3 set-anon
     \ Set the anonymous local variables:
     \   [ 0 ] anon = _c_
-    \   [ 1 ] anon = height
-    \   [ 2 ] anon = width
+    \   [ 1 ] anon = _height_
+    \   [ 2 ] anon = _width_
   [ 1 ] anon @ /udg* 0 ?do
     [ 2 ] anon @ 0 ?do
       parse-name-thru udg-scan>number
@@ -285,8 +285,8 @@ here anon> ! 3 cells allot
   3 set-anon
     \ Set the anonymous local variables:
     \   [ 0 ] anon = _c_
-    \   [ 1 ] anon = height
-    \   [ 2 ] anon = width
+    \   [ 1 ] anon = _height_
+    \   [ 2 ] anon = _width_
   [ 1 ] anon @ /udg* 0 ?do parse-name-thru ( ca len )
     [ 2 ] anon @ 0 ?do
       over udg-width udg-scan>number ( ca len b )
@@ -334,6 +334,72 @@ here anon> ! 3 cells allot
   \ XX..XXXXXX.XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
   \ .XXXXXX..XXXXXX..XXXXXX..XXXXXX..XXXXXX.
   \ ..XXXX....XXXX....XXXX....XXXX....XXXX..
+  \ ----
+
+  \ See also: `csprite`.
+  \
+  \ }doc
+
+( csprite )
+
+need udg-scan>number need /udg*
+need udg-width need parse-name-thru need j need anon
+
+here anon> ! 3 cells allot
+
+: csprite ( width height a "name..." -- )
+  3 set-anon
+    \ Set the anonymous local variables:
+    \   [ 0 ] anon = _a_
+    \   [ 1 ] anon = _height_
+    \   [ 2 ] anon = _width_
+  [ 1 ] anon @ /udg* 0 ?do parse-name-thru ( ca len )
+    [ 2 ] anon @ 0 ?do
+      over udg-width udg-scan>number ( ca len b )
+      j [ 2 ] anon @ * i + [ 0 ] anon @ + c! udg-width /string
+    loop 2drop
+  loop ;
+
+  \ doc{
+  \
+  \ csprite ( width height a "name..." -- )
+  \
+  \ Parse a character sprite and store it at _a_. _width_ and
+  \ _height_ are in characters.  The maximum _width_ is 7
+  \ (imposed by the size of Forth source blocks). _height_ has
+  \ no maximum, as the UDG block can ocuppy more than one Forth
+  \ block (provided the Forth block has no index line, i.e.
+  \ `load-program` is used to load the source).
+  \
+  \ The scans can be formed by binary digits, by the characters
+  \ hold in `udg-blank` and `udg-dot`, or any combination of
+  \ both notations.
+  \
+  \ The difference with `udg-block` is ``csprite`` stores the
+  \ graphic by whole scans, not by characters.
+  \
+  \ Usage example:
+
+  \ ----
+  \ create ship-sprite 3 2 * /udg* allot
+  \ 3 2 ship-sprite csprite
+  \
+  \ ..XX.X.X........X.X.XX..
+  \ ..XXX.X.X......X.X.XXX..
+  \ ..XX.....X....X.....XX..
+  \ ...XX.....XXXX.....XX...
+  \ ....XX.....XX.....XX....
+  \ .....XXX........XXX.....
+  \ ......XX........XX......
+  \ .......XX......XX.......
+  \ .......XX......XX.......
+  \ ........XX....XX........
+  \ ........XX....XX........
+  \ X.........XXXX.........X
+  \ X........XXXXXX........X
+  \ .XXXXXXXXXXXXXXXXXXXXXX.
+  \ ..........XXXX..........
+  \ ...........XX...........
   \ ----
 
   \ }doc
@@ -868,6 +934,43 @@ unused - cr .( Data space used by .2x1-udg-fast : ) u.  cr
   \ XXX TMP --
   \ XXX REMARK -- 58 B
 
+( .udga )
+
+  \ 2017-05-21
+  \ XXX UNDER DEVELOPMENT
+
+code .udga ( a -- )
+
+d pop, exx,
+  \ pop de
+  \ exx ; save the Forth IP
+  \ ld bc,(sys_s_posn) ; cursor position
+  \
+  \ ld hl,(sys_df_cc) ; current screen address
+
+h push, 8 b ld#, rbegin d ftap, a m ld, d incp, h inc, rstep
+  \   push hl
+  \   ld b,8                         ; character scans
+  \ dot_udga.char:
+  \   ld a,(de)
+  \   ld (hl),a
+  \   inc de
+  \   inc h                          ; HL = screen address of the next scan
+  \   djnz dot_udga.char
+
+  \ ld (sys_df_cc),hl
+exx, jpnext, end-code
+  \ exx ; restore the Forth IP
+  \ _jp_next
+
+  \
+  \ .udga ( a -- )
+  \
+  \ Display the UDG defined at _a_.
+  \
+  \ See also: `emit-udg`.
+  \
+
   \ ===========================================================
   \ Change log
 
@@ -975,5 +1078,7 @@ unused - cr .( Data space used by .2x1-udg-fast : ) u.  cr
   \
   \ 2017-05-19: Fix and improve documentation. Add `.2x1-udg`
   \ and draft of `.nx1-udg`.
+  \
+  \ 2017-05-21: Add draft of `.udga`. Add `csprite`.
 
   \ vim: filetype=soloforth

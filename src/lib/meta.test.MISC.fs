@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705151641
+  \ Last modified: 201705211917
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -22,6 +22,42 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( csprite-test )
+
+need /udg* need csprite
+create ship-sprite 3 2 * /udg* allot  3 2 ship-sprite csprite
+
+..XX.X.X........X.X.XX..
+..XXX.X.X......X.X.XXX..
+..XX.....X....X.....XX..
+...XX.....XXXX.....XX...
+....XX.....XX.....XX....
+.....XXX........XXX.....
+......XX........XX......
+.......XX......XX.......
+.......XX......XX.......
+........XX....XX........
+........XX....XX........ X.........XXXX.........X
+X........XXXXXX........X .XXXXXXXXXXXXXXXXXXXXXX.
+..........XXXX.......... ...........XX........... -->
+
+( csprite-test )
+
+need binary need /udg*
+
+variable sprite-width
+
+: dump-csprite ( width height a -- )
+  rot dup sprite-width ! -rot
+  base @ >r binary
+  -rot /udg* * 0 ?do
+    i sprite-width @ mod 0= if cr then
+    dup i + c@ s>d <# # # # # # # # # #> type
+  loop
+  r> base ! cr ;
+
+: csprite-test ( -- ) 3 2 ship-sprite dump-csprite ;
 
 ( f64-test )
 
@@ -1364,5 +1400,7 @@ blk @ 1+ blk @ 2+ thru
   \ 2017-05-13: Add `wtype-test` and `wltype-test`.
   \
   \ 2017-05-15: Add `f64-test`.
+  \
+  \ 2017-05-21: Add `csprite-test`.
 
   \ vim: filetype=soloforth
