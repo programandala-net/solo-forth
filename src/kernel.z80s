@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705211924
+; Last modified: 201705222111
 
 include version.z80s
 
@@ -3054,7 +3054,7 @@ question_stringer_.enough:
 
 ; ----
 ; : ?do ( -- do-sys )
-;   postpone (?do) >mark  ;  immediate compile-only
+;   postpone (?do) >mark ; immediate compile-only
 ; ----
 
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
@@ -3635,7 +3635,7 @@ to_number.end:
 ;   dpl @ 0<                  \ single-cell number?
 ;   if    d>s r> ?negate  1   \ single-cell number
 ;   else  r> ?dnegate  2      \ double-cell number
-;   then  r> base !  ;        \ restore the radix
+;   then  r> base ! ;         \ restore the radix
 ; ----
 
 ; See also: `>number`, `number-point?`, `skip-sign?`, `dpl`,
@@ -6759,7 +6759,7 @@ do_user:
   db $06
 
 ; ----------------------------------------------
-  _user_variable_header lastblk_,'lastblk'
+  _user_variable_header last_blk_,'lastblk'
 
 ; XXX TODO normal variable?
 
@@ -6768,8 +6768,9 @@ do_user:
 ; lastblk ( -- a )
 ;
 ; A user variable. _a_ is the address of a cell containing the
-; `block` number of the block most recently or loaded (with
-; `load` or `continued`). ``lastblk`` is used by `reload`.
+; `block` number of the block most recently or loaded (e.g. with
+; `load`, `continued` or `load-program`). ``lastblk`` is updated
+; by `(load)` and used by `reload`.
 ;
 ; }doc
 
@@ -10786,7 +10787,7 @@ search.failed:
 
 ; ----
 ; : sliteral ( ca len -- )
-;   postpone slit s,  ; immediate compile-only
+;   postpone slit s, ; immediate compile-only
 ; ----
 
 ; See also: `slit`, `s,`, `csliteral`.
@@ -11134,7 +11135,7 @@ endif
 ;   r> >in !
 ;   r> (source-id) !
 ;   2r> input-buffer 2!
-;   >r  ; compile-only
+;   >r ; compile-only
 ; ----
 
 ; }doc
@@ -13349,13 +13350,14 @@ block.end:
 ; Definition:
 
 ; ----
-; : (load) ( u -- ) block>source interpret ;
+; : (load) ( u -- ) dup lastblk ! block>source interpret ;
 ; ----
 ;
 ; See also: `block>source`, `interpret`.
 ;
 ; }doc
 
+  dw dup_,last_blk_,store_
   dw block_to_source_,interpret_
   dw exit_
 
@@ -13378,8 +13380,7 @@ block.end:
 
 ; ----
 ; : load ( u -- )
-;   dup 0= #-259 ?throw  dup lastblk !
-;   nest-source (load) unnest-source ;
+;   dup 0= #-259 ?throw nest-source (load) unnest-source ;
 ; ----
 
 ; See also: `(load)`, `nest-source`, `unnest-source`,
@@ -13389,7 +13390,6 @@ block.end:
 
   dw dup_,zero_equals_
   _question_throw error.loading_from_screen_0
-  dw dup_,lastblk_,store_
   dw nest_source_,paren_load_,unnest_source_
   dw exit_
 
@@ -13408,7 +13408,7 @@ block.end:
 
 ; ----
 ; : --> ( -- )
-;   ?loading refill 0= #-35 ?throw  ; immediate
+;   ?loading refill 0= #-35 ?throw ; immediate
 ; ----
 
 ; Origin: fig-Forth, Forth-79 (Reference Word Set), Forth-83
@@ -13516,7 +13516,7 @@ block.end:
 
 ; ----
 ; : [undefined] ( "name" -- f )
-;   postpone [defined] 0=  ; immediate
+;   postpone [defined] 0= ; immediate
 ; ----
 
 ; Origin: Forth-2012 (TOOLS EXT).
@@ -13578,7 +13578,7 @@ block.end:
 
 ; ----
 ; : ['] \ Compilation: ( "name" -- )
-;   ' postpone literal  ; immediate
+;   ' postpone literal ; immediate
 ; ----
 
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
@@ -15542,7 +15542,7 @@ throw.end:
 ; : s" \ Compilation:    ( "ccc<quote>" -- )
 ;      \ Interpretation: ( "ccc<quote>" -- ca len )
 ;      \ Run-time:       ( -- ca len )
-;   '"' parse-string  ; immediate
+;   '"' parse-string ; immediate
 ; ----
 
 ; Origin: Forth-94 (CORE, FILE), Forth-2012 (CORE, FILE).
