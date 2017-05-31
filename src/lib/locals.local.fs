@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703181758
+  \ Last modified: 201705220133
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -34,18 +34,17 @@ here ] ( R: a x -- ) 2r> swap ! exit [
   \ Exit point of `local` to restore the value _x_ of variable
   \ _a_.
 
-: local \ Interpretation: ( a -- a )
-        \ Run-time: ( a0 -- ) ( R: a1 -- a0 x pfa a1 )
+: local \ Definition: ( a -- a )
+        \ Run-time:   ( a0 -- ) ( R: a1 -- a0 x a a1 )
           \ a   = address of colon code to be executed
           \       to restore the variable
           \ a0  = address of a variable
-          \ x   = its current value
+          \ x   = the current contents of _a0_
           \ a1  = return address
-          \ pfa = pfa of `restore-local`
-  r> swap              \ save top return address
+  r> swap              \ save return address _a1_
   dup @ 2>r            \ save variable address and value
-  [ dup ] literal >r   \ force exit via the restoration code
-  >r ;                 \ restore top return address
+  [ dup ] literal >r   \ force exit via _a_
+  >r ;                 \ restore return address _a1_
   compile-only
 
   drop \ discard _a_
@@ -57,14 +56,18 @@ here ] ( R: a x -- ) 2r> swap ! exit [
   \ Save the value of variable _a_, which will be restored at
   \ the end of the current definition.
   \
+  \ ``local`` is a `compile-only` word.
+  \
   \ Usage example:
 
   \ ----
   \ variable v
   \ 1 v !  v ?  \ default value
+  \
   \ : test ( -- )
   \   v local
   \   v ?  1887 v !  v ? ;
+  \
   \ v ?  \ default value
   \ ----
   \
@@ -88,14 +91,14 @@ here ] ( R: a x -- ) 2r> swap ! exit [
   \ 2016-12-30: Remove the old, unused, first version.
   \
   \ 2017-03-18: Improve the code: `:noname` and `>body` are not
-  \ needed anymore. 
+  \ needed anymore.
   \
   \ The previous version used the following memory:
 
   \   Including requirements:
   \     Data space:  70 B
   \     Name space:  32 B
-  \     Total:      102 B 
+  \     Total:      102 B
   \   Not including requirements:
   \     Data space:  34 B
   \     Name space:  10 B
@@ -108,5 +111,7 @@ here ] ( R: a x -- ) 2r> swap ! exit [
   \     Total:      41 B
 
   \ Improve documentation.
+  \
+  \ 2017-05-22: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -11,12 +11,12 @@
   \ ===========================================================
   \ Description
 
-  \ A 42 CPL display mode.
+  \ A 42-cpl display mode.
 
   \ ===========================================================
   \ Authors
 
-  \ Author of the 42 cpl printing routine: Ricardo Serral Wigge.
+  \ Author of the 42-cpl printing routine: Ricardo Serral Wigge.
   \ Published on Microhobby, issue 66 (1986-02), page 24:
   \ http://microhobby.org/numero066.htm
   \ http://microhobby.speccy.cz/mhf/066/MH066_24.jpg

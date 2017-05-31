@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705151558
+  \ Last modified: 201705152138
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -113,7 +113,6 @@ create (mode-64o-output_ ( -- a ) asm
   rthen
 
   \ getcol:
-
 
   FE cp#, nz? rif b a ld, #64 cp#, nc? rif #63 a ld#, rthen
 

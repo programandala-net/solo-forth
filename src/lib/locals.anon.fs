@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071836
+  \ Last modified: 201705220117
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -64,12 +64,14 @@ variable anon> ( -- a )
   \ Compilation:
   \
   \ Compile a reference to cell _n_ (0 index) of the buffer
-  \ pointed by `anon>`.
+  \ pointed by `anon>` and initialized by `set-anon`.
   \
   \ Run-time:
-  \ 
+  \
   \ Return address _a_ of cell _n_ (0 index) of the buffer that
   \ was pointed by `anon>` during the compilation.
+  \
+  \ See `set-anon` for a usage example.
   \
   \ See also: `arguments`, `local`.
   \
@@ -80,7 +82,7 @@ variable anon> ( -- a )
 
   \ doc{
   \
-  \ set-anon ( x[n-1]..x[0] n a -- )
+  \ set-anon ( x[n-1]..x[0] n -- )
   \
   \ Store the given _n_ cells into the buffer pointed by
   \ `anon>`, which will be accessed by `anon`.
@@ -92,15 +94,15 @@ variable anon> ( -- a )
   \
   \ : test ( x4 x3 x2 x1 x0 -- )
   \   5 set-anon
-  \   [ 0 ] anon ?     \ display _x5_
+  \   [ 0 ] anon ?     \ display _x0_
   \   123 [ 0 ] anon !
   \   [ 0 ] anon ?     \ display 123
-  \   [ 2 ] anon ?     \ display _x3_
+  \   [ 2 ] anon ?     \ display _x2_
   \   555 [ 2 ] anon !
   \   [ 2 ] anon ?     \ display 555
   \   ;
   \ ----
-  
+
   \ }doc
 
   \ ===========================================================
@@ -128,5 +130,8 @@ variable anon> ( -- a )
   \ 2017-05-05: Improve documentation.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2017-05-22: Fix usage example of `set-anon`. Improve
+  \ documentation.
 
   \ vim: filetype=soloforth

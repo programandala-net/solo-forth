@@ -3,13 +3,13 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705151251
+  \ Last modified: 201705152043
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ The default 32 CPL display mode.
+  \ The default 32-cpl display mode.
 
   \ ===========================================================
   \ Author
@@ -55,7 +55,7 @@ variable mode-32-font  rom-font bl 8 * + mode-32-font !
   \
   \ mode-32 ( -- )
   \
-  \ Set the default 32 CPL display mode. Usually this is not
+  \ Set the default 32-cpl display mode. Usually this is not
   \ needed by the application, except when any other mode is
   \ used, e.g.  `mode-32iso`, `mode-42` or `mode-64`.
   \
