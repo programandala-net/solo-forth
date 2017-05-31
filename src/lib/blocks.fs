@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705080055
+  \ Last modified: 201705222120
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -38,7 +38,7 @@
   \
   \ ``?-->`` is an `immediate` word.
   \
-  \ See also: `-->`.
+  \ See also: `-->`, `?(`, `?\`.
   \
   \ }doc
 
@@ -245,9 +245,9 @@ variable loading-program
   \
   \ loading-program ( -- a )
   \
-  \ _a_ is the address of a cell containing a flag: Is an
-  \ application being loaded?  This flag is modified by
-  \ `load-program` and `end-program`.
+  \ _a_ is the address of a cell containing a flag: Is a
+  \ program being loaded by `load-program`?  This flag is
+  \ modified by `load-program` and `end-program`.
   \
   \ }doc
 
@@ -270,11 +270,38 @@ variable loading-program
   \                      loop  end-program ; ?)
   \   \ XXX OLD -- incompatible with words that use `refill`
 
-: load-program ( "name" -- )
-  loading-program on  locate blk !
-  begin   loading-program @  blk @ blocks/disk <  and  while
-          blk @ (load) 1 blk +!
-  repeat  end-program ; ?)
+: (load-program ( u -- )
+  blk !  loading-program on
+  begin  loading-program @  blk @ blocks/disk <  and
+  while  blk @ (load) 1 blk +!
+  repeat end-program ; ?)
+
+  \ doc{
+  \
+  \ (load-program ( u -- )
+  \
+  \ Load a program, i.e. a set of blocks that are loaded as a
+  \ whole. The blocks of a program don't have block headers.
+  \ Therefore programs can not have internal requisites, i.e.
+  \ they use `need` only to load from the library, which must
+  \ be before the blocks of the program on the disk or disks.
+  \
+  \ Programs don't need `-->` or any similar word to control
+  \ the loading of blocks.  The loading starts from block _u_
+  \ and continues until the last block of the disk or until
+  \ `end-program` is executed.
+  \
+  \ ``(load-program`` is a factor of `load-program`.
+  \ ``(load-program`` can be used to resume the `load-program`
+  \ after an error, provided the code of block where the error
+  \ happened (`lastblk`) is not the continuation of the
+  \ previous block.
+  \
+  \ See also: `loading-program`.
+  \
+  \ }doc
+
+: load-program ( "name" -- ) locate (load-program ;
 
   \ doc{
   \
@@ -293,7 +320,7 @@ variable loading-program
   \ by spaces), and continues until the last block of the disk
   \ or until `end-program` is executed.
   \
-  \ See also: `loading-program`.
+  \ See also: `loading-program`, `(load-program`.
   \
   \ }doc
 
@@ -340,5 +367,9 @@ variable loading-program
   \
   \ 2017-05-08: Rename `load-app` to `load-program`, and so the
   \ related words. Improve documentation.
+  \
+  \ 2017-05-22: Factor `load-program` into `(load-program`, to
+  \ make it possible to continue loading from a block, in case
+  \ of error. Improve documentation.
 
   \ vim: filetype=soloforth
