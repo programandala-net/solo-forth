@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201705151452
+# Last modified: 201707221955
 
 # ==============================================================
 # Author
@@ -201,7 +201,7 @@ cleantmp:
 
 .PHONY: cleandoc
 cleandoc:
-	-rm -f doc/*.html doc/*.pdf tmp/doc.*
+	-rm -f doc/*.html doc/*.pdf doc/*.docbook doc/*.epub tmp/doc.* 
 
 .PHONY: doc
 doc: gplusdosdoc plus3dosdoc trdosdoc
@@ -787,6 +787,15 @@ backgrounds/current.scr: backgrounds/current.pbm
 %.docbook: %.adoc
 	asciidoctor --backend=docbook --out-file=$@ $<
 
+%.epub: %.docbook
+	pandoc --output=$@ -f docbook -t epub $<
+
+# XXX FIXME -- Pandoc does not preserve the HTML anchor ids.
+# Therefore the links are useless.
+
+# XXX OLD
+# dbtoepub --output=$@ $<
+
 # ----------------------------------------------
 # Documentation for G+DOS
 
@@ -807,6 +816,12 @@ tmp/doc.gplusdos.manual_skeleton.adoc: \
 	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
 	sed -e "s/%DOS%/G+DOS/" -e "s/%VERSION%/$${version}/" $< > $@
 
+# Preserve the links in the DocBook source by removing the
+# enclosing <literal> tags:
+
+doc/gplusdos_solo_forth_manual.docbook: tmp/doc.gplusdos.manual.docbook
+	sed -e "s/<literal><link/<link/g" -e "s/<\/link><\/literal>/<\/link>/g" $< > $@
+
 tmp/doc.gplusdos.manual.adoc: \
 	tmp/doc.gplusdos.manual_skeleton.adoc \
 	src/doc/stack_notation.adoc \
@@ -815,8 +830,24 @@ tmp/doc.gplusdos.manual.adoc: \
 	tmp/doc.gplusdos.glossary.adoc
 	cat $^ > $@
 
+doc/gplusdos_solo_forth_manual.epub: doc/gplusdos_solo_forth_manual.docbook
+	pandoc --output=$@ -f docbook -t epub $<
+
+# XXX OLD
+# dbtoepub --output=$@ $<
+
+# /usr/local/lib/ruby/2.3.0/rubygems/core_ext/kernel_require.rb:55:in `require': cannot load such file -- dbtoepub/docbook (LoadError)
+#         from /usr/local/lib/ruby/2.3.0/rubygems/core_ext/kernel_require.rb:55:in `require'
+#         from /usr/bin/dbtoepub:24:in `<main>'
+
 .PHONY: gplusdosdoc
-gplusdosdoc: doc/gplusdos_solo_forth_manual.html doc/gplusdos_solo_forth_manual.pdf
+gplusdosdoc: \
+	doc/gplusdos_solo_forth_manual.html \
+	doc/gplusdos_solo_forth_manual.pdf
+
+# XXX TMP -- Experimental:
+.PHONY: epub
+epub: doc/gplusdos_solo_forth_manual.epub
 
 # ----------------------------------------------
 # Documentation for +3DOS
@@ -1103,7 +1134,7 @@ oldbackup:
 # integrated into the library.
 #
 # 2017-05-15: Add 64-cpl fonts from:
-#
+
 # 	64#4 - 4x8 FONT DRIVER FOR 64 COLUMNS (c) 2007, 2011
 # 	Original by Andrew Owen (657 bytes)
 # 	Optimized by Crisis (602 bytes)
@@ -1111,3 +1142,5 @@ oldbackup:
 # 	https://sites.google.com/site/zxgraph/home/einar-saukas/fonts
 # 	http://www.worldofspectrum.org/infoseekid.cgi?id=0027130
 
+# 2017-07-22: Add DocBook and EPUB experimental versions of the
+# manual.

@@ -14,6 +14,8 @@ _meta/
 # Ignore the documentation:
 doc/*.html
 doc/*.pdf
+doc/*.docbook
+doc/*.epub
 
 # Ignore some files which are not ready yet:
 bin/fonts/mini.f64
