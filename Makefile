@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201707221955
+# Last modified: 201707222010
 
 # ==============================================================
 # Author
@@ -790,6 +790,12 @@ backgrounds/current.scr: backgrounds/current.pbm
 %.epub: %.docbook
 	pandoc --output=$@ -f docbook -t epub $<
 
+%.html.epub: %.html
+	pandoc --output=$@ -f html -t epub $<
+
+%.docbook.epub: %.docbook
+	pandoc --output=$@ -f docbook -t epub $<
+
 # XXX FIXME -- Pandoc does not preserve the HTML anchor ids.
 # Therefore the links are useless.
 
@@ -830,8 +836,8 @@ tmp/doc.gplusdos.manual.adoc: \
 	tmp/doc.gplusdos.glossary.adoc
 	cat $^ > $@
 
-doc/gplusdos_solo_forth_manual.epub: doc/gplusdos_solo_forth_manual.docbook
-	pandoc --output=$@ -f docbook -t epub $<
+# doc/gplusdos_solo_forth_manual.epub: doc/gplusdos_solo_forth_manual.docbook
+# 	pandoc --output=$@ -f docbook -t epub $<
 
 # XXX OLD
 # dbtoepub --output=$@ $<
@@ -847,7 +853,9 @@ gplusdosdoc: \
 
 # XXX TMP -- Experimental:
 .PHONY: epub
-epub: doc/gplusdos_solo_forth_manual.epub
+epub: \
+	doc/gplusdos_solo_forth_manual.html.epub \
+	doc/gplusdos_solo_forth_manual.docbook.epub
 
 # ----------------------------------------------
 # Documentation for +3DOS
