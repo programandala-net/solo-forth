@@ -2,9 +2,8 @@
 
 \ pbm2scr
 
-: version  s" 0.3.1+201612302009"  ;
-
-\ Last modified: 201612302009
+: version  s" 0.4.0+201707261003"  ;
+\ See change log at the end of the file
 
 \ ==============================================================
 \ Description
@@ -16,7 +15,7 @@
 \ http://programandala.net/en.program.pbm2scr.html
 
 \ This program is written in Forth (http://forth-standard.org)
-\ with Gforth (http://gnu.org/software/gforth/).
+\ with Gforth 0.7.9 (http://gnu.org/software/gforth/).
 
 \ ==============================================================
 \ Author and license
@@ -65,14 +64,9 @@
 \ symbolic link instead, or a different target directory.
 
 \ ==============================================================
-\ History
-
-\ See at the end of the file.
-
-\ ==============================================================
 \ Requirements
 
-forth definitions
+only forth definitions
 
 \ ----------------------------------------------
 \ From the Galope library
@@ -97,6 +91,19 @@ forth definitions
   -1 +loop  ( ca1 ca1' )  \ final raw return values
   over -  ;
   \ Remove the file extension of a filename.
+
+[undefined] s+ [if]
+
+: s+ {: ca1 len1 ca2 len2 -- ca3 len3 :}
+  len1 len2 + allocate throw {: ca3 :}
+  ca1 ca3 len1 move
+  ca2 ca3 len1 + len2 move
+  ca3 len1 len2 + ;
+  \ Create a new string _ca3 len3_ in the heap, containing the
+  \ concatenation of string _ca1 len1_ (first) and string _ca2 len2_
+  \ (second).
+
+[then]
 
 \ ==============================================================
 \ ZX Spectrum screen
@@ -318,7 +325,7 @@ forth definitions
 run bye
 
 \ ==============================================================
-\ History
+\ Change log
 
 \ 2015-04-26: Start. Version A-00.
 \
@@ -346,6 +353,9 @@ run bye
 \ 2016-11-20: Fix comment.
 \
 \ 2016-12-30: Modify the header comments.
+\
+\ 2017-07-26: Add `s+` from the Galope library. This word was in
+\ Gforth 0.7.3, but it's not included in Gforth 0.7.9.
 
 \ vim: textwidth=64
 
