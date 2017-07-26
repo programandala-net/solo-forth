@@ -3,7 +3,8 @@
 \ This file is part of Solo Forth
 \ http://programandala.net/en.program.solo_forth.html
 
-\ Last modified 201702181915
+\ Last modified 201707261841
+\ See change log at the end of the file
 
 \ ==============================================================
 \ Description
@@ -38,18 +39,6 @@
 \ license.  There is no warranty.
 
 \ ==============================================================
-\ History
-
-\ 2016-11-19: Start.
-\
-\ 2016-12-30: Improve the description.
-\
-\ 2017-02-18: Rename from `versionfile2string.fs` to
-\ `version_number.fs`. Improve to return also the real-format version
-\ number, with prerelease and build date. Improve the parsing words
-\ with a defining word.
-
-\ ==============================================================
 
 only forth definitions decimal
 
@@ -63,6 +52,7 @@ variable real-format \ flag
 variable version-major
 variable version-minor
 variable version-patch
+variable version-prerelease-id
 variable version-prerelease
 variable version-build-high
 variable version-build-low
@@ -108,12 +98,13 @@ variable version-build-low
 
 wordlist dup constant parser-wordlist set-current
 
-version-major      symbol version_major:           ( "name1" name2" -- )
-version-minor      symbol version_minor:           ( "name1" name2" -- )
-version-patch      symbol version_patch:           ( "name1" name2" -- )
-version-prerelease symbol version_prerelease:      ( "name1" name2" -- )
-version-build-high symbol version_build_high_part: ( "name1" name2" -- )
-version-build-low  symbol version_build_low_part:  ( "name1" name2" -- )
+version-major         symbol version_major:           ( "name1" name2" -- )
+version-minor         symbol version_minor:           ( "name1" name2" -- )
+version-patch         symbol version_patch:           ( "name1" name2" -- )
+version-prerelease-id symbol version_prerelease_id:   ( "name1" name2" -- )
+version-prerelease    symbol version_prerelease:      ( "name1" name2" -- )
+version-build-high    symbol version_build_high_part: ( "name1" name2" -- )
+version-build-low     symbol version_build_low_part:  ( "name1" name2" -- )
 
 ' \ alias ; ( "ccc<eol>" -- )  immediate
   \ Ignore the comments in the Z80 source file.
@@ -124,3 +115,18 @@ forth-wordlist set-current
 \ Main
 
 real-format !  parser-wordlist >order included  .version bye
+
+\ ==============================================================
+\ Change log
+
+\ 2016-11-19: Start.
+\
+\ 2016-12-30: Improve the description.
+\
+\ 2017-02-18: Rename from `versionfile2string.fs` to
+\ `version_number.fs`. Improve to return also the real-format version
+\ number, with prerelease and build date. Improve the parsing words
+\ with a defining word.
+\
+\ 2017-07-26: Update to the new internal format of the version number.
+

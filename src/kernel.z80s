@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705222119
+; Last modified: 201707261839
 
 include version.z80s
 
@@ -11883,8 +11883,10 @@ quit.begin:
 ; +0:: major (one byte)
 ; +1:: minor (one byte)
 ; +2:: patch (one byte)
-; +3:: pre-release (one cell), zero if none
-; +5:: build (double-cell number)
+; +3:: pre-release identifier (one byte):
+;      'd' for "dev", 'p' for "pre", 'r' for "rc", zero if none
+; +4:: pre-release (one cell)
+; +6:: build (double-cell number)
 
 ; See also: `.version`.
 ;
@@ -11893,6 +11895,7 @@ quit.begin:
   db version_major
   db version_minor
   db version_patch
+  db version_prerelease_id
   dw version_prerelease
   dw version_build_high_part,version_build_low_part
 
@@ -11919,10 +11922,30 @@ quit.begin:
   dw emit_
   dw count_,zero_dot_r_ ; patch
 
-if version_prerelease
+if version_prerelease_id
+
   dw paren_dot_quote_
-  _string "-pre."
-  dw dup_,fetch_,zero_dot_r_ ; prerelease
+
+if version_prerelease_id='d'
+  _string "-dev."
+else
+  if version_prerelease_id='p'
+    _string "-pre."
+  else
+    if version_prerelease_id='r'
+      _string "-rc."
+    else
+      .error "Invalid prerelease identifier"
+    endif
+  endif
+endif
+
+  dw char_plus_,dup_,fetch_,zero_dot_r_ ; prerelease
+
+else
+
+  dw char_plus_
+
 endif
 
   _literal '+'
