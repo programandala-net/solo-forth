@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071838
+  \ Last modified: 201707262116
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -349,7 +349,9 @@ code (>tape-file) ( -- )
   \
   \ }doc
 
-( last-tape-header )
+( last-tape-header display>tape-file tape-file>display )
+
+[unneeded] last-tape-header ?(
 
 need tape-header
 
@@ -407,7 +409,7 @@ last-tape-header 11 + constant last-tape-length ( -- a )
   \
   \ }doc
 
-last-tape-header 13 + constant last-tape-start ( -- a )
+last-tape-header 13 + constant last-tape-start ( -- a ) ?)
 
   \ doc{
   \
@@ -416,6 +418,37 @@ last-tape-header 13 + constant last-tape-start ( -- a )
   \ Address of the file start in `last-tape-header`.
   \
   \ See also: `tape-start`.
+  \
+  \ }doc
+
+[unneeded] display>tape-file ?( need >tape-file
+
+: display>tape-file ( ca len -- )
+  16384 6912 2swap >tape-file ; ?)
+
+  \ doc{
+  \
+  \ display>tape-file ( ca len -- )
+  \
+  \ Write the display memory into a tape file _ca
+  \ len_.
+  \
+  \ See also: `>tape-file`.
+  \
+  \ }doc
+
+[unneeded] tape-file>display ?( need tape-file>
+
+: tape-file>display ( ca len -- ) 16384 0 tape-file> ; ?)
+
+  \ doc{
+  \
+  \ display>tape-file ( ca len -- )
+  \
+  \ Write the display memory into a tape file _ca
+  \ len_.
+  \
+  \ See also: `>tape-file`.
   \
   \ }doc
 
@@ -450,5 +483,8 @@ last-tape-header 13 + constant last-tape-start ( -- a )
   \ fields to constants. Add `last-tape-header` and its fields.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2017-07-26: Add `display>tape-file` and
+  \ `tape-file>display`.
 
   \ vim: filetype=soloforth
