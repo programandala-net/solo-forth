@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705091230
+  \ Last modified: 201707271602
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -59,11 +59,11 @@ create sample  /sample allot
 
   \ Random pixels benchmark
 
-need set-pixel need bench{ need pixels need u% need 3dup
-need 2rdrop
+need set-pixel need bench{ need fast-pixels need u% need 3dup
+need 2rdrop need display>tape-file
 
 256 192 * constant #pixels
-  \ number of pixels of the screen
+  \ Number of pixels of the screen.
 
 defer rng ( n -- 0..n-1 )
 
@@ -78,17 +78,20 @@ defer rng ( n -- 0..n-1 )
 
 variable cycles
 
+: one-cycle? ( -- f ) cycles @ 1 = ;
+
 defer .cycles ( -- )
 
-: (.cycles) ( -- )
-  cycles ?  s" cycles" cycles @ 1 = + type ;
+: ?cycles ( len -- len | len-1 ) cycles @ 1 = + ;
+  \ If the contents of `cycles` is not zero, decrement _len_.
+
+: (.cycles) ( -- ) cycles ?  s" cycles" ?cycles type ;
   \ Display the number of cycles.
 
 : .time ( d -- ) bench. ." per cycle" cr ;
 
-: .result ( ca len d -- )
-  2>r pixels >r  .title cr  r> .pixels cr
-  2r> .time .cycles ;  -->
+: .result ( ca len d -- ) 2>r pixels >r  .title cr  r> .pixels
+                          cr 2r> .time .cycles ; -->
   \ Calculate and display the result of the benchmark.
   \ _d_ is the time in frames; _ca len_ is the title.
 
@@ -113,9 +116,9 @@ defer random-coords ( -- gx gy )
   1 cycles +!  signal  bench{ fill-screen }bench ;
   \ Do one cycle of the benchmark and return its result.
 
-: wait ( -- ) key drop ;
+: save-result ( -- ) s" rng-pix-bench" display>tape-file ;
 
-: finish ( ca len d -- ) 0 border  .result  wait ;
+: finish ( ca len d -- ) 0 border .result save-result ;
   \ Finish the benchmark.
   \ _d_ is the time in frames; _ca len_ is the title.
 
@@ -159,13 +162,13 @@ defer rng-pix-bench ( ca len xt -- )
   \ it's useful a simpler test to show only the pixels set at
   \ the end of the first cycle:
 
-' rng-pix-bench2 ' rng-pix-bench defer!
-  \ default benchmark
+: multi-cycle ( -- )
+  ['] rng-pix-bench2 ['] rng-pix-bench defer! ;
+  \ Set `rng-pix-bench` to multi-cycle mode.
 
 : (.cycle) ( -- ) ." First cycle only" ;
 
-: (rnd-pix-bench1) ( ca len -- )
-  (rnd-pix-bench) .result wait ;
+: (rnd-pix-bench1) ( ca len -- ) (rnd-pix-bench) finish ;
   \ Do a one-cycle RNG benchmark with title _ca len_: Only the
   \ time required to complete one cycle (49152 random pixels).
 
@@ -178,65 +181,130 @@ defer rng-pix-bench ( ca len xt -- )
 
 ( rng-pix-bench )
 
+: single-cycle ( -- )
+  ['] rng-pix-bench1 ['] rng-pix-bench defer! ;
+  \ Set `rng-pix-bench` to single-cycle mode.
+
   \ Versions for 8-bit `rnd`.
 
 : crnd-coords ( -- gx gy ) rng rng 192 min ;
   \ Random graphic coordinates for 8-bit `rnd`.
 
 : crnd-pix-bench2 ( ca len xt -- )
-  ['] (.cycles) ['] crnd-coords init
-  (rnd-pix-bench2) ;
+  ['] (.cycles) ['] crnd-coords init (rnd-pix-bench2) ;
   \ Do a double RNG benchmark for 8-bit `rnd` word _xt_ with
   \ title _ca len_: The time required to complete one cycle
   \ (49152 random pixels), plus the number of cycles required
   \ until the number of pixels doesn't change.
 
 : crnd-pix-bench1 ( ca len xt -- )
-  ['] (.cycle) ['] crnd-coords init
-  (rnd-pix-bench1) ;
+  ['] (.cycle) ['] crnd-coords init (rnd-pix-bench1) ;
   \ Do a one-cycle RNG benchmark for 8-bit `rnd` word _xt_ with
   \ title _ca len_: Only the time required to complete one
   \ cycle (49152 random pixels).
 
+( show-rng )
+
+need tape-file>display
+
+: show-rng ( -- )
+  page ." Rewind tape; press 'q' to quit" key 'q' = ?exit
+  begin s" " tape-file>display key 'q' = until ; -->
+  \ Show the benchmark results, loading the screens from tape.
+
 ( 16-bit-rng-pix-benchs )
 
-  \ Execute all of the 16-bit random pixels benchmarks
+need rng-pix-bench need show-rng
 
-need rng-pix-bench need +thru  2 21 +thru
+       \  <------------------------------>
+  page .( 16-bit random pixels benchmarks) cr
+       .( -------------------------------) cr cr
+  \  <------------------------------>
+  .( The benchmarks that need more) cr
+  .( than one cycle to complete,) cr
+  .( will be executed a second time) cr
+  .( in one-cycle mode.) cr cr
+  .( All the result displays will be) cr
+  .( saved to tape. Use 'show-rng') cr
+  .( to display them later.) cr cr
+  .( The process can not be stopped.) cr cr
+  .( Press 'q' to quit or any other) cr
+  .( key to start.) key page 'q' = ?\ -->
 
-ace-rng-pix-bench
+( 16-bit-rng-pix-benchs )
 
-cgm-5E9B-rng-pix-bench cgm-61BF-rng-pix-bench
-cgm-62DC-rng-pix-bench cgm-6363-rng-pix-bench
-cgm-6594-rng-pix-bench cgm-65E8-rng-pix-bench
+  \ XXX TODO -- Make this unnecessary. Make `rng-pix-bench` do
+  \ the second pass if needed.
 
-dx-rng-pix-bench gf-rng-pix-bench
-jer-rng-pix-bench jml-rng-pix-bench
-lb-rng-pix-bench lina-rng-pix-bench
-mb-rng-pix-bench
+need ace-rng-pix-bench multi-cycle ace-rng-pix-bench
+one-cycle? ?\ single-cycle ace-rng-pix-bench
 
-  \ mm-rng-pix-bench  \ XXX TMP --
+need cgm-5E9B-rng-pix-bench multi-cycle cgm-5E9B-rng-pix-bench
+one-cycle? ?\ single-cycle cgm-5E9B-rng-pix-bench
 
-sf83-rng-pix-bench tt-rng-pix-bench
-vf-rng-pix-bench z88-rng-pix-bench
-zh-rng-pix-bench
+need cgm-61BF-rng-pix-bench multi-cycle cgm-61BF-rng-pix-bench
+one-cycle? ?\ single-cycle cgm-61BF-rng-pix-bench
+
+need cgm-62DC-rng-pix-bench multi-cycle cgm-62DC-rng-pix-bench
+one-cycle? ?\ single-cycle cgm-62DC-rng-pix-bench
+
+need cgm-6363-rng-pix-bench multi-cycle cgm-6363-rng-pix-bench
+one-cycle? ?\ single-cycle cgm-6363-rng-pix-bench
+
+need cgm-6594-rng-pix-bench multi-cycle cgm-6594-rng-pix-bench
+one-cycle? ?\ single-cycle cgm-6594-rng-pix-bench
 
 -->
 
 ( 16-bit-rng-pix-benchs )
 
-  \ Execute single-cycle benchmarks of RNG that need more than
-  \ one cycle to finish:
+need cgm-65E8-rng-pix-bench multi-cycle cgm-65E8-rng-pix-bench
+one-cycle? ?\ single-cycle cgm-65E8-rng-pix-bench
 
-' rng-pix-bench1 ' rng-pix-bench defer!
+need dx-rng-pix-bench multi-cycle dx-rng-pix-bench
+one-cycle? ?\ single-cycle dx-rng-pix-bench
 
-cgm-5E9B-rng-pix-bench cgm-61BF-rng-pix-bench
-cgm-62DC-rng-pix-bench cgm-6363-rng-pix-bench
-cgm-6594-rng-pix-bench cgm-65E8-rng-pix-bench
+need gf-rng-pix-bench multi-cycle gf-rng-pix-bench
+one-cycle? ?\ single-cycle gf-rng-pix-bench
 
-dx-rng-pix-bench  vf-rng-pix-bench
+need jer-rng-pix-bench multi-cycle jer-rng-pix-bench
+one-cycle? ?\ single-cycle jer-rng-pix-bench
 
-( ace-random )
+need jml-rng-pix-bench multi-cycle jml-rng-pix-bench
+one-cycle? ?\ single-cycle jml-rng-pix-bench
+
+need lb-rng-pix-bench multi-cycle lb-rng-pix-bench
+one-cycle? ?\ single-cycle lb-rng-pix-bench
+
+need lina-rng-pix-bench multi-cycle lina-rng-pix-bench
+one-cycle? ?\ single-cycle lina-rng-pix-bench
+
+-->
+
+( 16-bit-rng-pix-benchs )
+
+need mb-rng-pix-bench multi-cycle mb-rng-pix-bench
+one-cycle? ?\ single-cycle mb-rng-pix-bench
+
+need sf83-rng-pix-bench multi-cycle sf83-rng-pix-bench
+one-cycle? ?\ single-cycle sf83-rng-pix-bench
+
+need tt-rng-pix-bench multi-cycle tt-rng-pix-bench
+one-cycle? ?\ single-cycle tt-rng-pix-bench
+
+need vf-rng-pix-bench multi-cycle vf-rng-pix-bench
+one-cycle? ?\ single-cycle vf-rng-pix-bench
+
+need z88-rng-pix-bench multi-cycle z88-rng-pix-bench
+one-cycle? ?\ single-cycle z88-rng-pix-bench
+
+need zh-rng-pix-bench multi-cycle zh-rng-pix-bench
+one-cycle? ?\ single-cycle zh-rng-pix-bench
+
+need xorshift-rng-pix-bench multi-cycle xorshift-rng-pix-bench
+one-cycle? ?\ single-cycle xorshift-rng-pix-bench
+
+( ace-random ace-rng-pix-bench )
 
   \ Credit:
   \
@@ -257,7 +325,7 @@ need rng-pix-bench
   os-seed off  s" Jupiter ACE manual"
   ['] ace-random rng-pix-bench ;
 
-( cgm-5E9B-random )
+( cgm-5E9B-random cgm-5E9B-rng-pix-bench )
 
   \ Random Number Generator by C. G. Montgomery
 
@@ -280,7 +348,7 @@ need rng-pix-bench
   s" C. G. Montgomery $5E9B"
   ['] cgm-5E9B-random rng-pix-bench ;
 
-( cgm-61BF-random )
+( cgm-61BF-random cgm-61BF-rng-pix-bench )
 
   \ Random Number Generator by C. G. Montgomery
 
@@ -303,7 +371,7 @@ need rng-pix-bench
   s" C. G. Montgomery $61BF"
   ['] cgm-61BF-random rng-pix-bench ;
 
-( cgm-62DC-random )
+( cgm-62DC-random cgm-62DC-rng-pix-bench )
 
   \ Random Number Generator by C. G. Montgomery
 
@@ -326,7 +394,7 @@ need rng-pix-bench
   s" C. G. Montgomery $62DC"
   ['] cgm-62DC-random rng-pix-bench ;
 
-( cgm-6363-random )
+( cgm-6363-random cgm-6363-rng-pix-bench )
 
   \ Random Number Generator by C. G. Montgomery
 
@@ -349,7 +417,7 @@ need rng-pix-bench
   s" C. G. Montgomery $6363"
   ['] cgm-6363-random rng-pix-bench ;
 
-( cgm-6594-random )
+( cgm-6594-random cgm-6594-rng-pix-bench )
 
   \ Random Number Generator by C. G. Montgomery
 
@@ -372,7 +440,7 @@ need rng-pix-bench
   s" C. G. Montgomery $6594"
   ['] cgm-6594-random rng-pix-bench ;
 
-( cgm-65E8-random )
+( cgm-65E8-random cgm-65E8-rng-pix-bench )
 
   \ Random Number Generator by C. G. Montgomery
 
@@ -395,7 +463,7 @@ need rng-pix-bench
   s" C. G. Montgomery $65E8"
   ['] cgm-65E8-random rng-pix-bench ;
 
-( dx-random )
+( dx-random dx-rng-pix-bench )
 
   \ Credit:
   \
@@ -417,7 +485,7 @@ need rng-pix-bench
 : dx-rng-pix-bench ( -- )
   s" DX-Forth" ['] dx-random rng-pix-bench ;
 
-( gf-random )
+( gf-random gf-rng-pix-bench )
 
   \ Credit:
   \
@@ -436,7 +504,7 @@ need rng-pix-bench
   os-seed off  s" Gforth"
   ['] gf-random rng-pix-bench ;
 
-( jer-random )
+( jer-random jer-rng-pix-bench )
 
   \ Credit:
   \
@@ -460,7 +528,7 @@ need rng-pix-bench
   os-seed off  s" J. E. Rickenbacker"
   ['] jer-random rng-pix-bench ;
 
-( jml-random )
+( jml-random jml-rng-pix-bench )
 
   \ Credit:
   \
@@ -488,7 +556,7 @@ need rng-pix-bench
   os-seed off  s" J. M. Lazo"
   ['] jml-random rng-pix-bench ;
 
-( lb-random )
+( lb-random lb-rng-pix-bench )
 
   \ Credit:
   \
@@ -506,7 +574,7 @@ need rng-pix-bench
   os-seed off  s" Leo Brodie"
   ['] lb-random rng-pix-bench ;
 
-( lina-random )
+( lina-random lina-rng-pix-bench )
 
 need os-seed
 
@@ -521,7 +589,7 @@ need rng-pix-bench
   os-seed off  s" lina"
   ['] lina-random rng-pix-bench ;
 
-( mb-random )
+( mb-random mb-rng-pix-bench )
 
   \ Credit:
   \
@@ -573,13 +641,14 @@ need rng-pix-bench
   os-seed off  s" Milos Bazelides"
   ['] mb-random rng-pix-bench ;
 
-( mm-random )
+( mm-random mm-rng-pix-bench )
 
   \ Credit:
   \ IsForth Random Number Generator, by Mark I Manning IV.
 
   \ 2016-04-04: Adapted to Solo Forth. Strange negative
   \ results.
+  \ XXX FIXME --
   \ XXX TODO -- check the original
 
 need cell/ need frames@
@@ -609,7 +678,7 @@ need rng-pix-bench
 
   \ mm-rng-pix-bench
 
-( sf83-random )
+( sf83-random sf83-rng-pix-bench )
 
   \ Credit:
   \
@@ -626,7 +695,7 @@ need rng-pix-bench
   s" Spectrum Forth-83"
   ['] sf83-random rng-pix-bench ;
 
-( tt-random )
+( tt-random tt-rng-pix-bench )
 
   \ Credit:
   \
@@ -647,7 +716,7 @@ need rng-pix-bench
   os-seed on  s" Tetris for terminals"
   ['] tt-random rng-pix-bench ;
 
-( vf-random )
+( vf-random vf-rng-pix-bench )
 
   \ Credit:
   \
@@ -666,7 +735,7 @@ need rng-pix-bench
 : vf-rng-pix-bench ( -- )
   s" vForth" ['] vf-random rng-pix-bench ;
 
-( z88-random )
+( z88-random z88-rng-pix-bench )
 
   \ Credit:
   \
@@ -685,7 +754,7 @@ need rng-pix-bench
   os-seed off  s" Z88 CamelForth"
   ['] z88-random rng-pix-bench ;
 
-( zh-random )
+( zh-random zh-rng-pix-bench )
 
   \ Credit:
   \
@@ -768,7 +837,7 @@ need rng-pix-bench
   os-seed off  s" Z80 Heaven"
   ['] zh-random rng-pix-bench ;
 
-( random-byte )
+( random-byte random-byte-bench )
 
 code random-byte ( -- b )
   ED c, 5F c,     \ ld a,r
@@ -782,7 +851,7 @@ need bench{
   ?do  rng rng 192 min set-pixel  loop  }bench.
   ." Z80 R register" cr key drop ;
 
-( lcm-random )
+( lcm-random lcm-rng-pix-bench )
 
   \ XXX UNDER DEVELOPMENT
 
@@ -820,6 +889,52 @@ need rng-pix-bench
 
 : lcm-rng-pix-bench ( -- )
   s" LCM" ['] lcm-random rng-pix-bench ;
+
+( xorshift-random xorshift-rng-pix-bench )
+
+  \ Xorshift is a simple, fast pseudorandom number generator
+  \ developed by George Marsaglia. The generator combines
+  \ three xorshift operations where a number is exclusive-ored
+  \ with a shifted copy of itself.
+
+  \ Credit:
+  \
+  \ Original Z80 code by John Metcalf
+  \ http://www.retroprogramming.com/2017/07/xorshift-pseudorandom-numbers-in-z80.html
+
+need os-seed need assembler
+
+1 os-seed ! \ seed must not be 0
+
+code xorshift-rnd ( -- x )
+  os-seed h ftp,
+    \ ld hl,(seed)
+  h a ld, rra, l a ld, rra, h xor, a h ld, l a ld, rra, h a ld,
+    \ ld a,h
+    \ rra
+    \ ld a,l
+    \ rra
+    \ xor h
+    \ ld h,a
+    \ ld a,l
+    \ rra
+    \ ld a,h
+  rra, l xor, a l ld, h xor, a h ld, os-seed h stp, h push,
+    \ rra
+    \ xor l
+    \ ld l,a
+    \ xor h
+    \ ld h,a
+    \ ld (xrnd+1),hl
+    \ push hl
+  jpnext, end-code
+
+: xorshift-random ( n -- 0..n-1 ) xorshift-rnd um* nip ;
+
+need rng-pix-bench
+
+: xorshift-rng-pix-bench ( -- )
+  s" xorshift" ['] xorshift-random rng-pix-bench ;
 
 ( 8-bit-rng-pix-benchs )
 
@@ -1044,6 +1159,7 @@ need rng-pix-bench
   \ Credit:
   \ Original code from the ZX Spectrum libzx library,
   \ written by Sebastian Mihai, 2016
+  \ http://sebastianmihai.com/main.php?t=131
 
   \ 2016-04-09: Adapted to Solo Forth. Optimized and modified
   \ the original code.
@@ -1054,7 +1170,7 @@ variable rom-pointer  rom-pointer off  os-seed off
 
 code libzx-crnd-opt3 ( -- b )
 
-  \ Gets an 8-bit random number.
+  \ Get an 8-bit random number.
   \ It is computed using a combination of:
   \     - the last returned random number
   \     - a byte from ROM, in increasing order
@@ -1112,6 +1228,7 @@ code libzx-crnd-opt3 ( -- b )
   \ Credit:
   \ Original code from the ZX Spectrum libzx library,
   \ written by Sebastian Mihai, 2016
+  \ http://sebastianmihai.com/main.php?t=131
 
   \ 2016-04-09: Adapted to Solo Forth. Optimized and modified
   \ the original code.
@@ -1122,7 +1239,7 @@ variable rom-pointer  rom-pointer off  os-seed off
 
 code libzx-crnd-opt2 ( -- b )
 
-  \ Gets an 8-bit random number.
+  \ Get an 8-bit random number.
   \ It is computed using a combination of:
   \     - the last returned random number
   \     - a byte from ROM, in increasing order
@@ -1181,6 +1298,7 @@ code libzx-crnd-opt2 ( -- b )
   \ Credit:
   \ Original code from the ZX Spectrum libzx library,
   \ written by Sebastian Mihai, 2016
+  \ http://sebastianmihai.com/main.php?t=131
 
   \ 2016-04-09: Adapted to Solo Forth. Optimized the original
   \ code.
@@ -1191,7 +1309,7 @@ variable rom-pointer  3 rom-pointer !  33 os-seed c!
 
 code libzx-crnd-opt1 ( -- b )
 
-  \ Gets an 8-bit random number.
+  \ Get an 8-bit random number.
   \ It is computed using a combination of:
   \     - the last returned random number
   \     - a byte from ROM, in increasing order
@@ -1253,6 +1371,7 @@ code libzx-crnd-opt1 ( -- b )
   \ Credit:
   \ Original code from the ZX Spectrum libzx library,
   \ written by Sebastian Mihai, 2016
+  \ http://sebastianmihai.com/main.php?t=131
 
   \ 2016-04-09: Adapted to Solo Forth.
 
@@ -1262,7 +1381,7 @@ variable rom-pointer  3 rom-pointer !  33 os-seed c!
 
 code libzx-crnd ( -- b )
 
-  \ Gets an 8-bit random number.
+  \ Get an 8-bit random number.
   \ It is computed using a combination of:
   \     - the last returned random number
   \     - a byte from ROM, in increasing order
@@ -1459,5 +1578,12 @@ code libzx-crnd ( -- b )
   \ 2017-05-07: Improve documentation.
   \
   \ 2017-05-09: Remove `jppushhl,`.
+  \
+  \ 2017-07-26: Add `xorshift-random`. Improve the way 16-bit
+  \ benchs are loaded. Improve documentation. Save the result
+  \ screens to tape.
+  \
+  \ 2017-07-27: Improve loading of 16-bit benchs. Add URL to
+  \ the credits of the libzx library.
 
   \ vim: filetype=soloforth

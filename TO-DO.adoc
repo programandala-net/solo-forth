@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-07-22
+:revdate: 2017-07-27
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -172,11 +172,38 @@ convention.
 // Interpreter/compiler {{{1
 == Interpreter/compiler ==
 
-.2017-05-06:
+.2017-05-06, 2017-07-27:
 
-NOTE: Milestone: 0.14.0
+Rewrite `compiling?` and `interpreting?` in Z80?
 
-Rewrite `compiling?` and `interpreting?` in Z80.
+Problem: `state` is a user variable. Otherwise, for example, the code
+of `compiling?` would need only 6 bytes (its current colon definiton
+needs 11 bytes):
+
+----
+  ld hl,(state_pfa)
+  jp zero_not_equals.hl
+----
+
+But fetching a user variable makes the code bigger (16 bytes):
+
+----
+  ld de,$001E     ; $1E = index of `state`
+  ld hl,(up_pfa)  ; HL = address of the user area (the value of `up`)
+  add hl,de       ; HL = address of the user variable
+  ex de,hl
+  ld a,(de)
+  ld l,a
+  inc de
+  ld a,(de)
+  ld h,a
+  jp zero_not_equals.hl
+----
+
+The address calculation could be factored, shared with `do_user`...
+but it needs 6 bytes, plus 1 for the return, while the call needs 3
+bytes... It does not worth. Beside, this factoring would slow down all
+user variables a bit.
 
 .2017-03-28:
 
