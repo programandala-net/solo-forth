@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705051939
+  \ Last modified: 201707271622
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -95,7 +95,7 @@ code -exit ( n -- ) ( R: nest-sys | -- nest-sys | )
   \ pop hl
   \ bit 7,h ; negative?
   \ jp nz,exit_xt ; exit if negative
-  \ jp next
+  \ _jp_next
 
   \ doc{
   \
@@ -130,5 +130,8 @@ code -exit ( n -- ) ( R: nest-sys | -- nest-sys | )
   \ 2017-02-27: Improve documentation.
   \
   \ 2017-05-05: Improve documentation.
+  \
+  \ 2017-07-27: Replace `jp next` with the actual macro
+  \ `_jp_next` in Z80 comments.
 
   \ vim: filetype=soloforth

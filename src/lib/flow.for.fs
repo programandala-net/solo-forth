@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702272355
+  \ Last modified: 201707271622
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -76,7 +76,7 @@ code (step) ( R: n -- n' )
   03 c, 03 c, jpnext,
     \ inc bc
     \ inc bc
-    \ jp next
+    \ _jp_next
 
   end-code
 
@@ -158,5 +158,8 @@ need alias
   \ in the kernel.
   \
   \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-07-27: Replace `jp next` with the actual macro
+  \ `_jp_next` in Z80 comments.
 
   \ vim: filetype=soloforth

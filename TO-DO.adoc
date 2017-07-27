@@ -82,12 +82,6 @@ NOTE: Milestone: 0.14.0
 
 Try `;code`. Its definition should include `asm`.
 
-.2017-01-26, 2017-05-09:
-
-Homogenize the notation of assembly comments in the library: use the
-same code that would be used in the kernel. Example: the `_jp_next`
-macro for `jpnext,`, not `jp next`.
-
 .2017-01-13:
 
 Modify words that restore IX: use the current contents of `next`

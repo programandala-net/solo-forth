@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705211923
+  \ Last modified: 201707271623
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -513,7 +513,7 @@ $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! #128 udg> 8 erase
 code set-udg ( a -- ) E1 c, 22 c, os-udg , jpnext, end-code ?)
   \ pop hl
   \ ld (sys_udg),hl
-  \ jp next
+  \ _jp_next
 
   \ doc{
   \
@@ -1080,5 +1080,8 @@ exx, jpnext, end-code
   \ and draft of `.nx1-udg`.
   \
   \ 2017-05-21: Add draft of `.udga`. Add `csprite`.
+  \
+  \ 2017-07-27: Replace `jp next` with the actual macro
+  \ `_jp_next` in Z80 comments.
 
   \ vim: filetype=soloforth

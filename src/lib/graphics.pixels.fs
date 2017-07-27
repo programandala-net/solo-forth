@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705141928
+  \ Last modified: 201707271623
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -270,7 +270,7 @@ code plot ( gx gy -- )
     \ call $22EC        ; ROM PLOT-SUB + 7
     \ exx               ; restore Forth IP
     \ ld ix,next        ; restore ix
-    \ _jp_next          ; jp next
+    \ _jp_next
 
   \ doc{
   \
@@ -297,7 +297,7 @@ code plot176 ( gx gy -- )
     \ call $22E5        ; ROM PLOT-SUB
     \ exx               ; restore Forth IP
     \ ld ix,next        ; restore Forth IX
-    \ _jp_next          ; jp next
+    \ _jp_next
 
   \ doc{
   \
@@ -875,5 +875,8 @@ need gxy>attra
   \ 2017-05-09: Remove `jp pushhlde`. Remove `jppushhl,`.
   \
   \ 2017-05-13: Fix needing of `set-pixel` (code typo).
+  \
+  \ 2017-07-27: Replace `jp next` with the actual macro
+  \ `_jp_next` in Z80 comments.
 
   \ vim: filetype=soloforth

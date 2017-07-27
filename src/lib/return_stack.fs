@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705091327
+  \ Last modified: 201707271623
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -142,7 +142,7 @@ code 2rdrop ( R: x1 x2 -- )
     \ add hl,de
     \ ld (return_stack_pointer),hl
   jpnext, end-code ?)
-    \ jp next
+    \ _jp_next
 
   \ doc{
   \
@@ -217,5 +217,8 @@ code dup>r ( x -- x ) ( R: -- x )
   \ optional, not included in the assembler by default.
   \
   \ 2017-05-09: Remove `jppushhl,`. Improve documentation.
+  \
+  \ 2017-07-27: Replace `jp next` with the actual macro
+  \ `_jp_next` in Z80 comments.
 
   \ vim: filetype=soloforth

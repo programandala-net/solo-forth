@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071821
+  \ Last modified: 201707271622
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -70,7 +70,7 @@ code call ( a -- )
   \   call call_hl
   \   pop bc
   \   ld ix,next
-  \   jp next
+  \   _jp_next
   \ call_hl:
   \   jp (hl)
 
@@ -340,7 +340,7 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ ld a,h
   \ or l
   \ jp nz,leave_
-  \ jp next
+  \ _jp_next
   end-code ?)
 
   \ doc{
@@ -391,5 +391,8 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ 2017-02-27: Improve documentation.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2017-07-27: Replace `jp next` with the actual macro
+  \ `_jp_next` in Z80 comments.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703291155
+  \ Last modified: 201707271623
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -235,7 +235,7 @@ code rdraw ( gx gy -- )
     \ d_l_range:
     \  jr      z,d_l_plot
     \  pop bc ; restore Forth IP
-    \  jp next ; jp (ix)
+    \  _jp_next
 
   \ Credit:
   \
@@ -392,7 +392,7 @@ code orthodraw ( gx gy gxinc gyinc len -- )
   exx, next ix ldp#, jpnext, end-code
     \ exx               ; restore Forth IP
     \ ld ix,next        ; restore ix
-    \ _jp_next          ; jp next
+    \ _jp_next
 
   \ doc{
   \
@@ -505,7 +505,7 @@ code ortholine ( gx gy gxinc gyinc len -- )
   exx, next ix ldp#, jpnext, end-code
     \ exx               ; restore Forth IP
     \ ld ix,next        ; restore ix
-    \ _jp_next          ; jp next
+    \ _jp_next
 
   \ doc{
   \
@@ -560,5 +560,8 @@ code ortholine ( gx gy gxinc gyinc len -- )
   \ 2017-03-25: Change the notation of assembler label numbers.
   \
   \ 2017-03-29: Add `orthodraw` and `ortholine`.
+  \
+  \ 2017-07-27: Replace `jp next` with the actual macro
+  \ `_jp_next` in Z80 comments.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702281734
+  \ Last modified: 201707271631
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -94,7 +94,7 @@ code !p ( b a -- ) D9 c, C1 c, E1 c, ED c, 69 c, D9 c,
     \ ld b,h    ; 04 01
     \ out (c),e ; 12 02
     \ pop bc    ; 10 01
-    \ jp next   ; 10 03
+    \ _jp_next  ; 10 03
     \           ; -- --
     \           ; 72 11
 
@@ -118,5 +118,8 @@ code !p ( b a -- ) D9 c, C1 c, E1 c, ED c, 69 c, D9 c,
   \
   \ 2017-02-28: Improve `@p` and `!p`: faster and smaller.
   \ Improve documentation.
+  \
+  \ 2017-07-27: Replace `jp next` with the actual macro
+  \ `_jp_next` in Z80 comments.
 
   \ vim: filetype=soloforth

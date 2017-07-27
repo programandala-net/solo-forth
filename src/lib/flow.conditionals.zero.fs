@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705211931
+  \ Last modified: 201707271622
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -91,7 +91,7 @@ code 0exit ( f -- ) ( R: nest-sys | -- nest-sys | )
   \ ld a,h
   \ or l ; zero?
   \ jp z,exit_ ; jump if zero
-  \ jp next
+  \ _jp_next
 
   \ doc{
   \
@@ -134,5 +134,8 @@ code 0exit ( f -- ) ( R: nest-sys | -- nest-sys | )
   \ 2017-05-09: Fix typo.
   \
   \ 2017-05-21: Fix typo.
+  \
+  \ 2017-07-27: Replace `jp next` with the actual macro
+  \ `_jp_next` in Z80 comments.
 
   \ vim: filetype=soloforth

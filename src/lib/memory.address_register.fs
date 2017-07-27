@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705091228
+  \ Last modified: 201707271630
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -51,7 +51,7 @@ variable a
 code a! ( a -- ) E1 c, 22 c, a , jpnext, end-code
     \ pop hl
     \ ld (address_register),hl
-    \ jp next
+    \ _jp_next
 
   \ doc{
   \
@@ -90,7 +90,7 @@ code !a ( x -- ) D1 c, 2A c, a , 70 03 + c, 23 c, 70 02 + c,
     \ ld (hl),e
     \ inc hl
     \ ld (hl),d
-    \ jp next
+    \ _jp_next
 
   \ doc{
   \
@@ -129,7 +129,7 @@ code c!a ( c -- ) D1 c, 2A c, a , 70 03 + c, jpnext,
     \ pop de
     \ ld hl,(address_register)
     \ ld (hl),e
-    \ jp next
+    \ _jp_next
 
   \ doc{
   \
@@ -175,7 +175,7 @@ code !a+ ( x -- )
     \ ld (hl),d
     \ inc hl
     \ ld (address_register),hl
-    \ jp next
+    \ _jp_next
 
   \ doc{
   \
@@ -199,7 +199,7 @@ code @a+ ( -- x )
     \ inc hl
     \ ld (address_register),hl
     \ push de
-    \ jp next
+    \ _jp_next
 
   \ doc{
   \
@@ -221,7 +221,7 @@ code c!a+ ( c -- ) D1 c, 2A c, a , 70 03 + c, 23 c,
     \ ld (hl),e
     \ inc hl
     \ ld (address_register),hl
-    \ jp next
+    \ _jp_next
 
   \ doc{
   \
@@ -243,7 +243,7 @@ code c@a+ ( -- c ) 2A c, a , 5E c, 23 c, 16 c, 00 c,
     \ ld d,0
     \ ld (address_register),hl
     \ push de
-    \ jp next
+    \ _jp_next
 
   \ doc{
   \
@@ -281,5 +281,8 @@ code c@a+ ( -- c ) 2A c, a , 5E c, 23 c, 16 c, 00 c,
   \ documentation.
   \
   \ 2017-05-09: Remove `jppushhl,`.
+  \
+  \ 2017-07-27: Replace `jp next` with the actual macro
+  \ `_jp_next` in Z80 comments.
 
   \ vim: filetype=soloforth

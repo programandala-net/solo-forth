@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705120118
+  \ Last modified: 201707271623
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -106,7 +106,7 @@ code wipe-rectangle ( column row width height -- )
   exx, next ix ldp#, jpnext, end-code
     \ exx           ; restore the Forth IP
     \ ld ix,next    ; restore IX
-    \ jp next
+    \ _jp_next
 
   \ Credit:
   \
@@ -194,7 +194,7 @@ code color-rectangle ( column row width height color -- )
   exx, next ix ldp#, jpnext, end-code
     \ exx           ; restore the Forth IP
     \ ld ix,next    ; restore IX
-    \ jp next
+    \ _jp_next
 
   \ Credit:
   \
@@ -340,7 +340,7 @@ code clear-rectangle ( column row width height color -- )
   exx, next ix ldp#, jpnext, end-code
     \ exx           ; restore the Forth IP
     \ ld ix,next    ; restore IX
-    \ jp next
+    \ _jp_next
 
   \ Credit:
   \
@@ -385,5 +385,8 @@ code clear-rectangle ( column row width height color -- )
   \ and `wipe-rectangle`, to make `clear-rectangle` consistent
   \ with `cls` ("clear screen"), because `clear-rectangle` is
   \ going to be used as a factor of `wcls`.
+  \
+  \ 2017-07-27: Replace `jp next` with the actual macro
+  \ `_jp_next` in Z80 comments.
 
   \ vim: filetype=soloforth

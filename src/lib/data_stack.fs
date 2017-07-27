@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705091238
+  \ Last modified: 201707271623
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -121,7 +121,7 @@ code 3drop ( x1 x2 x3 -- )
     \ pop hl
     \ pop hl
     \ pop hl
-    \ jp next
+    \ _jp_next
 
   \ doc{
   \
@@ -138,7 +138,7 @@ code 4drop ( x1 x2 x3 x4 -- )
     \ pop hl
     \ pop hl
     \ pop hl
-    \ jp next
+    \ _jp_next
 
   \ doc{
   \
@@ -164,7 +164,7 @@ code 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
     \ push bc
   D9 c,  jpnext, end-code ?)
     \ exx
-    \ jp next
+    \ _jp_next
 
   \ doc{
   \
@@ -267,7 +267,7 @@ code 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
     \ pop hl
     \ push hl
     \ push hl
-    \ jp next
+    \ _jp_next
 
   \ doc{
   \
@@ -290,7 +290,7 @@ code 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
     \ pop de
     \ push hl
     \ push hl
-    \ jp next
+    \ _jp_next
 
   \ doc{
   \
@@ -516,5 +516,8 @@ code >false ( x -- false ) E1 c, ' false jp, end-code ?)
   \ 2017-03-21: Improve documentation.
   \
   \ 2017-05-09: Remove `jp pushhlde`. Remove `jppushhl,`.
+  \
+  \ 2017-07-27: Replace `jp next` with the actual macro
+  \ `_jp_next` in Z80 comments.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705151216
+  \ Last modified: 201707271622
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -166,7 +166,7 @@ code (banked-mode-output) ( -- )
   C1 c,  DD c, 21 c, next ,  jpnext, end-code
     \ pop bc ; restore Forth IP
     \ ld ix,next ; restore IX, just in case
-    \ jp next
+    \ _jp_next
 
 : set-banked-mode-output ( a -- )
   (output_) !  \ patch `(banked-mode-output)`
@@ -211,5 +211,8 @@ code (banked-mode-output) ( -- )
   \ and used by `mode-42`, `mode-64` and others.
   \
   \ 2017-05-15: Add `form>xy`, `>form` and `form`.
+  \
+  \ 2017-07-27: Replace `jp next` with the actual macro
+  \ `_jp_next` in Z80 comments.
 
   \ vim: filetype=soloforth
