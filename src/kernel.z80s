@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201707261839
+; Last modified: 201707272043
 
 include version.z80s
 
@@ -7192,10 +7192,12 @@ source.other:
 ;
 ; Add 2 to _n1_, according to the operation of `+`, giving _n2_.
 ;
+; This is the same as ``2 +`` but faster.
+;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set).
 ;
-; See also: `2-`, `1+`.
+; See also: `2-`, `1+`, `8+`.
 ;
 ; }doc
 
@@ -7234,10 +7236,12 @@ source.other:
 ; Subtract 1 from _n1_, according to the operation of `-`,
 ; giving _n2_.
 ;
+; This is the same as ``1 -`` but faster.
+;
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set).
 ;
-; See also: `1+`, `2-`.
+; See also: `1+`, `2-`, `8-`.
 ;
 ; }doc
 
@@ -7273,10 +7277,12 @@ source.other:
 ;
 ; Add 1 to _n1_, according to the operation of `+`, giving _n2_.
 ;
+; This is the same as ``1 +`` but faster.
+;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set).
 ;
-; See also: `1-`, `2+`.
+; See also: `1-`, `2+`, `8+`.
 ;
 ; }doc
 
@@ -7313,10 +7319,12 @@ source.other:
 ; Subtract 2 from _n1_, according to the operation of `-`,
 ; giving _n2_.
 ;
+; This is the same as ``2 -`` but faster.
+;
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set).
 ;
-; See also: `2+`, `1-`.
+; See also: `2+`, `1-`, `8-`.
 ;
 ; }doc
 

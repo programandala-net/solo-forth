@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705121654
+  \ Last modified: 201707272052
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -262,11 +262,11 @@ code even? ( n -- f )
   \
   \ }doc
 
-( 8* polarity <=> )
+( 8* 8+ 8- )
 
 [unneeded] 8* ?(
 
-code 8* ( n1 -- n2 )
+code 8* ( x1 -- x2 )
   e1 c, 29 c, 29 c, 29 c, E5 c, jpnext, end-code ?)
   \ pop hl
   \ add hl,hl
@@ -286,9 +286,58 @@ code 8* ( n1 -- n2 )
   \ This is the same as ``3 lshift`` or ``2* 2* 2*``, but
   \ faster.
   \
-  \ See also: `2*`, `lshift`.
+  \ See also: `2*`, `lshift`, `8+`, `8-`.
   \
   \ }doc
+
+[unneeded] 8+ ?(
+
+code 8+ ( n1 -- n2 )
+  e1 c, 11 c, 0008 , 19 c,  E5 c, jpnext, end-code ?)
+  \ pop hl
+  \ ld de,8
+  \ add hl,de
+  \ push hl
+  \ _jp_next
+
+  \ doc{
+  \
+  \ 8+ ( n1 -- n2 )
+  \
+  \ Add 8 to _n1_, according to the operation of `+`, giving
+  \ _n2_.
+  \
+  \ This is the same as ``8 +`` but faster.
+  \
+  \ See also: `8-`, `1+`, `2+`, `8*`.
+  \
+  \ }doc
+
+[unneeded] 8- ?(
+
+code 8- ( n1 -- n2 ) e1 c, 11 c, 0008 , A7 c, ED c, 52 c, E5 c,
+                     jpnext, end-code ?)
+  \ pop hl
+  \ ld de,8
+  \ and a
+  \ sbc hl,de
+  \ push hl
+  \ _jp_next
+
+  \ doc{
+  \
+  \ 8- ( n1 -- n2 )
+  \
+  \ Subtract 8 from _n1_, according to the operation of `-`,
+  \ giving _n2_.
+  \
+  \ This is the same as ``8 -`` but faster.
+  \
+  \ See also: `8+`, `1-`, `2-`, `8*`.
+  \
+  \ }doc
+
+( polarity <=> )
 
 [unneeded] polarity ?(
 
@@ -1246,5 +1295,7 @@ code join ( b1 b2 -- x )
   \
   \ 2017-05-09: Remove `jp pushhlde` from `split.  Remove
   \ `jppushhl,`.
+  \
+  \ 2017-07-27: Add `8+` and `8-`. Improve documentation.
 
   \ vim: filetype=soloforth

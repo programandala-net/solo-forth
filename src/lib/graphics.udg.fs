@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201707271623
+  \ Last modified: 201707271950
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -65,7 +65,7 @@
 
 [unneeded] udg> ?( need /udg* need get-udg
 
-: udg> ( n -- a ) /udg* get-udg + ; ?)
+: udg> ( c -- a ) /udg* get-udg + ; ?)
 
   \ doc{
   \
@@ -146,9 +146,10 @@ here anon> ! 3 cells allot
   \ block (provided the Forth block has no index line, i.e.
   \ `load-program` is used to load the source).
   \
-  \ The scans can be formed by binary digits, by the characters
-  \ hold in `udg-blank` and `udg-dot`, or any combination of
-  \ both notations.
+  \ The UDG scans can be formed by binary digits, by the
+  \ characters hold in `udg-blank` and `udg-dot`, or any
+  \ combination of both notations. The UDG scans must be
+  \ separated with at least one space.
   \
   \ Usage example:
 
@@ -336,7 +337,7 @@ here anon> ! 3 cells allot
   \ ..XXXX....XXXX....XXXX....XXXX....XXXX..
   \ ----
 
-  \ See also: `csprite`.
+  \ See also: `csprite`, `udg-group`.
   \
   \ }doc
 
@@ -1082,6 +1083,6 @@ exx, jpnext, end-code
   \ 2017-05-21: Add draft of `.udga`. Add `csprite`.
   \
   \ 2017-07-27: Replace `jp next` with the actual macro
-  \ `_jp_next` in Z80 comments.
+  \ `_jp_next` in Z80 comments. Improve documentation.
 
   \ vim: filetype=soloforth
