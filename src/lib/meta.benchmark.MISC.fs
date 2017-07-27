@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705201435
+  \ Last modified: 201707272138
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -53,6 +53,42 @@ here 256 c, constant try-constant
   \ 01000      5        6
   \ 10000     48       56
   \ 65535    313      363
+
+( type-udg-bench )
+
+need bench{ need }bench. need type-udg
+
+  \ XXX OLD -- This benchmark was written for Nuclear Waste
+  \ Invaders.
+  \
+  \ `right-arrow$` was a `2constant` returning the address and
+  \ length of a string containing the 2 UDG consecutive codes
+  \ of the graphic.
+  \
+  \ `right-arrow` was a `cconstant` returning the first of the
+  \ two consecutive UDG codes of the graphic.
+
+: .2x1-udg-sprite ( c -- ) dup emit-udg 1+ emit-udg ;
+
+: sprite-string-bench ( n -- )
+  dup page ." type-udg :"
+  bench{ 0 ?do 18 0 at-xy right-arrow$ type-udg
+            loop }bench.
+  0 1 at-xy ." .2x1-udg-sprite :"
+  bench{ 0 ?do 18 1 at-xy right-arrow .2x1-udg-sprite
+           loop }bench. ;
+
+  \ 2017-07-27:
+  \
+  \ |===================================
+  \ |       | Frames
+  \ |       | ==========================
+  \ | Times | type-udg | .2x1-udg-sprite
+  \
+  \ |  1000 |      112 |              94
+  \ | 10000 |     1122 |             937
+  \ | 65535 |     7353 |            6142
+  \ |===================================
 
 ( .2x1-udg-bench )
 
@@ -2046,20 +2082,22 @@ defer #spaces
 
 ( emit-udg-bench )
 
-  \ 2015-12-18
+need bench{ need }bench.
 
-need bench{
+: emit-udg-bench ( n -- )
+  dup bench{ 0 ?do  home   128 emit      loop  }bench
+      0 1 at-xy ." emit     " bench.
+  dup bench{ 0 ?do  home   128 emit-udg  loop  }bench
+      0 2 at-xy ." emit-udg " bench.
+      bench{ 0 ?do  home 65368 emit-udga loop  }bench
+      0 3 at-xy ." emit-udga" bench. ;
 
-: e ( n -- )
-  bench{ 0 ?do  home 128 emit  loop  }bench. ;
-: eu ( n -- )
-  bench{ 0 ?do  home 128 emit-udg  loop  }bench. ;
-
-  \             Frames (20 ms)
-  \             -----------------------
-  \ Iterations  emit        emit-udg
-  \ ----------  ----------- -----------
-  \ 32000       1904 (1.00) 1856 (0.97)
+  \                        Frames (20 ms)
+  \                        ---------------------------------
+  \ Date       Iterations  emit        emit-udg    emit-udga
+  \ ---------- ----------  ----------- ----------- ---------
+  \ 2015-12-18 32000       1904 (1.00) 1856 (0.97)
+  \ 2017-07-27 32000       2382        2318        2307
 
 ( m+-bench )
 
@@ -2789,5 +2827,9 @@ need bench{ need }bench.
   \ 2017-05-11: Improve some benchmark names.
   \
   \ 2017-05-20: Add `.2x1-udg-bench` and `create-bench`.
+  \
+  \ 2017-07-27: Add `udg-type-bench`, from Nuclear Waste
+  \ Invaders.  Improve `emit-udg-bench` and add `emit-udga` to
+  \ it.
 
   \ vim: filetype=soloforth

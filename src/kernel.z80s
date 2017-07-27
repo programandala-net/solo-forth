@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201707272043
+; Last modified: 201707272138
 
 include version.z80s
 
@@ -4199,7 +4199,8 @@ mode_32_emit.a
 ; in display modes that use the ROM printing routines and keep
 ; those variables updated, like `mode-32` and `mode-32iso`.
 ;
-; See also: `set-udg`, `emit`, `mode-32-emit`, `last-font-char`.
+; See also: `set-udg`, `emit-udga`, `emit`, `mode-32-emit`,
+; `last-font-char`.
 ;
 ; }doc
 
@@ -4212,6 +4213,8 @@ emit_udg.l
   add hl,hl
   add hl,de
   ex de,hl ; DE = character address in the UDG set
+emit_udg.address
+  ; DE = character address in the UDG set
   ld bc,(sys_s_posn) ; cursor position
   ld hl,(sys_df_cc) ; current screen address
   ld (iy+sys_scr_ct_offset),$FF ; no scroll message
@@ -4220,6 +4223,34 @@ emit_udg.l
   ld (sys_df_cc),hl
   pop bc ; restore the Forth IP
   _jp_next
+
+; ----------------------------------------------
+  _code_header emit_udga_,'emit-udga'
+
+  ; XXX TMP -- Experimental.
+  ; XXX TODO -- Move to the library.
+
+; doc{
+;
+; emit-udga ( ca -- )
+;
+; Display the UDG defined at _ca_, i.e, the 8 bytes of the UDG
+; are stored at _ca_, in the usual ZX Spectrum font/UDG format:
+; the first byte is the top scan.
+;
+; WARNING: ``emit-udga`` gets the cursor position and the
+; current screen address from the OS variables. Therefore, it
+; works only in display modes that use the ROM printing routines
+; and keep those variables updated, like `mode-32` and
+; `mode-32iso`.
+;
+; See also: `emit-udg`, `emit`, `mode-32-emit`.
+;
+; }doc
+
+  pop de ; UDG address
+  push bc ; save the Forth IP
+  jp emit_udg.address
 
 ; ----------------------------------------------
   _defer_header emit_,'emit',,mode_32_emit_
