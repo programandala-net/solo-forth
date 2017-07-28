@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201707271602
+  \ Last modified: 201707281421
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -203,6 +203,45 @@ defer rng-pix-bench ( ca len xt -- )
   \ title _ca len_: Only the time required to complete one
   \ cycle (49152 random pixels).
 
+( rng-pix-bench: )
+
+need rng-pix-bench need multi-cycle need one-cycle?
+need single-cycle
+
+: (rng-pix-bench:) ( a -- ) dup perform rot
+                            cell+ dup @ swap
+                            cell+ perform rng-pix-bench ;
+  \ Execute the RNG pixel benchmark whose description is stored
+  \ at _a_, as described in `rng-pix-bench:`.
+
+: main-rng-pix-bench ( a -- ) multi-cycle (rng-pix-bench:) ;
+  \ Execute the main phase of an RNG pixel benchmark, whose
+  \ description is stored at _a_, as described in
+  \ `rng-pix-bench:`.
+
+: secondary-rng-pix-bench ( a -- )
+  one-cycle? if drop else single-cycle (rng-pix-bench:) then ;
+  \ If needed, execute the secondary phase of an RNG pixel
+  \ benchmark, whose description is stored at _a_, as described
+  \ in `rng-pix-bench:`.
+
+: rng-pix-bench: ( xt1 xt2 xt3 "name" -- )
+  create , , ,
+    \ Cell offset    Description
+    \ +0             xt3, which returns the title string
+    \ +1             xt2, `random`
+    \ +2             xt1, `random` init
+  does> ( -- ) ( pfa ) dup main-rng-pix-bench
+                           secondary-rng-pix-bench ;
+  \ Create an RNG pixel benchmark _name_ for the `random` word
+  \ _xt2_, with initialization _xt1_ and title _ca len_.
+
+  \ XXX TODO -- Improve: Do not run the benchmark twice when it
+  \ needs more than one cycle to complete, in order to preserve
+  \ the result of its first cycle. Instead, always save the
+  \ result of the first cycle into a memory buffer, and use it
+  \ at the end of the benchmark if needed.
+
 ( show-rng )
 
 need tape-file>display
@@ -214,7 +253,7 @@ need tape-file>display
 
 ( 16-bit-rng-pix-benchs )
 
-need rng-pix-bench need show-rng
+need show-rng
 
        \  <------------------------------>
   page .( 16-bit random pixels benchmarks) cr
@@ -233,76 +272,30 @@ need rng-pix-bench need show-rng
 
 ( 16-bit-rng-pix-benchs )
 
-  \ XXX TODO -- Make this unnecessary. Make `rng-pix-bench` do
-  \ the second pass if needed.
-
-need ace-rng-pix-bench multi-cycle ace-rng-pix-bench
-one-cycle? ?\ single-cycle ace-rng-pix-bench
-
-need cgm-5E9B-rng-pix-bench multi-cycle cgm-5E9B-rng-pix-bench
-one-cycle? ?\ single-cycle cgm-5E9B-rng-pix-bench
-
-need cgm-61BF-rng-pix-bench multi-cycle cgm-61BF-rng-pix-bench
-one-cycle? ?\ single-cycle cgm-61BF-rng-pix-bench
-
-need cgm-62DC-rng-pix-bench multi-cycle cgm-62DC-rng-pix-bench
-one-cycle? ?\ single-cycle cgm-62DC-rng-pix-bench
-
-need cgm-6363-rng-pix-bench multi-cycle cgm-6363-rng-pix-bench
-one-cycle? ?\ single-cycle cgm-6363-rng-pix-bench
-
-need cgm-6594-rng-pix-bench multi-cycle cgm-6594-rng-pix-bench
-one-cycle? ?\ single-cycle cgm-6594-rng-pix-bench
-
+need ace-rng-pix-bench        ace-rng-pix-bench
+need cgm-5E9B-rng-pix-bench   cgm-5E9B-rng-pix-bench
+need cgm-61BF-rng-pix-bench   cgm-61BF-rng-pix-bench
+need cgm-62DC-rng-pix-bench   cgm-62DC-rng-pix-bench
+need cgm-6363-rng-pix-bench   cgm-6363-rng-pix-bench
+need cgm-6594-rng-pix-bench   cgm-6594-rng-pix-bench
+need cgm-65E8-rng-pix-bench   cgm-65E8-rng-pix-bench
+need dx-rng-pix-bench         dx-rng-pix-bench
+need gf-rng-pix-bench         gf-rng-pix-bench
+need jer-rng-pix-bench        jer-rng-pix-bench
+need jml-rng-pix-bench        jml-rng-pix-bench
+need lb-rng-pix-bench         lb-rng-pix-bench
+need lina-rng-pix-bench       lina-rng-pix-bench
+need mb-rng-pix-bench         mb-rng-pix-bench
 -->
 
 ( 16-bit-rng-pix-benchs )
 
-need cgm-65E8-rng-pix-bench multi-cycle cgm-65E8-rng-pix-bench
-one-cycle? ?\ single-cycle cgm-65E8-rng-pix-bench
-
-need dx-rng-pix-bench multi-cycle dx-rng-pix-bench
-one-cycle? ?\ single-cycle dx-rng-pix-bench
-
-need gf-rng-pix-bench multi-cycle gf-rng-pix-bench
-one-cycle? ?\ single-cycle gf-rng-pix-bench
-
-need jer-rng-pix-bench multi-cycle jer-rng-pix-bench
-one-cycle? ?\ single-cycle jer-rng-pix-bench
-
-need jml-rng-pix-bench multi-cycle jml-rng-pix-bench
-one-cycle? ?\ single-cycle jml-rng-pix-bench
-
-need lb-rng-pix-bench multi-cycle lb-rng-pix-bench
-one-cycle? ?\ single-cycle lb-rng-pix-bench
-
-need lina-rng-pix-bench multi-cycle lina-rng-pix-bench
-one-cycle? ?\ single-cycle lina-rng-pix-bench
-
--->
-
-( 16-bit-rng-pix-benchs )
-
-need mb-rng-pix-bench multi-cycle mb-rng-pix-bench
-one-cycle? ?\ single-cycle mb-rng-pix-bench
-
-need sf83-rng-pix-bench multi-cycle sf83-rng-pix-bench
-one-cycle? ?\ single-cycle sf83-rng-pix-bench
-
-need tt-rng-pix-bench multi-cycle tt-rng-pix-bench
-one-cycle? ?\ single-cycle tt-rng-pix-bench
-
-need vf-rng-pix-bench multi-cycle vf-rng-pix-bench
-one-cycle? ?\ single-cycle vf-rng-pix-bench
-
-need z88-rng-pix-bench multi-cycle z88-rng-pix-bench
-one-cycle? ?\ single-cycle z88-rng-pix-bench
-
-need zh-rng-pix-bench multi-cycle zh-rng-pix-bench
-one-cycle? ?\ single-cycle zh-rng-pix-bench
-
-need xorshift-rng-pix-bench multi-cycle xorshift-rng-pix-bench
-one-cycle? ?\ single-cycle xorshift-rng-pix-bench
+need sf83-rng-pix-bench       sf83-rng-pix-bench
+need tt-rng-pix-bench         tt-rng-pix-bench
+need vf-rng-pix-bench         vf-rng-pix-bench
+need z88-rng-pix-bench        z88-rng-pix-bench
+need zh-rng-pix-bench         zh-rng-pix-bench
+need xorshift-rng-pix-bench   xorshift-rng-pix-bench
 
 ( ace-random ace-rng-pix-bench )
 
@@ -319,11 +312,12 @@ need os-seed
 
 : ace-random ( n -- 0..n-1 ) ace-rnd um* nip ;
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: ace-rng-pix-bench ( -- )
-  os-seed off  s" Jupiter ACE manual"
-  ['] ace-random rng-pix-bench ;
+:noname ( -- ) os-seed off ;
+' ace-random
+:noname ( -- ca len ) s" Jupiter ACE manual" ;
+rng-pix-bench: ace-rng-pix-bench ( -- )
 
 ( cgm-5E9B-random cgm-5E9B-rng-pix-bench )
 
@@ -342,11 +336,12 @@ need rng-pix-bench
 
 : cgm-5E9B-random ( n -- 0..n-1 ) cgm-5E9B-rnd um* nip ;
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: cgm-5E9B-rng-pix-bench ( -- )
-  s" C. G. Montgomery $5E9B"
-  ['] cgm-5E9B-random rng-pix-bench ;
+' noop
+' cgm-5E9B-random
+:noname ( -- ca len ) s" C. G. Montgomery $5E9B" ;
+rng-pix-bench: cgm-5E9B-rng-pix-bench ( -- )
 
 ( cgm-61BF-random cgm-61BF-rng-pix-bench )
 
@@ -365,11 +360,12 @@ need rng-pix-bench
 
 : cgm-61BF-random ( n -- 0..n-1 ) cgm-61BF-rnd um* nip ;
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: cgm-61BF-rng-pix-bench ( -- )
-  s" C. G. Montgomery $61BF"
-  ['] cgm-61BF-random rng-pix-bench ;
+' noop
+' cgm-61BF-random
+:noname ( -- ca len ) s" C. G. Montgomery $61BF" ;
+rng-pix-bench: cgm-61BF-rng-pix-bench ( -- )
 
 ( cgm-62DC-random cgm-62DC-rng-pix-bench )
 
@@ -388,11 +384,12 @@ need rng-pix-bench
 
 : cgm-62DC-random ( n -- 0..n-1 ) cgm-62DC-rnd um* nip ;
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: cgm-62DC-rng-pix-bench ( -- )
-  s" C. G. Montgomery $62DC"
-  ['] cgm-62DC-random rng-pix-bench ;
+' noop
+' cgm-62DC-random
+:noname ( -- ca len ) s" C. G. Montgomery $62DC" ;
+rng-pix-bench: cgm-62DC-rng-pix-bench ( -- )
 
 ( cgm-6363-random cgm-6363-rng-pix-bench )
 
@@ -411,11 +408,12 @@ need rng-pix-bench
 
 : cgm-6363-random ( n -- 0..n-1 ) cgm-6363-rnd um* nip ;
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: cgm-6363-rng-pix-bench ( -- )
-  s" C. G. Montgomery $6363"
-  ['] cgm-6363-random rng-pix-bench ;
+' noop
+' cgm-6363-random
+:noname ( -- ca len ) s" C. G. Montgomery $6363" ;
+rng-pix-bench: cgm-6363-rng-pix-bench ( -- )
 
 ( cgm-6594-random cgm-6594-rng-pix-bench )
 
@@ -434,11 +432,12 @@ need rng-pix-bench
 
 : cgm-6594-random ( n -- 0..n-1 ) cgm-6594-rnd um* nip ;
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: cgm-6594-rng-pix-bench ( -- )
-  s" C. G. Montgomery $6594"
-  ['] cgm-6594-random rng-pix-bench ;
+' noop
+' cgm-6594-random
+:noname ( -- ca len ) s" C. G. Montgomery $6594" ;
+rng-pix-bench: cgm-6594-rng-pix-bench ( -- )
 
 ( cgm-65E8-random cgm-65E8-rng-pix-bench )
 
@@ -457,11 +456,12 @@ need rng-pix-bench
 
 : cgm-65E8-random ( n -- 0..n-1 ) cgm-65E8-rnd um* nip ;
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: cgm-65E8-rng-pix-bench ( -- )
-  s" C. G. Montgomery $65E8"
-  ['] cgm-65E8-random rng-pix-bench ;
+' noop
+' cgm-65E8-random
+:noname ( -- ca len ) s" C. G. Montgomery $65E8" ;
+rng-pix-bench: cgm-65E8-rng-pix-bench ( -- )
 
 ( dx-random dx-rng-pix-bench )
 
@@ -480,10 +480,12 @@ need d*
 : dx-random ( u -- 0..u-1 ) dx-rnd um* nip ;
   \ Get random number between 0 and u-1
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: dx-rng-pix-bench ( -- )
-  s" DX-Forth" ['] dx-random rng-pix-bench ;
+' noop
+' dx-random
+:noname ( -- ca len ) s" DX-Forth" ;
+rng-pix-bench: dx-rng-pix-bench ( -- )
 
 ( gf-random gf-rng-pix-bench )
 
@@ -498,11 +500,12 @@ need os-seed need ud*
 
 : gf-random ( n -- 0..n-1 ) gf-rnd um* nip ;
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: gf-rng-pix-bench ( -- )
-  os-seed off  s" Gforth"
-  ['] gf-random rng-pix-bench ;
+:noname ( -- ) os-seed off ;
+' gf-random
+:noname ( -- ca len ) s" Gforth" ;
+rng-pix-bench: gf-rng-pix-bench ( -- )
 
 ( jer-random jer-rng-pix-bench )
 
@@ -522,11 +525,12 @@ need os-seed
 
   \ XXX Note: patterns
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: jer-rng-pix-bench ( -- )
-  os-seed off  s" J. E. Rickenbacker"
-  ['] jer-random rng-pix-bench ;
+:noname ( -- ) os-seed off ;
+' jer-random
+:noname ( -- ca len ) s" J. E. Rickenbacker" ;
+rng-pix-bench: jer-rng-pix-bench ( -- )
 
 ( jml-random jml-rng-pix-bench )
 
@@ -550,11 +554,12 @@ code jml-rnd ( -- u )
 
 : jml-random ( n -- 0..n-1 ) jml-rnd um* nip ;
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: jml-rng-pix-bench ( -- )
-  os-seed off  s" J. M. Lazo"
-  ['] jml-random rng-pix-bench ;
+:noname ( -- ) os-seed off ;
+' jml-random
+:noname ( -- ca len ) s" J. M. Lazo" ;
+rng-pix-bench: jml-rng-pix-bench ( -- )
 
 ( lb-random lb-rng-pix-bench )
 
@@ -568,11 +573,12 @@ need os-seed
 
 : lb-random ( n -- 0..n-1 ) lb-rnd um* nip ;
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: lb-rng-pix-bench ( -- )
-  os-seed off  s" Leo Brodie"
-  ['] lb-random rng-pix-bench ;
+:noname ( -- ) os-seed off ;
+' lb-random
+:noname ( -- ca len ) s" Leo Brodie" ;
+rng-pix-bench: lb-rng-pix-bench ( -- )
 
 ( lina-random lina-rng-pix-bench )
 
@@ -583,11 +589,12 @@ need os-seed
 
 : lina-random ( n -- 0..n-1 ) lina-rnd um* nip ;
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: lina-rng-pix-bench ( -- )
-  os-seed off  s" lina"
-  ['] lina-random rng-pix-bench ;
+:noname ( -- ) os-seed off ;
+' lina-random
+:noname ( -- ca len ) s" lina" ;
+rng-pix-bench: lina-rng-pix-bench ( -- )
 
 ( mb-random mb-rng-pix-bench )
 
@@ -635,11 +642,12 @@ code mb-rnd ( -- u )
   \  ret
   \ ----
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: mb-rng-pix-bench ( -- )
-  os-seed off  s" Milos Bazelides"
-  ['] mb-random rng-pix-bench ;
+:noname ( -- ) os-seed off ;
+' mb-random
+:noname ( -- ca len ) s" Milos Bazelides" ;
+rng-pix-bench: mb-rng-pix-bench ( -- )
 
 ( mm-random mm-rng-pix-bench )
 
@@ -665,18 +673,12 @@ variable seed1  variable seed2
   2dup + seed2 ! 2dup xor seed1 !
   + swap cells mod cell/ ;
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: mm-rng-pix-bench ( -- )
-  s" IsForth" ['] mm-random rng-pix-bench ;
-
-  \ ' rng-pix-bench2 ' rng-pix-bench defer!
-
-  \ mm-rng-pix-bench
-
-  \ ' rng-pix-bench1 ' rng-pix-bench defer!
-
-  \ mm-rng-pix-bench
+' noop
+' mm-random
+:noname ( -- ca len ) s" IsForth" ;
+rng-pix-bench: mm-rng-pix-bench ( -- )
 
 ( sf83-random sf83-rng-pix-bench )
 
@@ -689,11 +691,12 @@ need os-seed  3 os-seed !
 : sf83-random ( n -- 0..n-1 )
   os-seed @ 743 * 43 + dup os-seed ! um* swap drop ;
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: sf83-rng-pix-bench ( -- )
-  s" Spectrum Forth-83"
-  ['] sf83-random rng-pix-bench ;
+' noop
+' sf83-random
+:noname ( -- ca len ) s" Spectrum Forth-83" ;
+rng-pix-bench: sf83-rng-pix-bench ( -- )
 
 ( tt-random tt-rng-pix-bench )
 
@@ -710,11 +713,12 @@ need os-seed
     os-seed @ 13 * $7FFF and
     dup os-seed !  swap mod ;
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: tt-rng-pix-bench ( -- )
-  os-seed on  s" Tetris for terminals"
-  ['] tt-random rng-pix-bench ;
+:noname ( -- ) os-seed on ;
+' tt-random
+:noname ( -- ca len ) s" Tetris for terminals" ;
+rng-pix-bench: tt-rng-pix-bench
 
 ( vf-random vf-rng-pix-bench )
 
@@ -730,10 +734,12 @@ need os-frames
   \ dup os-seed !
   swap mod ;
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: vf-rng-pix-bench ( -- )
-  s" vForth" ['] vf-random rng-pix-bench ;
+' noop
+' vf-random
+:noname ( -- ca len ) s" vForth" ;
+rng-pix-bench: vf-rng-pix-bench ( -- )
 
 ( z88-random z88-rng-pix-bench )
 
@@ -748,11 +754,12 @@ need ud* need os-seed need 2rdrop
   os-seed @ ud* 12345. d+ over os-seed !
   rot ud/mod 2drop ;
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: z88-rng-pix-bench ( -- )
-  os-seed off  s" Z88 CamelForth"
-  ['] z88-random rng-pix-bench ;
+:noname ( -- ) os-seed off ;
+' z88-random
+:noname ( -- ca len ) s" Z88 CamelForth" ;
+rng-pix-bench: z88-rng-pix-bench ( -- )
 
 ( zh-random zh-rng-pix-bench )
 
@@ -831,13 +838,16 @@ code zh-rnd ( -- u )
   \      ret
   \ ----
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: zh-rng-pix-bench ( -- )
-  os-seed off  s" Z80 Heaven"
-  ['] zh-random rng-pix-bench ;
+:noname ( -- ) os-seed off ;
+' zh-random
+:noname ( -- ca len ) s" Z80 Heaven" ;
+rng-pix-bench: zh-rng-pix-bench ( -- )
 
 ( random-byte random-byte-bench )
+
+  \ XXX TODO -- Add to the 8-bit benchmarks.
 
 code random-byte ( -- b )
   ED c, 5F c,     \ ld a,r
@@ -885,10 +895,12 @@ need d* need du/mod need 2nip
 
 : lcm-random ( n -- 0..n-1 ) lcm-rnd d>s um* nip ;
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: lcm-rng-pix-bench ( -- )
-  s" LCM" ['] lcm-random rng-pix-bench ;
+' noop
+' lcm-random
+:noname ( -- ca len ) s" LCM" ;
+rng-pix-bench: lcm-rng-pix-bench ( -- )
 
 ( xorshift-random xorshift-rng-pix-bench )
 
@@ -931,10 +943,12 @@ code xorshift-rnd ( -- x )
 
 : xorshift-random ( n -- 0..n-1 ) xorshift-rnd um* nip ;
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: xorshift-rng-pix-bench ( -- )
-  s" xorshift" ['] xorshift-random rng-pix-bench ;
+' noop
+' xorshift-random
+:noname ( -- ca len ) s" xorshift" ;
+rng-pix-bench: xorshift-rng-pix-bench ( -- )
 
 ( 8-bit-rng-pix-benchs )
 
@@ -990,11 +1004,14 @@ code jw-crnd ( -- b )
     \ ld      (randData),hl
     \ jp push_a
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: jw-rng-pix-bench ( -- )
-  os-seed off  s" Joe Wingbermuehle"
-  ['] jw-crnd rng-pix-bench ;
+  \ XXX TODO -- Finish adapting to `rng-pix-bench:`.
+
+:noname ( -- ) os-seed off ;
+' jw-crnd
+:noname ( -- ca len ) s" Joe Wingbermuehle" ;
+rng-pix-bench: jw-rng-pix-bench ( -- )
 
   \ Original code:
 
@@ -1053,14 +1070,17 @@ code mb1-crnd ( -- b )
 : mb1-crandom ( n1 -- n2 ) mb1-crnd um* nip ;
   \ XXX FIXME -- it always return zero
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
+
+  \ XXX TODO -- Finish adapting to `rng-pix-bench:`.
+
+:noname ( -- ) os-seed off ;
+' mb1-crnd
+:noname ( -- ca len ) s" Milos Bazelides 1 (8 bit)" ;
+rng-pix-bench: mb1-rng-pix-bench ( -- )
 
   \ : mb1-rng-pix-bench ( -- )
   \   s" Milos Bazelides 1" ['] mb1-crandom rng-pix-bench ;
-
-: mb1-rng-pix-bench ( -- )
-  os-seed off  s" Milos Bazelides 1 (8 bit)"
-  ['] mb1-crnd rng-pix-bench ;
 
 ( mb2-crnd )
 
@@ -1098,14 +1118,18 @@ code mb2-crnd ( -- b )
 : mb2-crandom ( n1 -- n2 ) mb2-crnd um* nip ;
   \ XXX FIXME -- it always return zero
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
+
+  \ XXX TODO -- Finish adapting to `rng-pix-bench:`.
+
+:noname ( -- ) os-seed off ;
+' mb2-crnd
+:noname ( -- ca len ) s" Milos Bazelides 2 (8 bit)" ;
+rng-pix-bench: mb2-rng-pix-bench ( -- )
 
   \ : mb2-rng-pix-bench ( -- )
   \   s" Milos Bazelides 2" ['] mb2-crandom rng-pix-bench ;
-
-: mb2-rng-pix-bench ( -- )
-  os-seed off  s" Milos Bazelides 2 (8 bit)"
-  ['] mb2-crnd rng-pix-bench ;
+  \   XXX OLD
 
 ( zh-crnd )
 
@@ -1127,10 +1151,14 @@ code zh-crnd ( -- b )
 
   end-code
 
-need rng-pix-bench
+need rng-pix-bench: need :noname
 
-: zh-rng-pix-bench ( -- )
-  s" Z80 Heaven (8 bit)" ['] zh-crnd rng-pix-bench ;
+  \ XXX TODO -- Finish adapting to `rng-pix-bench:`.
+
+' noop
+' zh-crnd
+:noname ( -- ca len ) s" Z80 Heaven (8 bit)" ;
+rng-pix-bench: zh-rng-pix-bench ( -- )
 
   \ This is one of many variations of PRNGs. This routine is
   \ not particularly useful for many games, but is fairly
@@ -1164,7 +1192,7 @@ need rng-pix-bench
   \ 2016-04-09: Adapted to Solo Forth. Optimized and modified
   \ the original code.
 
-need assembler need os-seed need rng-pix-bench
+need assembler need os-seed
 
 variable rom-pointer  rom-pointer off  os-seed off
 
@@ -1219,6 +1247,8 @@ code libzx-crnd-opt3 ( -- b )
 
   os-seed sta, b pop, pusha jp, end-code
 
+need rng-pix-bench
+
 : libzx-rng-pix-bench-opt3 ( -- )
   rom-pointer off  os-seed off  s" libzx opt3 (8 bit)"
   ['] libzx-crnd-opt3 rng-pix-bench ;
@@ -1233,7 +1263,7 @@ code libzx-crnd-opt3 ( -- b )
   \ 2016-04-09: Adapted to Solo Forth. Optimized and modified
   \ the original code.
 
-need assembler need os-seed need rng-pix-bench
+need assembler need os-seed
 
 variable rom-pointer  rom-pointer off  os-seed off
 
@@ -1289,6 +1319,8 @@ code libzx-crnd-opt2 ( -- b )
 
   b pop, pusha jp, end-code
 
+need rng-pix-bench
+
 : libzx-rng-pix-bench-opt2 ( -- )
   rom-pointer off  os-seed off  s" libzx opt2 (8 bit)"
   ['] libzx-crnd-opt2 rng-pix-bench ;
@@ -1303,7 +1335,7 @@ code libzx-crnd-opt2 ( -- b )
   \ 2016-04-09: Adapted to Solo Forth. Optimized the original
   \ code.
 
-need assembler need os-seed need rng-pix-bench
+need assembler need os-seed
 
 variable rom-pointer  3 rom-pointer !  33 os-seed c!
 
@@ -1362,6 +1394,8 @@ code libzx-crnd-opt1 ( -- b )
 
   b pop, pusha jp, end-code
 
+need rng-pix-bench
+
 : libzx-rng-pix-bench-opt1 ( -- )
   3 rom-pointer !  33 os-seed c!  s" libzx opt1 (8 bit)"
   ['] libzx-crnd-opt1 rng-pix-bench ;
@@ -1375,7 +1409,7 @@ code libzx-crnd-opt1 ( -- b )
 
   \ 2016-04-09: Adapted to Solo Forth.
 
-need assembler need os-seed need rng-pix-bench
+need assembler need os-seed
 
 variable rom-pointer  3 rom-pointer !  33 os-seed c!
 
@@ -1393,8 +1427,7 @@ code libzx-crnd ( -- b )
 
   \ 1) advance ROM pointer
 
-  rom-pointer h ldp#,
-  m c ld, h incp, m b ld, 3 h ldp#, b addp,
+  rom-pointer h ldp#, m c ld, h incp, m b ld, 3 h ldp#, b addp,
     \ XXX TODO -- simpler
     \ XXX REMARK -- original code is not optimized
 
@@ -1430,22 +1463,21 @@ code libzx-crnd ( -- b )
     \ add a, h
     \ add a, l
 
-  rom-pointer h ldp#, m add,
+  rom-pointer h ldp#, m add, os-seed h ldp#, m a ld,
     \ ld hl, romPointer
     \ add a, (hl) ; the contents of the ROM are "pretty random"
     \ ; so add it in the mix
-
-  os-seed h ldp#, m a ld,
     \ ld hl, lastRandomNumber
     \ ld (hl), a ; save this number
     \ XXX REMARK -- original code is not optimized
 
   b pop, 0 h ld#, a l ld, h push, jpnext, end-code
 
+need rng-pix-bench
+
 : libzx-rng-pix-bench ( -- )
   3 rom-pointer !  33 os-seed c!
   s" libzx (8 bit)" ['] libzx-crnd rng-pix-bench ;
-
 
   \ ===========================================================
 
@@ -1585,5 +1617,8 @@ code libzx-crnd ( -- b )
   \
   \ 2017-07-27: Improve loading of 16-bit benchs. Add URL to
   \ the credits of the libzx library.
+  \
+  \ 2017-07-28: Write a definer of 16-bit benchmarks, in order
+  \ to make their secondary phase automatic.
 
   \ vim: filetype=soloforth
