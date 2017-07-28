@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201707281741
+  \ Last modified: 201707282344
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -241,7 +241,8 @@ need rng-px-bench
   does> ( -- ) ( pfa )
         set-16b-rng-px-bench (does-rng-px-bench) ;
   \ Create a 16-bit RNG pixel benchmark _name_ for the `random`
-  \ word _xt2_, with initialization _xt1_ and title _ca len_.
+  \ word _xt2_, with initialization _xt1_ and title string
+  \ returned by _x3_.
 
 ( 8b-rng-px-bench )
 
@@ -266,7 +267,7 @@ need rng-px-bench
 
 -->
 
-( 16b-rng-px-bench )
+( 8b-rng-px-bench )
 
 
 : 8b-single-cycle ( -- )
@@ -283,9 +284,12 @@ need rng-px-bench
   ['] 8b-multi-cycle   ['] multi-cycle   defer! ;
 
 : 8b-rng-px-bench ( xt1 xt2 xt3 "name" -- )
-  set-8b-rng-px-bench (x-bit-rng-px-bench) ; ?)
-  \ Create an RNG pixel benchmark _name_ for the `random` word
-  \ _xt2_, with initialization _xt1_ and title _ca len_.
+  create-rng-px-bench
+  does> ( -- ) ( pfa )
+        set-8b-rng-px-bench (does-rng-px-bench) ;
+  \ Create an 8-bit RNG pixel benchmark _name_ for the `random`
+  \ word _xt2_, with initialization _xt1_ and title string
+  \ returned by _x3_.
 
 ( show-rng )
 
@@ -296,34 +300,38 @@ need tape-file>display
   begin s" " tape-file>display key 'q' = until ;
   \ Show the benchmark results, loading their screens from tape.
 
+( rng-px-benchs-intro )
+
+: rng-px-benchs-intro ( ca len -- )
+  page type ." random pixels benchmarks" cr
+  ." --------------------------------" cr cr
+
+  \  <------------------------------>
+  ." The benchmarks that need more" cr
+  ." than one cycle to complete," cr
+  ." will be executed a second time" cr
+  ." in one-cycle mode." cr cr
+
+  \  <------------------------------>
+  ." All the result displays will be" cr
+  ." saved to tape. Use 'show-rng'" cr
+  ." to display them later." cr cr
+
+  \  <------------------------------>
+  ." The process can not be stopped." cr cr
+
+  \  <------------------------------>
+  ." Press 'q' to quit or any other" cr
+  ." key to start." key page 'q' = if quit then ;
+  \ Display the intro of the batch RNG pixel benchmarks.  _ca
+  \ len_ is the start of the title: "8-bit" or "16-bit".
+
 ( 16b-rng-px-benchs )
 
-  page
-  \  <------------------------------>
-  .( 16-bit random pixels benchmarks) cr
-  .( -------------------------------) cr cr
+  \ Execute all the 16-bit random pixels benchmarks
 
-  \  <------------------------------>
-  .( The benchmarks that need more) cr
-  .( than one cycle to complete,) cr
-  .( will be executed a second time) cr
-  .( in one-cycle mode.) cr cr
-
-  \  <------------------------------>
-  .( All the result displays will be) cr
-  .( saved to tape. Use 'show-rng') cr
-  .( to display them later.) cr cr
-
-  \  <------------------------------>
-  .( The process can not be stopped.) cr cr
-
-  \  <------------------------------>
-  .( Press 'q' to quit or any other) cr
-  .( key to start.) key page 'q' <> ?\ quit
-
-page need show-rng -->
-
-( 16b-rng-px-benchs )
+need rng-px-benchs-intro  s" 16-bit" rng-px-benchs-intro
+need show-rng
 
 need ace-rng-px-bench        ace-rng-px-bench
 need cgm-5E9B-rng-px-bench   cgm-5E9B-rng-px-bench
@@ -337,12 +345,11 @@ need gf-rng-px-bench         gf-rng-px-bench
 need jer-rng-px-bench        jer-rng-px-bench
 need jml-rng-px-bench        jml-rng-px-bench
 need lb-rng-px-bench         lb-rng-px-bench
-need lina-rng-px-bench       lina-rng-px-bench
-need mb-rng-px-bench         mb-rng-px-bench
--->
+need lina-rng-px-bench       lina-rng-px-bench -->
 
 ( 16b-rng-px-benchs )
 
+need mb-rng-px-bench         mb-rng-px-bench
 need sf83-rng-px-bench       sf83-rng-px-bench
 need tt-rng-px-bench         tt-rng-px-bench
 need vf-rng-px-bench         vf-rng-px-bench
@@ -459,7 +466,7 @@ need 16b-rng-px-bench need :noname
   rloc 2@ $6363 um* rot 0 d+ over rloc 2! ;
   \ good values for 16-bit systems: 61BF 62DC 6594 6363 5E9B 65E8
 
-: cgm-6363-random ( n -- 0..n-1 ) cgm-6363-rnd um* nip ;
+: cgm-6363-random ( n -- 0..n-1 " cgm-6363-rnd um* nip ;
 
 need 16b-rng-px-bench need :noname
 
@@ -898,22 +905,6 @@ need 16b-rng-px-bench need :noname
 :noname ( -- ca len ) s" Z80 Heaven" ;
 16b-rng-px-bench zh-rng-px-bench ( -- )
 
-( random-byte random-byte-bench )
-
-  \ XXX TODO -- Add to the 8-bit benchmarks.
-
-code random-byte ( -- b )
-  ED c, 5F c,     \ ld a,r
-  C3 c, pusha ,   \ jp pusha
-  end-code
-
-need bench{
-
-: random-byte-bench ( -- )
-  ['] random-byte ['] rng defer!  cls  bench{ pixels
-  ?do  rng rng 192 min set-pixel  loop  }bench.
-  ." Z80 R register" cr key drop ;
-
 ( lcm-random lcm-rng-px-bench )
 
   \ XXX UNDER DEVELOPMENT
@@ -1005,34 +996,38 @@ need 16b-rng-px-bench need :noname
 
 ( 8b-rng-px-benchs )
 
-  \ Execute all of the 8-bit random pixels benchmarks
-
-need rng-px-bench need +thru  1 8 +thru
-
-' 8b-multi-cycle-rng-px-bench ' rng-px-bench defer!
+  \ Execute all the 8-bit random pixels benchmarks
 
   \ XXX TODO -- check the libzx rng benchs
 
-  jw-rng-px-bench
-  \ mb1-rng-px-bench  mb2-rng-px-bench
-  zh-rng-px-bench
-  libzx-rng-px-bench
-  libzx-rng-px-bench-opt2
-  libzx-rng-px-bench-opt1
-  libzx-rng-px-bench-opt3  \ XXX FIXME -- crash after!
+need rng-px-benchs-intro  s" 8-bit" rng-px-benchs-intro
+need show-rng
 
-  \ Execute single-cycle benchmarks of RNG that need more than
-  \ one cycle to finish:
+need jw-rng-px-bench       jw-rng-px-bench
+need mb1-rng-px-bench      mb1-rng-px-bench
+need mb2-rng-px-bench      mb2-rng-px-bench
+need zh-rng-px-bench       zh-rng-px-bench
+need libzx-rng-px-bench    libzx-rng-px-bench
+need libzx-1-rng-px-bench  libzx-1-rng-px-bench
+need libzx-2-rng-px-bench  libzx-2-rng-px-bench
+need libzx-3-rng-px-bench  libzx-3-rng-px-bench
+need r-rng-px-bench        r-rng-px-bench
 
-' 8b-single-cycle-rng-px-bench ' rng-px-bench defer!
+( r-crnd r-rng-px-bench )
 
-  jw-rng-px-bench
-  libzx-rng-px-bench  \ XXX FIXME -- crash after!
-  libzx-rng-px-bench-opt1
-  libzx-rng-px-bench-opt2
-  libzx-rng-px-bench-opt3
+code r-crnd ( -- b )
+  ED c, 5F c,     \ ld a,r
+  C3 c, pusha ,   \ jp pusha
+  end-code
 
-( jw-crnd )
+need 8b-rng-px-bench need :noname
+
+:noname ( -- ) os-seed off ;
+' r-crnd
+:noname ( -- ca len ) s" R register (8 bit)" ;
+8b-rng-px-bench r-rng-px-bench ( -- )
+
+( jw-crnd jw-rng-px-bench )
 
   \ 2015-12-25
 
@@ -1058,8 +1053,6 @@ code jw-crnd ( -- b )
     \ jp push_a
 
 need 8b-rng-px-bench need :noname
-
-  \ XXX TODO -- Finish adapting to `8b-rng-px-bench`.
 
 :noname ( -- ) os-seed off ;
 ' jw-crnd
@@ -1087,7 +1080,7 @@ need 8b-rng-px-bench need :noname
   \         ret
   \ ----
 
-( mb1-crnd )
+( mb1-crnd mb1-rng-px-bench )
 
   \ XXX UNDER DEVELOPMENT
 
@@ -1125,8 +1118,6 @@ code mb1-crnd ( -- b )
 
 need 8b-rng-px-bench need :noname
 
-  \ XXX TODO -- Finish adapting to `8b-rng-px-bench`.
-
 :noname ( -- ) os-seed off ;
 ' mb1-crnd
 :noname ( -- ca len ) s" Milos Bazelides 1 (8 bit)" ;
@@ -1135,7 +1126,7 @@ need 8b-rng-px-bench need :noname
   \ : mb1-rng-px-bench ( -- )
   \   s" Milos Bazelides 1" ['] mb1-crandom rng-px-bench ;
 
-( mb2-crnd )
+( mb2-crnd mb2-rng-px-bench )
 
   \ XXX UNDER DEVELOPMENT
 
@@ -1173,8 +1164,6 @@ code mb2-crnd ( -- b )
 
 need 8b-rng-px-bench need :noname
 
-  \ XXX TODO -- Finish adapting to `8b-rng-px-bench`.
-
 :noname ( -- ) os-seed off ;
 ' mb2-crnd
 :noname ( -- ca len ) s" Milos Bazelides 2 (8 bit)" ;
@@ -1184,7 +1173,7 @@ need 8b-rng-px-bench need :noname
   \   s" Milos Bazelides 2" ['] mb2-crandom rng-px-bench ;
   \   XXX OLD
 
-( zh-crnd )
+( zh-crnd zx-rgn-px-bench )
 
   \ 2015-12-25
 
@@ -1205,8 +1194,6 @@ code zh-crnd ( -- b )
   end-code
 
 need 8b-rng-px-bench need :noname
-
-  \ XXX TODO -- Finish adapting to `8b-rng-px-bench`.
 
 ' noop
 ' zh-crnd
@@ -1235,7 +1222,7 @@ need 8b-rng-px-bench need :noname
   \      ld (randSeed),a
   \      ret
 
-( libzx-crnd-opt3 )
+( libzx-3-crnd libzx-3-rng-px-bench )
 
   \ Credit:
   \ Original code from the ZX Spectrum libzx library,
@@ -1249,7 +1236,7 @@ need assembler need os-seed
 
 variable rom-pointer  rom-pointer off  os-seed off
 
-code libzx-crnd-opt3 ( -- b )
+code libzx-3-crnd ( -- b )
 
   \ Get an 8-bit random number.
   \ It is computed using a combination of:
@@ -1300,13 +1287,14 @@ code libzx-crnd-opt3 ( -- b )
 
   os-seed sta, b pop, pusha jp, end-code
 
-need rng-px-bench
+need 8b-rng-px-bench need :noname
 
-: libzx-rng-px-bench-opt3 ( -- )
-  rom-pointer off  os-seed off  s" libzx opt3 (8 bit)"
-  ['] libzx-crnd-opt3 rng-px-bench ;
+:noname ( -- ) rom-pointer off  os-seed off ;
+' libzx-3-crnd
+:noname ( -- ca len ) s" libzx opt3 (8 bit)" ;
+8b-rng-px-bench libzx-3-rng-px-bench ( -- )
 
-( libzx-crnd-opt2 )
+( libzx-2-crnd libzx-2-rng-px-bench )
 
   \ Credit:
   \ Original code from the ZX Spectrum libzx library,
@@ -1320,7 +1308,7 @@ need assembler need os-seed
 
 variable rom-pointer  rom-pointer off  os-seed off
 
-code libzx-crnd-opt2 ( -- b )
+code libzx-2-crnd ( -- b )
 
   \ Get an 8-bit random number.
   \ It is computed using a combination of:
@@ -1362,23 +1350,22 @@ code libzx-crnd-opt2 ( -- b )
     \ add a, h
     \ add a, l
 
-  rom-pointer h ldp#, m add,
+  rom-pointer h ldp#, m add, os-seed sta,
     \ ld hl, romPointer
     \ add a, (hl) ; the contents of the ROM are "pretty random"
     \ ; so add it in the mix
-
-  os-seed sta,
     \ ld (lastRandomNumber), a ; save this number
 
   b pop, pusha jp, end-code
 
-need rng-px-bench
+need 8b-rng-px-bench need :noname
 
-: libzx-rng-px-bench-opt2 ( -- )
-  rom-pointer off  os-seed off  s" libzx opt2 (8 bit)"
-  ['] libzx-crnd-opt2 rng-px-bench ;
+:noname ( -- ) rom-pointer off  os-seed off ;
+' libzx-2-crnd
+:noname ( -- ca len ) s" libzx opt2 (8 bit)" ;
+8b-rng-px-bench libzx-2-rng-px-bench ( -- )
 
-( libzx-crnd-opt1 )
+( libzx-1-crnd libzx-1-rng-px-bench )
 
   \ Credit:
   \ Original code from the ZX Spectrum libzx library,
@@ -1392,7 +1379,7 @@ need assembler need os-seed
 
 variable rom-pointer  3 rom-pointer !  33 os-seed c!
 
-code libzx-crnd-opt1 ( -- b )
+code libzx-1-crnd ( -- b )
 
   \ Get an 8-bit random number.
   \ It is computed using a combination of:
@@ -1437,23 +1424,22 @@ code libzx-crnd-opt1 ( -- b )
     \ add a, h
     \ add a, l
 
-  rom-pointer h ldp#, m add,
+  rom-pointer h ldp#, m add, os-seed sta,
     \ ld hl, romPointer
     \ add a, (hl) ; the contents of the ROM are "pretty random"
     \ ; so add it in the mix
-
-  os-seed sta,
     \ ld (lastRandomNumber), a ; save this number
 
   b pop, pusha jp, end-code
 
-need rng-px-bench
+need 8b-rng-px-bench need :noname
 
-: libzx-rng-px-bench-opt1 ( -- )
-  3 rom-pointer !  33 os-seed c!  s" libzx opt1 (8 bit)"
-  ['] libzx-crnd-opt1 rng-px-bench ;
+:noname ( -- ) 3 rom-pointer ! 33 os-seed c! ;
+' libzx-1-crnd
+:noname ( -- ca len ) s" libzx opt1 (8 bit)" ;
+8b-rng-px-bench libzx-1-rng-px-bench ( -- )
 
-( libzx-crnd )
+( libzx-crnd libzx-rng-px-bench )
 
   \ Credit:
   \ Original code from the ZX Spectrum libzx library,
@@ -1526,11 +1512,12 @@ code libzx-crnd ( -- b )
 
   b pop, 0 h ld#, a l ld, h push, jpnext, end-code
 
-need rng-px-bench
+need 8b-rng-px-bench need :noname
 
-: libzx-rng-px-bench ( -- )
-  3 rom-pointer !  33 os-seed c!
-  s" libzx (8 bit)" ['] libzx-crnd rng-px-bench ;
+:noname ( -- ) 3 rom-pointer ! 33 os-seed c! ;
+' libzx-crnd
+:noname ( -- ca len ) s" libzx (8 bit)" ;
+8b-rng-px-bench libzx-rng-px-bench ( -- )
 
   \ ===========================================================
 
@@ -1674,6 +1661,7 @@ need rng-px-bench
   \ 2017-07-28: Write a definer of 16-bit benchmarks, in order
   \ to make their secondary phase automatic. Shorten "-pix-" to
   \ "-px-", "16-bit-" to "16-bit-" and "8-bit-" to "8b-" in
-  \ word names, except old comments.
+  \ word names, except old comments. Write a definer of 8-bit
+  \ benchmarks. Rename and rewrite the R-register benchmark.
 
   \ vim: filetype=soloforth
