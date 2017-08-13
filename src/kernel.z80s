@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201707272138
+; Last modified: 201708131618
 
 include version.z80s
 
@@ -8551,8 +8551,6 @@ name_to_string.loop_exit:
   dw question_branch_,throw_pfa
   dw drop_
   dw exit_
-
-; XXX TODO -- benchmark, compare to `swap 0<> and throw`
 
 ; ----------------------------------------------
   _colon_header compiling_question_,'compiling?'

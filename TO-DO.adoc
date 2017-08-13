@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-07-27
+:revdate: 2017-08-09
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -284,6 +284,60 @@ actual strings.
 
 // Control structures {{{1
 == Control structures ==
+
+.2017-08-09
+
+`cond` and `thens` are part of the unfinished implementation of
+`select`. Reference:
+
+....
+Subject: Re: Multiple WHILE's
+From: Wil Baden <neil...@earthlink.net>
+Newsgroups: comp.lang.forth
+Message-ID: <260620020959020469%neilbawd@earthlink.net>
+Date: Wed, 26 Jun 2002 16:58:18 GMT
+....
+
+
+`COND ... THENS`, please.  Proposed in early 1990s.
+
+When control-flow stack is the data stack, the following has worked. 
+
+----
+    : COND 0 ; IMMEDIATE
+
+    : THENS  BEGIN dup WHILE  postpone THEN  REPEAT DROP ; IMMEDIATE
+----
+
+Note further example.
+
+----
+COND  test IF  
+    action
+ELSE  test IF 
+    action 
+ELSE  test IF  
+    action 
+ELSE
+    otherwise
+THENS
+----
+
+`test` may be on a string.
+
+`test` may use `ANDIF` and/or `ORIF` for short circuit conditionals.
+
+----
+: ANDIF postpone DUP  postpone IF  postpone DROP ; IMMEDIATE
+: ORIF  postpone DUP  postpone 0=  postpone IF  postpone DROP ; IMMEDIATE
+----
+
+Foolish example.
+
+----
+: Is-Alnum                  ( char -- flag )
+    COND dup Is-Lower ORIF dup Is-Upper ORIF dup Is-Digit THENS NIP ;
+----
 
 .2017-03-28
 

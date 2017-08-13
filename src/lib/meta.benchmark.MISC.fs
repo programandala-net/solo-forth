@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201707272138
+  \ Last modified: 201708131617
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -28,6 +28,38 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+( ?throw-bench )
+
+need bench{ need }bench.
+
+: ?t1 ( f n -- ) swap if drop else drop then ;
+  \ : ?throw ( f n -- ) swap if throw else drop then ;
+
+: ?t2 ( f n -- ) swap 0<> and drop ;
+  \ : ?throw ( f n -- ) swap 0<> and throw ;
+
+: run ( u -- )
+  cr ." Results for " dup u. ." iterations"
+  dup cr ." false n ?throw \ v1 :"
+  bench{ 0 ?do false i ?t1 loop }bench.
+  dup cr ." false n ?throw \ v2 :"
+  bench{ 0 ?do false i ?t2 loop }bench.
+  dup cr ." true n ?throw \ v1 :"
+  bench{ 0 ?do true i ?t1 loop }bench.
+      cr ." true n ?throw \ v2 :"
+  bench{ 0 ?do true i ?t2 loop }bench. cr ;
+
+  \ 2017-08-13
+  \
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- ---------------------------------
+  \       false v1 false v2 true v1 true v2
+  \       -------- -------- ------- -------
+  \   100        2        2       1       2
+  \  1000       15       16      16      17
+  \ 10000      144      161     153     161
+  \ 65535      944     1054    1000    1060
+
 ( create-bench )
 
 need bench{ need }bench.
@@ -40,7 +72,7 @@ here 256 c, constant try-constant
   cr ." Results for " dup u. ." iterations"
   dup cr ." create   :"
   bench{ 0 ?do try-create drop loop }bench.
-      cr ." constant : " 
+      cr ." constant : "
   bench{ 0 ?do try-constant drop loop }bench. cr ;
 
   \ 2017-05-20:
@@ -2086,11 +2118,11 @@ need bench{ need }bench.
 
 : emit-udg-bench ( n -- )
   dup bench{ 0 ?do  home   128 emit      loop  }bench
-      0 1 at-xy ." emit     " bench.
+      0 1 at-xy ." emit      " bench.
   dup bench{ 0 ?do  home   128 emit-udg  loop  }bench
-      0 2 at-xy ." emit-udg " bench.
+      0 2 at-xy ." emit-udg  " bench.
       bench{ 0 ?do  home 65368 emit-udga loop  }bench
-      0 3 at-xy ." emit-udga" bench. ;
+      0 3 at-xy ." emit-udga " bench. ;
 
   \                        Frames (20 ms)
   \                        ---------------------------------
@@ -2831,5 +2863,7 @@ need bench{ need }bench.
   \ 2017-07-27: Add `udg-type-bench`, from Nuclear Waste
   \ Invaders.  Improve `emit-udg-bench` and add `emit-udga` to
   \ it.
+  \
+  \ 2017-08-13: Add `?throw-bench`.
 
   \ vim: filetype=soloforth
