@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-08-09
+:revdate: 2017-08-16
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -281,6 +281,14 @@ the dictionary. Example: `(loop)`, `clit`, `back`, `digit`...
 Separate header flags from the length byte of the name field.  This way more
 bits will fit (alias, deferred, special behaviour), and word names will be
 actual strings.
+
+.2017-08-17:
+
+`'` should warn when used with a `compile-only` word.
+
+.2017-08-17:
+
+Implement Gforth's `]]`  and `[[`.
 
 // Control structures {{{1
 == Control structures ==

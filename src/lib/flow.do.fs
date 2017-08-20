@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703131954
+  \ Last modified: 201708202129
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,7 +23,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( do -do )
+( do -do #do )
 
 [unneeded] do ?(
 
@@ -39,18 +39,11 @@
   \   Compilation: ( -- do-sys )
   \
 
-  \ Compile `(do)` and leave _do-sys_ to be consumed by `loop` or
-  \ `+loop`.
+  \ Compile `(do)` and leave _do-sys_ to be consumed by `loop`
+  \ or `+loop`.
   \
   \ ``do`` is an `immediate` and `compile-only` word.
   \
-  \ Definition:
-
-  \ ----
-  \ : do ( -- do-sys )
-  \   postpone (do) >mark ;  immediate compile-only
-  \ ----
-
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
   \
   \ See also: `?do`, `-do`.
@@ -74,7 +67,7 @@ code (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
 
   \ Credit:
   \
-  \ Code based on Spectrum Forth-83' `(do)`
+  \ Code based on Spectrum Forth-83's `(do)`
 
   \ XXX TODO -- Finish the documentation.
 
@@ -110,13 +103,6 @@ code (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
   \
   \ ``-do`` is an `immediate` and `compile-only` word.
   \
-  \ Definition:
-
-  \ ----
-  \ : -do ( -- do-sys )
-  \   postpone (-do) >mark ;  immediate compile-only
-  \ ----
-
   \ Usage example:
 
   \ ----
@@ -148,6 +134,36 @@ code (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
   \
   \ }doc
 
+[unneeded] #do ?(
+
+: #do ( -- do-sys )
+  postpone 0 postpone ?do ; immediate compile-only ?)
+
+  \ doc{
+  \
+  \ #do
+  \   Compilation: ( -- do-sys )
+  \
+  \ Execute `0 ?do` and leave _do-sys_ to be consumed by `loop`
+  \ or `+loop`.
+  \
+  \ ``#do`` is an `immediate` and `compile-only` word.
+  \
+  \ Usage example:
+
+  \ ----
+  \ : times ( n -- ) #do i . loop ;
+  \
+  \ 0 times \ prints nothing
+  \ 4 times \ prints 0 1 2 3
+  \ ----
+
+  \ See also: `?do`, `do`, `-do`.
+  \
+  \ Origin: Comus.
+  \
+  \ }doc
+
   \ ===========================================================
   \ Change log
 
@@ -157,6 +173,7 @@ code (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
   \ 2017-02-27: Improve documentation.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-08-20: Add `#do`. Improve documentation.
 
   \ vim: filetype=soloforth
-
