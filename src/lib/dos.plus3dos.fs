@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709071633
+  \ Last modified: 201709071845
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -534,7 +534,7 @@ code reposition-file ( ud fid -- ior )
   \ XXX UNDER DEVELOPMENT -- 2017-03-09
 
 need assembler need >filename
-need /base-filename need /filename-ext
+need /base-filename need /filename-ext need 3dup need 3drop
 
 13 cconstant /cat-entry
 
@@ -550,12 +550,9 @@ need /base-filename need /filename-ext
   \ }doc
 
 code (cat ( ca1 ca2 x -- n ior )
-  exx,  b pop, d pop, h pop,
-        011E ix ldp#, dos-ix_ call,
-        b c ld, 0 b ld#, b push,
-  exx,  pushdosior jp, end-code
-
-  \ XXX FIXME -- Why does it return _ior_ #-1004 (no data)?
+  exx, b pop, d pop, h pop,
+       011E ix ldp#, dos-ix_ call, b c ld, 0 b ld#, b push,
+  exx, pushdosior jp, end-code
 
   \ XXX TODO -- Rewrite with Z80 opcodes.
 
@@ -577,8 +574,18 @@ code (cat ( ca1 ca2 x -- n ior )
   \ _ior_ :: result error (if non-zero, _n_ is undefined)
 
   \
-  \ `(cat` is a factor of `wcat` and a direct interface to the
-  \ DOS CATALOG +3DOS routine.
+  \ ``(cat`` is a factor of `wcat` and a direct interface to
+  \ the DOS CATALOG +3DOS routine.
+  \
+  \ Entry 0 of the buffer must be preloaded with the first
+  \ filename required (or erased with zeroes). Entry 1 will
+  \ contain the first matching filename greater than the
+  \ preloaded entry (if any). If the buffer is too small for
+  \ the catalogue, ``(cat`` can be called again with entry 0
+  \ replaced by entry _n_ (task done by `more-cat`) to fetch
+  \ the next part of the directory.
+  \
+  \ See also: `cat-buffer`, `cat-entries`, `/cat-entry`.
   \
   \ }doc
 
@@ -588,8 +595,8 @@ create cat-entries 10 c,
   \
   \ cat-entries ( -- ca )
   \
-  \ A character variable that holds the number of entries of
-  \ the buffer used by `cat`.
+  \ A character variable that holds the number of entries
+  \ (minimum 2) of the buffer used by `(cat`.
   \
   \ See also: `/cat-entry`.
   \
@@ -597,10 +604,6 @@ create cat-entries 10 c,
 
 variable cat-buffer
   \ XXX TMP -- use the stack instead?
-
--->
-
-( wcat cat )
 
 : .filename-ext ( ca -- ) '.' emit /filename-ext type ;
 
@@ -635,7 +638,7 @@ variable cat-buffer
 
 : .cat-entry ( ca -- )
   dup .filename
-      /base-filename /filename-ext + + @ 4 .r ."  KiB" ;
+      /base-filename /filename-ext + + @ 4 .r ."  KiB" ; -->
 
   \ doc{
   \
@@ -658,54 +661,61 @@ variable cat-buffer
   \
   \ }doc
 
-: .cat-entry# ( n -- ) /cat-entry * cat-buffer @ + .cat-entry ;
+( wcat cat )
+
+: >cat-entry ( n -- ca ) /cat-entry * cat-buffer @ + ;
 
   \ doc{
   \
-  \ .cat-entry# ( n -- )
+  \ name  ( -- )
   \
-  \ Display the catalogue entry number _n_ from buffer pointed by
-  \ `cat-buffer`.
+  \ Convert `cat-buffer` entry _n_ to its address _ca_.
   \
-  \ ``.cat-entry#`` is a factor of `.cat`.
-  \
-  \ See also: `.cat-entry`, `/cat-entry`.
+  \ See also: `/cat-entry`, `allocate-cat-buffer`.
   \
   \ }doc
 
-: .cat ( n -- ) 1+ 1 ?do  i .cat-entry# cr loop ;
+: .cat ( n -- ) 1 ?do  i >cat-entry .cat-entry cr loop ;
 
   \ doc{
   \
   \ .cat ( n -- )
   \
-  \ Display _n_ entries from `cat-buffer`, excluding the first
-  \ one.
+  \ Display _n_ entries from `cat-buffer`.
   \
   \ ``.cat`` is a factor of `wcat`.
   \
-  \ See also: `.cat-entry#`.
+  \ See also: `.cat-entry`.
   \
   \ }doc
 
 : allocate-cat-buffer ( n -- ca )
-  /cat-entry * allocate-stringer dup /cat-entry erase ;
+  1+ /cat-entry * allocate-stringer dup /cat-entry erase ;
 
   \ doc{
   \
   \ allocate-cat-buffer ( n -- ca )
   \
-  \ Allocate space in the `stringer` for _n_ cat entries and
-  \ return its address _ca_`, which will be stored in
+  \ Allocate space in the `stringer` for _n_ catalogue entries
+  \ and return its address _ca_, which will be stored later in
   \ `cat-buffer`.
   \
+  \ An additional entry is added at the start of the buffer and
+  \ erased with zeroes. This first entry is used by the DOS
+  \ routine.
+  \
   \ ``allocate-cat-buffer`` is a factor of `>cat`.
+  \
+  \ See also: `(cat`.
   \
   \ }doc
 
 : >cat ( ca len -- ca1 ca2 x )
   >filename cat-entries c@ allocate-cat-buffer dup cat-buffer !
-            cat-entries c@ $100 * 1 or ;
+            cat-entries c@ 1+ $100 * 1 or ;
+
+  \ XXX TODO -- Make the filter configurable, with a flag,
+  \ `full-cat`.
 
   \ doc{
   \
@@ -718,7 +728,7 @@ variable cat-buffer
   \ [horizontal]
   \ _ca1_ :: address of $FF-terminated filename (wildcards permitted)
   \ _ca2_ :: address of buffer
-  \ _x_ (low byte) :: bit 0 set if system files are included
+  \ _x_ (low byte) :: filter: bit 0 set if system files are included
   \ _x_ (high byte) :: size of the buffer in entries, plus one (>=2)
 
   \ See also: `wcat`, `cat`, `allocate-cat-buffer`,
@@ -726,7 +736,27 @@ variable cat-buffer
   \
   \ }doc
 
-: wcat ( ca len -- n ) >cat (cat throw .cat ;
+: more-cat ( -- )
+  cat-entries c@ >cat-entry cat-buffer @ /cat-entry move ;
+
+  \ doc{
+  \
+  \ more-cat ( -- )
+  \
+  \ Copy the last catalogue entry of `cat-buffer` to the first
+  \ position in the buffer, in order to get the next chunk of
+  \ the catalogue.
+  \
+  \ ``more-cat`` is a factor of `wcat`.
+  \
+  \ See also: `(cat`.
+  \
+  \ }doc
+
+: wcat ( ca len -- ) >cat begin  3dup (cat throw ?dup
+                          while  dup .cat cat-entries c@ 1+ =
+                          while  more-cat
+                          repeat then 3drop ;
 
   \ doc{
   \
@@ -735,7 +765,7 @@ variable cat-buffer
   \ Show a wild-card disk catalogue using the wild-card
   \ filename _ca len_.
   \
-  \ See also: `cat`, `(cat`, `set-drive`.
+  \ See also: `cat`, `(cat`, `more-cat`, `set-drive`.
   \
   \ }doc
 
@@ -774,6 +804,8 @@ variable cat-buffer
   \
   \ 2017-03-13: Improve documentation.
   \
-  \ 2017-09-07: Fix file size in `.cat-entry`.
+  \ 2017-09-07: Fix file size in `.cat-entry`.  Fix `wcat`: it
+  \ called `(cat` only once, not until the catalogue is
+  \ completed. Fix and improve documentation.
 
   \ vim: filetype=soloforth
