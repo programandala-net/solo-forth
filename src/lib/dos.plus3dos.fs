@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709071845
+  \ Last modified: 201709072143
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -529,12 +529,10 @@ code reposition-file ( ud fid -- ior )
   \
   \ }doc
 
-( wcat cat )
-
-  \ XXX UNDER DEVELOPMENT -- 2017-03-09
+( (cat )
 
 need assembler need >filename
-need /base-filename need /filename-ext need 3dup need 3drop
+need /base-filename need /filename-ext
 
 13 cconstant /cat-entry
 
@@ -542,50 +540,10 @@ need /base-filename need /filename-ext need 3dup need 3drop
   \
   \ /cat-entry ( -- n )
   \
-  \ Return size _n_, in bytes, of every entry of the temporary
-  \ buffer used by `cat`.
+  \ Return size _n_, in bytes, of every entry of the
+  \ `cat-buffer` used by `cat`.
   \
   \ See also: `cat-entries`.
-  \
-  \ }doc
-
-code (cat ( ca1 ca2 x -- n ior )
-  exx, b pop, d pop, h pop,
-       011E ix ldp#, dos-ix_ call, b c ld, 0 b ld#, b push,
-  exx, pushdosior jp, end-code
-
-  \ XXX TODO -- Rewrite with Z80 opcodes.
-
-  \ doc{
-  \
-  \ (cat ( ca1 ca2 x -- n ior )
-  \
-  \ Fill a buffer _ca2_ with part of the directory (sorted),
-  \ using filename stored at _ca1_. Input and output
-  \ parameters:
-  \
-
-  \ [horizontal]
-  \ _ca1_ :: address of $FF-terminated filename (wildcards permitted)
-  \ _ca2_ :: address of buffer
-  \ _x_ (low byte) :: bit 0 set if system files are included
-  \ _x_ (high byte) :: size of the buffer in entries, plus one (>=2)
-  \ _n_ :: number of completed entries in buffer (if non-zero, there may be more to come)
-  \ _ior_ :: result error (if non-zero, _n_ is undefined)
-
-  \
-  \ ``(cat`` is a factor of `wcat` and a direct interface to
-  \ the DOS CATALOG +3DOS routine.
-  \
-  \ Entry 0 of the buffer must be preloaded with the first
-  \ filename required (or erased with zeroes). Entry 1 will
-  \ contain the first matching filename greater than the
-  \ preloaded entry (if any). If the buffer is too small for
-  \ the catalogue, ``(cat`` can be called again with entry 0
-  \ replaced by entry _n_ (task done by `more-cat`) to fetch
-  \ the next part of the directory.
-  \
-  \ See also: `cat-buffer`, `cat-entries`, `/cat-entry`.
   \
   \ }doc
 
@@ -596,14 +554,27 @@ create cat-entries 10 c,
   \ cat-entries ( -- ca )
   \
   \ A character variable that holds the number of entries
-  \ (minimum 2) of the buffer used by `(cat`.
+  \ (minimum 2) of the `cat-buffer`, created by
+  \ `allocate-cat-buffer` and used by `(cat`.  Its default
+  \ value is 10.
   \
   \ See also: `/cat-entry`.
   \
   \ }doc
 
 variable cat-buffer
-  \ XXX TMP -- use the stack instead?
+
+  \ doc{
+  \
+  \ cat-buffer ( -- a )
+  \
+  \ _a_ is the address of a cell containing the address of the
+  \ catalogue buffer, used by `(cat`, `.cat`, `.acat` and other
+  \ words.
+  \
+  \ See also: `cat-entries`, `/cat-entry`.
+  \
+  \ }doc
 
 : .filename-ext ( ca -- ) '.' emit /filename-ext type ;
 
@@ -621,7 +592,7 @@ variable cat-buffer
   \ }doc
 
 : .filename ( ca -- )
-  /base-filename 2dup type + .filename-ext ;
+  /base-filename 2dup type + .filename-ext ; -->
 
   \ doc{
   \
@@ -634,34 +605,11 @@ variable cat-buffer
   \ filename from the filename extension is not included in the
   \ string at _ca_, but it's printed.
   \
-  \ }doc
-
-: .cat-entry ( ca -- )
-  dup .filename
-      /base-filename /filename-ext + + @ 4 .r ."  KiB" ; -->
-
-  \ doc{
-  \
-  \ .cat-entry ( ca -- )
-  \
-  \ Display a catalogue entry stored at _ca_. Format of the
-  \ entry:
-  \
-  \ - Bytes 0..7: Base filename (left justified, space filled)
-  \ - Bytes 8..10: Filename extension (left justified, space filled)
-  \ - Bytes 11..12: File size in kibibytes (binary)
-  \
-  \ The file size is the amount of disk space allocated to the
-  \ file, not necessarily the same as the amount used by the
-  \ file.
-  \
-  \ ``.cat-entry`` is a factor of `.cat-entry#`.
-  \
-  \ See also: `.cat`, `.filename`.
+  \ See also: `.filename-ext`.
   \
   \ }doc
 
-( wcat cat )
+( (cat )
 
 : >cat-entry ( n -- ca ) /cat-entry * cat-buffer @ + ;
 
@@ -672,20 +620,6 @@ variable cat-buffer
   \ Convert `cat-buffer` entry _n_ to its address _ca_.
   \
   \ See also: `/cat-entry`, `allocate-cat-buffer`.
-  \
-  \ }doc
-
-: .cat ( n -- ) 1 ?do  i >cat-entry .cat-entry cr loop ;
-
-  \ doc{
-  \
-  \ .cat ( n -- )
-  \
-  \ Display _n_ entries from `cat-buffer`.
-  \
-  \ ``.cat`` is a factor of `wcat`.
-  \
-  \ See also: `.cat-entry`.
   \
   \ }doc
 
@@ -753,8 +687,109 @@ variable cat-buffer
   \
   \ }doc
 
+: more-cat? ( n -- f ) cat-entries c@ 1+ = ;
+
+  \ doc{
+  \
+  \ more-cat? ( n -- f )
+  \
+  \ There may be more catalague entries to come after _n_ of
+  \ them have been completed in `cat-buffer`?
+  \
+  \ ``more-cat?`` is a factor of `wcat` and `wacat`.
+  \
+  \ See also: `(cat`.
+  \
+  \ }doc
+
+code (cat ( ca1 ca2 x -- n ior )
+  exx, b pop, d pop, h pop,
+       011E ix ldp#, dos-ix_ call, b c ld, 0 b ld#, b push,
+  exx, pushdosior jp, end-code
+
+  \ XXX FIXME -- It returns ior #-1020 (bad filename) the first
+  \ time it runs.
+  \
+  \ XXX TODO -- Rewrite with Z80 opcodes.
+
+  \ doc{
+  \
+  \ (cat ( ca1 ca2 x -- n ior )
+  \
+  \ Fill a buffer _ca2_ with part of the directory (sorted),
+  \ using filename stored at _ca1_. Input and output
+  \ parameters:
+  \
+
+  \ [horizontal]
+  \ _ca1_ :: address of $FF-terminated filename (wildcards permitted)
+  \ _ca2_ :: address of buffer
+  \ _x_ (low byte) :: bit 0 set if system files are included
+  \ _x_ (high byte) :: size of the buffer in entries, plus one (>=2)
+  \ _n_ :: number of completed entries in buffer (if non-zero, there may be more to come)
+  \ _ior_ :: result error (if non-zero, _n_ is undefined)
+
+  \
+  \ ``(cat`` is a factor of `wcat` and a direct interface to
+  \ the DOS CATALOG +3DOS routine.
+  \
+  \ Entry 0 of the buffer must be preloaded with the first
+  \ filename required (or erased with zeroes). Entry 1 will
+  \ contain the first matching filename greater than the
+  \ preloaded entry (if any). If the buffer is too small for
+  \ the catalogue, ``(cat`` can be called again with entry 0
+  \ replaced by entry _n_ (task done by `more-cat`) to fetch
+  \ the next part of the directory.
+  \
+  \ See also: `cat-buffer`, `cat-entries`, `/cat-entry`.
+  \
+  \ }doc
+
+( wcat cat )
+
+need (cat need 3dup need 3drop
+
+: .cat-entry ( ca -- )
+  dup .filename
+      /base-filename /filename-ext + + @ 4 .r ."  KiB" ;
+
+  \ doc{
+  \
+  \ .cat-entry ( ca -- )
+  \
+  \ Display a catalogue entry stored at _ca_. Format of the
+  \ entry:
+  \
+  \ - Bytes 0..7: Base filename (left justified, space filled)
+  \ - Bytes 8..10: Filename extension (left justified, space filled)
+  \ - Bytes 11..12: File size in kibibytes (binary)
+  \
+  \ The file size is the amount of disk space allocated to the
+  \ file, not necessarily the same as the amount used by the
+  \ file.
+  \
+  \ ``.cat-entry`` is a factor of `.cat-entry#`.
+  \
+  \ See also: `.cat`, `.filename`.
+  \
+  \ }doc
+
+: .cat ( n -- ) 1 ?do  i >cat-entry .cat-entry cr loop ;
+
+  \ doc{
+  \
+  \ .cat ( n -- )
+  \
+  \ Display _n_ entries from `cat-buffer`.
+  \
+  \ ``.cat`` is a factor of `wcat`.
+  \
+  \ See also: `.cat-entry`, `.acat`.
+  \
+  \ }doc
+
 : wcat ( ca len -- ) >cat begin  3dup (cat throw ?dup
-                          while  dup .cat cat-entries c@ 1+ =
+                          while  dup .cat more-cat?
                           while  more-cat
                           repeat then 3drop ;
 
@@ -765,7 +800,7 @@ variable cat-buffer
   \ Show a wild-card disk catalogue using the wild-card
   \ filename _ca len_.
   \
-  \ See also: `cat`, `(cat`, `more-cat`, `set-drive`.
+  \ See also: `cat`, `wacat`, `(cat`, `more-cat`, `set-drive`.
   \
   \ }doc
 
@@ -773,11 +808,58 @@ variable cat-buffer
 
   \ doc{
   \
-  \ wcat ( ca len -- )
+  \ cat ( -- )
   \
   \ Show a disk catalogue of the current drive.
   \
-  \ See also: `wcat`, `(cat`, `set-drive`.
+  \ See also: `wcat`, `acat`, `(cat`, `set-drive`.
+  \
+  \ }doc
+
+( wacat acat )
+
+need (cat need tab need 3dup need 3drop
+
+: .acat ( n -- ) 1 ?do  i >cat-entry .filename tab loop ;
+
+  \ doc{
+  \
+  \ .acat ( n -- )
+  \
+  \ Display _n_ entries from `cat-buffer`, in abbreviated
+  \ format.
+  \
+  \ ``.acat`` is a factor of `wacat`.
+  \
+  \ See also: `.filename`, `.cat`.
+  \
+  \ }doc
+
+: wacat ( ca len -- ) >cat begin  3dup (cat throw ?dup
+                           while  dup .acat more-cat?
+                           while  more-cat
+                           repeat then 3drop ;
+
+  \ doc{
+  \
+  \ wacat ( ca len -- )
+  \
+  \ Show an abbreviated wild-card disk catalogue using the
+  \ wild-card filename _ca len_.
+  \
+  \ See also: `acat`, `wcat`, `(cat`, `more-cat`, `set-drive`.
+  \
+  \ }doc
+
+: acat ( -- ) s" *.*" wacat ;
+
+  \ doc{
+  \
+  \ acat ( -- )
+  \
+  \ Show an abbreviated disk catalogue of the current drive.
+  \
+  \ See also: `wacat`, `cat`, `(cat`, `set-drive`.
   \
   \ }doc
 
@@ -806,6 +888,7 @@ variable cat-buffer
   \
   \ 2017-09-07: Fix file size in `.cat-entry`.  Fix `wcat`: it
   \ called `(cat` only once, not until the catalogue is
-  \ completed. Fix and improve documentation.
+  \ completed. Fix and improve documentation. Add `acat` and
+  \ `wacat`.
 
   \ vim: filetype=soloforth

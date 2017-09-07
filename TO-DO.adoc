@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-08-16
+:revdate: 2017-09-07
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -961,6 +961,12 @@ source.
 
 // DOS {{{1
 == DOS ==
+
+.2017-09-07:
+
+Fix +3DOS `(cat`, which return ior #-1020 the first time it's
+executed. It seems the bug has been introduced after adding `acat` and
+`wacat`, but the shared code has not changed.
 
 .2017-03-12, 2017-03-13:
 

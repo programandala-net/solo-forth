@@ -1,12 +1,12 @@
 = Solo Forth %VERSION% %DOS%
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-04-27
+:revdate: 2017-09-07
 :toc:
 :toclevels: 1
 :toc-placement!:
 :linkattrs:
 
-// Last modified 201704271919
+// Last modified 201709071912
 
 toc::[]
 
@@ -87,9 +87,9 @@ on each DOS.
 | Word              | G+DOS | TR-DOS | +3DOS | Comment
 
 | `>file`           | YES   | YES    |       | Save memory zone to a file
-| `acat`            | YES   | YES    | n/a   | Abbreviated disk catalogue
+| `acat`            | YES   | YES    | YES   | Abbreviated disk catalogue
 | `bin`             |       |        | YES   | Standard Forth
-| `cat`             | YES   | YES    | draft | Detailed disk catalogue
+| `cat`             | YES   | YES    | YES   | Detailed disk catalogue
 | `close-file`      |       |        | YES   | Standard Forth
 | `create-file`     |       |        | draft | Standard Forth
 | `delete-file`     | YES   | YES    | YES   | Standard Forth
@@ -125,8 +125,8 @@ on each DOS.
 | `set-drive`       | YES   | YES    | draft |
 | `undelete-file`   |       | YES    |       |
 | `w/o`             |       |        | YES   | Standard Forth
-| `wacat`           | YES   |        |       | Abbreviated disk catalogue with wildcards
-| `wcat`            | YES   |        | draft | Detailed disk catalogue with wildcards
+| `wacat`           | YES   |        | YES   | Abbreviated disk catalogue with wildcards
+| `wcat`            | YES   |        | YES   | Detailed disk catalogue with wildcards
 | `write-file`      |       |        |       | Standard Forth
 | `write-line`      |       |        |       | Standard Forth
 
