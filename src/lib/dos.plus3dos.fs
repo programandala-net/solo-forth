@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709072143
+  \ Last modified: 201709072227
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -644,12 +644,25 @@ variable cat-buffer
   \
   \ }doc
 
+variable full-cat  full-cat on
+
+  \ doc{
+  \
+  \ full-cat ( -- a )
+  \
+  \ _a_ is the address of a cell containing a flag. When the
+  \ flag is _true_, `cat`, `wcat`, `acat` and `wacat` display
+  \ also system files. When the flag is _false_, they don't.
+  \ Other values are not supported.
+  \ The default value is _true_.
+  \
+  \ See also: `>cat`.
+  \
+  \ }doc
+
 : >cat ( ca len -- ca1 ca2 x )
   >filename cat-entries c@ allocate-cat-buffer dup cat-buffer !
-            cat-entries c@ 1+ $100 * 1 or ;
-
-  \ XXX TODO -- Make the filter configurable, with a flag,
-  \ `full-cat`.
+            cat-entries c@ 1+ $100 * full-cat @ abs or ;
 
   \ doc{
   \
@@ -662,7 +675,8 @@ variable cat-buffer
   \ [horizontal]
   \ _ca1_ :: address of $FF-terminated filename (wildcards permitted)
   \ _ca2_ :: address of buffer
-  \ _x_ (low byte) :: filter: bit 0 set if system files are included
+  \ _x_ (low byte) :: filter: bit 0 set if system files are
+  \ included (configurable by `full-cat`)
   \ _x_ (high byte) :: size of the buffer in entries, plus one (>=2)
 
   \ See also: `wcat`, `cat`, `allocate-cat-buffer`,
@@ -889,6 +903,6 @@ need (cat need tab need 3dup need 3drop
   \ 2017-09-07: Fix file size in `.cat-entry`.  Fix `wcat`: it
   \ called `(cat` only once, not until the catalogue is
   \ completed. Fix and improve documentation. Add `acat` and
-  \ `wacat`.
+  \ `wacat`. Add the `full-cat` flag.
 
   \ vim: filetype=soloforth
