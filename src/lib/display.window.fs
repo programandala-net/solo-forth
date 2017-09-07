@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705131346
+  \ Last modified: 201705212303
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -489,8 +489,7 @@ need window need clear-rectangle need attr@ need whome
 
 ( wtype wltype )
 
-[unneeded] wtype ?( need wfreecolumns need free/wtype
-                    need at-wxy need wtype+
+[unneeded] wtype ?( need free/wtype
 
 : wtype ( ca len -- )
   begin dup while free/wtype repeat 2drop ; ?)
@@ -563,5 +562,7 @@ need window need clear-rectangle need attr@ need whome
   \
   \ 2017-05-13: Fix `free/wtype`. Try the tests. Move them to
   \ the tests module.
+  \
+  \ 2017-05-21: Remove unnecessary requirements from `wtype`.
 
   \ vim: filetype=soloforth

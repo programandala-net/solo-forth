@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071801
+  \ Last modified: 201708192044
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -787,7 +787,8 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \
   \ ruler ( c len -- ca len )
   \
-  \ Return a string _ca len_ of characters _c_.
+  \ Return a string _ca len_ of characters _c_, in the
+  \ `stringer`.
   \
   \ See also: `chars>string`, `char>string`, `s+`.
   \
@@ -989,5 +990,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \ 2017-05-05: Improve documentation.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2017-08-19: Improve documentation.
 
   \ vim: filetype=soloforth

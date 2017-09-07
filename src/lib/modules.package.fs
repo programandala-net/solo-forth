@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703142257
+  \ Last modified: 201707031728
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -42,8 +42,6 @@
 
 ( package public private end-package )
 
-  \ XXX TODO -- combine with `begin-module`
-
   \ ............................................
   \ XXX REMARK -- 2016-12-07:
 
@@ -58,7 +56,6 @@
   \ ............................................
 
 need latest>wordlist need +order need -order need nextname
-
 
 : package ( "name" -- wid0 wid1 )
   get-current parse-name find-name ?dup
