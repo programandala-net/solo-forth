@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703131934
+  \ Last modified: 201709071633
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -634,7 +634,8 @@ variable cat-buffer
   \ }doc
 
 : .cat-entry ( ca -- )
-  dup .filename space /base-filename + @ 3 .r ." KiB" ;
+  dup .filename
+      /base-filename /filename-ext + + @ 4 .r ."  KiB" ;
 
   \ doc{
   \
@@ -772,5 +773,7 @@ variable cat-buffer
   \ 2017-03-12: Update the names of `stringer` words.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-09-07: Fix file size in `.cat-entry`.
 
   \ vim: filetype=soloforth
