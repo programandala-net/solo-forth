@@ -1,4 +1,8 @@
 # This file makes sure this directory is kept.
 # when disk images are ignored in the main <.gitignore>.
 
+# Debugging screenshots and notes:
+*.txt
+*.png
+
 # vim: filetype=config

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709072227
+  \ Last modified: 201709081601
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -531,6 +531,8 @@ code reposition-file ( ud fid -- ior )
 
 ( (cat )
 
+  cr .( loading (cat ... ) \ XXX INFORMER
+
 need assembler need >filename
 need /base-filename need /filename-ext
 
@@ -721,9 +723,6 @@ code (cat ( ca1 ca2 x -- n ior )
        011E ix ldp#, dos-ix_ call, b c ld, 0 b ld#, b push,
   exx, pushdosior jp, end-code
 
-  \ XXX FIXME -- It returns ior #-1020 (bad filename) the first
-  \ time it runs.
-  \
   \ XXX TODO -- Rewrite with Z80 opcodes.
 
   \ doc{
@@ -760,6 +759,8 @@ code (cat ( ca1 ca2 x -- n ior )
   \ }doc
 
 ( wcat cat )
+
+  cr .( loading cat ... ) \ XXX INFORMER
 
 need (cat need 3dup need 3drop
 
@@ -831,6 +832,8 @@ need (cat need 3dup need 3drop
   \ }doc
 
 ( wacat acat )
+
+  cr .( loading acat ... ) \ XXX INFORMER
 
 need (cat need tab need 3dup need 3drop
 

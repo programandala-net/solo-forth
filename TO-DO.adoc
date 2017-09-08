@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-09-07
+:revdate: 2017-09-08
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -114,12 +114,32 @@ NOTE: Milestone: 0.14.0
 // Bugs {{{1
 == Bugs ==
 
-.2017-04-30:
+.2017-09-07, 2017-09-08:
+
++3DOS `(cat` returns ior #-1020 (bad filename) in some cases:
+
+- When `cat`/`wcat` and `acat`/`wacat` are loaded (no matter the
+  order), the first execution of any of them fails with ior #-1020
+  before displaying anything.  Later executions of any of them work
+  fine.
+- When only `cat`/`wcat` is loaded, is works fine.
+- When only `acat`/`wacat` is loaded, the first execution of any of
+  them fails with ior #-1020 after displaying the first part of the
+  catalogue (the first 10 files, hold in the buffer pointed by
+  `cat-buffer`). Later executions work fine.
+
+It seems the bug has been introduced after adding `acat` and `wacat`,
+but the shared code has not changed, included `(cat`.
+
+.2017-04-30, 2017-09-08:
 
 The sector calculation on +3DOS fails when the system boots from the
 180-KiB disk, which is replaced by the 720-KiB library disk. When the
 system boots from the 720-KiB disk, the output of `blks` is correct,
 identical to G+DOS and TR-DOS.
+
+It seems +3DOS is not aware the disk, being a different format, has
+been changed.
 
 .2017-03-22:
 
@@ -961,12 +981,6 @@ source.
 
 // DOS {{{1
 == DOS ==
-
-.2017-09-07:
-
-Fix +3DOS `(cat`, which return ior #-1020 the first time it's
-executed. It seems the bug has been introduced after adding `acat` and
-`wacat`, but the shared code has not changed.
 
 .2017-03-12, 2017-03-13:
 
