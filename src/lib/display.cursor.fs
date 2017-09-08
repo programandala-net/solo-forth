@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705091248
+  \ Last modified: 201709081810
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,7 +23,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( column last-column row last-row at-x at-y xy>r r>xy )
+( column last-column row last-row at-x at-y xy>r r>xy home? )
 
 [unneeded] column ?\ : column ( -- col ) xy drop ;
 
@@ -125,6 +125,18 @@
   \ stack.
   \
   \ See also: `xy>r`, `restore-mode`.
+  \
+  \ }doc
+
+[unneeded] home? ?\ need xy : home? ( -- f ) xy + 0= ;
+
+  \ doc{
+  \
+  \ home? ( -- f )
+  \
+  \ Is the cursor at home position (column 0, row 0)?
+  \
+  \ See: `xy`, `home`.
   \
   \ }doc
 
@@ -499,5 +511,7 @@ code xy>attra ( col row -- a )
   \ 2017-04-19: Fix documentation.
   \
   \ 2017-05-09: Remove `jppushhl,`.
+  \
+  \ 2017-09-08: Add `home?`.
 
   \ vim: filetype=soloforth
