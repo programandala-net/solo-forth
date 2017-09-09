@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201708192044
+  \ Last modified: 201709091148
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -478,7 +478,7 @@ code lowers ( ca len -- )
   \
   \ }doc
 
-( /name first-name last-name )
+( last-name /name first-name /first-name )
 
 [unneeded] last-name ?( need trim
 
@@ -539,7 +539,24 @@ code lowers ( ca len -- )
   \ Return the first name _ca2 len2_ from string _ca1 len1_.  A
   \ name is a substring separated by spaces.
   \
-  \ See also: `last-name`, `/name`, `-prefix`, `/string`.
+  \ See also: `/first-name`, `last-name`, `/name`, `-prefix`,
+  \ `/string`.
+  \
+  \ }doc
+
+[unneeded] /first-name ?( need /name
+
+: /first-name ( ca1 len1 -- ca2 len2 ca3 len3 )
+  /name tuck 2>r - 2r> 2swap ; ?)
+
+  \ doc{
+  \
+  \ /first-name ( ca1 len1 -- ca2 len2 ca3 len3 )
+  \
+  \ Get the first name _ca3 len3_ from string _ca2 len2_,
+  \ returning also the remaining string _ca3 len3_.
+  \
+  \ See also: `first-name`, `/name`.
   \
   \ }doc
 
@@ -992,5 +1009,8 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \ 2017-05-07: Improve documentation.
   \
   \ 2017-08-19: Improve documentation.
+  \
+  \ 2017-09-08: Move `/first-name` from <display.ltype.fs>,
+  \ where it was called `first-word`.
 
   \ vim: filetype=soloforth
