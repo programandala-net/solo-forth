@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201705211616
+// Last modified 201709091410
 
 // Assembler {{{1
 == Assembler ==
@@ -754,11 +754,6 @@ words, or into a section of the manual.
 
 Update stack notation and description of `if`, `while`, `until` and
 its variants after Forth-2012 (using _x_ instead of _f_)?
-
-.2017-05-05:
-
-Complete the range of 48-bit and 64-bit numbers in the _Stack notation
-symbols_ table of the manual.
 
 .2017-05-04:
 

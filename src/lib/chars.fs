@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703281402
+  \ Last modified: 201709091049
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -36,6 +36,8 @@
   \ Is character _c_ an ASCII character, i.e. in the range
   \ 0..126?
   \
+  \ See also: `printable-ascii-char?`, `control-char?`.
+  \
   \ }doc
 
 [unneeded] control-char? ?\ : control-char? ( c -- f ) bl < ;
@@ -46,6 +48,8 @@
   \
   \ Is character _c_ a control character, i.e. in the range
   \ 0..31?
+  \
+  \ See also: `ascii-char?`.
   \
   \ }doc
 
@@ -62,7 +66,7 @@
   \ Is _c_ a printable ASCII character, i.e. in the range
   \ 32..126?
   \
-  \ See also: `>printable-ascii-char`.
+  \ See also: `ascii-char?`, `>printable-ascii-char`.
   \
   \ }doc
 
@@ -77,7 +81,7 @@ need printable-ascii-char?
   \ default-printable-ascii-char ( -- c )
   \
   \ Return the default ASCII character _c_ used by
-  \ `>printable-ascii-cthar`.
+  \ `>printable-ascii-char`.
   \
   \ }doc
 
@@ -115,5 +119,7 @@ need printable-ascii-char?
   \ 2017-03-28: Improve documentation. Fix `ascii-char?` and
   \ `printable-ascii-char?`: the higher ASCII character is 126,
   \ not 127.
+  \
+  \ 2017-09-09: Improve and fix documentation.
 
   \ vim: filetype=soloforth
