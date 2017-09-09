@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -20,7 +20,7 @@
   \ Bernd Paysan, 1998.
   \
   \ Integrated into Solo Forth by Marcos Cruz
-  \ (programandala.net), 2016.
+  \ (programandala.net), 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -46,7 +46,7 @@ need alias
   \ }doc
 
 : var ( m v size "name" -- m v' )
-  create  over , +  does> ( o -- addr ) ( o pfa ) @ + ;
+  create  over , +  does> ( o -- addr ) ( o dfa ) @ + ;
 
   \ doc{
   \
@@ -127,5 +127,7 @@ create object  1 cells , 2 cells ,
   \ 2016-11-19: Copy the original code.
   \
   \ 2016-11-23: Document the words after the Gforth's manual.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

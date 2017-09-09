@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704261925
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -330,7 +330,7 @@ end-stringtable
   create  4 0 ?do
             0 ?do  dup i chars + c@ c,  loop drop
           loop
-  does> ( x1 x2 -- a ) ( pfa ) rot 4 * rot + 2* + ;
+  does> ( x1 x2 -- a ) ( dfa ) rot 4 * rot + 2* + ;
   \ Define the shape of a brick.
   \ Every brick has 4 rows, defined by 4 strings.
   \ XXX TODO stack notation of `does>`
@@ -631,5 +631,7 @@ only forth definitions
   \
   \ 2017-04-26: Use `cconstant`. Use `wordlist` instead of
   \ `vocabulary`. Replace old `flash` with `flash.`.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

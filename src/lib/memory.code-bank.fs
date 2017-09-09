@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201705111908
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -18,7 +18,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016.
+  \ Marcos Cruz (programandala.net), 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -56,7 +56,7 @@ variable code-bank#  3 code-bank# !
 
 : code-bank-caller ( i*x a "name" -- j*x )
   create ?bank ,
-  does> ( -- ) ( pfa ) @ code-bank call default-bank ;
+  does> ( -- ) ( dfa ) @ code-bank call default-bank ;
   \ Create a word "name" which will call the machine code
   \ routine at _a_, in the code bank.
 
@@ -72,5 +72,7 @@ variable code-bank#  3 code-bank# !
   \
   \ 2017-05-11: Add `need bank-start`, since `bank-start` has
   \ been moved to the library.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

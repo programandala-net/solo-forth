@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,7 +23,7 @@
   \ Dimensions (volume 3, number 6, page 189, 1982-03).
 
   \ Marcos Cruz (programandala.net), adapted, renamed and
-  \ commented the original code, 2015, 2016.
+  \ commented the original code, 2015, 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -38,9 +38,9 @@
 
 : cases: ( "name" -- orig 0 )
   create >mark 0
-  does> ( selector -- ) ( selector pfa )
-    true rot rot dup ( true selector pfa pfa )
-    cell+ swap @   ( true selector pfa+2 options )
+  does> ( selector -- ) ( selector dfa )
+    true rot rot dup ( true selector dfa dfa )
+    cell+ swap @   ( true selector dfa+2 options )
     0 do ( true selector a )
       2dup @ = ( true selector a f )
       if    dup cell+ perform
@@ -112,5 +112,7 @@
   \
   \ 2016-04-27: Rename `other>` to `othercase>`. Improve
   \ documentation and file header.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

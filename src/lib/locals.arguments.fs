@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703191350
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -125,7 +125,7 @@ variable arg-action  arg-default-action @ arg-action !
 : arg: ( +n "name" -- )
   create  c,
   does> ( -- x ) ( x -- )
-    \ ( pfa | x pfa )
+    \ ( dfa | x dfa )
     c@ >args @ swap - arg-action perform init-arg-action ;
   \ Create a new argument _name_ with offset _+n_.
 
@@ -260,5 +260,7 @@ $0A arg: l5 $0C arg: l6 $0E arg: l7 $10 arg: l8 $12 arg: l9 -->
   \ Update and improve the documentation.
   \
   \ 2017-03-19: Complete documentation.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

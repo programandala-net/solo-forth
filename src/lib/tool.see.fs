@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703172146
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -91,21 +91,21 @@ variable see-address  \ in the word being decoded
   \ First, its first byte must be $CD (the Z80 call opcode);
   \ second, its jump address must be the colon interpreter.
 
-defer colon-body? ( pfa -- f )
+defer colon-body? ( dfa -- f )
 
-: (colon-body?) ( pfa -- f ) body> colon-xt? ;
+: (colon-body?) ( dfa -- f ) body> colon-xt? ;
   \ Is _a_ the body of a colon definition?
 
-defer .see-body-name ( pfa -- )
+defer .see-body-name ( dfa -- )
 
-: (.see-body-name) ( pfa -- )
+: (.see-body-name) ( dfa -- )
   indent  ." : " body>name .name ;
 
 : be-see-body ( -- )
   ['] (colon-body?) ['] colon-body? defer!
   ['] (.see-body-name) ['] .see-body-name defer! ; be-see-body
 
-: no-colon-check ( pfa -- true ) drop true ;  -->
+: no-colon-check ( dfa -- true ) drop true ;  -->
 
   \ : variable-xt? ( xt -- f )
   \   dup c@ $CD = swap 1+ @ docreate = and ;
@@ -120,14 +120,14 @@ defer .see-body-name ( pfa -- )
 
 ( see )
 
-: see-body ( pfa -- )
+: see-body ( dfa -- )
   dup colon-body?  if
     dup body> see-address ! dup .see-body-name  be-see-body
-    begin   ( pfa+n ) dup see-address !
-            dup @ ( pfa+n xt ) dup colon-end? 0=
+    begin   ( dfa+n ) dup see-address !
+            dup @ ( dfa+n xt ) dup colon-end? 0=
     while  \ high level & not end of colon definition
-      \ ( pfa+n xt )
-      >body ( pfa+n pfa' ) dup indent+  body>name .name
+      \ ( dfa+n xt )
+      >body ( dfa+n dfa' ) dup indent+  body>name .name
       key case  'q' of  sp0 @ sp! quit  endof
                 bl  of  drop            endof
                 swap recurse  \ default
@@ -138,9 +138,9 @@ defer .see-body-name ( pfa -- )
 
   \ doc{
   \
-  \ see-body ( pfa -- )
+  \ see-body ( dfa -- )
   \
-  \ Decode the colon word's definition whose body is _pfa_.
+  \ Decode the colon word's definition whose body is _dfa_.
   \ ``see-body`` is a factor of `see`.
   \
   \ See also: `see-body-from`, `see-xt`.
@@ -199,9 +199,9 @@ get-current  also forth definitions
 
 : see-xt ( xt -- ) dup colon-xt?  if  see-level off
     dup see-address ! indent  ." : " dup >name .name >body
-    begin   ( pfa+n ) dup see-address !
-            dup @ ( pfa+n xt ) dup colon-end? 0=  nuf? 0= and
-    while   >body ( pfa+n pfa' ) indent+ body>name .name
+    begin   ( dfa+n ) dup see-address !
+            dup @ ( dfa+n xt ) dup colon-end? 0=  nuf? 0= and
+    while   >body ( dfa+n dfa' ) indent+ body>name .name
             see-special  cell+  -1 see-level +!
     repeat  indent >name .name
   else  ." Not a colon definition."  then drop ; ?)
@@ -291,5 +291,7 @@ previous set-current
   \
   \ 2017-03-17: Support `(abort")`, provided it is defined when
   \ `see` is compiled.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

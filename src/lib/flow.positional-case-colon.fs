@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221314
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -35,7 +35,7 @@ need create:
   create:
   does>   ( n -- )
           \ Execute the n-th word compiled.
-          ( n pfa ) swap cells + perform ;
+          ( n dfa ) swap cells + perform ;
 
   \ doc{
   \
@@ -69,5 +69,7 @@ need create:
   \ 2015-12-14: Renamed to `positional-case:`.
   \
   \ 2016-04-09: Fixed the file header. Documented.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

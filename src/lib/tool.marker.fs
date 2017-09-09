@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201703132012
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -16,7 +16,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -121,7 +121,7 @@ need get-order need @cell+ need nn, need nn@ need there
   \ }doc
 
 : marker ( "name" -- )
-  marker, create ,  does> ( -- ) ( pfa ) @ unmarker ;
+  marker, create ,  does> ( -- ) ( dfa ) @ unmarker ;
 
   \ doc{
   \
@@ -178,5 +178,7 @@ need possibly need marker
   \ in the kernel.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

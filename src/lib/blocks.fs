@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705222120
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -188,7 +188,7 @@
   \ }doc
 
 [unneeded] loader
-?\ : loader ( u "name" -- ) create , does> ( pfa ) @ load ;
+?\ : loader ( u "name" -- ) create , does> ( dfa ) @ load ;
 
   \ doc{
   \
@@ -371,5 +371,7 @@ variable loading-program
   \ 2017-05-22: Factor `load-program` into `(load-program`, to
   \ make it possible to continue loading from a block, in case
   \ of error. Improve documentation.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

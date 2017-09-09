@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -42,7 +42,7 @@
 
 : avariable ( n "name" -- )
   create  cells allot
-  does> ( n -- a ) ( n pfa ) array> ; ?)
+  does> ( n -- a ) ( n dfa ) array> ; ?)
 
   \ doc{
   \
@@ -66,7 +66,7 @@
 
 : 2avariable ( n "name" -- )
   create  [ 2 cells ] cliteral * allot
-  does> ( n -- a ) ( n pfa ) 2array> ; ?)
+  does> ( n -- a ) ( n dfa ) 2array> ; ?)
 
   \ doc{
   \
@@ -90,7 +90,7 @@
 
 : cavariable ( n "name" -- )
   create  allot align
-  does> ( n -- ca ) ( n pfa ) + ; ?)
+  does> ( n -- ca ) ( n dfa ) + ; ?)
 
   \ doc{
   \
@@ -128,6 +128,7 @@
   \
   \ 2017-02-17: Fix markup in documentation.  Update cross
   \ references.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth
-

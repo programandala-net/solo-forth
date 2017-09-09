@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221309
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -32,7 +32,7 @@ need create:
 
 : associative-case: ( "name" -- )
   create:
-  does> ( n -- ) ( n pfa ) cell+  \ move past `lit`
+  does> ( n -- ) ( n dfa ) cell+  \ move past `lit`
   begin   2dup @ dup 0= >r ( n a n n')
           =  r> or  0= ( n a f )
   while   ( n a ) [ 3 cells ] literal +  \ no match
@@ -73,5 +73,7 @@ need create:
   \ 2016-04-09: Fixed the file header.
   \
   \ 2017-02-22: Update markup in documentation.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

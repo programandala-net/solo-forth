@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not ready yet
 
-  \ Last modified: 201704261915
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -62,7 +62,7 @@ How-Wide How-Deep * CONSTANT Homes
 : World ( "name" -- )
   CREATE  Homes CHARS ALLOT
   DOES> ( u -- c-addr )
-    ( u pfa ) SWAP Homes +  Homes MOD  CHARS + ;
+    ( u dfa ) SWAP Homes +  Homes MOD  CHARS + ;
 
 World old  World new
 
@@ -222,5 +222,7 @@ run-message
   \
   \ 2017-04-26: Add `run-message`. Use `cconstant`. Replace
   \ `do` with `?do`.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

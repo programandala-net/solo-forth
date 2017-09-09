@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -18,7 +18,7 @@
   \ Forth_, Appendix A. Public domain.
 
   \ This version was adapted from PFE by Marcos Cruz
-  \ (programanadla.net), 2015, 2016.
+  \ (programandala.net), 2015, 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -34,11 +34,11 @@ need >body
 : doer-noop ( -- ) ;
 
 : doer ( "name" -- )
-  create  ['] doer-noop >body ,  does> ( pfa ) @ >r ;
+  create  ['] doer-noop >body ,  does> ( dfa ) @ >r ;
   \ Define a word whose action is vectorable.
 
 : (make)
-  \ Stuff the address of further code into the parameter field
+  \ Stuff the address of further code into the data field
   \ of a doer word.
   r> dup cell+ dup cell+
     ( a1 a2 a2 )
@@ -47,7 +47,7 @@ need >body
     \ a2 = address of the doer word
     \ a3 = address of the code to associate the doer word with
   swap @ >body !
-    \ Get the pfa of the doer word and store the code address
+    \ Get the dfa of the doer word and store the code address
     \ into it.
   @ ?dup if  >r  then ;
     \ Manage the optional continuation after `;and`.
@@ -78,5 +78,7 @@ variable >;and
   \ 2016-11-27: Move `doer-test` to the tests module.
   \
   \ 2017-02-17: Update notation "behaviour" to "action".
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

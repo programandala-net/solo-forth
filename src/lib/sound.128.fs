@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704182150
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -361,7 +361,7 @@ set-current previous
 [unneeded] sound ?( need sound, need play
 
 : sound ( b[0]..b[13] "name" -- )
-  create  sound,  does> ( -- ) ( pfa ) play ; ?)
+  create  sound,  does> ( -- ) ( dfa ) play ; ?)
 
   \ doc{
   \
@@ -653,5 +653,7 @@ decimal
   \ documentation. Fix references to `!mixer` and `@mixer`:
   \ they are `set-mixer` and `get-mixer`. Update old reference
   \ to `shutup`, now `-mixer`.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

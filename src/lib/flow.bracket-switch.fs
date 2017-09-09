@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -82,7 +82,7 @@ need link@ need link, need pick
   \ }doc
 
 : :switch ( xt "name" -- head )
-  create  >mark swap ,  does> ( n -- ) ( n pfa ) switcher ;
+  create  >mark swap ,  does> ( n -- ) ( n dfa ) switcher ;
 
   \ doc{
   \
@@ -147,7 +147,7 @@ need link@ need link, need pick
 [unneeded] [switch [unneeded] switch] and ?( need switcher
 
 : [switch ( "name1" "name2" -- head )
-  create  >mark ' ,  does> ( n -- ) ( n pfa ) switcher ;
+  create  >mark ' ,  does> ( n -- ) ( n dfa ) switcher ;
 
   \ doc{
   \
@@ -222,5 +222,7 @@ need alias  ' drop alias switch] ( head -- ) ?)
   \ Change log
 
   \ 2015-11-15: Adapt the original code.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

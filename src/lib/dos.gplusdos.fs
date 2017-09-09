@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071833
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1276,7 +1276,7 @@ code (rename-file ( -- ior )
     \ G+DOS ROM instead of hook codes:
 
   21 c, back-from-dos-error_ , E5 c, ED c, 73 c, 2066 ,
-    \ ld hl,back_from_dos_error_pfa
+    \ ld hl,back_from_dos_error_dfa
     \ push hl
     \ ld ($2066),sp
 
@@ -1444,5 +1444,7 @@ code (rename-file ( -- ior )
   \ 2017-03-13: Improve documentation.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

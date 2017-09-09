@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703302122
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -51,7 +51,7 @@
   \ }doc
 
 : val ( x "name" -- )
-  create , does> ( -- ) ( pfa ) (val) perform init-val ;
+  create , does> ( -- ) ( dfa ) (val) perform init-val ;
 
   \ doc{
   \
@@ -100,7 +100,7 @@
   \ }doc
 
 : 2val ( xd "name" -- )
-  create 2, does> ( -- ) ( pfa ) (2val) perform init-2val ;
+  create 2, does> ( -- ) ( dfa ) (2val) perform init-2val ;
 
   \ doc{
   \
@@ -149,7 +149,7 @@
   \ }doc
 
 : cval ( xd "name" -- )
-  create c, does> ( -- ) ( pfa ) (cval) perform init-cval ;
+  create c, does> ( -- ) ( dfa ) (cval) perform init-cval ;
 
   \ doc{
   \
@@ -192,5 +192,7 @@
   \ Factor the initialization. Add a double-cell version.
   \
   \ 2017-03-30: Add `cval` and `ctoval`. Document all words.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

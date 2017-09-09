@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132001
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -111,7 +111,7 @@ need substitute-wordlist need search-wordlist
 
 need >body
 
-: reuse-substitution ( ca len xt -- pfa ) nip nip >body ; ?)
+: reuse-substitution ( ca len xt -- dfa ) nip nip >body ; ?)
 
 [unneeded] replaces ?(
 
@@ -166,5 +166,7 @@ need slit-substitution
   \ 2017-02-17: Update cross references.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

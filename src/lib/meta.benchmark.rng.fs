@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201707282344
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -11,6 +11,11 @@
 
   \ RNG benchmarks written during the development of Solo Forth
   \ in order to choose the best implementations.
+
+  \ ===========================================================
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -238,7 +243,7 @@ need rng-px-bench
 
 : 16b-rng-px-bench ( xt1 xt2 xt3 "name" -- )
   create-rng-px-bench
-  does> ( -- ) ( pfa )
+  does> ( -- ) ( dfa )
         set-16b-rng-px-bench (does-rng-px-bench) ;
   \ Create a 16-bit RNG pixel benchmark _name_ for the `random`
   \ word _xt2_, with initialization _xt1_ and title string
@@ -285,7 +290,7 @@ need rng-px-bench
 
 : 8b-rng-px-bench ( xt1 xt2 xt3 "name" -- )
   create-rng-px-bench
-  does> ( -- ) ( pfa )
+  does> ( -- ) ( dfa )
         set-8b-rng-px-bench (does-rng-px-bench) ;
   \ Create an 8-bit RNG pixel benchmark _name_ for the `random`
   \ word _xt2_, with initialization _xt1_ and title string
@@ -1663,5 +1668,7 @@ need 8b-rng-px-bench need :noname
   \ "-px-", "16-bit-" to "16-bit-" and "8-bit-" to "8b-" in
   \ word names, except old comments. Write a definer of 8-bit
   \ benchmarks. Rename and rewrite the R-register benchmark.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705091100
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -21,7 +21,8 @@
   \ M. Edward Borasky, 1995-07-30; code published on Forth
   \ Dimensions (volume 17, number 4, page 11, 1995-11).
 
-  \ Adapted by Marcos Cruz (programandala.net), 2015, 2016.
+  \ Adapted by Marcos Cruz (programandala.net), 2015, 2016,
+  \ 2017.
 
   \ ===========================================================
   \ License
@@ -51,7 +52,7 @@ need bench{
   \ compiling, reserve memory
   create  cells allot
   \ executing, compute address
-  does> ( index -- address ) ( index pfa ) swap cells + ;
+  does> ( index -- address ) ( index dfa ) swap cells + ;
 
 vsize vector vec1  vsize vector vec2  vsize vector vec3
 
@@ -193,5 +194,7 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
   \
   \ 2017-05-09: Run the benchmark to test moving/copying the
   \ code of `next` in the kernel and note the results.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

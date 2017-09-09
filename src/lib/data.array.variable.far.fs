@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702261228
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -42,7 +42,7 @@
 
 : faravariable ( n "name" -- )
   create  np@ , cells farallot
-  does> ( n -- a ) ( n pfa ) @ array> ; ?)
+  does> ( n -- a ) ( n dfa ) @ array> ; ?)
 
   \ doc{
   \
@@ -66,7 +66,7 @@
 
 : far2avariable ( n "name" -- )
   create  np@ , [ 2 cells ] cliteral * farallot
-  does> ( n -- a ) ( n pfa ) @ 2array> ; ?)
+  does> ( n -- a ) ( n dfa ) @ 2array> ; ?)
 
   \ doc{
   \
@@ -90,7 +90,7 @@
 
 : farcavariable ( n "name" -- )
   create  np@ , farallot
-  does> ( n -- ca ) ( n pfa ) @ + ; ?)
+  does> ( n -- ca ) ( n dfa ) @ + ; ?)
 
   \ doc{
   \
@@ -123,7 +123,7 @@
   \
   \ 2017-02-26: Update "hp" notation to "np", after the changes
   \ in the kernel.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth
-
-

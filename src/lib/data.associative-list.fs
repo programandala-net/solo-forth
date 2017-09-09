@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -86,7 +86,7 @@ need search-wordlist
 
 need create-entry  [unneeded] entry: ?(
 : entry: ( x wid "name" -- )
-  ['] , create-entry does> ( -- x ) ( pfa ) @ ; ?)
+  ['] , create-entry does> ( -- x ) ( dfa ) @ ; ?)
 
   \ doc{
   \
@@ -99,7 +99,7 @@ need create-entry  [unneeded] entry: ?(
 
 [unneeded] centry: ?(
 : centry: ( c wid "name" -- )
-  ['] c, create-entry does> ( -- c ) ( pfa ) c@ ; ?)
+  ['] c, create-entry does> ( -- c ) ( dfa ) c@ ; ?)
 
   \ doc{
   \
@@ -112,7 +112,7 @@ need create-entry  [unneeded] entry: ?(
 
 [unneeded] 2entry: ?(
 : 2entry: ( dx wid "name" -- )
-  ['] 2, create-entry does> ( -- dx ) ( pfa ) 2@ ; ?)
+  ['] 2, create-entry does> ( -- dx ) ( dfa ) 2@ ; ?)
 
   \ doc{
   \
@@ -125,7 +125,7 @@ need create-entry  [unneeded] entry: ?(
 
 [unneeded] sentry: ?(
 : sentry: ( ca len wid "name" -- )
-  ['] s, create-entry does> ( -- ca len ) ( pfa ) count ; ?)
+  ['] s, create-entry does> ( -- ca len ) ( dfa ) count ; ?)
 
   \ doc{
   \
@@ -173,5 +173,7 @@ need create-entry  [unneeded] entry: ?(
   \
   \ 2017-01-19: Remove remaining `exit` at the end of
   \ conditional interpretation.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

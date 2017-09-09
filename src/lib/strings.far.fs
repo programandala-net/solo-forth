@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132019
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -152,7 +152,7 @@ need farsconstants, need array> need farsconstants>
 
 : farsconstants ( 0 ca[n]..ca[1] "name" -- n )
   farsconstants,  does> ( n -- ca len )
-  ( n pfa ) farsconstants> ; ?)
+  ( n dfa ) farsconstants> ; ?)
 
   \ doc{
   \
@@ -195,7 +195,7 @@ need array> need farsconstants> need far>stringer
 
 : far>sconstants ( 0 ca[n]..ca[1] "name" -- n )
   farsconstants,  does> ( n -- ca len )
-  ( n pfa ) farsconstants> far>stringer ; ?)
+  ( n dfa ) farsconstants> far>stringer ; ?)
 
   \ doc{
   \
@@ -319,6 +319,8 @@ code faruppers ( ca len -- )
   \ mentions to it.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703131958
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ ===========================================================
   \ Credit
@@ -62,7 +62,7 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
 : bit-array ( n "name" -- )
   create bits>bytes allot align
   does> ( n -- b ca )
-    ( n pfa ) swap 8 /mod >r bitmasks + c@ swap r> + ;
+    ( n dfa ) swap 8 /mod >r bitmasks + c@ swap r> + ;
 
   \ doc{
   \
@@ -120,5 +120,7 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
   \ 2017-02-17: Update cross references.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

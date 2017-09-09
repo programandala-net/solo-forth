@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703161217
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -134,7 +134,7 @@
 [unneeded] begin-structure [unneeded] end-structure and ?(
 
 : begin-structure ( "name" -- struct-sys 0 )
-  create  >mark 0 does> ( -- n ) ( pfa ) @ ;
+  create  >mark 0 does> ( -- n ) ( dfa ) @ ;
 
   \ doc{
   \
@@ -207,7 +207,7 @@
 [unneeded] +field-unopt ?( need +field
 
 : +field-unopt ( n1 n2 "name" -- n3 )
-  create over , + does> ( a -- a' ) ( a pfa ) @ + ;
+  create over , + does> ( a -- a' ) ( a dfa ) @ + ;
 
 ' +field-unopt ' +field defer! ?)
 
@@ -323,5 +323,7 @@
   \
   \ 2017-03-16: Complete and improve documentation.  Improve
   \ `+field-opt-0124` (one byte less).
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

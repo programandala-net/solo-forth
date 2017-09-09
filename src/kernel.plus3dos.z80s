@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705091638
+; Last modified: 201709091311
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -804,7 +804,7 @@ if current_drive_method=4 ; XXX TMP -- Copy of 3
   ld (transfer_sector.backup_ip),bc ; save Forth IP
 
 transfer_sector.xdpb: equ $+2           ; XDPB (patched by `set-drive`)
-  ld ix,xdpb0_pfa                       ; xdpb0_pfa or xdpb1_pfa
+  ld ix,xdpb0_dfa                       ; xdpb0_dfa or xdpb1_dfa
 
   pop hl                                ; address of origin or destination buffer
   pop de                                ; D = logical track, E = logical sector
@@ -945,11 +945,11 @@ if current_drive_method=4
 
   exx                   ; save Forth IP
   pop bc                ; C = physical drive unit (0..1)
-  ld ix,xdpb0_pfa       ; XDPB for physical drive unit 0
+  ld ix,xdpb0_dfa       ; XDPB for physical drive unit 0
   ld a,c
   and a                 ; physical drive unit 0?
   jr z,log_in_disk.call ; if so, continue
-  ld ix,xdpb1_pfa       ; XDPB for physical drive unit 0
+  ld ix,xdpb1_dfa       ; XDPB for physical drive unit 0
 log_in_disk.call
   call dos_in
   call dd_login
@@ -982,9 +982,9 @@ if 0 ; XXX TMP --
   pop hl
   ld a,l
   sub 'A'
-  ld hl,xdpb0_pfa
+  ld hl,xdpb0_dfa
   jr z,set_sector_drive.patch_transfer_sector
-  ld hl,xdpb1_pfa
+  ld hl,xdpb1_dfa
 set_sector_drive.patch_transfer_sector:
   ld (transfer_sector.physical_drive),a
   ld (transfer_sector.xdpb),hl
@@ -1187,9 +1187,9 @@ if current_drive_method=4 ; XXX TMP --
   push af
 
   sub 'A'
-  ld hl,xdpb0_pfa
+  ld hl,xdpb0_dfa
   jr z,set_drive.patch_transfer_sector
-  ld hl,xdpb1_pfa
+  ld hl,xdpb1_dfa
 set_drive.patch_transfer_sector:
   ld (transfer_sector.physical_drive),a
   ld (transfer_sector.xdpb),hl
@@ -1282,5 +1282,7 @@ endif ; defined plus3dos
 ;
 ; 2017-05-09: Replace `_jp_pushhl` with `push hl` and
 ; `_jp_next`.
+;
+; 2017-09-09: Update notation "pfa" to the standard "dfa".
 
 ; vim: filetype=z80:textwidth=64

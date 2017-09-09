@@ -40,7 +40,7 @@ Make `hook,` and `prt,` optional.
 Study changes needed to use `ix addp,` instead of `addix,`;
 this means `h addp,` should be used instead of `addp,`
 
-.2017-03-10, 2017-03-12, 2017-03-26:
+.2017-03-10, 2017-03-12, 2017-03-26, 2017-09-09:
 
 Remove the need to use `af` only for `push,` and `pop,`.
 
@@ -48,7 +48,7 @@ The solution is a variant of `m3` to limit the register numbers:
 
 ----
 : m3p ( 8b "name" -- )
-  (c does> ( reg -- ) ( reg pfa ) %1111110 and c@ swap 8* + c, ;
+  (c does> ( reg -- ) ( reg dfa ) %1111110 and c@ swap 8* + c, ;
   \ 1-byte opcode with register encoded in bits 3-5.
 ----
 
@@ -178,7 +178,7 @@ of `compiling?` would need only 6 bytes (its current colon definiton
 needs 11 bytes):
 
 ----
-  ld hl,(state_pfa)
+  ld hl,(state_dfa)
   jp zero_not_equals.hl
 ----
 
@@ -186,7 +186,7 @@ But fetching a user variable makes the code bigger (16 bytes):
 
 ----
   ld de,$001E     ; $1E = index of `state`
-  ld hl,(up_pfa)  ; HL = address of the user area (the value of `up`)
+  ld hl,(up_dfa)  ; HL = address of the user area (the value of `up`)
   add hl,de       ; HL = address of the user variable
   ex de,hl
   ld a,(de)
@@ -740,12 +740,6 @@ Pandoc.
 Uso "bytes" instead of "address units", which is needed only in the
 standard.
 
-.2017-05-08:
-
-NOTE: Milestone: 0.14.0
-
-Use "data field (address)" instead of "parameter field (address)".
-
 .2017-05-06:
 
 Review and homogenize the layout of "Compilation" and "Run-time" stack
@@ -913,27 +907,14 @@ Common notation for:
 - text coordinates: "col row" --> "x y"?
 - graphic coordinates: "x y" --> "gx gy"?
 
-.2016-06-01, 2017-04-17:
+.2016-06-01, 2017-04-17 2017-09-09:
 
 Change the stack notation back to classic Forth?:
 
 - xt -> cfa
 - nt -> nfa
-- pfa
 - lfa
-
-And change also:
-
 - xtp -> cfaa/cfap
-
-The problem with the standard notation is it does not provide
-alternatives to _pfa_ and _lfa_, because they are system dependent.
-This makes the notations _xt_, _nt_, _pfa_, _lfa_ look heterogeneous.
-Beside, _xt_ and _nt_ are abstract terms, while _cfa_ and _nfa_ are
-precise definitions for the implemention.
-
-Anyway, _dfa_ is better than _pfa_, because somehow it resembles _data
-space_, where the address is.
 
 .2016-05-11:
 
@@ -1928,9 +1909,9 @@ Study the way v.Forth manages the interrupts and adapt it.
 // Library {{{1
 == Library ==
 
-.2017-03-28:
+.2017-03-28, 2017-09-09:
 
-Move words from <chars.fsb> to <strings.misc.fsb>.
+Move words from <chars.fs> to <strings.MISC.fs>?
 
 .2017-02-22:
 

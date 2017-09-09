@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705101727
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -120,33 +120,33 @@
 ( body>name name>body link>name name>link name<name name>name )
 
 [unneeded] body>name
-?\ need body> : body>name ( pfa -- nt ) body> >name ;
+?\ need body> : body>name ( dfa -- nt ) body> >name ;
 
   \ doc{
   \
-  \ body>name ( pfa -- nt )
+  \ body>name ( dfa -- nt )
   \
-  \ Get _nt_ from its _pfa_.
+  \ Get _nt_ from its _dfa_.
   \
   \ See also: `name>body`, `link>name`.
   \
   \ }doc
 
 [unneeded] name>body
-?\ need >body : name>body ( nt -- pfa ) name> >body ;
+?\ need >body : name>body ( nt -- dfa ) name> >body ;
 
   \ doc{
   \
-  \ name>body ( nt -- pfa )
+  \ name>body ( nt -- dfa )
   \
-  \ Get _pfa_ from its _nt_.
+  \ Get _dfa_ from its _nt_.
   \
   \ See also: `body>name`.
   \
   \ }doc
 
 [unneeded] link>name
-?\ need alias ' cell+ alias link>name ( nt -- pfa )
+?\ need alias ' cell+ alias link>name ( nt -- dfa )
 
   \ doc{
   \
@@ -210,7 +210,7 @@
 
 [unneeded] >body
 ?\ code >body  E1 c, 23 c, 23 c, 23 c, E5 c, jpnext, end-code
-  \ ( xt -- pfa )
+  \ ( xt -- dfa )
   \ pop hl
   \ inc hl
   \ inc hl
@@ -250,7 +250,7 @@
 
 [unneeded] body>
 ?\ code body> E1 c, 2B c, 2B c, 2B c, E5 c, jpnext, end-code
-  \ ( pfa -- xt )
+  \ ( dfa -- xt )
   \ pop hl
   \ dec hl
   \ dec hl
@@ -1153,5 +1153,7 @@ variable warnings  warnings on
   \ 2017-05-09: Remove `jppushhl,`.
   \
   \ 2017-05-10: Add `no-exit`.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201709081808
+; Last modified: 201709091312
 
 include version.z80s
 
@@ -66,10 +66,11 @@ include version.z80s
                            ;   LLLLL: name length (0..31).
 ;       ds length          ; name
 
-; The code and parameter fields are created in the data space:
+; The code field and the data field are created in the data
+; space:
 
 ; xt:  code
-; pfa: ...
+; dfa: ...
 
 ; ==============================================================
 ; Configuration
@@ -402,7 +403,7 @@ _colon_header: macro _base_label,_name,_flags
 
   _header _base_label,_name,_flags
   call do_colon ; code field
-  _base_label##pfa: ; parameter field address
+  _base_label##dfa: ; data field address
 
   endm
 
@@ -410,7 +411,7 @@ _user_variable_header: macro _base_label,_name,_flags
 
   _header _base_label,_name,_flags
   call do_user ; code field
-  _base_label##pfa: ; parameter field address
+  _base_label##dfa: ; data field address
 
   endm
 
@@ -419,7 +420,7 @@ _does_header: macro _base_label,_name,_flags,_runtime_routine
   _header _base_label,_name,_flags
 
   call _runtime_routine ; code field ; XXX TODO confirm this
-  _base_label##pfa: ; parameter field address
+  _base_label##dfa: ; data field address
 
   endm
 
@@ -427,7 +428,7 @@ _constant_header: macro _base_label,_name,_flags
 
   _header _base_label,_name,_flags
   call do_constant ; code field
-  _base_label##pfa: ; parameter field address
+  _base_label##dfa: ; data field address
 
   endm
 
@@ -435,7 +436,7 @@ _two_constant_header: macro _base_label,_name,_flags
 
   _header _base_label,_name,_flags
   call do_two_constant ; code field
-  _base_label##pfa: ; parameter field address
+  _base_label##dfa: ; data field address
 
   endm
 
@@ -443,7 +444,7 @@ _c_constant_header: macro _base_label,_name,_flags
 
   _header _base_label,_name,_flags
   call do_c_constant ; code field
-  _base_label##pfa: ; parameter field address
+  _base_label##dfa: ; data field address
 
   endm
 
@@ -451,7 +452,7 @@ _variable_header: macro _base_label,_name,_flags
 
   _header _base_label,_name,_flags
   call do_variable ; code field
-  _base_label##pfa: ; parameter field address
+  _base_label##dfa: ; data field address
 
   endm
 
@@ -732,9 +733,9 @@ endif
 latest_wordlist.init_value:
   ; `$0C +origin`
 if 1 ; assembler_core_in_kernel
-  dw assembler_wordlist_pfa
+  dw assembler_wordlist_dfa
 else
-  dw forth_wordlist_pfa
+  dw forth_wordlist_dfa
 endif
 
 return_stack_pointer:
@@ -871,8 +872,8 @@ hash_order_value:                             ; +$26
 
 context_value:                                ; +$28..+$36
 
-  dw forth_pfa
-  dw root_pfa
+  dw forth_dfa
+  dw root_dfa
   ds (max_search_order-2)*cell
 
   ; Free space for more user variables:
@@ -1618,7 +1619,7 @@ question_next_bank:
   ret nc
 
   ; Update HL to the next bank of the far memory:
-  ld a,(bank_index_pfa)
+  ld a,(bank_index_dfa)
   inc a
   ld de,bank_start
   add hl,de
@@ -1634,9 +1635,9 @@ new_bank:
 
   push hl
   and %11 ; force range 0..3
-  ld (bank_index_pfa),a
+  ld (bank_index_dfa),a
   ld e,a
-  ld hl,far_banks_pfa
+  ld hl,far_banks_dfa
   ld d,0
   add hl,de
   ld e,(hl) ; E = bank
@@ -1695,7 +1696,7 @@ question_previous_bank:
   ret nc
 
   ; Update HL to the previous bank of the far memory:
-  ld a,(bank_index_pfa)
+  ld a,(bank_index_dfa)
   dec a
   ld de,bank_size
   add hl,de
@@ -1770,9 +1771,9 @@ far.hl:
   srl e
   srl e ; E = 0..3 (bank index)
   ld a,e
-  ld (bank_index_pfa),a ; save the bank index
+  ld (bank_index_dfa),a ; save the bank index
   push hl
-  ld hl,far_banks_pfa
+  ld hl,far_banks_dfa
   ld d,0
   add hl,de
   ld e,(hl) ; E = bank
@@ -2263,7 +2264,7 @@ set_order.loop_exit
 ;
 ; }doc
 
-  dw root_wordlist_pfa
+  dw root_wordlist_dfa
 
 ; ----------------------------------------------
   _variable_header forth_wordlist_,'forth-wordlist'
@@ -2285,7 +2286,7 @@ set_order.loop_exit
 ; }doc
 
   dw latest_nt_in_forth_word_list
-  dw root_wordlist_pfa
+  dw root_wordlist_dfa
   dw forth_nt
 
 ; ----------------------------------------------
@@ -2309,7 +2310,7 @@ set_order.loop_exit
 ;
 ; }doc
 
-  dw forth_wordlist_pfa
+  dw forth_wordlist_dfa
 
 ; ----------------------------------------------
 if 1 ; assembler_core_in_kernel
@@ -2329,7 +2330,7 @@ if 1 ; assembler_core_in_kernel
 ; }doc
 
   dw latest_nt_in_assembler_word_list
-  dw forth_wordlist_pfa
+  dw forth_wordlist_dfa
   dw 0
 
 endif
@@ -2556,7 +2557,7 @@ push_hl:
 ;
 ; }doc
 
-  ld hl,(plus_stringer_pfa)
+  ld hl,(plus_stringer_dfa)
   push hl
   _jp_next
 
@@ -2760,8 +2761,8 @@ question_stringer_.enough:
 ;
 ; }doc
 
-  dw lit_,stringer,lit_,stringer_pfa,store_
-  dw lit_,stringer_size,lit_,slash_stringer_pfa,store_
+  dw lit_,stringer,lit_,stringer_dfa,store_
+  dw lit_,stringer_size,lit_,slash_stringer_dfa,store_
   dw empty_stringer_
   dw exit_
 
@@ -3817,7 +3818,7 @@ char_question.not:
   ; Patch the code with the routine proper to the
   ; case-sensitive mode:
 
-  ld hl,(case_sensitive_pfa) ; contents of the `case-sensitive` variable
+  ld hl,(case_sensitive_dfa) ; contents of the `case-sensitive` variable
   ld a,h
   or l ; case-sensitive mode?
   ld hl,ascii_lower.a ; routine used when case-sensitive mode is off
@@ -4164,7 +4165,7 @@ skip.end:
 
   pop hl ; L = character
   push bc ; save the Forth IP
-  ld a,(last_font_char_pfa) ; max character displayed from the font
+  ld a,(last_font_char_dfa) ; max character displayed from the font
   cp l ; is character L in range?
   jr z,mode_32_emit.l ; if equals, display it from the font
   jr c,emit_udg.l ; if greater, display it from the UDG set
@@ -4363,7 +4364,7 @@ default_key_translation_table:
   jp push_a
 
 translate_char.a:
-  ld hl,(key_translation_table_pfa)
+  ld hl,(key_translation_table_dfa)
   dec hl
 translate_char.begin:
   inc hl    ; next record of the table
@@ -4572,7 +4573,7 @@ endif
   push bc
 
   ; Display cursor:
-  ld a,(cursor_char_pfa) ; cursor character code
+  ld a,(cursor_char_dfa) ; cursor character code
   rst $10
   ld a,backspace_char
   rst $10
@@ -6206,8 +6207,8 @@ do_colon:
   dec hl
   ld (hl),c
   ld (return_stack_pointer),hl
-  ; Then point it to the pfa of the word that called here
-  pop bc ; BC=pfa
+  ; Then point it to the dfa of the word that called here
+  pop bc ; BC=dfa
 
   ; Copy of the inner interpreter:
 
@@ -6476,7 +6477,7 @@ do_user:
   pop hl
   ld e,(hl)
   ld d,$00        ; DE = index of the user variable
-  ld hl,(up_pfa)  ; HL = address of the user area (the value of `up`)
+  ld hl,(up_dfa)  ; HL = address of the user area (the value of `up`)
   add hl,de       ; HL = address of the user variable
   push hl
   _jp_next
@@ -7107,9 +7108,9 @@ do_user:
   _variable_header latest_wordlist_,'latest-wordlist'
 
 if 1 ; assembler_core_in_kernel
-  dw assembler_wordlist_pfa
+  dw assembler_wordlist_dfa
 else
-  dw forth_wordlist_pfa
+  dw forth_wordlist_dfa
 endif
 
 ; ----------------------------------------------
@@ -8548,7 +8549,7 @@ name_to_string.loop_exit:
 ; }doc
 
   dw swap_
-  dw question_branch_,throw_pfa
+  dw question_branch_,throw_dfa
   dw drop_
   dw exit_
 
@@ -9044,10 +9045,10 @@ base_store:
 ; semantics given  below. Return  control  to the  calling
 ; definition  specified  by _nest-sys1_.
 ;
-; Initiation: ``( i*x -- i*x pfa ) ( R: -- nest-sys2)``
+; Initiation: ``( i*x -- i*x dfa ) ( R: -- nest-sys2)``
 ;
 ; Save information _nest-sys2_  about the calling definition.
-; Place _name_'s parameter field address on the stack. The stack
+; Place _name_'s data field address on the stack. The stack
 ; effects _i*x_ represent arguments to name.
 ;
 ; _name_ execution: ``( i*x -- j*x )``
@@ -9513,7 +9514,7 @@ simple_accept.end
 ;
 ; }doc
 
-  dw source_id_pfa
+  dw source_id_dfa
 
 ; ----------------------------------------------
   _constant_header source_id_,'source-id'
@@ -10364,7 +10365,7 @@ far_place.copy_char:
   dw dup_
   _literal -1
   dw equals_
-  dw question_branch_,paren_abort_pfa
+  dw question_branch_,paren_abort_dfa
   ; No return from `(abort)`.
 
   dw dup_
@@ -10518,7 +10519,7 @@ endif
 
   ; Update the word count
   _literal 1
-  _literal hash_words_pfa
+  _literal hash_words_dfa
   dw plus_store_
 
   dw exit_
@@ -10935,8 +10936,8 @@ search.failed:
 ; }doc
 
   dw dup_,byte_question_
-  dw zero_branch_,literal_pfa
-  dw branch_,c_literal_pfa
+  dw zero_branch_,literal_dfa
+  dw branch_,c_literal_dfa
 
 ; ----------------------------------------------
   _colon_header two_literal_,'2literal',immediate+compile_only
@@ -11585,7 +11586,7 @@ endif
 ; Definition:
 
 ; ----
-; : dovocabulary ( -- ) does> ( -- ) ( pfa ) @ context ! ;
+; : dovocabulary ( -- ) does> ( -- ) ( dfa ) @ context ! ;
 ; ----
 
 ; See also: `vocabulary`, `wordlist>vocabulary`, `wordlist`.
@@ -12254,21 +12255,21 @@ warm_start:
 
   ; Restore the dictionary to its default state.
   dw lit_,latest_nt_in_root_word_list.init_value,fetch_
-  dw lit_,root_wordlist_pfa,store_
+  dw lit_,root_wordlist_dfa,store_
   dw lit_,latest_nt_in_forth_word_list.init_value,fetch_
-  dw lit_,forth_wordlist_pfa,store_
+  dw lit_,forth_wordlist_dfa,store_
 if 1 ; assembler_core_in_kernel
   dw lit_,latest_nt_in_assembler_word_list.init_value,fetch_
-  dw lit_,assembler_wordlist_pfa,store_
+  dw lit_,assembler_wordlist_dfa,store_
 endif
   dw lit_,latest_wordlist.init_value,fetch_
-  dw lit_,latest_wordlist_pfa,store_
+  dw lit_,latest_wordlist_dfa,store_
 
   ; Restore the word count:
   dw lit_
 cold.hash_words:
   dw 0
-  dw lit_,hash_words_pfa,store_
+  dw lit_,hash_words_dfa,store_
 
   ; Set `warn` and `init-asm` to their default action `noop`:
   dw lit_,noop_,dup_
@@ -14955,13 +14956,13 @@ system_stack_pointer:
   dw dup_
   _literal 23
   dw not_equals_ ; not the last row?
-  dw zero_branch_,at_pfa.last_line
+  dw zero_branch_,at_dfa.last_line
   ; not the last row
   _literal 22
   dw mode_32_emit_,mode_32_emit_,mode_32_emit_
   dw exit_
 
-at_pfa.last_line:
+at_dfa.last_line:
   dw one_minus_,dup_,mode_32_emit_,mode_32_emit_
   _literal 0
   dw mode_32_emit_
@@ -15773,7 +15774,7 @@ if plus3dos
   ; space used by +3DOS:
 
   ld hl,$C000
-  ld (farlimit_pfa),hl
+  ld (farlimit_dfa),hl
 
 endif
 
@@ -15790,7 +15791,7 @@ endif
   ld bc,sys_screen_size ; count
   ldir                  ; copy to the screen
 
-  ld a,(far_banks_pfa)  ; first bank of far memory
+  ld a,(far_banks_dfa)  ; first bank of far memory
   ld e,a
   call bank.e
 
@@ -15882,7 +15883,7 @@ background_image:
 ; End
 
   ; Update the counter of words:
-  org hash_words_pfa
+  org hash_words_dfa
   dw word_count
   org cold.hash_words
   dw word_count

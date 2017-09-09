@@ -1,9 +1,9 @@
-  \ data.fs
+  \ data.associative-colon.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220028
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -16,7 +16,8 @@
 
   \ Original code from F83, by Henry Laxen and Michael Perry.
 
-  \ Adapted by Marcos Cruz (programandala.net), 2015, 2016.
+  \ Adapted by Marcos Cruz (programandala.net), 2015, 2016,
+  \ 2017.
 
   \ ===========================================================
   \ License
@@ -30,10 +31,10 @@
 : associative: ( n "name" -- )
   constant
   does> ( x -- index )
-    ( x pfa )
-    dup @ ( x pfa n ) -rot dup @ 0 ( n x pfa n 0 )
-    do ( n x pfa )
-      cell+ 2dup @ = ( n x pfa' flag )
+    ( x dfa )
+    dup @ ( x dfa n ) -rot dup @ 0 ( n x dfa n 0 )
+    do ( n x dfa )
+      cell+ 2dup @ = ( n x dfa' flag )
       if  2drop drop i unloop exit  then
     loop 2drop ( n ) ;
 
@@ -45,7 +46,7 @@
   \
   \ An associative memory word.  It must be followed by a set
   \ of values to be looked up.  At runtime, the values stored
-  \ in the parameter field are searched for a match.  If one if
+  \ in the data field are searched for a match.  If one if
   \ found, the index to that value is returned.  If no match is
   \ made, then the number of entries, ie max index + 1 is
   \ returned.  This is the inverse of an array.
@@ -73,5 +74,7 @@
   \
   \ 2016-04-09: Fixed the file header. Improved the
   \ documentation.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

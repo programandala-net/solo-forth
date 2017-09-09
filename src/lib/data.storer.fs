@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -28,7 +28,7 @@
 [unneeded] storer ?(
 
 : storer ( x a "name" -- )
-  create  2,  does>   ( -- ) ( pfa ) 2@ ! ; ?)
+  create  2,  does>   ( -- ) ( dfa ) 2@ ! ; ?)
 
   \ doc{
   \
@@ -45,7 +45,7 @@
 [unneeded] cstorer ?(
 
 : cstorer ( c ca "name" -- )
-  create  2,  does>   ( -- ) ( pfa ) 2@ c! ; ?)
+  create  2,  does>   ( -- ) ( dfa ) 2@ c! ; ?)
 
   \ doc{
   \
@@ -64,7 +64,7 @@
 
 : 2storer ( xd a "name" -- )
   create  , 2,
-  does>   ( -- ) ( pfa ) dup cell+ 2@ rot @ 2! ; ?)
+  does>   ( -- ) ( dfa ) dup cell+ 2@ rot @ 2! ; ?)
 
   \ doc{
   \
@@ -87,6 +87,8 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth
 

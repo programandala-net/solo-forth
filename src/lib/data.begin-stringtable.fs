@@ -3,7 +3,8 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201709091154
+  \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
@@ -13,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -37,7 +38,7 @@
     \   a2 = address of the compiled strings
   does> ( n -- ca len )
     \ Return the nth string.
-    ( n pfa ) @ swap cells + @ count ;
+    ( n dfa ) @ swap cells + @ count ;
 
 : end-stringtable ( stringtable-sys -- )
   \ End the stringtable definition.
@@ -59,5 +60,10 @@
   \ end-stringtable
   \ 0 esperanto-number type
   \ 3 esperanto-number type
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

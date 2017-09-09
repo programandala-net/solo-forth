@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702282019
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -39,7 +39,7 @@
   \ create: ( "name" -- )
   \
   \ Create a word "name" which is compiled as a colon word but,
-  \ when executed, will return the address of its pfa.
+  \ when executed, will return the address of its dfa.
   \
   \ }doc
 
@@ -185,5 +185,7 @@
   \ 2017-02-27: Improve documentation.
   \
   \ 2017-02-28: Fix typo in documentation.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091148
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -832,7 +832,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
 
 : sconstants ( 0 ca[n]..ca[1] "name" -- n )
   create  0 begin  swap ?dup  while  , 1+  repeat
-  does> ( n -- ca len ) ( n pfa ) array> @ count ; ?)
+  does> ( n -- ca len ) ( n dfa ) array> @ count ; ?)
 
   \ doc{
   \
@@ -1012,5 +1012,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \
   \ 2017-09-08: Move `/first-name` from <display.ltype.fs>,
   \ where it was called `first-word`.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth

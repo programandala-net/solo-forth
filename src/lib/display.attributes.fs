@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705091218
+  \ Last modified: 201709091154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -499,7 +499,7 @@ code mask+attr@ ( -- b1 b2 )
 [unneeded] attr-setter ?( need attr!
 
 : attr-setter ( b "name" -- )
-  create c,  does> ( -- ) ( pfa ) c@ attr! ; ?)
+  create c,  does> ( -- ) ( dfa ) c@ attr! ; ?)
 
   \ doc{
   \
@@ -515,7 +515,7 @@ code mask+attr@ ( -- b1 b2 )
 [unneeded] mask+attr-setter ?( need mask+attr!
 
 : mask+attr-setter ( b1 b2 "name" -- )
-  create 2,  does> ( -- ) ( pfa ) 2@ mask+attr! ; ?)
+  create 2,  does> ( -- ) ( dfa ) 2@ mask+attr! ; ?)
 
   \ doc{
   \
@@ -1222,5 +1222,7 @@ create (0-9-color. ( -- a ) asm
   \ 2017-05-07: Improve documentation.
   \
   \ 2017-05-09: Remove `jppushhl,`.
+  \
+  \ 2017-09-09: Update notation "pfa" to the standard "dfa".
 
   \ vim: filetype=soloforth
