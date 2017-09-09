@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709090946
+  \ Last modified: 201709091011
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -549,9 +549,7 @@ need /base-filename need /filename-ext
   \
   \ }doc
 
-create cat-entries 10 c,
-  \ XXX TODO -- Convert to constant. Or move the buffer to
-  \ `pad` and calculate its length.
+create cat-entries 16 c,
 
   \ doc{
   \
@@ -559,25 +557,27 @@ create cat-entries 10 c,
   \
   \ A character variable that holds the number of entries
   \ (minimum 2) of the `cat-buffer`, and used by `(cat`.  Its
-  \ default value is 10.
+  \ default value is 16.
   \
   \ See also: `/cat-entry`.
   \
   \ }doc
 
-create cat-buffer cat-entries c@ 1+ /cat-entry * allot
+defer cat-buffer ' pad ' cat-buffer defer!
 
   \ doc{
   \
   \ cat-buffer ( -- a )
   \
-  \ _a_ is the address of the catalogue buffer, used by `(cat`,
-  \ `.cat`, `.acat` and other words.
+  \ A deferred word that returns the address _a_ of the
+  \ catalogue buffer, used by `(cat`, `.cat`, `.acat` and other
+  \ words.
+  \
+  \ WARNING: By default, ``cat-buffer`` executes `pad`.
   \
   \ See also: `cat-entries`, `/cat-entry`.
   \
   \ }doc
-
 
 : .filename-ext ( ca -- ) '.' emit /filename-ext type ;
 
@@ -888,10 +888,10 @@ need (cat need tab need 3dup need 3drop
   \ `wacat`. Add the `full-cat` flag.
   \
   \ 2017-09-09: Move the catalogue buffer from the `stringer`
-  \ to a permanent location. The reason of the catalogue
-  \ corruption was the buffer was overwritten by other strings
-  \ during the process. Remove `allocate-cat-buffer`. Fix
-  \ documentation. Convert the `cat-buffer` variable to a
-  \ constant.
+  \ to a configurable disposable location, by making
+  \ `cat-buffer` a deferred word that executes `pad`.  The
+  \ reason of the catalogue corruption was the buffer was
+  \ overwritten by other strings during the process. Remove
+  \ `allocate-cat-buffer`. Fix documentation.
 
   \ vim: filetype=soloforth

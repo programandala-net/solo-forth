@@ -1122,10 +1122,6 @@ Move the Z80-symbol constants to the assembler word list.
 // +3DOS {{{2
 === +3DOS ===
 
-.2017-09-09:
-
-Make `cat-buffer` configurable and disposable.
-
 .2017-03-05:
 
 Implement a `map-b` word with a custom _disk change_ routine.
