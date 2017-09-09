@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709081601
+  \ Last modified: 201709090932
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -531,10 +531,13 @@ code reposition-file ( ud fid -- ior )
 
 ( (cat )
 
-  cr .( loading (cat ... ) \ XXX INFORMER
+  \ cr .( loading (cat ... ) \ XXX INFORMER
 
 need assembler need >filename
 need /base-filename need /filename-ext
+
+need [if]  true constant [cat-buffer] immediate
+  \ XXX TMP -- alternative
 
 13 cconstant /cat-entry
 
@@ -577,6 +580,14 @@ variable cat-buffer
   \ See also: `cat-entries`, `/cat-entry`.
   \
   \ }doc
+
+[cat-buffer] [if]
+
+create (cat-buffer cat-entries c@ 1+ /cat-entry * allot
+(cat-buffer cat-buffer !
+(cat-buffer /cat-entry erase
+
+[then]
 
 : .filename-ext ( ca -- ) '.' emit /filename-ext type ;
 
@@ -662,9 +673,16 @@ variable full-cat  full-cat on
   \
   \ }doc
 
+-->
+
+( (cat )
+
 : >cat ( ca len -- ca1 ca2 x )
-  >filename cat-entries c@ allocate-cat-buffer dup cat-buffer !
-            cat-entries c@ 1+ $100 * full-cat @ abs or ;
+  >filename
+  [cat-buffer]
+  [if]   cat-buffer @ dup /cat-entry erase
+  [else] cat-entries c@ allocate-cat-buffer dup cat-buffer !
+  [then] cat-entries c@ 1+ $100 * full-cat @ abs or ;
 
   \ doc{
   \
@@ -760,7 +778,7 @@ code (cat ( ca1 ca2 x -- n ior )
 
 ( wcat cat )
 
-  cr .( loading cat ... ) \ XXX INFORMER
+  \ cr .( loading cat ... ) \ XXX INFORMER
 
 need (cat need 3dup need 3drop
 
@@ -833,7 +851,7 @@ need (cat need 3dup need 3drop
 
 ( wacat acat )
 
-  cr .( loading acat ... ) \ XXX INFORMER
+  \ cr .( loading acat ... ) \ XXX INFORMER
 
 need (cat need tab need 3dup need 3drop
 
@@ -907,5 +925,10 @@ need (cat need tab need 3dup need 3drop
   \ called `(cat` only once, not until the catalogue is
   \ completed. Fix and improve documentation. Add `acat` and
   \ `wacat`. Add the `full-cat` flag.
+  \
+  \ 2017-09-09: Move the catalogue buffer from the `stringer`
+  \ to a permanent location. The reason of the catalogue
+  \ corruption was the buffer was overwritten by other strings
+  \ during the process.
 
   \ vim: filetype=soloforth
