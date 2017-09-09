@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709090932
+  \ Last modified: 201709090946
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -536,9 +536,6 @@ code reposition-file ( ud fid -- ior )
 need assembler need >filename
 need /base-filename need /filename-ext
 
-need [if]  true constant [cat-buffer] immediate
-  \ XXX TMP -- alternative
-
 13 cconstant /cat-entry
 
   \ doc{
@@ -553,41 +550,34 @@ need [if]  true constant [cat-buffer] immediate
   \ }doc
 
 create cat-entries 10 c,
+  \ XXX TODO -- Convert to constant. Or move the buffer to
+  \ `pad` and calculate its length.
 
   \ doc{
   \
   \ cat-entries ( -- ca )
   \
   \ A character variable that holds the number of entries
-  \ (minimum 2) of the `cat-buffer`, created by
-  \ `allocate-cat-buffer` and used by `(cat`.  Its default
-  \ value is 10.
+  \ (minimum 2) of the `cat-buffer`, and used by `(cat`.  Its
+  \ default value is 10.
   \
   \ See also: `/cat-entry`.
   \
   \ }doc
 
-variable cat-buffer
+create cat-buffer cat-entries c@ 1+ /cat-entry * allot
 
   \ doc{
   \
   \ cat-buffer ( -- a )
   \
-  \ _a_ is the address of a cell containing the address of the
-  \ catalogue buffer, used by `(cat`, `.cat`, `.acat` and other
-  \ words.
+  \ _a_ is the address of the catalogue buffer, used by `(cat`,
+  \ `.cat`, `.acat` and other words.
   \
   \ See also: `cat-entries`, `/cat-entry`.
   \
   \ }doc
 
-[cat-buffer] [if]
-
-create (cat-buffer cat-entries c@ 1+ /cat-entry * allot
-(cat-buffer cat-buffer !
-(cat-buffer /cat-entry erase
-
-[then]
 
 : .filename-ext ( ca -- ) '.' emit /filename-ext type ;
 
@@ -624,36 +614,15 @@ create (cat-buffer cat-entries c@ 1+ /cat-entry * allot
 
 ( (cat )
 
-: >cat-entry ( n -- ca ) /cat-entry * cat-buffer @ + ;
+: >cat-entry ( n -- ca ) /cat-entry * cat-buffer + ;
 
   \ doc{
   \
-  \ name  ( -- )
+  \ >cat-entry ( n -- ca )
   \
   \ Convert `cat-buffer` entry _n_ to its address _ca_.
   \
-  \ See also: `/cat-entry`, `allocate-cat-buffer`.
-  \
-  \ }doc
-
-: allocate-cat-buffer ( n -- ca )
-  1+ /cat-entry * allocate-stringer dup /cat-entry erase ;
-
-  \ doc{
-  \
-  \ allocate-cat-buffer ( n -- ca )
-  \
-  \ Allocate space in the `stringer` for _n_ catalogue entries
-  \ and return its address _ca_, which will be stored later in
-  \ `cat-buffer`.
-  \
-  \ An additional entry is added at the start of the buffer and
-  \ erased with zeroes. This first entry is used by the DOS
-  \ routine.
-  \
-  \ ``allocate-cat-buffer`` is a factor of `>cat`.
-  \
-  \ See also: `(cat`.
+  \ See also: `/cat-entry`.
   \
   \ }doc
 
@@ -673,16 +642,9 @@ variable full-cat  full-cat on
   \
   \ }doc
 
--->
-
-( (cat )
-
 : >cat ( ca len -- ca1 ca2 x )
-  >filename
-  [cat-buffer]
-  [if]   cat-buffer @ dup /cat-entry erase
-  [else] cat-entries c@ allocate-cat-buffer dup cat-buffer !
-  [then] cat-entries c@ 1+ $100 * full-cat @ abs or ;
+  >filename cat-buffer dup /cat-entry erase
+            cat-entries c@ 1+ $100 * full-cat @ abs or ;
 
   \ doc{
   \
@@ -699,13 +661,12 @@ variable full-cat  full-cat on
   \ included (configurable by `full-cat`)
   \ _x_ (high byte) :: size of the buffer in entries, plus one (>=2)
 
-  \ See also: `wcat`, `cat`, `allocate-cat-buffer`,
-  \ `cat-entries`.
+  \ See also: `wcat`, `cat`, `cat-entries`.
   \
   \ }doc
 
 : more-cat ( -- )
-  cat-entries c@ >cat-entry cat-buffer @ /cat-entry move ;
+  cat-entries c@ >cat-entry cat-buffer /cat-entry move ;
 
   \ doc{
   \
@@ -929,6 +890,8 @@ need (cat need tab need 3dup need 3drop
   \ 2017-09-09: Move the catalogue buffer from the `stringer`
   \ to a permanent location. The reason of the catalogue
   \ corruption was the buffer was overwritten by other strings
-  \ during the process.
+  \ during the process. Remove `allocate-cat-buffer`. Fix
+  \ documentation. Convert the `cat-buffer` variable to a
+  \ constant.
 
   \ vim: filetype=soloforth
