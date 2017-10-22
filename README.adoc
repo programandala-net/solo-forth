@@ -1,6 +1,6 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-04-27
+:revdate: 2017-10-22
 :toc:
 :linkattrs:
 
@@ -333,7 +333,7 @@ DOS commands.
 
 1. Run a ZX Spectrum emulator and select a Pentagon 512.
 2. "Insert" the disk image file
-   <disks/trdos/disk_0_boot.pentagon_512.trd> as disk 'A'.
+   <disks/trdos/disk_0_boot.pentagon_1024.trd> as disk 'A'.
 3. Choose "128k menu"footnoteref:[pentagonboot] from the computer
    start menu (the reset service menu). This will enter a ZX Spectrum
    128 style menu. Choose "TR-DOS".  This will enter the TR-DOS
