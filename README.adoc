@@ -331,7 +331,7 @@ DOS commands.
 
 === On Pentagon 1024
 
-1. Run a ZX Spectrum emulator and select a Pentagon 512.
+1. Run a ZX Spectrum emulator and select a Pentagon 1024.
 2. "Insert" the disk image file
    <disks/trdos/disk_0_boot.pentagon_1024.trd> as disk 'A'.
 3. Choose "128k menu"footnoteref:[pentagonboot] from the computer
