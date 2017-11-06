@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201711061857
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -41,6 +41,9 @@ need search-wordlist
   \
   \ Create a new associative list "name".
   \
+  \ See: `entry:`, `centry:`, `2entry:`, `sentry:`, `item`,
+  \ `item?`, `items`, `associative:`.
+  \
   \ }doc
 
 : item? ( ca len wid -- false | xt true ) search-wordlist 0<> ;
@@ -49,8 +52,11 @@ need search-wordlist
   \
   \ item? ( ca len wid -- false | xt true )
   \
-  \ Is _ca len_ an item of associative list _wid_?
-  \ If so return its _xt_ and _true_, else return _false_.
+  \ Is _ca len_ an item of the `associative-list` _wid_?  If so
+  \ return its _xt_ and _true_, else return _false_.
+  \
+  \ See: `item`.  `entry:`, `centry:`, `2entry:`, `sentry:`,
+  \ `items`.
   \
   \ }doc
 
@@ -60,12 +66,14 @@ need search-wordlist
   \
   \ item ( ca len wid -- i*x )
   \
-  \ If _ca len_ is an item of associative list _wid_, return
-  \ its value _i*x_; else throw exception -13, "undefined
-  \ word".
+  \ If _ca len_ is an item of the `associative-list` _wid_,
+  \ return its value _i*x_; else throw exception -13,
+  \ "undefined word".
+  \
+  \ See: `item?`.  `entry:`, `centry:`, `2entry:`, `sentry:`,
+  \ `items`.
   \
   \ }doc
-
 
 : create-entry ( i*x wid xt "name" -- )
   get-current >r swap set-current  create execute
@@ -75,8 +83,11 @@ need search-wordlist
   \
   \ create-entry ( i*x wid xt "name" -- )
   \
-  \ Create an entry "name" in associative list _wid_,
+  \ Create an entry "name" in the `associative-list` _wid_,
   \ using _xt_ to store its value _i*x_.
+  \
+  \ ``create-entry`` is a factor of `entry:`, `centry:`,
+  \ `2entry:` and `sentry:`.
   \
   \ }doc
 
@@ -92,8 +103,10 @@ need create-entry  [unneeded] entry: ?(
   \
   \ entry: ( x wid "name" -- )
   \
-  \ Create a cell entry "name" in associative list
+  \ Create a cell entry "name" in the `associative-list`
   \ _wid_, with value _x_.
+  \
+  \ See: `centry:`, `2entry`, `sentry:`, `create-entry`.
   \
   \ }doc
 
@@ -105,8 +118,10 @@ need create-entry  [unneeded] entry: ?(
   \
   \ centry: ( c wid "name" -- )
   \
-  \ Create a character entry "name" in associative list
+  \ Create a character entry "name" in the `associative-list`
   \ _wid_, with value _c_.
+  \
+  \ See: `entry:`, `2entry`, `sentry:`, `create-entry`.
   \
   \ }doc
 
@@ -118,8 +133,10 @@ need create-entry  [unneeded] entry: ?(
   \
   \ 2entry: ( dx wid "name" -- )
   \
-  \ Create a double-cell entry "name" in associative list
+  \ Create a double-cell entry "name" in the `associative-list`
   \ _wid_, with value _dx_.
+  \
+  \ See: `entry:`, `centry:`, `sentry:`, `create-entry`.
   \
   \ }doc
 
@@ -131,8 +148,10 @@ need create-entry  [unneeded] entry: ?(
   \
   \ sentry: ( ca len wid "name" -- )
   \
-  \ Create a string entry "name" in associative list
+  \ Create a string entry "name" in the `associative-list`
   \ _wid_, with value _ca len_.
+  \
+  \ See: `entry:`, `centry:`, `2entry:`, `create-entry`.
   \
   \ }doc
 
@@ -144,7 +163,7 @@ need create-entry  [unneeded] entry: ?(
   \
   \ items ( wid -- )
   \
-  \ List items of associative list _wid_.
+  \ List items of the `associative-list` _wid_.
   \
   \ }doc
 
@@ -175,5 +194,7 @@ need create-entry  [unneeded] entry: ?(
   \ conditional interpretation.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2017-11-06: Improve documentation with cross-references.
 
   \ vim: filetype=soloforth

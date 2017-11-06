@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201709091459
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -160,7 +160,7 @@ B0 m2 or, A8 m2 xor, -->
   \ Opcodes
 
 : jpix, ( -- ) ix-op c, jphl, ;
-  \ XXX TODO -- study changes needed to use `ix jpp` or similar
+  \ XXX TODO -- study changes needed to use `ix jp,` or similar
   \ instead.
 
 : ldp#, ( 16b regp -- ) 8* 1+ c, , ;
@@ -224,6 +224,11 @@ F2 cconstant p?   FA cconstant m?
   \
   \ z? ( -- op )
   \
+  \ Return the opcode _op_ of the Z80 instruction ``jp z``,
+  \ to be used as condition and consumed by
+  \ `?ret,`, `?jp,`, `?call`, `?jr`, `aif`, `rif`, `awhile`,
+  \ `rwhile`, `auntil, or `runtil`.
+  \
   \ See also: `nz?`, `c?`, `nc?`, `po?`, `pe?`, `p?`, `m?`.
   \
   \ }doc
@@ -232,17 +237,25 @@ F2 cconstant p?   FA cconstant m?
   \
   \ nz? ( -- op )
   \
+  \ Return the opcode _op_ of the Z80 instruction ``jp nz``,
+  \ to be used as condition and consumed by
+  \ `?ret,`, `?jp,`, `?call`, `?jr`, `aif`, `rif`, `awhile`,
+  \ `rwhile`, `auntil, or `runtil`.
+  \
   \ See also: `z?`, `c?`, `nc?`, `po?`, `pe?`, `p?`, `m?`,
   \ `?ret,`, `?jp,`, `?jr`, `?call`, `rif`, `rwhile`, `runtil`,
   \ `aif`, `awhile`, `auntil`.
   \
   \ }doc
 
-  \ XXX TODO -- Finish documentation.
-
   \ doc{
   \
   \ c? ( -- op )
+  \
+  \ Return the opcode _op_ of the Z80 instruction ``jp c``,
+  \ to be used as condition and consumed by
+  \ `?ret,`, `?jp,`, `?call`, `?jr`, `aif`, `rif`, `awhile`,
+  \ `rwhile`, `auntil, or `runtil`.
   \
   \ See also: `z?`, `nz?`, `nc?`, `po?`, `pe?`, `p?`, `m?`.
   \
@@ -252,6 +265,11 @@ F2 cconstant p?   FA cconstant m?
   \
   \ nc? ( -- op )
   \
+  \ Return the opcode _op_ of the Z80 instruction ``jp nc``,
+  \ to be used as condition and consumed by
+  \ `?ret,`, `?jp,`, `?call`, `?jr`, `aif`, `rif`, `awhile`,
+  \ `rwhile`, `auntil, or `runtil`.
+  \
   \ See also: `z?`, `nz?`, `c?`, `po?`, `pe?`, `p?`, `m?`.
   \
   \ }doc
@@ -259,6 +277,10 @@ F2 cconstant p?   FA cconstant m?
   \ doc{
   \
   \ po? ( -- op )
+  \
+  \ Return the opcode _op_ of the Z80 instruction ``jp op``,
+  \ to be used as condition and consumed by
+  \ `?ret,`, `?jp,`, `?call`, `aif`, `awhile` or `auntil`.
   \
   \ See also: `z?`, `nz?`, `c?`, `nc?`, `pe?`, `p?`, `m?`.
   \
@@ -268,6 +290,10 @@ F2 cconstant p?   FA cconstant m?
   \
   \ pe? ( -- op )
   \
+  \ Return the opcode _op_ of the Z80 instruction ``jp pe``,
+  \ to be used as condition and consumed by
+  \ `?ret,`, `?jp,`, `?call`, `aif`, `awhile` or `auntil`.
+  \
   \ See also: `z?`, `nz?`, `c?`, `nc?`, `po?`, `p?`, `m?`.
   \
   \ }doc
@@ -276,6 +302,10 @@ F2 cconstant p?   FA cconstant m?
   \
   \ p? ( -- op )
   \
+  \ Return the opcode _op_ of the Z80 instruction ``jp p``,
+  \ to be used as condition and consumed by
+  \ `?ret,`, `?jp,`, `?call`, `aif`, `awhile` or `auntil`.
+  \
   \ See also: `z?`, `nz?`, `c?`, `nc?`, `po?`, `pe?`, `m?`.
   \
   \ }doc
@@ -283,6 +313,10 @@ F2 cconstant p?   FA cconstant m?
   \ doc{
   \
   \ m? ( -- op )
+  \
+  \ Return the opcode _op_ of the Z80 instruction ``jp m``,
+  \ to be used as condition and consumed by
+  \ `?ret,`, `?jp,`, `?call`, `aif`, `awhile` or `auntil`.
   \
   \ See also: `z?`, `nz?`, `c?`, `nc?`, `po?`, `pe?`, `p?`.
   \
@@ -297,16 +331,62 @@ F2 cconstant p?   FA cconstant m?
   \ Note: Opcodes: $C3 is `jp`; $18 is `jr`.
 
 : ?ret, ( op -- ) 2- c, ;
-  \ Conditional return.
+
+  \ doc{
+  \
+  \ ?ret, ( op -- )
+  \
+  \ Compile a Z80 conditional return instruction, being _op_
+  \ the identifier of the condition, which has been put on the
+  \ stack by `nz?`, `c?`, `nc?`, `po?`, `pe?`, `p?`, or `m?`.
+  \
+  \ See also: `?jp,`, `?call,`.
+  \
+  \ }doc
 
 : ?jp, ( a op -- ) c, , ;
-  \ Conditional absolute jump.
+
+  \ doc{
+  \
+  \ ?jp, ( a op -- )
+  \
+  \ Compile a Z80 conditional absolute jump instruction to
+  \ address _a_, being _op_ the identifier of the condition,
+  \ which has been put on the stack by `nz?`, `c?`, `nc?`,
+  \ `po?`, `pe?`, `p?`, or `m?`.
+  \
+  \ See also: `?jr,`, `?ret,`, `?call,`.
+  \
+  \ }doc
 
 : ?call, ( a op -- ) 2+ ?jp, ;
-  \ Conditional call.
+
+  \ doc{
+  \
+  \ ?call, ( a op -- )
+  \
+  \ Compile a Z80 conditional absolute call instruction to
+  \ address _a_, being _op_ the identifier of the condition,
+  \ which has been put on the stack by `nz?`, `c?`, `nc?`,
+  \ `po?`, `pe?`, `p?`, or `m?`.
+  \
+  \ See also: `?ret,`, `?jp,`.
+  \
+  \ }doc
 
 : ?jr, ( a op -- ) jp>jr (jr,) ;
-  \ Conditional relative jump.
+
+  \ doc{
+  \
+  \ ?jp, ( a op -- )
+  \
+  \ Compile a Z80 conditional relative jump instruction to
+  \ address _a_, being _op_ the identifier of the condition,
+  \ which has been put on the stack by `nz?`, `c?`, or `nc?`.
+  \
+  \ See also: `?jp,`.
+  \
+  \ }doc
 
   \ Control structures with relative jumps
 
@@ -414,12 +494,13 @@ set-current set-order
 
   \ doc{
   \
-  \ inverse-cond ( op1 -- op2)
+  \ inverse-cond ( op1 -- op2 )
   \
   \ Convert an assembler condition flag (actually, an absolute
   \ jump opcode) to its opposite.
   \
-  \ Examples: `c?` is converted to `nc?`; `nz?` to `z?`, etc.
+  \ Examples: The opcode returned by `c?` is converted to the
+  \ opcode returned by `nc?`; `nz?` to `z?`, etc.
   \
   \ }doc
 
@@ -652,5 +733,7 @@ macro call-xt, ( xt -- ) 21 c, , execute-hl, endm
   \ `call-xt,` with Z80 opcodes. Improve documentation.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \ Finish documentation of conditions (`z?`, `nz?`...).
+  \ Document `?ret,`, `?call`, `?jp,`, `?jr,`.
 
   \ vim: filetype=soloforth

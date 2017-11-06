@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201711061902
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -46,10 +46,10 @@
   \
   \ An associative memory word.  It must be followed by a set
   \ of values to be looked up.  At runtime, the values stored
-  \ in the data field are searched for a match.  If one if
-  \ found, the index to that value is returned.  If no match is
-  \ made, then the number of entries, ie max index + 1 is
-  \ returned.  This is the inverse of an array.
+  \ in the data field are searched for a match.  If a match is
+  \ made, the index to that value is returned.  If no match is
+  \ made, then the number of entries is returned.  This is the
+  \ inverse of an array.
 
   \ Usage example:
 
@@ -65,6 +65,8 @@
   \ 30 unzx .    \ prints 2
   \ ----
 
+  \ See: `associative-list`.
+  \
   \ }doc
 
   \ ===========================================================
@@ -76,5 +78,7 @@
   \ documentation.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2017-11-06: Improve documentation with cross-reference.
 
   \ vim: filetype=soloforth
