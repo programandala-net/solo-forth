@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201709091312
+; Last modified: 201711261630
 
 include version.z80s
 
@@ -3186,10 +3186,12 @@ paren_do.de_hl:
 ;
 ; i ( -- n|u ) ( R: do-sys -- do-sys )
 ;
-; Return a copy of the current (innermost) `loop` index.
+; Return a copy _n|u_ of the current (innermost) `loop` index.
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `i'`, `j`, `k`.
 ;
 ; }doc
 

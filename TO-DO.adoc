@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-11-06
+:revdate: 2017-11-19
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -544,9 +544,12 @@ actions of `emit` must be rewritten after them. This is what
 Improve the transition between display modes: Convert the cursor
 coordinates of the previous mode.
 
-.2017-05-12:
+.2017-05-12, 2017-11-20:
 
 Finish `ltype`.
+Make it compatible with Galope's `ltype`.
+
+.2017-05-12:
 
 Make `wltype` simpler and faster.
 
@@ -2300,6 +2303,17 @@ Finish the conversion of 128K sound explosions. More details in the source.
 
 // Strings {{{1
 == Strings ==
+
+.2017-11-19:
+
+Improve `sconstant` or write a variant to store long strings: store
+only the text, not the length, and create a `2constant` to return
+address and length.
+
+.2017-11-08:
+
+Compare the stringer to its latest version in Galope, for possible
+improvements.
 
 .2017-05-04:
 

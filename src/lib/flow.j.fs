@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702240011
+  \ Last modified: 201711261655
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -45,14 +45,14 @@ code j ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
   \ Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
   \ Forth-2012 (CORE).
   \
-  \ See also: `i`, `k`.
+  \ See also: `j'`, `i`, `k`.
   \
   \ }doc
 
 [unneeded] k ?(
 
 code k ( -- n|u )
-  ( R: loop-sys1..loop-sys3 -- loop-sys1..loop-sys3 )
+  ( R: loop-sys1 .. loop-sys3 -- loop-sys1 .. loop-sys3 )
   2A c, rp ,  11 c, 6 cells ,  19 c,  C3 c, ' i 3 + , end-code
     \ ld hl,(return_stack_pointer)
     \ ld de,6*cell
@@ -63,13 +63,96 @@ code k ( -- n|u )
 
   \ doc{
   \
-  \ k ( -- n|u ) ( R: loop-sys1..loop-sys3 -- loop-sys1..loop-sys3 )
+  \ k ( -- n|u ) ( R: loop-sys1 .. loop-sys3 -- loop-sys1 .. loop-sys3 )
   \
   \ Return a copy _n|u_ of the second outer `loop` index.
   \
   \ Origin: Forth-83 (Controlled reference words).
   \
-  \ See also: `i`, `j`.
+  \ See also: `k'`, `i`, `j`.
+  \
+  \ }doc
+
+( i' j' k' )
+
+[unneeded] i' ?(
+
+code i' ( -- n|u ) ( R: do-sys -- do-sys )
+  2A c, rp , 11 c, 2 cells , 19 c, 5E c, 23 c, 56 c, D5 c,
+  jpnext, end-code ?)
+    \ ld hl,(return_stack_pointer)
+    \ ld de,2*cell
+    \ add hl,de
+    \ ld e,(hl)
+    \ inc hl
+    \ ld d,(hl)
+    \ push de
+    \ _jp_next
+
+  \ doc{
+  \
+  \ i' ( -- n|u ) ( R: loop-sys -- loop-sys )
+  \
+  \ Return a copy _n|u_ of the limit of the current (innermost)
+  \ `loop` index.
+  \
+  \ Origin: Comus.
+  \
+  \ See also: `i`, `j'`, `k'`.
+  \
+  \ }doc
+
+[unneeded] j' ?(
+
+code j' ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
+  2A c, rp , 11 c, 5 cells , 19 c, 5E c, 23 c, 56 c, D5 c,
+  jpnext, end-code ?)
+    \ ld hl,(return_stack_pointer)
+    \ ld de,5*cell
+    \ add hl,de
+    \ ld e,(hl)
+    \ inc hl
+    \ ld d,(hl)
+    \ push de
+    \ _jp_next
+
+  \ doc{
+  \
+  \ j' ( -- n|u ) ( R: loop-sys1 loop-sys2 -- loop-sys1 loop-sys2 )
+  \
+  \ Return a copy _n|u_ of the limit of the next-outer `loop`
+  \ index.
+  \
+  \ Origin: Comus.
+  \
+  \ See also: `j`, `i'`, `k'`.
+  \
+  \ }doc
+
+[unneeded] k' ?(
+
+code k' ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
+  2A c, rp , 11 c, 8 cells , 19 c, 5E c, 23 c, 56 c, D5 c,
+  jpnext, end-code ?)
+    \ ld hl,(return_stack_pointer)
+    \ ld de,8*cell
+    \ add hl,de
+    \ ld e,(hl)
+    \ inc hl
+    \ ld d,(hl)
+    \ push de
+    \ _jp_next
+
+  \ doc{
+  \
+  \ k' ( -- n|u ) ( R: loop-sys1 .. loop-sys3 -- loop-sys1 .. loop-sys3 )
+  \
+  \ Return a copy _n|u_ of the limit of the second outer `loop`
+  \ index.
+  \
+  \ Origin: Comus.
+  \
+  \ See also: `k`, `i'`, `j'`.
   \
   \ }doc
 
@@ -89,5 +172,7 @@ code k ( -- n|u )
   \ 2017-02-20: Update notation of word sets.
   \
   \ 2017-02-24: Improve documentation.
+  \
+  \ 2017-11-26: Add `i'`, `j'` and `k'`.
 
   \ vim: filetype=soloforth
