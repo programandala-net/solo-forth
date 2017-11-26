@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201707272052
+  \ Last modified: 201711261724
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -370,14 +370,17 @@ code polarity ( n -- -1 | 0 | 1 )
   \ If _n_ is negative, return negative one.
   \ If _n_ is positive, return positive one.
   \
-  \ ``polarity`` is written in Z80. This is an example
-  \ implementation in Forth:
-  \
+  \ ``polarity`` is written in Z80. These are example
+  \ implementations in Forth:
+
   \ ----
-  \ : polarity ( n -- -1|0|1 )
-  \   dup 0= ?exit  0< ?dup ?exit  1 ;
-  \ ----
+  \ : polarity ( n -- -1|0|1 ) dup 0= ?exit 0< ?dup ?exit 1 ;
   \
+  \ : polarity ( n -- -1|0|1 ) dup 0= ?exit 0< 2* 1+ ;
+  \
+  \ : polarity ( n -- -1|0|1 ) -1 max 1 min ;
+  \ ----
+
   \ See also: `<=>`, `negate`, `within`, `between`.
   \
   \ }doc
@@ -1297,5 +1300,7 @@ code join ( b1 b2 -- x )
   \ `jppushhl,`.
   \
   \ 2017-07-27: Add `8+` and `8-`. Improve documentation.
+  \
+  \ 2017-11-26: Improve documentation.
 
   \ vim: filetype=soloforth
