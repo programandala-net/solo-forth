@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201711271851
+  \ Last modified: 201711272149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -275,7 +275,7 @@ code call ( a -- )
   \
   \ }doc
 
-( retry ?retry ?leave thens )
+( retry ?retry ?leave )
 
   \ Description:
   \
