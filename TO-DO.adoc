@@ -106,11 +106,6 @@ examples: `lshift`, `(g-emit)` and family, `f!`, `f@`,
 // Benchmarks {{{1
 == Benchmarks ==
 
-NOTE: Milestone: 0.14.0
-
-- Benchmark current `times` and new version that keeps the xt in the return
-  stack in the loop: `do dup r> execute r> loop drop`.
-
 // Bugs {{{1
 == Bugs ==
 

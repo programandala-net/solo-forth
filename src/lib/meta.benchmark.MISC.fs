@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201708131617
+  \ Last modified: 201711271905
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,6 +27,42 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( times-bench )
+
+need bench{ need }bench.  variable times-xt
+
+: times-v1 ( u -- )
+  rp@ @ dup cell+ rp@ ! @ times-xt !
+  0 ?do times-xt perform loop ; compile-only ?)
+
+: times-v2 ( u -- )
+  rp@ @ dup cell+ rp@ ! @ swap
+  0 ?do dup execute loop drop ; compile-only ?)
+  \ NOTE: This is the fastest variant, but a copy of the _xt_
+  \ is on the stack when the _xt_ is executed. This can be
+  \ inconvenient in some cases.
+
+: times-v3 ( u -- )
+  rp@ @ dup cell+ rp@ ! @ swap
+  0 ?do dup >r execute r> loop drop ; compile-only ?)
+
+: run ( u -- )
+  cr ." Results for " dup u. ." iterations"
+  dup cr ." times noop \ v1 :" bench{ times-v1 noop }bench.
+  dup cr ." times noop \ v2 :" bench{ times-v2 noop }bench.
+      cr ." times noop \ v3 :" bench{ times-v3 noop }bench. ;
+
+  \ 2017-08-13
+  \
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- ---------------------------------
+  \         v1          v2          v3
+  \       ---- ----------- -----------
+  \  1000    5    5           9
+  \ 10000   55   51 (0.92)   91 (1.65)
+  \ 32000  176  164 (0.93)  290 (1.64)
+  \ 65535  360  337 (0.93)  594 (1.65)
 
 ( ?throw-bench )
 
@@ -2865,5 +2901,7 @@ need bench{ need }bench.
   \ it.
   \
   \ 2017-08-13: Add `?throw-bench`.
+  \
+  \ 2017-11-27: Add `times-bench`.
 
   \ vim: filetype=soloforth

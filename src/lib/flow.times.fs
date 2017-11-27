@@ -1,9 +1,11 @@
   \ flow.times.fs
   \
+  \ 2017-11-27: Improve documentation.
+  \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132019
+  \ Last modified: 201711271908
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,11 +35,12 @@
 
 [unneeded] times ?(
 
-variable times-xt  \ the _xt_ executed by `times`
+variable times-xt
+  \ Storage of the _xt_ executed by `times`.
 
 : times ( u -- )
-  rp@ @  dup cell+ rp@ !  @ times-xt !
-  0 ?do  times-xt perform  loop ; compile-only ?)
+  rp@ @ dup cell+ rp@ ! @ times-xt !
+  0 ?do times-xt perform loop ; compile-only ?)
 
   \ doc{
   \
@@ -62,7 +65,7 @@ variable times-xt  \ the _xt_ executed by `times`
 
   \ Origin: cmForth's ``repeats``.
   \
-  \ See also: `dtimes`, `executions`.
+  \ See also: `dtimes`, `executions`, `for`, `?do`.
   \
   \ }doc
 
@@ -92,7 +95,7 @@ variable dtimes-xt  \ the _xt_ executed by `dtimes`
   \ : blinking ( -- ) 100000. dtimes blink  ." Done" cr ;
   \ ----
 
-  \ See also: `times`, `executions`.
+  \ See also: `times`, `executions`, `dfor`, `?do`.
   \
   \ }doc
 
@@ -117,5 +120,7 @@ variable dtimes-xt  \ the _xt_ executed by `dtimes`
   \ library, with `?do`.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-11-27: Improve documentation.
 
   \ vim: filetype=soloforth

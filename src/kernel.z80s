@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201711271633
+; Last modified: 201711271909
 
 include version.z80s
 
@@ -3060,7 +3060,7 @@ question_stringer_.enough:
 
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See also: `do`, `-do`.
+; See also: `do`, `-do`, `times`, `executions`.
 ;
 ; }doc
 
