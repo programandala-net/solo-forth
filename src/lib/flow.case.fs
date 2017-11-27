@@ -3,14 +3,14 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703190106
+  \ Last modified: 201711271631
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ Several implementations of the standard Eaker's `case`
-  \ structure and some variants of `of`.
+  \ An implementation of the standard Eaker's `case` structure
+  \ and some variants of `of`.
 
   \ ===========================================================
   \ Author
@@ -38,16 +38,27 @@
                        immediate compile-only
   \ doc{
   \
-  \ case  ( -- 0 )
+  \ case
+  \   Compilation: ( C: -- case-sys )
+  \   Run-time:    ( -- )
+
+  \
+  \ Compilation: Mark the start of a ``case`` .. `endcase`
+  \ structure.
+  \
+  \ Run-time: Continue execution.
   \
   \ ``case`` is an `immediate` and `compile-only` word.
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
+  \ See also: `of`, `endof`, `default-of`, `less-of`,
+  \ `greater-of`, `between-of`, `within-of`, `or-of`, `any-of`.
+  \
   \ }doc
 
 : of
-  \ Compilation: ( -- orig )
+  \ Compilation: ( C: -- orig )
   \ Run-time: ( x1 x2 -- )
   postpone over  postpone =  postpone if  postpone drop ;
   immediate compile-only
@@ -55,12 +66,28 @@
   \ doc{
   \
   \ of
-  \   Compilation: ( -- orig )
-  \   Run-time: ( x1 x2 -- )
+  \   Compilation: ( C: -- orig )
+  \   Run-time:    ( x1 x2 -- )
+
+  \
+  \ ``of`` is an `immediate` and `compile-only` word.
+  \
+  \ Compilation: Put _orig_ onto the control flow stack.
+  \ Append the run-time semantics given below to the current
+  \ definition. The semantics are incomplete until resolved by
+  \ a consumer of _orig_ such as `endof`.
+  \
+  \ Run-time: If _x1_ and _x2_ are not equal, discard _x2_ and
+  \ continue execution at the location specified by the
+  \ consumer of _orig_, e.g. following the next `endof`.
+  \ Otherwise discard _x1 x2_ and continue execution in line.
   \
   \ ``of`` is an `immediate` and `compile-only` word.
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+  \
+  \ See also: `default-of`, `less-of`, `greater-of`,
+  \ `between-of`, `within-of`, `or-of`, `any-of`.
   \
   \ }doc
 
@@ -71,9 +98,21 @@ immediate compile-only
 
   \ doc{
   \
-  \ endof ( orig1 -- orig2 )
+  \ endof
+  \   Compilation: ( C: orig1 -- orig2 )
+  \   Run-time:    ( -- )
+
   \
-  \ Mark the end of an `of` clause of the `case` structure.
+  \ Compilation: Mark the end of an `of` clause (or any of its
+  \ variants) of the `case` structure.  Resolve the forward
+  \ reference _orig1_, usually left by `of`.  Put the location
+  \ of a new unresolved forward reference _orig2_ onto the
+  \ control-flow stack, usually to be resolved by `endcase`.
+  \
+  \ Run-time: Continue execution at the location specified by
+  \ the consumer of _orig2_.
+  \
+  \ ``endof`` is equivalent to `else`.
   \
   \ ``endof`` is an `immediate` and `compile-only` word.
   \
@@ -82,7 +121,7 @@ immediate compile-only
   \ }doc
 
 : endcase
-  \ Compilation: ( 0 orig[1]..orig[n] -- )
+  \ Compilation: ( C: 0 orig[1]..orig[n] -- )
   \ Run-time: ( x -- )
   postpone drop  begin ?dup while postpone then repeat ;
   immediate compile-only
@@ -90,8 +129,8 @@ immediate compile-only
   \ doc{
   \
   \ endcase
-  \   Compilation: ( 0 orig1..orign -- )
-  \   Run-time: ( x -- )
+  \   Compilation: ( C: 0 orig#1 .. orig#n -- )
+  \   Run-time:    ( x -- )
   \
   \ ``endcase`` is an `immediate` and `compile-only` word.
   \
@@ -107,20 +146,46 @@ immediate compile-only
 
 need between
 
-: (between-of) ( x1 x2 x3 -- x1 x1 | x1 x1' )
-  2>r dup dup 2r> between 0= if  invert  then ;
+: (between-of) ( x1 x2 x3 -- x1 x1 | x1 x4 )
+  2>r dup dup 2r> between 0= if invert then ;
+
+  \ doc{
+  \
+  \ (between-of) ( x1 x2 x3 -- x1 x1 | x1 x4 )
+  \
+  \ The run-time factor of `between-of`.  If _x1_ is in range
+  \ _x2 x3_, as calculated by `between`, return _x1 x1_;
+  \ otherwise return _x1 x4_, being _x4_ not equal to _x1_.
+  \
+  \ }doc
 
 : between-of
-  \ Compilation: ( -- of-sys )
+  \ Compilation: ( C: -- of-sys )
   \ Run-time: ( x1 x2 x3 -- | x1 )
   postpone (between-of) postpone of ;  immediate compile-only
 
   \ doc{
   \
   \ between-of
-  \   Compilation: ( -- of-sys )
-  \   Run-time: ( x1 x2 x3 -- | x1 )
+  \   Compilation: ( C: -- of-sys )
+  \   Run-time:    ( x1 x2 x3 -- | x1 )
 
+  \ A variant of `of`.
+  \
+  \ Compilation:
+  \
+  \ Put _of-sys_ onto the control flow stack. Append the
+  \ run-time semantics given below to to the current
+  \ definition. The semantics are incomplete until resolved by
+  \ a consumer of _of-sys_, such as `endof`.
+  \
+  \ Run-time:
+  \
+  \ If _x1_ is not in range _x2 x3_, as calculated by
+  \ `between`, discard _x2 x3_ and continue execution at the
+  \ location specified by the consumer of _of-sys_, e.g.,
+  \ following the next `endof`. Otherwise, consume also _x1_
+  \ and continue execution in line.
   \
   \ ``between-of`` is an `immediate` and `compile-only` word.
   \
@@ -129,12 +194,13 @@ need between
   \ ----
   \ : test ( n -- )
   \   case
-  \     1 of  ." one"  endof
-  \     2 5 between-of  ." between two and five"  endof
-  \     6 of  ." six"  endof
+  \     1           of  ." one"                  endof
+  \     2 5 between-of  ." between two and five" endof
+  \     6           of  ." six"                  endof
   \   endcase ;
   \ ----
 
+  \ See also: `case`, `within-of`, `(between-of)`.
   \
   \ }doc
 
@@ -144,31 +210,34 @@ need between
   \
   \ Code from Galope.
 
-[unneeded] less-of ?(
+[unneeded] less-of ?( need nup
 
-[defined] nup ?\ : nup ( x1 x2 -- x1 x1 x2 ) over swap ;
-
-: (less-of) ( x1 x2 -- x1 x1 | x1 x1' )
-  nup nup >= if  invert  then ;
+: (less-of) ( n1 n2 -- n1 n1 | n1 n3 )
+  nup nup >= if invert then ;
 
   \ doc{
   \
-  \ (less-of) ( x1 x2 -- x1 x1 | x1 x1' )
+  \ (less-of) ( n1 n2 -- n1 n1 | n1 n3 )
   \
   \ The run-time factor of `less-of`.
+  \
+  \ If _n1_ is less than _n2_, leave _n1 n1_; otherwise leave
+  \ _n1 n3_, being _n3_ not equal to _n1_.
+  \
+  \ See also: `(greater-of)`.
   \
   \ }doc
 
 : less-of
-  \ Compilation: ( -- of-sys )
+  \ Compilation: ( C: -- of-sys )
   \ Run-time: ( x1 x2 -- | x1 )
-  postpone (less-of) postpone of ;  immediate compile-only ?)
+  postpone (less-of) postpone of ; immediate compile-only ?)
 
   \ doc{
   \
   \ less-of
-  \   Compilation: ( -- of-sys )
-  \   Run-time: ( x1 x2 -- | x1 )
+  \   Compilation: ( C: -- of-sys )
+  \   Run-time:    ( x1 x2 -- | x1 )
 
   \
   \ ``less-of`` is an `immediate` and `compile-only` word.
@@ -178,40 +247,44 @@ need between
   \ ----
   \ : test ( x -- )
   \   case
-  \     10 of      ." ten!"         endof
+  \     10      of ." ten!"         endof
   \     15 less-of ." less than 15" endof
   \     ." greater than 14"
   \   endcase ;
   \ ----
 
-  \ See also: `greater-of`, `(less-of)`.
+  \ See also: `case`, `greater-of`, `(less-of)`.
   \
   \ }doc
 
-: (greater-of) ( x1 x2 -- x1 x1 | x1 x1' )
-  nup nup <= if  invert  then ;
+[unneeded] greater-of ?( need nup
+
+: (greater-of) ( n1 n2 -- n1 n1 | n1 n3 )
+  nup nup <= if invert then ;
 
   \ doc{
   \
-  \ (greater-of) ( x1 x2 -- x1 x1 | x1 x1' )
+  \ (greater-of) ( n1 n2 -- n1 n1 | n1 n3 )
   \
   \ The run-time factor of `greater-of`.
+  \
+  \ If _n1_ is greater than _n2_, leave _n1 n1_; otherwise
+  \ leave _n1 n3_, being _n3_ not equal to _n1_.
+  \
+  \ See also: `(less-of)`.
   \
   \ }doc
 
 : greater-of
-  \ Compilation: ( -- of-sys )
+  \ Compilation: ( C: -- of-sys )
   \ Run-time: ( x1 x2 -- | x1 )
-  postpone (greater-of) postpone of ; immediate compile-only
-
-  \ Usage example:
-
+  postpone (greater-of) postpone of ; immediate compile-only ?)
 
   \ doc{
   \
   \ greater-of
-  \   Compilation: ( -- of-sys )
-  \   Run-time: ( x1 x2 -- | x1 )
+  \   Compilation: ( C: -- of-sys )
+  \   Run-time:    ( x1 x2 -- | x1 )
 
   \
   \ ``greater-of`` is an `immediate` and `compile-only` word.
@@ -227,7 +300,7 @@ need between
   \   endcase ;
   \ ----
 
-  \ See also: `less-of`.
+  \ See also: `case`, `less-of`, `(greater-of)`.
   \
   \ }doc
 
@@ -248,7 +321,7 @@ need between
   \ }doc
 
 : any-of
-  \ Compilation: ( -- of-sys )
+  \ Compilation: ( C: -- of-sys )
   \ Run-time: ( x0 x1..xn n -- | x0 )
   postpone (any-of) postpone of ; immediate compile-only ?)
 
@@ -256,8 +329,9 @@ need between
   \
   \ any-of
   \   Compilation: ( C: -- of-sys )
-  \   Run-time: ( x0 x1..xn n -- | x0 )
+  \   Run-time:    ( x0 x1..xn n -- | x0 )
 
+  \ A variant of `of`.
   \
   \ Compilation:
   \
@@ -268,12 +342,14 @@ need between
   \
   \ Run-time:
   \
-  \ A variant of `of`. If _x0_ equals any of _x1..xn_, discard
-  \ _x1..xn n_ and continue execution at the location specified
-  \ by the consumer of _of-sys_, e.g., following the next
-  \ `endof`. Otherwise, consume also _x0_ and continue
-  \ execution in line.
+  \ If _x0_ equals any of _x1..xn_, discard _x1..xn n_ and
+  \ continue execution at the location specified by the
+  \ consumer of _of-sys_, e.g., following the next `endof`.
+  \ Otherwise, consume also _x0_ and continue execution in
+  \ line.
 
+  \ ``any-of`` is an `immediate` and `compile-only` word.
+  \
   \ Usage example:
 
   \ ----
@@ -285,16 +361,9 @@ need between
   \   endcase ;
   \ ----
 
-  \ See also: `case`, `endcase`, `(any-of)`.
+  \ See also: `case`, `or-of`, `(any-of)`.
   \
   \ }doc
-
-  \ Credit:
-  \
-  \ Code from Galope.  Originally based on code by Mark Willis
-  \ posted to <comp.lang.forth>:
-  \ Message-ID: <64b90787-344c-4ee0-a0e4-4e2c12b3dec3@googlegroups.com>
-  \ Date: Fri, 24 Jan 2014 02:08:22 -0800 (PST)
 
 : default-of ( -- )
   postpone dup postpone of ; immediate compile-only
@@ -303,10 +372,17 @@ need between
 
   \ : test ( x -- )
   \   case
-  \     1 of       ." one"    endof
-  \     2 of       ." two"    endof
-  \     default-of ." other"  endof
+  \     1 of       ." one"   endof
+  \     2 of       ." two"   endof
+  \     default-of ." other" endof
   \   endcase ;
+
+  \ Credit:
+  \
+  \ Code from Galope.  Originally based on code by Mark Willis
+  \ posted to <comp.lang.forth>:
+  \ Message-ID: <64b90787-344c-4ee0-a0e4-4e2c12b3dec3@googlegroups.com>
+  \ Date: Fri, 24 Jan 2014 02:08:22 -0800 (PST)
 
 ( within-of or-of )
 
@@ -316,45 +392,124 @@ need between
 
 [unneeded] within-of ?( need within
 
-: (within-of) ( x1 x2 x3 -- x1 x1 | x1 x1' )
-  2>r dup dup 2r> within 0= if  invert  then ;
+: (within-of) ( x1 x2 x3 -- x1 x1 | x1 x4 )
+  2>r dup dup 2r> within 0= if invert then ;
+
+  \ doc{
+  \
+  \ (within-of) ( x1 x2 x3 -- x1 x1 | x1 x4 )
+  \
+  \ The run-time factor of `within-of`.  If _x1_ is in range
+  \ _x2 x3_, as calculated by `within`, return _x1 x1_;
+  \ otherwise return _x1 x4_, being _x4_ not equal to _x1_.
+  \
+  \ }doc
 
 : within-of
-  \ Compilation: ( -- of-sys )
+  \ Compilation: ( C: -- of-sys )
   \ Run-time: ( x1 x2 x3 -- | x1 )
   postpone (within-of) postpone of ; immediate compile-only ?)
 
   \ XXX TODO confirm the ranges in the example:
 
+  \ doc{
+  \
+  \ within-of Compilation: ( C: -- of-sys )
+  \           Run-time:    ( x1 x2 x3 -- | x1 )
+
+  \ A variant of `of`.
+  \
+  \ Compilation:
+  \
+  \ Put _of-sys_ onto the control flow stack. Append the
+  \ run-time semantics given below to to the current
+  \ definition. The semantics are incomplete until resolved by
+  \ a consumer of _of-sys_, such as `endof`.
+  \
+  \ Run-time:
+  \
+  \ If _x1_ is not in range _x2 x3_, as calculated by `within`,
+  \ discard _x2 x3_ and continue execution at the location
+  \ specified by the consumer of _of-sys_, e.g., following the
+  \ next `endof`. Otherwise, consume also _x1_ and continue
+  \ execution in line.
+  \
+  \ ``within-of`` is an `immediate` and `compile-only` word.
+
   \ Usage example:
 
-  \ : test ( x -- )
-  \   case
-  \     1 of          ." one"                 endof
-  \     2 5 within-of ." within two and five" endof
-  \     6 of          ." six"                 endof
-  \   endcase ;
+  \ ----
+  : test ( x -- )
+    case
+      1          of ." one"                           endof
+      2 5 within-of ." within two and five; not five" endof
+      5          of ." five"                          endof
+    endcase ;
+  \ ----
+
+  \ See also: `case`, `between-of`, `(within-of)`.
+  \
+  \ }doc
 
   \ Credit:
   \
   \ Code from Galope.
 
-: (or-of) ( x1 x2 x3 -- x1 x1 | x1 x1' )
-  2>r dup dup dup r> = swap r> = or 0= if  invert  then ;
+: (or-of) ( x1 x2 x3 -- x1 x1 | x1 x4 )
+  2>r dup dup dup r> = swap r> = or 0= if invert then ;
+
+  \ doc{
+  \
+  \ (or-of) ( x1 x2 x3 -- x1 x1 | x1 x4 )
+  \
+  \ The run-time factor of `less-of`.
+  \
+  \ }doc
 
 : or-of
-  \ Compilation: ( -- of-sys )
+  \ Compilation: ( C: -- of-sys )
   \ Run-time: ( x1 x2 x3 -- | x1 )
   postpone (or-of) postpone of ; immediate compile-only
 
+  \ doc{
+  \
+  \ or-of
+  \   Compilation: ( C: -- of-sys )
+  \   Run-time:    ( x1 x2 x3 -- | x1 )
+
+  \ A variant of `of`.
+  \
+  \ Compilation:
+  \
+  \ Put _of-sys_ onto the control flow stack. Append the
+  \ run-time semantics given below to to the current
+  \ definition. The semantics are incomplete until resolved by
+  \ a consumer of _of-sys_, such as `endof`.
+  \
+  \ Run-time:
+  \
+  \ If _x1_ is equal to _x2_ or _x1_ is equal to _x3_ discard
+  \ _x1 x2 x3_ and continue execution in line; otherwise
+  \ discard _x2 x3_ and continue execution at the location
+  \ specified by the consumer of _of-sys_, e.g., following the
+  \ next `endof`.
+  \
+  \ ``or-of`` is an `immediate` and `compile-only` word.
+  \
   \ Usage example:
 
+  \ ----
   \ : test ( x -- )
   \   case
-  \     1 of      ." one"          endof
+  \     1      of ." one"          endof
   \     2 3 or-of ." two or three" endof
-  \     4 of      ." four"         endof
+  \     4      of ." four"         endof
   \   endcase ;
+  \ ----
+
+  \ See also: `case`, `any-of`, `(or-of)`.
+  \
+  \ }doc
 
   \ ===========================================================
   \ Change log
@@ -379,5 +534,8 @@ need between
   \ implementations of `case`. Improve documentation.
   \
   \ 2017-03-19: Improve documentation.
+  \
+  \ 2017-11-27: Improve documentation. Fix needing of
+  \ `greater-of`. Need `nup` instead of define it.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201711261630
+; Last modified: 201711271633
 
 include version.z80s
 
@@ -13822,7 +13822,7 @@ block.end:
 ; : repeat
 ;   \ Compilation: ( C: orig dest -- )
 ;   \ Run-time:    ( -- )
-;   again then ; immediate compile-only
+;   postpone again postpone then ; immediate compile-only
 ; ----
 
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
@@ -13917,14 +13917,14 @@ if.do:
 ; doc{
 ;
 ; else
-;   Compilation: ( orig1 -- orig2 )
+;   Compilation: ( C: orig1 -- orig2 )
 ;   Run-time:    ( -- )
 
 ;
-; Compilation: Put the location of a new unresolved forward
+; Compilation: Resolve the forward reference _orig1_, usually
+; left by `if`.  Put the location of a new unresolved forward
 ; reference _orig2_ onto the control-flow stack, usually to be
-; resolved by `then`.  Resolve the forward reference _orig1_,
-; usually left by `if`.
+; resolved by `then`.
 ;
 ; Run-time: Continue execution at the location specified by the
 ; resolution of _orig2_.
