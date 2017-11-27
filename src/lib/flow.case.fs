@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201711271631
+  \ Last modified: 201711271658
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -32,6 +32,8 @@
 
   \ When `alias` is already defined,
   \ this version uses 40 bytes; else it uses 51 bytes.
+
+need thens
 
 [defined] alias dup 0= ?\   ' 0 alias case
                        ?\ 0 cconstant case
@@ -121,10 +123,9 @@ immediate compile-only
   \ }doc
 
 : endcase
-  \ Compilation: ( C: 0 orig[1]..orig[n] -- )
+  \ Compilation: ( C: 0 orig#1 .. orig#n -- )
   \ Run-time: ( x -- )
-  postpone drop  begin ?dup while postpone then repeat ;
-  immediate compile-only
+  postpone drop postpone thens ; immediate compile-only
 
   \ doc{
   \
@@ -135,6 +136,8 @@ immediate compile-only
   \ ``endcase`` is an `immediate` and `compile-only` word.
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+  \
+  \ See also: `thens`.
   \
   \ }doc
 
@@ -296,7 +299,7 @@ need between
   \   case
   \     10 of         ." ten!"            endof
   \     15 greater-of ." greater than 15" endof
-  \     ." less than 10 or 11..15"
+  \     ." less than 10 or 11 .. 15"
   \   endcase ;
   \ ----
 
@@ -308,28 +311,28 @@ need between
 
 [unneeded] any-of ?( need any? need pick
 
-: (any-of) ( x0 x1..xn n -- x0 x0 | x0 0 )
+: (any-of) ( x#0 x#1 .. x#n n -- x#0 x#0 | x#0 0 )
   dup 1+ pick >r any? r> tuck and ;
 
   \ doc{
   \
-  \ (any-of) ( x0 x1..xn n -- x0 x0 | x0 0 )
+  \ (any-of) ( x#0 x#1 .. x#n n -- x#0 x#0 | x#0 0 )
   \
-  \ The run-time factor of `any-of`.  If _x0_ equals any of
-  \ _x1..xn_, return _x0 x0_; else return _x0 0_.
+  \ The run-time factor of `any-of`.  If _x#0_ equals any of
+  \ _x#1 .. x#n_, return _x#0 x#0_; else return _x#0 0_.
   \
   \ }doc
 
 : any-of
   \ Compilation: ( C: -- of-sys )
-  \ Run-time: ( x0 x1..xn n -- | x0 )
+  \ Run-time: ( x#0 x#1 .. x#n n -- | x#0 )
   postpone (any-of) postpone of ; immediate compile-only ?)
 
   \ doc{
   \
   \ any-of
   \   Compilation: ( C: -- of-sys )
-  \   Run-time:    ( x0 x1..xn n -- | x0 )
+  \   Run-time:    ( x#0 x#1 .. x#n n -- | x#0 )
 
   \ A variant of `of`.
   \
@@ -342,8 +345,8 @@ need between
   \
   \ Run-time:
   \
-  \ If _x0_ equals any of _x1..xn_, discard _x1..xn n_ and
-  \ continue execution at the location specified by the
+  \ If _x#0_ equals any of _x#1 .. x#n_, discard _x#1 .. x#n n_
+  \ and continue execution at the location specified by the
   \ consumer of _of-sys_, e.g., following the next `endof`.
   \ Otherwise, consume also _x0_ and continue execution in
   \ line.
@@ -536,6 +539,7 @@ need between
   \ 2017-03-19: Improve documentation.
   \
   \ 2017-11-27: Improve documentation. Fix needing of
-  \ `greater-of`. Need `nup` instead of define it.
+  \ `greater-of`. Need `nup` instead of define it. Use `thens`
+  \ in `endcase`.
 
   \ vim: filetype=soloforth

@@ -300,10 +300,7 @@ Implement Gforth's `]]`  and `[[`.
 // Control structures {{{1
 == Control structures ==
 
-.2017-08-09
-
-`cond` and `thens` are part of the unfinished implementation of
-`select`. Reference:
+.2017-08-09, 2017-11-27
 
 ....
 Subject: Re: Multiple WHILE's
@@ -313,34 +310,7 @@ Message-ID: <260620020959020469%neilbawd@earthlink.net>
 Date: Wed, 26 Jun 2002 16:58:18 GMT
 ....
 
-
-`COND ... THENS`, please.  Proposed in early 1990s.
-
-When control-flow stack is the data stack, the following has worked. 
-
-----
-    : COND 0 ; IMMEDIATE
-
-    : THENS  BEGIN dup WHILE  postpone THEN  REPEAT DROP ; IMMEDIATE
-----
-
-Note further example.
-
-----
-COND  test IF  
-    action
-ELSE  test IF 
-    action 
-ELSE  test IF  
-    action 
-ELSE
-    otherwise
-THENS
-----
-
-`test` may be on a string.
-
-`test` may use `ANDIF` and/or `ORIF` for short circuit conditionals.
+`ANDIF` and `ORIF` for short circuit conditionals.
 
 ----
 : ANDIF postpone DUP  postpone IF  postpone DROP ; IMMEDIATE
@@ -739,7 +709,8 @@ Improve tab control.
 
 .2017-11-27
 
-Finish the documentation of <flow.case.fs>.
+Finish the documentation of <flow.case.fs>: `endcase`, `less-of`,
+`greater-of`
 
 .2017-07-22:
 

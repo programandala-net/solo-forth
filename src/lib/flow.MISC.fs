@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201707271622
+  \ Last modified: 201711271706
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -275,7 +275,7 @@ code call ( a -- )
   \
   \ }doc
 
-( retry ?retry ?leave )
+( retry ?retry ?leave thens )
 
   \ Description:
   \
@@ -297,8 +297,7 @@ code call ( a -- )
 [unneeded] retry ?( need name>body
 
 : retry ( -- )
-  latest name>body postpone again
-  ; immediate compile-only ?)
+  latest name>body postpone again ; immediate compile-only ?)
 
   \ doc{
   \
@@ -356,6 +355,74 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \
   \ }doc
 
+( cond thens )
+
+[unneeded] cond ?( need thens
+
+0 constant cond immediate compile-only ?)
+
+  \ doc{
+  \
+  \ cond
+  \   Compilation: ( C: -- 0 )
+  \   Run-time:    ( -- )
+
+  \
+  \ Compilation: Mark the start of a ``cond`` .. `thens`
+  \ structure.  Leave _0_ on the control-flow stack, as a mark
+  \ for `thens`.
+  \
+  \ ``cond`` is an `immediate` and `compile-only` word.
+  \
+  \ Usage example:
+
+  \ ----
+  \ : test ( x -- )
+  \   cond
+  \     test1 if action1 else
+  \     test2 if action2 else
+  \     test3 if action3 else
+  \     default-action
+  \   thens ;
+  \ ----
+
+  \ See also: `case`.
+  \
+  \ }doc
+
+[unneeded] thens ?(
+
+: thens
+  \ Compilation: ( C: 0 orig#1 .. orig#n -- )
+  \ Run-time:    ( -- )
+  begin ?dup while postpone then repeat
+  ; immediate compile-only ?)
+
+  \ doc{
+  \
+  \ thens
+  \   Compilation: ( C: 0 orig#1 .. orig#n -- )
+  \   Run-time:    ( -- )
+  \
+  \ Resolve all forward references _orig#1 .. orign#n_ with
+  \ `then` until _0_ is found.
+  \
+  \ ``thens`` is an `immediate` and `compile-only` word.
+  \
+  \ ``thens`` is a factor of `endcase` and other control
+  \ structures, but it's also the end of a `cond` .. ``thens``
+  \ structure.
+
+  \ }doc
+
+  \ Credit of the `cond thens` structure:
+  \
+  \ Subject: Re: Multiple WHILE's
+  \ From: Wil Baden <neil...@earthlink.net>
+  \ Newsgroups: comp.lang.forth
+  \ Message-ID: <260620020959020469%neilbawd@earthlink.net>
+  \ Date: Wed, 26 Jun 2002 16:58:18 GMT
+
   \ ===========================================================
   \ Change log
 
@@ -394,5 +461,8 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \
   \ 2017-07-27: Replace `jp next` with the actual macro
   \ `_jp_next` in Z80 comments.
+  \
+  \ 2017-11-27: Move `cond` and `thens` from <flow.select.fs>
+  \ and document them.
 
   \ vim: filetype=soloforth

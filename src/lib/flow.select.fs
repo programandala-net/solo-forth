@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071800
+  \ Last modified: 201711271707
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -65,16 +65,12 @@
   \ provides "fall-through" capability akin to C's switch
   \ statement.
 
+need cond need thens
+
 0 constant select immediate
-0 constant cond immediate
 
   \ XXX NOTE: A version of `thens` is in the kernel of
   \ DZX-Forth.
-
-: thens  begin  ?dup while  postpone then  repeat ;
-  \ ( 0 a'1 ... a'n -- )
-  \ Compile the pending `then`.
-  \ XXX TODO -- probably, common factor with `endcase`
 
 : endselect  postpone drop  thens ; immediate
   \ Compilation: ( 0 a'1 ... a'n -- ) Run-time: ( x0 -- )
@@ -103,7 +99,7 @@
 : range
   \ Compilation: ( -- orig )
   \ Run-time:    ( x0 x1 x2 -- x0 f )
-  postpone (range)  postpone if ; immediate  -->
+  postpone (range)  postpone if ; immediate
 
   \ ===========================================================
   \ Change log
@@ -116,5 +112,7 @@
   \ 2017-01-23: Move `select-test` to the tests module.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2017-11-27: Move `cond` and `thens` to <flow.MISC.fs>.
 
   \ vim: filetype=soloforth
