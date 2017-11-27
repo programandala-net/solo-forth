@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201711271706
+  \ Last modified: 201711271851
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -313,9 +313,11 @@ code call ( a -- )
 
 [unneeded] ?retry ?( need retry
 
-: ?retry \ Compilation: ( -- ) Run-time: ( f -- )
+: ?retry
+  \ Compilation: ( -- )
+  \ Run-time: ( f -- )
   postpone if  postpone retry  postpone then
- ; immediate compile-only ?)
+  ; immediate compile-only ?)
 
   \ doc{
   \
@@ -463,6 +465,6 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ `_jp_next` in Z80 comments.
   \
   \ 2017-11-27: Move `cond` and `thens` from <flow.select.fs>
-  \ and document them.
+  \ and document them. Improve documentation.
 
   \ vim: filetype=soloforth

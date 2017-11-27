@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071738
+  \ Last modified: 201711271852
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -64,6 +64,8 @@
   \ The current value of the index can be retrieved with
   \ `dfor-i`.
   \
+  \ See also: `for`, `dtimes`, `?do`, `executions`.
+  \
   \ }doc
 
 : dstep ( -- )
@@ -122,5 +124,8 @@ need alias
   \ 2017-02-27: Improve documentation.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2017-11-27: Make `times` faster and smaller. Improve
+  \ documentation.
 
   \ vim: filetype=soloforth

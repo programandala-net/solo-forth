@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201707271622
+  \ Last modified: 201711271837
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -34,15 +34,13 @@
   \ Code adapted from Z88 CamelForth. Modified to do the check
   \ before decrementing the index.
 
-code (step) ( R: n -- n' )
+code (step) ( R: u -- u' )
 
   \ doc{
   \
-  \ (step)
+  \ (step) ( R: u -- u' )
   \
   \ The run-time procedure compiled by `step`.
-  \
-  \ Run-time:    ( R: n -- n' )
   \
   \ If the loop index is zero, discard the loop parameters and
   \ continue execution after the loop. Otherwise decrement the
@@ -80,19 +78,24 @@ code (step) ( R: n -- n' )
 
   end-code
 
-: for ( n -- ) postpone >r <mark ; immediate compile-only
+: for ( u -- ) postpone >r <mark ; immediate compile-only
 
   \ doc{
   \
-  \ for Compilation: ( R: -- dest ) Run-time:    ( n -- )
+  \ for
+  \   Compilation: ( R: -- dest )
+  \   Run-time:    ( u -- )
+
   \
-  \ Start of a ``for``..`step` loop, that will iterate _n+1_
-  \ times, starting with _n_ and ending with 0.
+  \ Start of a ``for``..`step` loop, that will iterate _u+1_
+  \ times, starting with _u_ and ending with 0.
   \
   \ The current value of the index can be retrieved with
   \ `for-i`.
   \
   \ ``for`` is an `immediate` and `compile-only` word.
+  \
+  \ See also: `dfor`, `times`, `?do`, `executions`.
   \
   \ }doc
 
@@ -161,5 +164,7 @@ need alias
   \
   \ 2017-07-27: Replace `jp next` with the actual macro
   \ `_jp_next` in Z80 comments.
+  \
+  \ 2017-11-27: Improve documentation.
 
   \ vim: filetype=soloforth
