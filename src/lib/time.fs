@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705061710
+  \ Last modified: 201711272004
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -343,7 +343,7 @@ code ms ( u -- )
   \ can be changed with `set-date`. The date is not updated by
   \ the system.
   \
-  \ See: `set-date`, `date`.
+  \ See: `set-date`, `date`, `time&date`, `.date`.
   \
   \ }doc
 
@@ -360,7 +360,7 @@ code ms ( u -- )
   \ can be fetch with `get-date`. The date is not updated by
   \ the system.
   \
-  \ See: `get-date`, `date`, `leapy-year?`.
+  \ See: `get-date`, `date`, `.date`, `leapy-year?`.
   \
   \ }doc
 
@@ -385,7 +385,7 @@ code ms ( u -- )
   \ maximum is $FFFFFF ticks of 20 ms (5592 minutes, 93 hours),
   \ then it starts again from zero.
   \
-  \ See also: `set-time`, `time&date`.
+  \ See also: `set-time`, `time&date`, `.time`.
   \
   \ }doc
 
@@ -429,6 +429,16 @@ code ms ( u -- )
 
 : .time ( second minute hour -- ) .00 ." :" .00 ." :" .00 ; ?)
 
+  \ doc{
+  \
+  \ .time ( second minute hour -- )
+  \
+  \ Display the given time in ISO 8601 extended format.
+  \
+  \ See also: `.date`, `.time&date`, `time&date`.
+  \
+  \ }doc
+
 [unneeded] .system-time ?( need get-time need .time
 
 : .system-time ( -- ) get-time .time ; ?)
@@ -436,6 +446,16 @@ code ms ( u -- )
 [unneeded] .date ?( need .0000 need .00
 
 : .date ( day month year -- ) .0000 ." -" .00 ." -" .00 ;
+
+  \ doc{
+  \
+  \ .date ( day month year -- )
+  \
+  \ Display the given time in ISO 8601 extended format.
+  \
+  \ See also: `.time`, `.time&date`, `time&date`.
+  \
+  \ }doc
 
 [unneeded] .system-date ?( need get-date need .date
 
@@ -447,6 +467,18 @@ code ms ( u -- )
 
 : .time&date ( second minute hour day month year -- )
   .date ." T" .time ; ?)
+
+
+  \ doc{
+  \
+  \ .time&date ( second minute hour day month year -- )
+  \
+  \ Display the given time and date in ISO 8601 extended
+  \ format.
+  \
+  \ See also: `.date`, `.time`, `time&date`.
+  \
+  \ }doc
 
 [unneeded] time&date ?( need get-time need get-date
 
@@ -462,7 +494,8 @@ code ms ( u -- )
   \
   \ Origin: Forth-94 (FACILITY EXT), Forth-201 (FACILITY EXT).
   \
-  \ See also: `get-time`, `get-date`, `set-time`, `set-date`.
+  \ See also: `get-time`, `get-date`, `set-time`, `set-date`,
+  \ `.time&date`.
   \
   \ }doc
 
@@ -612,5 +645,7 @@ need reset-frames need frames@ need frames>cs
   \ 2017-05-06: Add `frames/second`, `frames>seconds`,
   \ `frames>cs`, `frames>ms`.  Improve `bench.` to display
   \ seconds with hundrendths precision. Improve documentation.
+  \
+  \ 2017-11-27: Improve documentation.
 
   \ vim: filetype=soloforth

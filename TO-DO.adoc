@@ -2535,6 +2535,11 @@ Make `editor` defered, in order to load more than one editor at the same time.
 // User variables {{{1
 == User variables ==
 
+.2017-11-27:
+
+Add `: #user ( -- n ) udp @ ;`.  `#user` is proposed by Andrew Haley
+in _A multi-tasking wordset for Standard Forth`, EuroForth 2017.
+
 .2016-11-27:
 
 Update the user variables that are initialized (`warnings` has been removed,
