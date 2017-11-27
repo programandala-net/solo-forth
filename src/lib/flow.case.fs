@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201711271658
+  \ Last modified: 201711272244
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -413,8 +413,6 @@ need between
   \ Run-time: ( x1 x2 x3 -- | x1 )
   postpone (within-of) postpone of ; immediate compile-only ?)
 
-  \ XXX TODO confirm the ranges in the example:
-
   \ doc{
   \
   \ within-of Compilation: ( C: -- of-sys )
@@ -442,12 +440,12 @@ need between
   \ Usage example:
 
   \ ----
-  : test ( x -- )
-    case
-      1          of ." one"                           endof
-      2 5 within-of ." within two and five; not five" endof
-      5          of ." five"                          endof
-    endcase ;
+  \ : test ( x -- )
+  \   case
+  \     1          of ." one"                           endof
+  \     2 5 within-of ." within two and five; not five" endof
+  \     5          of ." five"                          endof
+  \   endcase ;
   \ ----
 
   \ See also: `case`, `between-of`, `(within-of)`.
@@ -540,6 +538,6 @@ need between
   \
   \ 2017-11-27: Improve documentation. Fix needing of
   \ `greater-of`. Need `nup` instead of define it. Use `thens`
-  \ in `endcase`.
+  \ in `endcase`. Test `within-of`.
 
   \ vim: filetype=soloforth
