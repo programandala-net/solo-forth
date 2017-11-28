@@ -2092,11 +2092,6 @@ Rename `c!exchange` to `c!@`?
 
 Rename `!exchange` to `!@`?
 
-.2017-05-06:
-
-Rename `pause` to `basic-pause` or something. "pause" will be used for
-multitasking.
-
 .2017-02-24:
 
 Rename `(0-1-8-color.` and `(0-9-color.` after the current convention

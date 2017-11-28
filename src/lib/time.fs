@@ -194,7 +194,7 @@ code ms ( u -- )
   \
   \ }doc
 
-( ?ticks-pause ticks-pause pause )
+( ?ticks-pause ticks-pause basic-pause )
 
 [unneeded] ?ticks-pause ?( need os-frames
 
@@ -252,21 +252,20 @@ code ms ( u -- )
   \ XXX FIXME -- `0 ticks-pause` does `$FFFF ticks-pause`
   \ XXX TODO -- multitasking
 
-[unneeded] pause ?( need ?ticks-pause
+[unneeded] basic-pause ?( need ?ticks-pause
 
-: pause ( u -- )
-  ?dup if ?ticks-pause exit then  begin key? until ; ?)
+: basic-pause ( u -- ) ?dup if ?ticks-pause else key then ; ?)
 
   \ doc{
   \
-  \ pause ( u -- )
+  \ basic-pause ( u -- )
   \
-  \ If _u_ 0 zero, stop execution until a key is pressed.
+  \ If _u_ is zero, stop execution until a key is pressed.
   \ Otherwise stop execution during at least _u_ clock ticks,
   \ or until a key is pressed.
   \
-  \ ``pause`` is a convenience that works like the homonymous
-  \ keyword of Sinclair BASIC.
+  \ ``basic-pause`` is a convenience that works like Sinclair
+  \ BASIC's ``PAUSE``.
   \
   \ See: `ticks-pause`, `?ticks-pause`, `os-frames`,
   \ `?seconds`, `ticks/second`.
@@ -649,6 +648,7 @@ need reset-ticks need ticks need ticks>cs
   \ 2017-11-27: Improve documentation.
   \
   \ 2017-11-28: Replace the "frames" naming convention with
-  \ "ticks". Use `ticks/second` instead of literals.
+  \ "ticks". Use `ticks/second` instead of literals. Rename
+  \ `pause` `basic-pause`. Improve documentation.
 
   \ vim: filetype=soloforth
