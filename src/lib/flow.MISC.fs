@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201711272149
+  \ Last modified: 201711281756
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -110,8 +110,8 @@ code call ( a -- )
   \ Code from Galope (module times.fs).
 
 : executions ( xt n -- )
-  2>r begin   2r@   while
-        2r> 1- 2>r execute  repeat  drop 2rdrop ; ?)
+  2>r begin  2r@ while 2r> 1- 2>r execute
+      repeat drop 2rdrop ; ?)
 
   \ doc{
   \
@@ -466,5 +466,7 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \
   \ 2017-11-27: Move `cond` and `thens` from <flow.select.fs>
   \ and document them. Improve documentation.
+  \
+  \ 2017-11-28: Improve source layout of `executions`.
 
   \ vim: filetype=soloforth
