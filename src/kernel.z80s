@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201711271909
+; Last modified: 201711281523
 
 include version.z80s
 
@@ -4507,6 +4507,8 @@ endif
 ;
 ; Origin: Forth-94 (FACILITY), Forth-2012 (FACILITY).
 ;
+; See also: `-keys`.
+;
 ; }doc
 
   ; XXX TODO -- Update when `ekey` is implemented.
@@ -4541,12 +4543,14 @@ endif
 ;
 ; key ( -- c )
 ;
-; Receive one character _c_, a member of the defined character
-; set. Keyboard events that do not correspond to such characters
-; are discarded until a valid character is received, and those
-; events are subsequently unavailable.
+; Return character _c_ of the key struck, a member of the
+; defined character set. Keyboard events that do not correspond
+; to such characters are discarded until a valid character is
+; received, and those events are subsequently unavailable.
 ;
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `key?`, `new-key`, `new-key-`, `-keys`.
 ;
 ; }doc
 
@@ -4563,7 +4567,9 @@ endif
 ;
 ; Show a cursor, wait for the next terminal key struck; if it's
 ; the caps lock key, toggle caps and keep waiting; else leave
-; the character code of the key struck.
+; the character code _c_ of the key struck.
+;
+; See also: `key`, `-keys`.
 ;
 ; }doc
 

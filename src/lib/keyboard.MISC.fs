@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071835
+  \ Last modified: 201711281730
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -185,7 +185,7 @@ noop noop noop noop noop noop noop noop noop noop noop noop [
   \ : ax ( -- ) ['] acceptx ['] accept defer! ;
   \ : a0 ( -- ) ['] default-accept ['] accept defer! ;
 
-( nuf? aborted? break? )
+( nuf? aborted? break? -keys new-key new-key- )
 
 [unneeded] nuf? dup
 
@@ -250,6 +250,54 @@ noop noop noop noop noop noop noop noop noop noop noop noop [
   \ XXX TODO try
 
 : break? ( -- f ) key? dup if  key 2drop break-key?  then ; ?)
+
+[unneeded] -keys ?(
+code -keys ( -- )
+  FD c, CB c, 01 c, 86 08 05 * + c, jpnext, end-code ?)
+    \ 01 iy 5 resx, \ res 5,(iy+$01)
+    \ Reset bit 5 of system variable FLAGS.
+
+  \ Credit:
+  \ Adapted from Galope.
+
+  \ doc{
+  \
+  \ -keys ( -- )
+  \
+  \ Remove all keys from the keyboard buffer.
+  \
+  \ See also: `key?`, `new-key`, `new-key-`, `key`, `xkey`.
+  \
+  \ }doc
+
+[unneeded] new-key need -keys ?\ : new-key ( -- c ) -keys key ;
+
+  \ doc{
+  \
+  \ new-key ( -- c )
+  \
+  \ Remove all keys from the keyboard buffer, then return
+  \ character _c_ of the key struck, a member of the a member
+  \ of the defined character set.
+  \
+  \ See also: `new-key-`, `key`, `xkey`, `-keys`.
+  \
+  \ }doc
+
+[unneeded] new-key- ?( need new-key need -keys
+: new-key- ( -- ) new-key drop -keys ; ?)
+
+  \ doc{
+  \
+  \ new-key- ( -- )
+  \
+  \ Remove all keys from the keyboard buffer, then wait for a
+  \ key press and discard it. Finally remove all keys from the
+  \ keyboard buffer.
+  \
+  \ See also: `new-key`, `key`, `xkey`, `-keys`.
+  \
+  \ }doc
 
 ( /kk kk-ports kk, kk@ )
 
@@ -629,5 +677,7 @@ need kk-ports
   \ 2017-05-04: Improve documentation.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2017-11-28: Add `-keys`, `new-key`, `new-key-`.
 
   \ vim: filetype=soloforth
