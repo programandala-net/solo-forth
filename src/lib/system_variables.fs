@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201711281158
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -82,12 +82,15 @@
   \
   \ os-frames ( -- a )
   \
-  \ A constant that returns the address _a_ of 3-byte system
-  \ variable FRAMES (least significant byte first), which holds
-  \ a frame counter incremented every 20 ms.
+  \ A constant that returns the address _a_ of the 24-bit
+  \ system variable FRAMES (least significant byte first),
+  \ containing the counter of frames, which is incremented
+  \ every 20 ms by the interrupt routine of the OS. This
+  \ counter is returned by `ticks` and used by its related
+  \ words.
   \
-  \ See also: `frames@`, `frames!`, `reset-frames`, `frames`,
-  \ `?frames`.
+  \ See also: `set-ticks`, `reset-ticks`,
+  \ `ticks-pause`, `?ticks-pause`.
   \
   \ }doc
 
@@ -243,5 +246,8 @@
   \ `base` is not decimal.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-11-28: Update: replace "frames" words with "ticks".
+  \ Improve documentation.
 
   \ vim: filetype=soloforth

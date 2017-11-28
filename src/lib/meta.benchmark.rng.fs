@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201711281158
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -98,7 +98,7 @@ defer .cycles ( -- )
 : .result ( ca len d -- ) 2>r pixels >r  .title cr  r> .pixels
                           cr 2r> .time .cycles ; -->
   \ Calculate and display the result of the benchmark.
-  \ _d_ is the time in frames; _ca len_ is the title.
+  \ _d_ is the time in ticks; _ca len_ is the title.
 
 ( rng-px-bench )
 
@@ -122,7 +122,7 @@ defer random-coords ( -- gx gy )
 
 : finish ( ca len d -- ) 0 border .result save-result ;
   \ Finish the benchmark.
-  \ _d_ is the time in frames; _ca len_ is the title.
+  \ _d_ is the time in ticks; _ca len_ is the title.
 
 : init ( xt1 xt2 -- )
   ['] .cycles defer! ['] rng defer! page -1 cycles ! ;
@@ -724,11 +724,11 @@ need 16b-rng-px-bench need :noname
   \ XXX FIXME --
   \ XXX TODO -- check the original
 
-need cell/ need frames@
+need cell/ need ticks
 
 variable seed1  variable seed2
 
-: randomize ( -- ) frames@ seed1 ! seed2 ! ;
+: randomize ( -- ) ticks seed1 ! seed2 ! ;
 
 : 0seed ( -- ) seed1 off seed2 off ;  0seed
   \ Reset random number generator seed to zero.
@@ -1529,7 +1529,7 @@ need 8b-rng-px-bench need :noname
   \ 2016-03-31
   \ Results of the 16-bit version of `rnd-pix-bench`:
 
-  \ | Code | Pixels | Time per cycle in frames (and seconds) | Cycles
+  \ | Code | Pixels | Time per cycle in ticks (and seconds) | Cycles
 
   \ | Jupiter ACE manual     | 05937 (012%) | 07652 (153 s) | 1
   \ | C. G. Montgomery $5E9B | 49151 (099%) | 06917 (138 s) | 11
@@ -1562,7 +1562,7 @@ need 8b-rng-px-bench need :noname
   \ 2016-03-31
   \ Results of the 8-bit version of `rnd-pix-bench`:
 
-  \ | Code | Pixels | Time per cycle in frames (and seconds) | Cycles
+  \ | Code | Pixels | Time per cycle in ticks (and seconds) | Cycles
 
   \ | Joe Wingbermuehle      | 49145 (099%) | 01076 (021 s) | 29
   \ | Joe Wingbermuehle      | 25234 (051%) | 01075 (021 s) | first only
@@ -1575,7 +1575,7 @@ need 8b-rng-px-bench need :noname
   \ with `os-seed` initialized to zero every time, except when
   \ the implementation needs a non-zero value:
 
-  \ | Code | Pixels | Time per cycle in frames (and seconds) | Cycles
+  \ | Code | Pixels | Time per cycle in ticks (and seconds) | Cycles
 
   \ | Jupiter ACE manual     | 02272 (004%) | 07635 (152 s) | 1
   \ | C. G. Montgomery $5E9B | 49151 (099%) | 06899 (137 s) | 11
@@ -1608,7 +1608,7 @@ need 8b-rng-px-bench need :noname
   \ 2016-04-08
   \ Results of the 8-bit version of `rnd-pix-bench`:
 
-  \ | Code | Pixels | Time per cycle in frames (and seconds) | Cycles
+  \ | Code | Pixels | Time per cycle in ticks (and seconds) | Cycles
 
   \ | Joe Wingbermuehle      | 49140 (099%) | 01075 (021 s) | 27
   \ | Joe Wingbermuehle      | 25308 (051%) | 01075 (021 s) | first only
@@ -1670,5 +1670,8 @@ need 8b-rng-px-bench need :noname
   \ benchmarks. Rename and rewrite the R-register benchmark.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2017-11-28: Update: replace "frames" words with "ticks"
+  \ words; update comments accordingly.
 
   \ vim: filetype=soloforth

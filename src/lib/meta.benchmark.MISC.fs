@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201711271905
+  \ Last modified: 201711281157
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -55,8 +55,8 @@ need bench{ need }bench.  variable times-xt
 
   \ 2017-08-13
   \
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- ---------------------------------
+  \ Times Ticks (20 ms)
+  \ ----- ----------------------------
   \         v1          v2          v3
   \       ---- ----------- -----------
   \  1000    5    5           9
@@ -87,7 +87,7 @@ need bench{ need }bench.
 
   \ 2017-08-13
   \
-  \ Times Frames (1 frame = 50th of second)
+  \ Times Ticks (20 ms)
   \ ----- ---------------------------------
   \       false v1 false v2 true v1 true v2
   \       -------- -------- ------- -------
@@ -113,8 +113,8 @@ here 256 c, constant try-constant
 
   \ 2017-05-20:
 
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- ---------------------------------
+  \ Times Ticks (20 ms)
+  \ ----- -------------------------------
   \       create constant
   \       ------ --------
   \ 00100      0        1
@@ -149,7 +149,7 @@ need bench{ need }bench. need type-udg
   \ 2017-07-27:
   \
   \ |===================================
-  \ |       | Frames
+  \ |       | Ticks (20 ms)
   \ |       | ==========================
   \ | Times | type-udg | .2x1-udg-sprite
   \
@@ -178,8 +178,8 @@ need .2x1-udg need .2x1-udg-fast need bench{ need }bench.
 
   \ 2017-05-20:
 
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- ---------------------------------
+  \ Times Ticks (20 ms)
+  \ ----- ------------------------------------
   \       .2x1-udg-old .2x1-udg  .2x1-udg-fast
   \       ------------ --------  -------------
   \ 00100           10       10             10
@@ -210,8 +210,8 @@ need baden-sqrt need newton-sqrt need bench{ need }bench.
 
   \ 2017-03-29:
 
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- ---------------------------------
+  \ Times Ticks (20 ms)
+  \ ----- --------------------------------
   \       baden[1]  baden[2]        newton
   \       --------  -------- -------------
   \ 00100       20        20    170 (8.50)
@@ -236,8 +236,8 @@ need orthodraw need ortholine need bench{ need }bench.
 
   \ 2017-03-29:
 
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- ---------------------------------
+  \ Times Ticks (20 ms)
+  \ ----- -------------------------------
   \       orthodraw          ortholine
   \       ---------  -----------------
   \ 00100        97         56
@@ -264,7 +264,7 @@ need ink. need set-ink need attr@ need attr!
 
   \ 2017-01-31:
 
-  \ Times Frames (1 frame = 50th of second)
+  \ Times Ticks (20 ms)
   \ ----- ------------------------------------------
   \       ink.   set-ink in Forth   set-ink in Z80
   \       ------ ------------------ ----------------
@@ -310,8 +310,8 @@ need attr@ need attr!
 
   \ 2017-01-31:
 
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- ---------------------------------
+  \ Times Ticks (20 ms)
+  \ ----- ------------------------------------------
   \       paper. set-paper in Forth set-paper in Z80
   \       ------ ------------------ ----------------
   \ 00100      3                  2                1
@@ -342,7 +342,7 @@ need bench{ need }bench.
 need circle
 need colored-circle-pixel need uncolored-circle-pixel
 
-need frames@ need reset-frames  defer (number-base)
+defer (number-base)
 
 : (run) ( u -- )
   bench{ 0 ?do  127 95 95 circle  loop }bench. ;
@@ -357,7 +357,7 @@ need frames@ need reset-frames  defer (number-base)
 
   \ 2017-01-30:
 
-  \ Times Frames (1 frame = 50th of second)
+  \ Times Ticks (20 ms)
   \ ----- ---------------------------------------
   \       colored circle  uncolored circle
   \       --------------- -----------------------
@@ -389,8 +389,8 @@ need attr! need attr-mask! need os-attr-t need mask+attr!
 
   \ 2017-01-27:
 
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- ---------------------------------
+  \ Times Ticks (20 ms)
+  \ ----- -----------------------------
   \       mask+attr!
   \       -----------------------------
   \       Variant 1 Variant 2 Variant 3
@@ -441,7 +441,7 @@ need bench{ need }bench. need under+
 
   \ 2017-01-24:
 
-  \ Times Frames (1 frame = 50th of second)
+  \ Times Ticks (20 ms)
   \ ----- ---------------------------------------
   \       -beep>note with `12 cconstant /octave`
   \       ---------------------------------------
@@ -453,7 +453,7 @@ need bench{ need }bench. need under+
   \ 10000      1430      1438      1436       951
   \ 65535      9618      9722      9660      6267
 
-  \ Times Frames (1 frame = 50th of second)
+  \ Times Ticks (20 ms)
   \ ----- ---------------------------------------
   \       -beep>note with `12 cconst /octave`
   \       ---------------------------------------
@@ -485,10 +485,10 @@ need bench{ need }bench.
 
   \ 2017-01-23:
 
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- ---------------------------------
+  \ Times Ticks (20 ms)
+  \ ----- -------------------------------
   \       hz>bleep
-  \       ----------------------------
+  \       -------------------------------
   \       variant 1 variant 2
   \       --------- ---------
   \ 00010         3        2
@@ -510,8 +510,8 @@ need bench{ need }bench.
 
   \ 2017-01-23:
 
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- ---------------------------------
+  \ Times Ticks (20 ms)
+  \ ----- --------------------------
   \                   `1/string`
   \                   --------------
   \       `1 /string` push jr   jp
@@ -559,8 +559,8 @@ result 255 2constant new
 
   \ 2017-01-22
 
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- ------------------------------------
+  \ Times Ticks (20 ms)
+  \ ----- --------------------------------------
   \       substitute w/rot substitute w/variable
   \       ---------------- ---------------------
   \ 00010               25                    26
@@ -635,8 +635,8 @@ need >>name need name>> need name>name
 
   \ 2017-01-20
 
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- ------------------------------------
+  \ Times Ticks (20 ms)
+  \ ----- -----------------------------------
   \       >name in Z80  >name in Forth
   \       ------------  ---------------------
   \ 00010           62             380 (6.12)
@@ -666,8 +666,8 @@ need bench{ need }bench. need d*
 
   \ 2017-01-13:
 
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- ---------------------------------
+  \ Times Ticks (20 ms)
+  \ ----- ---------------------
   \       Kernel m*  Library m*
   \       ---------  ----------
   \ 00010         0           1
@@ -691,7 +691,7 @@ need column need row need .\"
 
   \ 2017-01-11:
 
-  \             Frames (20 ms)
+  \             Ticks (20 ms)
   \             ------------------------------
   \ Iterations  'X' emit    ." X"
   \ ----------  ----------- ------------------
@@ -716,18 +716,18 @@ need 0udg-at-xy-display ( x y c -- )
 
   \ 2017-01-09:
 
-  \ Times Frames (1 frame = 50th of second)
+  \ Times Ticks (20 ms)
   \ ----- -------------------------------------
   \       at-xy-display-0udg 0udg-at-xy-display
-  \       ------------------ -----------------
-  \ 00010                  1                 1
-  \ 00100                  1                 2
-  \ 01000                 15                16
-  \ 01000                 16                15
-  \ 10000                156               156
-  \ 32768                511               510
-  \ 32768                511               510
-  \ 65535               1022              1020
+  \       ------------------ ------------------
+  \ 00010                  1                  1
+  \ 00100                  1                  2
+  \ 01000                 15                 16
+  \ 01000                 16                 15
+  \ 10000                156                156
+  \ 32768                511                510
+  \ 32768                511                510
+  \ 65535               1022               1020
 
 ( aline176-bench )
 
@@ -748,7 +748,7 @@ need bench{ need }bench. need adraw176 need aline176
 
   \ 2016-12-27:
 
-  \ Times Frames (1 frame = 50th of second)
+  \ Times Ticks (20 ms)
   \ ----- ------------------------------------
   \       adraw176  aline176 (1)  aline176 (2)
   \       --------  ------------  ------------
@@ -897,8 +897,8 @@ $0005 1 +field-ca 5f-ca drop  -->
 
   \ 2016-11-28:
 
-  \                     Frames (1 frame = 50th of second)
-  \ Field  +field       ---------------------------------
+  \                     Ticks (20 ms)
+  \ Field  +field       ---------------------
   \ offset implement.   Times             Id
   \ ------ ------------ ----------------- ---
   \                     01000 10000 65535
@@ -942,7 +942,7 @@ need bench{ need }bench.
       cr ." literal       "
       0 swap bench{ 0 ?do  litsum drop    loop }bench. drop ;
 
-  \ Times Frames (1 frame = 50th of second)
+  \ Times Ticks (20 ms)
   \ ----- ---------------------------------
   \       constants sum             literal
   \       -------------  ------------------
@@ -967,7 +967,7 @@ need bench{ need }bench.
       cr ." 4 +         "
       0 swap bench{ 0 ?do  2cellslit+  loop }bench. drop ;
 
-  \ Times Frames (1 frame = 50th of second)
+  \ Times Ticks (20 ms)
   \ ----- ----------------------------------
   \       cell+ cell+  [ 2 cells ] literal +
   \       -----------  ---------------------
@@ -1008,12 +1008,12 @@ need bench{ need }bench.
   dup '%' = if  drop 1 /string  2  exit  then
       '#' = if  1 /string 10  exit  then  base @ ;
 
-need frames@ need reset-frames  defer (number-base)
+need ticks need reset-ticks  defer (number-base)
 
 : (number-base-bench) ( n xt -- )
   ['] (number-base) defer!
-  reset-frames  0 ?do  s" 000" (number-base) drop 2drop  loop
-  frames@ d. cr ;
+  reset-ticks  0 ?do  s" 000" (number-base) drop 2drop  loop
+  ticks d. cr ;
 
 : number-base-bench ( u -- )
   dup ['] number-base-1 (number-base-bench)
@@ -1023,8 +1023,8 @@ need frames@ need reset-frames  defer (number-base)
 
   \ 2015-10-09
   \
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- -----------------------------------
+  \ Times Ticks (20 ms)
+  \ ----- -------------------
   \          1    2    3    4
   \       ---- ---- ---- ----
   \ 01000   73   75   74   69
@@ -1039,18 +1039,18 @@ need frames@ need reset-frames  defer (number-base)
   \ `fill2` is a modified version
   \ `fill88` is the code adapted from Z88 CamelForth
 
-need frames@ need reset-frames need rnd
+need ticks need reset-ticks need rnd
 
 defer (fill)
 
 : (fill-bench) ( n xt -- )
   ['] (fill) defer!
-  reset-frames  0
+  reset-ticks  0
   ?do  16384 6144 rnd (fill)  loop
   \ ?do  16384 1 rnd (fill)  loop
   \ ?do  16384 0 rnd (fill)  loop
   \ ?do  16384 2048 rnd (fill)  loop
-  frames@ cr d.
+  ticks cr d.
   key drop ;
 
 : fill-bench ( u -- )
@@ -1060,8 +1060,8 @@ defer (fill)
 
   \ Kernel code: `16384 6144 rnd (fill)`
   \
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- -----------------------------------
+  \ Times Ticks (20 ms)
+  \ ----- -----------------
   \       fill fill2 fill88
   \       ---- ----- ------
   \ 00010   10    10      5
@@ -1070,8 +1070,8 @@ defer (fill)
 
   \ Kernel code: `16384 1 rnd (fill)`
   \
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- -----------------------------------
+  \ Times Ticks (20 ms)
+  \ ----- -----------------
   \       fill fill2 fill88
   \       ---- ----- ------
   \ 00010    1     0      0
@@ -1082,8 +1082,8 @@ defer (fill)
 
   \ Kernel code: `16384 0 rnd (fill)`
   \
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- -----------------------------------
+  \ Times Ticks (20 ms)
+  \ ----- -----------------
   \       fill fill2 fill88
   \       ---- ----- ------
   \ 00010    1     0      0
@@ -1094,8 +1094,8 @@ defer (fill)
 
   \ Kernel code: `16384 2048 rnd (fill)`
   \
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- -----------------------------------
+  \ Times Ticks (20 ms)
+  \ ----- ------------------
   \       fill  fill2 fill88
   \       ----- ----- ------
   \ 00010    17    18      9
@@ -1131,8 +1131,8 @@ variable var1  : variable-bench ( u -- )
      dup ." variable  " variable-bench cr
          ." 2variable " 2variable-bench cr ;
 
-  \ Date            Times Frames (1 frame = 50th of second)
-  \ --------------  ----- ---------------------------------
+  \ Date            Times Ticks (20 ms)
+  \ --------------  ----- -------------------------------------
   \                           value   2value variable 2variable
   \                       --------- -------- -------- ---------
   \ 2016-10-14 (1)   1000         6        6        6         7
@@ -1172,7 +1172,7 @@ cvariable cvar  : cvariable-bench ( u -- )
      dup ." variable  " variable-bench cr
          ." cvariable " cvariable-bench cr ;
 
-  \ Date            Times Frames (1 frame = 50th of second)
+  \ Date            Times Ticks (20 ms)
   \ --------------  ----- -------------------------------------
   \                           value   cvalue variable cvariable
   \                       --------- -------- -------- ---------
@@ -1214,7 +1214,7 @@ need bench{ need }bench.
                   dup ." variable  " variable-bench cr
                       ." cvariable " cvariable-bench cr ;
 
-  \ Date            Times Frames (1 frame = 50th of second)
+  \ Date            Times Ticks (20 ms)
   \ --------------  ----- -------------------------------------
   \                           value   cvalue variable cvariable
   \                       --------- -------- -------- ---------
@@ -1252,22 +1252,22 @@ need value need 2value need bench{ need }bench.
   \ 2017-01-21: Remove the slower implementations (and 3 bytes
   \ smaller) from the library.
 
-need frames@ need reset-frames
+need ticks need reset-ticks
 
 : rshift-bench ( u -- )
-  reset-frames  0
+  reset-ticks  0
   ?do  128 255 rshift drop   loop
-  frames@ cr d. ;
+  ticks cr d. ;
 
 : lshift-bench ( u -- )
-  reset-frames  0
+  reset-ticks  0
   ?do  128 255 lshift drop   loop
-  frames@ cr d. ;
+  ticks cr d. ;
 
   \ 2015-11-01
 
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- -----------------------------------
+  \ Times Ticks (20 ms)
+  \ ----- -----------------------------
   \       rshift         lshift
   \       -------------- --------------
   \        Z88  DZX    %  Z88  DZX    %
@@ -1296,22 +1296,22 @@ need frames@ need reset-frames
   \ words are equivalent.  Abersoft Forth's `m/` is much
   \ faster.
 
-need frames@ need reset-frames need rnd
+need ticks need reset-ticks need rnd
 
 : drnd ( -- d ) rnd rnd ;
 
 [defined] (/) ?\ defer (/)
 
 : (/-bench) ( n -- )
-  reset-frames
-  1+ 1 ?do  drnd i (/) 2drop  loop  frames@ cr d. ;
+  reset-ticks
+  1+ 1 ?do  drnd i (/) 2drop  loop  ticks cr d. ;
 
 : /-bench ( u -- )
   dup ['] m/ ['] (/) defer! (/-bench)
       ['] sm/rem ['] (/) defer! (/-bench) ;
 
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- -----------------------------------
+  \ Times Ticks (20 ms)
+  \ ----- -------------
   \       m/    sm/rem
   \       ----- ------
   \ 00010     3      4
@@ -1334,7 +1334,7 @@ need bench{ need }bench.
 : run ( u -- )
   bench{  0 ?do  i i um* 2drop  loop  }bench. ;
 
-  \ Times Frames (1 frame = 50th of second)
+  \ Times Ticks (20 ms)
   \ ----- -------------------------------------------
   \       In 2015                             In 2017
   \       ----------------------------------- -------
@@ -1377,8 +1377,8 @@ need bench{ need }bench.
   dup cr ." Abersoft Forth  U/MOD ..." um/mod-bench
       cr ." Z88 CamelForth UM/MOD ..." um/mod-bench88 ; ?)
 
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- -----------------------------------
+  \ Times Ticks (20 ms)
+  \ ----- --------------------
   \          AF      Z88
   \       ----- --------------
   \ 00100     6        5
@@ -1388,7 +1388,7 @@ need bench{ need }bench.
   \ 32000  1881     1372 (72%)
 
   \            Bytes free Code from
-  \            ---------- ---------
+  \            ---------- --------------
   \ AF         32689      Abersoft Forth
   \ Z88        32707      Z88 CamelForth
 
@@ -1414,8 +1414,8 @@ need bench{
 
   \ 10000 run  20000  run 65535 run
 
-  \ Times   Frames (1 frame = 50th of second)
-  \ -----   -----------------------------------
+  \ Times   Ticks (20 ms)
+  \ -----   ------------------------
   \            AF    Z88 (1) Z88 (2)
   \         ----- ---------- -------
   \ 10000     964    967      944
@@ -1451,8 +1451,8 @@ need bench{
 
   \ 10000 run  20000  run 65535 run
 
-  \ Times   Frames (1 frame = 50th of second)
-  \ -----   -----------------------------------
+  \ Times   Ticks (20 ms)
+  \ -----   -------------
   \            AF    Z88
   \         ----- ------
   \ 10000     900    882
@@ -1463,17 +1463,17 @@ need bench{
 
   \ 2015-10-14
 
-need frames@ need reset-frames
+need ticks need reset-ticks
 
 : empty-stack ( -- ) sp0 @ sp! ;
 
 defer num?
 
 : number?-bench ( u -- )
-  reset-frames  0 ?do
+  reset-ticks  0 ?do
     s" " num?  s" 12345" num?   s" 12345." num?
     s" -12345" num?  s" -12345." num?  empty-stack
-  loop  frames@ cr d. ;
+  loop  ticks cr d. ;
 
 : benchs ( -- )
   100 number?-bench 1000 number?-bench 10000 number?-bench ;
@@ -1487,8 +1487,8 @@ defer num?
   \ Note: The CamelForth code is for single numbers only.
   \       The DZX-Forth code is a bit obfuscated.
 
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- -----------------------------------
+  \ Times Ticks (20 ms)
+  \ ----- --------------------------------------
   \       pForth CamelForth DZX-Forth Solo Forth
   \       ------ ---------- --------- ----------
   \ 00100    256        257       259        266
@@ -1499,27 +1499,27 @@ defer num?
 
   \ 2015-10-14
 
-need frames@ need reset-frames
+need ticks need reset-ticks
 
 : empty-stack ( -- ) sp0 @ sp! ;
 
 defer num?
 
 : number?-bench ( u -- )
-  reset-frames  0 ?do
+  reset-ticks  0 ?do
     s" " num?  s" 123x45." num?   s" 12345.999x" num?
     s" -12345.x" num?  s" -12345.999x" num?
     s" -12345.000.000" num?
     empty-stack
-  loop  frames@ cr d. ;
+  loop  ticks cr d. ;
 
 : benchs ( -- )
   100 number?-bench 1000 number?-bench 10000 number?-bench ;
 
 ' solo-number? ' num? defer! benchs
 
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- -----------------------------------
+  \ Times Ticks (20 ms)
+  \ ----- -------------
   \ 00100   416
   \ 01000  4165
   \ 10000 41649
@@ -1528,8 +1528,8 @@ defer num?
 
 ( buffer-bench1 )
 
-  2 load need reset-frames
-  reset-frames
+  2 load need ticks need reset-ticks
+  reset-ticks
 
   need dummy-needed need dummy-needed need dummy-needed
   need dummy-needed need dummy-needed need dummy-needed
@@ -1538,34 +1538,34 @@ defer num?
   need dummy-needed need dummy-needed need dummy-needed
   need dummy-needed
 
-  frames@ cr .( Frames ) d. cr
+  ticks cr .( Ticks ) d. cr
 
   \ 2015-11-04:
 
   \ Benchmark: Locate and load 16 times empty block #457.
 
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- -----------------------------------
-  \        512-byte buffer 1024-byte buffer
-  \       ---------------- ----------------
+  \ Times Ticks (20 ms)
+  \ ----- ----------------------------------
+  \        512-byte buffer  1024-byte buffer
+  \       ---------------- -----------------
   \    16             6323       8621 (136%)
 
 ( buffer-bench2 )
 
-  2 load need reset-frames  reset-frames
+  2 load need ticks need reset-ticks  reset-ticks
 
   need list need dump need wdump need decode
   need life need hanoi need tt need siderator need pong
   need doer need a! need defer need value need editor
   need case need times need dtimes need for
 
-  frames@ cr .( Frames ) d. cr
+  ticks cr .( Ticks ) d. cr
 
   \ Benchmark: interpretation of many source blocks from disk.
 
   \ ===========================================================
-  \ Date       Condition             Bytes free   Frames (=20ms)
-  \ ---------- --------------------- ------------ --------------
+  \ Date       Condition             Bytes free   Ticks (=20ms)
+  \ ---------- --------------------- ------------ -------------
   \ 2015-11-04 512-byte buffer       33742        20960 (1.00)
   \            1024-byte buffer      33277 (-465) 24310 (1.15)
   \                                               24042 (1.14)
@@ -1575,8 +1575,8 @@ defer num?
   \ both methods are equally fast:
 
   \ ===========================================================
-  \ Date       Condition             Bytes free   Frames (=20ms)
-  \ ---------- --------------------- ------------ --------------
+  \ Date       Condition             Bytes free   Ticks (=20ms)
+  \ ---------- --------------------- ------------ -------------
   \ 2015-11-17 `next-name` (1)       32807        40530
   \                                               40485
   \                                               40526
@@ -1618,8 +1618,8 @@ need bench{ need }bench. bench{ : w ; : w ; : w ; : w ;
   \ Benchmark: Create 143 empty colon words.
 
   \ ===========================================================
-  \ Date       Condition             Bytes free   Frames (=20ms)
-  \ ---------- --------------------- ------------ --------------
+  \ Date       Condition             Bytes free   Ticks (=20ms)
+  \ ---------- --------------------- ------------ -------------
   \ 2015-11-17 `next-name` (1)       32807        490 (9 s)
   \            `next-name` (4)       32791        494 (9 s)
   \            `nextname` (2)        32781        491 (9 s)
@@ -1664,8 +1664,8 @@ b load b load b load b load b load b load b load b load }bench.
   \ block that contains 120 definitions.
 
   \ ===========================================================
-  \ Date       Condition             Bytes free   Frames (=20ms)
-  \ ---------- --------------------- ------------ --------------
+  \ Date       Condition             Bytes free   Ticks (=20ms)
+  \ ---------- --------------------- ------------ -------------
   \ 2015-11-17 `next-name` (1)       32807        40530
   \                                               40485
   \                                               40526
@@ -1727,7 +1727,7 @@ b load b load b load b load b load b load b load b load }bench.
   }bench. sp0 @ sp!
 
   \ How `interpret`
-  \ interprets numbers   Bytes free  Frames         Date
+  \ interprets numbers   Bytes free  Ticks          Date
   \ ------------------   ----------  -------------  ----------
   \ branches (1)              32766     500 (1.00)  2015-11-12
   \ execution table (1)       32770     497 (0.99)  2015-11-12
@@ -1738,7 +1738,7 @@ b load b load b load b load b load b load b load b load }bench.
   \ (2): shared with the words, integrating the common factor
   \ (3): same as (2), but when the Forth system is DTC
 
-  \ 1 frame = 50th of second
+  \ Note: 1 tick = 20 ms.
 
 ( interpret-]#-bench )
 
@@ -1763,7 +1763,7 @@ b load b load b load b load b load b load b load b load }bench.
   }bench.
 
   \ How `interpret`
-  \ compiles numbers    Bytes free  Frames         Date
+  \ compiles numbers    Bytes free  Ticks          Date
   \ ----------------    ----------  -------------  ----------
   \ branches (1)             32766     510 (1.00)  2015-11-12
   \ execution table (1)      32770     507 (0.99)  2015-11-12
@@ -1774,7 +1774,7 @@ b load b load b load b load b load b load b load b load }bench.
   \ (2): shared with the words, integrating the common factor
   \ (3): same as (2), but when the Forth system is DTC
 
-  \ 1 frame = 50th of second
+  \ Note: 1 tick = 20 ms.
 
 ( interpret-[name-bench )
 
@@ -1799,7 +1799,7 @@ noop noop noop noop noop noop noop noop noop noop noop noop
   }bench.
 
   \ How `interpret`
-  \ interprets words       Bytes free  Frames      Date
+  \ interprets words       Bytes free  Ticks       Date
   \ ---------------------  ----------  ----------- ----------
   \ branches (0)           32770       192 (1.00)  2015-11-12
   \ independent table (1)  32746       190 (0.98)  2015-11-12
@@ -1815,7 +1815,7 @@ noop noop noop noop noop noop noop noop noop noop noop noop
   \ (4): shared with the numbers, integrating the common factor
   \ (5): same as (4), but when the Forth system is DTC
 
-  \ 1 frame = 50th of second
+  \ Note: 1 tick = 20 ms.
 
 ( interpret-]name-bench )
 
@@ -1840,7 +1840,7 @@ noop noop noop noop noop noop noop noop noop noop noop noop ;
   }bench.
 
   \ How `interpret`
-  \ compiles words        Bytes free  Frames      Date
+  \ compiles words        Bytes free  Ticks       Date
   \ ------------------    ----------  ----------  ----------
   \ branches (0)          32770       199 (1.00)  2015-11-12
   \ independent table (1) 32746       198 (0.98)  2015-11-12
@@ -1856,7 +1856,7 @@ noop noop noop noop noop noop noop noop noop noop noop noop ;
   \ (4): shared with the numbers, integrating the common factor
   \ (5): same as (4), but when the Forth system is DTC
 
-  \ 1 frame = 50th of second
+  \ Note: 1 tick = 20 ms.
 
 ( 2constant-bench 2literal-bench )
 
@@ -1877,8 +1877,8 @@ need bench{ need }bench.
       ." 2constant " 2constant-bench cr
       ." 2literal  " 2literal-bench cr ;
 
-  \ Date        Times Frames (1 frame = 50th of second)
-  \ ----------  ----- ---------------------------------
+  \ Date        Times Ticks (20 ms)
+  \ ----------  ----- ------------------
   \                   2constant 2literal
   \                   --------- --------
   \ 2016-05-31   1000         7        7
@@ -1928,9 +1928,9 @@ need bench{ need }bench.
   dup ." literal       " literal-bench cr
       ." cliteral      " cliteral-bench cr ;
 
-  \ Date            Times Frames (1 frame = 50th of second)
+  \ Date            Times Ticks (20 ms)
   \ --------------- ----- -------------------------------------
-  \                        const. cconst. code const. lit. clit.
+  \                       const. cconst. code const. lit. clit.
   \                       ------ ------- ----------- ---- -----
   \
   \ 2015 (1)        32000            251         236
@@ -1997,15 +1997,15 @@ need bench{
 
   \ 2015-11-09: baden-d*, smith-d*
 
-  \ Bench     Frames for 32767 iterations
-  \ -----     ---------------------------
+  \ Bench     Ticks for 32767 iterations
+  \ -----     --------------------------
   \ baden-d*  4920 (98 seconds)  1.00
   \ smith-d*  5189 (103 seconds) 1.05
 
   \ 2015-12-22:
   \
-  \ Bench     Frames for 32767 iterations
-  \ -----     ---------------------------
+  \ Bench     Ticks for 32767 iterations
+  \ -----     --------------------------
   \ baden-d*  4860 (97 seconds)   1.0008
   \ smith-d*  5139 (102 seconds)  1.0582
   \ dx-d*     4856 (97 seconds)   1.0000
@@ -2037,7 +2037,7 @@ need bench{ need 0if
         dup bench{ bench2 }bench.
             bench{ bench3 }bench. ;
 
-  \ Bench    Frames for 32767 iterations
+  \ Bench    Ticks for 32767 iterations
   \ -----   ---------------------------
   \ bench1   655 (`1 -`)
   \ bench1a  576 (`1-`)
@@ -2054,8 +2054,8 @@ need bench{
 : 2swap-bench ( -- )
   32767 0 bench{ 2dup ?do  2swap  loop  }bench. 2drop ;
 
-  \ Code                          Frames for 32767 iterations
-  \ -----                         ---------------------------
+  \ Code                          Ticks for 32767 iterations
+  \ -----                         --------------------------
   \ From DZX-Forth                271 (5 s) (1.00)
   \ Adapted from Z88 CamelForth   243 (4 s) (0.89)
 
@@ -2071,8 +2071,8 @@ need bench{
 : dnegate-bench2 ( -- )
   32767 0 bench{ 2dup ?do  dnegate2  loop  }bench. 2drop ;
 
-  \ Code                          Frames for 32767 iterations
-  \ -----                         ---------------------------
+  \ Code                          Ticks for 32767 iterations
+  \ -----                         --------------------------
   \ From Abersoft Forth           243 (4 s) (1.00)
   \ From Spectrum Forth-83        253 (5 s) (1.04)
 
@@ -2102,8 +2102,8 @@ need bench{  variable times  40000 times !
      ." Z80 version:"   cr ." 0 ?dup :" z80-0-?dup-bench cr
                            ." 1 ?dup :" z80-1-?dup-bench cr ;
 
-  \ Code        Frames for 40000 iterations
-  \ -----       ---------------------------
+  \ Code        Ticks for 40000 iterations
+  \ -----       --------------------------
   \             Forth  Z80
   \             -----  ----
   \ `0 ?dup`    532    288
@@ -2138,15 +2138,13 @@ defer #spaces
   dup ['] #spaces2 ['] #spaces defer! ." 2..." #spaces-bench
       ['] #spaces3 ['] #spaces defer! ." 3..." #spaces-bench ;
 
-  \         Frames
+  \         Ticks (20 ms)
   \         ----------------------------
   \ Version 10 iterations 100 iterations
   \ ------- ------------- --------------
   \ 1                 123           1231
   \ 2                 103           1036
   \ 3                  95            951
-
-  \ Note: 1 frame = 50th of second
 
 ( emit-udg-bench )
 
@@ -2160,7 +2158,7 @@ need bench{ need }bench.
       bench{ 0 ?do  home 65368 emit-udga loop  }bench
       0 3 at-xy ." emit-udga " bench. ;
 
-  \                        Frames (20 ms)
+  \                        Ticks (20 ms)
   \                        ---------------------------------
   \ Date       Iterations  emit        emit-udg    emit-udga
   \ ---------- ----------  ----------- ----------- ---------
@@ -2190,8 +2188,8 @@ unused - cr .( bytes of high M+ ) .
 
   \ 10000 run  65535 run
 
-  \ Times   Frames (1 frame = 50th of second)
-  \ -----   -----------------------------------
+  \ Times   Ticks (20 ms)
+  \ -----   -------------------------------------
   \         code M+ (13 bytes)  high M+ (9 bytes)
   \         ------------------  -----------------
   \ 10000                  134         196 (1.44)
@@ -2236,8 +2234,8 @@ defer (u<)
 
   \ 10 run
 
-  \ Times   Frames (1 frame = 50th of second)
-  \ -----   -----------------------------------
+  \ Times   Ticks (20 ms)
+  \ -----   -------------------------
   \         DZX-Forth DU< m3forth DU<
   \         ------------- -----------
   \ 10               3623      crash!
@@ -2305,10 +2303,10 @@ defer (m*/)
   dup cr ." Gforth ......" ['] gforth-m*/ m*/-bench
       cr ." ColdForth ..." ['] coldforth-m*/ m*/-bench ;
 
-  \ Times   Frames (1 frame = 50th of second)
-  \ -----   -----------------------------------
+  \ Times   Ticks (20 ms)
+  \ -----   --------------------------------
   \         Gforth M*/  ColdForth M*/
-  \         ----------  -------------
+  \         ----------  --------------------
   \ 10000         1690           1719 (1.01)
   \ 20000         3381           3442 (1.01)
   \ 65535        11621              0 \ XXX FIXME --
@@ -2340,7 +2338,7 @@ variable times
 
   \ 2016-04-29
 
-  \ Times   Frames (1 frame = 50th of second)
+  \ Times   Ticks (20 ms)
   \ -----   --------------------------------------
   \         DZX-Forth u<  Z88 CamelForth u<
   \         ------------- ------------------------
@@ -2384,8 +2382,8 @@ variable times
   dup cr ."   u< 0= ..." ['] 0(u>=) operator-bench
       cr ."   1- u< ..." ['] 1(u>=) operator-bench ;
 
-  \ Times   Frames (1 frame = 50th of second)
-  \ -----   -----------------------------------
+  \ Times   Ticks (20 ms)
+  \ -----   ----------------------------
   \         u<=             u>=
   \         ------------    ------------
   \         u> 0=  1+ u<    u< 0=  1- u<
@@ -2409,8 +2407,8 @@ need bench{ need }bench. need clshift
   dup cr ." 3 clshift ..." 3clshift-bench
       cr ." 8 * ........." 8*-bench ;
 
-  \ Times  Frames (1 frame = 50th of second)
-  \ -----  ---------------------------------
+  \ Times  Ticks (20 ms)
+  \ -----  ------------------
   \        3 clshift  8 *
   \        ---------  -------
   \ 10000        106      480
@@ -2441,8 +2439,8 @@ defer do-search
   dup cr ." Z88 CamelForth 1 ..." ['] search881 search-bench
       cr ." Z88 CamelForth 2 ..." ['] search88 search-bench ;
 
-  \ Times  Frames (1 frame = 50th of second)
-  \ -----  -----------------------------------------------
+  \ Times  Ticks (20 ms)
+  \ -----  ---------------------------------------------
   \        DZX-Forth  Z88 CamelForth 1  Z88 CamelForth 2
   \        ---------  ----------------  ----------------
   \     1        207                24                24
@@ -2479,7 +2477,7 @@ variable times
 
   \ 2016-05-06
 
-  \ Times   Frames (1 frame = 50th of second)
+  \ Times   Ticks (20 ms)
   \ -----   --------------------------------------
   \         DZX-Forth `<`  Z88 CamelForth `<`
   \         ------------- ------------------------
@@ -2538,7 +2536,7 @@ variable times
   \ jp nz,false_
   \ ; execution continues into `true`
 
-  \ Times   Frames (1 frame = 50th of second)
+  \ Times   Ticks (20 ms)
   \ -----   -------------------------------------------
   \         DZX-Forth Z88 CamelForth 1 Z88 CamelForth 2
   \         --------- ---------------- ----------------
@@ -2569,7 +2567,7 @@ variable times
 
   \ 2016-05-06
 
-  \ Times   Frames (1 frame = 50th of second)
+  \ Times   Ticks (20 ms)
   \ -----   --------------------------------------
   \         DZX-Forth `<`  Z88 CamelForth `<`
   \         ------------- ------------------------
@@ -2599,7 +2597,7 @@ need >body need bench{ need }bench.
 
   \ 2016-05-13
 
-  \ Times   Frames (1 frame = 50th of second)
+  \ Times   Ticks (20 ms)
   \ -----   --------------------------------------------
   \          ?throw0  ?throw1  ?throw2  ?throw3  ?throw4
   \          -------  -------  -------  -------  -------
@@ -2624,12 +2622,12 @@ need j
 
 : run ( -- )
   cls fast set-pixel-bench cls slow set-pixel-bench cls
-  ." Results of set-pixel in frames:" cr
+  ." Results of set-pixel in ticks:" cr
   ." slow-gxy>scra_:" bench. cr
   ." fast-gxy>scra_:" bench. cr ;
 
-  \ Date            Frames (1 frame = 50th of second)
-  \ --------------  ---------------------------------
+  \ Date            Ticks (20 ms)
+  \ --------------  -----------------------------
   \                 slow set-pixel fast set-pixel
   \                 -------------- --------------
   \ 2016-10-15 (1)      683 (1.00)     682 (0.99)
@@ -2654,12 +2652,12 @@ need slow-pixels need fast-pixels
 
 : run ( -- )
   fast pixels-bench slow pixels-bench cls
-  ." Results of pixels in frames:" cr
+  ." Results of pixels in ticks:" cr
   ." slow-pixels:" bench. cr
   ." fast-pixels:" bench. cr ;
 
-  \ Date            Frames (1 frame = 50th of second)
-  \ --------------  ---------------------------------
+  \ Date            Ticks (20 ms)
+  \ --------------  -----------------------
   \                 slow-pixels fast pixels
   \                 ----------- -----------
   \ 2016-10-15 (1)    37 (1.00)   36 (0.97)
@@ -2737,7 +2735,7 @@ code c2-d0= ( d -- f )
 
   \ 2017-05-06:
   \
-  \ Benchmark results in frames (1 frame = 50th of second).
+  \ Benchmark results in ticks (20 ms).
 
   \
   \ `or 0=` `+ 0=`      c1 (*)      c2 (*) Note
@@ -2781,7 +2779,7 @@ need bench{ need }bench.
 
   \ 2017-05-08:
   \
-  \ Benchmark results in frames (1 frame = 50th of second).
+  \ Benchmark results in ticks (20 ms).
 
   \ d=(1) d=(2n) d=(2) d<>(1n) d<>(2) d<>(1)
   \ ----- ------ ----- ------- ------ ------
@@ -2903,5 +2901,8 @@ need bench{ need }bench.
   \ 2017-08-13: Add `?throw-bench`.
   \
   \ 2017-11-27: Add `times-bench`.
+  \
+  \ 2017-11-28: Update: replace "frames" words with "ticks"
+  \ words; update headings of tables accordingly.
 
   \ vim: filetype=soloforth

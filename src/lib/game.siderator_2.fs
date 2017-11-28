@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704261910
+  \ Last modified: 201711281156
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -39,7 +39,7 @@
 only forth definitions  decimal
 
 need random need randomize need udg: need inkey
-need between need ocr need frames@ need inverse
+need between need ocr need ticks need inverse
 need j need between need rows need last-column need last-row
 need cyan need white need set-ink need set-bright
 need /udg need set-udg need get-udg need rom-font
@@ -252,7 +252,7 @@ rows 2 / constant craft-y
 : 4+- ( n1 -- n2 ) 9 random 4 - + ;
 
 : init ( -- )
-  frames@ s>d randomize
+  ticks d>s randomize
   init-screen  15 4+- x ! parsecs off  speed off ;
 
 : run-message ( -- ) cr ." Type SIDERATOR-2 to run" cr ;
@@ -292,5 +292,8 @@ run-message
   \ main words after the name of the game. Add `run-message`.
   \ Use `wordlist` instead of `vocabulary`. Update numbering of
   \ UDGs.
+  \
+  \ 2017-11-28: Update: replace `frames@` with `ticks`; fix
+  \ `init`.
 
   \ vim: filetype=soloforth

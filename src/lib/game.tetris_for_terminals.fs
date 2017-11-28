@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201711281122
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -55,7 +55,7 @@ only forth also definitions
   \ XXX TODO
 
 need random need j need >= need <= need 2/ need value
-need d<> need d= need case need ms need frames@ need yes?
+need d<> need d= need case need ms need ticks need yes?
 need begin-stringtable need positional-case: need tab
 need >body need randomize need flash.
 
@@ -560,7 +560,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
   endcase  true ;
 
 : initialize ( -- )
-  frames@ d>s randomize
+  ticks d>s randomize
   score off  pieces off  levels off  adjust-delay
   empty-pit page arena ;
   \ Prepare for playing.
@@ -633,5 +633,7 @@ only forth definitions
   \ `vocabulary`. Replace old `flash` with `flash.`.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2017-11-28: Update: replace `frames@` with `ticks`.
 
   \ vim: filetype=soloforth

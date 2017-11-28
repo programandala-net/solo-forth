@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201711272004
+  \ Last modified: 201711281200
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,12 +33,12 @@
   \
   \ Wait at least _u_ seconds.
   \
-  \ See also: `?seconds`, `ms`, `frames`.
+  \ See also: `?seconds`, `ms`, `ticks`.
   \
   \ }doc
 
-[unneeded] ?seconds
-?\ need ?frames  : ?seconds ( u -- ) 50 * ?frames ;
+[unneeded] ?seconds ?( need ?ticks-pause need ticks/second
+: ?seconds ( u -- ) ticks/second * ?ticks-pause ; ?)
 
   \ doc{
   \
@@ -46,7 +46,7 @@
   \
   \ Wait at least _u_ seconds or until a key is pressed.
   \
-  \ See also: `seconds`, `ms`, `?frames`.
+  \ See also: `seconds`, `ms`, `?ticks`.
   \
   \ }doc
 
@@ -74,132 +74,131 @@ code ms ( u -- )
   \ Origin: Forth-94 (FACILITY EXT), Forth-202 (FACILITY
   \ EXT).
   \
-  \ See also: `seconds`, `frames`.
+  \ See also: `seconds`, `ticks-pause`.
   \
   \ }doc
 
-( frames@ frames! reset-frames )
+( ticks set-ticks reset-ticks )
 
-[unneeded] frames@ ?( need os-frames
+[unneeded] ticks ?( need os-frames
 
-: frames@ ( -- d )
+: ticks ( -- d )
   os-frames @ [ os-frames cell+ ] literal c@ ; ?)
 
   \ doc{
   \
-  \ frames@ ( -- d )
+  \ ticks ( -- d )
   \
-  \ Fetch the system frames counter, which is incremented every
-  \ 20 ms by the OS.
+  \ Return the current count of clock ticks _d_, which is
+  \ updated by the OS.
   \
-  \ See also: `frames!`, `reset-frames`, `os-frames`,
-  \ `frames/second`, `bench{`.
+  \ See also: `set-ticks`, `reset-ticks`, `os-frames`,
+  \ `ticks/second`, `bench{`.
   \
   \ }doc
 
-[unneeded] frames! ?( need os-frames
+[unneeded] set-ticks ?( need os-frames
 
-: frames! ( d -- )
+: set-ticks ( d -- )
   [ os-frames cell+ ] literal c! os-frames ! ; ?)
 
   \ doc{
   \
-  \ frames! ( d -- )
+  \ set-ticks ( d -- )
   \
-  \ Store _d_ at the system frames counter, which is
-  \ incremented every 20 ms by the OS.
+  \ Set the system clock to _d_ ticks.
   \
-  \ See also: `frames@`, `reset-frames`, `os-frames`,
-  \ `frames/second`, `bench{`.
+  \ See also: `ticks`, `reset-ticks`, `os-frames`,
+  \ `ticks/second`, `bench{`.
   \
   \ }doc
 
-[unneeded] reset-frames
+[unneeded] reset-ticks
 
-?\ need frames! : reset-frames ( -- ) 0. frames! ;
+?\ need set-ticks : reset-ticks ( -- ) 0. set-ticks ;
 
   \ doc{
   \
-  \ reset-frames ( -- )
+  \ reset-ticks ( -- )
   \
-  \ Reset the system frames counter, which is incremented every
-  \ 20 ms by the OS, setting it to zero.
+  \ Reset the system clock to zero ticks.
   \
-  \ See: `frames@`, `frames!`, `os-frames`, `frames/second`,
+  \ See: `ticks`, `set-ticks`, `os-frames`, `ticks/second`,
   \ `bench{`.
   \
   \ }doc
 
-( frames/second frames>cs frames>ms frames>seconds )
+( ticks/second ticks>cs ticks>ms ticks>seconds )
 
-[unneeded] frames/second ?\ 50 cconstant frames/second
-
-  \ doc{
-  \
-  \ frames/second ( -- n )
-  \
-  \ _n_ is the number of system frames in one second.  There
-  \ are 50 frames per second in Europe and 60 frames per second
-  \ in USA.
-  \
-  \ See also: `frames>seconds`, `frames>cs`, `frames>ms`,
-  \ `frames@`.
-  \
-  \ }doc
-
-[unneeded] frames>cs ?( need frames/second need % need m+
-
-: frames>cs ( d1 -- d2 )
-  frames/second m/ 100 m* rot frames/second % m+ ; ?)
+[unneeded] ticks/second ?\ 50 cconstant ticks/second
+  \ XXX TODO -- Calculate after the lina Forth system.
 
   \ doc{
   \
-  \ frames>cs ( d1 -- d2 )
+  \ ticks/second ( -- n )
   \
-  \ Convert system frames _d1_ to centiseconds _d2_.
+  \ Return the number _n_ of clock ticks per second.
   \
-  \ See also: `frames>seconds`, `frames>ms`, `frames/seconds`,
-  \ `frames@`.
+  \ See also: `ticks>seconds`, `ticks>cs`, `ticks>ms`, `ticks`.
   \
   \ }doc
 
-[unneeded] frames>ms ?( need frames/second
+[unneeded] ticks>cs ?( need ticks/second need % need m+
 
-: frames>ms ( d1 -- d2 )
-  frames/second m/ 1000 m*
-  rot frames/second 1000 swap */ m+ ; ?)
+: ticks>cs ( d1 -- d2 )
+  ticks/second m/ 100 m* rot ticks/second % m+ ; ?)
+  \ XXX TODO -- Improve after the lina Forth system.
 
   \ doc{
   \
-  \ frames>ms ( d1 -- d2 )
+  \ ticks>cs ( d1 -- d2 )
   \
-  \ Convert system frames _d1_ to milliseconds _d2_.
+  \ Convert clock ticks _d1_ to centiseconds _d2_.
   \
-  \ See also: `frames>seconds`, `frames>cs`, `frames/seconds`,
-  \ `frames@`.
+  \ See also: `ticks>seconds`, `ticks>ms`, `ticks/seconds`,
+  \ `ticks`.
   \
   \ }doc
 
-[unneeded] frames>seconds ?( need frames/second need m*/
+[unneeded] ticks>ms ?( need ticks/second
 
-: frames>seconds ( d1 -- d2 ) 1 frames/second m*/ ; ?)
+: ticks>ms ( d1 -- d2 )
+  ticks/second m/ 1000 m*
+  rot ticks/second 1000 swap */ m+ ; ?)
+  \ XXX TODO -- Improve after the lina Forth system.
 
   \ doc{
   \
-  \ frames>seconds ( d -- n )
+  \ ticks>ms ( d1 -- d2 )
   \
-  \ Convert system frames _d_ to seconds _n_.
+  \ Convert clock ticks _d1_ to milliseconds _d2_.
   \
-  \ See also: `frames>cs`, `frames>ms`, `frames/seconds`,
-  \ `frames@`.
+  \ See also: `ticks>seconds`, `ticks>cs`, `ticks/seconds`,
+  \ `ticks`.
   \
   \ }doc
 
-( ?frames frames pause )
+[unneeded] ticks>seconds ?( need ticks/second need m*/
 
-[unneeded] ?frames ?( need os-frames
+: ticks>seconds ( d1 -- d2 ) 1 ticks/second m*/ ; ?)
+  \ XXX TODO -- Improve after the lina Forth system.
 
-: ?frames ( u -- )
+  \ doc{
+  \
+  \ ticks>seconds ( d -- n )
+  \
+  \ Convert clock ticks _d_ to seconds _n_.
+  \
+  \ See also: `ticks>cs`, `ticks>ms`, `ticks/seconds`,
+  \ `ticks`.
+  \
+  \ }doc
+
+( ?ticks-pause ticks-pause pause )
+
+[unneeded] ?ticks-pause ?( need os-frames
+
+: ?ticks-pause ( u -- )
   os-frames @ +
   begin  dup os-frames @ u< key? or  until drop ; ?)
 
@@ -207,31 +206,31 @@ code ms ( u -- )
 
   \ doc{
   \
-  \ ?frames ( u -- )
+  \ ?ticks-pause ( u -- )
   \
-  \ Stop execution during at least _u_ frames of the TV, or
-  \ until a key is pressed.
+  \ Stop execution during at least _u_ clock ticks, or until a
+  \ key is pressed.
   \
-  \ See: `frames`, `pause`, `os-frames`, `?seconds`,
-  \ `frames/second`.
+  \ See: `ticks-pause`, `pause`, `os-frames`, `?seconds`,
+  \ `ticks/second`.
   \
   \ }doc
 
-[unneeded] frames ?( need os-frames
+[unneeded] ticks-pause ?( need os-frames
 
-: frames ( u -- )
+: ticks-pause ( u -- )
   os-frames @ +  begin  dup os-frames @ u<  until drop ; ?)
 
   \ XXX TODO -- multitasking
 
   \ doc{
   \
-  \ frames ( u -- )
+  \ ticks-pause ( u -- )
   \
-  \ Stop execution during at least _u_ frames of the TV.
+  \ Stop execution during at least _u_ clock ticks.
   \
-  \ See: `?frames`, `pause`, `os-frames`, `seconds`, `ms`,
-  \ `frames/second`.
+  \ See: `?ticks-pause`, `pause`, `os-frames`, `seconds`, `ms`,
+  \ `ticks/second`.
   \
   \ }doc
 
@@ -241,7 +240,7 @@ code ms ( u -- )
 
   \ need assembler
 
-  \ code frames ( u -- )
+  \ code ticks-pause ( u -- )
   \   d pop, b push,
   \   rbegin  halt, d decp, d tstp,  z? runtil
   \   b pop, jpnext, end-code ?)
@@ -250,27 +249,27 @@ code ms ( u -- )
   \
   \ Code adapted from Spectrum Forth-83.
 
-  \ XXX FIXME -- `0 frames` does `$FFFF frames`
+  \ XXX FIXME -- `0 ticks-pause` does `$FFFF ticks-pause`
   \ XXX TODO -- multitasking
 
-[unneeded] pause ?( need ?frames
+[unneeded] pause ?( need ?ticks-pause
 
 : pause ( u -- )
-  ?dup if ?frames exit then  begin key? until ; ?)
+  ?dup if ?ticks-pause exit then  begin key? until ; ?)
 
   \ doc{
   \
   \ pause ( u -- )
   \
   \ If _u_ 0 zero, stop execution until a key is pressed.
-  \ Otherwise stop execution during at least _u_ system frames,
+  \ Otherwise stop execution during at least _u_ clock ticks,
   \ or until a key is pressed.
   \
   \ ``pause`` is a convenience that works like the homonymous
   \ keyword of Sinclair BASIC.
   \
-  \ See: `frames`, `?frames`, `os-frames`, `?seconds`,
-  \ `frames/second`.
+  \ See: `ticks-pause`, `?ticks-pause`, `os-frames`,
+  \ `?seconds`, `ticks/second`.
   \
   \ }doc
 
@@ -366,12 +365,12 @@ code ms ( u -- )
 
 ( set-time get-time reset-time )
 
-[unneeded] get-time ?( need frames@
+[unneeded] get-time ?( need ticks need ticks/second
 
 : get-time ( -- second minute hour )
-  frames@ 50 um/mod nip s>d   ( sec . )
-          60 um/mod s>d       ( sec min . )
-          60 um/mod           ( sec min hour ) ; ?)
+  ticks ticks/second um/mod nip s>d   ( sec . )
+                  60 um/mod s>d       ( sec min . )
+                  60 um/mod           ( sec min hour ) ; ?)
 
   \ doc{
   \
@@ -379,20 +378,21 @@ code ms ( u -- )
   \
   \ Return the current time.
   \
-  \ The system doesn't have a clock. The system frames counter
-  \ is used instead. It is increased by the interrupts routine
-  \ every 20th ms. The counter is a 24-bit value, so its
-  \ maximum is $FFFFFF ticks of 20 ms (5592 minutes, 93 hours),
-  \ then it starts again from zero.
+  \ NOTE: The computer doesn't have a real clock. The OS frames
+  \ counter is used instead, which is increased by the
+  \ interrupts routine every 20th ms. The counter is a 24-bit
+  \ value, so its maximum is $FFFFFF ticks of 20 ms (5592
+  \ minutes, 93 hours), then it starts again from zero.
   \
   \ See also: `set-time`, `time&date`, `.time`.
   \
   \ }doc
 
-[unneeded] set-time ?( need ud* need frames!
+[unneeded] set-time ?( need ud* need set-ticks
 
 : set-time ( second minute hour -- )
-  3600 um* rot 60 * m+ rot m+ ( seconds ) 50. ud* frames! ; ?)
+  3600 um* rot 60 * m+ rot m+ ( seconds )
+  ticks/second s>d ud* set-ticks ; ?)
 
   \ doc{
   \
@@ -404,8 +404,8 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] reset-time ?( need reset-frames need alias
-' reset-frames alias reset-time ( -- ) ?)
+[unneeded] reset-time ?( need reset-ticks need alias
+' reset-ticks alias reset-time ( -- ) ?)
 
   \ doc{
   \
@@ -508,48 +508,48 @@ code ms ( u -- )
 
   \ System-dependent timing routines.
 
-need reset-frames need frames@ need frames>cs
+need reset-ticks need ticks need ticks>cs
 
-: bench{ ( -- ) reset-frames ;
+: bench{ ( -- ) reset-ticks ;
 
   \ doc{
   \
   \ bench{ ( -- )
   \
-  \ Start timing, setting the system frames counter to zero.
+  \ Start timing, setting the clock ticks to zero.
   \
-  \ See also: `}bench`, `reset-frames`.
+  \ See also: `}bench`, `reset-ticks`.
   \
   \ }doc
 
-: }bench ( -- d ) frames@ ;
+: }bench ( -- d ) ticks ;
 
   \ doc{
   \
-  \ }bench ( -- d ) frames@ ;
+  \ }bench ( -- d ) ticks ;
   \
-  \ Return the current value of the system frames counter.
+  \ Return the current value of the clock ticks.
   \
-  \ See also: `bench{`, `frames@`, `bench.`, `}bench.`.
+  \ See also: `bench{`, `ticks`, `bench.`, `}bench.`.
   \
   \ }doc
 
 : bench. ( d -- )
-  2dup d. ." frames ("
-  frames>cs <# # # '.' hold #s #> type ."  s) " ;
+  2dup d. ." ticks ("
+  ticks>cs <# # # '.' hold #s #> type ."  s) " ;
 
   \ doc{
   \
   \ bench. ( d -- )
   \
-  \ Display the timing result _d_, which is the number of
-  \ system frames, in frames and seconds.
+  \ Display the timing result _d_, which is a number of
+  \ clock ticks, in ticks and seconds.
   \
   \ See also: `bench{`, `}bench`, `}bench.`.
   \
   \ }doc
 
-: }bench. ( -- ) frames@ bench. ;
+: }bench. ( -- ) ticks bench. ;
 
   \ doc{
   \
@@ -647,5 +647,8 @@ need reset-frames need frames@ need frames>cs
   \ seconds with hundrendths precision. Improve documentation.
   \
   \ 2017-11-27: Improve documentation.
+  \
+  \ 2017-11-28: Replace the "frames" naming convention with
+  \ "ticks". Use `ticks/second` instead of literals.
 
   \ vim: filetype=soloforth
