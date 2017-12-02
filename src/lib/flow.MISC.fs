@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201711281756
+  \ Last modified: 201712022323
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -374,6 +374,8 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ structure.  Leave _0_ on the control-flow stack, as a mark
   \ for `thens`.
   \
+  \ Run-time: Continue execution.
+  \
   \ ``cond`` is an `immediate` and `compile-only` word.
   \
   \ Usage example:
@@ -402,12 +404,13 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
 
   \ doc{
   \
-  \ thens
-  \   Compilation: ( C: 0 orig#1 .. orig#n -- )
-  \   Run-time:    ( -- )
+  \ thens Compilation: ( C: 0 orig#1 .. orig#n -- ) Run-time:
+  \ ( -- )
   \
-  \ Resolve all forward references _orig#1 .. orign#n_ with
-  \ `then` until _0_ is found.
+  \ Compilation: Resolve all forward references _orig#1 ..
+  \ orign#n_ with `then` until _0_ is found.
+  \
+  \ Run-time: Continue execution.
   \
   \ ``thens`` is an `immediate` and `compile-only` word.
   \
@@ -468,5 +471,7 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ and document them. Improve documentation.
   \
   \ 2017-11-28: Improve source layout of `executions`.
+  \
+  \ 2017-12-02: Improve documentation.
 
   \ vim: filetype=soloforth

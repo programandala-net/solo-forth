@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201712022305
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -84,7 +84,7 @@
 
 [unneeded] hunt ?(
 : hunt ( ca1 len1 ca2 len2 -- ca3 len3 )
-  search 0= if  chars + 0  then ; ?)
+  search 0= if chars + 0 then ; ?)
 
   \ Credit:
   \
@@ -127,7 +127,7 @@
   \ }doc
 
 [unneeded] u>str
-?\ need ud>str  : u>str ( u -- ca len ) s>d ud>str ;
+?\ need ud>str : u>str ( u -- ca len ) s>d ud>str ;
 
   \ doc{
   \
@@ -177,9 +177,9 @@
 
 [unneeded] chars>string ?(
 : chars>string ( c1..cn n -- ca len )
-  dup if    dup allocate-stringer swap 2dup 2>r ( c1..cn ca n )
-            bounds ?do  i c!  loop  2r>
-      else  pad swap  then ; ?)
+  dup if   dup allocate-stringer swap 2dup 2>r ( c1..cn ca n )
+           bounds ?do i c! loop 2r>
+      else pad swap then ; ?)
 
   \ doc{
   \
@@ -224,7 +224,7 @@
   \
   \ }doc
 
-[unneeded] 2>bstring  ?(
+[unneeded] 2>bstring ?(
 : 2>bstring ( xd -- ca len )
   pad 2! pad [ 2 cells ] literal ; ?)
 
@@ -248,7 +248,9 @@ code lengths
 
   \ 11 bytes in Forth:
 
-    \   : lengths  2over nip over ;
+    \   : lengths
+    \     ( ca1 len1 ca2 len2 -- ca1 len1 ca2 len2 len1 len2 )
+    \     2over nip over ;
 
   \ 12 bytes in Z80:
 
@@ -292,14 +294,14 @@ code lengths
 
   \ }doc
 
-[unneeded] s+  ?( need lengths need pick
+[unneeded] s+ ?( need lengths need pick
 
 : s+ ( ca1 len1 ca2 len2 -- ca3 len3 )
   lengths + >r            ( ca1 len2 ca2 len2 ) ( r: len3 )
   r@ allocate-stringer >r ( r: len3 ca3 )
   2 pick r@ +             ( ca1 len1 ca2 len2 len1+ca3 )
   smove                   ( ca1 len1 ) \ 2nd string to buffer
-  r@ smove                \  1st string to buffer
+  r@ smove                \ 1st string to buffer
   r> r> ; ?)
 
   \ Credit:
@@ -396,7 +398,7 @@ code uppers ( ca len -- )
   \ }doc
 
 [unneeded] uppers1
-?\ need uppers  : uppers1 ( ca len -- ) drop 1 uppers ;
+?\ need uppers : uppers1 ( ca len -- ) drop 1 uppers ;
 
   \ doc{
   \
@@ -444,7 +446,7 @@ code lowers ( ca len -- )
   \ `#chars`? add `#nulls`
 
 : #spaces ( ca len -- +n )
-  0 rot rot  0 ?do  count bl = under+  loop  drop abs ; ?)
+  0 rot rot 0 ?do count bl = under+ loop drop abs ; ?)
 
   \ Credit:
   \
@@ -466,7 +468,7 @@ code lowers ( ca len -- )
 [unneeded] #chars ?( need under+
 : #chars ( ca len c -- +n )
   0 2swap 0 ?do
-    ( c count ca ) count over = under+  loop  2drop abs ; ?)
+    ( c count ca ) count over = under+ loop 2drop abs ; ?)
 
   \ doc{
   \
@@ -483,8 +485,8 @@ code lowers ( ca len -- )
 [unneeded] last-name ?( need trim
 
 : last-name ( ca1 len1 -- ca2 len2 )
-  trim  begin  2dup bl scan bl skip dup
-        while  2nip  repeat  2drop ; ?)
+  trim begin 2dup bl scan bl skip dup
+       while 2nip repeat 2drop ; ?)
 
   \ Credit:
   \
@@ -604,7 +606,7 @@ code lowers ( ca len -- )
 
 : -prefix ( ca1 len1 ca2 len2 -- ca1 len1 | ca3 len3 )
   dup >r 2over 2swap prefix?
-  if  swap r@ + swap r> -  else  rdrop  then ; ?)
+  if swap r@ + swap r> - else rdrop then ; ?)
 
   \ Credit:
   \
@@ -641,7 +643,7 @@ code lowers ( ca len -- )
 
 ( contains chop s"" sconstant counted>stringer s' )
 
-[unneeded] contains ?\ : contains  search nip nip ;
+[unneeded] contains ?\ : contains search nip nip ;
                          \ ( ca1 len1 ca2 len2 -- f )
 
   \ doc{
@@ -689,8 +691,9 @@ code lowers ( ca len -- )
   \
   \ }doc
 
-[unneeded] s' ?\ : s'  ''' parse-string ; immediate
-  \ Compilation: ( "ccc<char>" -- ) Run-time:  ( -- ca len )
+[unneeded] s' ?\ : s' ''' parse-string ; immediate
+  \ Compilation: ( "ccc<char>" -- )
+  \ Run-time:    ( -- ca len )
 
   \ Credit:
   \
@@ -764,8 +767,8 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
 [unneeded] char-in-string? ?( need -rot
 
 : char-in-string? ( ca len c -- f )
-  -rot bounds ?do   dup i c@ = if  drop true unloop exit  then
-              loop  drop false ; ?)
+  -rot bounds ?do  dup i c@ = if drop true unloop exit then
+              loop drop false ; ?)
 
   \ doc{
   \
@@ -781,8 +784,8 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
 [unneeded] char-position? ?( need -rot
 
 : char-position? ( ca len c -- +n true | false )
-  -rot 0 ?do   2dup i + c@ = if  2drop i true unloop exit  then
-         loop  2drop false ; ?)
+  -rot 0 ?do  2dup i + c@ = if 2drop i true unloop exit then
+         loop 2drop false ; ?)
 
   \ doc{
   \
@@ -822,7 +825,11 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \
   \ sconstant ( ca len "name" -- )
   \
-  \ Create a string constant _name_ with value _ca len_.
+  \ Create a character string constant _name_ with value _ca
+  \ len_.  The character string is stored into data space. When
+  \ _name_ is later executed, it returns the corresponding _ca2
+  \ len_, being _ca2_ the address where the original string was
+  \ stored by ``sconstant``.
   \
   \ See also: `sconstants`.
   \
@@ -831,7 +838,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
 [unneeded] sconstants ?( need array>
 
 : sconstants ( 0 ca[n]..ca[1] "name" -- n )
-  create  0 begin  swap ?dup  while  , 1+  repeat
+  create 0 begin swap ?dup while , 1+ repeat
   does> ( n -- ca len ) ( n dfa ) array> @ count ; ?)
 
   \ doc{
@@ -850,12 +857,12 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
 
   \ ----
   \
-  \ 0                \ end of strings
-  \   here ," kvar"  \ string 4
-  \   here ," tri"   \ string 3
-  \   here ," du"    \ string 2
-  \   here ," unu"   \ string 1
-  \   here ," nul"   \ string 0
+  \ 0               \ end of strings
+  \   here ," kvar" \ string 4
+  \   here ," tri"  \ string 3
+  \   here ," du"   \ string 2
+  \   here ," unu"  \ string 1
+  \   here ," nul"  \ string 0
   \ sconstants digitname
   \   constant digitnames
   \
@@ -876,7 +883,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   dup 2swap over + swap ?do
     i c@ '%' = if '%' over c! 1+ then
     i c@ over c! 1+
-  loop  over - ; ?)
+  loop over - ; ?)
 
   \ Credit:
   \
@@ -888,7 +895,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \
   \ Replace each "%" character in the input string _ca1 len1_
   \ by two "%" characters. The output is represented by _ca2
-  \ len2_.  The  buffer at ca2  shall be big enough  to hold
+  \ len2_.  The buffer at _ca2_ shall be big enough to hold
   \ the unescaped string.
   \
   \ If you pass a string through `unescape` and then
@@ -952,7 +959,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \ 2017-01-09: Add `fars,`, `farsconstant`, `farsconstants`,
   \ `/farsconstants`.
   \
-  \ 2017-01-10: Add `far,"`,  `far>sconstants`,
+  \ 2017-01-10: Add `far,"`, `far>sconstants`,
   \ `/far>sconstants`, `save-farstring`.
   \
   \ 2017-01-10: Move all far-memory strings words to their own
@@ -1014,5 +1021,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \ where it was called `first-word`.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2017-12-02: Update source style (spacing).
 
   \ vim: filetype=soloforth
