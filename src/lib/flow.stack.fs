@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705051643
+  \ Last modified: 201712022236
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,7 +23,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( cs-pick cs-roll cs-swap cs-drop )
+( cs-pick cs-roll cs-drop )
 
 [unneeded] cs-pick
 ?\ need alias need pick ' pick alias cs-pick compile-only
@@ -32,8 +32,8 @@
   \
   \ cs-pick
   \   \ ( S: u -- )
-  \   \ ( C: orig[u]|dest[u]..orig[0]|dest[0] --
-  \          orig[u]|dest[u]..orig[0]|dest[0] orig[u]|dest[u] )
+  \   \ ( C: orig#u|dest#u .. orig#0|dest#0 --
+  \   \      orig#u|dest#u .. orig#0|dest#0 orig#u|dest#u )
 
   \
   \ Remove _u_. Copy _orig[u]|dest[u]_ to the top of the
@@ -58,8 +58,8 @@
   \
   \ cs-roll
   \   \ ( S: u -- )
-  \   \ ( C: orig[u]|dest[u] orig[u-1]|dest[u-1]..orig[0]|dest[0] --
-  \   \      orig[u-1]|dest[u-1]..orig[0]|dest[0] orig[u]|dest[u] )
+  \   \ ( C: orig#u|dest#u orig#u-1|dest#u-1 .. orig#0|dest#0 --
+  \   \      orig#u-1|dest#u-1 .. orig#0|dest#0 orig#u|dest#u )
 
   \
   \ Remove _u_.  Rotate _u+1_ items on top of the control-flow
@@ -75,28 +75,6 @@
   \ Origin: Forth-94 (TOOLS EXT), Forth-2012 (TOOLS EXT).
   \
   \ See also: `cs-pick`, `cs-swap`, `cs-drop`.
-  \
-  \ }doc
-
-[unneeded] cs-swap
-?\ need alias ' swap alias cs-swap compile-only
-
-  \ doc{
-  \
-  \ cs-swap
-  \   \ ( C: orig[1]|dest[1] orig[2]|dest[2] --
-  \   \      orig[2]|dest[2] orig[1]|dest[1] )
-
-  \
-  \ Exchange the top two control-flow stack items.
-  \
-  \ ``cs-swap`` is a `compile-only` word.
-  \
-  \ NOTE: In Solo Forth the control-flow stack is implemented
-  \ using the data stack. Therefore ``cs-swap`` is an `alias`
-  \ of `swap`.
-  \
-  \ See also: `cs-pick`, `cs-roll`, `cs-drop`.
   \
   \ }doc
 
@@ -130,5 +108,8 @@
   \
   \ 2017-05-05: Make `cs-pick`, `cs-roll`, `cs-swap` and
   \ `cs-drop` compile-only. Document them.
+  \
+  \ 2017-12-02: Move `cs-swap` to the kernel. Improve stack
+  \ notation.
 
   \ vim: filetype=soloforth

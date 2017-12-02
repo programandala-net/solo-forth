@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201711281523
+; Last modified: 201712022250
 
 include version.z80s
 
@@ -63,7 +63,7 @@ include version.z80s
                            ;   S: Smudge bit:
                            ;      0 = definition completed
                            ;      1 = definition not completed
-                           ;   LLLLL: name length (0..31).
+                           ;   LLLLL: name length (0 .. 31).
 ;       ds length          ; name
 
 ; The code field and the data field are created in the data
@@ -212,21 +212,21 @@ if gplusdos
   blocks_per_disk:                  equ 800
   sectors_per_block:                equ 2
   max_drives:                       equ 2
-  first_drive:                      equ 1 ; 1..2
+  first_drive:                      equ 1 ; 1 .. 2
 endif
 if plus3dos
   sectors_per_track:                equ 9
   blocks_per_disk:                  equ 719 ; 720 minus 1 KiB of 2 sectors (first and last)
   sectors_per_block:                equ 2
   max_drives:                       equ 2
-  first_drive:                      equ 'A' ; 'A'..'P'
+  first_drive:                      equ 'A' ; 'A' .. 'P'
 endif
 if trdos
   sectors_per_track:                equ 16
   blocks_per_disk:                  equ 636 ; 640 minus 4 KiB of track 0
   sectors_per_block:                equ 4
   max_drives:                       equ 4
-  first_drive:                      equ 0 ; 0..3
+  first_drive:                      equ 0 ; 0 .. 3
 endif
 
 bytes_per_sector:                 equ bytes_per_buffer/sectors_per_block
@@ -870,7 +870,7 @@ csp_value:                                    ; +$24
 hash_order_value:                             ; +$26
   dw $0000
 
-context_value:                                ; +$28..+$36
+context_value:                                ; +$28 .. +$36
 
   dw forth_dfa
   dw root_dfa
@@ -1535,12 +1535,12 @@ endif
 ; a 16-KiB range of addresses, as follows:
 
 ; |===
-; | Offset | Address range | Bank
+; | Offset | Address range   | Bank
 ;
-; | +0     | $0000..$3FFF  | 1
-; | +1     | $4000..$7999  | 3
-; | +2     | $8000..$BFFF  | 4
-; | +3     | $C000..$FFFF  | 6
+; | +0     | $0000 .. $3FFF  | 1
+; | +1     | $4000 .. $7999  | 3
+; | +2     | $8000 .. $BFFF  | 4
+; | +3     | $C000 .. $FFFF  | 6
 ; |===
 
 ; WARNING: On +3DOS bank 6 is used for disk cache and RAM disk,
@@ -1575,9 +1575,9 @@ endif
 ;
 ; ?next-bank ( a -- a|a' )
 ;
-; If the actual far-memory address _a_ ($C000..$FFFF) has
-; increased to the next bank ($0000..$3FFF), convert it to the
-; corresponding actual address _a'_ ($C000..$FFFF) in the next
+; If the actual far-memory address _a_ ($C000 .. $FFFF) has
+; increased to the next bank ($0000 .. $3FFF), convert it to the
+; corresponding actual address _a'_ ($C000 .. $FFFF) in the next
 ; bank and page in the next bank. Otherwise return _a_.
 ;
 ; See also: `?next-bank_`, `?previous-bank`.
@@ -1591,15 +1591,15 @@ endif
 
 question_next_bank:
 
-  ; If the actual far-memory address ($C000..$FFFF) in the HL
-  ; register has increased to the next bank ($0000..$3FFF),
+  ; If the actual far-memory address ($C000 .. $FFFF) in the HL
+  ; register has increased to the next bank ($0000 .. $3FFF),
   ; convert it to the corresponding actual address
-  ; ($C000..$FFFF) in the next bank and page in the next bank,
+  ; ($C000 .. $FFFF) in the next bank and page in the next bank,
   ; else do nothing.
   ;
   ; Input:
-  ;   HL = address in a paged bank ($C000..$FFFF) or higher
-  ;        ($0000..$3FFF).
+  ;   HL = address in a paged bank ($C000 .. $FFFF) or higher
+  ;        ($0000 .. $3FFF).
   ; Output (when HL is above the paged bank):
   ;   HL = corresponding address in the next bank, which is paged in
   ;   A = corrupted
@@ -1627,14 +1627,14 @@ question_next_bank:
 new_bank:
 
   ; Input:
-  ;   A = updated bank index (possibly out of range 0..3)
+  ;   A = updated bank index (possibly out of range 0 .. 3)
   ; Output:
   ;   A = corrupted
   ;   D = 0
   ;   E = bank
 
   push hl
-  and %11 ; force range 0..3
+  and %11 ; force range 0 .. 3
   ld (bank_index_dfa),a
   ld e,a
   ld hl,far_banks_dfa
@@ -1651,9 +1651,9 @@ new_bank:
 ;
 ; ?previous-bank ( a -- a|a' )
 ;
-; If the actual far-memory address _a_ ($C000..$FFFF) has
-; decreased to the previous bank ($8000..$BFFF), convert it to
-; the corresponding actual address _a'_ ($C000..$FFFF) in the
+; If the actual far-memory address _a_ ($C000 .. $FFFF) has
+; decreased to the previous bank ($8000 .. $BFFF), convert it to
+; the corresponding actual address _a'_ ($C000 .. $FFFF) in the
 ; previous bank and page in the next bank. Otherwise return
 ; _a_.
 ;
@@ -1668,15 +1668,15 @@ new_bank:
 
 question_previous_bank:
 
-  ; If the actual far-memory address ($C000..$FFFF) in the HL
-  ; register has decreased to the previous bank ($8000..$BFFF),
+  ; If the actual far-memory address ($C000 .. $FFFF) in the HL
+  ; register has decreased to the previous bank ($8000 .. $BFFF),
   ; convert it to the corresponding actual address
-  ; ($C000..$FFFF) in the previous bank and page in the next
+  ; ($C000 .. $FFFF) in the previous bank and page in the next
   ; bank, else do nothing.
   ;
   ; Input:
-  ;   HL = address in a paged bank ($C000..$FFFF) or lower
-  ;        ($8000..$BFFF).
+  ;   HL = address in a paged bank ($C000 .. $FFFF) or lower
+  ;        ($8000 .. $BFFF).
   ; Output (when HL is below the paged bank):
   ;   HL = corresponding address in the previous bank, which is paged in
   ;   A = corrupted
@@ -1711,7 +1711,7 @@ question_previous_bank:
 ; bank-index ( -- ca )
 ;
 ; A byte variable. _ca_ is the address of an address unit
-; containing the bank index (0..3) calculated by the latest
+; containing the bank index (0 .. 3) calculated by the latest
 ; execution of `far`
 ;
 ; See also: `far-banks`, `bank`, `banks`.
@@ -1727,8 +1727,8 @@ question_previous_bank:
 ;
 ; far ( a1 -- a2 )
 ;
-; Convert a far-memory address _a1_ ($0000..$FFFF) to its actual
-; equivalent _a2_ ($C000..$FFFF) and page in the corresponding
+; Convert a far-memory address _a1_ ($0000 .. $FFFF) to its actual
+; equivalent _a2_ ($C000 .. $FFFF) and page in the corresponding
 ; memory bank, using the configuration at `far-banks`.
 ;
 ; ``far`` is written in Z80. Its equivalent definition in Forth
@@ -1750,12 +1750,12 @@ question_previous_bank:
 
 far.hl:
 
-  ; Convert a far-memory address ($0000..$FFFF) to its actual
-  ; equivalent ($C000..$FFFF) and page in the corresponding
+  ; Convert a far-memory address ($0000 .. $FFFF) to its actual
+  ; equivalent ($C000 .. $FFFF) and page in the corresponding
   ; memory bank.
   ;
-  ; Input: HL = far-memory address ($0000..$FFFF) Output: HL =
-  ; actual memory address ($C000..$FFFF) A = corrupted DE =
+  ; Input: HL = far-memory address ($0000 .. $FFFF) Output: HL =
+  ; actual memory address ($C000 .. $FFFF) A = corrupted DE =
   ; corrupted
   ;
   ; Note: the address of this routine is returned by `far-hl_`,
@@ -1769,7 +1769,7 @@ far.hl:
   srl e
   srl e
   srl e
-  srl e ; E = 0..3 (bank index)
+  srl e ; E = 0 .. 3 (bank index)
   ld a,e
   ld (bank_index_dfa),a ; save the bank index
   push hl
@@ -1779,12 +1779,12 @@ far.hl:
   ld e,(hl) ; E = bank
   call bank.e
 
-  pop hl ; HL = far-memory address ($0000..$FFFF)
+  pop hl ; HL = far-memory address ($0000 .. $FFFF)
   ld a,h
 far.hl.mod:
   sub $40 ; substract $4000 (16 KiB)...
   jr nc,far.hl.mod ; ...as many times as needed
-  ld h,a ; HL = actual memory address ($C000..$FFFF)
+  ld h,a ; HL = actual memory address ($C000 .. $FFFF)
   ret
 
 ; ----------------------------------------------
@@ -2046,16 +2046,16 @@ endif
 
 ; doc{
 ;
-; get-order ( -- wid[n]..wid[1] n )
+; get-order ( -- wid#n .. wid#1 n )
 ;
 ; Return the number of word lists _n_ in the search order and
-; the word lists identifiers _wid[n]..wid[1]_ identifying these
-; word lists.  _wid[1]_ identifies the word list that is
-; searched first, and _wid[n]_ the word list that is searched
+; the word lists identifiers _wid#n .. wid#1_ identifying these
+; word lists.  _wid#1_ identifies the word list that is
+; searched first, and _wid#n_ the word list that is searched
 ; last.
 
 ; ----
-; : get-order ( -- wid[n]..wid[1] n )
+; : get-order ( -- wid#n .. wid#1 n )
 ;   #order @ dup 0 ?do
 ;     dup i - 1- cells context + @ swap
 ;   loop ;
@@ -2125,19 +2125,18 @@ get_order.exit
 
 ; doc{
 ;
-; set-order ( -1 | 0 | wid[n]..wid[1] n -- )
+; set-order ( -1 | 0 | wid#n .. wid#1 n -- )
 ;
-; Set the search order to the word lists identified by
-; _widn..wid1_. Subsequently, word list _wid1_ will be
-; searched first, and word list _widn_ searched last. If _n_
-; is zero, empty the search order. If _n_ is minus one, set
-; the search order to the implementation-defined minimum
-; search order.
+; Set the search order to the word lists identified by _wid#n ..
+; wid#1_. Subsequently, word list _wid1_ will be searched first,
+; and word list _wid#n_ searched last. If _n_ is zero, empty the
+; search order. If _n_ is minus one, set the search order to the
+; implementation-defined minimum search order.
 ;
 ; Definition:
 
 ; ----
-; : set-order ( -1 | 0 | widn..wid1 n -- )
+; : set-order ( -1 | 0 | wid#n .. wid#1 n -- )
 ;   dup -1 = if  drop root-wordlist dup 2  then
 ;   dup ?order  dup #order !
 ;   0 ?do  i cells context + !  loop ;
@@ -2253,14 +2252,15 @@ set_order.loop_exit
 ;
 ; root ( -- )
 ;
-; Transform the search  order consisting of  _wid[n]..wid[2]
-; wid[1]_ (where _wid[1]_  is searched first)  into
-; _wid[n]..wid[2] wid[`root-wordlist`]_, i.e. replace the top
-; word list of the search order with `root-wordlist`.
+; Transform the search order consisting of _wid#n .. wid#2
+; wid#1_ (where _wid#1_  is searched first)  into _wid#n ..
+; wid#2 wid#r_, where _wid#r_ is the word-list identifier
+; returned by `root-wordlist`.  I.e., replace the top word list
+; of the search order with `root-wordlist`.
 ;
-; ``root`` is the vocabulary corresponding to `root-wordlist`.
+; ``root`` is the `vocabulary` corresponding to `root-wordlist`.
 ;
-; See also: `forth`, `wordlist`, `vocabulary`.
+; See also: `forth`, `wordlist`.
 ;
 ; }doc
 
@@ -2296,17 +2296,19 @@ set_order.loop_exit
 ;
 ; forth ( -- )
 ;
-; Transform the search  order consisting of  _wid[n]..wid[2]
-; wid[1]_ (where _wid[1]_  is searched first)  into
-; _wid[n]..wid[2] wid[`forth-wordlist`]_, i.e. replace the top
-; word list of the search order with `forth-wordlist`.
+; Transform the search  order consisting of  _wid#n .. wid#2
+; wid#1_ (where _wid#1_  is searched first)  into _wid#n ..
+; wid#2 wid#f_, where _wid#f_ is the word-list identifier
+; returned by `forth-wordlist`.  I.e., replace the top word list
+; of the search order with `forth-wordlist`.
 ;
-; ``forth`` is the vocabulary corresponding to `forth-wordlist`.
+; ``forth`` is the `vocabulary` corresponding to
+; `forth-wordlist`.
 ;
 ; Origin: Forth-83 (Required Word Set), Forth-94 (SEARCH EXT),
 ; Forth-2012 (SEARCH EXT).
 ;
-; See also: `root`, `wordlist`, `vocabulary`.
+; See also: `root`, `wordlist`.
 ;
 ; }doc
 
@@ -2491,7 +2493,7 @@ push_hl:
 ; default-bank# ( -- ca )
 ;
 ; _ca_ is the address of an address unit containing the value of
-; the default `bank` paged in at $C000..$FFFF. Its default value
+; the default `bank` paged in at $C000 .. $FFFF. Its default value
 ; is zero.
 ;
 ; See also: `set-default-bank`, `get-default-bank`, `banks`,
@@ -2512,21 +2514,21 @@ push_hl:
 ;
 ; bank ( +n -- )
 ;
-; Page in the 16-KiB memory bank _+n_ at $C000..$FFFF.
+; Page in the 16-KiB memory bank _+n_ at $C000 .. $FFFF.
 ;
 ; The range of _n_ depends on the computer:
 
 ; |===
 ; | Computer        | Memory banks
 ;
-; | ZX Spectrum 128  >| 0..7
-; | ZX Spectrum +2   >| 0..7
-; | ZX Spectrum +3   >| 0..7
-; | ZX Spectrum +3e  >| 0..7
-; | Pentagon 128     >| 0..7
-; | Scorpion ZS 256  >| 0..15
-; | Pentagon 512     >| 0..31
-; | Pentagon 1024    >| 0..63
+; | ZX Spectrum 128  >| 0 .. 7
+; | ZX Spectrum +2   >| 0 .. 7
+; | ZX Spectrum +3   >| 0 .. 7
+; | ZX Spectrum +3e  >| 0 .. 7
+; | Pentagon 128     >| 0 .. 7
+; | Scorpion ZS 256  >| 0 .. 15
+; | Pentagon 512     >| 0 .. 31
+; | Pentagon 1024    >| 0 .. 63
 ; |===
 
 ; See also: `default-bank`, `banks`, `far-banks`.
@@ -4132,8 +4134,8 @@ skip.end:
 ;
 ; ``mode-32-emit`` uses `last-font-char` the following way:
 ; characters up to and including `last-font-char` (by default,
-; 0..127) are displayed through the ROM routine, while higher
-; characters (by default, 128..255) are displayed by `emit-udg`
+; 0 .. 127) are displayed through the ROM routine, while higher
+; characters (by default, 128 .. 255) are displayed by `emit-udg`
 ; from the current UDG set.  The following table shows the
 ; effect of changing the value of `last-font-char`:
 
@@ -4141,24 +4143,24 @@ skip.end:
 ; |===
 ; | Value | Effect
 ;
-; | 126 | Characters 0..126 are displayed by the ROM;
-;         characters 127..255 are displayed by `emit-udg`.
-; | 127 | Characters 0..127 are displayed by the ROM;
-;         characters 128..255 are displayed by `emit-udg`.
-; | 143 | Characters 0..143 are displayed by the ROM
+; | 126 | Characters 0 .. 126 are displayed by the ROM;
+;         characters 127 .. 255 are displayed by `emit-udg`.
+; | 127 | Characters 0 .. 127 are displayed by the ROM;
+;         characters 128 .. 255 are displayed by `emit-udg`.
+; | 143 | Characters 0 .. 143 are displayed by the ROM
 ;         (this range includes the block graphics);
-;         characters 144..255 are displayed by `emit-udg`.
-; | 162 | Characters 0..162 are displayed by the ROM
-;         (this range includes also the 128-BASIC UDG set 144..162,
-;         corresponding to UDG characters 0..18 in Solo Forth);
-;         characters 163..255 are displayed by `emit-udg`.
-; | 255 | Characters 0..255 are displayed by the ROM
+;         characters 144 .. 255 are displayed by `emit-udg`.
+; | 162 | Characters 0 .. 162 are displayed by the ROM
+;         (this range includes also the 128-BASIC UDG set 144 .. 162,
+;         corresponding to UDG characters 0 .. 18 in Solo Forth);
+;         characters 163 .. 255 are displayed by `emit-udg`.
+; | 255 | Characters 0 .. 255 are displayed by the ROM
 ;         (this range includes also the 128-BASIC tokens);
 ;         no character is displayed by `emit-udg`.
 ; |===
 
 ; When a standard character set is required, without the ROM
-; interpreting characters 128..255 its own way, `mode-32iso-emit`
+; interpreting characters 128 .. 255 its own way, `mode-32iso-emit`
 ; can be used instead.
 ;
 ; See also: `set-font`, `set-udg`.
@@ -4192,7 +4194,7 @@ mode_32_emit.a
 ; Display the UDG _c|n_ from the current UDG set, which is
 ; pointed by `os-udg`.
 ;
-; NOTE: The usual parameter is _c_ (0..255), but no check is
+; NOTE: The usual parameter is _c_ (0 .. 255), but no check is
 ; done: If a 16-bit value _n_ is received instead, it will be
 ; used to calculate the address of the corresponding character
 ; bitmap in the UDG set.
@@ -5822,6 +5824,30 @@ endif
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; See also: `2swap`, `over`, `tuck`.
+;
+; }doc
+
+  ; Execution continues in `cs-swap`:
+
+; ----------------------------------------------
+  _code_header cs_swap_,'cs-swap'
+
+; doc{
+;
+; cs-swap
+;   \ ( C: orig#1|dest#1 orig#2|dest#2 --
+;   \      orig#2|dest#2 orig#1|dest#1 )
+
+;
+; Exchange the top two control-flow stack items.
+;
+; ``cs-swap`` is a `compile-only` word.
+;
+; NOTE: In Solo Forth the control-flow stack is implemented
+; using the data stack. Therefore ``cs-swap`` is an `alias`
+; of `swap`.
+;
+; See also: `cs-pick`, `cs-roll`, `cs-drop`.
 ;
 ; }doc
 
@@ -8122,7 +8148,7 @@ ram_kib: equ banks*16+(8*(gplusdos and 1))
 ; default-bank ( -- )
 ;
 ; Page in the default memory `bank`, wich can be configured with
-; `default-bank#`, at $C000..$FFFF.
+; `default-bank#`, at $C000 .. $FFFF.
 ;
 ; See also: `set-default-bank`, `get-default-bank`, `banks`.
 ;
@@ -8152,10 +8178,10 @@ bank.e:
 
   ; Input:
   ;   E = bank number
-  ;       On 128 KiB computers:  0..7
-  ;       On 256 KiB computers:  0..15
-  ;       On 512 KiB computers:  0..31
-  ;       On 1024 Kib computers: 0..63
+  ;       On 128 KiB computers:  0 .. 7
+  ;       On 256 KiB computers:  0 .. 15
+  ;       On 512 KiB computers:  0 .. 31
+  ;       On 1024 Kib computers: 0 .. 63
   ; Output:
   ;   A = corrupted
   ;   D = corrupted (only on Pentagon 512 and Pentagon 1024)
@@ -8166,21 +8192,21 @@ bank.e:
   ; address is calculated using an offset from the execution
   ; token of `default-bank`.
 
-  ; The ZX Spectrum 128 uses bits 0..2 of port $EFF7 to select
-  ; the memory bank (0..7) to page in addresses $C000..$FFFF.
+  ; The ZX Spectrum 128 uses bits 0 .. 2 of port $EFF7 to select
+  ; the memory bank (0 .. 7) to page in addresses $C000 .. $FFFF.
   ; The Pentagon 512 and the Pentagon 1024 use additional bits
   ; to form the number of the memory bank, as follows:
 
   ;                  Bits written to the port  Page range
   ;                  ------------------------  ----------
-  ; ZX Spectrum 128  .. .. .. .. .. D2 D1 D0   0..7
-  ; Pentagon 512     D7 D6 .. .. .. D2 D1 D0   0..31
-  ; Pentagon 1024    D7 D6 D5 .. .. D2 D1 D0   0..63
+  ; ZX Spectrum 128  .. .. .. .. .. D2 D1 D0   0 .. 7
+  ; Pentagon 512     D7 D6 .. .. .. D2 D1 D0   0 .. 31
+  ; Pentagon 1024    D7 D6 D5 .. .. D2 D1 D0   0 .. 63
 
 if pentagon=512 or pentagon=1024
 
-  ; This routine converts a Pentagon bank number (0..31 or
-  ; 0..63) to the bit layout that must be written to port $EFF7.
+  ; This routine converts a Pentagon bank number (0 .. 31 or
+  ; 0 .. 63) to the bit layout that must be written to port $EFF7.
 
   ld a,e        ; bank number
 
@@ -8189,17 +8215,17 @@ if pentagon=512
   rla           ; shift to the left...
   rla
   rla           ; ...3 bits
-  and %11000000 ; keep only bits 6..7
+  and %11000000 ; keep only bits 6 .. 7
 else
   ; Pentagon 1024
   rla           ; shift to the left...
   rla           ; ...2 bits
-  and %11100000 ; keep only bits 5..7
+  and %11100000 ; keep only bits 5 .. 7
 endif
 
   ld d,a        ; save the result
   ld a,e        ; get the bank again
-  and %00000111 ; only bits 0..2
+  and %00000111 ; only bits 0 .. 2
   or d          ; combine both parts
   ld e,a        ; done
 
@@ -8225,9 +8251,9 @@ else
 
 if scorpion=256
 
-  ; The Scorpion ZS 256 uses bits 0..2 of port $EFF7 and bit 4
-  ; of port $1FFD to select the memory bank (0..15) to page in
-  ; at $C000..$FFFF.
+  ; The Scorpion ZS 256 uses bits 0 .. 2 of port $EFF7 and bit 4
+  ; of port $1FFD to select the memory bank (0 .. 15) to page in
+  ; at $C000 .. $FFFF.
 
   ; Port $7FFD (adressation - 01xxxxxx xx1xxx01):
   ;
@@ -8242,24 +8268,24 @@ if scorpion=256
   ;
   ; Port $1FFD (adressation - 00xxxxxx xx1xxx01):
   ;
-  ; D0 = set to disable ROM and connect RAM bank 0 at $0000..$3FFF
+  ; D0 = set to disable ROM and connect RAM bank 0 at $0000 .. $3FFF
   ; D4 = bit 3 of bank number
   ; D6 = unused
   ; D7 = unused
 
-  ; E = bank number (bits 0..3)
+  ; E = bank number (bits 0 .. 3)
 
   ld a,e           ; bank number
   rla              ; shift to the left to move bit 3 to bit 4
   and %00010000    ; keep only bit 4
   ld d,a           ; save the result
   ld a,e           ; bank number
-  and %00000111    ; keep only bits 0..2
+  and %00000111    ; keep only bits 0 .. 2
   ld e,a           ; save the result
 
   ; D = bit 4 is the higher bit (bit 3) of the bank number,
   ;     other bits clear
-  ; E = bits 0..2 are the lower bits of the bank number,
+  ; E = bits 0 .. 2 are the lower bits of the bank number,
   ;     other bits clear
 
   ld a,(sys_bankm) ; get the saved status of BANKM
@@ -13954,7 +13980,7 @@ if.do:
 ; }doc
 
   dw ahead_
-  dw swap_ ; XXX TODO -- `cs-swap`, an alias defined in the library
+  dw cs_swap_
   dw then_
   dw exit_
 
@@ -14149,7 +14175,7 @@ sign.end:
 ;
 ; >digit ( n -- c )
 ;
-; Convert a number to its character digit: 0..9A..Z.
+; Convert a number to its character digit: 0 .. 9A .. Z.
 ;
 ; ``>digit`` is written in Z80. Its equivalent definition if
 ; Forth is the following:
@@ -15214,14 +15240,14 @@ mode_32_xy.end:
 ; border ( n -- )
 ;
 ; Set the border of the screen to color to _n_.  Only the 3
-; lower bits of _n_ are used (for colors 0..7).
+; lower bits of _n_ are used (for colors 0 .. 7).
 ;
 ; }doc
 
   pop hl
   ld a,l
 border.a:
-  and %00000111 ; force value 0..7
+  and %00000111 ; force value 0 .. 7
   call $229B ; secondary entry point in the "BORDER" ROM routine
   _jp_next
 
@@ -15744,7 +15770,7 @@ first_boot:
 if plus3dos
 
   ; +3DOS uses RAM banks 1, 3, 4 and 6 as an array of 128 sector
-  ; buffers (numbered 0...127), each of 512 bytes, thus 32
+  ; buffers (numbered 0 .. 127), each of 512 bytes, thus 32
   ; buffers per RAM bank. The cache and RAM disk occupy two
   ; separate (contiguous) areas of this array.
   ;

@@ -130,7 +130,7 @@ code call ( a -- )
 : ?repeat
   \ Compilation: ( dest -- dest )
   \ Run-time:    ( f -- )
-  cs-dup  postpone until ; immediate ?)
+  cs-dup postpone until ; immediate ?)
 
   \ Credit:
   \

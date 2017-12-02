@@ -1,11 +1,9 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-11-28
+:revdate: 2017-12-02
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
-
-// Last modified 201711271633
 
 // Assembler {{{1
 == Assembler ==
@@ -94,7 +92,7 @@ Rename `end-code` to `;c`?  `end-code` is more legible, but space is
 precious in blocks.  `end-code` is not in Forth-94 or Forth-2012 (only
 mentioned), but it was in Forth-79 and Forth-83, and it's in Gforth.
 
-.2016-11-26, 2016-12-30..2017-01-02:
+.2016-11-26, 2016-12-30 .. 2017-01-02:
 
 NOTE: Milestone: 0.14.0
 
@@ -546,7 +544,7 @@ Update `(at-xy` and its documentation.
 
 .2017-04-20:
 
-Write `mode-32udg-emit` to use the full UDG 0..255 as a font, after the
+Write `mode-32udg-emit` to use the full UDG 0 .. 255 as a font, after the
 method used by `mode-32iso-emit`.
 
 .2017-04-20:
@@ -593,7 +591,7 @@ Add '$' prefix to `hex.`, '%' to `bin.` and '#' to `dec.`.
 .2017-02-04:
 
 Rename `mode-32-emit` to `mode-32rom-emit` and write an alternative
-word `mode-32iso-emit` to print characters 128..255 also from the
+word `mode-32iso-emit` to print characters 128 .. 255 also from the
 current font.  This will make it possible to use 8-bit character sets.
 
 .2017-01-18, 2017-02-04:
@@ -863,13 +861,12 @@ Homogenize and fix the notation about interpretation, compilation and
 execution/run-time semantics. Better yet, use the simpler convention of
 Forth-83.
 
-.2016-08-09:
+.2016-08-09, 2017-12-02:
 
 Change the format of stack notation:
 
 ----
-xn..x1 --> x[n] ... x[1]
-       --> x[n]..x[1]
+xn..x1 --> x#n .. x#1
 ----
 
 .2016-10-24:
@@ -1327,7 +1324,7 @@ Or write a variant:
 
 .2017-01-09, 2017-02-04:
 
-Add `.udg"` as a fast way to print strings of UDG (0..255).
+Add `.udg"` as a fast way to print strings of UDG (0 .. 255).
 
 .2017-01-09, 2017-03-17:
 
@@ -1651,7 +1648,7 @@ Z80.
 .2016-05-01:
 
 Change the order of the parameters of `%` and `u%`, after _Starting Forth_ pp
-103..105.
+103 .. 105.
 
 .2016-04-27:
 
@@ -1701,7 +1698,7 @@ Document floating point.
 
 .2016-04-22:
 
-Idea: Use the ROM calculator memories (0..5) as floating-point non-recursive
+Idea: Use the ROM calculator memories (0 .. 5) as floating-point non-recursive
 locals. Problem: some calculator's words use them (eg. `|over`).  They could be
 recursive, because their address can be changed with the system variable MEM;
 they could be pointed to a frame in the return stack.
@@ -1728,7 +1725,7 @@ instead of restoring the default one.
 
 .2017-03-14:
 
-`huge-banks` for 256..1024 KiB models. A system analougous to
+`huge-banks` for 256 .. 1024 KiB models. A system analougous to
 `far-banks`.
 
 .2017-03-02:
@@ -2164,11 +2161,12 @@ to remove all of them, including itself, and sets the new values of
 the pointers. This way, the program can get rid of all of them at the
 start of the compilation and get some extra memory.
 
-.2017-02-25:
+.2017-02-25, 2017-11-29:
 
 Options to make it easier to share code with other systems:
 
-- Add `solo-forth` as an immediate alias of `noop`.
+- Add `solo-forth` as an alias of `greeting`, akin to Gforth's
+  `gforth`.
 - Add `solo-forth` to the enviromental queries, to return the version
   (like Gforth).
 
@@ -2278,6 +2276,10 @@ Finish the conversion of 128K sound explosions. More details in the source.
 
 // Strings {{{1
 == Strings ==
+
+.2017-12-02:
+
+Rename `sconstants` `csconstants`.
 
 .2017-11-19:
 
@@ -2392,10 +2394,6 @@ Calculate `ticks/second` after the lina Forth system.
 
 .2017-11-28:
 
-Rename "ticks" words "dticks" and write 1-cell "ticks" versions?
-
-.2017-11-28:
-
 Convert `get-time` to `uptime`.  Then rewrite `set-time` after
 `set-date` and rewrite `get-time` to make a calculation from the set
 time and the current ticks count...
@@ -2405,9 +2403,9 @@ time and the current ticks count...
 Words to adapt from LaForth (chapter 9 of the documentation): `cdn`,
 `dmy`, `wends`, `wdays`.
 
-.2017-03-29:
+.2017-03-29, 2017-11-28:
 
-Fix: `0 frames` does `$FFFF frames`.
+Fix: `0 ticks-pause` (Z80 version) does `$FFFF ticks-pause`.
 
 .2017-02-13, 2017-03-17:
 
@@ -2518,8 +2516,6 @@ Use `chars` in offsets of `get-date` and `set-date`.
 Update the date with interrupts.
 
 .2016-11-18, 2016-11-19:
-
-Rename `frames@` to `ticks@`, etc.?
 
 `utime`, `cputime`? (See Gforth)
 
