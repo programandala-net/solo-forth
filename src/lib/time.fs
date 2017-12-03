@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712032347
+  \ Last modified: 201712040045
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -97,6 +97,8 @@ code ms ( u -- )
   \ every 20th ms. The counter is actually a 24-bit value,
   \ which can be fetched by `dticks`.
   \
+  \ Origin: Comus.
+  \
   \ See also: `set-ticks`, `reset-ticks`, `ticks/second`,
   \ `ticks>seconds`, `os-frames`, `bench{`.
   \
@@ -104,14 +106,14 @@ code ms ( u -- )
 
 [unneeded] dticks ?( need os-frames
 
-: dticks ( -- d )
+: dticks ( -- ud )
   os-frames @ [ os-frames cell+ ] literal c@ ; ?)
 
   \ doc{
   \
-  \ dticks ( -- d )
+  \ dticks ( -- ud )
   \
-  \ Return the current count of clock ticks _d_, which is
+  \ Return the current count of clock ticks _ud_, which is
   \ updated by the OS.
   \
   \ NOTE: ``dticks``returns the OS frames counter, which is
@@ -164,7 +166,7 @@ code ms ( u -- )
   \
   \ Reset the low 16 bits of the OS clock to zero ticks.
   \
-  \ See: `ticks`, `set-dticks`, `ticks/second`, `bench{`.
+  \ See also: `ticks`, `set-dticks`, `ticks/second`, `bench{`.
   \
   \ }doc
 
@@ -178,7 +180,7 @@ code ms ( u -- )
   \
   \ Reset the system clock to zero ticks.
   \
-  \ See: `reset-ticks`, `dticks`, `set-dticks`, `ticks/second`,
+  \ See also: `reset-ticks`, `dticks`, `set-dticks`, `ticks/second`,
   \ `bench{`.
   \
   \ }doc
@@ -224,7 +226,7 @@ code ms ( u -- )
   \ Convert clock ticks _d1_ to centiseconds _d2_.
   \
   \ See also: `ticks>cs`, `dticks>seconds`, `dticks>ms`,
-  \ `ticks/seconds`, `ticks`.
+  \ `ticks/second`, `ticks`.
   \
   \ }doc
 
@@ -239,7 +241,7 @@ code ms ( u -- )
   \ Convert clock ticks _d1_ to milliseconds _d2_.
   \
   \ See also: `ticks>ms`, `dticks>seconds`, `dticks>cs`,
-  \ `ticks/seconds`, `ticks`.
+  \ `ticks/second`, `ticks`.
   \
   \ }doc
 
@@ -254,13 +256,75 @@ code ms ( u -- )
   \ Convert clock ticks _d_ to seconds _n_.
   \
   \ See also: `ticks>seconds`, `dticks>cs`, `dticks>ms`,
-  \ `ticks/seconds`, `ticks`.
+  \ `ticks/second`, `ticks`.
+  \
+  \ }doc
+
+( elapsed delapsed timer dtimer )
+
+[unneeded] elapsed ?( need ticks
+
+: elapsed ( u1 -- u2 ) ticks swap - ; ?)
+
+  \ doc{
+  \
+  \ elapsed ( u1 -- u2 )
+  \
+  \ For the time _u1_ in `ticks` return the elapsed time _u2_
+  \ since then, also in `ticks`.
+  \
+  \ See also: `timer`, `delapsed`, `ticks>seconds`, `ticks>cs`,
+  \ `ticks>ms`.
+  \
+  \ }doc
+
+[unneeded] delapsed ?( need dticks
+
+: delapsed ( d1 -- d2 ) dnegate dticks d+ ; ?)
+
+  \ doc{
+  \
+  \ delapsed ( d1 -- d2 )
+  \
+  \ For the time _d1_ in `dticks` return the elapsed time _d2_
+  \ since then, also in `dticks`.
+  \
+  \ See also: `timer`, `delapsed`, `dticks>seconds`, `dticks>cs`,
+  \ `dticks>ms`.
+  \
+  \ }doc
+
+[unneeded] timer ?\ need elapsed : timer ( n -- ) elapsed u. ;
+
+  \ doc{
+  \
+  \ timer ( u -- )
+  \
+  \ For the time _u_ in `ticks` display the elapsed time
+  \ since then, also in `ticks`.
+  \
+  \ Origin: Comus.
+  \
+  \ See also: `dtimer`, `elapsed`.
+  \
+  \ }doc
+
+[unneeded] dtimer
+
+?\ need delapsed need ud. : dtimer ( d -- ) delapsed ud. ;
+
+  \ doc{
+  \
+  \ dtimer ( d -- )
+  \
+  \ For the time _d_ in `dticks` display the elapsed time
+  \ since then, also in `dticks`.
+  \
+  \ See also: `timer`, `delapsed`.
   \
   \ }doc
 
 ( ticks>cs ticks>ms ticks>seconds )
-
-  \ XXX UNDER DEVELOPMENT 2017-11-28
 
 [unneeded] ticks>cs ?( need ms/tick
 
@@ -270,10 +334,10 @@ code ms ( u -- )
   \
   \ ticks>cs ( n1 -- n2 )
   \
-  \ Convert clock ticks _n1_ to centiseconds _n2_.
+  \ Convert clock `ticks` _n1_ to centiseconds _n2_.
   \
   \ See also: `dticks>cs`, `ticks>seconds`, `ticks>ms`,
-  \ `ticks/seconds`, `ticks`.
+  \ `ticks/second`.
   \
   \ }doc
 
@@ -288,7 +352,7 @@ code ms ( u -- )
   \ Convert clock ticks _n1_ to milliseconds _n2_.
   \
   \ See also: `dticks>ms`, `ticks>seconds`, `ticks>cs`,
-  \ `ticks/seconds`, `ticks`.
+  \ `ticks/second`, `ticks`.
   \
   \ }doc
 
@@ -303,7 +367,7 @@ code ms ( u -- )
   \ Convert clock ticks _n1_ to seconds _n2_.
   \
   \ See also: `dticks>seconds`, `ticks>cs`, `ticks>ms`,
-  \ `ticks/seconds`, `ticks`.
+  \ `ticks/second`, `ticks`.
   \
   \ }doc
 
@@ -324,7 +388,7 @@ code ms ( u -- )
   \ Stop execution during at least _u_ clock ticks, or until a
   \ key is pressed.
   \
-  \ See: `ticks-pause`, `basic-pause`, `?seconds`,
+  \ See also: `ticks-pause`, `basic-pause`, `?seconds`,
   \ `ticks/second`.
   \
   \ }doc
@@ -342,7 +406,7 @@ code ms ( u -- )
   \
   \ Stop execution during at least _u_ clock ticks.
   \
-  \ See: `?ticks-pause`, `basic-pause`, `seconds`, `ms`,
+  \ See also: `?ticks-pause`, `basic-pause`, `seconds`, `ms`,
   \ `ticks/second`.
   \
   \ }doc
@@ -381,7 +445,7 @@ code ms ( u -- )
   \ ``basic-pause`` is a convenience that works like Sinclair
   \ BASIC's ``PAUSE``.
   \
-  \ See: `ticks-pause`, `?ticks-pause`, `?seconds`,
+  \ See also: `ticks-pause`, `?ticks-pause`, `?seconds`,
   \ `ticks/second`.
   \
   \ }doc
@@ -435,7 +499,7 @@ code ms ( u -- )
   \ +2 year  (1 cell)
   \ ....
   \
-  \ See: `set-date`, `get-date`.
+  \ See also: `set-date`, `get-date`.
   \
   \ }doc
 
@@ -452,7 +516,7 @@ code ms ( u -- )
   \ can be changed with `set-date`. The date is not updated by
   \ the system.
   \
-  \ See: `set-date`, `date`, `time&date`, `.date`.
+  \ See also: `set-date`, `date`, `time&date`, `.date`.
   \
   \ }doc
 
@@ -469,7 +533,7 @@ code ms ( u -- )
   \ can be fetch with `get-date`. The date is not updated by
   \ the system.
   \
-  \ See: `get-date`, `date`, `.date`, `leapy-year?`.
+  \ See also: `get-date`, `date`, `.date`, `leapy-year?`.
   \
   \ }doc
 
@@ -580,7 +644,6 @@ code ms ( u -- )
 : .time&date ( second minute hour day month year -- )
   .date ." T" .time ; ?)
 
-
   \ doc{
   \
   \ .time&date ( second minute hour day month year -- )
@@ -674,7 +737,7 @@ need reset-dticks need dticks need dticks>cs
   \ }doc
 
 : benched ( xt n -- d )
-  bench{ 0 ?do  dup execute  loop  }bench rot drop ;
+  bench{ 0 ?do dup execute loop }bench rot drop ;
 
   \ doc{
   \
@@ -688,7 +751,7 @@ need reset-dticks need dticks need dticks>cs
   \ }doc
 
 : benched. ( xt n -- )
-  bench{ 0 ?do  dup execute  loop  }bench. drop ;
+  bench{ 0 ?do dup execute loop }bench. drop ;
 
   \ doc{
   \
@@ -768,5 +831,8 @@ need reset-dticks need dticks need dticks>cs
   \
   \ 2017-12-03: Improve conversions between ticks and time
   \ units.
+  \
+  \ 2017-12-04: Add `elapsed`, `delapsed`, `timer`, `dtimer`.
+  \ Fix and improve documentation.
 
   \ vim: filetype=soloforth

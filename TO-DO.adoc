@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-12-02
+:revdate: 2017-12-04
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -2436,76 +2436,25 @@ for u milliseconds:
 : TRY ( u -- ) COUNTER + BEGIN TEST DUP EXPIRED UNTIL ;
 ----
 
-.2016-12-06, 2017-01-24, 2017-02-18, 2017-03-16:
+.2017-12-04:
 
 NOTE: Milestone: 0.14.0
 
-Rename `bench{` and `}bench` and family.
+Deprecate `bench{`, `}bench` and family, or replace with `ticks`,
+`elapsed`, `timer` and family.
 
-Maybe after SwiftForth: `counter` and `timer`:
+.2017-12-04:
 
-----
-counter  ( -- ms )
-Return the current value of the millisecond timer.
-----
+NOTE: Milestone: 0.14.0
 
-----
-: timer  ( ms -- )  counter swap - u.  ;
-----
-
-Another example, from Brouhabouha Forth:
-
-----
-: TIMER  ( n --)
-  base @ decimal ticks rot -
-  0 <# #s #> type . sec  base ! ;
-----
-
-From lina:
+Adapt from lina:
 
 ----
 : PAST? DNEGATE TICKS D+ SWAP DROP 0< 0= ;                     
 
 DECIMAL TICKS DNEGATE 1000 MS TICKS D+ DROP                    
    CONSTANT TICKS-PER-SECOND                                   
-
-\ Mark a point in time by leaving its tick COUNT.              
-: MARK-TIME TICKS ;                                            
-
-\ Print a TIME interval, given in uS as ms.                    
-: .mS SPACE 0 <# # # # [CHAR] . HOLD #S #> TYPE ." mS "  ;     
-
-\ Print a TIME interval, given in uS, as us.                   
-: .uS SPACE . ." uS "  ;                                       
-
-\ For the TIME (in ticks) on the stack return ELAPSED time     
-\ since then, in uS.                                           
-: ELAPSED   DNEGATE TICKS D+ DROP                              
-    1,000,000 TICKS-PER-SECOND */ ;                            
 ----
-
-Draft:
-
-----
-\ `ticks` is the old `frames@`
-
-2variable (timer)
-: init-timer ( -- ) ticks (timer) 2! ;
-: elapsed ( d1 -- d2 ) dnegate frames@ d+ ;
-: timer ( -- d ) (timer) 2@ elapsed ;
-
-\ Print a TIME interval, given in uS as ms.                    
-: ms. ( d -- ) <# # # # '.' hold #s #> type ." ms "  ;     
-
-\ Print a TIME interval, given in uS, as us.                   
-: us. ( d -- )  . ." uS "  ;                                       
-
-: ticks>ms      ( d1 -- d2 ) 20. d* ;
-: ticks>cs      ( d -- n )  5 m/ nip ;
-: ticks>seconds ( d -- n ) 50 m/ nip ;
-----
-
-Changes under development on 2017-11-28.
 
 .2016-12-20:
 
