@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705080017
+  \ Last modified: 201712041903
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,105 +25,213 @@
 
 ( ltype )
 
-  \ XXX UNDER DEVELOPMENT
-  \ Adapted from Galope <print.fs>.
+need column need last-row need /first-name need columns
+need 0exit need home? need seclusion
 
-need last-row need /name
+seclusion
 
-  \ export
+variable #indented
+  \ `#indented` = Indented characters in the current line.
 
-variable #ltyped   \ chars displayed in the current line.
+-seclusion
 
-variable #indented   \ Indented chars in the current line.
+variable #ltyped
 
-: ltyped+ ( u -- ) #ltyped +! ;
+  \ doc{
+  \
+  \ ltyped# ( -- a )
+  \
+  \ _a_ is the address of a cell containing the number of
+  \ characters displayed by `ltype` on the current row.
+  \
+  \ See: `ltyped`.
+  \
+  \ }doc
+
+: ltyped ( u -- ) #ltyped +! ;
+
+  \ doc{
+  \
+  \ ltyped ( n -- )
+  \
+  \ Update `ltyped#` with _n_ characters typed by `ltype`.
+  \
+  \ }doc
 
 : indented+ ( u -- ) #indented +! ;
 
-: (.word ( ca len -- ) dup ltyped+ type ;
+: (.word ( ca len -- ) dup ltyped type ;
 
-: .char ( c -- ) emit 1 ltyped+ ;
+: lemit ( c -- ) emit 1 ltyped ;  : lspace ( -- ) bl lemit ;
 
-: not-at-home? ( -- 0f ) xy + ;
+  \ doc{
+  \
+  \ lemit ( c -- )
+  \
+  \ Display character _c_ as part of the left-justified displaying
+  \ system.
+  \
+  \ See also: `ltype`, `lspace`.
+  \
+  \ }doc
 
-  \ export
+  \ doc{
+  \
+  \ lspace ( -- )
+  \
+  \ Display a space as part of the left-justified printing
+  \ system.
+  \
+  \ See also: `lemit`, `ltype`.
+  \
+  \ }doc
 
 : no-ltyped ( -- ) #ltyped off #indented off ;
 
-: ltype-home ( -- ) home no-ltyped ;
+  \ doc{
+  \
+  \ no-ltyped ( -- )
+  \
+  \ Set `ltyped#` and `#indented` to zero.
+  \
+  \ See also: `ltyped`.
+  \
+  \ }doc
 
-: ltype-page ( -- ) page ltype-home ;
+: lhome ( -- ) home no-ltyped ;
 
-: ltype-start-of-line ( -- )
-  #ltyped @ trm+move-cursor-left no-ltyped ;
+  \ doc{
+  \
+  \ lhome ( -- )
+  \
+  \ Move the cursor used by `ltype` and related words to its
+  \ home position, at the top left (column 0, row 0).
+  \
+  \ }doc
 
-  \ : ltype-cr ( -- ) not-at-home? if  cr  then  no-ltyped ;
-  \ XXX OLD first version
+: lpage ( -- ) cls lhome ;
 
-  \ hide
+  \ doc{
+  \
+  \ lpage ( -- )
+  \
+  \ Clear the display and init the cursor used by `ltype` and
+  \ related words.
+  \
+  \ }doc
 
-: at-last-start-of-line? ( -- f )
-  xy last-row = swap 0= and ;  -->
+: lcr? ( -- f ) home? 0= column 0<> and ;
+
+  \ doc{
+  \
+  \ lcr? ( -- f )
+  \
+  \ Is the cursor neither at the home position nor at the start of a
+  \ line?  ``lcr?`` is part of the left-justified displaying system.
+  \
+  \ See also: `lcr`, `ltype`.
+  \
+  \ }doc
+
+defer (lcr) ( -- ) ' cr ' (lcr) defer! -->
+
+  \ doc{
+  \
+  \ (lcr) ( -- )
+  \
+  \ A deferred word whose default action is `cr`.  This is the
+  \ actual carriage return done by `lcr`, before updating the
+  \ data of the left-justified displaying system.  ``(lcr)`` is
+  \ a hook for the application, for special cases.
+  \
+  \ See also: `ltype`.
+  \
+  \ }doc
 
 ( ltype )
 
-: not-at-start-of-line? ( -- f ) column 0<> ;
+: lcr ( -- ) lcr? if (lcr) then no-ltyped ;
 
-: ltype-cr? ( -- f ) not-at-home? not-at-start-of-line? and ;
-  \ XXX FIXME -- 2012-09-30 what this was for?:
-  \ at-last-start-of-line? 0= or
+  \ doc{
+  \
+  \ lcr ( -- )
+  \
+  \ If the cursor is neither at the home position nor at the
+  \ start of a line, move it to the next row. ``lcr`` is part
+  \ of the left-justified displaying system. 
+  \
+  \ See also: `lcr?`, `(lcr)`, `ltype`.
+  \
+  \ }doc
 
-  \ export
+variable lwidth columns lwidth !
 
-defer (ltype-cr ' (ltype-cr ' cr defer!
+  \ doc{
+  \
+  \ lwidth ( -- a )
+  \
+  \ A variable containing the text width in columns used by
+  \ `ltype` and related words. Its default value is `columns`,
+  \ ie. the current width of the screen.
+  \
+  \ }doc
 
-: ltype-cr ltype-cr? if (ltype-cr then no-ltyped ;
-
-variable ltype-width
-
-  \ hide
++seclusion
 
 : previous-word? ( -- f ) #ltyped @ #indented @ > ;
+  \ Has a word been displayed before in the current line?
 
-: ?space ( -- ) previous-word? if bl .char then ;
+: ?space ( -- ) previous-word? if bl lemit then ;
+  \ If a word was displayed before in the current line, display
+  \ a space as separator.
 
-: current-ltype-width ( -- u ) ltype-width @ ?dup ?exit cols ;
-
-: too-long? ( u -- f ) 1+ #ltyped @ + current-ltype-width > ;
+: unfit? ( len -- f ) 1+ #ltyped @ + lwidth > ;
+  \ Is word length _len_ too long to be displayed in the
+  \ current line?
 
 : .word ( ca len -- )
-  dup too-long? if ltype-cr else ?space then (.word ;
+  dup unfit? if lcr else ?space then (.word ;
+  \ Display word _ca len_ left-justified from the current
+  \ cursor position.
 
 : (ltype-indentation ( u -- )
-  dup trm+move-cursor-right dup indented+ ltyped+ ;  -->
+  dup spaces dup indented+ ltyped ;
 
-( ltype )
-
-  \ export
+-seclusion
 
 : ltype-indentation ( u -- ) ?dup 0exit (ltype-indentation ;
 
-  \ hide
+: ltype ( ca len --)
+  begin dup while /first-name .word repeat 2drop ;
 
-: >word ( ca1 len1 ca2 len2 -- ca2 len2 ca1 len4 )
-  \ ca1 len1 = Text, from the start of its first word.
-  \ ca2 len2 = Same text, from the char after its first word.
-  \ ca1 len4 = First word of the text.
-  tuck 2>r -  2r> 2swap ;
+  \ doc{
+  \
+  \ ltype ( ca len -- )
+  \
+  \ Display character string _ca len_ left-justified from the
+  \ current cursor position.
+  \
+  \ See also: `/ltype`.
+  \
+  \ }doc
 
-: first-word ( ca1 len1 -- ca2 len2 ca3 len3 ) /name >word ;
+end-seclusion -->
 
-: (ltype ( ca1 len1 -- ca2 len2 ) first-word .word ;
+( ltype )
 
-  \ export
+  \ ===========================================================
+  \ Debugging test
 
-: ltype ( ca len --) begin dup while (ltype repeat 2drop ;
+  \ XXX TMP --
 
-  \ Suggested usage in the application:
+need n>str
 
-  \ 4 value indentation
-  \ : paragraph ( ca len -- )
-  \   ltype-cr indentation ltype-indentation ltype ;
+: t ( n -- )
+  0 ?do
+    \ lrow#  @ n>str ltype
+    \ lrows# @ n>str ltype
+    s" En un lugar de La Mancha." ltype
+  loop ;
 
   \ ===========================================================
   \ Change log
@@ -136,5 +244,17 @@ variable ltype-width
   \
   \ 2017-05-08: Rename "print" to "ltype" in all words,
   \ including the filename of the module.
+  \
+  \ 2017-08-17: Remove old useless code, after the recent
+  \ changes in Galope's `ltype`.
+  \
+  \ 2017-09-08: Reduce factoring of `first-word`, rename it
+  \ `/first-name` and move it to <strings.MISC.fs>.  Rename all
+  \ "ltype-cr" to "lcr".  Fix initializacion of `(lcr`.
+  \ Complete the requirements. Use `home?`.
+  \
+  \ 2017-12-04: Compact the code, saving one block. Use
+  \ `seclusion`. Update names after Galope's `ltype` module.
+  \ Improve documentation.
 
   \ vim: filetype=soloforth

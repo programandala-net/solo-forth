@@ -511,10 +511,9 @@ actions of `emit` must be rewritten after them. This is what
 Improve the transition between display modes: Convert the cursor
 coordinates of the previous mode.
 
-.2017-05-12, 2017-11-20:
+.2017-05-12, 2017-11-20, 2017-12-04:
 
-Finish `ltype`.
-Make it compatible with Galope's `ltype`.
+Finish `ltype`, and make it compatible with Galope's `ltype`.
 
 .2017-05-12:
 

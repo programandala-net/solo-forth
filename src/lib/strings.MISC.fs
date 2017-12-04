@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712022305
+  \ Last modified: 201712041921
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -107,7 +107,7 @@
   \
   \ }doc
 
-( ud>str u>str d>str char>string chars>string )
+( ud>str u>str d>str n>str )
 
 [unneeded] ud>str
 ?\ : ud>str ( ud -- ca len ) <# #s #> ;
@@ -135,7 +135,7 @@
   \
   \ Convert _u_ to string _ca len_.
   \
-  \ See also: `ud>str`, `d>str`, `char>string`.
+  \ See also: `n>str`, `ud>str`, `d>str`, `char>string`.
   \
   \ }doc
 
@@ -152,9 +152,24 @@
   \
   \ Convert _d_ to string _ca len_.
   \
-  \ See also: `u>str`, `ud>str`, `char>string`.
+  \ See also: `n>str`, `ud>str`, `char>string`.
   \
   \ }doc
+
+[unneeded] n>str
+?\ need d>str : n>str ( n -- ca len ) s>d d>str ;
+
+  \ doc{
+  \
+  \ n>str ( n -- ca len )
+  \
+  \ Convert _n_ to string _ca len_.
+  \
+  \ See: `u>str`, `d>str`, `char>string`.
+  \
+  \ }doc
+
+( char>string chars>string >bstring c>bstring 2>bstring )
 
 [unneeded] char>string ?(
 : char>string ( c -- ca len )
@@ -193,8 +208,6 @@
   \ See also: `ruler`, `s+`.
   \
   \ }doc
-
-( >bstring c>bstring 2>bstring )
 
 [unneeded] >bstring
 ?\ : >bstring ( u -- ca len ) pad ! pad cell ;
@@ -1023,5 +1036,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
   \
   \ 2017-12-02: Update source style (spacing).
+  \
+  \ 2017-12-04: Add `n>str`. Update documentation.
 
   \ vim: filetype=soloforth
