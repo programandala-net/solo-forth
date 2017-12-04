@@ -787,8 +787,11 @@ backgrounds/current.scr: backgrounds/current.pbm
 %.docbook: %.adoc
 	asciidoctor --backend=docbook --out-file=$@ $<
 
+# %.epub: %.docbook
+# 	pandoc --output=$@ -f docbook -t epub $<
+
 %.epub: %.docbook
-	pandoc --output=$@ -f docbook -t epub $<
+	make/docbook2epub.py $<
 
 %.html.epub: %.html
 	pandoc --output=$@ -f html -t epub $<
