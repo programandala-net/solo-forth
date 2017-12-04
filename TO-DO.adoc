@@ -2422,20 +2422,6 @@ rest_1:
 
 But it needs to be adjusted slightly depending on the machine.
 
-.2017-01-24:
-
-From SwiftForth:
-
-EXPIRED  ( u — flag )
-
-Return true if the current millisecond timer reading has passed u. For
-example, the following word will execute the hypothetical word TEST
-for u milliseconds:
-
-----
-: TRY ( u -- ) COUNTER + BEGIN TEST DUP EXPIRED UNTIL ;
-----
-
 .2017-12-04:
 
 NOTE: Milestone: 0.14.0

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712040106
+  \ Last modified: 201712041740
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -260,7 +260,7 @@ code ms ( u -- )
   \
   \ }doc
 
-( elapsed delapsed timer dtimer )
+( elapsed delapsed timer dtimer expired dexpired )
 
 [unneeded] elapsed ?( need ticks
 
@@ -321,6 +321,53 @@ code ms ( u -- )
   \ since then, also in `dticks`.
   \
   \ See also: `timer`, `delapsed`.
+  \
+  \ }doc
+
+[unneeded] expired
+
+?\ need ticks : expired ( u -- f ) ticks u< ;
+
+  \ doc{
+  \
+  \ expired ( u -- f )
+  \
+  \ Return true if the `ticks` clock has passed _u_.
+  \
+  \ Usage example: The following word will execute the
+  \ hypothetical word ``test`` for _u_ clock `ticks`:
+
+  \ ----
+  \ : try ( u -- ) ticks + begin test dup expired until drop ;
+  \ ----
+
+  \ Origin: SwiftForth.
+  \
+  \ See also: `dexpired`, `elapsed`, `timer`.
+  \
+  \ }doc
+
+[unneeded] dexpired
+
+?\ need dticks need du< : dexpired ( ud -- f ) dticks du< ;
+
+  \ doc{
+  \
+  \ dexpired ( ud -- f )
+  \
+  \ Return true if the `dticks` clock has passed _ud_.
+  \
+  \ Usage example: The following word will execute the
+  \ hypothetical word ``test`` for _ud_ clock `dticks`:
+
+  \ ----
+  \ : dtry ( ud -- )
+  \   dticks + begin test 2dup dexpired until 2drop ;
+  \ ----
+
+  \ Origin: SwiftForth's ``expired``.
+  \
+  \ See also: `expired`, `delapsed`, `dtimer`.
   \
   \ }doc
 
@@ -832,8 +879,8 @@ need reset-dticks need dticks need dticks>cs
   \ 2017-12-03: Improve conversions between ticks and time
   \ units.
   \
-  \ 2017-12-04: Add `elapsed`, `delapsed`, `timer`, `dtimer`.
-  \ Fix and improve documentation. Make `dticks>ms` and
-  \ `set-time` faster.
+  \ 2017-12-04: Add `elapsed`, `delapsed`, `timer` and
+  \ `dtimer`.  Fix and improve documentation. Make `dticks>ms`
+  \ and `set-time` faster. Add `expired` and `dexpired`.
 
   \ vim: filetype=soloforth
