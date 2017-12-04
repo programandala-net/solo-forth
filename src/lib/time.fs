@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712040045
+  \ Last modified: 201712040106
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -232,7 +232,7 @@ code ms ( u -- )
 
 [unneeded] dticks>ms ?( need ms/tick need d*
 
-: dticks>ms ( d1 -- d2 ) ms/tick s>d d* ; ?)
+: dticks>ms ( d1 -- d2 ) [ ms/tick s>d ] 2literal d* ; ?)
 
   \ doc{
   \
@@ -567,7 +567,7 @@ code ms ( u -- )
 
 : set-time ( second minute hour -- )
   3600 um* rot 60 * m+ rot m+ ( seconds )
-  ticks/second s>d ud* set-ticks ; ?)
+  [ ticks/second s>d ] 2literal ud* set-ticks ; ?)
 
   \ doc{
   \
@@ -833,6 +833,7 @@ need reset-dticks need dticks need dticks>cs
   \ units.
   \
   \ 2017-12-04: Add `elapsed`, `delapsed`, `timer`, `dtimer`.
-  \ Fix and improve documentation.
+  \ Fix and improve documentation. Make `dticks>ms` and
+  \ `set-time` faster.
 
   \ vim: filetype=soloforth

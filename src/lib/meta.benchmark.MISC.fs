@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201711281157
+  \ Last modified: 201712040056
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,6 +27,29 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( s>d-bench )
+
+need dticks need dtimer
+
+: s>d-bench ( u -- )
+  dticks rot 0 ?do   0 s>d            2drop loop dtimer ;
+
+: 2literal-bench ( u -- )
+  dticks rot 0 ?do [ 0 s>d ] 2literal 2drop loop dtimer ;
+
+: run ( u -- )
+  dup cr
+      ." s>d              " s>d-bench      cr
+      ." [ s>d ] 2literal " 2literal-bench cr ;
+
+  \ Date        Times Ticks (20 ms)
+  \ ----------  ----- ------------------
+  \                         s>d 2literal
+  \                   --------- --------
+  \ 2017-12-04   1000         7        6
+  \             10000        68       61
+  \             65535       442      402
 
 ( times-bench )
 
@@ -2904,5 +2927,7 @@ need bench{ need }bench.
   \
   \ 2017-11-28: Update: replace "frames" words with "ticks"
   \ words; update headings of tables accordingly.
+  \
+  \ 2017-12-04: Add `s>d-bench`.
 
   \ vim: filetype=soloforth
