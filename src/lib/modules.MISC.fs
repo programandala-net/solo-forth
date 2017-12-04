@@ -48,7 +48,7 @@
   \ module will be created.  They are used by `-seclusion`,
   \ which marks the start of public definitions, `+seclusion`,
   \ which optionally marks the start of new private
-  \ definitions, and `end-seclusion`, which ends the module. 
+  \ definitions, and `end-seclusion`, which ends the module.
   \
   \ Usage example:
 

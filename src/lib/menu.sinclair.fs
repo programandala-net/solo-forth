@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703291557
+  \ Last modified: 201711252216
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -259,7 +259,7 @@ create current-option 0 c,
   \
   \ }doc
 
-: set-menu ( a1 a2 ca len x y width options -- )
+: set-menu ( a1 a2 ca len x y n1 n2 -- )
   menu-options c! [ /stripes 2+ ] cliteral max menu-width c!
   menu-xy 2! menu-title 2!  options-table ! actions-table ! ;
 
@@ -277,8 +277,7 @@ create current-option 0 c,
   \
   \ }doc
 
-: new-menu ( a1 a2 ca len x y width options -- )
-  set-menu .menu menu ;
+: new-menu ( a1 a2 ca len x y n1 n2 -- ) set-menu .menu menu ;
 
   \ doc{
   \
@@ -301,5 +300,7 @@ create current-option 0 c,
   \
   \ 2017-03-29: Add the 1-pixel border. Add `menu-rounding` to
   \ configure the behaviour of the option selector.
+  \
+  \ 2017-11-25: Update stack comments.
 
   \ vim: filetype=soloforth

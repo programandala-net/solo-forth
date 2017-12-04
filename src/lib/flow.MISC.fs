@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712022323
+  \ Last modified: 201712032231
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -100,6 +100,15 @@ code call ( a -- )
   \ ``don't`` is intended to be used before `do`, as an
   \ alternative to `?do`, when the do-loop structure is
   \ factored in its own word.
+  \
+  \ Usage example:
+
+  \ ----
+  \ : (.range) ( n1 n2 -- ) don't do i . loop ;
+  \ : .range ( n1 n2 -- ) (.range) ;
+  \ ----
+
+  \ ``don't`` is superseded by the standard word `?do`.
   \
   \ }doc
 
@@ -415,7 +424,7 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ ``thens`` is an `immediate` and `compile-only` word.
   \
   \ ``thens`` is a factor of `endcase` and other control
-  \ structures, but it's also the end of a `cond` .. ``thens``
+  \ structures, but it's also the end of the `cond` .. ``thens``
   \ structure.
 
   \ }doc
@@ -473,5 +482,7 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ 2017-11-28: Improve source layout of `executions`.
   \
   \ 2017-12-02: Improve documentation.
+  \
+  \ 2017-12-03: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -1,6 +1,6 @@
 = Acknowledgments
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-03-11
+:revdate: 2017-12-03
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -29,8 +29,8 @@ alphabetical order:
 - eForth (for DOS), by Bill Muench, 1989..1997.
 - F83 (for CP/M and DOS), by Mike Perry and Henry Laxen, 1984.
 - Forth Foundation Library, by Dick van Oudheusden, <2006..2015.
-- Galope (library for Gforth), by Marcos Cruz, 2012..2015.
-- Gforth, by Anton Ertl, Bernd Paysan et al., 1995..2016.
+- Galope (library for Gforth), by Marcos Cruz, 2012..2017.
+- Gforth, by Anton Ertl, Bernd Paysan et al., 1995..2017.
 - hForth (Z80 RAM model v0.9.9), by Wonyong Koh, 1995.
 - IsForth (version 1.23b for Linux), by Mark I. Manning IV, c.
   2001..2012.
