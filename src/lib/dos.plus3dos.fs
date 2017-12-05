@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712051408
+  \ Last modified: 201712051425
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -352,7 +352,7 @@ file-id-table max-file-id 1+ erase
   \
   \ Modify file access method _fam1_ to additionally select  a
   \ "binary", i.e., not line oriented, file access method,
-  \ giving access method _fam2_.
+  \ giving file access method _fam2_.
   \
   \ See: `r/o`, `w/o`, `r/w`, `s/r`,
   \ `create-file`, `open-file`.
@@ -361,11 +361,28 @@ file-id-table max-file-id 1+ erase
   \
   \ }doc
 
-[unneeded] headed ?\ : headed ( fam1 -- fam2 ) 128 and ;
-  \ XXX TODO -- Rewrite in Z80.
+code headed ( fam1 -- fam2 )
+  E1 c, CB c, C0 08 07 * + 05 + c, pushhl jp, end-code ?)
   \ pop hl
   \ set 7,l
   \ jp pushl
+  \
+  \ Equivalent code in Forth:
+  \
+  \ : headed ( fam1 -- fam2 ) 128 and ;
+
+  \ doc{
+  \
+  \ headed ( fam1 -- fam2 )
+  \
+  \ Modify file access method _fam1_ to additionally select a
+  \ "headed", i.e., with an additional +3DOS header, file
+  \ access method, giving file access method _fam2_.
+  \
+  \ See: `bin`, `r/o`, `w/o`, `r/w`, `s/r`,
+  \ `create-file`, `open-file`.
+  \
+  \ }doc
 
 [unneeded] do-dos-open_ ?( need assembler
 
@@ -998,6 +1015,6 @@ need (cat need tab need 3dup need 3drop
   \ `allocate-cat-buffer`. Fix documentation. Rewrite `(cat`
   \ with Z80 opcodes.
   \
-  \ 2017-12-05: Improve documentation.
+  \ 2017-12-05: Improve documentation. Rewrite `headed` in Z80.
 
   \ vim: filetype=soloforth
