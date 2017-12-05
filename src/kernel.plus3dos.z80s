@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201709091311
+; Last modified: 201712051617
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -91,6 +91,7 @@ dos.tos:
 ; Page in DOS
 
 dos_in:
+
   push af
   push bc                  ; temp save registers while switching
   ld   a,(sys_bankm)       ; RAM/ROM switching system variable
@@ -497,9 +498,9 @@ dosior_to_ior.hl:
 ; ----
 ; : transfer-block ( u -- )
 ;   >drive-block sectors/block * dup
-;     block-sector#>dos buffer-data
+;   block-sector#>dos buffer-data
 ;     transfer-sector throw
-;  1+ block-sector#>dos [ buffer-data b/sector + ] literal
+;   1+ block-sector#>dos [ buffer-data b/sector + ] literal
 ;     transfer-sector throw ;
 ; ----
 
@@ -1073,7 +1074,7 @@ endif
 ; Set drive _c_ ('A'..'P') as the current default drive, i.e.
 ; the drive implied by all filenames that do not specify a
 ; drive, and the drive used by `transfer-sector` and
-; `transfer-block`. The default drive is intially 'A'.
+; `transfer-block`. The default drive is 'A'.
 ;
 ; Does not access the drive, but merely checks that there is a
 ; driver for it (which does not imply that the drive exists).
@@ -1284,5 +1285,7 @@ endif ; defined plus3dos
 ; `_jp_next`.
 ;
 ; 2017-09-09: Update notation "pfa" to the standard "dfa".
+;
+; 2017-12-05: Fix documentation.
 
 ; vim: filetype=z80:textwidth=64
