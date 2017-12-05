@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705211917
+  \ Last modified: 201712051941
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -22,6 +22,40 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( 64cpl-fonts-test )
+
+  \ Credit:
+  \
+  \ The 64-cpl fonts are part of:
+  \
+  \ 64#4 - 4x8 FONT DRIVER FOR 64 COLUMNS (c) 2007, 2011
+  \
+  \ Original by Andrew Owen (657 bytes)
+  \ Optimized by Crisis (602 bytes)
+  \ Reimplemented by Einar Saukas (494 bytes)
+  \
+  \ https://sites.google.com/site/zxgraph/home/einar-saukas/fonts
+  \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027130
+
+need mode-64o need mini-64cpl-font need nbot-64cpl-font
+need omn1-64cpl-font need omn2-64cpl-font need owen-64cpl-font
+
+: .ascii ( -- ) 127 32 ?do i emit loop ;
+
+: .font-test ( -- ) .ascii cr
+  ." A QUICK BROWN FOX JUMPS OVER THE LAZY DOG!" cr
+  ." A quick brown fox jumps over the lazy dog." cr ;
+
+: 64cpl-font-test ( ca len a -- )
+  mode-64-font ! mode-64o cr type ." : " .font-test key drop ;
+
+: 64cpl-fonts-test ( -- )
+  s" Minix" mini-64cpl-font 64cpl-font-test
+  s" n-Bot" nbot-64cpl-font 64cpl-font-test
+  s" Omni1" omn1-64cpl-font 64cpl-font-test
+  s" Omni2" omn2-64cpl-font 64cpl-font-test
+  s" Owen"  owen-64cpl-font 64cpl-font-test ;
 
 ( csprite-test )
 
@@ -1402,5 +1436,7 @@ blk @ 1+ blk @ 2+ thru
   \ 2017-05-15: Add `f64-test`.
   \
   \ 2017-05-21: Add `csprite-test`.
+  \
+  \ 2017-12-05: Add `64cpl-fonts-test`.
 
   \ vim: filetype=soloforth

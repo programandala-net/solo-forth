@@ -8,7 +8,9 @@
 // Assembler {{{1
 == Assembler ==
 
-.2017-03-26:
+.2017-03-26, 2017-12-05:
+
+NOTE: Milestone: 0.14.0
 
 Document the instructions.
 
@@ -68,6 +70,8 @@ memory, and use it from there.
 
 .2017-02-21:
 
+NOTE: Milestone: 0.14.0
+
 Move private words of `l:` to a word list.
 
 .2017-02-21:
@@ -106,6 +110,10 @@ examples: `lshift`, `(g-emit)` and family, `f!`, `f@`,
 
 // Bugs {{{1
 == Bugs ==
+
+.2017-12-05:
+
+Fix: Add `default-mode` to `cold`.
 
 .2017-03-22:
 
@@ -475,10 +483,6 @@ additional link.
 // Display {{{1
 == Display ==
 
-.2017-12-05:
-
-Add all the 64 CPL binary fonts to the library.
-
 .2017-05-15:
 
 Document the control characters accepted by each mode, especially the
@@ -517,7 +521,7 @@ is temporary, for debugging.
 .2017-04-21, 2017-05-20:
 
 Finish `mode-64s`, the port of "64#4", the the driver written by Einar
-Saukas.  Add its four extra fonts to the library.
+Saukas.
 
 .2017-04-21, 2017-12-05:
 
@@ -687,7 +691,11 @@ Improve tab control.
 // Documentation {{{1
 == Documentation ==
 
-.2017-11-27
+.2017-12-05:
+
+Include the PNG of the 64-cpl fonts from Einar Saukas' 64#4.
+
+.2017-11-27:
 
 Finish the documentation of <flow.case.fs>: `endcase`, `less-of`,
 `greater-of`
