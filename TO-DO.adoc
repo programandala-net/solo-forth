@@ -475,10 +475,14 @@ additional link.
 // Display {{{1
 == Display ==
 
-.2017-05-15:
+.2017-12-05:
 
-Add the 64 CPL binary fonts to disk 0. Rename `4x8-font` after them:
-`owen-64cpl-font`.
+Replace `mode-64s-chars` and `mode-64o-font` with a common variable
+`mode-64-font`.
+
+.2017-12-05:
+
+Add all the 64 CPL binary fonts to the library.
 
 .2017-05-15:
 
@@ -520,13 +524,13 @@ is temporary, for debugging.
 Finish `mode-64s`, the port of "64#4", the the driver written by Einar
 Saukas.  Add its four extra fonts to the library.
 
-.2017-04-21:
+.2017-04-21, 2017-12-05:
 
 NOTE: Milestone: 0.14.0
 
 Fix: The default `mode-32` expects _row_ right after control character
 22, and then _col_, i.e in the order used by Sinclair BASIC. But
-`mode-64` and `mode-42` expect them in reverse order.
+`mode-64o` and `mode-42` expect them in reverse order.
 
 Update `(at-xy` and its documentation.
 
@@ -541,10 +545,10 @@ Change the order of the cursor coordinates embedded in strings, after
 the Forth convention? This is not possible with `mode-32-emit`, which
 uses the ROM routine.
 
-.2017-04-19:
+.2017-04-19, 2017-12-05:
 
 Convert the ISO standard 64-cpl fonts included in mikroprint to the
-format used by the current implementation of `mode-64`.
+format used by `mode-64o` and `mode-64s`.
 
 .2017-04-17:
 
@@ -637,18 +641,18 @@ and use `type`.
 
 Make `type` deferred, to be configured as `fartype` or other when needed.
 
-.2016-11-21:
+.2016-11-21, 2017-12-05:
 
-Add support for more control characters to alternative version of
-`mode-64`.
+Add support for more control characters to an alternative version of
+`mode-64o` ar `mode-64s`.
 
-.2016-11-21:
+.2016-11-21, 2017-12-05:
 
 In `mode-32`, one `cr` does nothing when the cursor is at the end of a
 line.  That is the default behaviour in Sinclair BASIC. The driver of
-`mode-42` works the same way.  But the driver of `mode-64` always
+`mode-42` works the same way.  But the driver of `mode-64o` always
 prints the carriage return, increasing the line number. Somehow the
-behaviour must be unified in all modes. The behaviour of `mode-64`
+behaviour must be unified in all modes. The behaviour of `mode-64o`
 seems more logical.
 
 .2016-10-28:
@@ -950,6 +954,10 @@ their behaviour and names identical. Write the +3DOS version too.
 
 // G+DOS {{{2
 === G+DOS ===
+
+.2017-12-05:
+
+Fix: `cat` crashes the system.
 
 .2017-02-13:
 
