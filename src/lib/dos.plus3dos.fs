@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091143
+  \ Last modified: 201712051408
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -63,7 +63,6 @@
   \ See: `/filename`, `/base-filename`.
   \
   \ }doc
-
 
 [unneeded] >filename ?( need /filename
 
@@ -163,8 +162,8 @@ code get-1346 ( -- n1 n2 n3 n4 )
   \
   \ Return the +3DOS current configuration of RAM banks 1, 3, 4
   \ and 6, which are organized as an array of 128 sector
-  \ buffers, each of 512 bytes. The cache and RAM disk occupy
-  \ two separate (contiguous) areas of this array.
+  \ buffers, each of 512 bytes. The cache and the RAM disk
+  \ occupy two separate (contiguous) areas of this array.
 
   \ [horizontal]
   \ _n1_ :: first sector buffer of cache
@@ -202,8 +201,8 @@ code set-1346 ( n1 n2 n3 n4 -- )
   \
   \ Set the +3DOS configuration of RAM banks 1, 3, 4 and 6,
   \ which are organized as an array of 128 sector buffers, each
-  \ of 512 bytes. The cache and RAM disk occupy two separate
-  \ (contiguous) areas of this array.
+  \ of 512 bytes. The cache and the RAM disk occupy two
+  \ separate (contiguous) areas of this array.
 
   \ [horizontal]
   \ _n1_ :: first sector buffer of cache
@@ -212,7 +211,7 @@ code set-1346 ( n1 n2 n3 n4 -- )
   \ _n4_ :: number of RAM disk sector buffers
 
   \
-  \ See: `dos-get-1346`.
+  \ See: `get-1346`.
   \
   \ }doc
 
@@ -288,10 +287,79 @@ file-id-table max-file-id 1+ erase
   \ Adapted from DZX-Forth.
 
 [unneeded] r/o ?\ %001 cconstant r/o
+
+  \ doc{
+  \
+  \ r/o ( -- fam )
+  \
+  \ Return the "read only" file access method _fam_.
+  \
+  \ See: `w/o`, `r/w`, `s/r`, `bin`,
+  \ `create-file`, `open-file`.
+  \
+  \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
+  \
+  \ }doc
+
 [unneeded] w/o ?\ %010 cconstant w/o
+  
+  \ doc{
+  \
+  \ w/o ( -- fam )
+  \
+  \ Return the "write only" file access method _fam_.
+  \
+  \ See: `r/o`, `r/w`, `s/r`, `bin`,
+  \ `create-file`, `open-file`.
+  \
+  \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
+  \
+  \ }doc
+
 [unneeded] r/w ?\ %011 cconstant r/w
+  
+  \ doc{
+  \
+  \ r/w ( -- fam )
+  \
+  \ Return the "read/write" file access method _fam_.
+  \
+  \ See: `r/o`, `w/o`, `s/r`, `bin`,
+  \ `create-file`, `open-file`.
+  \
+  \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
+  \
+  \ }doc
+
 [unneeded] s/r ?\ %101 cconstant s/r
+  
+  \ doc{
+  \
+  \ r/w ( -- fam )
+  \
+  \ Return the "shared read" file access method _fam_.
+  \
+  \ See: `r/o`, `w/o`, `r/w`, `bin`,
+  \ `create-file`, `open-file`.
+  \
+  \ }doc
+
 [unneeded] bin ?\ need alias ' noop alias bin immediate
+
+  \ doc{
+  \
+  \ bin ( fam1 -- fam2 )
+  \
+  \ Modify file access method _fam1_ to additionally select  a
+  \ "binary", i.e., not line oriented, file access method,
+  \ giving access method _fam2_.
+  \
+  \ See: `r/o`, `w/o`, `r/w`, `s/r`,
+  \ `create-file`, `open-file`.
+  \
+  \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
+  \
+  \ }doc
 
 [unneeded] headed ?\ : headed ( fam1 -- fam2 ) 128 and ;
   \ XXX TODO -- Rewrite in Z80.
@@ -392,6 +460,28 @@ code (create-file ( ca fam fid -- fid ior )
   >r >filename r> file-id if (create-file exit then
                           drop #-288 ;
 
+  \ doc{
+  \
+  \ create-file ( ca len fam -- fid ior )
+  \
+  \  Create the file named in the character string specified by
+  \  _ca len_, and open it with file access method _fam_.  If a
+  \  file with the same name already exists, recreate it as an
+  \  empty file.
+  \
+  \ If the  file  was  successfully created  and  opened, _ior_
+  \ is  zero,  _fid_,  is  its identifier, and the file has
+  \ been positioned to the start of the file.
+  \
+  \ Otherwise, _ior_ is a +3DOS I/O result code and _fid_ is
+  \ undefined.
+  \
+  \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
+  \
+  \ See: `open-file`,  `r/o`, `w/o`, `r/w`, `s/r`, `bin`.
+  \
+  \ }doc
+
 ( open-file )
 
   \ Credit:
@@ -427,6 +517,26 @@ code (open-file ( ca fam fid -- fid ior )
 
 : open-file ( ca len fam -- fid ior )
   >r >filename r> file-id if (open-file exit then drop #-288 ;
+
+  \ doc{
+  \
+  \ open-file ( ca len fam -- fid ior )
+  \
+  \  Open the file named in the character string specified by
+  \  _ca len_, and open it with file access method _fam_.
+  \
+  \ If the  file  was  successfully and  opened, _ior_ is zero,
+  \ _fid_,  is  its identifier, and the file has been
+  \ positioned to the start of the file.
+  \
+  \ Otherwise, _ior_ is a +3DOS I/O result code and _fid_ is
+  \ undefined.
+  \
+  \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
+  \
+  \ See: `create-file`, `r/o`, `w/o`, `r/w`, `s/r`, `bin`.
+  \
+  \ }doc
 
 ( close-file )
 
@@ -469,7 +579,6 @@ code (close-file ( fid -- ior )
   \ }doc
 
 ( file-position reposition-file )
-
 
 [unneeded] file-position ?(
 
@@ -888,5 +997,7 @@ need (cat need tab need 3dup need 3drop
   \ overwritten by other strings during the process. Remove
   \ `allocate-cat-buffer`. Fix documentation. Rewrite `(cat`
   \ with Z80 opcodes.
+  \
+  \ 2017-12-05: Improve documentation.
 
   \ vim: filetype=soloforth
