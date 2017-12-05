@@ -107,16 +107,6 @@ examples: `lshift`, `(g-emit)` and family, `f!`, `f@`,
 // Bugs {{{1
 == Bugs ==
 
-.2017-04-30, 2017-09-08:
-
-The sector calculation on +3DOS fails when the system boots from the
-180-KiB disk, which is replaced by the 720-KiB library disk. When the
-system boots from the 720-KiB disk, the output of `blks` is correct,
-identical to G+DOS and TR-DOS.
-
-It seems +3DOS is not aware the disk, being a different format, has
-been changed.
-
 .2017-03-22:
 
 Make `cold` set `set-block-drives` to the default value.

@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201707222010
+# Last modified: 201712051558
 
 # ==============================================================
 # Author
@@ -121,8 +121,7 @@ plus3dos: plus3dosdisks
 
 .PHONY: plus3dosdisks
 plus3dosdisks: \
-	disks/plus3dos/disk_0_boot.180.dsk \
-	disks/plus3dos/disk_0_boot.720.dsk \
+	disks/plus3dos/disk_0_boot.dsk \
 	disks/plus3dos/disk_1_library.dsk \
 	disks/plus3dos/disk_2_games.dsk \
 	disks/plus3dos/disk_3_workbench.dsk
@@ -1155,3 +1154,5 @@ oldbackup:
 
 # 2017-07-22: Add DocBook and EPUB experimental versions of the
 # manual.
+#
+# 2017-12-05: Don't make a +3DOS 180 KiB boot disk anymore.
