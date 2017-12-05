@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201712051138
+  \ Last modified: 201712051418
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -138,21 +138,20 @@ create mode-42rt-output_ ( -- a ) asm
   \   ld   (coordinates),de
   \   ret
 
-  1F cp#, c? ?ret,
+  1F cp#, c? ?ret, exx, h push, exx, a c ld, 00 h ld#, a l ld,
   \ check_printable_character:
   \   cp   $1F ; printable character?
   \   ret  c   ; if not, return
   \
   \ printable_character:
   \   ; Form the new 6-bit wide characters and alter colors to match
-
-  exx, h push, exx, a c ld, 00 h ld#, a l ld,
   \   exx     ; XXX TODO remove
   \   push hl ; XXX TODO remove
   \   exx     ; XXX TODO remove
   \   ld   c,a
   \   ld   h,$00
   \   ld   l,a
+
   mode-42rt-removable-columns 32 - d ldp#, d addp, m a ld,
   \   ld   de,removable_columns-32
   \   add  hl,de
@@ -167,10 +166,8 @@ create mode-42rt-output_ ( -- a ) asm
   \   call character_bitmap
   \   ld   b,h ; XXX TODO -- why this?
   \   ld   c,l ; XXX TODO -- why this?
-  {display_character_bitmap} rl# jr,
+  {display_character_bitmap} rl# jr, -->
   \   jr   display_character_bitmap
-
--->
 
 ( mode-42rt )
 
