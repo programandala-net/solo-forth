@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712051425
+  \ Last modified: 201712051556
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -402,7 +402,7 @@ create do-dos-open_ ( -- a ) asm
   0106 ix ldp#, dos-ix_ call,
   \   ld ix,dos_open
   \   call dos.ix
-  b pop, nc? pushdosior ?jp,
+  b pop, pushdosior nc? ?jp,
   h pop, 0 h ld#, h push, ' false jp, end-asm ?)
   \   pop bc  ; restore the Forth IP
   \   _jump_nc do_dos_open.error
@@ -476,7 +476,6 @@ code (create-file ( ca fam fid -- fid ior )
 : create-file ( ca len fam -- fid ior )
   >r >filename r> file-id if (create-file exit then
                           drop #-288 ;
-
   \ doc{
   \
   \ create-file ( ca len fam -- fid ior )
@@ -1016,5 +1015,6 @@ need (cat need tab need 3dup need 3drop
   \ with Z80 opcodes.
   \
   \ 2017-12-05: Improve documentation. Rewrite `headed` in Z80.
+  \ Fix Z80 opcode in `do-dos-open_`.
 
   \ vim: filetype=soloforth
