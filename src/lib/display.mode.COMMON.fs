@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201707271622
+  \ Last modified: 201709081737
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -64,10 +64,6 @@
   \ mode.
   \
   \ }doc
-
--->
-
-( )
 
 [unneeded] form ?( need columns need rows
 
@@ -214,5 +210,7 @@ code (banked-mode-output) ( -- )
   \
   \ 2017-07-27: Replace `jp next` with the actual macro
   \ `_jp_next` in Z80 comments.
+  \
+  \ 2017-09-08: Compact the code, saving one block.
 
   \ vim: filetype=soloforth

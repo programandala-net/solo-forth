@@ -755,7 +755,7 @@ backgrounds/current.pbm: src/version.z80s
 
 #	ln -f v$${version}.pbm $(notdir $@) ; \
 
-	# Second, convert it to a SCR format file (which will be included in
+# Second, convert it to a SCR format file (which will be included in
 # the assembled binary of the system):
 
 backgrounds/current.scr: backgrounds/current.pbm

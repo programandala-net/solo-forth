@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703280120
+  \ Last modified: 201712051040
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -227,17 +227,17 @@ need ?drive# need block-drive@ need ?block-drive
 
 need ?drives need -block-drives need block-drive!
 
-: set-block-drives ( c[u]..c[1] u -- )
+: set-block-drives ( c#n..c#1 n -- )
   dup ?drives -block-drives
   dup #block-drives c!  max-blocks 1- last-locatable !
       0 ?do i block-drive! loop ; ?)
 
   \ doc{
   \
-  \ set-block-drives ( c[n]..c[1] n -- )
+  \ set-block-drives ( c#n..c#1 n -- )
   \
   \ Set the block drives to the drives specified by drive
-  \ identifiers _c[n]..c[1]_. Subsequently drive _c[1]_ will be
+  \ identifiers _c#n..c#1_. Subsequently drive _c#1_ will be
   \ searched first for blocks from block number 0 to block
   \ number ``blocks/disk 1-``; drive _c[n+1]_ will be searched
   \ for blocks from block number `blocks/disk` to block number
@@ -258,19 +258,19 @@ need ?drives need -block-drives need block-drive!
 
 need block-drive@
 
-: get-block-drives ( -- c[u]..c[1] u )
+: get-block-drives ( -- c#n..c#1 n )
   #block-drives c@
   dup 0 ?do dup i - 1- block-drive@ swap loop ; ?)
 
   \ doc{
   \
-  \ get-block-drives ( -- c[n]..c[1] n )
+  \ get-block-drives ( -- c#n..c#1 n )
   \
   \ Get the current configuration of block drives, as
   \ configured by `
   \
-  \ to the drives specified by drive identifiers _c[n]..c[1]_.
-  \ Subsequently drive _c[1]_ will be searched first for
+  \ to the drives specified by drive identifiers _c#n..c#1_.
+  \ Subsequently drive _c#1_ will be searched first for
   \ blocks, from block 0 to `blocks/disk` minus one, and so on.
   \
   \ If _n_ is zero, no drive is used for blocks.
@@ -312,5 +312,7 @@ need block-drive@
   \ 2017-03-28: Fix typo.
   \
   \ 2017-04-21: Fix stack notation of `?drives`.
+  \
+  \ 2017-12-05: Fix and update stack notation.
 
   \ vim: filetype=soloforth
