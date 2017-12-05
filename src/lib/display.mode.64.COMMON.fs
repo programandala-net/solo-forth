@@ -28,6 +28,25 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+( mode-64-font )
+
+variable mode-64-font
+
+  \ doc{
+  \
+  \ mode-64-font ( -- a )
+  \
+  \ A variable. _a_ is the address of a cell containing the
+  \ address of the 4x8-pixel font used by `mode-64o`. Note the
+  \ address of the font must be the address of its character 32
+  \ (space). The size of a 4x8-pixel font is 336 bytes. The
+  \ program is responsible for initializing the contents of
+  \ this variable before executing `mode-64o`.
+  \
+  \ See: `owen-64cpl-font`.
+  \
+  \ }doc
+
 ( owen-64cpl-font )
 
 create owen-64cpl-font ( -- a ) hex
@@ -111,9 +130,9 @@ decimal
   \
   \ _a_ is the address of a 4x8-pixel font compiled in data
   \ space (336 bytes used), to be used in `mode-64o` by setting
-  \ `mode-64o-font`.
+  \ `mode-64-font`.
   \
-  \ This font is included also is disk 0 as "owen.f64".
+  \ This font is included also in disk 0 as "owen.f64".
   \
   \ Author of the font: Andrew Owen.
   \
@@ -142,6 +161,7 @@ decimal
   \ New
 
   \ 2017-12-05: Extract Andrew Owen's font from
-  \ <display.mode.64.fs>.
+  \ <display.mode.64.fs>. Move `mode-64-font` from
+  \ <display.mode.64o.fs>.
 
   \ vim: filetype=soloforth

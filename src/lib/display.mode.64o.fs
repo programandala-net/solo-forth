@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712051620
+  \ Last modified: 201712051706
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -456,7 +456,7 @@ code mode-64o-emit ( c -- )
 
 ( mode-64o )
 
-need mode-64o-output_ need mode-64o-emit
+need mode-64o-output_ need mode-64o-emit need mode-64-font
 need mode-32 need (at-xy need set-mode-output need >form
 
 : mode-64o-xy ( -- col row )
@@ -472,26 +472,9 @@ need mode-32 need (at-xy need set-mode-output need >form
   \
   \ }doc
 
-variable mode-64o-font
-
-  \ doc{
-  \
-  \ mode-64o-font ( -- a )
-  \
-  \ A variable. _a_ is the address of a cell containing the
-  \ address of the 4x8-pixel font used by `mode-64o`. Note the
-  \ address of the font must be the address of its character 32
-  \ (space). The size of a 4x8-pixel font is 336 bytes. The
-  \ program is responsible for initializing the contents of
-  \ this variable before executing `mode-64o`.
-  \
-  \ See: `owen-64cpl-font`.
-  \
-  \ }doc
-
 : mode-64o ( -- )
   [ latestxt ] literal current-mode !
-  mode-64o-font @ $71 - set-font
+  mode-64-font @ $71 - set-font
   mode-64o-output_ set-mode-output
   ['] mode-64o-emit ['] emit  defer!
   ['] (at-xy        ['] at-xy defer! 64 24 >form
@@ -520,7 +503,7 @@ variable mode-64o-font
   \
   \ See: `current-mode`, `set-font`, `set-mode-output`,
   \ `columns`, `rows`, `mode-64o-emit`, `mode-64o-xy`,
-  \ `mode-64o-font`, `>form`, `mode-64o-output_`.
+  \ `mode-64-font`, `>form`, `mode-64o-output_`.
   \
   \ }doc
 
@@ -572,6 +555,8 @@ variable mode-64o-font
   \ --------------------------------------------
   \ New
 
-  \ 2017-12-05: Extract from <display.mode.64.fs>.
+  \ 2017-12-05: Extract from <display.mode.64.fs>. Move
+  \ `mode-64o-font` to <display.mode.64.COMMON.fs> and rename
+  \ it `mode-64-font`.
 
   \ vim: filetype=soloforth

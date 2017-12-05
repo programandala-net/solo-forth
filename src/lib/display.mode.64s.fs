@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712051621
+  \ Last modified: 201712051706
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -45,7 +45,6 @@ need assembler need l:
 create mode-64s-at-flag 0 c,
 create mode-64s-column 0 c,
 create mode-64s-row 0 c,
-variable mode-64s-chars
 
 create mode-64s-emit_ ( -- a ) asm
 
@@ -334,13 +333,14 @@ code mode-64s-emit ( c -- )
 ( mode-64s )
 
 need (at-xy need set-mode-output need mode-64s-emit
+need mode-64-font
 
 : mode-64s-xy ( -- col row ) 0 0 ;  \ XXX TODO
 
 : mode-64s ( -- )
   [ latestxt ] literal current-mode !
   2548 set-mode-output
-  mode-64s-chars @ set-font
+  mode-64-font @ set-font
   64 to columns  24 to rows
   ['] mode-64s-emit ['] emit  defer!
   ['] mode-64s-xy   ['] xy    defer!
@@ -395,6 +395,7 @@ need (at-xy need set-mode-output need mode-64s-emit
   \ New
 
   \ 2017-12-05: Advance the conversion of the `mode-64s`'s
-  \ code.  Extract from <display.mode.64.fs>.
+  \ code.  Extract from <display.mode.64.fs>.  Replace
+  \ `mode-64s-chars` with `mode-64-font`.
 
   \ vim: filetype=soloforth

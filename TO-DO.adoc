@@ -477,11 +477,6 @@ additional link.
 
 .2017-12-05:
 
-Replace `mode-64s-chars` and `mode-64o-font` with a common variable
-`mode-64-font`.
-
-.2017-12-05:
-
 Add all the 64 CPL binary fonts to the library.
 
 .2017-05-15:
