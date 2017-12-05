@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705152138
+  \ Last modified: 201712051114
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -562,7 +562,7 @@ create mode-64s-emit_ ( -- a ) asm
   \ ; Based on code by Tony Samuels from Your Spectrum issue 20, November 1985.
 
   0 b ld#, mode-64s-at-flag h ldp#, m dec,
-  {chk_at} rl# m? ?jp {get_col} rl# z? ?jr
+  #1 m? ?jp #al  #2 rl# z? ?jr
 
   \ CH_ADDR:
   \         ld      b, 0            ; save a few bytes later using B instead of 0
@@ -593,13 +593,17 @@ create mode-64s-emit_ ( -- a ) asm
   \         cp      24              ; specified row greater than 23?
   \         jr      nc, ERROR_B     ; error if so
   \         inc     hl              ; dirty trick to store new row into AT_ROW
+
+  #2 l: #64 cp#, nc? rif h incp, a m ld, ret, rthen
+
   \ GET_COL:
   \         cp      64              ; specified column greater than 63?
   \         jr      nc, ERROR_B     ; error if so
   \         inc     hl
   \         ld      (hl), a         ; store new column into AT_COL
   \         ret
-  \
+
+  b m ld, #10 hook,
 
   \ ERROR_B:
   \         ld      (hl), b         ; reset AT_FLAG
@@ -607,7 +611,7 @@ create mode-64s-emit_ ( -- a ) asm
   \         defb    10
   \
 
-  16 cp#,
+  #1 l: 16 cp#,
 
   \ CHK_AT:
   \         cp      0x16            ; specified keyword 'AT'?
@@ -625,14 +629,18 @@ create mode-64s-emit_ ( -- a ) asm
   \ ; -----------------------------------------------------------------------------
   \
 
-  {chk_cr} rl# nz? ?jr  2 m ld#, ret,
+  z? rif 2 m ld#, ret, rthen
 
   \         jr      nz, CHK_CR      ; continue otherwise
   \         ld      (hl), 2         ; change AT_FLAG to expect row value next time
   \         ret                     ;   (or to expect INVERSE parameter next time)
   \
 
-  {chk_cr} l: m inc, h incp, 0D cp#, {next_row} rl# z? ?jr,
+  -->
+
+( mode-64s )
+
+  m inc, h incp, 0D cp#, #3 rl# z? ?jr,
 
   \ CHK_CR:
   \         inc     (hl)            ; increment AT_FLAG to restore previous value
@@ -682,10 +690,17 @@ create mode-64s-emit_ ( -- a ) asm
   \         ld      c, (hl)         ; store current column in BC
   \
   \ ; Check if character font must be rotated, self-modifying the code accordingly
-  \
+
+  c xor, rra,
+  \ XXX TODO --
+
   \         xor     c               ; compare BIT 0 from character value and column
   \         rra
   \         ld      a, 256-(END_LOOP-SKIP_RLC) ; instruction DJNZ skipping rotation
+ 
+  nc? rif
+  \ XXX TODO --
+
   \         jr      nc, NOT_RLC             ; decide based on BIT 0 comparison
   \         ld      a, 256-(END_LOOP-INIT_RLC) ; instruction DJNZ using rotation
   \ NOT_RLC:
@@ -715,6 +730,10 @@ create mode-64s-emit_ ( -- a ) asm
   \
   \ ; Calculate location of the character font data in FONT_ADDR
   \ ; Formula: FONT_ADDR + 7 * INT ((char-32)/2) - 1
+
+  b m ld, l srl, l c ld, h addp, h addp, h addp, b sbcp,
+  xxx
+  b addp,
   \
   \         ld      h, b            ; now HL = char
   \         srl     l               ; now HL = INT (char/2)
@@ -730,6 +749,9 @@ create mode-64s-emit_ ( -- a ) asm
   \
   \         xor     a               ; first font byte is always blank
   \         ld      b, 8            ; execute loop 8 times
+
+  rbegin rlca, rlca, rlca, rlca,
+
   \ INIT_RLC:
   \         rlca                    ; switch position between bits 0-3 and bits 4-7
   \         rlca
@@ -744,11 +766,16 @@ create mode-64s-emit_ ( -- a ) asm
   \ ;INV_C:  nop                     ; either 'NOP' or 'CPL'
   \ ; #endif _STANDARD_INVERSE
   \ ; -----------------------------------------------------------------------------
-  \
+
+  %11110000 and#, a c ld, d ftp,
+
   \ FONT_MASK:
   \         and     %11110000       ; mask half of the font byte
   \         ld      c, a            ; store half of the font byte in C
   \         ld      a, (de)         ; get screen byte
+
+  %00001111 and#, c or, d ftp, d inc, m inc, m a ld, rstep
+
   \ SCR_MASK:
   \         and     %00001111       ; mask half of the screen byte
   \         or      c               ; combine half screen and half font
@@ -758,11 +785,17 @@ create mode-64s-emit_ ( -- a ) asm
   \         ld      a, (hl)         ; store next font byte in A
   \         djnz    INIT_RLC        ; repeat loop 8 times
   \ END_LOOP:
-  \
+
+  h pop, m inc, m 6 bit, z? ?ret,
+
   \         pop     hl              ; restore AT_COL address
   \         inc     (hl)            ; next column
   \         bit     6, (hl)         ; column lower than 64?
   \         ret     z               ; return if so
+
+  #3 l: b m ld, h incp, m inc, m a ld, #24 cp#, c? ?ret,
+        b m ld, ret,
+
   \ NEXT_ROW:
   \         ld      (hl), b         ; reset AT_COL
   \         inc     hl              ; store AT_ROW address in HL
@@ -897,6 +930,8 @@ decimal
   \
   \ This font is included also is disk 0 as "owen.f64".
   \
+  \ Author of the font: Andrew Owen.
+  \
   \ }doc
 
   \ ===========================================================
@@ -940,5 +975,8 @@ decimal
   \ 2017-05-15: Use `>form` for mode transition. Improve
   \ documentation. Rename `4x8-font` to `owen-64cpl-font`,
   \ after the filenames of the fonts included in disk 0.
+  \
+  \ 2017-12-05: Advance the conversion of the `mode-64s`'s
+  \ code.
 
   \ vim: filetype=soloforth
