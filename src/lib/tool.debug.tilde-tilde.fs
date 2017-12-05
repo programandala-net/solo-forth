@@ -62,7 +62,7 @@ create ~~quit-key 'q' c,
   \ not zero, `~~control` will wait for a key press in order to
   \ quit the debugging.  Its default value is the code of 'q'.
   \
-  \ See also: `~~resume-key`.
+  \ See: `~~resume-key`.
   \
   \ }doc
 
@@ -80,7 +80,7 @@ create ~~resume-key bl c,
   \ the key stored at ``~~resume-key``, whose default value is
   \ `bl`, the code of the space character.
   \
-  \ See also: `~~quit-key`.
+  \ See: `~~quit-key`.
   \
   \ }doc
 
@@ -143,7 +143,7 @@ create ~~resume-key bl c,
   \ then execute `quit`; if the pressed key equals the contents
   \ of `~~resume-key`, then exit.
   \
-  \ See also: `~~control?`, `~~press?`.
+  \ See: `~~control?`, `~~press?`.
   \
   \ }doc
 
@@ -173,7 +173,7 @@ defer ~~save ( -- ) defer ~~restore ( -- )
   \ compiled by `~~`..  This is a deferred word. Its default
   \ action is to save the cursor coordinates.
   \
-  \ See also: `~~restore`, `~~save-xy`.
+  \ See: `~~restore`, `~~save-xy`.
   \
   \ }doc
 
@@ -185,7 +185,7 @@ defer ~~save ( -- ) defer ~~restore ( -- )
   \ compiled by `~~`.  This is a deferred word. Its default
   \ action is to restore the cursor coordinates.
   \
-  \ See also: `~~save`, `~~restore-xy`.
+  \ See: `~~save`, `~~restore-xy`.
   \
   \ }doc
 
@@ -200,7 +200,7 @@ defer ~~save ( -- ) defer ~~restore ( -- )
   \
   \ ``~~save-xy`` is part of the `~~` tool.
   \
-  \ See also: `~~restore-xy`, `~~restore`, `~~xy-backup`.
+  \ See: `~~restore-xy`, `~~restore`, `~~xy-backup`.
   \
   \ }doc
 
@@ -215,7 +215,7 @@ defer ~~save ( -- ) defer ~~restore ( -- )
   \
   \ ``~~restore-xy`` is part of the `~~` tool.
   \
-  \ See also: `~~save-xy`, `~~save`, `~~xy-backup`.
+  \ See: `~~save-xy`, `~~save`, `~~xy-backup`.
   \
   \ }doc
 
@@ -232,7 +232,7 @@ defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
   \ part of the debugging code compiled by `~~`.  By default it
   \ does nothing.
   \
-  \ See also: `~~info`.
+  \ See: `~~info`.
   \
   \ }doc
 
@@ -249,7 +249,7 @@ defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
   \ code that was compiled by `~~` during the definition of
   \ word _nt_ in line _n_ of block _u_.
   \
-  \ See also: `~~y`, `~~control`.
+  \ See: `~~y`, `~~control`.
   \
   \ }doc
 
@@ -269,7 +269,7 @@ defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
   \
   \ Origin: Gforth.
   \
-  \ See also: `(~~)`, `~~?`, `~~y`, `~~quit-key`, `~~resume-key`,
+  \ See: `(~~)`, `~~?`, `~~y`, `~~quit-key`, `~~resume-key`,
   \ `~~info`, `~~app-info`, `~~control` `~~save`, `~~restore`.
   \
   \ }doc

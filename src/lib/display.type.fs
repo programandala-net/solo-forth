@@ -36,7 +36,7 @@
   \ If _len_ is greater than zero, display the character string
   \ _ca len_, which is stored in the far memory.
   \
-  \ See also: `far-banks`, `type`.
+  \ See: `far-banks`, `type`.
   \
   \ }doc
 
@@ -67,7 +67,7 @@
   \ which is stored in far memory, replacing non-ASCII and
   \ control chars with a dot.
   \
-  \ See also: `fartype`, `type-ascii`.
+  \ See: `fartype`, `type-ascii`.
   \
   \ }doc
 
@@ -96,7 +96,7 @@
   \ If _len2_ minus _len1_ is a positive number, display that
   \ number of spaces; else do nothing.
   \
-  \ See also: `type-left-field`.
+  \ See: `type-left-field`.
   \
   \ }doc
 
@@ -113,7 +113,7 @@
   \ string _ca1 len1_ at the left of a field of _len2_
   \ characters.
   \
-  \ See also: `padding-spaces`, `type-right-field`,
+  \ See: `padding-spaces`, `type-right-field`,
   \ `type-center-field`.
   \
   \ }doc
@@ -132,7 +132,7 @@ need drop-type need <=> need array>
   \ Type string _ca1 len1_ at the right of a field of _len2_
   \ characters, which is shorter than the string.
   \
-  \ See also: `type-right-field`, `type-right-field-fit`.
+  \ See: `type-right-field`, `type-right-field-fit`.
   \
   \ }doc
 
@@ -146,7 +146,7 @@ need drop-type need <=> need array>
   \ Type string _ca1 len1_ at the right of a field of _len2_
   \ characters, which is longer than the string.
   \
-  \ See also: `type-right-field`, `type-right-field-crop`.
+  \ See: `type-right-field`, `type-right-field-crop`.
   \
   \ }doc
 
@@ -167,7 +167,7 @@ constant type-right-field-cases
   \ string _ca1 len1_ at the right of a field of _len2_
   \ characters.
   \
-  \ See also: `type-right-field-fit`, `type-right-field-crop`,
+  \ See: `type-right-field-fit`, `type-right-field-crop`,
   \ `drop-type`, `type-left-field`, `type-center-field`.
   \
   \ }doc
@@ -187,7 +187,7 @@ need drop-type need <=> need array>
   \ string _ca1 len1_ at the center of a field of _len2_
   \ characters, which is longer than the string.
   \
-  \ See also: `type-center-field-crop`, `type-center-field`.
+  \ See: `type-center-field-crop`, `type-center-field`.
   \
   \ }doc
 
@@ -202,7 +202,7 @@ need drop-type need <=> need array>
   \ string _ca1 len1_ at the center of a field of _len2_
   \ characters, which is shorter than the string.
   \
-  \ See also: `type-center-field-fit`, `type-center-field`.
+  \ See: `type-center-field-fit`, `type-center-field`.
   \
   \ }doc
 
@@ -223,7 +223,7 @@ constant type-center-field-cases
   \ string _ca1 len1_ at the center of a field of _len2_
   \ characters.
   \
-  \ See also: `type-center-field-fit`,
+  \ See: `type-center-field-fit`,
   \ `type-center-field-crop`, `drop-type`, `type-left-field`,
   \ `type-right-field`, `gigatype-title`.
   \

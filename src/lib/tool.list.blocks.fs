@@ -72,7 +72,7 @@
   \
   \ List line _n_ from block _u_, without trailing spaces.
   \
-  \ See also: `list-lines`, `.line#`, `list`.
+  \ See: `list-lines`, `.line#`, `list`.
   \
   \ }doc
 
@@ -88,7 +88,7 @@ need .line need nuf? need list-line need ?leave
   \
   \ List lines _n2..n3_ of block _u_ and store _u_ in `scr`.
   \
-  \ See also: `list`, `scr`, `list-line`.
+  \ See: `list`, `scr`, `list-line`.
   \
   \ }doc
 
@@ -106,7 +106,7 @@ need .line need nuf? need list-line need ?leave
   \ (Controlled Reference Words), Forth-94 (BLOCK EXT),
   \ Forth-2012 (BLOCK EXT).
   \
-  \ See also: `scr`, `list-lines`, `lt`, `lm`, `lb`.
+  \ See: `scr`, `list-lines`, `lt`, `lm`, `lb`.
   \
   \ }doc
 
@@ -127,7 +127,7 @@ need .line need nuf? need list-line need ?leave
   \ spaces). If _name_ can not be found, throw exception #-286
   \ ("not located").
   \
-  \ See also: `locate`, `list`.
+  \ See: `locate`, `list`.
   \
   \ }doc
 
@@ -186,7 +186,7 @@ need .index need contains need nuf? need ?leave
   \ a title, as long as the string _name_ is included in the
   \ line. The string comparison is case-sensitive.
   \
-  \ See also: `index`, `index-ilike`.
+  \ See: `index`, `index-ilike`.
   \
   \ }doc
 
@@ -209,7 +209,7 @@ need .index need contains need nuf? need ?leave
   \ a title, as long as the string _name_ is included in the
   \ line. The string comparison is case-insensitive.
   \
-  \ See also: `index`, `index-like`.
+  \ See: `index`, `index-like`.
   \
   \ }doc
 
@@ -241,7 +241,7 @@ need .line# need /line# need .block# need /block#
   \ depends on the columns (32, 42, 64...) of the current
   \ screen mode.
   \
-  \ See also: `qx`, `/qx-column`.
+  \ See: `qx`, `/qx-column`.
   \
   \ }doc
 
@@ -254,7 +254,7 @@ need .line# need /line# need .block# need /block#
   \ _n_ is the width of a column of the quick index. It depends
   \ on the columns (32, 42, 64...) of the current screen mode.
   \
-  \ See also: `qx`, `qx-columns`.
+  \ See: `qx`, `qx-columns`.
   \
   \ }doc
 
@@ -268,7 +268,7 @@ need .line# need /line# need .block# need /block#
   \ It depends on the rows and columns of the current screen
   \ mode.
   \
-  \ See also: `qx`.
+  \ See: `qx`.
   \
   \ }doc
 
@@ -282,7 +282,7 @@ need .line# need /line# need .block# need /block#
   \ Blocks to be included in the quick index, from block _u2_
   \ to block _u1-1_. They depend on `scr`.
   \
-  \ See also: `qx`.
+  \ See: `qx`.
   \
   \ }doc
 
@@ -342,7 +342,7 @@ need .line# need /line# need .block# need /block#
   \
   \ Origin: Gforth's ``blocked`` editor.
   \
-  \ See also: `nx`, `px`.
+  \ See: `nx`, `px`.
   \
   \ }doc
 
@@ -355,7 +355,7 @@ need .line# need /line# need .block# need /block#
   \
   \ Give next quick index, calculated from `scr`.
   \
-  \ See also: `qx`, `px`.
+  \ See: `qx`, `px`.
   \
   \ }doc
 
@@ -367,7 +367,7 @@ need .line# need /line# need .block# need /block#
   \
   \ Give previous quick index, calculated from `scr`.
   \
-  \ See also: `qx`, `nx`.
+  \ See: `qx`, `nx`.
   \
   \ }doc
 
@@ -383,7 +383,7 @@ need list-lines
   \
   \ List top half of screen hold in `scr`.
   \
-  \ See also: `lm`, `lb`, `list`, `list-lines`.
+  \ See: `lm`, `lb`, `list`, `list-lines`.
   \
   \ }doc
 
@@ -396,7 +396,7 @@ need list-lines
   \
   \ List middle part of screen hold in `scr`.
   \
-  \ See also: `lt`, `lb`, `list`, `list-lines`.
+  \ See: `lt`, `lb`, `list`, `list-lines`.
   \
   \ }doc
 
@@ -409,7 +409,7 @@ need list-lines
   \
   \ List bottom half of screen hold in `scr`.
   \
-  \ See also: `lt`, `lm`, `list`, `list-lines`.
+  \ See: `lt`, `lm`, `list`, `list-lines`.
   \
   \ }doc
 

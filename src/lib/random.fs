@@ -40,7 +40,7 @@
   \
   \ Return a random number _u_.
   \
-  \ See also: `random`, `random-range`, `fast-rnd`.
+  \ See: `random`, `random-range`, `fast-rnd`.
   \
   \ }doc
 
@@ -52,7 +52,7 @@
   \
   \ Return a random number _n2_ from 0 to _n1_ minus 1.
   \
-  \ See also: `rnd`, `random-range`, `fast-random`.
+  \ See: `rnd`, `random-range`, `fast-random`.
   \
   \ }doc
 
@@ -75,7 +75,7 @@
   \
   \ Return a random number from _n1_ (min) to _n2_ (max).
   \
-  \ See also: `random`.
+  \ See: `random`.
   \
   \ }doc
 
@@ -115,7 +115,7 @@ code fast-rnd ( -- u )
   \ that has a cycle of 65536 (so it will hit every single
   \ number): ``f(n+1)=241f(n)+257``.
   \
-  \ See also: `fast-random`, `rnd`.
+  \ See: `fast-random`, `rnd`.
   \
   \ }doc
 
@@ -129,7 +129,7 @@ code fast-rnd ( -- u )
   \
   \ Return a random number _n2_ from 0 to _n1_ minus 1.
   \
-  \ See also: `fast-rnd`, `random`.
+  \ See: `fast-rnd`, `random`.
   \
   \ }doc
 
@@ -227,7 +227,7 @@ code crnd ( -- b )
   \
   \ Return a random 8-bit number _b_ (0..255).
   \
-  \ See also: `crandom`, `rnd`.
+  \ See: `crandom`, `rnd`.
   \
   \ }doc
 
@@ -251,7 +251,7 @@ code crnd ( -- b )
   \
   \ Return a random number: -1 or 1.
   \
-  \ See also: `-1..1`, `rnd`, `fast-random`.
+  \ See: `-1..1`, `rnd`, `fast-random`.
   \
   \ }doc
 
@@ -264,7 +264,7 @@ code crnd ( -- b )
   \
   \ Return a random number: -1, 0 or 1.
   \
-  \ See also: `-1|1`, `rnd`, `fast-random`.
+  \ See: `-1|1`, `rnd`, `fast-random`.
   \
   \ }doc
 
@@ -277,7 +277,7 @@ code crnd ( -- b )
   \
   \ Set the seed used by `fast-rnd` and `fast-random` to _n_.
   \
-  \ See also: `randomize0`.
+  \ See: `randomize0`.
   \
   \ }doc
 
@@ -293,7 +293,7 @@ code crnd ( -- b )
   \ Set the seed used by `fast-rnd` and `fast-random` to _n_;
   \ if _n_ is zero use the system frames counter instead.
   \
-  \ See also: `randomize`.
+  \ See: `randomize`.
   \
   \ }doc
 

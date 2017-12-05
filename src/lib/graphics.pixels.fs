@@ -47,7 +47,7 @@ defer gxy>scra_ ( -- a )
   \ alternative to the PIXEL-ADD ROM routine ($22AA), to let
   \ the range of the y coordinate be 0..191 instead of 0..175.
   \
-  \ See also: `gxy176>scra_`, `xy>scra_`.
+  \ See: `gxy176>scra_`, `xy>scra_`.
   \
   \ }doc
 
@@ -85,7 +85,7 @@ create slow-gxy>scra_ ( -- a ) asm
   \ - A = position of the pixel in the byte address (0..7),
   \       note: position 0=bit 7, position 7=bit 0.
 
-  \ See also: `gxy176>scra_`.
+  \ See: `gxy176>scra_`.
   \
   \ }doc
 
@@ -153,7 +153,7 @@ create fast-gxy>scra_ ( -- a ) asm
   \ - A = position of the pixel in the byte address (0..7),
   \       note: position 0=bit 7, position 7=bit 0.
 
-  \ See also: `gxy176>scra_`.
+  \ See: `gxy176>scra_`.
   \
   \ }doc
 
@@ -188,7 +188,7 @@ create gxy176>scra_ ( -- a ) asm
   \ - A = position of the pixel in the byte address (0..7),
   \       note: position 0=bit 7, position 7=bit 0.
 
-  \ See also: `gxy176>scra`, `gxy>scra_`.
+  \ See: `gxy176>scra`, `gxy>scra_`.
   \
   \ }doc
 
@@ -218,7 +218,7 @@ code gxy176>scra ( gx gy -- n a )
   \ Return screen address _a_ and pixel position _n_ (0..7) of
   \ pixel coordinates _gx_ (0..255) and _gy_ (0..175).
   \
-  \ See also: `gxy176>scra_`, `gxy>scra`, `xy>scra`.
+  \ See: `gxy176>scra_`, `gxy>scra`, `xy>scra`.
   \
   \ }doc
 
@@ -247,7 +247,7 @@ code gxy>scra ( gx gy -- n a )
   \ Return screen address _a_ and pixel position _n_ (0..7) of
   \ pixel coordinates _gx_ (0..255) and _gy_ (0..191).
   \
-  \ See also: `gxy>scra_`, `gxy176>scra`, `xy>scra`.
+  \ See: `gxy>scra_`, `gxy176>scra`, `xy>scra`.
   \
   \ }doc
 
@@ -280,7 +280,7 @@ code plot ( gx gy -- )
   \ current graphic coordinates.  _gx_ is 0..255; _gy_ is
   \ 0..191.
   \
-  \ See also: `set-pixel`, `plot176`, `xy>gxy`.
+  \ See: `set-pixel`, `plot176`, `xy>gxy`.
   \
   \ }doc
 
@@ -314,7 +314,7 @@ code plot176 ( gx gy -- )
   \ WARNING: If parameters are out of range, the ROM will throw
   \ a BASIC error, and the system will crash.
   \
-  \ See also: `set-pixel176`, `plot`, `xy>gxy176`.
+  \ See: `set-pixel176`, `plot`, `xy>gxy176`.
   \
   \ }doc
 
@@ -345,7 +345,7 @@ code set-pixel ( gx gy -- )
   \ the current graphic coordinates.  _gx_ is 0..255; _gy_ is
   \ 0..191.
   \
-  \ See also:  `plot`, `plot176`, `reset-pixel`,
+  \ See:  `plot`, `plot176`, `reset-pixel`,
   \ `toggle-pixel`, `xy>gxy`.
   \
   \ }doc
@@ -376,7 +376,7 @@ code set-pixel176 ( gx gy -- )
   \ pixel rows of the screen (the lower 16 pixel rows are not
   \ used).  _gx_ is 0..255; _gy_ is 0..175.
   \
-  \ See also:  `set-save-pixel176`, `set-pixel`, `plot`,
+  \ See:  `set-save-pixel176`, `set-pixel`, `plot`,
   \ `plot176`, `reset-pixel`, `toggle-pixel`, `reset-pixel176`,
   \ `toggle-pixel176`, `xy>gxy176`.
   \
@@ -412,7 +412,7 @@ code set-save-pixel176 ( gx gy -- )
   \ 0..175.  ``set-save-pixel176`` updates the graphic
   \ coordinates (contrary to `set-pixel176`).
   \
-  \ See also:  `set-pixel`, `plot`, `plot176`, `reset-pixel`,
+  \ See:  `set-pixel`, `plot`, `plot176`, `reset-pixel`,
   \ `toggle-pixel`, `reset-pixel176`, `toggle-pixel176`.
   \
   \ }doc
@@ -443,7 +443,7 @@ code reset-pixel ( gx gy -- )
   \ or the current graphic coordinates.  _gx_ is 0..255; _gy_
   \ is 0..191.
   \
-  \ See also: `set-pixel`, `toggle-pixel`, `reset-pixel176`.
+  \ See: `set-pixel`, `toggle-pixel`, `reset-pixel176`.
   \
   \ }doc
 
@@ -472,7 +472,7 @@ code reset-pixel176 ( gx gy -- )
   \ pixel rows of the screen (the lower 16 pixel rows are not
   \ used).  _gx_ is 0..255; _gy_ is 0..175.
   \
-  \ See also: `set-pixel176`, `toggle-pixel176`, `reset-pixel`,
+  \ See: `set-pixel176`, `toggle-pixel176`, `reset-pixel`,
   \ `set-pixel`, `toggle-pixel`, `plot`, `plot176`.
   \
   \ }doc
@@ -503,7 +503,7 @@ code toggle-pixel ( gx gy -- )
   \ or the current graphic coordinates.  _gx_ is 0..255; _gy_
   \ is 0..191.
   \
-  \ See also: `set-pixel`, `reset-pixel`, `toggle-pixel176`,
+  \ See: `set-pixel`, `reset-pixel`, `toggle-pixel176`,
   \ `set-pixel176`, `reset-pixel176`, `plot`, `plot176`.
   \
   \ }doc
@@ -533,7 +533,7 @@ code toggle-pixel176 ( gx gy -- )
   \ 176 pixel rows of the screen (the lower 16 pixel rows are
   \ not used).  _gx_ is 0..255; _gy_ is 0..175.
   \
-  \ See also: `toggle-pixel`, `set-pixel`, `reset-pixel`,
+  \ See: `toggle-pixel`, `set-pixel`, `reset-pixel`,
   \ `set-pixel176`, `reset-pixel176`, `plot`, `plot176`.
   \
   \ }doc
@@ -574,7 +574,7 @@ code get-pixel176 ( gx gy -- f )
   \ This is a deferred word set by `fast-pixels` or
   \ `slow-pixels`.
   \
-  \ See also: `bits`.
+  \ See: `bits`.
   \
   \ }doc
 
@@ -627,7 +627,7 @@ code fast-pixels ( -- n )
   \ Return the number _n_ of pixels set on the screen.
   \ This is the default action of `pixels`.
   \
-  \ See also: `slow-pixels`, `bits`.
+  \ See: `slow-pixels`, `bits`.
   \
   \ }doc
 
@@ -648,7 +648,7 @@ code fast-pixels ( -- n )
   \ `pixels`. ``slow-pixels`` simply executes `bits` with the
   \ screen address and length on the stack.
   \
-  \ See also: `fast-pixels`.
+  \ See: `fast-pixels`.
   \
   \ }doc
 
@@ -709,7 +709,7 @@ code scra>attra ( a1 -- a2 )
   \
   \ Convert column _x_ to graphic x coordinate _gx_.
   \
-  \ See also: `y>gy`, `gx>x`.
+  \ See: `y>gy`, `gx>x`.
   \
   \ }doc
 
@@ -723,7 +723,7 @@ code scra>attra ( a1 -- a2 )
   \
   \ Convert row _y_ to graphic y coordinate _gy_.
   \
-  \ See also: `x>gx`, `gy>y`.
+  \ See: `x>gx`, `gy>y`.
   \
   \ }doc
 
@@ -735,7 +735,7 @@ code scra>attra ( a1 -- a2 )
   \
   \ Convert graphic x coordinate _gx_ to column _x_.
   \
-  \ See also: `gy>y`, `x>gx`.
+  \ See: `gy>y`, `x>gx`.
   \
   \ }doc
 
@@ -747,7 +747,7 @@ code scra>attra ( a1 -- a2 )
   \
   \ Convert graphic y coordinate _gy_ to row _y_.
   \
-  \ See also: `gx>x`, `y>gy`.
+  \ See: `gx>x`, `y>gy`.
   \
   \ }doc
 

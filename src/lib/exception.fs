@@ -35,7 +35,7 @@
   \ If not compiling, `throw` exception #-14 ("interpreting a
   \ compile-only word").
   \
-  \ See also: `compile-only`, `?executing`.
+  \ See: `compile-only`, `?executing`.
   \
   \ }doc
 
@@ -49,7 +49,7 @@
   \ If not executing, `throw` exception #-263 ("execution
   \ only").
   \
-  \ See also: `?compiling`.
+  \ See: `?compiling`.
   \
   \ }doc
 
@@ -78,7 +78,7 @@
   \ ``(abort")`` is the run-time procedure compiled by
   \ `abort"`.
   \
-  \ See also: `throw`.
+  \ See: `throw`.
   \
   \ }doc
 
@@ -102,7 +102,7 @@
   \ Word Set), Forth-94 (EXCEPTION EXT), Forth-2012 (EXCEPTION
   \ EXT).
   \
-  \ See also: `abort-message`, `abort`, `throw`, `warning"`.
+  \ See: `abort-message`, `abort`, `throw`, `warning"`.
   \
   \ }doc
 
@@ -175,7 +175,7 @@
   \ +n2 =  1..146
   \ ----
 
-  \ See also: `error>line`.
+  \ See: `error>line`.
   \
   \ }doc
 
@@ -190,7 +190,7 @@
   \ Convert error code _-n1_ to line _n2_ relative to the block
   \ that contains the error messages.
   \
-  \ See also: `error>ordinal`.
+  \ See: `error>ordinal`.
   \
   \ }doc
 
@@ -206,7 +206,7 @@ s" Standard error codes" located errors-block !
   \ A variable. _a_ is the address of a cell containing the
   \ block that holds the error messages.
   \
-  \ See also: `.throw-message`.
+  \ See: `.throw-message`.
   \
   \ }doc
 
@@ -227,7 +227,7 @@ s" Standard error codes" located errors-block !
   \ messages are hold. If `errors-block` contains zero, only
   \ the error number is displayed.
   \
-  \ See also: `error>line`.
+  \ See: `error>line`.
   \
   \ }doc
 
@@ -266,7 +266,7 @@ s" Standard error codes" located errors-block !
   \
   \ Origin: Forth-94 (EXCEPTION), Forth-2012 (EXCEPTION).
   \
-  \ See also: `catcher`.
+  \ See: `catcher`.
   \
   \ }doc
 

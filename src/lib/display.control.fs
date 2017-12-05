@@ -34,7 +34,7 @@
   \
   \ Select the printer as output.
   \
-  \ See also: `display`, `printing`.
+  \ See: `display`, `printing`.
   \
   \ }doc
 
@@ -86,7 +86,7 @@ variable /tabulate  8 /tabulate !
   \ A character constant that returns the caracter code used as
   \ tabulator (6).
   \
-  \ See also: `tab`, `'cr'`, `'bs'`.
+  \ See: `tab`, `'cr'`, `'bs'`.
   \
   \ }doc
 
@@ -99,7 +99,7 @@ variable /tabulate  8 /tabulate !
   \ A character constant that returns the caracter code used as
   \ backspace (8).
   \
-  \ See also: `'cr'`, `'tab'`.
+  \ See: `'cr'`, `'tab'`.
   \
   \ }doc
 
@@ -112,7 +112,7 @@ variable /tabulate  8 /tabulate !
   \ A character constant that returns the caracter code used as
   \ carriage return (13).
   \
-  \ See also: `cr`, `crs`.
+  \ See: `cr`, `crs`.
   \
   \ }doc
 
@@ -127,7 +127,7 @@ variable /tabulate  8 /tabulate !
   \ character displayed will appear at the next 16-character
   \ column.
   \
-  \ See also: `tabulate`.
+  \ See: `tabulate`.
   \
   \ }doc
 
@@ -140,7 +140,7 @@ variable /tabulate  8 /tabulate !
   \
   \ Emit a backspace character (character code 8).
   \
-  \ See also: `'bs'`.
+  \ See: `'bs'`.
   \
   \ }doc
 
@@ -153,7 +153,7 @@ variable /tabulate  8 /tabulate !
   \
   \ Emit _n_ number of cr characters (character code 13).
   \
-  \ See also: `cr`, `'cr'`.
+  \ See: `cr`, `'cr'`.
   \
   \ }doc
 
@@ -166,7 +166,7 @@ variable /tabulate  8 /tabulate !
   \
   \ Emit _n_ number of tab characters (character code 6).
   \
-  \ See also: `tab`, `'tab'`.
+  \ See: `tab`, `'tab'`.
   \
   \ }doc
 
@@ -179,7 +179,7 @@ variable /tabulate  8 /tabulate !
   \
   \ Emit _n_ number of backspace characters (character code 8).
   \
-  \ See also: `backspace`, `'bs'`.
+  \ See: `backspace`, `'bs'`.
   \
   \ }doc
 

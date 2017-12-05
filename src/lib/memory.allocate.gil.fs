@@ -171,7 +171,7 @@ wordlist dup constant gil-heap-wordlist dup set-current >order
   \ memory `heap` implementation based on code written by
   \ Javier Gil, whose words are defined in `gil-heap-wordlist`.
   \
-  \ See also: `gil-allocate`, `gil-free`.
+  \ See: `gil-allocate`, `gil-free`.
   \
   \ }doc
 
@@ -197,7 +197,7 @@ wordlist dup constant gil-heap-wordlist dup set-current >order
   \ implementation based on written code written by Javier Gil,
   \ whose words are defined in `gil-heap-wordlist`.
   \
-  \ See also: `gil-free`.
+  \ See: `gil-free`.
   \
   \ }doc
 

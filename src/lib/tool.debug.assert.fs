@@ -90,7 +90,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \
   \ Origin: Gforth.
   \
-  \ See also: `assert(`.
+  \ See: `assert(`.
   \
   \ }doc
 
@@ -108,7 +108,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \
   \ Origin: Gforth.
   \
-  \ See also: `assert(`.
+  \ See: `assert(`.
   \
   \ }doc
 
@@ -125,7 +125,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \
   \ Origin: Gforth.
   \
-  \ See also: `assert-level`, `assert(`, `assert1(`, `assert2(`,
+  \ See: `assert-level`, `assert(`, `assert1(`, `assert2(`,
   \ assert3(`, `)`.
   \
   \ }doc
@@ -143,7 +143,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \
   \ Origin: Gforth.
   \
-  \ See also: `assert-level`, `assert(`, `assert0(`, `assert2(`,
+  \ See: `assert-level`, `assert(`, `assert0(`, `assert2(`,
   \ assert3(`, `)`.
   \
   \ }doc
@@ -160,7 +160,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \
   \ Origin: Gforth.
   \
-  \ See also: `assert-level`, `assert(`, `assert0(`, `assert1(`,
+  \ See: `assert-level`, `assert(`, `assert0(`, `assert1(`,
   \ assert3(`, `)`.
   \
   \ }doc
@@ -179,7 +179,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \
   \ Origin: Gforth.
   \
-  \ See also: `assert-level`, `assert(`, `assert0(`, `assert1(`,
+  \ See: `assert-level`, `assert(`, `assert0(`, `assert1(`,
   \ `assert2(`, `)`.
   \
   \ }doc
@@ -197,7 +197,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \
   \ Origin: Gforth.
   \
-  \ See also: `assert-level`, `assert0(`, `assert1(`,
+  \ See: `assert-level`, `assert0(`, `assert1(`,
   \ `assert2(`, assert3(`, `)`.
   \
   \ }doc

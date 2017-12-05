@@ -58,7 +58,7 @@
   \
   \ Return address _a_ of element _n_.
   \
-  \ See also: `2avariable`, `cavariable`, `faravariable`.
+  \ See: `2avariable`, `cavariable`, `faravariable`.
   \
   \ }doc
 
@@ -82,7 +82,7 @@
   \
   \ Return address _a_ of element _n_.
   \
-  \ See also: `avariable`, `cavariable`, `far2avariable`.
+  \ See: `avariable`, `cavariable`, `far2avariable`.
   \
   \ }doc
 
@@ -105,7 +105,7 @@
   \
   \ Return address _ca_ of element _n_.
   \
-  \ See also: `avariable`, `2avariable`, `farcavariable`.
+  \ See: `avariable`, `2avariable`, `farcavariable`.
   \
   \ }doc
 

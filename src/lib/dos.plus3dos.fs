@@ -34,7 +34,7 @@
   \ Return the maximum length of a +3DOS filename, including
   \ drive, user area and filename extension.
   \
-  \ See also: `/base-filename`, `>filename`.
+  \ See: `/base-filename`, `>filename`.
   \
   \ }doc
 
@@ -47,7 +47,7 @@
   \ Return the maximum length of a +3DOS base filename, i.e.,
   \ a filename without drive, user area and extension.
   \
-  \ See also: `/filename-ext`, `/filename`, `>filename`.
+  \ See: `/filename-ext`, `/filename`, `>filename`.
   \
   \ }doc
 
@@ -60,7 +60,7 @@
   \ Return the maximum length of a +3DOS filename extension
   \ excluding the dot.
   \
-  \ See also: `/filename`, `/base-filename`.
+  \ See: `/filename`, `/base-filename`.
   \
   \ }doc
 
@@ -78,7 +78,7 @@
   \ Convert the filename _ca1 len1_ to a $FF-terminated string
   \ at _ca2_ in the `stringer`.
   \
-  \ See also: `/filename`.
+  \ See: `/filename`.
   \
   \ }doc
 
@@ -130,7 +130,7 @@ code (rename-file ( ca1 ca2 -- ior )
   \
   \ Origin: Forth-94 (FILE EXT), Forth-2012 (FILE EXT).
   \
-  \ See also: `(rename-file`.
+  \ See: `(rename-file`.
   \
   \ }doc
 
@@ -173,7 +173,7 @@ code get-1346 ( -- n1 n2 n3 n4 )
   \ _n4_ :: number of RAM disk sector buffers
 
   \
-  \ See also: `set-1346`.
+  \ See: `set-1346`.
   \
   \ }doc
 
@@ -212,7 +212,7 @@ code set-1346 ( n1 n2 n3 n4 -- )
   \ _n4_ :: number of RAM disk sector buffers
 
   \
-  \ See also: `dos-get-1346`.
+  \ See: `dos-get-1346`.
   \
   \ }doc
 
@@ -262,7 +262,7 @@ code (delete-file ( ca -- ior )
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
-  \ See also: `(delete-file`.
+  \ See: `(delete-file`.
   \
   \ }doc
 
@@ -464,7 +464,7 @@ code (close-file ( fid -- ior )
   \ Close the file identified by _fid_ and return error result
   \ _ior_.
   \
-  \ See also: `(close-file`.
+  \ See: `(close-file`.
   \
   \ }doc
 
@@ -496,7 +496,7 @@ code file-position ( fid -- ud ior )
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
-  \ See also: `reposition-file`, `open-file`, `create-file`.
+  \ See: `reposition-file`, `open-file`, `create-file`.
   \
   \ }doc
 
@@ -525,7 +525,7 @@ code reposition-file ( ud fid -- ior )
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
-  \ See also: `file-position`, `open-file`, `create-file`.
+  \ See: `file-position`, `open-file`, `create-file`.
   \
   \ }doc
 
@@ -542,7 +542,7 @@ need >filename need /base-filename need /filename-ext
   \ Return size _n_, in bytes, of every entry of the
   \ `cat-buffer` used by `cat`.
   \
-  \ See also: `cat-entries`.
+  \ See: `cat-entries`.
   \
   \ }doc
 
@@ -556,7 +556,7 @@ create cat-entries 16 c,
   \ (minimum 2) of the `cat-buffer`, and used by `(cat`.  Its
   \ default value is 16.
   \
-  \ See also: `/cat-entry`.
+  \ See: `/cat-entry`.
   \
   \ }doc
 
@@ -572,7 +572,7 @@ defer cat-buffer ' pad ' cat-buffer defer!
   \
   \ WARNING: By default, ``cat-buffer`` executes `pad`.
   \
-  \ See also: `cat-entries`, `/cat-entry`.
+  \ See: `cat-entries`, `/cat-entry`.
   \
   \ }doc
 
@@ -587,7 +587,7 @@ defer cat-buffer ' pad ' cat-buffer defer!
   \ _ca_. A dot separator is printed first, which is not
   \ included in the string at _ca_.
   \
-  \ See also: `.filename`.
+  \ See: `.filename`.
   \
   \ }doc
 
@@ -605,7 +605,7 @@ defer cat-buffer ' pad ' cat-buffer defer!
   \ filename from the filename extension is not included in the
   \ string at _ca_, but it's printed.
   \
-  \ See also: `.filename-ext`.
+  \ See: `.filename-ext`.
   \
   \ }doc
 
@@ -619,7 +619,7 @@ defer cat-buffer ' pad ' cat-buffer defer!
   \
   \ Convert `cat-buffer` entry _n_ to its address _ca_.
   \
-  \ See also: `/cat-entry`.
+  \ See: `/cat-entry`.
   \
   \ }doc
 
@@ -635,7 +635,7 @@ variable full-cat  full-cat on
   \ Other values are not supported.
   \ The default value is _true_.
   \
-  \ See also: `>cat`.
+  \ See: `>cat`.
   \
   \ }doc
 
@@ -658,7 +658,7 @@ variable full-cat  full-cat on
   \ included (configurable by `full-cat`)
   \ _x_ (high byte) :: size of the buffer in entries, plus one (>=2)
 
-  \ See also: `wcat`, `cat`, `cat-entries`.
+  \ See: `wcat`, `cat`, `cat-entries`.
   \
   \ }doc
 
@@ -675,7 +675,7 @@ variable full-cat  full-cat on
   \
   \ ``more-cat`` is a factor of `wcat`.
   \
-  \ See also: `(cat`.
+  \ See: `(cat`.
   \
   \ }doc
 
@@ -690,7 +690,7 @@ variable full-cat  full-cat on
   \
   \ ``more-cat?`` is a factor of `wcat` and `wacat`.
   \
-  \ See also: `(cat`.
+  \ See: `(cat`.
   \
   \ }doc
 
@@ -731,7 +731,7 @@ code (cat ( ca1 ca2 x -- n ior )
   \ replaced by entry _n_ (task done by `more-cat`) to fetch
   \ the next part of the directory.
   \
-  \ See also: `cat-buffer`, `cat-entries`, `/cat-entry`.
+  \ See: `cat-buffer`, `cat-entries`, `/cat-entry`.
   \
   \ }doc
 
@@ -760,7 +760,7 @@ need (cat need 3dup need 3drop
   \
   \ ``.cat-entry`` is a factor of `.cat-entry#`.
   \
-  \ See also: `.cat`, `.filename`.
+  \ See: `.cat`, `.filename`.
   \
   \ }doc
 
@@ -774,7 +774,7 @@ need (cat need 3dup need 3drop
   \
   \ ``.cat`` is a factor of `wcat`.
   \
-  \ See also: `.cat-entry`, `.acat`.
+  \ See: `.cat-entry`, `.acat`.
   \
   \ }doc
 
@@ -790,7 +790,7 @@ need (cat need 3dup need 3drop
   \ Show a wild-card disk catalogue using the wild-card
   \ filename _ca len_.
   \
-  \ See also: `cat`, `wacat`, `(cat`, `more-cat`, `set-drive`.
+  \ See: `cat`, `wacat`, `(cat`, `more-cat`, `set-drive`.
   \
   \ }doc
 
@@ -802,7 +802,7 @@ need (cat need 3dup need 3drop
   \
   \ Show a disk catalogue of the current drive.
   \
-  \ See also: `wcat`, `acat`, `(cat`, `set-drive`.
+  \ See: `wcat`, `acat`, `(cat`, `set-drive`.
   \
   \ }doc
 
@@ -821,7 +821,7 @@ need (cat need tab need 3dup need 3drop
   \
   \ ``.acat`` is a factor of `wacat`.
   \
-  \ See also: `.filename`, `.cat`.
+  \ See: `.filename`, `.cat`.
   \
   \ }doc
 
@@ -837,7 +837,7 @@ need (cat need tab need 3dup need 3drop
   \ Show an abbreviated wild-card disk catalogue using the
   \ wild-card filename _ca len_.
   \
-  \ See also: `acat`, `wcat`, `(cat`, `more-cat`, `set-drive`.
+  \ See: `acat`, `wcat`, `(cat`, `more-cat`, `set-drive`.
   \
   \ }doc
 
@@ -849,7 +849,7 @@ need (cat need tab need 3dup need 3drop
   \
   \ Show an abbreviated disk catalogue of the current drive.
   \
-  \ See also: `wacat`, `cat`, `(cat`, `set-drive`.
+  \ See: `wacat`, `cat`, `(cat`, `set-drive`.
   \
   \ }doc
 

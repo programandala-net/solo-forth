@@ -71,7 +71,7 @@ here ] ( R: a x -- ) 2r> swap ! exit [
   \ v ?  \ default value
   \ ----
   \
-  \ See also: `arguments`, `anon`.
+  \ See: `arguments`, `anon`.
   \
   \ }doc
 

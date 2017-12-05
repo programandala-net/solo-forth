@@ -54,7 +54,7 @@
   \ _n_ is the size in address units of a floating-point
   \ number.
   \
-  \ See also: `floats`, `float+`, `float-`.
+  \ See: `floats`, `float+`, `float-`.
   \
   \ }doc
 
@@ -67,7 +67,7 @@
   \ Add the size in address units of a floating-point number to
   \ _fa1_, giving _fa2_.
   \
-  \ See also: `float-`, `float`, `floats`.
+  \ See: `float-`, `float`, `floats`.
   \
   \ }doc
 
@@ -80,7 +80,7 @@
   \ Subtract the size in address units of a floating-point
   \ number from _fa1_, giving _fa2_.
   \
-  \ See also: `float+`, `float`, `floats`.
+  \ See: `float+`, `float`, `floats`.
   \
   \ }doc
 
@@ -93,7 +93,7 @@
   \ _n2_ is the size in address units of _n1_ floating-point
   \ numbers.
   \
-  \ See also: `float`, `float+`, `float-`.
+  \ See: `float`, `float+`, `float-`.
   \
   \ }doc
 
@@ -114,7 +114,7 @@ need float need float-
   \ NOTE: The floating-point stack (which is the OS calculator
   \ stack) grows towards higher memory.
   \
-  \ See also: `fp`.
+  \ See: `fp`.
   \
   \ }doc
 
@@ -131,7 +131,7 @@ need float need float-
   \ stack) grows towards higher memory, and ``fp`` points to
   \ the first free position, therefore above top of stack.
   \
-  \ See also: `fp@`, `fp0`.
+  \ See: `fp@`, `fp0`.
   \
   \ }doc
 
@@ -144,7 +144,7 @@ need float need float-
   \ _fa_ is the address above the top of the floating-point
   \ stack. ``(fp@``  is a factor of `fp@`.
   \
-  \ See also: `fp`.
+  \ See: `fp`.
   \
   \ }doc
 
@@ -156,7 +156,7 @@ need float need float-
   \
   \ _fa_ is the address of the top of the floating-point stack.
   \
-  \ See also: `fp`.
+  \ See: `fp`.
   \
   \ }doc
 
@@ -182,7 +182,7 @@ need float need float-
   \
   \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
   \
-  \ See also: `fp0`, `(fp@` ,`float`, `depth`, `rdepth`.
+  \ See: `fp0`, `(fp@` ,`float`, `depth`, `rdepth`.
   \
   \ }doc
 
@@ -220,7 +220,7 @@ macro end-calculator-flag ( -- f ) ( F: 1|0 -- )
   \ ``end-calculator-flag`` is a common factor of all
   \ floating-point logical operators.
   \
-  \ See also: `calculator-command`.
+  \ See: `calculator-command`.
   \
   \ }doc
 
@@ -246,7 +246,7 @@ need calculator
   \ Compile the assembly instructions needed to execute the
   \ _b_ command of the ROM calculator.
   \
-  \ See also: `end-calculator-flag`.
+  \ See: `end-calculator-flag`.
   \
   \ }doc
 
@@ -381,7 +381,7 @@ here ' f== ,
   \
   \ Origin: Forth-94 (FLOATING EXT), Forth-2012 (FLOATING EXT).
   \
-  \ See also: `f~rel`.
+  \ See: `f~rel`.
   \
   \ }doc
 
@@ -838,7 +838,7 @@ code floor ( F: r1 -- r2 )
   \
   \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
   \
-  \ See also: `ftrunc`, `fround`.
+  \ See: `ftrunc`, `fround`.
   \
   \ }doc
 
@@ -855,7 +855,7 @@ code ftrunc ( F: r1 -- r2 )
   \
   \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
   \
-  \ See also: `fround` ,`floor`.
+  \ See: `fround` ,`floor`.
   \
   \ }doc
 
@@ -881,7 +881,7 @@ code ftrunc ( F: r1 -- r2 )
   \
   \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
   \
-  \ See also: `ftrunc`, `floor`.
+  \ See: `ftrunc`, `floor`.
   \
   \ }doc
 
@@ -902,7 +902,7 @@ code ftrunc ( F: r1 -- r2 )
   \
   \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
   \
-  \ See also: `faligned`, `sfalign`, `dfalign`, `float`.
+  \ See: `faligned`, `sfalign`, `dfalign`, `float`.
   \
   \ }doc
 
@@ -921,7 +921,7 @@ code ftrunc ( F: r1 -- r2 )
   \
   \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
   \
-  \ See also: `falign`, `sfaligned`, `dfaligned`, `float`.
+  \ See: `falign`, `sfaligned`, `dfaligned`, `float`.
   \
   \ }doc
 
@@ -940,7 +940,7 @@ code ftrunc ( F: r1 -- r2 )
   \
   \ Origin: Forth-94 (FLOATING EXT), Forth-2012 (FLOATING EXT).
   \
-  \ See also: `sfaligned`, `falign`, `dfalign`, `float`.
+  \ See: `sfaligned`, `falign`, `dfalign`, `float`.
   \
   \ }doc
 
@@ -959,7 +959,7 @@ code ftrunc ( F: r1 -- r2 )
   \
   \ Origin: Forth-94 (FLOATING EXT), Forth-2012 (FLOATING EXT).
   \
-  \ See also: `sfalign`, `faligned`, `dfaligned`, `float`.
+  \ See: `sfalign`, `faligned`, `dfaligned`, `float`.
   \
   \ }doc
 
@@ -978,7 +978,7 @@ code ftrunc ( F: r1 -- r2 )
   \
   \ Origin: Forth-94 (FLOATING EXT), Forth-2012 (FLOATING EXT).
   \
-  \ See also: `dfaligned`, `falign`, `sfalign`, `float`.
+  \ See: `dfaligned`, `falign`, `sfalign`, `float`.
   \
   \ }doc
 
@@ -997,7 +997,7 @@ code ftrunc ( F: r1 -- r2 )
   \
   \ Origin: Forth-94 (FLOATING EXT), Forth-2012 (FLOATING EXT).
   \
-  \ See also: `dfalign`, `faligned`, `sfaligned`, `float`.
+  \ See: `dfalign`, `faligned`, `sfaligned`, `float`.
   \
   \ }doc
 

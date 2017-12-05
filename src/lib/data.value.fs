@@ -36,7 +36,7 @@
   \ _name_ is later executed, _c_ will be placed on the stack.
   \ `to` can be used to assign a new value to _name_.
   \
-  \ See also: `value`, `2value`, `cconstant`, `cvariable`.
+  \ See: `value`, `2value`, `cconstant`, `cvariable`.
   \
   \ }doc
 
@@ -53,7 +53,7 @@
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See also: `cvalue`, `2value`, `constant`, `variable`.
+  \ See: `cvalue`, `2value`, `constant`, `variable`.
   \
   \ }doc
 
@@ -70,7 +70,7 @@
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See also: `cvalue`, `value`, `2constant`, `2variable`.
+  \ See: `cvalue`, `value`, `2constant`, `2variable`.
   \
   \ }doc
 

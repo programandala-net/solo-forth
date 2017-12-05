@@ -713,7 +713,7 @@ variable mode-42rt-font  rom-font bl 8 * + mode-42rt-font !
   \ is the order used also in `mode-32` and `mode-32iso`, but
   \ not in `mode-64o`.
   \
-  \ See also: `current-mode`, `set-font`, `set-mode-output`,
+  \ See: `current-mode`, `set-font`, `set-mode-output`,
   \ `columns`, `rows`, `mode-42rt-emit`, `mode-42rt-xy`,
   \ `mode-42rt-font`, `>form`, `mode-42rt-output_`.
   \

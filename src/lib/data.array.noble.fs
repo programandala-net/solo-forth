@@ -131,7 +131,7 @@
   \ Define a 1-dimension array _name_ with _n1_ items of
   \ _n2_ address units each.
   \
-  \ See also: `}`, `array>items`, `2array`.
+  \ See: `}`, `array>items`, `2array`.
   \
   \ }doc
 
@@ -145,7 +145,7 @@
   \
   \ Convert address of array _a_ to its number of items _n_.
   \
-  \ See also: `1array`.
+  \ See: `1array`.
   \
   \ }doc
 
@@ -163,7 +163,7 @@
   \ 1-cell array _a1_.  Otherwise throw error #-272 (array
   \ index out of range).
   \
-  \ See also: `1array`, `array>items`.
+  \ See: `1array`, `array>items`.
   \
   \ }doc
 
@@ -179,7 +179,7 @@
   \ Define a 2-dimension array _name_ with _n1 x n2_ items of
   \ _n3_ address units each.
   \
-  \ See also: `}}`, `1array`.
+  \ See: `}}`, `1array`.
   \
   \ }doc
 
@@ -194,7 +194,7 @@
   \ Return address _a2_ of the _n1,n2_ item of the 2-dimension
   \ array _a1_.  Data  stored row-wise.
   \
-  \ See also: `2array`.
+  \ See: `2array`.
   \
   \ }doc
 

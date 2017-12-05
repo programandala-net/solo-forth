@@ -39,7 +39,7 @@ assembler-wordlist dup >order set-current need ?rel
   \ `rl#`.  ``rl-id`` is used as a bitmask added to the label
   \ number stored in `l-refs`.
   \
-  \ See also: `al-id`.
+  \ See: `al-id`.
   \
   \ }doc
 
@@ -51,7 +51,7 @@ assembler-wordlist dup >order set-current need ?rel
   \ `al#`.  ``rl-ad`` is used as a bitmask added to the label
   \ number stored in `l-refs`.
   \
-  \ See also: `rl-id`.
+  \ See: `rl-id`.
   \
   \ }doc
 
@@ -84,7 +84,7 @@ create max-labels 8 c,  create max-l-refs 16 c,
   \ max-labels c! \ restore the default value
   \ ----
 
-  \ See also: `max-l-refs`.
+  \ See: `max-l-refs`.
   \
   \ }doc
 
@@ -115,7 +115,7 @@ create max-labels 8 c,  create max-l-refs 16 c,
   \ max-l-refs c! \ restore the default value
   \ ----
 
-  \ See also: `max-labels`.
+  \ See: `max-labels`.
   \
   \ }doc
 
@@ -128,7 +128,7 @@ create max-labels 8 c,  create max-l-refs 16 c,
   \ _n_ is the size in bytes of each label reference stored in
   \ the `l-refs` table.
   \
-  \ See also: `/l-refs`.
+  \ See: `/l-refs`.
   \
   \ }doc
 
@@ -140,7 +140,7 @@ create max-labels 8 c,  create max-l-refs 16 c,
   \
   \ _n_ is the size in bytes of the `l-refs` table.
   \
-  \ See also: `max-l-refs`, `/l-ref`, `/labels`.
+  \ See: `max-l-refs`, `/l-ref`, `/labels`.
   \
   \ }doc
 
@@ -152,7 +152,7 @@ create max-labels 8 c,  create max-l-refs 16 c,
   \
   \ _n_ is the size in bytes of the `labels` table.
   \
-  \ See also: `max-labels`, `/l-refs`.
+  \ See: `max-labels`, `/l-refs`.
   \
   \ }doc
 
@@ -171,7 +171,7 @@ variable labels  variable l-refs
   \ contains either the address of the corresponding label or
   \ zero if the label is undefined.
   \
-  \ See also: `/labels`, `l-refs`.
+  \ See: `/labels`, `l-refs`.
   \
   \ }doc
 
@@ -231,7 +231,7 @@ init-labels ' init-labels ' init-asm defer!
   \ If assembler label _n_ is out of range, `throw` exception
   \ #-283.
   \
-  \ See also: `max-labels`.
+  \ See: `max-labels`.
   \
   \ }doc
 
@@ -273,7 +273,7 @@ init-labels ' init-labels ' init-asm defer!
   \
   \ Resolve an absolute reference at _orig_ to label _b_.
   \
-  \ See also: `resolve-rl#`, `(resolve-ref`, `>l`.
+  \ See: `resolve-rl#`, `(resolve-ref`, `>l`.
   \
   \ }doc
 
@@ -285,7 +285,7 @@ init-labels ' init-labels ' init-asm defer!
   \
   \ Resolve a relative reference at _orig_ to label _b_.
   \
-  \ See also: `resolve-al#`, `(resolve-ref`, `>l`.
+  \ See: `resolve-al#`, `(resolve-ref`, `>l`.
   \
   \ }doc
 
@@ -299,7 +299,7 @@ init-labels ' init-labels ' init-asm defer!
   \
   \ Resolve reference at _orig_ to label _b_.
   \
-  \ See also: `resolve-rl#`, `resolve-al#`.
+  \ See: `resolve-rl#`, `resolve-al#`.
   \
   \ }doc
 
@@ -397,7 +397,7 @@ init-labels ' init-labels ' init-asm defer!
   \ could have been created by `rl#` or `al#`. Usually _x_ is
   \ an address.
   \
-  \ See also: `l:`.
+  \ See: `l:`.
   \
   \ }doc
 
@@ -414,7 +414,7 @@ init-labels ' init-labels ' init-asm defer!
   \ references to it that could have been created by `rl#` or
   \ `al#`.
   \
-  \ See also: `l!`.
+  \ See: `l!`.
   \
   \ }doc
 

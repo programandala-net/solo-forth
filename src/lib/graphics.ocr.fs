@@ -41,7 +41,7 @@ variable ocr-charset  $3D00 ocr-charset !
   \ The configuration of `ocr`, including this variable, can be
   \ changed by `ascii-ocr` and `udg-ocr`.
   \
-  \ See also: `ocr-chars`, `ocr-first`.
+  \ See: `ocr-chars`, `ocr-first`.
   \
   \ }doc
 
@@ -59,7 +59,7 @@ create ocr-first bl c,
   \ The configuration of `ocr`, including this variable, can be
   \ changed by `ascii-ocr` and `udg-ocr`.
   \
-  \ See also: `ocr-chars`, `ocr-charset`.
+  \ See: `ocr-chars`, `ocr-charset`.
   \
   \ }doc
 
@@ -78,7 +78,7 @@ create ocr-chars 127 bl - c,
   \ The configuration of `ocr`, including this variable, can be
   \ changed by `ascii-ocr` and `udg-ocr`.
   \
-  \ See also: `ocr-first`, `ocr-charset`.
+  \ See: `ocr-first`, `ocr-charset`.
   \
   \ }doc
 
@@ -169,7 +169,7 @@ code ocr ( col line -- n )
   \ Note: The name `ocr` stands for "Optical Character
   \ Recognition".
   \
-  \ See also: `udg-ocr`, `ascii-ocr`.
+  \ See: `udg-ocr`, `ascii-ocr`.
   \
   \ }doc
 
@@ -188,7 +188,7 @@ code ocr ( col line -- n )
   \ Set `ocr` to work with the current ASCII charset, pointed
   \ by `os-chars`.
   \
-  \ See also: `ocr-charset`, `ocr-first`, `ocr-chars`,
+  \ See: `ocr-charset`, `ocr-first`, `ocr-chars`,
   \ `udg-ocr`, `set-font`.
   \
   \ }doc
@@ -205,7 +205,7 @@ code ocr ( col line -- n )
   \ Set `ocr` to work with the first _n_ chars of the current
   \ UDG set, pointed by `os-udg`.
   \
-  \ See also: `ocr-charset`, `ocr-first`, `ocr-chars`,
+  \ See: `ocr-charset`, `ocr-first`, `ocr-chars`,
   \ `ascii-ocr`, `set-udg`.
   \
   \ }doc

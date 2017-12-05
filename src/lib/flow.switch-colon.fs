@@ -94,7 +94,7 @@ need search-wordlist need nextname need >bstring
   \
   \ Execute the switch _switch_ for the key _x_.
   \
-  \ See also: `switch:`.
+  \ See: `switch:`.
   \
   \ }doc
 
@@ -109,7 +109,7 @@ need search-wordlist need nextname need >bstring
   \ Start the definition of a switch clause _x_ for switch
   \ _switch_.
   \
-  \ See also: `switch:`, `switch`.
+  \ See: `switch:`, `switch`.
   \
   \ }doc
 
@@ -128,7 +128,7 @@ need search-wordlist need nextname need >bstring
   \
   \ Execute the switch _switch_ for the key _c_.
   \
-  \ See also: `switch:`, `:cclause`.
+  \ See: `switch:`, `:cclause`.
   \
   \ }doc
 
@@ -143,7 +143,7 @@ need search-wordlist need nextname need >bstring
   \ Start the definition of a switch clause _c_ for switch
   \ _switch_.
   \
-  \ See also: `switch:`, `cswitch`.
+  \ See: `switch:`, `cswitch`.
   \
   \ }doc
 
@@ -160,7 +160,7 @@ need search-wordlist need nextname need 2>bstring
   \
   \ Execute the switch _switch_ for the key _xd_.
   \
-  \ See also: `switch:`, `:2clause`.
+  \ See: `switch:`, `:2clause`.
   \
   \ }doc
 
@@ -175,7 +175,7 @@ need search-wordlist need nextname need 2>bstring
   \ Start the definition of a switch clause _xd_ for switch
   \ _switch_.
   \
-  \ See also: `switch:`, `2switch`.
+  \ See: `switch:`, `2switch`.
   \
   \ }doc
 

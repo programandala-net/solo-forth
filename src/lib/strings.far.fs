@@ -66,7 +66,7 @@
   \ When _name_ is executed, it returns the string _ca len_ in
   \ far memory as _ca2 len_.
   \
-  \ See also: `far>sconstant`.
+  \ See: `far>sconstant`.
   \
   \ }doc
 
@@ -82,7 +82,7 @@
   \ Save the string _ca1 len1_, which is in far memory, to the
   \ `stringer` and return it as _ca2 len1_.
   \
-  \ See also: `>stringer`.
+  \ See: `>stringer`.
   \
   \ }doc
 
@@ -103,7 +103,7 @@ need farsconstant need far>stringer
   \ When _name_ is executed, it returns the string _ca len_ in
   \ the `stringer` as _ca2 len_.
   \
-  \ See also: `farsconstant`.
+  \ See: `farsconstant`.
   \
   \ }doc
 
@@ -186,7 +186,7 @@ need farsconstants, need array> need farsconstants>
   \ 3 digitname cr fartype cr
   \ ----
 
-  \ See also: `sconstants`, `far>sconstants`.
+  \ See: `sconstants`, `far>sconstants`.
   \
   \ }doc
 
@@ -229,7 +229,7 @@ need array> need farsconstants> need far>stringer
   \ 3 digitname cr type cr
   \ ----
 
-  \ See also: `sconstants`, `farsconstants`.
+  \ See: `sconstants`, `farsconstants`.
   \
   \ }doc
 
@@ -278,7 +278,7 @@ code faruppers ( ca len -- )
   \ Convert string _ca len_, which is stored in far memory, to
   \ uppercase.
   \
-  \ See also: `uppers`, `far-banks`.
+  \ See: `uppers`, `far-banks`.
   \
   \ }doc
 

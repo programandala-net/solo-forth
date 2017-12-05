@@ -50,7 +50,7 @@
   \
   \ Origin: IsForth.
   \
-  \ See also: `[const]`, `cconst`, `2const`.
+  \ See: `[const]`, `cconst`, `2const`.
   \
   \ }doc
 
@@ -71,7 +71,7 @@
   \
   \ Origin: IsForth's `const`.
   \
-  \ See also: `[cconst]`, `const`, `2const`.
+  \ See: `[cconst]`, `const`, `2const`.
   \
   \ }doc
 

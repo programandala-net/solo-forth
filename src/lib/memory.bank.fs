@@ -37,7 +37,7 @@
   \ Get the current default bank _+n_ by fetching the contents
   \ of `default-bank#`.
   \
-  \ See also: `set-default-bank`, `default-bank`, `bank`,
+  \ See: `set-default-bank`, `default-bank`, `bank`,
   \ `banks`.
   \
   \ }doc
@@ -53,7 +53,7 @@
   \ Set _+n_ as the default memory bank by modifyng the
   \ contents of `default-bank#`.
   \
-  \ See also: `get-default-bank`, `default-bank`, `bank`,
+  \ See: `get-default-bank`, `default-bank`, `bank`,
   \ `banks`.
   \
   \ }doc
@@ -66,7 +66,7 @@
   \
   \ _n_ is the size in bytes of a memory bank: $4000.
   \
-  \ See also: `bank-start`.
+  \ See: `bank-start`.
   \
   \ }doc
 
@@ -78,7 +78,7 @@
   \
   \ _a_ is the memory address where banks are paged in: $C000.
   \
-  \ See also: `/bank`, `bank`, `banks`, `far-banks`,
+  \ See: `/bank`, `bank`, `banks`, `far-banks`,
   \ `default-bank`.
   \
   \ }doc

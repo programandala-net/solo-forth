@@ -73,7 +73,7 @@ variable anon> ( -- a )
   \
   \ See `set-anon` for a usage example.
   \
-  \ See also: `arguments`, `local`.
+  \ See: `arguments`, `local`.
   \
   \ }doc
 

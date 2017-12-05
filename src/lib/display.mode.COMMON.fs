@@ -111,7 +111,7 @@
   \ Return the number of columns in the current screen mode.
   \ The default value is 32.
   \
-  \ See also: `rows`, last-column`, `column`.
+  \ See: `rows`, last-column`, `column`.
   \
   \ }doc
 
@@ -124,7 +124,7 @@
   \ Return the number of rows in the current screen mode.  The
   \ default value is 24.
   \
-  \ See also: `columns`, `last-row`, `row`.
+  \ See: `columns`, `last-row`, `row`.
   \
   \ }doc
 

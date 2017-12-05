@@ -143,7 +143,7 @@ defer .see-body-name ( dfa -- )
   \ Decode the colon word's definition whose body is _dfa_.
   \ ``see-body`` is a factor of `see`.
   \
-  \ See also: `see-body-from`, `see-xt`.
+  \ See: `see-body-from`, `see-xt`.
   \
   \ }doc
 
@@ -166,7 +166,7 @@ defer .see-body-name ( dfa -- )
   \
   \ Origin: Forth-94 (TOOLS), Forth-2012 (TOOLS).
   \
-  \ See also: `see-xt`, `see-body`, `see-body-from`.
+  \ See: `see-xt`, `see-body`, `see-body-from`.
   \
   \ }doc
 
@@ -191,7 +191,7 @@ get-current  also forth definitions
   \ that use `exit` in the midle of the definition, because
   \ `see` stops at the first `exit` found.
   \
-  \ See also: `see-body`, `see-xt`.
+  \ See: `see-body`, `see-xt`.
   \
   \ }doc
 
@@ -218,7 +218,7 @@ get-current  also forth definitions
   \ The listing can be paused with the space bar, then stopped
   \ with the return key or resumed with any other key.
   \
-  \ See also: `see`, `see-body`, `see-body-from`.
+  \ See: `see`, `see-body`, `see-body-from`.
   \
   \ }doc
 

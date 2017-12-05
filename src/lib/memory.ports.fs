@@ -64,7 +64,7 @@ code @p ( a -- b )
   \
   \ Input byte _b_ from port _a_.
   \
-  \ See also: `!p`, `@`, `c@`.
+  \ See: `!p`, `@`, `c@`.
   \
   \ }doc
 
@@ -104,7 +104,7 @@ code !p ( b a -- ) D9 c, C1 c, E1 c, ED c, 69 c, D9 c,
   \
   \ Output byte _b_ to port _a_.
   \
-  \ See also: `@p`, `!`, `c!`.
+  \ See: `@p`, `!`, `c!`.
   \
   \ }doc
 

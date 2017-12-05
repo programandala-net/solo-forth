@@ -138,7 +138,7 @@ _colon_header dosior_to_ior_,'dosior>ior'
 ;   \ side          = 0..1
 ; ----
 
-; See also: `sectors/track`, `sector>dos`, `transfer-sector`.
+; See: `sectors/track`, `sector>dos`, `transfer-sector`.
 ;
 ; }doc
 
@@ -169,7 +169,7 @@ _colon_header dosior_to_ior_,'dosior>ior'
 ; In G+DOS all sectors of a block disk can be used for blocks.
 ; Therefore ``block-sector#>dos`` is an alias of `sector#>dos`.
 ;
-; See also: `transfer-block`.
+; See: `transfer-block`.
 ;
 ; }doc
 
@@ -195,7 +195,7 @@ _colon_header dosior_to_ior_,'dosior>ior'
 ;      transfer-sector throw ;
 ; ----
 
-; See also: `transfer-sector`, `block-sector#>dos`,
+; See: `transfer-sector`, `block-sector#>dos`,
 ; `>drive-block`.
 ;
 ; }doc
@@ -230,7 +230,7 @@ _colon_header dosior_to_ior_,'dosior>ior'
 ;     ** low byte  = sector 1..10
 ; * _a_ = source or destination address
 
-; See also: `block-sector#>dos`, `transfer-block`.
+; See: `block-sector#>dos`, `transfer-block`.
 ;
 ; }doc
 
@@ -259,7 +259,7 @@ transfer_sector.command:       ; G+DOS command already patched:
 ;
 ; Set the write mode for `transfer-sector` and `transfer-block`.
 ;
-; See also: `read-mode`.
+; See: `read-mode`.
 ;
 ; }doc
 
@@ -275,7 +275,7 @@ transfer_sector.command:       ; G+DOS command already patched:
 ;
 ; Set the read mode for `transfer-sector` and `transfer-block`.
 ;
-; See also: `write-mode`.
+; See: `write-mode`.
 ;
 ; }doc
 

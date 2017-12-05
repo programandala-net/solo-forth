@@ -109,7 +109,7 @@ need value
   \ Create an `xstack` in the heap. _n_ is the size in
   \ cells.  Return its address _a_.
   \
-  \ See also: `xfree`, `allocate-xstack`.
+  \ See: `xfree`, `allocate-xstack`.
   \
   \ }doc
 
@@ -125,7 +125,7 @@ need value
   \ Create an `xstack` in data space. _n_ is the size in
   \ cells.  Return its address _a_.
   \
-  \ See also: `allocate-xstack`.
+  \ See: `allocate-xstack`.
   \
   \ }doc
 
@@ -141,7 +141,7 @@ need value
   \
   \ Move _x_ from the data stack to the `xstack`.
   \
-  \ See also: `x>`, `x@`.
+  \ See: `x>`, `x@`.
   \
   \ }doc
 
@@ -155,7 +155,7 @@ need value
   \
   \ Move _x_ from the current `xstack` to the data stack.
   \
-  \ See also: `x>`, `x@`.
+  \ See: `x>`, `x@`.
   \
   \ }doc
 
@@ -169,7 +169,7 @@ need value
   \
   \ Copy _x_ from the current `xstack` to the data stack.
   \
-  \ See also: `x>`, `>x`.
+  \ See: `x>`, `>x`.
   \
   \ }doc
 
@@ -183,7 +183,7 @@ need value
   \
   \ Remove _x_ from the `xstack`.
   \
-  \ See also: `>x`, `x>`.
+  \ See: `>x`, `x>`.
   \
   \ }doc
 
@@ -197,7 +197,7 @@ need value
   \
   \ Duplicate _x_ in the current `xstack`.
   \
-  \ See also: `2xdup`.
+  \ See: `2xdup`.
   \
   \ }doc
 
@@ -255,7 +255,7 @@ need value
   \ Move the cell pair _x1 x2_ from the data stack to the
   \ current `xstack`.
   \
-  \ See also: `2x>`, `2x@`, `>x`.
+  \ See: `2x>`, `2x@`, `>x`.
   \
   \ }doc
 
@@ -270,7 +270,7 @@ need value
   \ Move the cell pair _x1 x2_ from the current `xstack` to
   \ the data stack.
   \
-  \ See also: `2>x`, `2x@`, `x>`.
+  \ See: `2>x`, `2x@`, `x>`.
   \
   \ }doc
 
@@ -284,7 +284,7 @@ need value
   \
   \ Remove the cell pair _x1 x2_ from the current `xstack`.
   \
-  \ See also: `xdrop`.
+  \ See: `xdrop`.
   \
   \ }doc
 
@@ -298,7 +298,7 @@ need value
   \
   \ Duplicate the cell pair _x1 x2_ in the current `xstack`.
   \
-  \ See also: `xdup`.
+  \ See: `xdup`.
   \
   \ }doc
 
@@ -314,7 +314,7 @@ need value
   \
   \ Clear the current `xstack`.
   \
-  \ See also: `xdrop`, `2xdrop`, `xp0`, `xp`.
+  \ See: `xdrop`, `2xdrop`, `xp0`, `xp`.
   \
   \ }doc
 
@@ -328,7 +328,7 @@ need value
   \
   \ _n_ is the length of the current `xstack`, in address units.
   \
-  \ See also: `xdepth`.
+  \ See: `xdepth`.
   \
   \ }doc
 
@@ -341,7 +341,7 @@ need value
   \ _n_ is the number of single-cells values contained in the
   \ current `xstack`.
   \
-  \ See also: `.xs`, `xlen`.
+  \ See: `.xs`, `xlen`.
   \
   \ }doc
 
@@ -371,7 +371,7 @@ need xp0 need xlen need xdepth need .depth
   \ Display the number of items on the current `xstack`, followed
   \ by a list of the items, if any; TOS is the right-most item.
   \
-  \ See also: `xdepth` ,`(.xs)`.
+  \ See: `xdepth` ,`(.xs)`.
   \
   \ }doc
 

@@ -52,7 +52,7 @@
   \ `end-internal`. Then those definitions can be unlinked by
   \ `unlink-internal` or hidden by `hide-internal`.
   \
-  \ See also: `isolate`, `module`, `package`, `privatize`,
+  \ See: `isolate`, `module`, `package`, `privatize`,
   \ `seclusion`.
   \
   \ }doc

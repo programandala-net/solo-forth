@@ -36,7 +36,7 @@ wordlist constant environment-wordlist ( -- wid )
   \ A constant that holds the word list identifier _wid_ where
   \ the environmental queries are defined.
   \
-  \ See also: `environment?`.
+  \ See: `environment?`.
   \
   \ }doc
 
@@ -84,7 +84,7 @@ wordlist constant environment-wordlist ( -- wid )
   \
   \ Origin: Forth-2012 (CORE).
   \
-  \ See also: `environment-wordlist`.  `/counted-string`,
+  \ See: `environment-wordlist`.  `/counted-string`,
   \ `/pad`, `address-unit-bits`, `floored`, `max-char`,
   \ `max-d`, `max-n`, `max-u`, `max-ud`, `return-stack-cells`,
   \ `stack-cells`.
@@ -153,7 +153,7 @@ set-current previous
   \
   \ _n_ is the size of one address unit, in bits.
   \
-  \ See also: `max-char`, `environment?`.
+  \ See: `max-char`, `environment?`.
   \
   \ }doc
 
@@ -168,7 +168,7 @@ set-current previous
   \ _u_ is the maximum value of any character in the character
   \ set.
   \
-  \ See also: `address-unit-bits`, `/counted-string`,
+  \ See: `address-unit-bits`, `/counted-string`,
   \ `environment?`.
   \
   \ }doc
@@ -183,7 +183,7 @@ set-current previous
   \
   \ _n_ is the maximum size of a counted string, in characters.
   \
-  \ See also: `max-char`, `environment?`.
+  \ See: `max-char`, `environment?`.
   \
   \ }doc
 
@@ -198,7 +198,7 @@ set-current previous
   \ _n_ is the size of the scratch area pointed to by `pad`, in
   \ characters.
   \
-  \ See also: `/hold`, `environment?`.
+  \ See: `/hold`, `environment?`.
   \
   \ }doc
 
@@ -212,7 +212,7 @@ set-current previous
   \
   \ _f_ is _true_ if floored division is the default.
   \
-  \ See also: `environment?`.
+  \ See: `environment?`.
   \
   \ }doc
 
@@ -228,7 +228,7 @@ set-current previous
   \
   \ _n_ is the largest usable signed integer.
   \
-  \ See also: `max-u`, `max-d`, `environment?`.
+  \ See: `max-u`, `max-d`, `environment?`.
   \
   \ }doc
 
@@ -245,7 +245,7 @@ set-current previous
   \
   \ _u_ is the largest usable unsigned integer.
   \
-  \ See also: `max-n`, `max-ud`, `environment?`.
+  \ See: `max-n`, `max-ud`, `environment?`.
   \
   \ }doc
 
@@ -259,7 +259,7 @@ set-current previous
   \
   \ _d_ is the largest usable signed double.
   \
-  \ See also: `max-n`, `max-ud`, `environment?`.
+  \ See: `max-n`, `max-ud`, `environment?`.
   \
   \ }doc
 
@@ -273,7 +273,7 @@ set-current previous
   \
   \ _ud_ is the largest usable unsigned double.
   \
-  \ See also: `max-u`, `max-d`, `environment?`.
+  \ See: `max-u`, `max-d`, `environment?`.
   \
   \ }doc
 
@@ -287,7 +287,7 @@ set-current previous
   \
   \ _n_ is the maximum size of the return stack, in cells.
   \
-  \ See also: `return-stack-cells`, `environment?`.
+  \ See: `return-stack-cells`, `environment?`.
   \
   \ }doc
 
@@ -301,7 +301,7 @@ set-current previous
   \
   \ _n_ is the maximum size of the data stack, in cells.
   \
-  \ See also: `stack-cells`, `environment?`.
+  \ See: `stack-cells`, `environment?`.
   \
   \ }doc
 

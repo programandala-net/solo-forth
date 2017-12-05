@@ -107,7 +107,7 @@
   \
   \ Origin: Gforth.
   \
-  \ See also: `nextname-header`.
+  \ See: `nextname-header`.
   \
   \ }doc
 
@@ -124,7 +124,7 @@
   \
   \ Origin: Gforth.
   \
-  \ See also: `nextname-string`.
+  \ See: `nextname-string`.
   \ `default-header`.
   \
   \ }doc
@@ -146,7 +146,7 @@
   \
   \ Origin: Gforth.
   \
-  \ See also: `nextname-header`, `nextname-string`.
+  \ See: `nextname-header`, `nextname-string`.
   \
   \ }doc
 

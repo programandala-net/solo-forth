@@ -35,7 +35,7 @@
   \ Create a deferred word _name_ that will execute _xt_.  The
   \ effect is the same than `defer name  xt ' name defer!`.
   \
-  \ See also: `defer`, `defer!`.
+  \ See: `defer`, `defer!`.
   \
   \ }doc
 
@@ -71,7 +71,7 @@
   \
   \ Origin: Forth-2012 (CORE EXT).
   \
-  \ See also: `defer!`, `defer`, `>action`.
+  \ See: `defer!`, `defer`, `>action`.
   \
   \ }doc
 

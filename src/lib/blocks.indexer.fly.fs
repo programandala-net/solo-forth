@@ -45,7 +45,7 @@ blocks/disk bit-array indexed-blocks
   \
   \ Bit array to mark the indexed blocks
   \
-  \ See also: `use-fly-index`.
+  \ See: `use-fly-index`.
   \
   \ }doc
 
@@ -57,7 +57,7 @@ blocks/disk bit-array indexed-blocks
   \
   \ Is block _block_ indexed?
   \
-  \ See also: `use-fly-index`.
+  \ See: `use-fly-index`.
   \
   \ }doc
 
@@ -69,7 +69,7 @@ blocks/disk bit-array indexed-blocks
   \
   \ Mark block _block_ as indexed.
   \
-  \ See also: `use-fly-index`.
+  \ See: `use-fly-index`.
   \
   \ }doc
 
@@ -91,7 +91,7 @@ blocks/disk bit-array indexed-blocks
   \
   \ Index block _block_.
   \
-  \ See also: `use-fly-index`.
+  \ See: `use-fly-index`.
   \
   \ }doc
 
@@ -104,7 +104,7 @@ blocks/disk bit-array indexed-blocks
   \
   \ Index block _block_, if not done before.
   \
-  \ See also: `use-fly-index`.
+  \ See: `use-fly-index`.
   \
   \ }doc
 
@@ -121,7 +121,7 @@ blocks/disk bit-array indexed-blocks
   \ found, return zero.  The search is case-sensitive.
   \ Index all searched blocks on the fly.
   \
-  \ See also: `use-fly-index`.
+  \ See: `use-fly-index`.
   \
   \ }doc
 
@@ -141,7 +141,7 @@ blocks/disk bit-array indexed-blocks
   \ The default action of all said words can be restored by
   \ `use-no-index`.
   \
-  \ See also: `use-thru-index`.
+  \ See: `use-thru-index`.
   \
   \ }doc
 

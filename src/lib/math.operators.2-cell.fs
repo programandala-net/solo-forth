@@ -38,7 +38,7 @@
   \
   \ Multiply _ud1_ by _ud2_ giving the product _ud3_.
   \
-  \ See also: `d*`, `um*`, `m*`, `*`.
+  \ See: `d*`, `um*`, `m*`, `*`.
   \
   \ }doc
 
@@ -59,7 +59,7 @@
   \
   \ Multiply _d1|ud1_ by _d2|ud2_ giving the product _d3|ud3_.
   \
-  \ See also: `ud*`, `um*`, `m*`, `*`.
+  \ See: `ud*`, `um*`, `m*`, `*`.
   \
   \ }doc
 
@@ -145,7 +145,7 @@ need tum* need t+ need t- need tum/ need d2* need lshift
   \ Divide _ud1_ by _ud2_, giving the remainder _ud3_ and
   \ the quotient _ud4_.
   \
-  \ See also: `um/mod`, `/mod` ,`*/mod`.
+  \ See: `um/mod`, `/mod` ,`*/mod`.
   \
   \ }doc
 
@@ -183,7 +183,7 @@ code d0= ( d -- f )
   \ : d0= ( d -- f ) + 0= ;
   \ ----
 
-  \ See also: `0=`.
+  \ See: `0=`.
   \
   \ }doc
 
@@ -195,7 +195,7 @@ code d0= ( d -- f )
   \
   \ _f_ is true if and only if _d_ is less than zero.
   \
-  \ See also: `0<`.
+  \ See: `0<`.
   \
   \ }doc
 
@@ -214,7 +214,7 @@ code d0= ( d -- f )
   \ Number Extension Word Set), Forth-94 (DOUBLE EXT),
   \ Forth-2012 (DOUBLE EXT).
   \
-  \ See also: `du<`, `<`, `dmin`.
+  \ See: `du<`, `<`, `dmin`.
   \
   \ }doc
 
@@ -237,7 +237,7 @@ code d0= ( d -- f )
   \ Number Extension Word Set), Forth-94 (DOUBLE EXT),
   \ Forth-2012 (DOUBLE EXT).
   \
-  \ See also: `d<`, `<`, `dmin`.
+  \ See: `d<`, `<`, `dmin`.
   \
   \ }doc
 
@@ -252,7 +252,7 @@ code d0= ( d -- f )
   \
   \ _f_ is true if and only if _xd1_ is equal to _xd2_.
   \
-  \ See also: `=`.
+  \ See: `=`.
   \
   \ }doc
 
@@ -267,7 +267,7 @@ code d0= ( d -- f )
   \ _f_ is true if and only if _xd1_ is not bit-for-bit the
   \ same as _xd2_.
   \
-  \ See also: `<>`.
+  \ See: `<>`.
   \
   \ }doc
 
@@ -290,7 +290,7 @@ code d0= ( d -- f )
   \ Number Extension Word Set), Forth-94 (DOUBLE), Forth-2012
   \ (DOUBLE).
   \
-  \ See also: `dmax`, `min`, `umin`.
+  \ See: `dmax`, `min`, `umin`.
   \
   \ }doc
 
@@ -312,7 +312,7 @@ code d0= ( d -- f )
   \ Number Extension Word Set), Forth-94 (DOUBLE), Forth-2012
   \ (DOUBLE).
   \
-  \ See also: `dmin`, `max`, `umax`.
+  \ See: `dmin`, `max`, `umax`.
   \
   \ }doc
 
@@ -347,7 +347,7 @@ code d0= ( d -- f )
   \ Number Extension Word Set), Forth-94 (DOUBLE), Forth-2012
   \ (DOUBLE).
   \
-  \ See also: `d+`, `-`, `dmin`.
+  \ See: `d+`, `-`, `dmin`.
   \
   \ }doc
 
@@ -378,7 +378,7 @@ code d0= ( d -- f )
   \
   \ Origin: Forth-94 (DOUBLE), Forth-2012 (DOUBLE).
   \
-  \ See also: `d2/`, `2*`, `lshift`.
+  \ See: `d2/`, `2*`, `lshift`.
   \
   \ }doc
 
@@ -411,7 +411,7 @@ code d0= ( d -- f )
   \
   \ Origin: Forth-94 (DOUBLE), Forth-2012 (DOUBLE).
   \
-  \ See also: `d2*`, `2/`, `rshift`.
+  \ See: `d2*`, `2/`, `rshift`.
   \
   \ }doc
 
@@ -432,7 +432,7 @@ code d0= ( d -- f )
   \
   \ _xd3_ is the bit-by-bit exclusive-or of _xd1_ and _xd2_.
   \
-  \ See also: `xor`, `dor`, `dand`.
+  \ See: `xor`, `dor`, `dand`.
   \
   \ }doc
 
@@ -445,7 +445,7 @@ code d0= ( d -- f )
   \
   \ _xd3_ is the bit-by-bit inclusive-or of _xd1_ and _xd2_.
   \
-  \ See also: `or`, `dxor`, `dand`.
+  \ See: `or`, `dxor`, `dand`.
   \
   \ }doc
 
@@ -458,7 +458,7 @@ code d0= ( d -- f )
   \
   \ _xd3_ is the bit-by-bit logical "and" of _xd1_ and _xd2_.
   \
-  \ See also: `and`, `dor`, `dxor`.
+  \ See: `and`, `dor`, `dxor`.
   \
   \ }doc
 
@@ -475,7 +475,7 @@ code d0= ( d -- f )
   \
   \ Multiply _ud1_ per 10, resulting _ud2_.
   \
-  \ See also: `d2*`, `d*`, `2*`, `8*`.
+  \ See: `d2*`, `d*`, `2*`, `8*`.
   \
   \ }doc
 
@@ -512,7 +512,7 @@ code m+ ( d1|ud1 n -- d2|ud2 )
 
   \ Origin: Forth-94 (DOUBLE) Forth-2012 (DOUBLE).
   \
-  \ See also: `+`, `d+`.
+  \ See: `+`, `d+`.
   \
   \ }doc
 
@@ -540,7 +540,7 @@ code m+ ( d1|ud1 n -- d2|ud2 )
   \
   \ Origin: Forth-94 (DOUBLE), Forth-2012 (DOUBLE).
   \
-  \ See also: `*/`, `m*`.
+  \ See: `*/`, `m*`.
   \
   \ }doc
 
@@ -581,7 +581,7 @@ need 2nip need cell-bits
   \
   \ Calculate integer square root _d2_ of radicand _d1_.
   \
-  \ See also: `sqrt`.
+  \ See: `sqrt`.
 
   \ ===========================================================
   \ Change log

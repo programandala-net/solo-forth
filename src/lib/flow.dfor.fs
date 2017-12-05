@@ -64,7 +64,7 @@
   \ The current value of the index can be retrieved with
   \ `dfor-i`.
   \
-  \ See also: `for`, `dtimes`, `?do`, `executions`.
+  \ See: `for`, `dtimes`, `?do`, `executions`.
   \
   \ }doc
 

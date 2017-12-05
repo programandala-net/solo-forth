@@ -229,7 +229,7 @@ F2 cconstant p?   FA cconstant m?
   \ `?ret,`, `?jp,`, `?call`, `?jr`, `aif`, `rif`, `awhile`,
   \ `rwhile`, `auntil, or `runtil`.
   \
-  \ See also: `nz?`, `c?`, `nc?`, `po?`, `pe?`, `p?`, `m?`.
+  \ See: `nz?`, `c?`, `nc?`, `po?`, `pe?`, `p?`, `m?`.
   \
   \ }doc
 
@@ -242,7 +242,7 @@ F2 cconstant p?   FA cconstant m?
   \ `?ret,`, `?jp,`, `?call`, `?jr`, `aif`, `rif`, `awhile`,
   \ `rwhile`, `auntil, or `runtil`.
   \
-  \ See also: `z?`, `c?`, `nc?`, `po?`, `pe?`, `p?`, `m?`,
+  \ See: `z?`, `c?`, `nc?`, `po?`, `pe?`, `p?`, `m?`,
   \ `?ret,`, `?jp,`, `?jr`, `?call`, `rif`, `rwhile`, `runtil`,
   \ `aif`, `awhile`, `auntil`.
   \
@@ -257,7 +257,7 @@ F2 cconstant p?   FA cconstant m?
   \ `?ret,`, `?jp,`, `?call`, `?jr`, `aif`, `rif`, `awhile`,
   \ `rwhile`, `auntil, or `runtil`.
   \
-  \ See also: `z?`, `nz?`, `nc?`, `po?`, `pe?`, `p?`, `m?`.
+  \ See: `z?`, `nz?`, `nc?`, `po?`, `pe?`, `p?`, `m?`.
   \
   \ }doc
 
@@ -270,7 +270,7 @@ F2 cconstant p?   FA cconstant m?
   \ `?ret,`, `?jp,`, `?call`, `?jr`, `aif`, `rif`, `awhile`,
   \ `rwhile`, `auntil, or `runtil`.
   \
-  \ See also: `z?`, `nz?`, `c?`, `po?`, `pe?`, `p?`, `m?`.
+  \ See: `z?`, `nz?`, `c?`, `po?`, `pe?`, `p?`, `m?`.
   \
   \ }doc
 
@@ -282,7 +282,7 @@ F2 cconstant p?   FA cconstant m?
   \ to be used as condition and consumed by
   \ `?ret,`, `?jp,`, `?call`, `aif`, `awhile` or `auntil`.
   \
-  \ See also: `z?`, `nz?`, `c?`, `nc?`, `pe?`, `p?`, `m?`.
+  \ See: `z?`, `nz?`, `c?`, `nc?`, `pe?`, `p?`, `m?`.
   \
   \ }doc
 
@@ -294,7 +294,7 @@ F2 cconstant p?   FA cconstant m?
   \ to be used as condition and consumed by
   \ `?ret,`, `?jp,`, `?call`, `aif`, `awhile` or `auntil`.
   \
-  \ See also: `z?`, `nz?`, `c?`, `nc?`, `po?`, `p?`, `m?`.
+  \ See: `z?`, `nz?`, `c?`, `nc?`, `po?`, `p?`, `m?`.
   \
   \ }doc
 
@@ -306,7 +306,7 @@ F2 cconstant p?   FA cconstant m?
   \ to be used as condition and consumed by
   \ `?ret,`, `?jp,`, `?call`, `aif`, `awhile` or `auntil`.
   \
-  \ See also: `z?`, `nz?`, `c?`, `nc?`, `po?`, `pe?`, `m?`.
+  \ See: `z?`, `nz?`, `c?`, `nc?`, `po?`, `pe?`, `m?`.
   \
   \ }doc
 
@@ -318,7 +318,7 @@ F2 cconstant p?   FA cconstant m?
   \ to be used as condition and consumed by
   \ `?ret,`, `?jp,`, `?call`, `aif`, `awhile` or `auntil`.
   \
-  \ See also: `z?`, `nz?`, `c?`, `nc?`, `po?`, `pe?`, `p?`.
+  \ See: `z?`, `nz?`, `c?`, `nc?`, `po?`, `pe?`, `p?`.
   \
   \ }doc
 
@@ -340,7 +340,7 @@ F2 cconstant p?   FA cconstant m?
   \ the identifier of the condition, which has been put on the
   \ stack by `nz?`, `c?`, `nc?`, `po?`, `pe?`, `p?`, or `m?`.
   \
-  \ See also: `?jp,`, `?call,`.
+  \ See: `?jp,`, `?call,`.
   \
   \ }doc
 
@@ -355,7 +355,7 @@ F2 cconstant p?   FA cconstant m?
   \ which has been put on the stack by `nz?`, `c?`, `nc?`,
   \ `po?`, `pe?`, `p?`, or `m?`.
   \
-  \ See also: `?jr,`, `?ret,`, `?call,`.
+  \ See: `?jr,`, `?ret,`, `?call,`.
   \
   \ }doc
 
@@ -370,7 +370,7 @@ F2 cconstant p?   FA cconstant m?
   \ which has been put on the stack by `nz?`, `c?`, `nc?`,
   \ `po?`, `pe?`, `p?`, or `m?`.
   \
-  \ See also: `?ret,`, `?jp,`.
+  \ See: `?ret,`, `?jp,`.
   \
   \ }doc
 
@@ -384,7 +384,7 @@ F2 cconstant p?   FA cconstant m?
   \ address _a_, being _op_ the identifier of the condition,
   \ which has been put on the stack by `nz?`, `c?`, or `nc?`.
   \
-  \ See also: `?jp,`.
+  \ See: `?jp,`.
   \
   \ }doc
 
@@ -525,7 +525,7 @@ set-current set-order
   \
   \ Resolve an assembler absolute forward reference.
   \
-  \ See also: `>amark`.
+  \ See: `>amark`.
   \
   \ }doc
 
@@ -612,7 +612,7 @@ macro execute-hl, ( -- )
   \ Compile an `execute` with the _xt_ hold in the HL register.
   \ ``execute-hl,`` is used to call Forth words from Z80.
   \
-  \ See also: `call-xt,`.
+  \ See: `call-xt,`.
   \
   \ }doc
 

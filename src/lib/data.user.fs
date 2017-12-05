@@ -36,7 +36,7 @@
   \ is later executed, its absolute user area storage address
   \ is placed on the stack.  No user space is allocated.
   \
-  \ See also: `uallot`, `user`, `2user`, `?user`.
+  \ See: `uallot`, `user`, `2user`, `?user`.
   \
   \ }doc
 
@@ -54,7 +54,7 @@
   \ `throw` an exception if the user area pointer is out of
   \ bounds.
   \
-  \ See also: `udp`, `/user`.
+  \ See: `udp`, `/user`.
   \
   \ }doc
 
@@ -73,7 +73,7 @@
   \ if the user-data pointer is out of bounds after the
   \ operation.
   \
-  \ See also: `udp`, `ucreate`, `?user`, `user`, `2user`.
+  \ See: `udp`, `ucreate`, `?user`, `user`, `2user`.
   \
   \ }doc
 
@@ -91,7 +91,7 @@
   \ later executed, its absolute user area storage address is
   \ placed on the stack.
   \
-  \ See also: `2user`, `ucreate`, `uallot`, `?user`.
+  \ See: `2user`, `ucreate`, `uallot`, `?user`.
   \
   \ }doc
 
@@ -109,7 +109,7 @@
   \ is later executed, its absolute user area storage address
   \ is placed on the stack.
   \
-  \ See also: `user`, `ucreate`, `uallot`, `?user`.
+  \ See: `user`, `ucreate`, `uallot`, `?user`.
   \
   \ }doc
 

@@ -392,7 +392,7 @@ need xy>scra need array>
   \   key drop home ;
   \ ----
 
-  \ See also: `gigatype-title`, `set-font`, `(gigatext`,
+  \ See: `gigatype-title`, `set-font`, `(gigatext`,
   \ `type`.
   \
   \ }doc
@@ -829,7 +829,7 @@ need gigatype need 2/
   \ mode is `mode32` (32 characters per line), which is the
   \ default one.
   \
-  \ See also: `gigatype-style`, `type-center-field`.
+  \ See: `gigatype-style`, `type-center-field`.
   \
   \ }doc
 

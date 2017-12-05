@@ -40,7 +40,7 @@ need find-substitution
   \ A character constant that returns the character used as
   \ delimiter by `substitute`. By default it's "%".
   \
-  \ See also: `substitution-delimiter?`.
+  \ See: `substitution-delimiter?`.
   \
   \ }doc
 
@@ -183,7 +183,7 @@ code substitution-delimiter? ( ca -- f )
   \ the input string contains a single delimiter,  the residue
   \ is passed unchanged to the output.
   \
-  \ See also: `unescape`, `substitution-delimiter?`.
+  \ See: `unescape`, `substitution-delimiter?`.
   \
   \ }doc
 

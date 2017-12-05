@@ -106,7 +106,7 @@ need alias need nextname
   \ can use `name >order`, where _name_ is the name of the
   \ module.
   \
-  \ See also: `internal`, `isolate`, `package`, `privatize`,
+  \ See: `internal`, `isolate`, `package`, `privatize`,
   \ `seclusion`.
   \
   \ }doc

@@ -41,7 +41,7 @@ need (substitution
   \ storage space.  Return the address that will hold the
   \ execution token of the substitution.
   \
-  \ See also: `xt-replaces`.
+  \ See: `xt-replaces`.
   \
   \ }doc
 
@@ -67,7 +67,7 @@ need xt-substitution
   \ The name of a substitution should not contain the "%"
   \ delimiter character.
   \
-  \ See also: `replaces`, `substitute`, `unescape`,
+  \ See: `replaces`, `substitute`, `unescape`,
   \ `substitute-wordlist`.
   \
   \ }doc

@@ -180,7 +180,7 @@ variable mode-32iso-font  rom-font bl 8 * + mode-32iso-font !
   \ only the font address, and reserving the full UDG set for
   \ graphics.
   \
-  \ See also: `current-mode`, `set-font`, `set-mode-output`,
+  \ See: `current-mode`, `set-font`, `set-mode-output`,
   \ `columns`, `rows`, `mode-32-xy`, `mode-32-at-xy`, `>form`.
   \
   \ }doc

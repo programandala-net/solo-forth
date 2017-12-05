@@ -42,7 +42,7 @@
   \
   \ ``-if`` is an `immediate` and `compile-only` word.
   \
-  \ See also: `if`, `0if`, `+if`, `+branch`.
+  \ See: `if`, `0if`, `+if`, `+branch`.
   \
   \ }doc
 
@@ -63,7 +63,7 @@
   \
   \ ``-while`` is an `immediate` and `compile-only` word.
   \
-  \ See also: `while`, `0while`, `+while`.
+  \ See: `while`, `0while`, `+while`.
   \
   \ }doc
 
@@ -84,7 +84,7 @@
   \
   \ ``-until`` is an `immediate` and `compile-only` word.
   \
-  \ See also: `until`, `0until`, `+until`, `+branch`.
+  \ See: `until`, `0until`, `+until`, `+branch`.
   \
   \ }doc
 
@@ -110,7 +110,7 @@ code -exit ( n -- ) ( R: nest-sys | -- nest-sys | )
   \ ``-exit`` can be used in interpretation mode to stop the
   \ interpretation of a block.
   \
-  \ See also: `exit`, `?exit`, `0exit`, `+exit`.
+  \ See: `exit`, `?exit`, `0exit`, `+exit`.
   \
   \ }doc
 

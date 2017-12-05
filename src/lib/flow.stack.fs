@@ -47,7 +47,7 @@
   \
   \ Origin: Forth-94 (TOOLS EXT), Forth-2012 (TOOLS EXT).
   \
-  \ See also: `cs-roll`, `cs-swap`, `cs-drop`.
+  \ See: `cs-roll`, `cs-swap`, `cs-drop`.
   \
   \ }doc
 
@@ -74,7 +74,7 @@
   \
   \ Origin: Forth-94 (TOOLS EXT), Forth-2012 (TOOLS EXT).
   \
-  \ See also: `cs-pick`, `cs-swap`, `cs-drop`.
+  \ See: `cs-pick`, `cs-swap`, `cs-drop`.
   \
   \ }doc
 
@@ -94,7 +94,7 @@
   \ using the data stack. Therefore ``cs-drop`` is an `alias`
   \ of `drop`.
   \
-  \ See also: `cs-pick`, `cs-roll`, `cs-swap`.
+  \ See: `cs-pick`, `cs-roll`, `cs-swap`.
   \
   \ }doc
 

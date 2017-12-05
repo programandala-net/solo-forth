@@ -33,7 +33,7 @@
   \
   \ Current column (x coordinate).
   \
-  \ See also: `row`, `last-column`, `columns`.
+  \ See: `row`, `last-column`, `columns`.
   \
   \ }doc
 
@@ -46,7 +46,7 @@
   \
   \ Last column (x coordinate) in the current screen mode.
   \
-  \ See also: `last-row`, `columns`, `column`.
+  \ See: `last-row`, `columns`, `column`.
   \
   \ }doc
 
@@ -58,7 +58,7 @@
   \
   \ Current row (y coordinate).
   \
-  \ See also: `column`, `last-row`, `rows`.
+  \ See: `column`, `last-row`, `rows`.
   \
   \ }doc
 
@@ -71,7 +71,7 @@
   \
   \ Last row (y coordinate) in the current screen mode.
   \
-  \ See also: `last-column`, `row`, `rows`.
+  \ See: `last-column`, `row`, `rows`.
   \
   \ }doc
 
@@ -84,7 +84,7 @@
   \ Set the cursor at the given column (x coordinate) _col_ and
   \ the current row (y coordinate).
   \
-  \ See also: `at-y`, `at-xy`, `row`, `column`.
+  \ See: `at-y`, `at-xy`, `row`, `column`.
   \
   \ }doc
 
@@ -98,7 +98,7 @@
   \ Set the cursor at the current column (x coordinate) and the
   \ given row (y coordinate) _row_.
   \
-  \ See also: `at-x`, `at-xy`, `row`, `column`.
+  \ See: `at-x`, `at-xy`, `row`, `column`.
   \
   \ }doc
 
@@ -111,7 +111,7 @@
   \
   \ Save the current cursor coordinates to the return stack.
   \
-  \ See also: `r>xy`, `save-mode`.
+  \ See: `r>xy`, `save-mode`.
   \
   \ }doc
 
@@ -124,7 +124,7 @@
   \ Restore the current cursor coordinates from the return
   \ stack.
   \
-  \ See also: `xy>r`, `restore-mode`.
+  \ See: `xy>r`, `restore-mode`.
   \
   \ }doc
 
@@ -188,7 +188,7 @@ create xy>scra_ ( -- a ) asm
   \
   \ - DE = screen address
   \
-  \ See also: `xy>scra`, `gxy>scra_`.
+  \ See: `xy>scra`, `gxy>scra_`.
   \
   \ }doc
 
@@ -220,7 +220,7 @@ code xy>scra ( x y -- a )
   \ Convert cursor coordinates _x y_ to their correspondent
   \ screen address _a_.
   \
-  \ See also: `xy>scra_` , `gxy>scra`.
+  \ See: `xy>scra_` , `gxy>scra`.
   \
   \ }doc
 
@@ -273,7 +273,7 @@ create xy>scra_ ( -- a ) asm
   \
   \ - HL = screen address
   \
-  \ See also: `xy>scra`, `gxy>scra_`.
+  \ See: `xy>scra`, `gxy>scra_`.
 
 [unneeded] xy>scra ?( need assembler need xy>scra_
 
@@ -294,7 +294,7 @@ code xy>scra ( x y -- a )
   \ Convert cursor coordinates _x y_ to their correspondent
   \ screen address _a_.
   \
-  \ See also: `xy>scra_` , `gxy>scra`.
+  \ See: `xy>scra_` , `gxy>scra`.
 
 ( xy>gxy xy>gxy176 )
 
@@ -327,7 +327,7 @@ code xy>gxy ( x y -- gx gy )
   \ gy_.  _x_ is 0..31, _y_ is 0..23, _gx_ is 0..255 and _gy_
   \ is 0..191.
   \
-  \ See also: `xy>attra`, `xy>attr`, `xy>gxy176`, `plot`,
+  \ See: `xy>attra`, `xy>attr`, `xy>gxy176`, `plot`,
   \ `set-pixel`.
   \
   \ }doc
@@ -365,7 +365,7 @@ code xy>gxy176 ( x y -- gx gy )
   \ ``xy>gxy176`` is provided to make it easier to adapt
   \ Sinclair BASIC programs.
   \
-  \ See also: `xy>gxy`, `plot176`, `set-pixel176`.
+  \ See: `xy>gxy`, `plot176`, `set-pixel176`.
   \
   \ }doc
 
@@ -407,7 +407,7 @@ create xy>attra_ ( -- a ) asm
   \
   \ - HL = address of the attribute in the screen
   \
-  \ See also: `xy>attra`, `xy>attr`, `xy>gxy`.
+  \ See: `xy>attra`, `xy>attr`, `xy>gxy`.
   \
   \ }doc
 
@@ -432,7 +432,7 @@ code xy>attr ( col row -- b )
   \ Return the color attribute _b_ of the given cursor
   \ coordinates _col row_.
   \
-  \ See also: `xy>attra`, `xy>attra_`, `xy>gxy`.
+  \ See: `xy>attra`, `xy>attra_`, `xy>gxy`.
   \
   \ }doc
 
@@ -454,7 +454,7 @@ code xy>attra ( col row -- a )
   \ Return the color attribute address _a_ of the given cursor
   \ coordinates _col row_.
   \
-  \ See also: `xy>attr`, `xy>attra_`, `xy>gxy`.
+  \ See: `xy>attr`, `xy>attra_`, `xy>gxy`.
   \
   \ }doc
 

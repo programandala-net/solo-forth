@@ -36,7 +36,7 @@
   \ current font (actual characters 32..127). By default this
   \ system variables holds ROM address 15360 ($3C00).
   \
-  \ See also: `set-font`, `get-font`, `rom-font`, `os-udg`.
+  \ See: `set-font`, `get-font`, `rom-font`, `os-udg`.
   \
   \ }doc
 
@@ -60,7 +60,7 @@
   \ A constant that returns the address _ca_ of 1-byte system
   \ variable FLAGS2, which holds several flags.
   \
-  \ See also: `capslock`.
+  \ See: `capslock`.
   \
   \ }doc
 
@@ -89,7 +89,7 @@
   \ counter is returned by `ticks` and used by its related
   \ words.
   \
-  \ See also: `set-ticks`, `reset-ticks`,
+  \ See: `set-ticks`, `reset-ticks`,
   \ `ticks-pause`, `?ticks-pause`.
   \
   \ }doc
@@ -106,7 +106,7 @@
   \ 128..255 or 0..255, depending on the words used to access
   \ them).
   \
-  \ See also: `set-udg`, `get-udg`, `os-chars`.
+  \ See: `set-udg`, `get-udg`, `os-chars`.
   \
   \ }doc
 
@@ -122,7 +122,7 @@
   \ variable COORDS which holds the graphic coordinates of the
   \ last point plotted.
   \
-  \ See also: `set-pixel`, `plot`, `os-coordx`, `os-coordy`.
+  \ See: `set-pixel`, `plot`, `os-coordx`, `os-coordy`.
   \
   \ }doc
 
@@ -136,7 +136,7 @@
   \ variable COORDX which holds the graphic x coordinate of the
   \ last point plotted.
   \
-  \ See also: `set-pixel`, `plot`, `os-coords`, `os-coordy`.
+  \ See: `set-pixel`, `plot`, `os-coords`, `os-coordy`.
   \
   \ }doc
 
@@ -150,7 +150,7 @@
   \ variable COORDY which holds the graphic y coordinate of the
   \ last point plotted.
   \
-  \ See also: `set-pixel`, `plot`, `os-coords`, `os-coordx`.
+  \ See: `set-pixel`, `plot`, `os-coords`, `os-coordx`.
   \
   \ }doc
 
@@ -166,7 +166,7 @@
   \ variable ATTR_P, which holds the current permanent color
   \ attribute, as set up by color statements.
   \
-  \ See also: `os-attr-t`, `as-mask-p`.
+  \ See: `os-attr-t`, `as-mask-p`.
   \
   \ }doc
 
@@ -182,7 +182,7 @@
   \ shows that the corresponding attribute bit is taken not
   \ from `os-attr-p` but from what is already on the screen.
   \
-  \ See also: `os-attr-p`, `os-mask-t`.
+  \ See: `os-attr-p`, `os-mask-t`.
   \
   \ }doc
 
@@ -196,7 +196,7 @@
   \ variable ATTR_T, which holds the current temporary color
   \ attribute, as set up by color statements.
   \
-  \ See also: `os-attr-p`, `os-mask-t`.
+  \ See: `os-attr-p`, `os-mask-t`.
   \
   \ }doc
 
@@ -212,7 +212,7 @@
   \ shows that the corresponding attribute bit is taken not
   \ from `os-attr-t` but from what is already on the screen.
   \
-  \ See also: `os-attr-t`, `os-mask-p`.
+  \ See: `os-attr-t`, `os-mask-p`.
   \
   \ }doc
 

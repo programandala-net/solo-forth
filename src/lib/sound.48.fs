@@ -136,7 +136,7 @@ code bleep ( duration pitch -- )
   \ _____
 
   \
-  \ See also: `hz>bleep`, `dzh>bleep`, `beep`.
+  \ See: `hz>bleep`, `dzh>bleep`, `beep`.
   \
   \ }doc
 
@@ -159,7 +159,7 @@ code bleep ( duration pitch -- )
   \ Convert _frequency_ (in Hz) and _duration1_ (in ms) to
   \ the parameters _duration2 pitch_ needed by `bleep`.
   \
-  \ See also: `dhz>bleep`.
+  \ See: `dhz>bleep`.
   \
   \ }doc
 
@@ -183,7 +183,7 @@ code bleep ( duration pitch -- )
   \ _duration1_ (in ms) to the parameters _duration2 pitch_
   \ needed by `bleep`.
   \
-  \ See also: `hz>bleep`.
+  \ See: `hz>bleep`.
   \
   \ }doc
 
@@ -259,7 +259,7 @@ create middle-octave ( -- a )
   \   C   D   E   F   G   A   B
   \ ....
 
-  \ See also: `beep`, `/octave`, `octave-changer`.
+  \ See: `beep`, `/octave`, `octave-changer`.
   \
   \ }doc
 
@@ -272,7 +272,7 @@ create middle-octave ( -- a )
   \ A constant that returns the number of notes in one octave:
   \ 12.
   \
-  \ See also: `middle-octave`.
+  \ See: `middle-octave`.
   \
   \ }doc
 
@@ -291,7 +291,7 @@ here    ' drop    ,
   \ notes from any octave.  _a_ is the address of the second
   \ execution token (cell offset 0).
   \
-  \ See also: `change-octave`, `beep>dhz`, `middle-octave`.
+  \ See: `change-octave`, `beep>dhz`, `middle-octave`.
   \
   \ }doc
 
@@ -310,7 +310,7 @@ need polarity need octave-changer need array>
   \ zero) to its corresponding note frequency _u'_ in octave
   \ _n_.  If _n_ is zero, _u'_ equals _u_.
   \
-  \ See also: `octave-changer`, `beep>dhz`, `middle-octave`.
+  \ See: `octave-changer`, `beep>dhz`, `middle-octave`.
   \
   \ }doc
 
@@ -330,7 +330,7 @@ need polarity need octave-changer need array>
   \ to its corresponding note _+n3_ (0..11) in octave _-n2_,
   \ being zero the middle octave.
   \
-  \ See also: `beep>note`, `+beep>note`, `/octave`.
+  \ See: `beep>note`, `+beep>note`, `/octave`.
   \
   \ }doc
 
@@ -346,7 +346,7 @@ need polarity need octave-changer need array>
   \ ``BEEP`` to its corresponding note _+n3_ (0..11) in octave
   \ _+n2_, being zero the middle octave.
   \
-  \ See also: `beep>note`, `-beep>note`, `/octave`.
+  \ See: `beep>note`, `-beep>note`, `/octave`.
   \
   \ }doc
 
@@ -363,7 +363,7 @@ need polarity need octave-changer need array>
   \ corresponding note _+n3_ (0..11) in octave _n2_, being zero
   \ the middle octave.
   \
-  \ See also: `-beep>note`, `+beep>note`, `beep>dhz`,
+  \ See: `-beep>note`, `+beep>note`, `beep>dhz`,
   \ `beep>bleep`, `beep`, `/octave`.
   \
   \ }doc
@@ -388,7 +388,7 @@ need beep>note need note>dhz need change-octave
   \ Convert a pitch _n_ of Sinclair BASIC's ``BEEP`` to its
   \ corresponding frequency in dHz (tenths of hertzs) _u_.
   \
-  \ See also: `beep>note`, `beep>bleep`, `beep`.
+  \ See: `beep>note`, `beep>bleep`, `beep`.
   \
   \ }doc
 
@@ -430,7 +430,7 @@ need beep>dhz need dhz>bleep
   \           C   D   E   F   G   A   B   C
   \ ....
 
-  \ See also: `beep>dhz`, `beep>note`, `dhz>bleep`.
+  \ See: `beep>dhz`, `beep>note`, `dhz>bleep`.
   \
   \ }doc
 
@@ -492,7 +492,7 @@ need beep>dhz need dhz>bleep
   \ ----
 
   \
-  \ See also: `beep>bleep`, `bleep`.
+  \ See: `beep>bleep`, `bleep`.
   \
   \ }doc
 

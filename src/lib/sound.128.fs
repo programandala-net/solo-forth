@@ -34,7 +34,7 @@
   \ A character constant that returns 14, the number of
   \ registers used by the 128K sounds.
   \
-  \ See also: `!sound`, `@sound`, `sound`, `play`.
+  \ See: `!sound`, `@sound`, `sound`, `play`.
   \
   \ }doc
 
@@ -55,7 +55,7 @@ $FFFD const sound-register-port $BFFD const sound-write-port ?)
   \ ``sound-register-port`` is a fast constant defined with
   \ `const`. Its value is $FFFD.
   \
-  \ See also: `sound-write-port`, `!sound`, `@sound`.
+  \ See: `sound-write-port`, `!sound`, `@sound`.
   \
   \ }doc
 
@@ -69,7 +69,7 @@ $FFFD const sound-register-port $BFFD const sound-write-port ?)
   \ ``sound-write-port`` is a fast constant defined with
   \ `const`.  Its value is $BFFD.
   \
-  \ See also: `sound-register-port`, `!sound`, `@sound`.
+  \ See: `sound-register-port`, `!sound`, `@sound`.
   \
   \ }doc
 
@@ -86,7 +86,7 @@ need !p need sound-register-port need sound-write-port
   \
   \ Set sound register _b2_ (0...13) to value _b1_.
   \
-  \ See also: `@sound`, `sound`, `play`, `sound-register-port`,
+  \ See: `@sound`, `sound`, `play`, `sound-register-port`,
   \ `sound-write-port`.
   \
   \ }doc
@@ -102,7 +102,7 @@ need !p need sound-register-port need sound-write-port
   \
   \ Get the contents _b2_ of sound register _b1_ (0...13).
   \
-  \ See also: `!sound`, `sound`, `play`, `sound-register-port`.
+  \ See: `!sound`, `sound`, `play`, `sound-register-port`.
   \
   \ }doc
 
@@ -135,7 +135,7 @@ need !p need sound-register-port need sound-write-port
   \ Bits 6-7:: Not used.
   \ ____
   \
-  \ See also: `@volume`, `!sound`.
+  \ See: `@volume`, `!sound`.
   \
   \ }doc
 
@@ -160,7 +160,7 @@ need !p need sound-register-port need sound-write-port
   \ Bits 6-7:: Not used.
   \ ____
   \
-  \ See also: `!volume`, `@sound`.
+  \ See: `!volume`, `@sound`.
   \
   \ }doc
 
@@ -195,7 +195,7 @@ need !p need sound-register-port need sound-write-port
   \ Bit 7:: Not used.
   \ ____
   \
-  \ See also: `get-mixer`, `-mixer`, `!sound`.
+  \ See: `get-mixer`, `-mixer`, `!sound`.
   \
   \ }doc
 
@@ -230,7 +230,7 @@ need !p need sound-register-port need sound-write-port
   \ Bit 7:: Not used.
   \ ____
   \
-  \ See also: `set-mixer`, `-mixer`, `@sound`.
+  \ See: `set-mixer`, `-mixer`, `@sound`.
   \
   \ }doc
 
@@ -245,7 +245,7 @@ need !p need sound-register-port need sound-write-port
   \ Disable the noise and tone mixers for the three channels of
   \ the AY-3-8912 sound generator.
   \
-  \ See also: `set-mixer`, `get-mixer`, `silence`.
+  \ See: `set-mixer`, `get-mixer`, `silence`.
   \
   \ }doc
 
@@ -262,7 +262,7 @@ need !p need sound-register-port need sound-write-port
   \ the three channels of the AY-3-8912 sound generator. Then
   \ set the volume of the three channels to zero.
   \
-  \ See also: `!volume`.
+  \ See: `!volume`.
   \
   \ }doc
 
@@ -339,7 +339,7 @@ set-current previous
   \
   \ Play a 14-byte sound definition stored at _ca_.
   \
-  \ See also: `sound,`, `sound`, `!sound`.
+  \ See: `sound,`, `sound`, `!sound`.
   \
   \ }doc
 
@@ -354,7 +354,7 @@ set-current previous
   \
   \ Compile the 14-byte sound definition _b[0]..b[13]_.
   \
-  \ See also: `play`, `sound`.
+  \ See: `play`, `sound`.
   \
   \ }doc
 
@@ -370,7 +370,7 @@ set-current previous
   \ Create a word _name_ that will play the 14-byte sound
   \ defined by _b[0]..b[13]_.
   \
-  \ See also: `sound,`, `play`.
+  \ See: `sound,`, `play`.
   \
   \ }doc
 

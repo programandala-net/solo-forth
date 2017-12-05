@@ -31,7 +31,7 @@
   \ _wid_, which holds the word-list identifier of the previous
   \ word list defined in the system.
   \
-  \ See also: `wordlist`, `wid>name`.
+  \ See: `wordlist`, `wid>name`.
   \
   \ }doc
 
@@ -46,7 +46,7 @@
   \ identifier _wid_ (or zero if the word list has no
   \ associated name).
   \
-  \ See also: `wordlist`, `wordlist>link`.
+  \ See: `wordlist`, `wordlist>link`.
   \
   \ }doc
 
@@ -61,7 +61,7 @@
   \ Fetch from the word-list identifier _wid_ its associated
   \ name _nt_, or zero if the word list has no associated name.
   \
-  \ See also: `wordlist`, `wordlist-name!`, `wordlist>name`.
+  \ See: `wordlist`, `wordlist-name!`, `wordlist>name`.
   \
   \ }doc
 
@@ -77,7 +77,7 @@
   \ identified by _wid_.  _nt_ is stored into the name field of
   \ the word-list metadata.
   \
-  \ See also: `wordlist`, `wordlist-name@`, `wordlist>name`.
+  \ See: `wordlist`, `wordlist-name@`, `wordlist>name`.
   \
   \ }doc
 
@@ -99,7 +99,7 @@
   \ Remove all instances of the word list identified by _wid_
   \ from the search order, then add it to the top.
   \
-  \ See also: `-order`, `>order`, `set-order`, `order`.
+  \ See: `-order`, `>order`, `set-order`, `order`.
   \
   \ }doc
 
@@ -130,7 +130,7 @@ variable -order-wid
   \ Remove all instances of word list identified by _wid_ from
   \ the search order.
   \
-  \ See also: `+order`, `>order`, `set-order`, `order`.
+  \ See: `+order`, `>order`, `set-order`, `order`.
   \
   \ }doc
 
@@ -148,7 +148,7 @@ variable -order-wid
   \
   \ Origin: eForth's `widof`.
   \
-  \ See also: `wordlist`, `vocabulary`.
+  \ See: `wordlist`, `vocabulary`.
   \
   \ }doc
 
@@ -163,7 +163,7 @@ variable -order-wid
   \ Associate the latest name to the word list identified by
   \ _wid_.
   \
-  \ See also: `wordlist`, `wordlist-name!`,
+  \ See: `wordlist`, `wordlist-name!`,
   \ `wordlist>vocabulary`, `wordlists`, `latest`.
   \
   \ }doc
@@ -179,7 +179,7 @@ variable -order-wid
   \ Create a vocabulary _name_ for the word list identified by
   \ _wid_.
   \
-  \ See also: `wordlist`, `vocabulary`, `latest>wordlist`,
+  \ See: `wordlist`, `vocabulary`, `latest>wordlist`,
   \ `wordlists`.
   \
   \ }doc
@@ -200,7 +200,7 @@ variable -order-wid
   \
   \ Origin: Forth-83 (Required Word Set).
   \
-  \ See also: `wordlist`, `definitions`, `wordlist-of`.
+  \ See: `wordlist`, `definitions`, `wordlist-of`.
   \
   \ }doc
 
@@ -220,7 +220,7 @@ variable -order-wid
   \
   \ Origin: Gforth.
   \
-  \ See also: `only`, `set-order`, `#order`.
+  \ See: `only`, `set-order`, `#order`.
   \
   \ }doc
 
@@ -233,7 +233,7 @@ variable -order-wid
   \ Leave the _nt_ of the topmost word in the first word list
   \ of the search order.
   \
-  \ See also: `set-order`, `context`.
+  \ See: `set-order`, `context`.
   \
   \ }doc
 
@@ -248,7 +248,7 @@ variable -order-wid
   \ word list identified by _wid_. If the definition is found,
   \ return its _nt_, else return zero.
   \
-  \ See also: `search-wordlist`, `find-name-from`, `find-name`,
+  \ See: `search-wordlist`, `find-name-from`, `find-name`,
   \ `find`.
   \
   \ }doc
@@ -272,7 +272,7 @@ variable -order-wid
   \ Origin: Forth-83 (Required Word Set), Forth-94 (CORE,
   \ SEARCH), Forth-2012 (CORE, SEARCH).
   \
-  \ See also: `find-name`, `find-name-from`, `find-name-in`.
+  \ See: `find-name`, `find-name-from`, `find-name-in`.
   \
   \ }doc
 
@@ -312,7 +312,7 @@ variable -order-wid
   \
   \ Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
   \
-  \ See also: `find-name`, `find-name-from`, `find-name-in`,
+  \ See: `find-name`, `find-name-from`, `find-name-in`,
   \ `find`.
   \
   \ }doc

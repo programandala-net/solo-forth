@@ -39,7 +39,7 @@
   \
   \ Word list for substitution names and replacement texts.
   \
-  \ See also: `replaces`.
+  \ See: `replaces`.
   \
   \ }doc
 
@@ -63,7 +63,7 @@ need substitute-wordlist need nextname
   \ ``(substitution`` is a common factor of `substitution` and
   \ `xt-substitution`.
   \
-  \ See also: `substitution`, `xt-substitution`, `replaces`.
+  \ See: `substitution`, `xt-substitution`, `replaces`.
   \
   \ }doc
 
@@ -83,7 +83,7 @@ need (substitution need /counted-string
   \ storage space.  Return the address of the buffer for the
   \ substitution text.
   \
-  \ See also: `replaces`.
+  \ See: `replaces`.
   \
   \ }doc
 
@@ -103,7 +103,7 @@ need substitute-wordlist need search-wordlist
   \ Given a string _ca len_, find its substitution.  Return
   \ _xt_ and _f_ if found, or just zero if not found.
   \
-  \ See also: `replaces`.
+  \ See: `replaces`.
   \
   \ }doc
 
@@ -140,7 +140,7 @@ need slit-substitution
   \
   \ Origin: Forth-2012 (STRING EXT).
   \
-  \ See also: `substitute`, `unescape`, `substitution`,
+  \ See: `substitute`, `unescape`, `substitution`,
   \ `find-substitution`, `substitute-wordlist`.
   \
   \ }doc

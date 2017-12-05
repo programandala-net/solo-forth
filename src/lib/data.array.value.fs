@@ -67,7 +67,7 @@
   \
   \ Return contents _x_ of element _n_.
   \
-  \ See also: `ato`, `+ato`.
+  \ See: `ato`, `+ato`.
   \
   \ }doc
 
@@ -91,7 +91,7 @@
   \
   \ Return contents _xd_ of element _n_.
   \
-  \ See also: `2ato`, `+2ato`.
+  \ See: `2ato`, `+2ato`.
   \
   \ }doc
 
@@ -114,7 +114,7 @@
   \
   \ Return contents _c_ of element _n_.
   \
-  \ See also: `cato`, `+cato`.
+  \ See: `cato`, `+cato`.
   \
   \ }doc
 
@@ -131,7 +131,7 @@
   \ Store _x_ into element _n_ of 1-dimension single-cell
   \ values array _xt_.
   \
-  \ See also: `ato`.
+  \ See: `ato`.
   \
   \ }doc
 
@@ -148,7 +148,7 @@
   \
   \ ``ato`` is an `immediate` word.
   \
-  \ See also: `array`, `(ato)`.
+  \ See: `array`, `(ato)`.
   \
   \ }doc
 
@@ -163,7 +163,7 @@
   \ Add _n1_ to element _n2_ of 1-dimension single-cell
   \ values array _xt_.
   \
-  \ See also: `avalue`, `+ato`.
+  \ See: `avalue`, `+ato`.
   \
   \ }doc
 
@@ -180,7 +180,7 @@
   \
   \ ``+ato`` is an `immediate` word.
   \
-  \ See also: `avalue`, `(+ato)`.
+  \ See: `avalue`, `(+ato)`.
   \
   \ }doc
 
@@ -195,7 +195,7 @@
   \ Store _xd_ into element _n_ of 1-dimension double-cell
   \ values array _xt_.
   \
-  \ See also: `2ato`.
+  \ See: `2ato`.
   \
   \ }doc
 
@@ -212,7 +212,7 @@
   \
   \ ``2ato`` is an `immediate` word.
   \
-  \ See also: `2avalue`, `(2ato)`.
+  \ See: `2avalue`, `(2ato)`.
   \
   \ }doc
 
@@ -229,7 +229,7 @@
   \ Store _c_ into element _n_ of 1-dimension character
   \ values array _xt_.
   \
-  \ See also: `cato`.
+  \ See: `cato`.
   \
   \ }doc
 
@@ -246,7 +246,7 @@
   \
   \ ``cato`` is an `immediate` word.
   \
-  \ See also: `cavalue`, `(cato)`.
+  \ See: `cavalue`, `(cato)`.
   \
   \ }doc
 
@@ -261,7 +261,7 @@
   \ Add _c_ to element _n_ of 1-dimension character values
   \ array _xt_.
   \
-  \ See also: `cavalue`, `+cato`.
+  \ See: `cavalue`, `+cato`.
   \
   \ }doc
 
@@ -278,7 +278,7 @@
   \
   \ ``+cato`` is an `immediate` word.
   \
-  \ See also: `cavalue`, `(+cato)`.
+  \ See: `cavalue`, `(+cato)`.
   \
   \ }doc
 

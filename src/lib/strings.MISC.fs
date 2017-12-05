@@ -35,7 +35,7 @@
   \ Is string _ca1 len1_ lexicographically smaller than string
   \ _ca2 len2_?
   \
-  \ See also: `str=`, `str>`, `compare`.
+  \ See: `str=`, `str>`, `compare`.
   \
   \ }doc
 
@@ -49,7 +49,7 @@
   \ Is string _ca1 len1_ lexicographically larger than string
   \ _ca2 len2_?
   \
-  \ See also: `str<`, `str=`, `compare`.
+  \ See: `str<`, `str=`, `compare`.
   \
   \ }doc
 
@@ -63,7 +63,7 @@
   \ Remove leading and trailing spaces from a string _ca len1_,
   \ returning the result string _ca2 len2_.
   \
-  \ See also: `-leading`, `-trailing`.
+  \ See: `-leading`, `-trailing`.
   \
   \ }doc
 
@@ -78,7 +78,7 @@
   \ Add the string _ca1 len1_ to the end of the counted string
   \ _ca2_.
   \
-  \ See also: `place`, `s+`, `smove`, `count`.
+  \ See: `place`, `s+`, `smove`, `count`.
   \
   \ }doc
 
@@ -103,7 +103,7 @@
   \ Origin: Charscan library, by Wil Baden, 2003-02-17, public
   \ domain.
   \
-  \ See also: `search`, `compare`, `skip`, `scan`.
+  \ See: `search`, `compare`, `skip`, `scan`.
   \
   \ }doc
 
@@ -122,7 +122,7 @@
   \
   \ Convert _ud_ to string _ca len_.
   \
-  \ See also: `u>str`, `d>str`, `char>string`.
+  \ See: `u>str`, `d>str`, `char>string`.
   \
   \ }doc
 
@@ -135,7 +135,7 @@
   \
   \ Convert _u_ to string _ca len_.
   \
-  \ See also: `n>str`, `ud>str`, `d>str`, `char>string`.
+  \ See: `n>str`, `ud>str`, `d>str`, `char>string`.
   \
   \ }doc
 
@@ -152,7 +152,7 @@
   \
   \ Convert _d_ to string _ca len_.
   \
-  \ See also: `n>str`, `ud>str`, `char>string`.
+  \ See: `n>str`, `ud>str`, `char>string`.
   \
   \ }doc
 
@@ -185,7 +185,7 @@
   \ Convert the char _c_ to a string _ca len_ in the
   \ `stringer`.
   \
-  \ See also: `chars>string`, `ruler`, `u>str`, `d>str`,
+  \ See: `chars>string`, `ruler`, `u>str`, `d>str`,
   \ `ud>str`.
   \
   \ }doc
@@ -205,7 +205,7 @@
   \ c1..cn :: chars to make the string with (_c1_ is the last one)
   \ n :: number of chars
   \
-  \ See also: `ruler`, `s+`.
+  \ See: `ruler`, `s+`.
   \
   \ }doc
 
@@ -219,7 +219,7 @@
   \ Convert _x_ to a 1-cell binary string _ca len_ in `pad`.
   \ _ca len_ contains _x_ "as is", as stored in memory.
   \
-  \ See also: `c>bstring`, `2>bstring`.
+  \ See: `c>bstring`, `2>bstring`.
   \
   \ }doc
 
@@ -233,7 +233,7 @@
   \ Convert _c_ to a 1-char binary string _ca len_ in `pad`,
   \ _ca len_ contains _c_ "as is", as stored in memory.
   \
-  \ See also: `>bstring`, `2>bstring`.
+  \ See: `>bstring`, `2>bstring`.
   \
   \ }doc
 
@@ -248,7 +248,7 @@
   \ Convert _xd_ to a 2-cell binary string in `pad`.
   \ _ca len_ contains _xd_ "as is", as stored in memory.
   \
-  \ See also: `>bstring`, `c>bstring`.
+  \ See: `>bstring`, `c>bstring`.
   \
   \ }doc
 
@@ -328,7 +328,7 @@ code lengths
   \ Append the string _ca2 len2_ to the end of string _ca1
   \ len1_ returning the string _ca3 len3_ in the `stringer`.
   \
-  \ See also: `/string`, `string/`, `lengths`.
+  \ See: `/string`, `string/`, `lengths`.
   \
   \ }doc
 
@@ -361,7 +361,7 @@ code upper ( c -- c' ) E1 c, 7D c, 21 c, pusha , E5 c,
   \
   \ Convert _c_ to uppercase _c'_.
   \
-  \ See also: `uppers`, `lower`, `upper_`.
+  \ See: `uppers`, `lower`, `upper_`.
   \
   \ }doc
 
@@ -378,7 +378,7 @@ set-current ?)
   \ Return address _a_ of a routine that converts the ASCII
   \ character in the A register to uppercase.
   \
-  \ See also: `upper`, `lower_`.
+  \ See: `upper`, `lower_`.
   \
   \ }doc
 
@@ -406,7 +406,7 @@ code uppers ( ca len -- )
   \
   \ Convert string _ca len_ to uppercase.
   \
-  \ See also: `uppers1`, `lowers`, `upper`.
+  \ See: `uppers1`, `lowers`, `upper`.
   \
   \ }doc
 
@@ -419,7 +419,7 @@ code uppers ( ca len -- )
   \
   \ Change the first char of string _ca len_ to uppercase.
   \
-  \ See also: `uppers`, `upper`.
+  \ See: `uppers`, `upper`.
   \
   \ }doc
 
@@ -449,7 +449,7 @@ code lowers ( ca len -- )
   \
   \ Convert string _ca len_ to lowercase.
   \
-  \ See also: `uppers`, `lower`.
+  \ See: `uppers`, `lower`.
   \
   \ }doc
 
@@ -474,7 +474,7 @@ code lowers ( ca len -- )
   \
   \ Count number _+n_ of spaces in a string _ca len_.
   \
-  \ See also: `#chars`, `spaces`.
+  \ See: `#chars`, `spaces`.
   \
   \ }doc
 
@@ -489,7 +489,7 @@ code lowers ( ca len -- )
   \
   \ Return the count _+n_ of chars _c_ in a string _ca len_.
   \
-  \ See also: `#spaces`, `char-in-string?`, `char-position?`.
+  \ See: `#spaces`, `char-in-string?`, `char-position?`.
   \
   \ }doc
 
@@ -512,7 +512,7 @@ code lowers ( ca len -- )
   \ Get the last name _ca2 len2_ from string _ca1 len1_.  A
   \ name is a substring separated by spaces.
   \
-  \ See also: `first-name`, `/name`, `string/`, `-suffix`.
+  \ See: `first-name`, `/name`, `string/`, `-suffix`.
   \
   \ }doc
 
@@ -534,7 +534,7 @@ code lowers ( ca len -- )
   \ after the first name in _ca1 len1).  A name is a substring
   \ separated by spaces.
   \
-  \ See also: `first-name`, `/string`, `-prefix`, `-suffix`,
+  \ See: `first-name`, `/string`, `-prefix`, `-suffix`,
   \ `string/`.
   \
   \ }doc
@@ -554,7 +554,7 @@ code lowers ( ca len -- )
   \ Return the first name _ca2 len2_ from string _ca1 len1_.  A
   \ name is a substring separated by spaces.
   \
-  \ See also: `/first-name`, `last-name`, `/name`, `-prefix`,
+  \ See: `/first-name`, `last-name`, `/name`, `-prefix`,
   \ `/string`.
   \
   \ }doc
@@ -571,7 +571,7 @@ code lowers ( ca len -- )
   \ Get the first name _ca3 len3_ from string _ca2 len2_,
   \ returning also the remaining string _ca3 len3_.
   \
-  \ See also: `first-name`, `/name`.
+  \ See: `first-name`, `/name`.
   \
   \ }doc
 
@@ -592,7 +592,7 @@ code lowers ( ca len -- )
   \
   \ Is string _ca2 len2_ the prefix of string _ca1 len1_?
   \
-  \ See also: `suffix?`, `-prefix`.
+  \ See: `suffix?`, `-prefix`.
   \
   \ }doc
 
@@ -611,7 +611,7 @@ code lowers ( ca len -- )
   \
   \ Is string _ca2 len2_ the suffix of string _ca1 len1_?
   \
-  \ See also: `-suffix`, `prefix?`.
+  \ See: `-suffix`, `prefix?`.
   \
   \ }doc
 
@@ -631,7 +631,7 @@ code lowers ( ca len -- )
   \
   \ Remove prefix _ca2 len2_ from string _ca1 len1_.
   \
-  \ See also: `-suffix`, `/string`, `1/string`, `-leading`.
+  \ See: `-suffix`, `/string`, `1/string`, `-leading`.
   \
   \ }doc
 
@@ -650,7 +650,7 @@ code lowers ( ca len -- )
   \
   \ Remove suffix _ca2 len2_ from string _ca1 len1_.
   \
-  \ See also: `-prefix`, `string/`, `chop`, `-trailing`.
+  \ See: `-prefix`, `string/`, `chop`, `-trailing`.
   \
   \ }doc
 
@@ -665,7 +665,7 @@ code lowers ( ca len -- )
   \
   \ Does string _ca1 len1_ contain string _ca2 len2_?
   \
-  \ See also: `char-position?`, `char-in-string?`, `compare`,
+  \ See: `char-position?`, `char-in-string?`, `compare`,
   \ `#chars`,
   \
   \ }doc
@@ -688,7 +688,7 @@ code lowers ( ca len -- )
   \
   \ Remove the last character from string _ca len_.
   \
-  \ See also: `-suffix`, `/string`, `string/`.
+  \ See: `-suffix`, `/string`, `string/`.
   \
   \ }doc
 
@@ -700,7 +700,7 @@ code lowers ( ca len -- )
   \
   \ Return an empty string in the `stringer`.
   \
-  \ See also: `s"`, `s\"`, `s'`.
+  \ See: `s"`, `s\"`, `s'`.
   \
   \ }doc
 
@@ -740,7 +740,7 @@ code lowers ( ca len -- )
   \ Copy string _ca1 len1_ to the `stringer` as a counted
   \ string and return it as _ca2_.
   \
-  \ See also: `>stringer`, `allocate-stringer`.
+  \ See: `>stringer`, `allocate-stringer`.
   \
   \ }doc
 
@@ -773,7 +773,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \
   \ Return the _len2_ ending characters of string _ca1 len1_.
   \
-  \ See also: `/string`.
+  \ See: `/string`.
   \
   \ }doc
 
@@ -789,7 +789,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \
   \ Is char _c_ in string _ca len_?
   \
-  \ See also: `char-position?`, `contains`, `compare`,
+  \ See: `char-position?`, `contains`, `compare`,
   \ `#chars`.
   \
   \ }doc
@@ -807,7 +807,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \ If char _c_ is in string _ca len_, return its first
   \ position _+n_ and _true_; else return _false_.
   \
-  \ See also: `char-in-string?`, `contains`, `compare`.
+  \ See: `char-in-string?`, `contains`, `compare`.
   \
   \ }doc
 
@@ -823,7 +823,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \ Return a string _ca len_ of characters _c_, in the
   \ `stringer`.
   \
-  \ See also: `chars>string`, `char>string`, `s+`.
+  \ See: `chars>string`, `char>string`, `s+`.
   \
   \ }doc
 
@@ -844,7 +844,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \ len_, being _ca2_ the address where the original string was
   \ stored by ``sconstant``.
   \
-  \ See also: `sconstants`.
+  \ See: `sconstants`.
   \
   \ }doc
 
@@ -886,7 +886,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \ 3 digitname cr type cr
   \ ----
 
-  \ See also: `sconstant`.
+  \ See: `sconstant`.
   \
   \ }doc
 
@@ -916,7 +916,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \
   \ Origin: Forth-2012 (STRING EXT).
   \
-  \ See also: `replaces`.
+  \ See: `replaces`.
   \
   \ }doc
 

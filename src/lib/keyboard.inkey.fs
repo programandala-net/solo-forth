@@ -49,7 +49,7 @@ code inkey ( -- c | 0 )
   \ ``inkey`` works only when an interrupts routine reads the
   \ keyboard and updates the related system variables.
   \
-  \ See also: `get-inkey`, `key`.
+  \ See: `get-inkey`, `key`.
   \
   \ }doc
 

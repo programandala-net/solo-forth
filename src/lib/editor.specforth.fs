@@ -134,7 +134,7 @@ need r# need top
   \
   \ Erase line _n_ with blanks.
   \
-  \ See also: `b`, `c`, `d`, `f`, `<<,h>>`,
+  \ See: `b`, `c`, `d`, `f`, `<<,h>>`,
   \ `<<src/lib/editor.specforth.fsb,i>>`, `l`, `m`, `n`, `p`, `r`, `s`,
   \ `t`, `x`.
   \
@@ -153,7 +153,7 @@ need r# need top
   \ moved down one line. Line _n_ becomes blank. Line 15 is
   \ lost.
   \
-  \ See also: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
+  \ See: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
   \ `p`, `r`, `t`, `x`.
   \
   \ }doc
@@ -167,7 +167,7 @@ need r# need top
   \ Hold line _n_ at `pad` (used by system more often than by
   \ user).
   \
-  \ See also: `b`, `c`, `d`, `e`, `f`, `i`, `l`, `m`, `n`,
+  \ See: `b`, `c`, `d`, `e`, `f`, `i`, `l`, `m`, `n`,
   \ `p`, `r`, `s`, `t`, `x`.
   \
   \ }doc
@@ -183,7 +183,7 @@ need r# need top
   \ Delete line _n_ but hold it in `pad`. Line 15 becomes free
   \ as all statements move up one line.
   \
-  \ See also: `b`, `c`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
+  \ See: `b`, `c`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
   \ `p`, `r`, `s`, `t`, `x`.
   \
   \ }doc
@@ -197,7 +197,7 @@ need r# need top
   \ Move the cursor by _n_ characters. The position of the
   \ cursor on its line is shown by a "_" (underline).
   \
-  \ See also: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `n`,
+  \ See: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `n`,
   \ `p`, `r`, `s`, `t`, `x`.
   \
   \ }doc
@@ -210,7 +210,7 @@ need r# need top
   \
   \ Type line _n_ and save in `pad`.
   \
-  \ See also: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
+  \ See: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
   \ `p`, `r`, `s`, `x`.
   \
   \ }doc
@@ -223,7 +223,7 @@ need r# need top
   \
   \ List the current block.
   \
-  \ See also: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `m`, `n`,
+  \ See: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `m`, `n`,
   \ `p`, `r`, `s`, `t`, `x`.
   \
   \ }doc
@@ -236,7 +236,7 @@ need r# need top
   \
   \ Replace line _n_ with text in `pad`.
   \
-  \ See also: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
+  \ See: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
   \ `p`, `s`, `t`, `x`.
   \
   \ }doc
@@ -249,7 +249,7 @@ need r# need top
   \
   \ Put "ccc" on line _n_.
   \
-  \ See also: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
+  \ See: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
   \ `r`, `s`, `t`, `x`.
   \
   \ }doc
@@ -263,7 +263,7 @@ need r# need top
   \ Insert text from `pad` at line _n_, moving the old line _n_
   \ down. Line 15 is lost.
   \
-  \ See also: `b`, `c`, `d`, `e`, `f`, `h`, `l`, `m`, `n`,
+  \ See: `b`, `c`, `d`, `e`, `f`, `h`, `l`, `m`, `n`,
   \ `p`, `r`, `s`, `t`, `x`.
   \
   \ }doc
@@ -370,7 +370,7 @@ need r# need top
   \ Find the next occurrence of the string found by an `f`
   \ command.
   \
-  \ See also: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`,
+  \ See: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`,
   \ `p`, `r`, `s`, `t`, `x`.
   \
   \ }doc
@@ -387,7 +387,7 @@ need r# need top
   \ not found and error message is given and the cursor
   \ repositioned to the top of the block.
   \
-  \ See also: `b`, `c`, `d`, `e`, `h`, `i`, `l`, `m`, `n`,
+  \ See: `b`, `c`, `d`, `e`, `h`, `i`, `l`, `m`, `n`,
   \ `p`, `r`, `s`, `t`, `x`.
   \
   \ }doc
@@ -401,7 +401,7 @@ need r# need top
   \ Used after `f` to backup the cursor by the length of the
   \ most recent text.
   \
-  \ See also: `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
+  \ See: `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
   \ `p`, `r`, `s`, `t`, `x`.
   \
   \ }doc
@@ -414,7 +414,7 @@ need r# need top
   \
   \ Find and delete the next occurrence of the string "ccc".
   \
-  \ See also: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
+  \ See: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
   \ `p`, `r`, `s`, `t`.
   \
   \ }doc
@@ -452,7 +452,7 @@ need r# need top
   \
   \ Copy in "ccc" to the cursor line at the cursor position.
   \
-  \ See also: `b`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
+  \ See: `b`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
   \ `p`, `r`, `s`, `t`, `x`.
   \
   \ }doc

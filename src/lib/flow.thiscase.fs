@@ -48,7 +48,7 @@ need alias
   \
   \ ``ifcase`` is an `immediate` and `compile-only` word.
   \
-  \ See also: `othercase`.
+  \ See: `othercase`.
   \
   \ }doc
 
@@ -64,7 +64,7 @@ need alias
   \
   \ ``exitcase`` is an `immediate` and `compile-only` word.
   \
-  \ See also: `ifcase`, `othercase`.
+  \ See: `ifcase`, `othercase`.
   \
   \ }doc
 
@@ -91,7 +91,7 @@ need alias
   \   othercase say-other ;
   \ ----
   \
-  \ See also: `ifcase`, `exitcase`, `othercase`.
+  \ See: `ifcase`, `exitcase`, `othercase`.
   \
   \ }doc
 
@@ -104,7 +104,7 @@ need alias
   \ Mark the start of the default option of a `thiscase`
   \ structure that checked _x_.
   \
-  \ See also: `thiscase`, `ifcase`, `exitcase`.
+  \ See: `thiscase`, `ifcase`, `exitcase`.
   \
   \ }doc
 

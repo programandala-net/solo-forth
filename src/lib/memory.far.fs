@@ -173,7 +173,7 @@ get-current assembler-wordlist dup >order set-current
   \
   \ Output of the routine: A and E corrupted.
   \
-  \ See also: `bank-e_`.
+  \ See: `bank-e_`.
   \
   \ }doc
 
@@ -192,7 +192,7 @@ get-current assembler-wordlist dup >order set-current
   \ - Input: E = bank
   \ - Output: A corrupted
   \
-  \ See also: `default-bank_`.
+  \ See: `default-bank_`.
   \
   \ }doc
 
@@ -389,7 +389,7 @@ code !bank ( x a n -- )
   \ : !bank ( x a n -- ) bank ! default-bank ;
   \ ----
 
-  \ See also: `@bank`, `c!bank`.
+  \ See: `@bank`, `c!bank`.
   \
   \ }doc
 
@@ -417,7 +417,7 @@ code c!bank ( c ca n -- ) D1 c, e-bank_ call,
   \ : c!bank ( c ca n -- ) bank c! default-bank ;
   \ ----
 
-  \ See also: `c@bank`, `!bank`.
+  \ See: `c@bank`, `!bank`.
   \
   \ }doc
 
@@ -449,7 +449,7 @@ code @bank ( a n -- x )
   \ : @bank ( a n -- x ) bank @ default-bank ;
   \ ----
 
-  \ See also: `!bank`, `c@bank`.
+  \ See: `!bank`, `c@bank`.
   \
   \ }doc
 
@@ -476,7 +476,7 @@ code c@bank ( ca n -- c ) D1 c, e-bank_ call,
   \   bank c@ default-bank ;
   \ ----
 
-  \ See also: `c!bank`, `@bank`.
+  \ See: `c!bank`, `@bank`.
   \
   \ }doc
 

@@ -39,7 +39,7 @@
   \
   \ If the execution token is zero, do nothing.
   \
-  \ See also: `perform`, `execute`.
+  \ See: `perform`, `execute`.
   \
   \ }doc
 
@@ -128,7 +128,7 @@ code call ( a -- )
   \
   \ Execute _xt_ _n_ times.
   \
-  \ See also: `times`, `dtimes`.
+  \ See: `times`, `dtimes`.
   \
   \ }doc
 
@@ -316,7 +316,7 @@ code call ( a -- )
   \
   \ ``retry`` is an `immediate` and `compile-only` word.
   \
-  \ See also: `?retry`.
+  \ See: `?retry`.
   \
   \ }doc
 
@@ -338,7 +338,7 @@ code call ( a -- )
   \
   \ ``?retry`` is an `immediate` and `compile-only` word.
   \
-  \ See also: `retry`.
+  \ See: `retry`.
   \
   \ }doc
 
@@ -362,7 +362,7 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ immediately following the innermost syntactically enclosing
   \ `loop` or `+loop`.
   \
-  \ See also: `leave`, `unloop`, `do`, `?do`.
+  \ See: `leave`, `unloop`, `do`, `?do`.
   \
   \ }doc
 
@@ -399,7 +399,7 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \   thens ;
   \ ----
 
-  \ See also: `case`.
+  \ See: `case`.
   \
   \ }doc
 

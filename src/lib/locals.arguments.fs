@@ -44,7 +44,7 @@
   \ Loading ``toarg`` makes `@` the default action of
   \ `arguments` locals, which is hold in `arg-default-action`.
   \
-  \ See also: `+toarg`.
+  \ See: `+toarg`.
   \
   \ }doc
 
@@ -62,7 +62,7 @@
   \ Loading ``+toarg`` makes `@` the default action of
   \ `arguments` locals, which is hold in `arg-default-action`.
   \
-  \ See also: `toarg`.
+  \ See: `toarg`.
   \
   \ }doc
 
@@ -90,7 +90,7 @@ variable arg-default-action arg-default-action off
   \ `arg-action` by `arguments`, and also every time a local
   \ variable is used.
   \
-  \ See also: `arg-action`.
+  \ See: `arg-action`.
   \
   \ }doc
 
@@ -205,7 +205,7 @@ $0A arg: l5 $0C arg: l6 $0E arg: l7 $10 arg: l8 $12 arg: l9 -->
 
   \ ``arguments`` is a `compile-only` word.
   \
-  \ See also: `local`, `anon`.
+  \ See: `local`, `anon`.
   \
   \ }doc
 

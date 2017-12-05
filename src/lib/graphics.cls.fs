@@ -61,7 +61,7 @@ code cls-chars0 ( -- )
   \
   \ Clear the screen by rotating all bytes of the bitmap.
   \
-  \ See also: `cls-chars1`.
+  \ See: `cls-chars1`.
   \
   \ }doc
 
@@ -100,7 +100,7 @@ code cls-chars1 ( -- )
   \
   \ Clear the screen by rotating all bytes of the bitmap.
   \
-  \ See also: `cls-chars0`.
+  \ See: `cls-chars0`.
   \
   \ }doc
 
@@ -139,7 +139,7 @@ code horizontal-curtain ( b -- )
   \ Wash the screen with the given color attribute _b_ from the
   \ top and bottom rows to the middle.
   \
-  \ See also: `vertical-curtain`.
+  \ See: `vertical-curtain`.
   \
   \ }doc
 
@@ -178,7 +178,7 @@ code vertical-curtain ( b -- )
   \ Wash the screen with the given color attribute _b_ from the
   \ left and right columns to the middle.
   \
-  \ See also: `horizontal-curtain`.
+  \ See: `horizontal-curtain`.
   \
   \ }doc
 

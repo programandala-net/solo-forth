@@ -65,7 +65,7 @@
   \ fill it from the input source. If the input source is
   \ exhausted, throw exception #-289 (input source exhausted).
   \
-  \ See also: `parse-name`, `parse`.
+  \ See: `parse-name`, `parse`.
   \
   \ }doc
 
@@ -81,7 +81,7 @@
   \
   \ Set the string _ca len_ as the current source.
   \
-  \ See also: `set-source`, `(source-id)`.
+  \ See: `set-source`, `(source-id)`.
   \
   \ }doc
 
@@ -97,7 +97,7 @@ need-here string>source
   \ Make _ca len_ the current input source, execute _xt_, then
   \ restore the previous input source.
   \
-  \ See also: `evaluate`, `interpret`, `string>source`,
+  \ See: `evaluate`, `interpret`, `string>source`,
   \ `nest-source`.
   \
   \ Origin: Gforth.
@@ -121,7 +121,7 @@ need-here execute-parsing
   \
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
   \
-  \ See also: `interpret`, `execute-parsing`.
+  \ See: `interpret`, `execute-parsing`.
   \
   \ }doc
 
@@ -146,7 +146,7 @@ need-here execute-parsing
   \
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
   \
-  \ See also: `[char]`.
+  \ See: `[char]`.
   \
   \ }doc
 
@@ -180,7 +180,7 @@ need-here execute-parsing
   \
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
   \
-  \ See also: `char`.
+  \ See: `char`.
   \
   \ }doc
 

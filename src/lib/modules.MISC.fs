@@ -69,7 +69,7 @@
   \ access private words later, e.g.  ``seclusion dup constant
   \ my-module`.
   \
-  \ See also: `internal`, `isolate`, `module`, `package`,
+  \ See: `internal`, `isolate`, `module`, `package`,
   \ `privatize`.
   \
   \ }doc
@@ -82,7 +82,7 @@
   \
   \ Start the public definitions of a `seclusion` module.
   \
-  \ See also: `+seclusion`, `end-seclusion`.
+  \ See: `+seclusion`, `end-seclusion`.
   \
   \ }doc
 
@@ -94,7 +94,7 @@
   \
   \ Start more private definitions of a `seclusion` module.
   \
-  \ See also: `-seclusion`, `end-seclusion`.
+  \ See: `-seclusion`, `end-seclusion`.
   \
   \ }doc
 
@@ -106,7 +106,7 @@
   \
   \ End a `seclusion` module.
   \
-  \ See also: `-seclusion`, `+seclusion`.
+  \ See: `-seclusion`, `+seclusion`.
   \
   \ }doc
 
@@ -132,7 +132,7 @@
   \ previous
   \ ----
 
-  \ See also: `internal`, `module`, `package`, `privatize`,
+  \ See: `internal`, `module`, `package`, `privatize`,
   \ `seclusion`.
   \
   \ }doc

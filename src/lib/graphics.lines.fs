@@ -68,7 +68,7 @@ code rdraw176 ( gx gy -- )
   \ ``rdraw176`` is equivalent to Sinclair BASIC's ``DRAW``
   \ command.
   \
-  \ See also: `adraw176`, `rdraw`.
+  \ See: `adraw176`, `rdraw`.
   \
   \ }doc
 
@@ -83,7 +83,7 @@ code rdraw176 ( gx gy -- )
   \
   \ A double-cell variable used by `adraw176` and `aline176`.
   \
-  \ See also: `y1`, `incx`, `incy`.
+  \ See: `y1`, `incx`, `incy`.
   \
   \ }doc
 
@@ -93,7 +93,7 @@ code rdraw176 ( gx gy -- )
   \
   \ A double-cell variable used by `adraw176` and `aline176`.
   \
-  \ See also: `x1`, `incx`, `incy`.
+  \ See: `x1`, `incx`, `incy`.
   \
   \ }doc
 
@@ -103,7 +103,7 @@ code rdraw176 ( gx gy -- )
   \
   \ A double-cell variable used by `adraw176` and `aline176`.
   \
-  \ See also: `incy`, `x1`, `y1`.
+  \ See: `incy`, `x1`, `y1`.
   \
   \ }doc
 
@@ -113,7 +113,7 @@ code rdraw176 ( gx gy -- )
   \
   \ A double-cell variable used by `adraw176` and `aline176`.
   \
-  \ See also: `incx`, `x1`, `y1`.
+  \ See: `incx`, `x1`, `y1`.
   \
   \ }doc
 
@@ -249,7 +249,7 @@ code rdraw ( gx gy -- )
   \ Draw a line relative _gx gy_ to the current coordinates.
   \ _gx_ is 0..255; _gy_ is 0..191.
   \
-  \ See also: `rdraw176`, `adraw176`.
+  \ See: `rdraw176`, `adraw176`.
 
 ( adraw176 )
 
@@ -291,7 +291,7 @@ need x1 need incx need y1 need incy
   \ rows of the screen (the lower 16 pixel rows are not used).
   \ _gx_ is 0..255; _gy_ is 0..175.
   \
-  \ See also: `rdraw176`, `rline176`.
+  \ See: `rdraw176`, `rline176`.
   \
   \ }doc
 
@@ -338,7 +338,7 @@ need x1 need incx need y1 need incy
   \
   \ ``aline176`` is faster than `adraw176`.
   \
-  \ See also: `rdraw176`.
+  \ See: `rdraw176`.
   \
   \ }doc
 
@@ -407,7 +407,7 @@ code orthodraw ( gx gy gxinc gyinc len -- )
   \ are updated.  That's what makes ``orthodraw`` much slower
   \ than `ortholine`.
   \
-  \ See also: `adraw176`, `rdraw176`.
+  \ See: `adraw176`, `rdraw176`.
   \
   \ }doc
 
@@ -520,7 +520,7 @@ code ortholine ( gx gy gxinc gyinc len -- )
   \ system graphic coordinates are not updated. That's what
   \ makes ``ortholine`` almost twice faster than `orthodraw`.
   \
-  \ See also: `rline176`.
+  \ See: `rline176`.
   \
   \ }doc
 

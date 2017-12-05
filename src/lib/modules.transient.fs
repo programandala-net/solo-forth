@@ -111,7 +111,7 @@ variable old-current-latest
   \ The inner operation is: Restore the old values of `dp`,
   \ `np`, `limit` and `farlimit`.
   \
-  \ See also: `forget-transient`.
+  \ See: `forget-transient`.
   \
   \ }doc
 

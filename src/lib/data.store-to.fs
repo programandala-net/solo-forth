@@ -71,7 +71,7 @@ need >body
   \
   \ Origin: IsForth.
   \
-  \ See also: `c!>`, `2!>`.
+  \ See: `c!>`, `2!>`.
   \
   \ }doc
 
@@ -115,7 +115,7 @@ need >body
   \
   \ Origin: IsForth's ``!>``.
   \
-  \ See also: `!>`, `c!>`.
+  \ See: `!>`, `c!>`.
   \
   \ }doc
 
@@ -160,7 +160,7 @@ need >body
   \
   \ Origin: IsForth's ``!>``.
   \
-  \ See also: `!>`, `2!>`.
+  \ See: `!>`, `2!>`.
   \
   \ }doc
 

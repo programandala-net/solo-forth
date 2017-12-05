@@ -50,7 +50,7 @@ previous set-current ?)
   \ ``pushhlde`` is useful for exiting from a `code` word using
   \ an absolute conditional jump.
   \
-  \ See also: `pusha`, `pushhl`.
+  \ See: `pusha`, `pushhl`.
   \
   \ }doc
 
@@ -114,7 +114,7 @@ need c@+ need for need 16hex. need 8hex.
 
   \ Origin: Pygmy Forth.
   \
-  \ See also: `dump`, `wdump`, `assembler`.
+  \ See: `dump`, `wdump`, `assembler`.
   \
   \ }doc
 

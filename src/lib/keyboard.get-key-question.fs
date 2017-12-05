@@ -53,7 +53,7 @@ code get-key? ( -- f )
   \ An alternative to `key?`. It works also when the system
   \ interrupts are off. Variant with relative jumps.
   \
-  \ See also: `key?`, `fast-get-key?`.
+  \ See: `key?`, `fast-get-key?`.
   \
   \ }doc
 
@@ -84,7 +84,7 @@ code fast-get-key? ( -- f )
   \ An alternative to `key?`. It works also when the system
   \ interrupts are off. Faster variant with absolute jumps.
   \
-  \ See also: `get-key?`.
+  \ See: `get-key?`.
   \
   \ }doc
 

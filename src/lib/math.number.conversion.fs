@@ -38,7 +38,7 @@
   \ valid point, return _n_. If conversion fails due to an
   \ invalid character, an exception #-275 is thrown.
   \
-  \ See also: `number?`, `>number`.
+  \ See: `number?`, `>number`.
   \
   \ }doc
 
@@ -50,7 +50,7 @@
   \
   \ A constant. _n_ is the number of bits in a cell.
   \
-  \ See also: `cell`, `environment?`.
+  \ See: `cell`, `environment?`.
   \
   \ }doc
 

@@ -45,7 +45,7 @@ code fade-display ( -- )
   \ Do a screen fade to black, by decrementing the values of
   \ paper and ink in a loop.
   \
-  \ See also: `blackout`, `attr-cls`.
+  \ See: `blackout`, `attr-cls`.
   \
   \ }doc
 
@@ -78,7 +78,7 @@ code invert-display ( -- )
   \
   \ Invert the pixels of the whole screen.
   \
-  \ See also: `wave-display`, `fade-display`.
+  \ See: `wave-display`, `fade-display`.
   \
   \ }doc
 
@@ -105,7 +105,7 @@ code wave-display ( -- )
   \ Modify the screen bitmap with a water effect. At the end
   \ the original image is  restored.
   \
-  \ See also: `invert-display`, `fade-display`.
+  \ See: `invert-display`, `fade-display`.
   \
   \ }doc
 
@@ -129,7 +129,7 @@ code blackout ( -- )
   \
   \ Erase the screen (bitmap and the attributes) with zeros.
   \
-  \ See also: `fade-display`, `cls`, `attr-cls`.
+  \ See: `fade-display`, `cls`, `attr-cls`.
   \
   \ }doc
 

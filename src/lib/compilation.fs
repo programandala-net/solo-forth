@@ -33,7 +33,7 @@
   \
   \ ``[true]`` is an `immediate` word.
   \
-  \ See also: `[false]`, `true`.
+  \ See: `[false]`, `true`.
   \
   \ }doc
 
@@ -45,7 +45,7 @@
   \
   \ ``[false]`` is an `immediate` word.
   \
-  \ See also: `[true]`, `false`.
+  \ See: `[true]`, `false`.
   \
   \ }doc
 
@@ -78,7 +78,7 @@
   \
   \ Origin: Forth-94 (TOOLS EXT), Forth-2012 (TOOLS EXT).
   \
-  \ See also: `[if]`.
+  \ See: `[if]`.
   \
   \ }doc
 
@@ -99,7 +99,7 @@
   \
   \ Origin: Forth-94 (TOOLS EXT), Forth-2012 (TOOLS EXT).
   \
-  \ See also: `?\`, `?(`.
+  \ See: `?\`, `?(`.
   \
   \ }doc
 
@@ -128,7 +128,7 @@
   \
   \ Get _nt_ from its _dfa_.
   \
-  \ See also: `name>body`, `link>name`.
+  \ See: `name>body`, `link>name`.
   \
   \ }doc
 
@@ -141,7 +141,7 @@
   \
   \ Get _dfa_ from its _nt_.
   \
-  \ See also: `body>name`.
+  \ See: `body>name`.
   \
   \ }doc
 
@@ -154,7 +154,7 @@
   \
   \ Get _nt_ from its _lfa_.
   \
-  \ See also: `name>link`.
+  \ See: `name>link`.
   \
   \ }doc
 
@@ -167,7 +167,7 @@
   \
   \ Get _lfa_ from its _nt_.
   \
-  \ See also: `link>name`.
+  \ See: `link>name`.
   \
   \ }doc
 
@@ -180,7 +180,7 @@
   \
   \ Get the previous _nt2_ from _nt1_.
   \
-  \ See also: `name>name`.
+  \ See: `name>name`.
   \
   \ }doc
 
@@ -193,7 +193,7 @@
   \
   \ Get the next _nt2_ from _nt1_.
   \
-  \ See also: `name<name`.
+  \ See: `name<name`.
   \
   \ }doc
 
@@ -244,7 +244,7 @@
   \ Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
   \ Forth-2012 (CORE).
   \
-  \ See also: `body>`.
+  \ See: `body>`.
   \
   \ }doc
 
@@ -265,7 +265,7 @@
   \ _xt_ is the execution token corresponding to the data-field
   \ address _dfa_.
   \
-  \ See also: `>body`.
+  \ See: `>body`.
   \
   \ }doc
 
@@ -290,7 +290,7 @@
   \ '' discard >>name .name     \ this prints "discard"
   \ ----
 
-  \ See also: `['']`, `'`.
+  \ See: `['']`, `'`.
   \
   \ }doc
 
@@ -310,7 +310,7 @@
   \
   \ ``['']`` is an `immediate` and `compile-only` word.
   \
-  \ See also: `literal`, `''`, `[']`.
+  \ See: `literal`, `''`, `[']`.
   \
   \ }doc
 
@@ -398,7 +398,7 @@ need >>name need name>name need name>>
   \
   \ Origin: Forth-2012 (TOOLS EXT).
   \
-  \ See also: `(comp')`.
+  \ See: `(comp')`.
   \
   \ }doc
 
@@ -486,7 +486,7 @@ need >>name need name>name need name>>
   \ (Required Word Set), Forth-94 (CORE EXT), Forth-2012 (CORE
   \ EXT, obsolescent).
   \
-  \ See also: `compile`, `compile,`.
+  \ See: `compile`, `compile,`.
   \
   \ }doc
 
@@ -502,7 +502,7 @@ need >>name need name>name need name>>
   \ ``smudged`` is obsolete. `hidden` and `revealed` are used
   \ instead.
   \
-  \ See also: `smudge`.
+  \ See: `smudge`.
   \
   \ }doc
 
@@ -523,7 +523,7 @@ need >>name need name>name need name>>
   \
   \ Origin: fig-Forth.
   \
-  \ See also: `smudged`.
+  \ See: `smudged`.
   \
   \ }doc
 
@@ -590,7 +590,7 @@ need >>name need name>name need name>>
   \
   \ ``]l`` is an `immediate` and `compile-only` word.
   \
-  \ See also: `]`, `literal`, `]2l`, `]1l`, `]cl`.
+  \ See: `]`, `literal`, `]2l`, `]1l`, `]cl`.
   \
   \ }doc
 
@@ -606,7 +606,7 @@ need >>name need name>name need name>>
   \
   \ ``]2l`` is an `immediate` and `compile-only` word.
   \
-  \ See also: `]`, `2literal`, `]l`, `]1l`, `]cl`.
+  \ See: `]`, `2literal`, `]l`, `]1l`, `]cl`.
   \
   \ }doc
 
@@ -622,7 +622,7 @@ need >>name need name>name need name>>
   \
   \ ``]1l`` is an `immediate` and `compile-only` word.
   \
-  \ See also: `]`, `1literal`, `]2l`, `]l`, `]cl`.
+  \ See: `]`, `1literal`, `]2l`, `]l`, `]cl`.
   \
   \ }doc
 
@@ -638,7 +638,7 @@ need >>name need name>name need name>>
   \
   \ ``]cl`` is an `immediate` and `compile-only` word.
   \
-  \ See also: `]`, `cliteral`, `]2l`, `]l`, `]1l`.
+  \ See: `]`, `cliteral`, `]2l`, `]l`, `]1l`.
   \
   \ }doc
 
@@ -728,7 +728,7 @@ variable here-backup
 
   \ ``[const]`` is an `immediate` and `compile-only` word.
   \
-  \ See also: `const`, `[2const]`, `[1const]`, `[cconst]`, `eval`.
+  \ See: `const`, `[2const]`, `[1const]`, `[cconst]`, `eval`.
   \
   \ }doc
 
@@ -756,7 +756,7 @@ variable here-backup
 
   \ ``[2const]`` is an `immediate` and `compile-only` word.
   \
-  \ See also: `2const`, `[const]`, `[1const]`, `[cconst]`, `eval`.
+  \ See: `2const`, `[const]`, `[1const]`, `[cconst]`, `eval`.
   \
   \ }doc
 
@@ -787,7 +787,7 @@ variable here-backup
 
   \ ``[1const]`` is an `immediate` and `compile-only` word.
   \
-  \ See also: `[2const]`, `[const]`, `[cconst]`, `eval`.
+  \ See: `[2const]`, `[const]`, `[cconst]`, `eval`.
   \
   \ }doc
 
@@ -814,7 +814,7 @@ variable here-backup
 
   \ ``[cconst]`` is an `immediate` and `compile-only` word.
   \
-  \ See also: `cconst`, `[2const]`, `[const]`, `[1const]`, `eval`.
+  \ See: `cconst`, `[2const]`, `[const]`, `[1const]`, `eval`.
   \
   \ }doc
 
@@ -878,7 +878,7 @@ variable warnings  warnings on
   \ ``?warn`` is factor of `warn.throw`, `warn.message` and
   \ `warn-throw`.
   \
-  \ See also: `no-warnings?`, `not-redefined?`, `warn.message`,
+  \ See: `no-warnings?`, `not-redefined?`, `warn.message`,
   \ `warn.throw`, `warn-throw`.
   \
   \ }doc

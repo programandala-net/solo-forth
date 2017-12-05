@@ -36,7 +36,7 @@
   \ Is character _c_ an ASCII character, i.e. in the range
   \ 0..126?
   \
-  \ See also: `printable-ascii-char?`, `control-char?`.
+  \ See: `printable-ascii-char?`, `control-char?`.
   \
   \ }doc
 
@@ -49,7 +49,7 @@
   \ Is character _c_ a control character, i.e. in the range
   \ 0..31?
   \
-  \ See also: `ascii-char?`.
+  \ See: `ascii-char?`.
   \
   \ }doc
 
@@ -66,7 +66,7 @@
   \ Is _c_ a printable ASCII character, i.e. in the range
   \ 32..126?
   \
-  \ See also: `ascii-char?`, `>printable-ascii-char`.
+  \ See: `ascii-char?`, `>printable-ascii-char`.
   \
   \ }doc
 
@@ -97,7 +97,7 @@ need printable-ascii-char?
   \ it, else return the character returned by
   \ `default-printable-ascii-char`.
   \
-  \ See also: `printable-ascii-char?`.
+  \ See: `printable-ascii-char?`.
   \
   \ }doc
 

@@ -54,7 +54,7 @@
   \
   \ Origin: Forth-2012 (FACILITY EXT).
   \
-  \ See also: `begin-structure`.
+  \ See: `begin-structure`.
   \
   \ }doc
 
@@ -79,7 +79,7 @@
   \
   \ Origin: Forth-2012 (FACILITY EXT).
   \
-  \ See also: `begin-structure`, `+field`.
+  \ See: `begin-structure`, `+field`.
   \
   \ }doc
 
@@ -102,7 +102,7 @@
   \ Add the _offset_ calculated during the compile-time action
   \ to _a1_ giving the address _a2_.
   \
-  \ See also: `begin-structure`, `+field`.
+  \ See: `begin-structure`, `+field`.
   \
   \ }doc
 
@@ -127,7 +127,7 @@
   \
   \ Origin: Forth-2012 (FACILITY EXT).
   \
-  \ See also: `begin-structure`, `+field`.
+  \ See: `begin-structure`, `+field`.
   \
   \ }doc
 
@@ -184,7 +184,7 @@
   \
   \ Origin: Forth-2012 (FACILITY EXT).
   \
-  \ See also: `end-structure`, `field:`, `cfield:`, `2field:`,
+  \ See: `end-structure`, `field:`, `cfield:`, `2field:`,
   \ `+field`.
   \
   \ }doc

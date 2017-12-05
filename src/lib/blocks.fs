@@ -38,7 +38,7 @@
   \
   \ ``?-->`` is an `immediate` word.
   \
-  \ See also: `-->`, `?(`, `?\`.
+  \ See: `-->`, `?(`, `?\`.
   \
   \ }doc
 
@@ -72,7 +72,7 @@
   \ Origin: Forth-83 (Required Word Set), Forth-94 (BLOCK),
   \ Forth-2012 (BLOCK).
   \
-  \ See also: `empty-buffers`.
+  \ See: `empty-buffers`.
   \
   \ }doc
 
@@ -91,7 +91,7 @@
   \ (Controlled Reference Words), Forth-94 (BLOCK EXT),
   \ Forth-2012 (BLOCK EXT).
   \
-  \ See also: `load`, `+thru`.
+  \ See: `load`, `+thru`.
   \
   \ }doc
 
@@ -108,7 +108,7 @@
   \ Origin: Forth-79 (Reference Word Set), Forth-83 (Appendix
   \ B. Uncontrolled Reference Words).
   \
-  \ See also: `-->`, `load`.
+  \ See: `-->`, `load`.
   \
   \ }doc
 
@@ -127,7 +127,7 @@
   \
   \ Origin: Pygmy Forth.
   \
-  \ See also: `load`.
+  \ See: `load`.
   \
   \ }doc
 
@@ -140,7 +140,7 @@
   \
   \ Load the most recently loaded block.
   \
-  \ See also: `load`, `lastblk`.
+  \ See: `load`, `lastblk`.
   \
   \ }doc
 
@@ -169,7 +169,7 @@
   \
   \ Load the block that is _n_ blocks from the current one.
   \
-  \ See also: `load`, `blk`, `+thru`.
+  \ See: `load`, `blk`, `+thru`.
   \
   \ }doc
 
@@ -183,7 +183,7 @@
   \ Load consecutively the blocks that are _u1_ blocks through
   \ _u2_ blocks from the current one.
   \
-  \ See also: `+load`, `blk`, `load`.
+  \ See: `+load`, `blk`, `load`.
   \
   \ }doc
 
@@ -215,7 +215,7 @@
   \ Set block _u_ as the current source, starting from its
   \ line _n_.
   \
-  \ See also: `block>source`.
+  \ See: `block>source`.
   \
   \ }doc
 
@@ -233,7 +233,7 @@
   \
   \ Origin: Forth-83 (Uncontrolled Reference Words).
   \
-  \ See also: `load`.
+  \ See: `load`.
   \
   \ }doc
 
@@ -260,7 +260,7 @@ variable loading-program
   \ Mark the end of a program that is being loaded by
   \ `load-program`.
   \
-  \ See also: `loading-program`.
+  \ See: `loading-program`.
   \
   \ }doc
 
@@ -297,7 +297,7 @@ variable loading-program
   \ happened (`lastblk`) is not the continuation of the
   \ previous block.
   \
-  \ See also: `loading-program`.
+  \ See: `loading-program`.
   \
   \ }doc
 
@@ -320,7 +320,7 @@ variable loading-program
   \ by spaces), and continues until the last block of the disk
   \ or until `end-program` is executed.
   \
-  \ See also: `loading-program`, `(load-program`.
+  \ See: `loading-program`, `(load-program`.
   \
   \ }doc
 

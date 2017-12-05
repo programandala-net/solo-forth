@@ -58,7 +58,7 @@
   \
   \ Return far-memory address _a_ of element _n_.
   \
-  \ See also: `far2avariable`, `farcavariable`, `avariable`.
+  \ See: `far2avariable`, `farcavariable`, `avariable`.
   \
   \ }doc
 
@@ -82,7 +82,7 @@
   \
   \ Return far-memory address _a_ of element _n_.
   \
-  \ See also: `faravariable`, `farcvariable`, `2avariable`.
+  \ See: `faravariable`, `farcvariable`, `2avariable`.
   \
   \ }doc
 
@@ -106,7 +106,7 @@
   \
   \ Return far-memory address _ca_ of element _n_.
   \
-  \ See also: `faravariable`, `far2variable`, `cavariable`.
+  \ See: `faravariable`, `far2variable`, `cavariable`.
   \
   \ }doc
 

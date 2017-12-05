@@ -204,7 +204,7 @@ variable nextnode
   \ by Gordon Charlton, whose words are defined in
   \ `charlton-heap-wordlist`.
   \
-  \ See also: `charlton-allocate`, `charlton-resize`,
+  \ See: `charlton-allocate`, `charlton-resize`,
   \ `charlton-free`.
   \
   \ }doc
@@ -346,7 +346,7 @@ variable nextnode
   \ Gordon Charlton, whose words are defined in
   \ `charlton-heap-wordlist`.
   \
-  \ See also: `charlton-resize`, `charlton-free`.
+  \ See: `charlton-resize`, `charlton-free`.
   \
   \ }doc
 

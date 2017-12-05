@@ -54,7 +54,7 @@ need thens
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See also: `of`, `endof`, `default-of`, `less-of`,
+  \ See: `of`, `endof`, `default-of`, `less-of`,
   \ `greater-of`, `between-of`, `within-of`, `or-of`, `any-of`.
   \
   \ }doc
@@ -88,7 +88,7 @@ need thens
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See also: `default-of`, `less-of`, `greater-of`,
+  \ See: `default-of`, `less-of`, `greater-of`,
   \ `between-of`, `within-of`, `or-of`, `any-of`.
   \
   \ }doc
@@ -137,7 +137,7 @@ immediate compile-only
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See also: `thens`.
+  \ See: `thens`.
   \
   \ }doc
 
@@ -203,7 +203,7 @@ need between
   \   endcase ;
   \ ----
 
-  \ See also: `case`, `within-of`, `(between-of)`.
+  \ See: `case`, `within-of`, `(between-of)`.
   \
   \ }doc
 
@@ -227,7 +227,7 @@ need between
   \ If _n1_ is less than _n2_, leave _n1 n1_; otherwise leave
   \ _n1 n3_, being _n3_ not equal to _n1_.
   \
-  \ See also: `(greater-of)`.
+  \ See: `(greater-of)`.
   \
   \ }doc
 
@@ -256,7 +256,7 @@ need between
   \   endcase ;
   \ ----
 
-  \ See also: `case`, `greater-of`, `(less-of)`.
+  \ See: `case`, `greater-of`, `(less-of)`.
   \
   \ }doc
 
@@ -274,7 +274,7 @@ need between
   \ If _n1_ is greater than _n2_, leave _n1 n1_; otherwise
   \ leave _n1 n3_, being _n3_ not equal to _n1_.
   \
-  \ See also: `(less-of)`.
+  \ See: `(less-of)`.
   \
   \ }doc
 
@@ -303,7 +303,7 @@ need between
   \   endcase ;
   \ ----
 
-  \ See also: `case`, `less-of`, `(greater-of)`.
+  \ See: `case`, `less-of`, `(greater-of)`.
   \
   \ }doc
 
@@ -364,7 +364,7 @@ need between
   \   endcase ;
   \ ----
 
-  \ See also: `case`, `or-of`, `(any-of)`.
+  \ See: `case`, `or-of`, `(any-of)`.
   \
   \ }doc
 
@@ -448,7 +448,7 @@ need between
   \   endcase ;
   \ ----
 
-  \ See also: `case`, `between-of`, `(within-of)`.
+  \ See: `case`, `between-of`, `(within-of)`.
   \
   \ }doc
 
@@ -508,7 +508,7 @@ need between
   \   endcase ;
   \ ----
 
-  \ See also: `case`, `any-of`, `(or-of)`.
+  \ See: `case`, `any-of`, `(or-of)`.
   \
   \ }doc
 

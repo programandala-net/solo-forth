@@ -92,7 +92,7 @@ variable private-start  variable private-stop
   \ ' foo              \ will fail
   \ ----
 
-  \ See also: `internal`, `isolate`, `module`, `package`,
+  \ See: `internal`, `isolate`, `module`, `package`,
   \ `seclusion`.
   \
   \ }doc

@@ -36,7 +36,7 @@ need os-flags2 need ctoggle need cset need creset
   \ Return address _ca_ of system variable FLAGS2 and bitmask
   \ _b_ of the bit that controls the status of capslock.
   \
-  \ See also: `set-capslock`, `unset-capslock`, `capslock?`,
+  \ See: `set-capslock`, `unset-capslock`, `capslock?`,
   \ `os-flags2`.
   \
   \ }doc
@@ -49,7 +49,7 @@ need os-flags2 need ctoggle need cset need creset
   \
   \ Toggle capslock.
   \
-  \ See also: `set-capslock`, `unset-capslock`, `capslock?`,
+  \ See: `set-capslock`, `unset-capslock`, `capslock?`,
   \ `capslock`.
   \
   \ }doc
@@ -62,7 +62,7 @@ need os-flags2 need ctoggle need cset need creset
   \
   \ Set capslock.
   \
-  \ See also: `unset-capslock`, `capslock?`, `toggle-capslock`,
+  \ See: `unset-capslock`, `capslock?`, `toggle-capslock`,
   \ `capslock`.
   \
   \ }doc
@@ -75,7 +75,7 @@ need os-flags2 need ctoggle need cset need creset
   \
   \ Unset capslock.
   \
-  \ See also: `set-capslock`, `capslock?`, `toggle-capslock`,
+  \ See: `set-capslock`, `capslock?`, `toggle-capslock`,
   \ `capslock`.
   \
   \ }doc
@@ -88,7 +88,7 @@ need os-flags2 need ctoggle need cset need creset
   \
   \ Is capslock set?
   \
-  \ See also: `set-capslock`, `unset-capslock`, `toggle-capslock`,
+  \ See: `set-capslock`, `unset-capslock`, `toggle-capslock`,
   \ `capslock`.
   \
   \ }doc

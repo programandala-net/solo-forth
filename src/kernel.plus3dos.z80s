@@ -214,7 +214,7 @@ endif
 ; The stack must be somewhere in central 32K (conforming to
 ; +3DOS requirements).
 ;
-; See also: `dos-ix-preserve-ip_`, `dos-tos_`.
+; See: `dos-ix-preserve-ip_`, `dos-tos_`.
 ;
 ; }doc
 
@@ -245,7 +245,7 @@ endif
 ; The stack must be somewhere in central 32K (conforming to
 ; +3DOS requirements).
 ;
-; See also: `dos-ix_`, `dos-ix-preserve-ip_`.
+; See: `dos-ix_`, `dos-ix-preserve-ip_`.
 ;
 ; }doc
 
@@ -266,7 +266,7 @@ endif
 ; The stack must be somewhere in central 32K (conforming to
 ; +3DOS requirements).
 ;
-; See also: `dos-out_`.
+; See: `dos-out_`.
 ;
 ; }doc
 
@@ -288,7 +288,7 @@ endif
 ; The stack must be somewhere in central 32K (conforming to
 ; +3DOS requirements).
 ;
-; See also: `dos-in_`.
+; See: `dos-in_`.
 ;
 ; }doc
 
@@ -316,7 +316,7 @@ endif
 ; The stack must be somewhere in central 32K (conforming to
 ; +3DOS requirements).
 ;
-; See also: `dos-ix_`, `dos-tos_`.
+; See: `dos-ix_`, `dos-tos_`.
 ;
 ; }doc
 
@@ -346,7 +346,7 @@ endif
 ;   TOS = Forth exception code (-1036..-1000)
 ; ....
 
-; See also: `dosior>ior`.
+; See: `dosior>ior`.
 ;
 ; }doc
 
@@ -368,7 +368,7 @@ _code_header dosior_to_ior_,'dosior>ior'
 ; : dosior>ior ( dosior -- ior ) 1000 + negate ;
 ; ----
 
-; See also: `pushdosior`.
+; See: `pushdosior`.
 ;
 ; }doc
 
@@ -446,7 +446,7 @@ dosior_to_ior.hl:
 ; : sector#>dos ( n -- x ) sectors/track /mod sector>dos ;
 ; ----
 
-; See also: `sectors/track`, `sector>dos`, `transfer-sector`.
+; See: `sectors/track`, `sector>dos`, `transfer-sector`.
 ;
 ; }doc
 
@@ -474,7 +474,7 @@ dosior_to_ior.hl:
 ; : block-sector#>dos ( n -- x ) 1+ sector#>dos ;
 ; ----
 
-; See also: `sectors/track`, `sector#>dos`, `transfer-block`.
+; See: `sectors/track`, `sector#>dos`, `transfer-block`.
 ;
 ; }doc
 
@@ -503,7 +503,7 @@ dosior_to_ior.hl:
 ;     transfer-sector throw ;
 ; ----
 
-; See also: `transfer-sector`, `block-sector#>dos`,
+; See: `transfer-sector`, `block-sector#>dos`,
 ; `>drive-block`.
 ;
 ; }doc
@@ -588,7 +588,7 @@ endif
 ; other way around.  The read or write mode must be previously
 ; set by `write-mode` or `read-mode`.
 ;
-; See also: `transfer-block`.
+; See: `transfer-block`.
 ;
 ; }doc
 
@@ -848,7 +848,7 @@ endif
 ;
 ; Set the write mode for `transfer-sector` and `transfer-block`.
 ;
-; See also: `read-mode`.
+; See: `read-mode`.
 ;
 ; }doc
 
@@ -864,7 +864,7 @@ endif
 ;
 ; Set the read mode for `transfer-sector` and `transfer-block`.
 ;
-; See also: `write-mode`.
+; See: `write-mode`.
 ;
 ; }doc
 
@@ -915,7 +915,7 @@ endif
 ; the drive implied by all filenames that do not specify a
 ; drive. The default drive is intially 'A'.
 ;
-; See also: `set-drive`.
+; See: `set-drive`.
 ;
 ; }doc
 
@@ -975,7 +975,7 @@ if 0 ; XXX TMP --
 ; access, i.e.  the unit used by `transfer-sector` and
 ; `transfer-block`. The default unit is initially 0.
 ;
-; See also: `set-sector-unit`.
+; See: `set-sector-unit`.
 ;
 ; }doc
 
@@ -1003,7 +1003,7 @@ set_sector_drive.patch_transfer_sector:
 ; i.e.  the unit used by `transfer-sector` and `transfer-block`.
 ; The default unit is initially 0.
 ;
-; See also: `set-sector-unit`.
+; See: `set-sector-unit`.
 ;
 ; }doc
 
@@ -1028,7 +1028,7 @@ endif
 ; Does not access the drive, but merely checks that there is a
 ; driver for it (which does not imply that the drive exists).
 ;
-; See also: `get-filename-drive`.
+; See: `get-filename-drive`.
 ;
 ; }doc
 
@@ -1051,7 +1051,7 @@ endif
 ; the drive implied by all filenames that do not specify a
 ; drive.
 ;
-; See also: `set-filename-drive`.
+; See: `set-filename-drive`.
 ;
 ; }doc
 
@@ -1078,7 +1078,7 @@ endif
 ; Does not access the drive, but merely checks that there is a
 ; driver for it (which does not imply that the drive exists).
 ;
-; See also: `get-drive`.
+; See: `get-drive`.
 ;
 ; }doc
 

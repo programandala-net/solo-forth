@@ -79,7 +79,7 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
   \
   \ Return bitmak _b_ and address _ca_ of bit _n_ of the array.
   \
-  \ See also: `@bit`, `!bit`, `bits>bytes`, `bitmasks`.
+  \ See: `@bit`, `!bit`, `bits>bytes`, `bitmasks`.
   \
   \ }doc
 
@@ -92,7 +92,7 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
   \ Store flag _f_ in an element of a bit-array, represented by
   \ address _ca_ and bitmask _b_.
   \
-  \ See also: `@bit`, `bit-array`.
+  \ See: `@bit`, `bit-array`.
   \
   \ }doc
 
@@ -107,7 +107,7 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
   \
   \ ``@bit`` is an alias of `c@and?`.
   \
-  \ See also: `!bit`, `bit-array`.
+  \ See: `!bit`, `bit-array`.
   \
   \ }doc
 

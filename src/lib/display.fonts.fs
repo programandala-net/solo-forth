@@ -41,7 +41,7 @@ code get-font ( -- a )
   \ by fetching the system variable `os-chars`.  _a_ is the
   \ bitmap address of character 0.
   \
-  \ See also: `set-font`, `default-font`.
+  \ See: `set-font`, `default-font`.
   \
   \ }doc
 
@@ -57,7 +57,7 @@ code get-font ( -- a )
   \ which is the first printable character. This is the default
   \ hold in `os-chars`.
   \
-  \ See also: `default-font`, `set-font`, `get-font`,
+  \ See: `default-font`, `set-font`, `get-font`,
   \ `outlet-autochars`.
   \
   \ }doc
@@ -161,7 +161,7 @@ code outlet-autochars ( a -- )
   \ outlet-font outlet-autochars
   \ ----
 
-  \ See also: `set-font`, `rom-font`.
+  \ See: `set-font`, `rom-font`.
   \
   \ }doc
 

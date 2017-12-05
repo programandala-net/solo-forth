@@ -43,7 +43,7 @@ code (g-emit ( c -- )
   \ The character is printed with overprinting (equivalent to
   \ ``1 overprint``).
   \
-  \ See also: `g-emit`, `g-emit_`.
+  \ See: `g-emit`, `g-emit_`.
   \
   \ }doc
 
@@ -67,7 +67,7 @@ need g-emit-udg need (g-emit need g-emitted
   \ The character is printed with overprinting (equivalent to
   \ ``1 overprint``).
   \
-  \ See also: `g-emit-udg`, `(g-emit`, `g-type`.
+  \ See: `g-emit-udg`, `(g-emit`, `g-type`.
   \
   \ }doc
 
@@ -83,7 +83,7 @@ need g-emit-udg need (g-emit need g-emitted
   \ If _len_ is greater than zero, display the character string
   \ _ca len_ at the current graphic coordinates.
   \
-  \ See also: `g-emit`.
+  \ See: `g-emit`.
   \
   \ }doc
 
@@ -101,7 +101,7 @@ need g-emit-udg need (g-emit need g-emitted
   \
   \ Move the graphic coordinates to the next character row.
   \
-  \ See also: `g-at-xy`, `g-emit`.
+  \ See: `g-at-xy`, `g-emit`.
   \
   \ }doc
 
@@ -141,7 +141,7 @@ code g-emit-udg ( c -- )
   \ The UDG character is printed with overprinting (equivalent
   \ to ``1 overprint``).
   \
-  \ See also: `g-emit`, `g-emit_`.
+  \ See: `g-emit`, `g-emit_`.
   \
   \ }doc
 
@@ -197,7 +197,7 @@ create g-emit_ ( -- a ) asm
   \
   \ Modifies: AF BC HL IX DE
   \
-  \ See also: `g-emit`.
+  \ See: `g-emit`.
   \
   \ }doc
 

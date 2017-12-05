@@ -46,7 +46,7 @@
   \
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
   \
-  \ See also: `?do`, `-do`.
+  \ See: `?do`, `-do`.
   \
   \ }doc
 
@@ -158,7 +158,7 @@ code (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
   \ 4 times \ prints 0 1 2 3
   \ ----
 
-  \ See also: `?do`, `do`, `-do`.
+  \ See: `?do`, `do`, `-do`.
   \
   \ Origin: Comus.
   \

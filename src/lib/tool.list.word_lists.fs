@@ -34,7 +34,7 @@
   \
   \ Display the compilation word list.
   \
-  \ See also: `get-current`, `.wordlist`, `order`.
+  \ See: `get-current`, `.wordlist`, `order`.
   \
   \ }doc
 
@@ -50,7 +50,7 @@
   \ Display the word lists in the search order in their search
   \ order sequence, from first searched to last searched.
   \
-  \ See also: `get-order`, `.wordlist`, `order`.
+  \ See: `get-order`, `.wordlist`, `order`.
   \
   \ }doc
 
@@ -66,7 +66,7 @@
   \ If the word list identified by _wid_ has an associated
   \ name, display it; else display _wid_.
   \
-  \ See also: `wordlists`.
+  \ See: `wordlists`.
   \
   \ }doc
 
@@ -89,7 +89,7 @@
   \ word lists are listed in reverse chronological order: The
   \ first word list listed is the most recently defined.
   \
-  \ See also: `.wordlist`, `wordlist`, `latest-wordlist`.
+  \ See: `.wordlist`, `wordlist`, `latest-wordlist`.
   \
   \ }doc
 
@@ -112,7 +112,7 @@
   \
   \ Origin: Forth-2012 (SEARCH EXT).
   \
-  \ See also: `.context`, `.current`, `.wordlist`, `set-order`.
+  \ See: `.context`, `.current`, `.wordlist`, `set-order`.
   \
   \ }doc
 

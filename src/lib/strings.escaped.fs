@@ -74,7 +74,7 @@ dup >order set-current case-sensitive @ case-sensitive on
   \ | \x<hexdigit><hexdigit>  | | Conversion of the two hexadecimal digits
   \ |===
 
-  \ See also: `parse-esc-string`, `set-esc-order`,
+  \ See: `parse-esc-string`, `set-esc-order`,
   \ `esc-standard-chars-wordlist`, `esc-block-chars-wordlist`,
   \ `esc-udg-chars-ẁordlist`.
   \
@@ -136,7 +136,7 @@ need get-esc-order need catch
   \
   \ ``(parse-esc-string)`` is a factor of `parse-esc-string`.
   \
-  \ See also: `set-esc-order`.
+  \ See: `set-esc-order`.
   \
   \ }doc
 
@@ -197,7 +197,7 @@ variable case-sensitive-esc-chars  case-sensitive-esc-chars on
   \
   \ ``parse-esc-string`` is a common factor of `s\"` and `.\"`.
   \
-  \ See also: `(parse-esc-string)`.
+  \ See: `(parse-esc-string)`.
   \
   \ }doc
 
@@ -236,7 +236,7 @@ need set-esc-order  esc-standard-chars-wordlist 1 set-esc-order
   \
   \ Origin: Forth-2012 (CORE EXT, FILE EXT).
   \
-  \ See also: `parse-esc-string`, `set-esc-order`, `.\"`.
+  \ See: `parse-esc-string`, `set-esc-order`, `.\"`.
   \
   \ }doc
 
@@ -268,7 +268,7 @@ need set-esc-order  esc-standard-chars-wordlist 1 set-esc-order
   \ configured with `esc-block-chars-wordlist` and
   \ `esc-udg-chars-wordlist`.
   \
-  \ See also: `parse-esc-string`, `set-esc-order`, `s\"`.
+  \ See: `parse-esc-string`, `set-esc-order`, `s\"`.
   \
   \ }doc
 
@@ -288,7 +288,7 @@ need set-esc-order  esc-standard-chars-wordlist 1 set-esc-order
   \ constant with any other value before loading the words that
   \ need it, and it will be kept.
   \
-  \ See also: `esc-context`, `#esc-order`, `set-esc-order`,
+  \ See: `esc-context`, `#esc-order`, `set-esc-order`,
   \ `get-esc-order`, `>order`.
   \
   \ }doc
@@ -306,7 +306,7 @@ variable #esc-order  #esc-order off
   \ A variable that holds the number of word lists in the
   \ escaped strings search order.
   \
-  \ See also: `esc-context`, `esc-max-order`, `esc-get-order`,
+  \ See: `esc-context`, `esc-max-order`, `esc-get-order`,
   \ `esc-set-order`, `>esc-order`.
   \
   \ }doc
@@ -323,7 +323,7 @@ create esc-context here max-esc-order cells dup allot erase ?)
   \ length is hold in the `#esc-order` variable.  _a_ holds the
   \ word list at the top of the search order.
   \
-  \ See also: `esc-max-order`, `>esc-order`, `esc-get-order`,
+  \ See: `esc-max-order`, `>esc-order`, `esc-get-order`,
   \ `esc-set-order`.
   \
   \ }doc
@@ -342,7 +342,7 @@ need max-esc-order
   \ Check if _n_ is a valid size for the escaped strings search
   \ order, else throw an exception.
   \
-  \ See also: `#esc-order`, `esc-context`, `>esc-order`,
+  \ See: `#esc-order`, `esc-context`, `>esc-order`,
   \ `set-esc-order`, `get-esc-order`.
   \
   \ }doc
@@ -366,7 +366,7 @@ need ?esc-order need #esc-order need esc-context
   \ will be searched first, and word list _widn_ searched last.
   \ If _n_ is zero, empty the escaped strings search order.
   \
-  \ See also: `esc-get-order`, `>esc-order`,
+  \ See: `esc-get-order`, `>esc-order`,
   \ `esc-standard-chars-wordlist`, `esc-block-chars-wordlist`,
   \ `esc-udg-chars-ẁordlist`.
   \
@@ -391,7 +391,7 @@ need #esc-order need esc-context
   \ identifies the word list that is searched first, and
   \ _wid[n]_ the word list that is searched last.
   \
-  \ See also: `set-esc-order`, `>esc-order`.
+  \ See: `set-esc-order`, `>esc-order`.
   \
   \ }doc
 
@@ -410,7 +410,7 @@ need get-esc-order need set-esc-order
   \
   \ Push _wid_ on the escaped strings search order.
   \
-  \ See also: `set-esc-order`, `get-esc-order`,
+  \ See: `set-esc-order`, `get-esc-order`,
   \ `esc-standard-chars-wordlist`,
   \ `esc-block-chars-wordlist`,
   \ `esc-udg-chars-ẁordlist`.

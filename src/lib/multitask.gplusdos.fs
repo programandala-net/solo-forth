@@ -45,7 +45,7 @@
   \ routine to be called by G+DOS after the OS interrupts
   \ routine, every 50th of a second.
   \
-  \ See also: `jiffy@`, `-jiffy`.
+  \ See: `jiffy@`, `-jiffy`.
   \
   \ }doc
 
@@ -61,7 +61,7 @@
   \ routine that is called by G+DOS after the OS interrupts
   \ routine, every 50th of a second.
   \
-  \ See also: `jiffy!`, `-jiffy`.
+  \ See: `jiffy!`, `-jiffy`.
   \
   \ }doc
 
@@ -78,7 +78,7 @@
   \ 50th of a second), by setting its default value (a noop
   \ routine in the RAM of the Plus D interface).
   \
-  \ See also: `jiffy!`, `jiffy@`.
+  \ See: `jiffy!`, `jiffy@`.
   \
   \ }doc
 

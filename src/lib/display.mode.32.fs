@@ -64,7 +64,7 @@ variable mode-32-font  rom-font bl 8 * + mode-32-font !
   \ restored by `restore-mode`, which is called by `warm` and
   \ `cold`).
   \
-  \ See also: `current-mode`, `set-font`, `set-mode-output`,
+  \ See: `current-mode`, `set-font`, `set-mode-output`,
   \ `columns`, `rows`, `mode32-emit`, `mode-32-xy`,
   \ `mode-32-at-xy`, `>form`.
   \

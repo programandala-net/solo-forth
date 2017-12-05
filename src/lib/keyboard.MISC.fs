@@ -216,7 +216,7 @@ noop noop noop noop noop noop noop noop noop noop noop noop [
   \   begin  ." bla " nuf?  until  ." Aborted" ;
   \ ----
   \
-  \ See also: `aborted?`.
+  \ See: `aborted?`.
   \
   \ }doc
 
@@ -266,7 +266,7 @@ code -keys ( -- )
   \
   \ Remove all keys from the keyboard buffer.
   \
-  \ See also: `key?`, `new-key`, `new-key-`, `key`, `xkey`.
+  \ See: `key?`, `new-key`, `new-key-`, `key`, `xkey`.
   \
   \ }doc
 
@@ -280,7 +280,7 @@ code -keys ( -- )
   \ character _c_ of the key struck, a member of the a member
   \ of the defined character set.
   \
-  \ See also: `new-key-`, `key`, `xkey`, `-keys`.
+  \ See: `new-key-`, `key`, `xkey`, `-keys`.
   \
   \ }doc
 
@@ -295,7 +295,7 @@ code -keys ( -- )
   \ key press and discard it. Finally remove all keys from the
   \ keyboard buffer.
   \
-  \ See also: `new-key`, `key`, `xkey`, `-keys`.
+  \ See: `new-key`, `key`, `xkey`, `-keys`.
   \
   \ }doc
 
@@ -375,7 +375,7 @@ code -keys ( -- )
   \
   \ Store a key definition into the keys table.
   \
-  \ See also: `kk@`, `/kk`, `kk-ports`.
+  \ See: `kk@`, `/kk`, `kk-ports`.
   \
   \ }doc
 
@@ -385,7 +385,7 @@ code -keys ( -- )
   \
   \ Fetch a key definition from the keys table.
   \
-  \ See also: `kk,`, `/kk`, `kk-ports`.
+  \ See: `kk,`, `/kk`, `kk-ports`.
   \
   \ }doc
 
@@ -474,7 +474,7 @@ kk-sp kk,  kk-ss kk,  kk-m kk,  kk-n kk,  kk-b kk,
   \ Every item occupies 3 or 4 bytes, depending on the value of
   \ `/kk`.
   \
-  \ See also: `kk,`, `kk@`.
+  \ See: `kk,`, `kk@`.
   \
   \ }doc
 
@@ -557,7 +557,7 @@ create kk-chars
   \ Is a key pressed?  _bitmask_ is the key bitmask and _port_
   \ is the keyboard row port.
   \
-  \ See also: `pressed`, `only-one-pressed`.
+  \ See: `pressed`, `only-one-pressed`.
   \
   \ }doc
 
@@ -577,7 +577,7 @@ create kk-chars
   \ table that happens to be pressed.  _bitmask_ is the key
   \ bitmask and _port_ is the keyboard row port.
   \
-  \ See also: `kk-ports`, `only-one-pressed`, `pressed?`.
+  \ See: `kk-ports`, `only-one-pressed`, `pressed?`.
   \
   \ }doc
 
@@ -613,7 +613,7 @@ need kk-ports
   \ only one key pressed.  _bitmask_ is the key bitmask and
   \ _port_ is the keyboard row port.
   \
-  \ See also: `kk-ports`, `pressed`, `pressed?`.
+  \ See: `kk-ports`, `pressed`, `pressed?`.
   \
   \ }doc
 

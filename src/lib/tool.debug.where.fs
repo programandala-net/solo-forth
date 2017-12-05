@@ -46,7 +46,7 @@
   \
   \ Origin: Forth-79 (Reference Word Set).
   \
-  \ See also: `error-pos`, `error`.
+  \ See: `error-pos`, `error`.
   \
   \ }doc
 

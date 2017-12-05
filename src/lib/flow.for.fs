@@ -95,7 +95,7 @@ code (step) ( R: u -- u' )
   \
   \ ``for`` is an `immediate` and `compile-only` word.
   \
-  \ See also: `dfor`, `times`, `?do`, `executions`.
+  \ See: `dfor`, `times`, `?do`, `executions`.
   \
   \ }doc
 

@@ -41,7 +41,7 @@
   \
   \ ``0if`` is an `immediate` and `compile-only` word.
   \
-  \ See also: `if`, `-if`, `+if`.
+  \ See: `if`, `-if`, `+if`.
   \
   \ }doc
 
@@ -61,7 +61,7 @@
   \
   \ ``0while`` is an `immediate` and `compile-only` word.
   \
-  \ See also: `while`, `-while`, `+while`.
+  \ See: `while`, `-while`, `+while`.
   \
   \ }doc
 
@@ -79,7 +79,7 @@
   \
   \ ``0until`` is an `immediate` and `compile-only` word.
   \
-  \ See also: `until`, `-until`, `+until`.
+  \ See: `until`, `-until`, `+until`.
   \
   \ }doc
 
@@ -106,7 +106,7 @@ code 0exit ( f -- ) ( R: nest-sys | -- nest-sys | )
   \ ``0exit`` can be used in interpretation mode to stop the
   \ interpretation of a block.
   \
-  \ See also: `?exit`, `exit`, `-exit` ,`+exit`.
+  \ See: `?exit`, `exit`, `-exit` ,`+exit`.
   \
   \ }doc
 

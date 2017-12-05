@@ -40,7 +40,7 @@
   \
   \ Origin: Forth-2012 (CORE EXT).
   \
-  \ See also: `create`, `allot`.
+  \ See: `create`, `allot`.
   \
   \ }doc
 
@@ -55,7 +55,7 @@
   \ character of data space. When _name_ is executed, it
   \ returns the address of the reserved space.
   \
-  \ See also: `c!`, `c@`, `variable`.
+  \ See: `c!`, `c@`, `variable`.
   \
   \ }doc
 
@@ -78,7 +78,7 @@
   \ drop
   \ ----
   \
-  \ See also: `cenum`, `enumcell`.
+  \ See: `cenum`, `enumcell`.
   \
   \ }doc
 
@@ -101,7 +101,7 @@
   \ drop
   \ ----
   \
-  \ See also: `enum`, `enumcell`.
+  \ See: `enum`, `enumcell`.
   \
   \ }doc
 
@@ -129,7 +129,7 @@
   \ drop
   \ ----
   \
-  \ See also: `enum`.
+  \ See: `enum`.
   \
   \ }doc
 
@@ -150,7 +150,7 @@ need alias ' @ alias link@ ( node1 -- node2 )
   \ Fetch the node _node2_ from the linked list node _node1_.
   \ ``link@`` is an alias of `@`.
   \
-  \ See also: `link,`.
+  \ See: `link,`.
   \
   \ }doc
 
@@ -171,7 +171,7 @@ need alias ' @ alias link@ ( node1 -- node2 )
   \ - head --> new_node
   \ - new_node --> old_node
   \
-  \ See also: `link@`.
+  \ See: `link@`.
   \
   \ }doc
 

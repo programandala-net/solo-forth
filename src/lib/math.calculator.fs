@@ -73,7 +73,7 @@ wordlist constant calculator-wordlist
   \ rst $28 ; call the ROM calculator
   \ ----
 
-  \ See also: `end-calculator`.
+  \ See: `end-calculator`.
   \
   \ }doc
 
@@ -92,7 +92,7 @@ get-current  calculator-wordlist set-current
   \ db $38 ; exit the ROM calculator
   \ ----
 
-  \ See also: `end-calculator`.
+  \ See: `end-calculator`.
   \
   \ }doc
 
@@ -111,7 +111,7 @@ get-current  calculator-wordlist set-current
   \ pop bc ; restore the Forth IP
   \ ----
 
-  \ See also: `end-calc`.
+  \ See: `end-calc`.
   \
   \ }doc
 
@@ -127,7 +127,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``addition`` ROM `calculator` command.
   \
-  \ See also: `|-`.
+  \ See: `|-`.
   \
   \ }doc
 
@@ -139,7 +139,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``subtract`` ROM `calculator` command.
   \
-  \ See also: `|+`.
+  \ See: `|+`.
   \
   \ }doc
 
@@ -151,7 +151,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``multiply`` ROM `calculator` command.
   \
-  \ See also: `|\`, `|**`.
+  \ See: `|\`, `|**`.
   \
   \ }doc
 
@@ -163,7 +163,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``division`` ROM `calculator` command.
   \
-  \ See also: `|mod`, `|*`.
+  \ See: `|mod`, `|*`.
   \
   \ }doc
 
@@ -175,7 +175,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``n-mod-m`` ROM `calculator` command.
   \
-  \ See also: `|\`.
+  \ See: `|\`.
   \
   \ }doc
 
@@ -187,7 +187,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``to-power`` ROM `calculator` command.
   \
-  \ See also: `|sqrt`, `|*`.
+  \ See: `|sqrt`, `|*`.
   \
   \ }doc
 
@@ -199,7 +199,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``sqr`` ROM `calculator` command.
   \
-  \ See also: `|**`.
+  \ See: `|**`.
   \
   \ }doc
 
@@ -215,7 +215,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``negate`` ROM `calculator` command.
   \
-  \ See also: `|abs`, `|sgn`.
+  \ See: `|abs`, `|sgn`.
   \
   \ }doc
 
@@ -227,7 +227,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``sgn`` ROM `calculator` command.
   \
-  \ See also: `|abs`, `|negate`.
+  \ See: `|abs`, `|negate`.
   \
   \ }doc
 
@@ -239,7 +239,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``abs`` ROM `calculator` command.
   \
-  \ See also: `|sgn`, `|int`, `|truncate`.
+  \ See: `|sgn`, `|int`, `|truncate`.
   \
   \ }doc
 
@@ -251,7 +251,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``int`` ROM `calculator` command.
   \
-  \ See also: `|abs`, `|truncate`.
+  \ See: `|abs`, `|truncate`.
   \
   \ }doc
 
@@ -263,7 +263,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``truncate`` ROM `calculator` command.
   \
-  \ See also: `|abs`, `|int`.
+  \ See: `|abs`, `|int`.
   \
   \ }doc
 
@@ -285,7 +285,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ROM calculator command that stacks 0.
   \
-  \ See also: `|half`, `|1`, `|10`, `|pi2/`.
+  \ See: `|half`, `|1`, `|10`, `|pi2/`.
   \
   \ }doc
 
@@ -297,7 +297,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ROM calculator command that stacks 1.
   \
-  \ See also: `|0`, `|half`, `|10`, `|pi2/`.
+  \ See: `|0`, `|half`, `|10`, `|pi2/`.
   \
   \ }doc
 
@@ -309,7 +309,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ROM calculator command that stacks 1/2.
   \
-  \ See also: `|0`, `|1`, `|10`, `|pi2/`.
+  \ See: `|0`, `|1`, `|10`, `|pi2/`.
   \
   \ }doc
 
@@ -321,7 +321,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ROM calculator command that stacks pi/2.
   \
-  \ See also: `|0`, `|half`, `|1`, `|10`, `|acos`, `|asin`,
+  \ See: `|0`, `|half`, `|1`, `|10`, `|acos`, `|asin`,
   \ `|atan`, `|sin`, `|cos`, `|tan`.
   \
   \ }doc
@@ -334,7 +334,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ROM calculator command that stacks 10.
   \
-  \ See also: `|0`, `|half`, `|1`, `|pi2/`.
+  \ See: `|0`, `|half`, `|1`, `|pi2/`.
   \
   \ }doc
 
@@ -350,7 +350,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``ln`` ROM `calculator` command.
   \
-  \ See also: `|exp`.
+  \ See: `|exp`.
   \
   \ }doc
 
@@ -362,7 +362,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``exp`` ROM `calculator` command.
   \
-  \ See also: `|ln`.
+  \ See: `|ln`.
   \
   \ }doc
 
@@ -374,7 +374,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``acos`` ROM `calculator` command.
   \
-  \ See also: `|asin`, `|atan`, `|cos`, `|sin`, `|tan`,
+  \ See: `|asin`, `|atan`, `|cos`, `|sin`, `|tan`,
   \ `|pi2/`.
   \
   \ }doc
@@ -387,7 +387,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``asin`` ROM `calculator` command.
   \
-  \ See also: `|acos`, `|atan`, `|cos`, `|sin`, `|tan`,
+  \ See: `|acos`, `|atan`, `|cos`, `|sin`, `|tan`,
   \ `|pi2/`.
   \
   \ }doc
@@ -400,7 +400,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``atan`` ROM `calculator` command.
   \
-  \ See also: `|acos`, `|asin`, `|cos`, `|sin`, `|tan`,
+  \ See: `|acos`, `|asin`, `|cos`, `|sin`, `|tan`,
   \ `|pi2/`.
   \
   \ }doc
@@ -413,7 +413,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``cos`` ROM `calculator` command.
   \
-  \ See also: `|acos`, `|asin`, `|atan`, `|sin`, `|tan`,
+  \ See: `|acos`, `|asin`, `|atan`, `|sin`, `|tan`,
   \ `|pi2/`.
   \
   \ }doc
@@ -426,7 +426,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``sin`` ROM `calculator` command.
   \
-  \ See also: `|acos`, `|asin`, `|atan`, `|cos`, `|tan`,
+  \ See: `|acos`, `|asin`, `|atan`, `|cos`, `|tan`,
   \ `|pi2/`.
   \
   \ }doc
@@ -439,7 +439,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``tan`` ROM `calculator` command.
   \
-  \ See also: `|acos`, `|asin`, `|atan`, `|cos`, `|sin`,
+  \ See: `|acos`, `|asin`, `|atan`, `|cos`, `|sin`,
   \ `|pi2/`.
   \
   \ }doc
@@ -457,7 +457,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``delete`` ROM `calculator` command.
   \
-  \ See also: `|dup`, `|swap`, `|over`, `|2dup`.
+  \ See: `|dup`, `|swap`, `|over`, `|2dup`.
   \
   \ }doc
 
@@ -469,7 +469,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``duplicate`` ROM `calculator` command.
   \
-  \ See also: `|drop`, `|swap`, `|over`, `|2dup`.
+  \ See: `|drop`, `|swap`, `|over`, `|2dup`.
   \
   \ }doc
 
@@ -481,7 +481,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``exchange`` ROM `calculator` command.
   \
-  \ See also: `|drop`, `|dup`, `|over`, `|2dup`.
+  \ See: `|drop`, `|dup`, `|over`, `|2dup`.
   \
   \ }doc
 
@@ -521,7 +521,7 @@ get-current  calculator-wordlist set-current
   \ `|>mem` and `|mem>` (calculator memory positions 1 and 2
   \ are used).
   \
-  \ See also: `|drop`, `|dup`, `|swap`, `|2dup`.
+  \ See: `|drop`, `|dup`, `|swap`, `|2dup`.
   \
   \ }doc
 
@@ -536,7 +536,7 @@ get-current  calculator-wordlist set-current
   \ `|>mem` and `|mem>` (calculator memory positions 1 and 2
   \ are used).
   \
-  \ See also: `|drop`, `|dup`, `|swap`, `|over`.
+  \ See: `|drop`, `|dup`, `|swap`, `|over`.
   \
   \ }doc
 
@@ -553,7 +553,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``not`` ROM `calculator` command.
   \
-  \ See also: `|0<`, `|0>`, `|=`, `|<>`, `|>`, `|<`, `|<=`,
+  \ See: `|0<`, `|0>`, `|=`, `|<>`, `|>`, `|<`, `|<=`,
   \ `|>=`.
   \
   \ }doc
@@ -566,7 +566,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``less-0`` ROM `calculator` command.
   \
-  \ See also: `|0=`, `|0>`, `|=`, `|<>`, `|>`, `|<`, `|<=`,
+  \ See: `|0=`, `|0>`, `|=`, `|<>`, `|>`, `|<`, `|<=`,
   \ `|>=`.
   \
   \ }doc
@@ -579,7 +579,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``greater-0`` ROM `calculator` command.
   \
-  \ See also: `|0=`, `|0<`, `|=`, `|<>`, `|>`, `|<`, `|<=`,
+  \ See: `|0=`, `|0<`, `|=`, `|<>`, `|>`, `|<`, `|<=`,
   \ `|>=`.
   \
   \ }doc
@@ -644,7 +644,7 @@ get-current  calculator-wordlist set-current
   \ WARNING: This calculator command doesn't work fine when
   \ used from Forth. See its source file for details.
   \
-  \ See also: `|0=`, `|0<`, `|0>`, `|<>`, `|>`, `|<`, `|<=`,
+  \ See: `|0=`, `|0<`, `|0>`, `|<>`, `|>`, `|<`, `|<=`,
   \ `|>=`.
   \
   \ }doc
@@ -660,7 +660,7 @@ get-current  calculator-wordlist set-current
   \ WARNING: This calculator command doesn't work fine when
   \ used from Forth. See its source file for details.
   \
-  \ See also: `|0=`, `|0<`, `|0>`, `|=`, `|>`, `|<`, `|<=`,
+  \ See: `|0=`, `|0<`, `|0>`, `|=`, `|>`, `|<`, `|<=`,
   \ `|>=`.
   \
   \ }doc
@@ -676,7 +676,7 @@ get-current  calculator-wordlist set-current
   \ WARNING: This calculator command doesn't work fine when
   \ used from Forth. See its source file for details.
   \
-  \ See also: `|0=`, `|0<`, `|0>`, `|=`, `|<>`, `|<`, `|<=`,
+  \ See: `|0=`, `|0<`, `|0>`, `|=`, `|<>`, `|<`, `|<=`,
   \ `|>=`.
   \
   \ }doc
@@ -692,7 +692,7 @@ get-current  calculator-wordlist set-current
   \ WARNING: This calculator command doesn't work fine when
   \ used from Forth. See its source file for details.
   \
-  \ See also: `|0=`, `|0<`, `|0>`, `|=`, `|<>`, `|>`, `|<=`,
+  \ See: `|0=`, `|0<`, `|0>`, `|=`, `|<>`, `|>`, `|<=`,
   \ `|>=`.
   \
   \ }doc
@@ -708,7 +708,7 @@ get-current  calculator-wordlist set-current
   \ WARNING: This calculator command doesn't work fine when
   \ used from Forth. See its source file for details.
   \
-  \ See also: `|0=`, `|0<`, `|0>`, `|=`, `|<>`, `|>`, `|<`,
+  \ See: `|0=`, `|0<`, `|0>`, `|=`, `|<>`, `|>`, `|<`,
   \ `|>=`.
   \
   \ }doc
@@ -724,7 +724,7 @@ get-current  calculator-wordlist set-current
   \ WARNING: This calculator command doesn't work fine when
   \ used from Forth. See its source file for details.
   \
-  \ See also: `|0=`, `|0<`, `|0>`, `|=`, `|<>`, `|>`, `|<`,
+  \ See: `|0=`, `|0<`, `|0>`, `|=`, `|<>`, `|>`, `|<`,
   \ `|<=`.
   \
   \ }doc
@@ -741,7 +741,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``jump-true`` ROM `calculator` command.
   \
-  \ See also: `|0branch`, `|branch`.
+  \ See: `|0branch`, `|branch`.
   \
   \ }doc
 
@@ -754,7 +754,7 @@ get-current  calculator-wordlist set-current
   \ Compile ROM `calculator` commands `|0=` and `|?branch` to
   \ do a jump when the TOS of the calculator stack is zero.
   \
-  \ See also: `|branch`, `|?branch`.
+  \ See: `|branch`, `|?branch`.
   \
   \ }doc
 
@@ -766,7 +766,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``jump`` ROM `calculator` command.
   \
-  \ See also: `|0branch`, `|?branch`.
+  \ See: `|0branch`, `|?branch`.
   \
   \ }doc
 

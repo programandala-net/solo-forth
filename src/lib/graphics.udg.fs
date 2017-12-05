@@ -33,7 +33,7 @@
   \
   \ _b_ is the size of a UDG (User Defined Graphic), in bytes.
   \
-  \ See also: `udg-width`, `udg!`.
+  \ See: `udg-width`, `udg!`.
   \
   \ }doc
 
@@ -59,7 +59,7 @@
   \ _b_ is the width of a UDG (User Defined Graphic), in
   \ pixels.
   \
-  \ See also: `/udg`, `udg!`.
+  \ See: `/udg`, `udg!`.
   \
   \ }doc
 
@@ -74,7 +74,7 @@
   \ Convert UDG number _n_ (0..255) to the address _a_ of its
   \ bitmap, pointed by `os-udg`.
   \
-  \ See also: `udg!`, `udg:`, `/udg*`, `get-udg`.
+  \ See: `udg!`, `udg:`, `/udg*`, `get-udg`.
   \
   \ }doc
 
@@ -90,7 +90,7 @@
   \ the UDG font pointed by `os-udg`.  _b0_ is the first (top)
   \ scan.  _b7_ is the last (bottom) scan.
   \
-  \ See also: `udg:`, `udg>`.
+  \ See: `udg:`, `udg>`.
   \
   \ }doc
 
@@ -106,7 +106,7 @@
   \ store the 8-byte bitmap _b0..b7_ into that UDG char.  _b0_
   \ is the first (top) scan.  _b7_ is the last (bottom) scan.
   \
-  \ See also: `udg!`, `udg>`.
+  \ See: `udg!`, `udg>`.
   \
   \ }doc
 
@@ -166,7 +166,7 @@ here anon> ! 3 cells allot
   \ ..XXXX.. ..XXXX.. ..XXXX.. ..XXXX.. ..XXXX..
   \ ----
   \
-  \ See also: `udg-block`.
+  \ See: `udg-block`.
   \
   \ }doc
 
@@ -184,7 +184,7 @@ create udg-blank '.' c,  create udg-dot 'X' c,
   \ containing character used by `grid` and `g` as a grid
   \ blank. By default it's '.'.
   \
-  \ See also: `udg-dot`, `udg-scan>binary`.
+  \ See: `udg-dot`, `udg-scan>binary`.
   \
   \ }doc
 
@@ -196,7 +196,7 @@ create udg-blank '.' c,  create udg-dot 'X' c,
   \ containing the character used by `grid` and `g` as a grid
   \ blank. By default it's 'X'.
   \
-  \ See also: `udg-blank`, `udg-scan>binary`.
+  \ See: `udg-blank`, `udg-scan>binary`.
   \
   \ }doc
 
@@ -213,7 +213,7 @@ create udg-blank '.' c,  create udg-dot 'X' c,
   \ Convert the characters `udg-blank` and `udg-dot` found in
   \ UDG scan string _ca len_ to '0' and '1' respectively.
   \
-  \ See also: `udg-scan>number?`.
+  \ See: `udg-scan>number?`.
   \
   \ }doc
 
@@ -228,7 +228,7 @@ create udg-blank '.' c,  create udg-dot 'X' c,
   \ If so, return _n_ and _true_; else return _false_.
   \ The string is processed by `udg-scan>binary` first.
   \
-  \ See also: `udg-scan>binary`, `udg-scan>number`.
+  \ See: `udg-scan>binary`, `udg-scan>number`.
   \
   \ }doc
 
@@ -244,7 +244,7 @@ create udg-blank '.' c,  create udg-dot 'X' c,
   \ result _n_.  Otherwise `throw` exception #-290 (invalid UDG
   \ scan).
   \
-  \ See also: `udg-scan>number?`, `udg-block`, `udg-group`.
+  \ See: `udg-scan>number?`, `udg-block`, `udg-group`.
   \
   \ }doc
 
@@ -337,7 +337,7 @@ here anon> ! 3 cells allot
   \ ..XXXX....XXXX....XXXX....XXXX....XXXX..
   \ ----
 
-  \ See also: `csprite`, `udg-group`.
+  \ See: `csprite`, `udg-group`.
   \
   \ }doc
 
@@ -464,7 +464,7 @@ move ?)
   \ 0, while in Sinclair BASIC it points to bitmap of UDG
   \ 144.
   \
-  \ See also: `block-chars`, `set-udg`, `rom-font`.
+  \ See: `block-chars`, `set-udg`, `rom-font`.
   \
   \ }doc
 
@@ -501,7 +501,7 @@ $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! #128 udg> 8 erase
   \ they have in Sinclair BASIC.  The current value of `os-udg`
   \ is used.
   \
-  \ See also: `make-block-chars`, `set-udg`, `udg!`,
+  \ See: `make-block-chars`, `set-udg`, `udg!`,
   \ `default-udg-chars`.
   \
   \ }doc
@@ -524,7 +524,7 @@ code set-udg ( a -- ) E1 c, 22 c, os-udg , jpnext, end-code ?)
   \ 0..255), by changing the system variable `os-udg`.  _a_
   \ must be the bitmap address of character 0.
   \
-  \ See also: `get-udg`, `set-font`.
+  \ See: `get-udg`, `set-font`.
   \
   \ }doc
 
@@ -543,7 +543,7 @@ code get-udg ( -- a ) 2A c, os-udg , E5 c, jpnext, end-code ?)
   \ 0..255), by fetching the system variable `os-udg`.  _a_
   \ is the bitmap address of character 0.
   \
-  \ See also: `set-udg`.
+  \ See: `set-udg`.
   \
   \ }doc
 
@@ -559,7 +559,7 @@ code get-udg ( -- a ) 2A c, os-udg , E5 c, jpnext, end-code ?)
   \ string _ca len_. All characters of the string are printed
   \ with `emit-udg`.
   \
-  \ See also: `type`.
+  \ See: `type`.
   \
   \ }doc
 
@@ -704,7 +704,7 @@ unused code at-xy-display-udg ( c x y -- )
   \ the screen attributtes are not changed (only the character
   \ bitmap is displayed).
   \
-  \ See also: `udg-at-xy-display`.
+  \ See: `udg-at-xy-display`.
   \
   \ }doc
 
@@ -751,7 +751,7 @@ unused code udg-at-xy-display ( x y c -- )
   \ coordinates are not updated and the screen attributtes are
   \ not changed (only the character bitmap is displayed).
   \
-  \ See also: `at-xy-display-udg`.
+  \ See: `at-xy-display-udg`.
   \
   \ }doc
 
@@ -969,7 +969,7 @@ exx, jpnext, end-code
   \
   \ Display the UDG defined at _a_.
   \
-  \ See also: `emit-udg`.
+  \ See: `emit-udg`.
   \
 
   \ ===========================================================

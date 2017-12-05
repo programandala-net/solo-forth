@@ -242,7 +242,7 @@ create current-option 0 c,
   \ Activate the current menu, which has been set by `set-menu`
   \ and displayed by `.menu`.
   \
-  \ See also: `new-menu`.
+  \ See: `new-menu`.
   \
   \ }doc
 
@@ -255,7 +255,7 @@ create current-option 0 c,
   \ Display the current menu, which has been set by `set-menu`
   \ and can be activated by `menu`.
   \
-  \ See also: `new-menu`.
+  \ See: `new-menu`.
   \
   \ }doc
 
@@ -273,7 +273,7 @@ create current-option 0 c,
   \ and option texts table _a2_ (a cell array of _n2_ addresses
   \ of counted strings).
   \
-  \ See also: `new-menu`, `.menu`, `menu`.
+  \ See: `new-menu`, `.menu`, `menu`.
   \
   \ }doc
 
@@ -289,7 +289,7 @@ create current-option 0 c,
   \ tokens) and option texts table _a2_ (a cell array of _n2_
   \ addresses of counted strings).
   \
-  \ See also: `set-menu`, `.menu`, `menu`.
+  \ See: `set-menu`, `.menu`, `menu`.
   \
   \ }doc
 

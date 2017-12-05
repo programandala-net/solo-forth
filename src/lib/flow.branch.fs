@@ -47,7 +47,7 @@ code -branch ( n -- )
   \
   \ ``-branch`` is compiled by `+if` and `+until`.
   \
-  \ See also: `branch`, `?branch`, `0branch`, `+branch`.
+  \ See: `branch`, `?branch`, `0branch`, `+branch`.
   \
   \ }doc
 
@@ -71,7 +71,7 @@ code +branch ( n -- )
   \
   \ ``+branch`` is compiled by `-if` and `-until`.
   \
-  \ See also: `branch`, `?branch`, `0branch`, `-branch`.
+  \ See: `branch`, `?branch`, `0branch`, `-branch`.
   \
   \ }doc
 

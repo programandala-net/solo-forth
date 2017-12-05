@@ -41,7 +41,7 @@
   \ greater than _n_, all digits are displayed with no leading
   \ spaces in a field as wide as necessary.
   \
-  \ See also: `u.r`, `d.`, `ud.`.
+  \ See: `u.r`, `d.`, `ud.`.
   \
   \ }doc
 
@@ -69,7 +69,7 @@
   \ than _n_, an error condition exists, which depends on the
   \ system.], Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See also: `ud.r`, `.r`, `u.`.
+  \ See: `ud.r`, `.r`, `u.`.
   \
   \ }doc
 
@@ -86,7 +86,7 @@
   \
   \ Display an usigned double number _ud_.
   \
-  \ See also: `ud.r`, `d.`, `u.`.
+  \ See: `ud.r`, `d.`, `u.`.
   \
   \ }doc
 
@@ -107,7 +107,7 @@
   \
   \ Origin: Forth-2012 (CORE EXT).
   \
-  \ See also: `hold`.
+  \ See: `hold`.
   \
   \ }doc
 
@@ -130,7 +130,7 @@
   \ Display _n_ as an unsigned binary number, followed by
   \ one space.
   \
-  \ See also: `dec.`, `hex.`, `u.`, `.`.
+  \ See: `dec.`, `hex.`, `u.`, `.`.
   \
   \ }doc
 
@@ -144,7 +144,7 @@
   \ Display _n_ as an unsigned hexadecimal number, followed by
   \ one space.
   \
-  \ See also: `dec.`, `bin.`, `u.`, `.`.
+  \ See: `dec.`, `bin.`, `u.`, `.`.
   \
   \ }doc
 
@@ -169,7 +169,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
   \ A temporary variable used by `<hex`, `hex>`, `<bin` and
   \ `bin>`.  to store the current value of `base`.
   \
-  \ See also: `abase`.
+  \ See: `abase`.
   \
   \ }doc
 
@@ -192,7 +192,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
   \ Convert _d_ to an unsigned number in the current `base`,
   \ with _n_ digits, as string _ca len_.
   \
-  \ See also: `(bin.`, `(hex.`.
+  \ See: `(bin.`, `(hex.`.
   \
   \ }doc
 
@@ -209,7 +209,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
   \
   \ Origin: lina.
   \
-  \ See also: `<bin`.
+  \ See: `<bin`.
   \
   \ }doc
 
@@ -232,7 +232,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
   \
   \ Display _d_ as an unsigned hexadecimal number with _n_ digits.
   \
-  \ See also: `(bin.`, `32hex.`, `16hex.`, `8hex.`, `hex.`.
+  \ See: `(bin.`, `32hex.`, `16hex.`, `8hex.`, `hex.`.
   \
   \ }doc
 
@@ -245,7 +245,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
   \
   \ Display _d_ as an unsigned 32-bit hexadecimal number.
   \
-  \ See also: `32bin.`, `16hex.`, `8hex.`, `hex.`, `hex`.
+  \ See: `32bin.`, `16hex.`, `8hex.`, `hex.`, `hex`.
   \
   \ }doc
 
@@ -258,7 +258,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
   \
   \ Display _d_ as an unsigned 16-bit hexadecimal number.
   \
-  \ See also: `16bin.`, `32hex.`, `8hex.`, `hex.`, `hex`.
+  \ See: `16bin.`, `32hex.`, `8hex.`, `hex.`, `hex`.
   \
   \ }doc
 
@@ -271,7 +271,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
   \
   \ Display _d_ as an unsigned 8-bit hexadecimal number.
   \
-  \ See also: `8bin.`, `16hex.`, `hex.`, `hex`.
+  \ See: `8bin.`, `16hex.`, `hex.`, `hex`.
   \
   \ }doc
 
@@ -289,7 +289,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
   \
   \ Set contents of `base` to two.
   \
-  \ See also: `decimal`, `hex`.
+  \ See: `decimal`, `hex`.
   \
   \ }doc
 
@@ -305,7 +305,7 @@ need base' need base> need binary
   \ saving the current value of `base` to `base'` and executing
   \ `binary`. The zone is finished by `bin>`.
   \
-  \ See also: `<hex`.
+  \ See: `<hex`.
   \
   \ }doc
 
@@ -329,7 +329,7 @@ need base' need base> need binary
   \
   \ Display _d_ as an unsigned binary number with _n_ digits.
   \
-  \ See also: `(hex.`, `32bin.`, `16bin.`, `8bin.`, `bin.`.
+  \ See: `(hex.`, `32bin.`, `16bin.`, `8bin.`, `bin.`.
   \
   \ }doc
 
@@ -342,7 +342,7 @@ need base' need base> need binary
   \
   \ Display _d_ as an unsigned 32-bit binary number.
   \
-  \ See also: `32hex.`, `16bin.`, `8bin.`, `bin.`, `binary`.
+  \ See: `32hex.`, `16bin.`, `8bin.`, `bin.`, `binary`.
   \
   \ }doc
 
@@ -355,7 +355,7 @@ need base' need base> need binary
   \
   \ Display _n_ as an unsigned 16-bit binary number.
   \
-  \ See also: `16bin.`, `32bin.`, `8bin.`, `bin.`, `binary`.
+  \ See: `16bin.`, `32bin.`, `8bin.`, `bin.`, `binary`.
   \
   \ }doc
 
@@ -368,7 +368,7 @@ need base' need base> need binary
   \
   \ Display _n_ as an unsigned 8-bit binary number.
   \
-  \ See also: `8hex.`, `32bin.`, `16bin.`, `bin.`, `binary`.
+  \ See: `8hex.`, `32bin.`, `16bin.`, `bin.`, `binary`.
   \
   \ }doc
 

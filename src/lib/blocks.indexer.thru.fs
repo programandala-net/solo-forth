@@ -126,7 +126,7 @@ need evaluate need catch need use-default-located
   \ The default action of all said words can be restored by
   \ `use-no-index`.
   \
-  \ See also: `use-fly-index`.
+  \ See: `use-fly-index`.
   \
   \ }doc
 
@@ -146,7 +146,7 @@ need evaluate need catch need use-default-located
   \
   \ ``(make-thru-index)`` is a factor of `make-thru-index`.
   \
-  \ See also: `use-thru-index`.
+  \ See: `use-thru-index`.
   \
   \ }doc
 

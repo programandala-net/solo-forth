@@ -41,7 +41,7 @@
   \   \ the Plus D memory.
   \ ----
 
-  \ See also: `endm`, `asm`, `code`.
+  \ See: `endm`, `asm`, `code`.
   \
   \ }doc
 

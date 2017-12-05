@@ -65,7 +65,7 @@ variable times-xt
 
   \ Origin: cmForth's ``repeats``.
   \
-  \ See also: `dtimes`, `executions`, `for`, `?do`.
+  \ See: `dtimes`, `executions`, `for`, `?do`.
   \
   \ }doc
 
@@ -95,7 +95,7 @@ variable dtimes-xt  \ the _xt_ executed by `dtimes`
   \ : blinking ( -- ) 100000. dtimes blink  ." Done" cr ;
   \ ----
 
-  \ See also: `times`, `executions`, `dfor`, `?do`.
+  \ See: `times`, `executions`, `dfor`, `?do`.
   \
   \ }doc
 

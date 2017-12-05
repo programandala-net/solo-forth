@@ -63,7 +63,7 @@
   \
   \ ``val`` is an alternative to the standard `value`.
   \
-  \ See also: `cval`, `2val`, `variable`, `constant`.
+  \ See: `cval`, `2val`, `variable`, `constant`.
   \
   \ }doc
 
@@ -80,7 +80,7 @@
   \ ``toval`` and `val` are a non-parsing alternative to the
   \ standard `to` and `value`.
   \
-  \ See also: `ctoval`, `2toval`.
+  \ See: `ctoval`, `2toval`.
   \
   \ }doc
 
@@ -112,7 +112,7 @@
   \
   \ ``2val`` is an alternative to the standard `2value`.
   \
-  \ See also: `val`, `cval`, `2variable`, `2constant`.
+  \ See: `val`, `cval`, `2variable`, `2constant`.
   \
   \ }doc
 
@@ -129,7 +129,7 @@
   \ ``2toval`` and `2val` are a non-parsing alternative to the
   \ standard `to` and `2value`.
   \
-  \ See also: `toval`, `ctoval`.
+  \ See: `toval`, `ctoval`.
   \
   \ }doc
 
@@ -159,7 +159,7 @@
   \ the stack (unless `ctoval` is used first) and then will
   \ execute `init-cval`.
   \
-  \ See also: `val`, `2val`, `cvariable`, `cconstant`.
+  \ See: `val`, `2val`, `cvariable`, `cconstant`.
   \
   \ }doc
 
@@ -173,7 +173,7 @@
   \ make them store a new value instead of returning its actual
   \ one.
   \
-  \ See also: `toval`, `2toval`.
+  \ See: `toval`, `2toval`.
   \
   \ }doc
 

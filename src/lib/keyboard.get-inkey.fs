@@ -63,7 +63,7 @@ code get-inkey ( -- c | 0 )
   \ ``get-inkey`` reads the keyboard, so it works even when the
   \ keyboard is not read by an interrupts routine.
   \
-  \ See also: `inkey`, `key`.
+  \ See: `inkey`, `key`.
   \
   \ }doc
 

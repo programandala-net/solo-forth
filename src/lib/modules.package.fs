@@ -162,7 +162,7 @@ need latest>wordlist need +order need -order need nextname
 
   \ Origin: SwiftForth.
   \
-  \ See also: `internal`, `isolate`, `module`, `privatize`,
+  \ See: `internal`, `isolate`, `module`, `privatize`,
   \ `seclusion`.
   \
   \ }doc
@@ -181,7 +181,7 @@ need latest>wordlist need +order need -order need nextname
   \
   \ Origin: SwiftForth.
   \
-  \ See also: `end-package`, `private`.
+  \ See: `end-package`, `private`.
   \
   \ }doc
 
@@ -200,7 +200,7 @@ need latest>wordlist need +order need -order need nextname
   \
   \ Origin: SwiftForth.
   \
-  \ See also: `end-package`, `public`.
+  \ See: `end-package`, `public`.
   \
   \ }doc
 
@@ -217,7 +217,7 @@ need latest>wordlist need +order need -order need nextname
   \
   \ Origin: SwiftForth.
   \
-  \ See also: `public`, `private`.
+  \ See: `public`, `private`.
   \
   \ }doc
 

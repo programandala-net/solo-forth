@@ -1241,7 +1241,7 @@ endif
 ; : end-asm ( -- ) ?csp previous abase @ base ! ;
 ; ----
 
-; See also: `end-code`, `?csp`, `previous`, `abase`, `base`.
+; See: `end-code`, `?csp`, `previous`, `abase`, `base`.
 ;
 ; }doc
 
@@ -1272,7 +1272,7 @@ endif
 
 ; Origin: Forth-83 (Assembler Extension Word Set).
 ;
-; See also: `end-asm`, `reveal`.
+; See: `end-asm`, `reveal`.
 ;
 ; }doc
 
@@ -1289,7 +1289,7 @@ endif
 ; _a_ is the address of a routine that converts to uppercase the
 ; ASCII character hold in the A register.
 ;
-; See also: `lower`, `upper_`.
+; See: `lower`, `upper_`.
 ;
 ; }doc
 
@@ -1311,7 +1311,7 @@ endif
 ; In Solo Forth, the Z80 IX register contains _a_, which must be
 ; preserved across Forth words.
 ;
-; See also: `pushhl`, `pusha`.
+; See: `pushhl`, `pusha`.
 ;
 ; }doc
 
@@ -1333,7 +1333,7 @@ endif
 ; absolute conditional jump, or to save the bytes needed to
 ; prepare an 8-bit register to be pushed on the stack.
 ;
-; See also: `pushhl`, `pushhlde`.
+; See: `pushhl`, `pushhlde`.
 ;
 ; }doc
 
@@ -1354,7 +1354,7 @@ endif
 ; ``pushhl`` is useful for exiting from a `code` word using an
 ; absolute conditional jump.
 ;
-; See also: `pusha`, `pushhlde`.
+; See: `pusha`, `pushhlde`.
 ;
 ; }doc
 
@@ -1375,7 +1375,7 @@ endif
 ; register, pushes it onto the stack and then continues at the
 ; address returned by `next`.
 ;
-; See also: `pushhl`.
+; See: `pushhl`.
 ;
 ; }doc
 
@@ -1390,7 +1390,7 @@ endif
 ;
 ; Compile a Z80 jump to `next`.
 ;
-; See also: `jp,`.
+; See: `jp,`.
 ;
 ; }doc
 
@@ -1413,7 +1413,7 @@ endif
 ; : jp, ( a -- ) $C3 c, , ;
 ; ----
 
-; See also: `call,`.
+; See: `call,`.
 
 ; }doc
 
@@ -1436,7 +1436,7 @@ endif
 ; : call, ( a -- ) $CD c, , ;
 ; ----
 
-; See also: `jp,`.
+; See: `jp,`.
 
 ; }doc
 
@@ -1464,7 +1464,7 @@ nt_of_the_previous_word: defl 0
 ; Return the name of the DOS in string _ca len_.
 ; It can be "+3DOS", "G+DOS" or "TR-DOS".
 ;
-; See also: `g+dos`, `tr-dos`, `+3dos`.
+; See: `g+dos`, `tr-dos`, `+3dos`.
 ;
 ; }doc
 
@@ -1490,7 +1490,7 @@ endif
 ; A constant that returns the maximum number of drives
 ; available in the DOS.
 ;
-; See also: `first-drive`, `drive`.
+; See: `first-drive`, `drive`.
 ;
 ; }doc
 
@@ -1506,7 +1506,7 @@ endif
 ; A constant that returns the identifier _c_ of the first drive
 ; available in the DOS.
 ;
-; See also: `max-drives`, `drive`.
+; See: `max-drives`, `drive`.
 ;
 ; }doc
 
@@ -1548,7 +1548,7 @@ endif
 ; Therefore, the name space is 16 KiB smaller than on G+DOS or
 ; TR-DOS.
 ;
-; See also: `bank`, `banks`, `bank-index`, `far`, `far@`,
+; See: `bank`, `banks`, `bank-index`, `far`, `far@`,
 ; `farc@`, `far!`, `farc!`, `farcount`, `farplace`, `fartype`,
 ; `faruppers`, `farlimit`.
 ;
@@ -1580,7 +1580,7 @@ endif
 ; corresponding actual address _a'_ ($C000 .. $FFFF) in the next
 ; bank and page in the next bank. Otherwise return _a_.
 ;
-; See also: `?next-bank_`, `?previous-bank`.
+; See: `?next-bank_`, `?previous-bank`.
 ;
 ; }doc
 
@@ -1657,7 +1657,7 @@ new_bank:
 ; previous bank and page in the next bank. Otherwise return
 ; _a_.
 ;
-; See also: `?previous-bank_`, `?next-bank`.
+; See: `?previous-bank_`, `?next-bank`.
 ;
 ; }doc
 
@@ -1714,7 +1714,7 @@ question_previous_bank:
 ; containing the bank index (0 .. 3) calculated by the latest
 ; execution of `far`
 ;
-; See also: `far-banks`, `bank`, `banks`.
+; See: `far-banks`, `bank`, `banks`.
 ;
 ; }doc
 
@@ -1739,7 +1739,7 @@ question_previous_bank:
 ;   u>ud /bank um/mod  far-banks + c@ bank  bank-start + ;
 ; ----
 
-; See also: `far-hl_`, `bank`.
+; See: `far-hl_`, `bank`.
 ;
 ; }doc
 
@@ -1799,7 +1799,7 @@ far.hl.mod:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `perform`.
+; See: `perform`.
 ;
 ; }doc
 
@@ -1825,7 +1825,7 @@ far.hl.mod:
 
 ; NOTE: ``perform`` is called ``@execute`` in other Forth systems.
 ;
-; See also: `execute`.
+; See: `execute`.
 ;
 ; }doc
 
@@ -1848,7 +1848,7 @@ far.hl.mod:
 ;
 ; Do nothing.
 ;
-; See also: `noop_`.
+; See: `noop_`.
 ;
 ; }doc
 
@@ -1869,7 +1869,7 @@ call_ix:
 ; _a_ is the address of a routine that does nothing, except
 ; executing a Z80 ``ret`` to return.
 ;
-; See also: `noop`.
+; See: `noop`.
 ;
 ; }doc
 
@@ -1890,7 +1890,7 @@ endif
 ;
 ; ``g+dos`` is an `immediate` word.
 ;
-; See also: `dos`, `tr-dos`, `+3dos`.
+; See: `dos`, `tr-dos`, `+3dos`.
 ;
 ; }doc
 
@@ -1909,7 +1909,7 @@ endif
 ;
 ; ``tr-dos`` is an `immediate` word.
 ;
-; See also: `dos`, `g+dos`, `+3dos`.
+; See: `dos`, `g+dos`, `+3dos`.
 ;
 ; }doc
 
@@ -1928,7 +1928,7 @@ endif
 ;
 ; ``+3dos`` is an `immediate` word.
 ;
-; See also: `dos`, `tr-dos`, `g+dos`.
+; See: `dos`, `tr-dos`, `g+dos`.
 ;
 ; }doc
 
@@ -1962,7 +1962,7 @@ endif
 ;   !csp init-asm base @ abase ! hex assembler-wordlist >order ;
 ; ----
 
-; See also: `end-asm`, `code`, `init-asm`, `abase`,
+; See: `end-asm`, `code`, `init-asm`, `abase`,
 ; `!csp`, `hex`.
 ;
 ; }doc
@@ -1999,7 +1999,7 @@ endif
 ; Origin: Forth-83 (Experimental proposals), Forth-94 (SEARCH
 ; EXT), Forth-2012 (SEARCH-EXT).
 
-; See also: `previous`, `get-order`, `set-order`, `only`,
+; See: `previous`, `get-order`, `set-order`, `only`,
 ; `order`, `>order`.
 ;
 ; }doc
@@ -2033,7 +2033,7 @@ endif
 
 ; Origin: Forth-94 (SEARCH EXT), Forth-2012 (SEARCH EXT).
 ;
-; See also: `also`, `set-order`, `previous`, `order`.
+; See: `also`, `set-order`, `previous`, `order`.
 ;
 ; }doc
 
@@ -2063,7 +2063,7 @@ endif
 
 ; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
 
-; See also: `set-order`, `>order`, `context`, `#order`.
+; See: `set-order`, `>order`, `context`, `#order`.
 ;
 ; }doc
 
@@ -2086,7 +2086,7 @@ get_order.exit
 ; A constant that returns the maximum number _n_ of word lists
 ; in the search order.
 ;
-; See also: `context`, `#order`, `set-order`, `get-order`,
+; See: `context`, `#order`, `set-order`, `get-order`,
 ; `>order`.
 ;
 ; }doc
@@ -2110,7 +2110,7 @@ get_order.exit
 ;   dup 0< #-50 ?throw  max-order < ?exit  #-49 throw ;
 ; ----
 
-; See also: `#order`, `set-order`, `>order`, `order`.
+; See: `#order`, `set-order`, `>order`, `order`.
 ;
 ; }doc
 
@@ -2144,7 +2144,7 @@ get_order.exit
 
 ; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
 ;
-; See also: `get-order`, `>order`.
+; See: `get-order`, `>order`.
 ;
 ; }doc
 
@@ -2184,7 +2184,7 @@ set_order.loop_exit
 
 ; Origin: Gforth.
 ;
-; See also: `previous`, `also`, `set-order`,  `context`.
+; See: `previous`, `also`, `set-order`,  `context`.
 ;
 ; }doc
 
@@ -2209,7 +2209,7 @@ set_order.loop_exit
 
 ; Origin: Forth-94 (SEARCH EXT), Forth-2012 (SEARCH EXT).
 ;
-; See also: `>order`, `get-order`, `set-order`.
+; See: `>order`, `get-order`, `set-order`.
 ;
 ; }doc
 
@@ -2236,7 +2236,7 @@ set_order.loop_exit
 ; defined in the word list identified by ``root-wordlist`` are
 ; aliases of the definitions in `forth-wordlist`.
 ;
-; See also: `only`, `wordlist`, `set-order`,
+; See: `only`, `wordlist`, `set-order`,
 ; `assembler-wordlist`, `alias`.
 ;
 ; }doc
@@ -2260,7 +2260,7 @@ set_order.loop_exit
 ;
 ; ``root`` is the `vocabulary` corresponding to `root-wordlist`.
 ;
-; See also: `forth`, `wordlist`.
+; See: `forth`, `wordlist`.
 ;
 ; }doc
 
@@ -2280,7 +2280,7 @@ set_order.loop_exit
 ;
 ; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
 ;
-; See also: `wordlist`, `set-order`, `root-wordlist`,
+; See: `wordlist`, `set-order`, `root-wordlist`,
 ; `assembler-wordlist`.
 ;
 ; }doc
@@ -2308,7 +2308,7 @@ set_order.loop_exit
 ; Origin: Forth-83 (Required Word Set), Forth-94 (SEARCH EXT),
 ; Forth-2012 (SEARCH EXT).
 ;
-; See also: `root`, `wordlist`.
+; See: `root`, `wordlist`.
 ;
 ; }doc
 
@@ -2326,7 +2326,7 @@ if 1 ; assembler_core_in_kernel
 ; Return _wid_, the identifier of the word list that includes
 ; the words defined as part of the `assembler`.
 ;
-; See also: `wordlist`, `set-order`, `forth-wordlist`,
+; See: `wordlist`, `set-order`, `forth-wordlist`,
 ; `root-wordlist`.
 ;
 ; }doc
@@ -2385,7 +2385,7 @@ endif
 ;   parse compiling? if postpone sliteral exit then >stringer ;
 ; ----
 
-; See also: `compiling?`, `sliteral`, `>stringer`.
+; See: `compiling?`, `sliteral`, `>stringer`.
 ;
 ; }doc
 
@@ -2410,7 +2410,7 @@ parse_string.interpreting:
 ;
 ; ``clit`` is a `compile-only` word.
 ;
-; See also: `lit`, `2lit`.
+; See: `lit`, `2lit`.
 ;
 ; }doc
 
@@ -2434,7 +2434,7 @@ push_a:
 ;
 ; ``2lit`` is a `compile-only` word.
 ;
-; See also: `lit`, `clit`.
+; See: `lit`, `clit`.
 ;
 ; }doc
 
@@ -2472,7 +2472,7 @@ push_hl:
 ;
 ; ``lit`` is a `compile-only` word.
 ;
-; See also: `clit`, `2lit`.
+; See: `clit`, `2lit`.
 ;
 ; }doc
 
@@ -2496,7 +2496,7 @@ push_hl:
 ; the default `bank` paged in at $C000 .. $FFFF. Its default value
 ; is zero.
 ;
-; See also: `set-default-bank`, `get-default-bank`, `banks`,
+; See: `set-default-bank`, `get-default-bank`, `banks`,
 ; `far-banks`.
 ;
 ; }doc
@@ -2531,7 +2531,7 @@ push_hl:
 ; | Pentagon 1024    >| 0 .. 63
 ; |===
 
-; See also: `default-bank`, `banks`, `far-banks`.
+; See: `default-bank`, `banks`, `far-banks`.
 ;
 ; }doc
 
@@ -2555,7 +2555,7 @@ push_hl:
 ; : unused-stringer ( -- n ) +stringer @ ;
 ; ----
 
-; See also: `+stringer`.
+; See: `+stringer`.
 ;
 ; }doc
 
@@ -2576,7 +2576,7 @@ push_hl:
 ; See in `stringer` an example how to move and resize the
 ; `stringer`.
 ;
-; See also: `+stringer`, `empty-stringer`, `default-stringer'.
+; See: `+stringer`, `empty-stringer`, `default-stringer'.
 ;
 ; }doc
 
@@ -2594,7 +2594,7 @@ push_hl:
 ; address. The offset equals the number of free characters in
 ; the `stringer`.
 ;
-; See also: `empty-stringer`.
+; See: `empty-stringer`.
 ;
 ; }doc
 
@@ -2628,7 +2628,7 @@ push_hl:
 ; The default ``stringer`` can be restored by
 ; `default-stringer`.
 ;
-; See also: `!>`, `/stringer`, `empty-stringer`, `+stringer`,
+; See: `!>`, `/stringer`, `empty-stringer`, `+stringer`,
 ; `unused-stringer`, `?stringer`, `allocate-stringer`,
 ; `>stringer`.
 ;
@@ -2653,7 +2653,7 @@ push_hl:
 ;       negate +stringer +! ;
 ; ----
 
-; See also: `unused-stringer`, `empty-stringer`, `+stringer`.
+; See: `unused-stringer`, `empty-stringer`, `+stringer`.
 ;
 ; }doc
 
@@ -2690,7 +2690,7 @@ question_stringer_.enough:
 ;   ?stringer stringer unused-stringer + ;
 ; ----
 
-; See also: `>stringer`, `stringer`, `?stringer`,
+; See: `>stringer`, `stringer`, `?stringer`,
 ; `unused-stringer`.
 ;
 ; }doc
@@ -2719,7 +2719,7 @@ question_stringer_.enough:
 ;   dup allocate-stringer swap 2dup 2>r move 2r> ;
 ; ----
 
-; See also: `allocate-stringer`, `far>stringer`.
+; See: `allocate-stringer`, `far>stringer`.
 ;
 ; }doc
 
@@ -2744,7 +2744,7 @@ question_stringer_.enough:
 ; : empty-stringer ( -- ) /stringer +stringer ! ;
 ; ----
 
-; See also: `default-stringer`.
+; See: `default-stringer`.
 ;
 ; }doc
 
@@ -2792,7 +2792,7 @@ question_stringer_.enough:
 
 ; Origin: Forth-83 (System Extension Word Set).
 ;
-; See also: `<mark`.
+; See: `<mark`.
 ;
 ; }doc
 
@@ -2819,7 +2819,7 @@ question_stringer_.enough:
 
 ; Origin: Forth-83 (System Extension Word Set).
 ;
-; See also: `here`, `<resolve`.
+; See: `here`, `<resolve`.
 ;
 ; }doc
 
@@ -2838,7 +2838,7 @@ question_stringer_.enough:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `dp`, `limit`, `unused`, `there`.
+; See: `dp`, `limit`, `unused`, `there`.
 ;
 ; }doc
 
@@ -2860,7 +2860,7 @@ question_stringer_.enough:
 ;
 ; Origin: Forth-83 (System Extension Word Set).
 ;
-; See also: `>mark`, `begin`.
+; See: `>mark`, `begin`.
 ;
 ; }doc
 
@@ -2882,7 +2882,7 @@ question_stringer_.enough:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `2,`, `c,`, `here`, `!`, `cell`, `allot`.
+; See: `2,`, `c,`, `here`, `!`, `cell`, `allot`.
 ;
 ; }doc
 
@@ -2939,7 +2939,7 @@ question_stringer_.enough:
 ;
 ; Origin: fig-Forth.
 ;
-; See also: `branch`, `?branch`, `-branch`, `+branch`.
+; See: `branch`, `?branch`, `-branch`, `+branch`.
 ;
 ; }doc
 
@@ -2969,7 +2969,7 @@ question_stringer_.enough:
 ; logical naming convention shared with optional control flow
 ; words, e.g. `?exit`, `0exit`, `-exit`...
 ;
-; See also: `branch`, `-branch`, `+branch`.
+; See: `branch`, `-branch`, `+branch`.
 ;
 ; }doc
 
@@ -2994,7 +2994,7 @@ question_stringer_.enough:
 ;
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `leave`, `do`, `?do`, `+loop`.
+; See: `leave`, `do`, `?do`, `+loop`.
 ;
 ; }doc
 
@@ -3021,7 +3021,7 @@ question_stringer_.enough:
 ;
 ; ``(?do)`` is compiled by `?do`.
 ;
-; See also: `(do)`, `(-do)`.
+; See: `(do)`, `(-do)`.
 ;
 ; }doc
 
@@ -3062,7 +3062,7 @@ question_stringer_.enough:
 
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See also: `do`, `-do`, `times`, `executions`.
+; See: `do`, `-do`, `times`, `executions`.
 ;
 ; }doc
 
@@ -3087,7 +3087,7 @@ question_stringer_.enough:
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
 ; Forth-2012 (CORE).
 ;
-; See also: `+loop`, `-do`.
+; See: `+loop`, `-do`.
 ;
 ; }doc
 
@@ -3115,7 +3115,7 @@ question_stringer_.enough:
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
 ; Forth-2012 (CORE).
 ;
-; See also: `loop`.
+; See: `loop`.
 ;
 ; }doc
 
@@ -3144,7 +3144,7 @@ question_stringer_.enough:
 ;
 ; ``(do)`` is compiled by `do`.
 ;
-; See also: `(?do)`, `(-do)`.
+; See: `(?do)`, `(-do)`.
 ;
 ; }doc
 
@@ -3193,7 +3193,7 @@ paren_do.de_hl:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `i'`, `j`, `k`.
+; See: `i'`, `j`, `k`.
 ;
 ; }doc
 
@@ -3233,7 +3233,7 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
 ; Forth-2012 (CORE).
 ;
-; See also: `?leave`, `unloop`, `do`, `?do`, `+loop`.
+; See: `?leave`, `unloop`, `do`, `?do`, `+loop`.
 ;
 ; }doc
 
@@ -3268,7 +3268,7 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
 ;
 ; Origin: Forth-83 (System Extension Word Set).
 ;
-; See also: `?branch`, `0branch`, `-branch`, `+branch`.
+; See: `?branch`, `0branch`, `-branch`, `+branch`.
 ;
 ; }doc
 
@@ -3294,7 +3294,7 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
 ;
 ; ``(+loop)`` is compiled by `+loop`.
 ;
-; See also: `(loop)`.
+; See: `(loop)`.
 ;
 ; }doc
 
@@ -3359,7 +3359,7 @@ paren_loop.continue:
 ;
 ; ``(loop)`` is compiled by `loop`.
 ;
-; See also: `(+loop)`.
+; See: `(+loop)`.
 ;
 ; }doc
 
@@ -3510,7 +3510,7 @@ number_base.current:
 
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `number?`, `number`.
+; See: `number?`, `number`.
 ;
 ; }doc
 
@@ -3556,7 +3556,7 @@ to_number.end:
 ; default action is `standard-number-point?`, which only allows
 ; the period.
 ;
-; See also: `classic-number-point?`, `extended-number-point?`,
+; See: `classic-number-point?`, `extended-number-point?`,
 ; `dpl`.
 ;
 ; }doc
@@ -3580,7 +3580,7 @@ to_number.end:
 ; : standard-number-point? ( c -- f ) '.' = ;
 ; ----
 
-; See also: `classic-number-point?`, `extended-number-point?`.
+; See: `classic-number-point?`, `extended-number-point?`.
 ;
 ; }doc
 
@@ -3643,7 +3643,7 @@ to_number.end:
 ;   then  r> base ! ;         \ restore the radix
 ; ----
 
-; See also: `>number`, `number-point?`, `skip-sign?`, `dpl`,
+; See: `>number`, `number-point?`, `skip-sign?`, `dpl`,
 ; `number`.
 ;
 ; }doc
@@ -3789,7 +3789,7 @@ char_question.not:
 ;   over c@ '-' = dup >r abs /string r> ;
 ; ----
 
-; See also: `number?`, `?negate`.
+; See: `number?`, `?negate`.
 ;
 ; }doc
 
@@ -3815,7 +3815,7 @@ char_question.not:
 ;
 ; String _ca len_ must be below memory address $C000.
 ;
-; See also: `find-name`, `find-name-in`, `find`.
+; See: `find-name`, `find-name-in`, `find`.
 ;
 ; }doc
 
@@ -3938,7 +3938,7 @@ find_name_from.ip: equ $+1
 
 ; Origin: Gforth.
 ;
-; See also: `find-name-in`, `find-name-from`, `find`.
+; See: `find-name-in`, `find-name-from`, `find`.
 ;
 ; }doc
 
@@ -4080,7 +4080,7 @@ skip.end:
 ;
 ; Open channel _n_ for output.
 ;
-; See also: `terminal`, `printer`, `printing`.
+; See: `terminal`, `printer`, `printing`.
 ;
 ; }doc
 ;
@@ -4114,7 +4114,7 @@ skip.end:
 ; ``last-font-char`` is a character variable, which must be set
 ; with `c!`.  Its default value is 127.
 ;
-; See also: `set-font`, `set-udg`.
+; See: `set-font`, `set-udg`.
 ;
 ; }doc
 
@@ -4163,7 +4163,7 @@ skip.end:
 ; interpreting characters 128 .. 255 its own way, `mode-32iso-emit`
 ; can be used instead.
 ;
-; See also: `set-font`, `set-udg`.
+; See: `set-font`, `set-udg`.
 ;
 ; }doc
 
@@ -4204,7 +4204,7 @@ mode_32_emit.a
 ; in display modes that use the ROM printing routines and keep
 ; those variables updated, like `mode-32` and `mode-32iso`.
 ;
-; See also: `set-udg`, `emit-udga`, `emit`, `mode-32-emit`,
+; See: `set-udg`, `emit-udga`, `emit`, `mode-32-emit`,
 ; `last-font-char`.
 ;
 ; }doc
@@ -4249,7 +4249,7 @@ emit_udg.address
 ; and keep those variables updated, like `mode-32` and
 ; `mode-32iso`.
 ;
-; See also: `emit-udg`, `emit`, `mode-32-emit`.
+; See: `emit-udg`, `emit`, `mode-32-emit`.
 ;
 ; }doc
 
@@ -4272,7 +4272,7 @@ emit_udg.address
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `emit-udg`.
+; See: `emit-udg`.
 ;
 ; }doc
 
@@ -4301,7 +4301,7 @@ emit_udg.address
 ;
 ; Select the terminal as output.
 ;
-; See also: `printer`, `printing`, `page`.
+; See: `printer`, `printing`, `page`.
 ;
 ; }doc
 
@@ -4486,7 +4486,7 @@ endif
 ; _f_ is true if the break key is pressed. ``break-key?`` is a
 ; deferred word whose default action is `default-break-key?`.
 ;
-; See also: `key?`.
+; See: `key?`.
 ;
 ; }doc
 
@@ -4509,7 +4509,7 @@ endif
 ;
 ; Origin: Forth-94 (FACILITY), Forth-2012 (FACILITY).
 ;
-; See also: `-keys`.
+; See: `-keys`.
 ;
 ; }doc
 
@@ -4552,7 +4552,7 @@ endif
 ;
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `key?`, `new-key`, `new-key-`, `-keys`.
+; See: `key?`, `new-key`, `new-key-`, `-keys`.
 ;
 ; }doc
 
@@ -4571,7 +4571,7 @@ endif
 ; the caps lock key, toggle caps and keep waiting; else leave
 ; the character code _c_ of the key struck.
 ;
-; See also: `key`, `-keys`.
+; See: `key`, `-keys`.
 ;
 ; }doc
 
@@ -4695,7 +4695,7 @@ wait_for_key:
 ; Origin: Forth-83 (Required Word Set), Forth-94 (STRING),
 ; Forth-2012 (STRING).
 ;
-; See also: `cmove`, `move`.
+; See: `cmove`, `move`.
 ;
 ; }doc
 
@@ -4725,7 +4725,7 @@ wait_for_key:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (STRING), Forth-2012 (STRING).
 ;
-; See also: `cmove>`, `move`.
+; See: `cmove>`, `move`.
 ;
 ; }doc
 
@@ -4750,7 +4750,7 @@ wait_for_key:
 ; consecutive address units at _a2_ contain exactly what the _u_
 ; consecutive address units at _a1_ contained before the move.
 ;
-; See also: `cmove`, `cmove>`.
+; See: `cmove`, `cmove>`.
 ;
 ; Origin: Forth-83 (Uncontrolled Reference Words), Forth-94
 ; (STRING), Forth-2012 (STRING).
@@ -4778,7 +4778,7 @@ move.do:
 ; ``smove`` is the equivalent of the idiom ``swap move``, but
 ; faster.
 ;
-; See also: `cmove`, `cmove>`, `move`.
+; See: `cmove`, `cmove>`, `move`.
 ;
 ; }doc
 
@@ -4799,7 +4799,7 @@ move.do:
 ;
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `m*`, `*`, `d*`.
+; See: `m*`, `*`, `d*`.
 ;
 ; }doc
 
@@ -4825,7 +4825,7 @@ move.do:
 ;
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `/mod`, `du/mod`, `mod`, `*/mod`.
+; See: `/mod`, `du/mod`, `mod`, `*/mod`.
 ;
 ; }doc
 
@@ -4884,7 +4884,7 @@ u_m_slash_mod.4:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `or`, `xor`, `negate`, `0=`, `dand`.
+; See: `or`, `xor`, `negate`, `0=`, `dand`.
 ;
 ; }doc
 
@@ -4911,7 +4911,7 @@ u_m_slash_mod.4:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `and`, `xor`, `negate`, `0=`, `dor`.
+; See: `and`, `xor`, `negate`, `0=`, `dor`.
 ;
 ; }doc
 
@@ -4938,7 +4938,7 @@ u_m_slash_mod.4:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `or`, `and`, `negate`, `0=`, `dxor`.
+; See: `or`, `and`, `negate`, `0=`, `dxor`.
 ;
 ; }doc
 
@@ -4962,7 +4962,7 @@ u_m_slash_mod.4:
 ;
 ; _n_ is the length of the user area.
 ;
-; See also: `up`.
+; See: `up`.
 ;
 ; }doc
 
@@ -4980,7 +4980,7 @@ u_m_slash_mod.4:
 ;
 ; Origin: fig-Forth.
 ;
-; See also: `/user`, `user`.
+; See: `/user`, `user`.
 ;
 ; }doc
 
@@ -5013,7 +5013,7 @@ u_m_slash_mod.4:
 ; Name space is in "far memory": a 64-KiB memory formed by 4
 ; configurable memory banks.
 ;
-; See also: `np0`, `np@`, `dp`, `far-banks`.
+; See: `np0`, `np@`, `dp`, `far-banks`.
 ;
 ; }doc
 
@@ -5118,7 +5118,7 @@ u_m_slash_mod.4:
 ; Origin: fig-Forth, Forth-79 (Reference Word Set), Forth-83
 ; (Controlled Reference Words).
 ;
-; See also: `sp!`, `sp0`.
+; See: `sp!`, `sp0`.
 ;
 ; }doc
 
@@ -5151,7 +5151,7 @@ u_m_slash_mod.4:
 ;
 ; Address of the return stack pointer.
 ;
-; See also: `rp@`, `rp!`.
+; See: `rp@`, `rp!`.
 ;
 ; }doc
 
@@ -5178,7 +5178,7 @@ u_m_slash_mod.4:
 ; : rp@ ( -- a ) rp @ ;
 ; ----
 ;
-; See also: `rp`, `rp!`.
+; See: `rp`, `rp!`.
 ;
 ; }doc
 
@@ -5202,7 +5202,7 @@ u_m_slash_mod.4:
 ; : rp! ( a -- ) rp ! ;
 ; ----
 ;
-; See also: `rp`, `rp@`.
+; See: `rp`, `rp@`.
 ;
 ; }doc
 
@@ -5222,7 +5222,7 @@ u_m_slash_mod.4:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `r>`, `r@`, 2>r`, `dup>r`.
+; See: `r>`, `r@`, 2>r`, `dup>r`.
 ;
 ; }doc
 
@@ -5248,7 +5248,7 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `>r`, `r@`, `2r>`.
+; See: `>r`, `r@`, `2r>`.
 ;
 ; }doc
 
@@ -5270,7 +5270,7 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ;
 ; Remove _x_ from the return stack.
 ;
-; See also: `r@`, `drop`.
+; See: `r@`, `drop`.
 ;
 ; Origin: Comus.
 ;
@@ -5294,7 +5294,7 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ;
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See also: `2r>`, `2r@`, `>r`.
+; See: `2r>`, `2r@`, `>r`.
 ;
 ; }doc
 
@@ -5316,7 +5316,7 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ;
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See also: `2>r`, `2r@`, `r>`.
+; See: `2>r`, `2r@`, `r>`.
 ;
 ; }doc
 
@@ -5339,7 +5339,7 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ;
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See also: `2>r`, `2r>`, `r@`.
+; See: `2>r`, `2r>`, `r@`.
 ;
 ; }doc
 
@@ -5381,7 +5381,7 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `0<>`, `0<`, `0>`, `negate`, `invert`.
+; See: `0<>`, `0<`, `0>`, `negate`, `invert`.
 ;
 ; }doc
 
@@ -5403,7 +5403,7 @@ zero_equals.hl:
 ; Return _0_. ``0`` is not a `constant`, but a `code` word,
 ; which is faster.
 ;
-; See also: `-1`, `1`, `2`, `false`.
+; See: `-1`, `1`, `2`, `false`.
 ;
 ; }doc
 
@@ -5423,7 +5423,7 @@ zero_equals.hl:
 ;
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See also: `true`, `0`.
+; See: `true`, `0`.
 ;
 ; }doc
 
@@ -5438,7 +5438,7 @@ zero_equals.hl:
 ;
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See also: `0=`.
+; See: `0=`.
 ;
 ; }doc
 
@@ -5460,7 +5460,7 @@ zero_equals.hl:
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `0>`, `0<=`, `0=`, `0<>`.
+; See: `0>`, `0<=`, `0=`, `0<>`.
 ;
 ; }doc
 
@@ -5493,7 +5493,7 @@ true_if_cy:
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See also: `0<`, `0>=`, `0=`, `0<>`.
+; See: `0<`, `0>=`, `0=`, `0<>`.
 ;
 ; }doc
 
@@ -5516,7 +5516,7 @@ true_if_cy:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `m+`, `d+`, `2+`, `1+`, `-`.
+; See: `m+`, `d+`, `2+`, `1+`, `-`.
 ;
 ; }doc
 
@@ -5539,7 +5539,7 @@ true_if_cy:
 ; Number Extension Word Set), Forth-94 (DOUBLE), Forth-2012
 ; (DOUBLE).
 ;
-; See also: `d-`, `+`, `dmax`.
+; See: `d-`, `+`, `dmax`.
 ;
 ; }doc
 
@@ -5573,7 +5573,7 @@ true_if_cy:
 ;
 ; Invert all bits of _x1_ giving its logical inverse _x2_.
 ;
-; See also: `0=`, `negate`.
+; See: `0=`, `negate`.
 ;
 ; }doc
 
@@ -5602,7 +5602,7 @@ true_if_cy:
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required
 ; Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `?negate`, `0=`, `inverse`, `dnegate`.
+; See: `?negate`, `0=`, `inverse`, `dnegate`.
 ;
 ; }doc
 
@@ -5661,7 +5661,7 @@ negate_hl:
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required
 ; Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `negate`, `?dnegate`.
+; See: `negate`, `?dnegate`.
 ;
 ; }doc
 
@@ -5738,7 +5738,7 @@ endif
 ;
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See also: `drop`, `tuck`, `2nip`.
+; See: `drop`, `tuck`, `2nip`.
 ;
 ; }doc
 
@@ -5758,7 +5758,7 @@ endif
 ;
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See also: `dup`, `over`, `nip`, `nup`.
+; See: `dup`, `over`, `nip`, `nup`.
 ;
 ; }doc
 
@@ -5781,7 +5781,7 @@ endif
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `dup`, `swap`, `2over`.
+; See: `dup`, `swap`, `2over`.
 ;
 ; }doc
 
@@ -5804,7 +5804,7 @@ endif
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `2drop`, `nip`.
+; See: `2drop`, `nip`.
 ;
 ; }doc
 
@@ -5823,7 +5823,7 @@ endif
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `2swap`, `over`, `tuck`.
+; See: `2swap`, `over`, `tuck`.
 ;
 ; }doc
 
@@ -5847,7 +5847,7 @@ endif
 ; using the data stack. Therefore ``cs-swap`` is an `alias`
 ; of `swap`.
 ;
-; See also: `cs-pick`, `cs-roll`, `cs-drop`.
+; See: `cs-pick`, `cs-roll`, `cs-drop`.
 ;
 ; }doc
 
@@ -5868,7 +5868,7 @@ endif
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `?dup`, `2dup`, `tuck`, `over`, `0dup`, `-dup`,
+; See: `?dup`, `2dup`, `tuck`, `over`, `0dup`, `-dup`,
 ; `nup`, `3dup`, `dup>r`.
 ;
 ; }doc
@@ -5891,7 +5891,7 @@ endif
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ;
-; See also: `dup`, `2over`, `2drop`, `3dup`.
+; See: `dup`, `2over`, `2drop`, `3dup`.
 ;
 ; }doc
 
@@ -5915,7 +5915,7 @@ endif
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `c+!`, `@`, `+`, `!`.
+; See: `c+!`, `@`, `+`, `!`.
 ;
 ; }doc
 
@@ -5993,7 +5993,7 @@ endif
 ; of it with _b_. Return false if the result is zero, else
 ; true.
 ;
-; See also: `c@and`.
+; See: `c@and`.
 ;
 ; }doc
 
@@ -6058,7 +6058,7 @@ endif
 ; Number Extension Word Set), Forth-94 (CORE), Forth-2012
 ; (CORE).
 ;
-; See also: `2@`, `!`, `c!`.
+; See: `2@`, `!`, `c!`.
 ;
 ; }doc
 
@@ -6089,7 +6089,7 @@ two_store.into_hl_pointer:
 ; Set the default font, which is the ROM font, by setting the
 ; system variable `os-chars` to 15360 ($3C00).
 ;
-; See also: `set-font`, `rom-font`.
+; See: `set-font`, `rom-font`.
 ;
 ; }doc
 
@@ -6114,7 +6114,7 @@ two_store.into_hl_pointer:
 ; The last character used from the font can be configured by
 ; `last-font-char`.
 ;
-; See also: `get-font`, `rom-font`, `default-font`, `mode-32`,
+; See: `get-font`, `rom-font`, `default-font`, `mode-32`,
 ; `mode-32iso`, `mode-42`, `mode-64`.
 ;
 ; }doc
@@ -6134,7 +6134,7 @@ two_store.into_hl_pointer:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `@`, `+!`, `2!`, `c!`.
+; See: `@`, `+!`, `2!`, `c!`.
 ;
 ; }doc
 
@@ -6159,7 +6159,7 @@ store.de_into_hl_pointer:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `!`, `2!`, `c@`.
+; See: `!`, `2!`, `c@`.
 ;
 ; }doc
 
@@ -6210,7 +6210,7 @@ store.de_into_hl_pointer:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `;`, `does>`, `header`.
+; See: `;`, `does>`, `header`.
 ;
 ; }doc
 
@@ -6302,7 +6302,7 @@ do_colon:
 
 ; Origin: Gforth.
 ;
-; See also: `reveal`, `noname?`, `?csp`, `[`, `no-exit`.
+; See: `reveal`, `noname?`, `?csp`, `[`, `no-exit`.
 ;
 ; }doc
 
@@ -6348,7 +6348,7 @@ do_colon:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `exit`, `:`, `finish-code`, `;code`.
+; See: `exit`, `:`, `finish-code`, `;code`.
 ;
 ; }doc
 
@@ -6367,7 +6367,7 @@ do_colon:
 ;
 ; Origin: Comus.
 ;
-; See also: `constant`, `2constant`, `c!>`, `cconst`,
+; See: `constant`, `2constant`, `c!>`, `cconst`,
 ; `[cconst]`, `cvalue`, `cvariable`.
 ;
 ; }doc
@@ -6390,7 +6390,7 @@ do_c_constant:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `@`, `2@`, `c!`.
+; See: `@`, `2@`, `c!`.
 ;
 ; }doc
 
@@ -6414,7 +6414,7 @@ c_fetch.hl:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `2constant`, `cconstant`, `!>`, `const`, `[const]`,
+; See: `2constant`, `cconstant`, `!>`, `const`, `[const]`,
 ; `value`, `variable`.
 ;
 ; }doc
@@ -6437,7 +6437,7 @@ do_constant:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `!`, `2@`, `c@`.
+; See: `!`, `2@`, `c@`.
 ;
 ; }doc
 
@@ -6474,7 +6474,7 @@ fetch.hl:
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `cvariable`, `2variable`, `constant`.
+; See: `cvariable`, `2variable`, `constant`.
 ;
 ; }doc
 
@@ -6497,7 +6497,7 @@ fetch.hl:
 ; Origin: ``user`` in fig-Forth, Forth-79 (Reference Word Set)
 ; and Forth-83 (Uncontrolled Reference Words).
 ;
-; See also: `user`, `2user`.
+; See: `user`, `2user`.
 ;
 ; }doc
 
@@ -6526,7 +6526,7 @@ do_user:
 ; Return _1_. ``1`` is not a `constant`, but a `code` word,
 ; which is faster.
 ;
-; See also: `-1`, `0`, `2`.
+; See: `-1`, `0`, `2`.
 ;
 ; }doc
 
@@ -6544,7 +6544,7 @@ do_user:
 ; Return _2_. ``2`` is not a `constant`, but a `code` word,
 ; which is faster.
 ;
-; See also: `-1`, `0`, `1`, `cell`.
+; See: `-1`, `0`, `1`, `cell`.
 ;
 ; }doc
 
@@ -6564,7 +6564,7 @@ do_user:
 ;
 ; Origin: Comus.
 ;
-; See also: `cells`, `cell+`, `cell-`, `cell/`, `cell-bits`.
+; See: `cells`, `cell+`, `cell-`, `cell/`, `cell-bits`.
 ;
 ; }doc
 
@@ -6581,7 +6581,7 @@ do_user:
 ; delimiter, ``bl`` is the only way a program has to find and
 ; use the character value of a space.
 ;
-; See also: `space`, `emit`.
+; See: `space`, `emit`.
 ;
 ; }doc
 
@@ -6597,7 +6597,7 @@ do_user:
 ; _c_ is the number of characters per line in a `block` source:
 ; 64.
 ;
-; See also: `l/scr`.
+; See: `l/scr`.
 ;
 ; }doc
 
@@ -6614,7 +6614,7 @@ do_user:
 ;
 ; _c_ is the number of lines per `block` source: 16.
 ;
-; See also: `c/l`.
+; See: `c/l`.
 ;
 ; }doc
 
@@ -6632,7 +6632,7 @@ do_user:
 ; A constant. _a_ is the address of the disk `buffer`. The cell
 ; pointed by _a_ contains the disk buffer identifier.
 ;
-; See also: `buffer-data`.
+; See: `buffer-data`.
 ;
 ; }doc
 
@@ -6647,7 +6647,7 @@ do_user:
 ;
 ; A constant. _ca_ is the address of the disk `buffer` contents.
 ;
-; See also: `disk-buffer`.
+; See: `disk-buffer`.
 ;
 ; }doc
 
@@ -6669,7 +6669,7 @@ do_user:
 ; time.], Forth-79 (Reference Word Set), Forth-83 (Uncontrolled
 ; Reference Words).
 ;
-; See also: `c/l`, `l/scr`.
+; See: `c/l`, `l/scr`.
 ;
 ; }doc
 
@@ -6684,7 +6684,7 @@ do_user:
 ;
 ; Bytes per disk sector.
 ;
-; See also: `sectors/block`, `sectors/track`.
+; See: `sectors/block`, `sectors/track`.
 ;
 ; }doc
 
@@ -6701,7 +6701,7 @@ do_user:
 ;
 ; Sectors per disk track.
 ;
-; See also: `b/sector`, `sectors/block`, `blocks/disk`.
+; See: `b/sector`, `sectors/block`, `blocks/disk`.
 ;
 ; }doc
 
@@ -6716,7 +6716,7 @@ do_user:
 ;
 ; Sectors per block.
 ;
-; See also: `b/sector`, `sectors/track`, `blocks/disk`.
+; See: `b/sector`, `sectors/track`, `blocks/disk`.
 ;
 ; }doc
 
@@ -6731,7 +6731,7 @@ do_user:
 ;
 ; A constant. Number of blocks per disk.
 ;
-; See also: `sectors/block`, `sectors/track`.
+; See: `sectors/block`, `sectors/track`.
 ;
 ; }doc
 
@@ -6773,7 +6773,7 @@ do_user:
 ; Origin: fig-Forth's ``s0``, Forth-79's ``s0``, Forth-83's
 ; ``s0``.
 ;
-; See also: `sp@`, `sp!`.
+; See: `sp@`, `sp!`.
 ;
 ; }doc
 
@@ -6852,7 +6852,7 @@ do_user:
 ; A user variable. _a_ is the address of a cell containing the
 ; name token of the last word defined.
 ;
-; See also: `latest`, `lastxt`.
+; See: `latest`, `lastxt`.
 ;
 ; }doc
 
@@ -6902,7 +6902,7 @@ do_user:
 ; A user variable. _a_ is the address of a cell containing the
 ; execution token of the last word defined.
 ;
-; See also: `last`.
+; See: `last`.
 ;
 ; }doc
 
@@ -6933,7 +6933,7 @@ do_user:
 ; A user variable. _a_ is the address of a cell containing the
 ; number of the disk `block` being interpreted.
 ;
-; See also: `load`, `loading?`, `?loading`.
+; See: `load`, `loading?`, `?loading`.
 ;
 ; }doc
 
@@ -6956,7 +6956,7 @@ do_user:
 ; (Controlled Reference Words), Forth-94 (BLOCK EXT), Forth-2012
 ; (BLOCK EXT).
 ;
-; See also: `editor`.
+; See: `editor`.
 ;
 ; }doc
 
@@ -6994,7 +6994,7 @@ do_user:
 ;
 ; Origin: fig-Forth.
 ;
-; See also: `hold`, `<#`, `#>`.
+; See: `hold`, `<#`, `#>`.
 ;
 ; }doc
 
@@ -7013,7 +7013,7 @@ do_user:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (System Extension Word Set).
 ;
-; See also: `get-current`.
+; See: `get-current`.
 ;
 ; }doc
 
@@ -7033,7 +7033,7 @@ do_user:
 ; Origin: fig-Forth, Forth-89 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `compiling?`, `[`, `]`.
+; See: `compiling?`, `[`, `]`.
 ;
 ; }doc
 
@@ -7052,7 +7052,7 @@ do_user:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `>number`, `number?`, `abase`.
+; See: `>number`, `number?`, `abase`.
 ;
 ; }doc
 
@@ -7075,7 +7075,7 @@ do_user:
 ;
 ; Origin: fig-Forth, Forth-83 (Uncontrolled Reference Words).
 ;
-; See also: `number-point?`, `>number`, `number?`.
+; See: `number-point?`, `>number`, `number?`.
 ;
 ; }doc
 
@@ -7109,7 +7109,7 @@ do_user:
 ; A user variable. _a_ is the address of a cell containing the
 ; number of word lists in the search `order`.
 ;
-; See also: `context`, `max-order`, `get-order`, `set-order`,
+; See: `context`, `max-order`, `get-order`, `set-order`,
 ; `>order`, `wordlist`.
 ;
 ; }doc
@@ -7129,7 +7129,7 @@ do_user:
 ; the `#order` variable.  _a_ holds the word list at the top of
 ; the search order.
 ;
-; See also: `>order`, `get-order`, `set-order`.
+; See: `>order`, `get-order`, `set-order`.
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (System Extension Word Set).
@@ -7159,7 +7159,7 @@ endif
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE EXT,
 ; obsolescent).
 ;
-; See also: `/tib`, `#tib`.
+; See: `/tib`, `#tib`.
 ;
 ; }doc
 
@@ -7174,7 +7174,7 @@ endif
 ;
 ; _n_ is the maximum size of the terminal input buffer,
 ;
-; See also: `tib`, `#tib`.
+; See: `tib`, `#tib`.
 ;
 ; }doc
 
@@ -7193,7 +7193,7 @@ endif
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE EXT,
 ; obsolescent).
 ;
-; See also: `tib`, `/tib`.
+; See: `tib`, `/tib`.
 ;
 ; }doc
 
@@ -7209,7 +7209,7 @@ endif
 ; A double-cell variable that holds the address and length of
 ; the current input buffer.
 ;
-; See also: `source`, `set-source`.
+; See: `source`, `set-source`.
 ;
 ; }doc
 
@@ -7236,7 +7236,7 @@ endif
 
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `input-buffer`, `set-source`, `blk`, `stream`.
+; See: `input-buffer`, `set-source`, `blk`, `stream`.
 ;
 ; }doc
 
@@ -7263,7 +7263,7 @@ source.other:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set).
 ;
-; See also: `2-`, `1+`, `8+`.
+; See: `2-`, `1+`, `8+`.
 ;
 ; }doc
 
@@ -7288,7 +7288,7 @@ source.other:
 ;
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `cell`, `cells`, `cell-`, `cell/`.
+; See: `cell`, `cells`, `cell-`, `cell/`.
 ;
 ; }doc
 
@@ -7307,7 +7307,7 @@ source.other:
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set).
 ;
-; See also: `1+`, `2-`, `8-`.
+; See: `1+`, `2-`, `8-`.
 ;
 ; }doc
 
@@ -7330,7 +7330,7 @@ source.other:
 ;
 ; Origin: Comus.
 ;
-; See also: `char+`.
+; See: `char+`.
 ;
 ; }doc
 
@@ -7348,7 +7348,7 @@ source.other:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set).
 ;
-; See also: `1-`, `2+`, `8+`.
+; See: `1-`, `2+`, `8+`.
 ;
 ; }doc
 
@@ -7371,7 +7371,7 @@ source.other:
 ;
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `char-`, `chars`.
+; See: `char-`, `chars`.
 ;
 ; }doc
 
@@ -7390,7 +7390,7 @@ source.other:
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set).
 ;
-; See also: `2+`, `1-`, `8-`.
+; See: `2+`, `1-`, `8-`.
 ;
 ; }doc
 
@@ -7412,7 +7412,7 @@ source.other:
 ;
 ; Origin: Comus.
 ;
-; See also: `cell`, `cell+`, `cells`, `cell/`.
+; See: `cell`, `cell+`, `cells`, `cell/`.
 ;
 ; }doc
 
@@ -7432,7 +7432,7 @@ source.other:
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
 ; Forth-2012 (CORE).
 ;
-; See also: `lshift`, `8*`.
+; See: `lshift`, `8*`.
 ;
 ; }doc
 
@@ -7456,7 +7456,7 @@ source.other:
 ;
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `cell`, `cell+`, `cell-`, `cell/`.
+; See: `cell`, `cell+`, `cell-`, `cell/`.
 ;
 ; }doc
 
@@ -7547,7 +7547,7 @@ source.other:
 ; _x2_ is stored in the first cell, and _x1_ is stored in the
 ; second cell.
 ;
-; See also: `,`, `c,`, `here`, `2!`, `cells`, `literal`,
+; See: `,`, `c,`, `here`, `2!`, `cells`, `literal`,
 ; `allot`.
 ;
 ; }doc
@@ -7578,7 +7578,7 @@ two_comma.allot:
 ; (Controlled Reference Words), Forth-94 (CORE), Forth-2012
 ; (CORE).
 ;
-; See also: `,`, `2,`, `here`, `c!`, `allot`.
+; See: `,`, `2,`, `here`, `c!`, `allot`.
 ;
 ; }doc
 
@@ -7599,7 +7599,7 @@ two_comma.allot:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `d-`, `2-`, `1-`, `+`.
+; See: `d-`, `2-`, `1-`, `+`.
 ;
 ; }doc
 
@@ -7623,7 +7623,7 @@ two_comma.allot:
 ; Origin: Forth-79 (Reference Word Set), Forth-83 (Uncontrolled
 ; Reference Words), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `=`, `>`, `<`.
+; See: `=`, `>`, `<`.
 ;
 ; }doc
 
@@ -7647,7 +7647,7 @@ two_comma.allot:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `<>`, `>`, `<`.
+; See: `<>`, `>`, `<`.
 ;
 ; }doc
 
@@ -7669,7 +7669,7 @@ two_comma.allot:
 ; Return _-1_. ``-1`` is not a `constant`, but a `code` word,
 ; which is faster.
 ;
-; See also: `0`, `1`, `2`, `true`.
+; See: `0`, `1`, `2`, `true`.
 ;
 ; }doc
 
@@ -7689,7 +7689,7 @@ two_comma.allot:
 ;
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See also: `false`, `-1`.
+; See: `false`, `-1`.
 ;
 ; }doc
 
@@ -7705,7 +7705,7 @@ two_comma.allot:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `>`, `u<`, `0<`, `min`.
+; See: `>`, `u<`, `0<`, `min`.
 ;
 ; }doc
 
@@ -7749,7 +7749,7 @@ less_than.reverse
 ;
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See also: `>`, `u<`, `0>`, `umax`.
+; See: `>`, `u<`, `0>`, `umax`.
 ;
 ; }doc
 
@@ -7770,7 +7770,7 @@ u_greater_than.hl:
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `<`, `u>`, `0<` ,`umin`.
+; See: `<`, `u>`, `0<` ,`umin`.
 ;
 ; }doc
 
@@ -7801,7 +7801,7 @@ u_less_than.de_hl:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `<`, `u>`, `0>`, `max`.
+; See: `<`, `u>`, `0>`, `max`.
 ;
 ; }doc
 
@@ -7821,7 +7821,7 @@ u_less_than.de_hl:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `-rot`, `over`, `tuck`, `swap`, `roll`, `pick`.
+; See: `-rot`, `over`, `tuck`, `swap`, `roll`, `pick`.
 ;
 ; }doc
 
@@ -7844,7 +7844,7 @@ u_less_than.de_hl:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `bl`, `emit`.
+; See: `bl`, `emit`.
 ;
 ; }doc
 
@@ -7863,7 +7863,7 @@ u_less_than.de_hl:
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `dup`, `0dup`, `-dup`.
+; See: `dup`, `0dup`, `-dup`.
 ;
 ; }doc
 
@@ -7892,7 +7892,7 @@ u_less_than.de_hl:
 
 ; Origin: Gforth.
 ;
-; See also: `last`, `current-latest`.
+; See: `last`, `current-latest`.
 ;
 ; }doc
 
@@ -7917,7 +7917,7 @@ u_less_than.de_hl:
 
 ; Origin: fig-Forth's ``latest``.
 ;
-; See also: `latest`.
+; See: `latest`.
 ;
 ; }doc
 
@@ -8099,7 +8099,7 @@ to_name.next:
 ; |===
 ;
 ;
-; See also: `bank`, `far-banks`, `default-bank`, `ram`.
+; See: `bank`, `far-banks`, `default-bank`, `ram`.
 ;
 ; }doc
 
@@ -8132,7 +8132,7 @@ banks: equ (pentagon+scorpion+128*(!(pentagon || scorpion) and 1))/16
 ; NOTE: On G+DOS, the RAM size includes the 8 KiB of the Plus D
 ; interface.
 ;
-; See also: `banks`.
+; See: `banks`.
 ;
 ; }doc
 
@@ -8150,7 +8150,7 @@ ram_kib: equ banks*16+(8*(gplusdos and 1))
 ; Page in the default memory `bank`, wich can be configured with
 ; `default-bank#`, at $C000 .. $FFFF.
 ;
-; See also: `set-default-bank`, `get-default-bank`, `banks`.
+; See: `set-default-bank`, `get-default-bank`, `banks`.
 ;
 ; }doc
 
@@ -8345,7 +8345,7 @@ endif ; pentagon=512 or pentagon=1024
 ;
 ; Fetch _c_ from far-memory address _ca_.
 ;
-; See also: `far-banks`.
+; See: `far-banks`.
 ;
 ; }doc
 
@@ -8369,7 +8369,7 @@ endif ; pentagon=512 or pentagon=1024
 ;
 ; Store _c_ into far-memory address _ca_.
 ;
-; See also: `far-banks`.
+; See: `far-banks`.
 ;
 ; }doc
 
@@ -8404,7 +8404,7 @@ endif ; pentagon=512 or pentagon=1024
 ;   dup 1+ far c@ >r far c@ r> join default-bank ;
 ; ----
 
-; See also: `far-banks`.
+; See: `far-banks`.
 ;
 ; }doc
 
@@ -8444,7 +8444,7 @@ endif ; pentagon=512 or pentagon=1024
 ;   >r split r@ 1+ far c! r> far c! default-bank ;
 ; ----
 
-; See also: `far-banks`.
+; See: `far-banks`.
 ;
 ; }doc
 
@@ -8495,7 +8495,7 @@ endif ; pentagon=512 or pentagon=1024
 ; : name>str ( nt -- ca len ) farcount word-length-mask and ;
 ; ----
 
-; See also: `name>string`.
+; See: `name>string`.
 ;
 ; }doc
 
@@ -8523,7 +8523,7 @@ endif ; pentagon=512 or pentagon=1024
 ;   loop  2drop default-bank 2r> ;
 ; ----
 
-; See also: `name>str`.
+; See: `name>str`.
 ;
 ; }doc
 
@@ -8626,7 +8626,7 @@ name_to_string.loop_exit:
 ; : executing? ( -- f ) state @ 0= ;
 ; ----
 
-; See also: `?executing`.
+; See: `?executing`.
 ;
 ; }doc
 
@@ -8666,7 +8666,7 @@ name_to_string.loop_exit:
 ; If a `block` is not being loaded, i.e., if the content of
 ; `blk` is zero, `throw` exception code #-265 ("loading only").
 ;
-; See also: `loading?`, `load`.
+; See: `loading?`, `load`.
 ;
 ; }doc
 
@@ -8684,7 +8684,7 @@ name_to_string.loop_exit:
 ; If a `block` is being loaded, i.e., if the content of
 ; `blk` is non-zero, return true; else return false.
 ;
-; See also: `?loading`, `load`.
+; See: `?loading`, `load`.
 ;
 ; }doc
 
@@ -8728,7 +8728,7 @@ name_to_string.loop_exit:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set).
 ;
-; See also: `[compile]`, `compile,`.
+; See: `[compile]`, `compile,`.
 ;
 ; }doc
 
@@ -8759,7 +8759,7 @@ name_to_string.loop_exit:
 
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `[compile]`, `compile`, `defined`, `?defined`,
+; See: `[compile]`, `compile`, `defined`, `?defined`,
 ; `name>immediate?`, `compile,`, `0if`.
 ;
 ; }doc
@@ -8795,7 +8795,7 @@ postpone.end:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `]`.
+; See: `]`.
 ;
 ; }doc
 
@@ -8820,7 +8820,7 @@ postpone.end:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `[`, `]l`, `]2l`, `]cl`, `]1l`.
+; See: `[`, `]l`, `]2l`, `]cl`, `]1l`.
 ;
 ; }doc
 
@@ -8836,7 +8836,7 @@ postpone.end:
 ;
 ; Reveal the definition _nt_ by resetting its `smudge` bit.
 ;
-; See also: `reveal`, `hidden`.
+; See: `reveal`, `hidden`.
 ;
 ; }doc
 
@@ -8859,7 +8859,7 @@ postpone.end:
 ; : reveal ( -- ) latest revealed ;
 ; ----
 
-; See also: `revealed`, `hide`.
+; See: `revealed`, `hide`.
 ;
 ; }doc
 
@@ -8895,7 +8895,7 @@ postpone.end:
 ; : hidden ( nt -- ) smudge-mask swap lex! ;
 ; ----
 
-; See also: `revealed`, `hide`, `smudge-mask`, `lex!`.
+; See: `revealed`, `hide`, `smudge-mask`, `lex!`.
 ;
 ; }doc
 
@@ -8917,7 +8917,7 @@ postpone.end:
 ; : hide ( -- ) latest hidden ;
 ; ----
 
-; See also: `hidden`, `reveal`.
+; See: `hidden`, `reveal`.
 ;
 ; }doc
 
@@ -8933,7 +8933,7 @@ postpone.end:
 ;
 ; _b_ is the bitmask of the word length.
 ;
-; See also: `smudge-mask`, `immediate-mask`,
+; See: `smudge-mask`, `immediate-mask`,
 ; `compile-only-mask`.
 ;
 ; }doc
@@ -8949,7 +8949,7 @@ postpone.end:
 ;
 ; _b_ is the bitmask of the `smudge` bit.
 ;
-; See also: `word-length-mask`, `immediate-mask`,
+; See: `word-length-mask`, `immediate-mask`,
 ; `compile-only-mask`.
 ;
 ; }doc
@@ -8969,7 +8969,7 @@ postpone.end:
 ; (Controlled Reference Words), Forth-94 (CORE EXT), Forth-2012
 ; (CORE EXT).
 ;
-; See also: `decimal`, `binary`.
+; See: `decimal`, `binary`.
 ;
 ; }doc
 
@@ -8988,7 +8988,7 @@ postpone.end:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `hex`, `binary`.
+; See: `hex`, `binary`.
 ;
 ; }doc
 
@@ -9017,7 +9017,7 @@ base_store:
 ; : (;code) ( -- ) ( R: a -- ) r> latest name> 1+ ! ;
 ; ----
 
-; See also: `latest`, `name>`.
+; See: `latest`, `name>`.
 ;
 ; }doc
 
@@ -9095,7 +9095,7 @@ base_store:
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `;`, `;code`, `create`, `(;code)`, `call,`.
+; See: `;`, `;code`, `create`, `(;code)`, `call,`.
 ;
 ; }doc
 
@@ -9115,7 +9115,7 @@ do_does: equ do_colon
 ;
 ; A variant of `count` that works with far-memory addresses.
 ;
-; See also: `far-banks`.
+; See: `far-banks`.
 ;
 ; }doc
 
@@ -9146,7 +9146,7 @@ do_does: equ do_colon
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `farcount`.
+; See: `farcount`.
 ;
 ; }doc
 
@@ -9178,7 +9178,7 @@ push_ahl:
 
 ; Origin: Comus.
 ;
-; See also: `count`.
+; See: `count`.
 ;
 ; }doc
 
@@ -9208,7 +9208,7 @@ push_ahl:
 ;   bounds ?do i c@ emit loop ;
 ;----
 
-; See also: `type-udg`.
+; See: `type-udg`.
 ;
 ; }doc
 
@@ -9238,7 +9238,7 @@ type.loop_exit
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (STRING), Forth-2012 (STRING).
 ;
-; See also: `-leading`, `trim`.
+; See: `-leading`, `trim`.
 ;
 ; }doc
 
@@ -9279,7 +9279,7 @@ minus_trailing.begin:
 ; : -leading ( ca len -- ca' len' ) bl skip ;
 ; ----
 
-; See also: `-trailing`, `trim`, `bl`, `skip`.
+; See: `-trailing`, `trim`, `bl`, `skip`.
 ;
 ; }doc
 
@@ -9302,7 +9302,7 @@ minus_trailing.begin:
 ; : (.") ( -- ) r@ count dup char+ r> + >r type ;
 ; ----
 
-; See also: `,"`, `type`, `count`.
+; See: `,"`, `type`, `count`.
 ;
 ; }doc
 
@@ -9333,7 +9333,7 @@ minus_trailing.begin:
 ; : ," ( -- ) '"' parse s, ;
 ; ----
 
-; See also: `parse`, `s,`.
+; See: `parse`, `s,`.
 ;
 ; }doc
 
@@ -9368,7 +9368,7 @@ minus_trailing.begin:
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
 ; Forth-2012 (CORE).
 ;
-; See also: `s"`, `.(`, `,"`.
+; See: `s"`, `.(`, `,"`.
 ;
 ; }doc
 
@@ -9444,7 +9444,7 @@ minus_trailing.begin:
 ;   repeat ( bot eot cur c ) drop nip swap - ;
 ; ----
 
-; See also: `query`.
+; See: `query`.
 ;
 ; }doc
 
@@ -9752,7 +9752,7 @@ fill.done:
 ; : hold ( c -- ) -1 hld +!  hld @ c! ;
 ; ----
 
-; See also: `holds`.
+; See: `holds`.
 ;
 ; }doc
 
@@ -9773,7 +9773,7 @@ fill.done:
 ; ``/hold`` is a character constant; its default value is 68. It
 ; may be changed by `c!>`.
 ;
-; See also: `hld`, `<#`, `/pad`.
+; See: `hld`, `<#`, `/pad`.
 ;
 ; }doc
 
@@ -9801,7 +9801,7 @@ fill.done:
 ; (Required Word Set), Forth-94 (CORE EXT), Forth-2012 (CORE
 ; EXT).
 ;
-; See also: `/pad`.
+; See: `/pad`.
 ;
 ; }doc
 
@@ -9823,7 +9823,7 @@ fill.done:
 ; : stream ( -- ca len ) source >in @ /string ;
 ; ----
 
-; See also: `>in`, `/string`.
+; See: `>in`, `/string`.
 ;
 ; }doc
 
@@ -9842,7 +9842,7 @@ fill.done:
 ; ``1/string`` is equivalent to the idiom ``1 /string`` but
 ; faster (0.9 the execution time).
 ;
-; See also: `/string`.
+; See: `/string`.
 ;
 ; }doc
 
@@ -9875,7 +9875,7 @@ fill.done:
 
 ; Origin: Forth-94 (STRING), Forth-2012 (STRING).
 ;
-; See also: `1/string`, `-prefix`, `string/`.
+; See: `1/string`, `-prefix`, `string/`.
 ;
 ; }doc
 
@@ -9904,7 +9904,7 @@ fill.done:
 ; : parsed ( len -- ) >in +! ;
 ; ----
 
-; See also: `parse`.
+; See: `parse`.
 ;
 ; }doc
 
@@ -9935,7 +9935,7 @@ fill.done:
 
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See also: `stream`, `scan`, `parsed`, `parse-name`.
+; See: `stream`, `scan`, `parsed`, `parse-name`.
 ;
 ; }doc
 
@@ -9974,7 +9974,7 @@ parse.end:
 ; `default-header`. Its alternative temporary action is
 ; `nextname-header`.
 ;
-; See also: `header,`.
+; See: `header,`.
 ;
 ; }doc
 
@@ -9987,7 +9987,7 @@ parse.end:
 ;
 ; If name _ca len_ is empty, `throw` exception code #-16.
 ;
-; See also: `header`.
+; See: `header`.
 ;
 ; }doc
 
@@ -10011,7 +10011,7 @@ parse.end:
 ;   parse-name ?name-too-short header, ;
 ; ----
 
-; See also: `header`, `header,`, `nextname-header`,
+; See: `header`, `header,`, `nextname-header`,
 ; `parse-name`, `?name-too-short`.
 ;
 ; }doc
@@ -10079,7 +10079,7 @@ endif
 
 ; Origin: Forth-2012 (CORE EXT).
 ;
-; See also: `parse`, `parse-name-thru`, `word`, `stream`,
+; See: `parse`, `parse-name-thru`, `word`, `stream`,
 ; `scan`, `parsed`, `parsed-name`.
 ;
 ; }doc
@@ -10109,7 +10109,7 @@ parse_name.skip:
 ;
 ; Convert _c_ to lowercase _c'_.
 ;
-; See also: `lowers`, `upper`.
+; See: `lowers`, `upper`.
 ;
 ; }doc
 
@@ -10149,7 +10149,7 @@ ascii_lower.a:
 ;
 ; A variant of `lowers` that works in far memory.
 ;
-; See also: `far-banks`.
+; See: `far-banks`.
 ;
 ; }doc
 
@@ -10194,7 +10194,7 @@ far_lowers.end:
 ; : undefined? ( ca len -- f ) find-name 0= ;
 ; ----
 
-; See also: `defined`, `find-name`.
+; See: `defined`, `find-name`.
 ;
 ; }doc
 
@@ -10224,7 +10224,7 @@ far_lowers.end:
 ; : place ( ca1 len1 ca2 -- ) 2dup c! char+ smove ;
 ; ----
 
-; See also: `+place`, `smove`.
+; See: `+place`, `smove`.
 ;
 ; }doc
 
@@ -10262,7 +10262,7 @@ far_lowers.end:
 ; address $C000) as a counted string at far-memory address
 ; _ca2_.
 ;
-; See also: `far-banks`, `place`.
+; See: `far-banks`, `place`.
 ;
 ; }doc
 
@@ -10295,7 +10295,7 @@ far_place.copy_char:
 ; A variable. _a_ is the address of a cell containing the number
 ; of the last error issued by `error`.
 ;
-; See also: `error-pos`, `where`.
+; See: `error-pos`, `where`.
 ;
 ; }doc
 
@@ -10317,7 +10317,7 @@ far_place.copy_char:
 ; - First cell = value of `blk`
 ; - Second cell  = value of `>in`
 
-; See also: `error#`, `where`.
+; See: `error#`, `where`.
 
 ; }doc
 
@@ -10340,7 +10340,7 @@ far_place.copy_char:
 ; : .error-word ( -- ) parsed-name 2@ cr type ."  ? " ;
 ; ----
 
-; See also: `error`, `.throw`.
+; See: `error`, `.throw`.
 ;
 ; }doc
 
@@ -10383,7 +10383,7 @@ far_place.copy_char:
 ;   .error-word .throw  (abort) ;
 ; ----
 
-; See also: `abort-message`.
+; See: `abort-message`.
 ;
 ; }doc
 
@@ -10445,7 +10445,7 @@ error.message:
 ; Note ``.name`` is called ``.id`` or ``id.`` in other Forth
 ; systems.
 ;
-; See also: `name>string`, `type`, `space`.
+; See: `name>string`, `type`, `space`.
 ;
 ; }doc
 
@@ -10498,7 +10498,7 @@ error.message:
 ; The execution token pointer of the new header points to the
 ; data space pointer.
 ;
-; See also: `header`, `warn`.
+; See: `header`, `warn`.
 ;
 ; }doc
 
@@ -10581,7 +10581,7 @@ endif
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `,`, `c,`, `2,`.
+; See: `,`, `c,`, `2,`.
 ;
 ; }doc
 
@@ -10646,7 +10646,7 @@ endif
 ;
 ; Origin: Forth-94 (STRING), Forth-2012 (STRING).
 ;
-; See also: `str=`, `str<`, `str>`.
+; See: `str=`, `str<`, `str>`.
 ;
 ; }doc
 
@@ -10721,7 +10721,7 @@ compare.end:
 ; : str= ( ca1 len1 ca2 len2 -- f ) compare 0= ;
 ; ----
 
-; See also: `str<`, `str>`, `compare`.
+; See: `str<`, `str>`, `compare`.
 ;
 ; }doc
 
@@ -10742,7 +10742,7 @@ compare.end:
 ;
 ; Origin: Forth-94 (STRING), Forth-2012 (STRING).
 ;
-; See also: `compare`, `hunt`.
+; See: `compare`, `hunt`.
 ;
 ; }doc
 
@@ -10862,7 +10862,7 @@ search.failed:
 ;   postpone slit s, ; immediate compile-only
 ; ----
 
-; See also: `slit`, `s,`, `csliteral`.
+; See: `slit`, `s,`, `csliteral`.
 ;
 ; }doc
 
@@ -10910,7 +10910,7 @@ search.failed:
 
 ; Origin: Comus.
 ;
-; See also: `clit`, `2literal`, `1literal`, `]cl`.
+; See: `clit`, `2literal`, `1literal`, `]cl`.
 ;
 ; }doc
 
@@ -10934,7 +10934,7 @@ search.failed:
 ; : literal ( x -- ) postpone lit , ; immediate compile-only
 ; ----
 
-; See also: `lit`, `cliteral`, `2literal`, `1literal`, `]l`.
+; See: `lit`, `cliteral`, `2literal`, `1literal`, `]l`.
 ;
 ; }doc
 
@@ -10965,7 +10965,7 @@ search.failed:
 ;   immediate compile-only
 ; ----
 
-; See also: `2literal`, `]1l`, `byte?`.
+; See: `2literal`, `]1l`, `byte?`.
 ;
 ; }doc
 
@@ -10990,7 +10990,7 @@ search.failed:
 ; : 2literal ( x1 x2 -- ) postpone 2lit 2, ; immediate compile-only
 ; ----
 
-; See also: `2lit`, `literal`, `cliteral`, `1literal`, `]2l`.
+; See: `2lit`, `literal`, `cliteral`, `1literal`, `]2l`.
 ;
 ; }doc
 
@@ -11021,7 +11021,7 @@ if 1 ; developing
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `sp@`, sp0`, `cell`, `rdepth`, `fdepth`.
+; See: `sp@`, sp0`, `cell`, `rdepth`, `fdepth`.
 ;
 ; }doc
 
@@ -11060,7 +11060,7 @@ endif
 ;
 ; Origin: fig-Forth.
 ;
-; See also: `?rstack`.
+; See: `?rstack`.
 ;
 ; }doc
 
@@ -11084,7 +11084,7 @@ endif
 ;
 ; Origin: fig-Forth's ``?stack``.
 ;
-; See also: `?stack`.
+; See: `?stack`.
 ;
 ; }doc
 
@@ -11123,7 +11123,7 @@ endif
 ;
 ; ``not-understood`` is used in `interpret-table`.
 ;
-; See also: `compilation-only`.
+; See: `compilation-only`.
 ;
 ; }doc
 
@@ -11142,7 +11142,7 @@ endif
 ;
 ; ``compilation-only`` is used in `interpret-table`.
 ;
-; See also: `not-understood`, `?compiling`.
+; See: `not-understood`, `?compiling`.
 ;
 ; }doc
 
@@ -11294,7 +11294,7 @@ interpret_table.0:
 ; The actions of the text interpreter are determined by the
 ; configuration of `interpret-table`.
 ;
-; See also: `evaluate`, `execute-parsing`, `set-source`,
+; See: `evaluate`, `execute-parsing`, `set-source`,
 ; `nest-source`.
 ;
 ; }doc
@@ -11362,7 +11362,7 @@ interpret.end:
 ;
 ; _b_ is the bitmask of the precedence bit, set by `immediate`.
 ;
-; See also: `compile-only-mask`, `smudge-mask`,
+; See: `compile-only-mask`, `smudge-mask`,
 ; `word-length-mask`.
 ;
 ; }doc
@@ -11379,7 +11379,7 @@ interpret.end:
 ; Test the bits at _nt_ specified by the bitmask _b_.
 ; Return true if the result is non-zero, else return false.
 ;
-; See also: `lex!`, `immediate?`, `compile-only?`.
+; See: `lex!`, `immediate?`, `compile-only?`.
 ;
 ; }doc
 
@@ -11407,7 +11407,7 @@ endif
 ;
 ; Set the bits of the mask _b_ in the length byte of _nt_.
 ;
-; See also: `lex?`, `immediate`, `compile-only`.
+; See: `lex?`, `immediate`, `compile-only`.
 ;
 ; }doc
 
@@ -11436,7 +11436,7 @@ endif
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `immediate?`,  `compile-only`.
+; See: `immediate?`,  `compile-only`.
 ;
 ; }doc
 
@@ -11458,7 +11458,7 @@ endif
 ; : immediate? ( nt -- f ) immediate-mask lex? ;
 ; ----
 ;
-; See also: `immediate`, `lex?`, `immediate-mask`.
+; See: `immediate`, `lex?`, `immediate-mask`.
 ;
 ; }doc
 
@@ -11481,7 +11481,7 @@ endif
 ; : name>immediate? ( nt -- xt f ) dup name> swap immediate? ;
 ; ----
 
-; See also: `immediate?`, `name>`.
+; See: `immediate?`, `name>`.
 ;
 ; }doc
 
@@ -11499,7 +11499,7 @@ endif
 ; Constant that holds the bitmask of the compile-only bit, set
 ; by `compile-only`.
 ;
-; See also: `immediate-mask`, `smudge-mask`, `word-length-mask`.
+; See: `immediate-mask`, `smudge-mask`, `word-length-mask`.
 ;
 ; }doc
 
@@ -11520,7 +11520,7 @@ endif
 ; : compile-only ( -- ) compile-only-mask latest lex! ;
 ; ----
 
-; See also: `compile-only?`, `compile-only-mask`, `?compiling`,
+; See: `compile-only?`, `compile-only-mask`, `?compiling`,
 ; `lex!`, `immediate`.
 ;
 ; }doc
@@ -11543,7 +11543,7 @@ endif
 ; : compile-only? ( nt -- f ) compile-only-mask lex? ;
 ; ----
 
-; See also: `compile-only`, `immediate?`.
+; See: `compile-only`, `immediate?`.
 ;
 ; }doc
 
@@ -11573,7 +11573,7 @@ endif
 ;   here 0 , latest-wordlist @ , latest-wordlist !  0 , ;
 ; ----
 
-; See also: `wordlist`, `latest-wordlist`.
+; See: `wordlist`, `latest-wordlist`.
 
 ; }doc
 
@@ -11599,7 +11599,7 @@ endif
 ; : wordlist ( -- wid )
 ;   here wordlist, ;
 ;
-; See also: `set-order`, `vocabulary`.
+; See: `set-order`, `vocabulary`.
 ;
 ; }doc
 
@@ -11623,7 +11623,7 @@ endif
 ; : dovocabulary ( -- ) does> ( -- ) ( dfa ) @ context ! ;
 ; ----
 
-; See also: `vocabulary`, `wordlist>vocabulary`, `wordlist`.
+; See: `vocabulary`, `wordlist>vocabulary`, `wordlist`.
 ;
 ; }doc
 
@@ -11650,7 +11650,7 @@ do_vocabulary:
 
 ; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
 ;
-; See also: `current`.
+; See: `current`.
 ;
 ; }doc
 
@@ -11702,7 +11702,7 @@ do_vocabulary:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (SEARCH), Forth-2012 (SEARCH).
 ;
-; See also: `context`, `set-current`, `wordlist`, `vocabulary`.
+; See: `context`, `set-current`, `wordlist`, `vocabulary`.
 ;
 ; }doc
 
@@ -11736,7 +11736,7 @@ do_vocabulary:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `\`, `parse`.
+; See: `\`, `parse`.
 ;
 ; }doc
 
@@ -11779,7 +11779,7 @@ do_vocabulary:
 ;            while  s" ?)" str= ?exit repeat 2drop ; immediate
 ; ----
 ;
-; See also: `?\`, `?-->`, `(`.
+; See: `?\`, `?-->`, `(`.
 ;
 ; }doc
 
@@ -11853,7 +11853,7 @@ question_paren.exit:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `[`, `query`, `interpret`, `ok`,
+; See: `[`, `query`, `interpret`, `ok`,
 ; `abort
 ;
 ; }doc
@@ -11879,7 +11879,7 @@ quit.begin:
 ; Default action of an uninitialized deferred word: `error`
 ; #-261 ("deferred word is uninitialized").
 ;
-; See also: `defer`.
+; See: `defer`.
 ;
 ; }doc
 
@@ -11900,7 +11900,7 @@ quit.begin:
 ;
 ; Origin: Forth-2012 (CORE EXT).
 ;
-; See also: `defer@`, `action-of`, `>action`.
+; See: `defer@`, `action-of`, `>action`.
 ;
 ; }doc
 
@@ -11919,7 +11919,7 @@ quit.begin:
 ; Return the address _a_ that contains the execution token
 ; currently associated to the deferred word _xt_.
 ;
-; See also: `defer`, `action-of`, `defer!`, `defer@`.
+; See: `defer`, `action-of`, `defer!`, `defer@`.
 ;
 ; }doc
 
@@ -11934,7 +11934,7 @@ quit.begin:
 ;
 ; Origin: Forth-2012 (CORE EXT).
 ;
-; See also: `defer@`, `defer`, `>action`.
+; See: `defer@`, `defer`, `>action`.
 ;
 ; }doc
 
@@ -11960,7 +11960,7 @@ quit.begin:
 ; +4:: pre-release (one cell)
 ; +6:: build (double-cell number)
 
-; See also: `.version`.
+; See: `.version`.
 ;
 ; }doc
 
@@ -12040,7 +12040,7 @@ if 1 ; developing
 ; Display a message informing about the number of words defined
 ; in the system.
 ;
-; See also: `#words`, `greeting`.
+; See: `#words`, `greeting`.
 ;
 ; }doc
 
@@ -12060,7 +12060,7 @@ endif
 ;
 ; Display the boot message.
 ;
-; See also: `cold`.
+; See: `cold`.
 ;
 ; }doc
 
@@ -12089,7 +12089,7 @@ if 1 ; developing
 ; remaining in the regions addressed by `here` and `np`, in
 ; address units.
 ;
-; See also: `unused`, `farunused`.
+; See: `unused`, `farunused`.
 
 ; }doc
 
@@ -12119,7 +12119,7 @@ endif
 ; A deferred word executed by `abort`. By default it does
 ; nothing. It is changed by `turnkey`.
 ;
-; See also: `cold`.
+; See: `cold`.
 ;
 ; }doc
 
@@ -12155,7 +12155,7 @@ endif
 ; mode (e.g. `mode-32`, `mode-32iso`, `mode-64o`). It's set to
 ; `noop` until the first mode change is done.
 ;
-; See also: `save-mode`, `restore-mode`.
+; See: `save-mode`, `restore-mode`.
 ;
 ; }doc
 
@@ -12182,7 +12182,7 @@ endif
 ; : save-mode ( -- ) current-mode @ previous-mode ! ;
 ; ----
 
-; See also: `restore-mode`.
+; See: `restore-mode`.
 ;
 ; }doc
 
@@ -12208,7 +12208,7 @@ endif
 ; : restore-mode ( -- ) previous-mode perform ;
 ; ----
 
-; See also: `current-mode`, `perform`.
+; See: `current-mode`, `perform`.
 ;
 ; }doc
 
@@ -12233,7 +12233,7 @@ endif
 ; : warm ( -- ) display restore-mode page abort ;
 ; ----
 
-; See also: `cold`, `restore-mode`, `page`.
+; See: `cold`, `restore-mode`, `page`.
 ;
 ; }doc
 
@@ -12259,7 +12259,7 @@ warm_start:
 ;
 ; Origin: fig-Forth.
 ;
-; See also: `warm`.
+; See: `warm`.
 ;
 ; }doc
 
@@ -12385,7 +12385,7 @@ common_start:
 ;
 ; Origin: Forth-94 (DOUBLE), Forth-2012 (DOUBLE).
 ;
-; See also: `s>d`, `u>ud`.
+; See: `s>d`, `u>ud`.
 ;
 ; }doc
 
@@ -12434,7 +12434,7 @@ endif
 ; Origin: fig-Forth's ``s->d``, Forth-94 (CORE), Forth-2012
 ; (CORE).
 ;
-; See also: `d>s`, `u>ud`.
+; See: `d>s`, `u>ud`.
 ;
 ; }doc
 
@@ -12457,7 +12457,7 @@ endif
 
 ; Origin: fig-Forth's ``+-``.
 ;
-; See also: `negate`, `?dnegate`.
+; See: `negate`, `?dnegate`.
 ;
 ; }doc
 
@@ -12486,7 +12486,7 @@ question_negate.hl:
 
 ; Origin: fig-Forth's ``d+-``.
 ;
-; See also: `?negate`.
+; See: `?negate`.
 ;
 ; }doc
 
@@ -12547,7 +12547,7 @@ question_d_negate.hl:
 ;
 ; _u3_ is the greater of _u1_ and _u2_.
 ;
-; See also: `umin`, `max`, `dmax`, `u>`.
+; See: `umin`, `max`, `dmax`, `u>`.
 ;
 ; }doc
 
@@ -12568,7 +12568,7 @@ question_d_negate.hl:
 ;
 ; _u3_ is the lesser of _u1_ and _u2_.
 ;
-; See also: `umax`, `min`, `dmin`, `u<`.
+; See: `umax`, `min`, `dmin`, `u<`.
 ;
 ; }doc
 
@@ -12592,7 +12592,7 @@ question_d_negate.hl:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `max`, `umin`, `dmin`, `<`.
+; See: `max`, `umin`, `dmin`, `<`.
 ;
 ; }doc
 
@@ -12616,7 +12616,7 @@ question_d_negate.hl:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `min`, `umax`, `dmax`, `0max`, `>`.
+; See: `min`, `umax`, `dmax`, `0max`, `>`.
 ;
 ; }doc
 
@@ -12654,7 +12654,7 @@ max.2:
 
 ; Origin: fig-Forth, Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `*`, `um*`, `d*`, `?dnegate`.
+; See: `*`, `um*`, `d*`, `?dnegate`.
 ;
 ; }doc
 
@@ -12761,7 +12761,7 @@ endif
 
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `fm/mod`, `m/`.
+; See: `fm/mod`, `m/`.
 ;
 ; }doc
 
@@ -12784,7 +12784,7 @@ endif
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `m*`, `um*`, `d*`.
+; See: `m*`, `um*`, `d*`.
 ;
 ; }doc
 
@@ -12818,7 +12818,7 @@ endif
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-94
 ; (CORE), Forth-2012 (CORE).
 ;
-; See also: `m/`, `du/mod`, `/`, `mod`, `/-rem`, `/_mod`.
+; See: `m/`, `du/mod`, `/`, `mod`, `/-rem`, `/_mod`.
 ;
 ; }doc
 
@@ -12843,7 +12843,7 @@ endif
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-94
 ; (CORE), Forth-2012 (CORE).
 ;
-; See also: `m/`, `/mod`, `/_`, `/-`, `gcd`.
+; See: `m/`, `/mod`, `/_`, `/-`, `gcd`.
 ;
 ; }doc
 
@@ -12871,7 +12871,7 @@ endif
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-94
 ; (CORE), Forth-2012 (CORE).
 ;
-; See also: `m/`, `/mod`, `/_mod`, `/-rem`, `gcd`.
+; See: `m/`, `/mod`, `/_mod`, `/-rem`, `gcd`.
 ;
 ; }doc
 
@@ -12901,7 +12901,7 @@ endif
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-94
 ; (CORE), Forth-2012 (CORE).
 ;
-; See also: `/mod`, `*/`, `*/_mod`, `*/-rem`, `m*`, `m/`.
+; See: `/mod`, `*/`, `*/_mod`, `*/-rem`, `m*`, `m/`.
 ;
 ; }doc
 
@@ -12930,7 +12930,7 @@ endif
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-94
 ; (CORE), Forth-2012 (CORE).
 ;
-; See also: `*/mod`, `m*/`, `*`, `/`, '*/_`, `*/-`.
+; See: `*/mod`, `m*/`, `*`, `/`, '*/_`, `*/-`.
 ;
 ; }doc
 
@@ -12985,7 +12985,7 @@ endif
 ;
 ; Origin: Gforth.
 ;
-; See also: `hex.`, `bin.`, `.`.
+; See: `hex.`, `bin.`, `.`.
 ;
 ; }doc
 
@@ -13045,7 +13045,7 @@ endif
 ; : updated? ( -- f ) buffer-id 0< ;
 ; ----
 
-; See also: `update`, `empty-buffers`, `buffer-id`.
+; See: `update`, `empty-buffers`, `buffer-id`.
 ;
 ; }doc
 
@@ -13072,7 +13072,7 @@ endif
 ; (Controlled Reference Words), Forth-94 (BLOCK EXT), Forth-2012
 ; (BLOCK EXT).
 ;
-; See also: `update`, `flush`, `disk-buffer`.
+; See: `update`, `flush`, `disk-buffer`.
 ;
 ; }doc
 
@@ -13089,7 +13089,7 @@ endif
 ;
 ; _x_ is the identifier of the disk buffer.
 ;
-; See also: `disk-buffer`.
+; See: `disk-buffer`.
 ;
 ; }doc
 
@@ -13109,7 +13109,7 @@ endif
 ; : buffer-block ( -- n ) buffer-id $7FFF literal and ;
 ; ---
 ;
-; See also: `buffer-id`, `buffer`, `block`.
+; See: `buffer-id`, `buffer`, `block`.
 ;
 ; }doc
 
@@ -13149,7 +13149,7 @@ endif
 ; : read-block ( u -- ) read-mode transfer-block ;
 ; ----
 
-; See also: `read-mode`, `transfer-block`, `write-block`,
+; See: `read-mode`, `transfer-block`, `write-block`,
 ; `block`.
 ;
 ; }doc
@@ -13172,7 +13172,7 @@ endif
 ; : write-block ( n -- ) write-mode transfer-block ;
 ; ----
 
-; See also: `write-mode`, `transfer-block`, `read-block`,
+; See: `write-mode`, `transfer-block`, `read-block`,
 ; `block`.
 ;
 ; }doc
@@ -13231,7 +13231,7 @@ free_buffer.end:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `buffer-block`, `free-buffer`, `buffer-data`.
+; See: `buffer-block`, `free-buffer`, `buffer-data`.
 ;
 ; }doc
 
@@ -13275,7 +13275,7 @@ buffer.end:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `buffer-block`, `save-buffers`, `read-block`,
+; See: `buffer-block`, `save-buffers`, `read-block`,
 ; `disk-buffer`, `buffer-data`.
 ;
 ; }doc
@@ -13305,7 +13305,7 @@ block.end:
 ;
 ; Origin: eForth.
 ;
-; See also: `split`, `join`.
+; See: `split`, `join`.
 ;
 ; }doc
 
@@ -13344,7 +13344,7 @@ block.end:
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (BLOCK), Forth-2012 (BLOCK).
 ;
-; See also: `empty-buffers`, `flush`, `block`, `buffer`,
+; See: `empty-buffers`, `flush`, `block`, `buffer`,
 ; `buffer-block`, `disk-buffer`.
 ;
 ; }doc
@@ -13375,7 +13375,7 @@ block.end:
 ; : set-source ( ca len -- ) input-buffer 2! >in off ;
 ; ----
 
-; See also: `>in`, `terminal>source`, `block>source`.
+; See: `>in`, `terminal>source`, `block>source`.
 ;
 ; }doc
 
@@ -13399,7 +13399,7 @@ block.end:
 ;   blk off (source-id) off tib #tib @ set-source ;
 ; ----
 
-; See also: `set-source`, `blk`, `tib`, `#tib`, `(source-id)`,
+; See: `set-source`, `blk`, `tib`, `#tib`, `(source-id)`,
 ; `block>source`.
 ;
 ; }doc
@@ -13423,7 +13423,7 @@ block.end:
 ; : block>source ( u -- ) blk ! >in off ;
 ; ----
 
-; See also: `terminal>source`, `blk`, `>in`, `set-source`,
+; See: `terminal>source`, `blk`, `>in`, `set-source`,
 ; `lineblock>source`.
 ;
 ; }doc
@@ -13448,7 +13448,7 @@ block.end:
 ; : (load) ( u -- ) dup lastblk ! block>source interpret ;
 ; ----
 ;
-; See also: `block>source`, `interpret`.
+; See: `block>source`, `interpret`.
 ;
 ; }doc
 
@@ -13478,7 +13478,7 @@ block.end:
 ;   dup 0= #-259 ?throw nest-source (load) unnest-source ;
 ; ----
 
-; See also: `(load)`, `nest-source`, `unnest-source`,
+; See: `(load)`, `nest-source`, `unnest-source`,
 ; `lineload`, `+load`, `thru`.
 ;
 ; }doc
@@ -13509,7 +13509,7 @@ block.end:
 ; Origin: fig-Forth, Forth-79 (Reference Word Set), Forth-83
 ; (Controlled Reference Words).
 ;
-; See also: `?-->`, `load`, `continued`, `?loading`, `refill`.
+; See: `?-->`, `load`, `continued`, `?loading`, `refill`.
 ;
 ; }doc
 
@@ -13537,7 +13537,7 @@ block.end:
 ; : defined ( "name" -- nt | 0 ) parse-name find-name ;
 ; ----
 
-; See also: `undefined?`, `[defined]`, `parse-name`,
+; See: `undefined?`, `[defined]`, `parse-name`,
 ; `find-name`.
 ;
 ; }doc
@@ -13584,7 +13584,7 @@ block.end:
 
 ; Origin: Forth-2012 (TOOLS EXT).
 ;
-; See also: `defined`, `[undefined]`.
+; See: `defined`, `[undefined]`.
 ;
 ; }doc
 
@@ -13616,7 +13616,7 @@ block.end:
 
 ; Origin: Forth-2012 (TOOLS EXT).
 ;
-; See also: `[defined]`.
+; See: `[defined]`.
 ;
 ; }doc
 
@@ -13648,7 +13648,7 @@ block.end:
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
 ; Forth-2012 (CORE).
 ;
-; See also: `[']`, `''`, `defined`, `?defined`, `>`.
+; See: `[']`, `''`, `defined`, `?defined`, `>`.
 ;
 ; }doc
 
@@ -13679,7 +13679,7 @@ block.end:
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
 ; Forth-2012 (CORE).
 ;
-; See also: `literal`, `'`, `['']`.
+; See: `literal`, `'`, `['']`.
 ;
 ; }doc
 
@@ -13713,7 +13713,7 @@ block.end:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `while`, `do`.
+; See: `while`, `do`.
 ;
 ; }doc
 
@@ -13744,7 +13744,7 @@ block.end:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `else`, `ahead`.
+; See: `else`, `ahead`.
 ;
 ; }doc
 
@@ -13778,7 +13778,7 @@ block.end:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `again`, `repeat`, `<resolve`, `compile`, `0until`,
+; See: `again`, `repeat`, `<resolve`, `compile`, `0until`,
 ; `-until`, `+until`.
 ;
 ; }doc
@@ -13821,7 +13821,7 @@ block.end:
 ; (Uncontrolled Reference Words), Forth-94 (CORE EXT),
 ; Forth-2012 (CORE EXT).
 ;
-; See also: `until`, `repeat`.
+; See: `until`, `repeat`.
 ;
 ; }doc
 
@@ -13860,7 +13860,7 @@ block.end:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `again`, `then`, `until`.
+; See: `again`, `then`, `until`.
 ;
 ; }doc
 
@@ -13899,7 +13899,7 @@ block.end:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `again`, `until`, `ahead`, `0if`, `-if`, `+if`.
+; See: `again`, `until`, `ahead`, `0if`, `-if`, `+if`.
 ;
 ; }doc
 
@@ -13975,7 +13975,7 @@ if.do:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `ahead`, `cs-swap`.
+; See: `ahead`, `cs-swap`.
 ;
 ; }doc
 
@@ -14015,7 +14015,7 @@ if.do:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `if`, `cs-swap`, `postpone`, `0while`, `-while`,
+; See: `if`, `cs-swap`, `postpone`, `0while`, `-while`,
 ; `+while`.
 ;
 ; }doc
@@ -14043,7 +14043,7 @@ if.do:
 ; Origin: fig-Forth, Forth-79, Forth-83 (Required Word Set),
 ; Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `space`, `bl`, `emits`.
+; See: `space`, `bl`, `emits`.
 ;
 ; }doc
 
@@ -14103,7 +14103,7 @@ emits.loop_exit:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `/hold`, `#>`, `#`, `#s`, `hold`, `holds`, `sign`.
+; See: `/hold`, `#>`, `#`, `#s`, `hold`, `holds`, `sign`.
 ;
 ; }doc
 
@@ -14130,7 +14130,7 @@ emits.loop_exit:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `#`, `#s`, `hold`, `hld`, `sign`, `pad`.
+; See: `#`, `#s`, `hold`, `hld`, `sign`, `pad`.
 ;
 ; }doc
 
@@ -14157,7 +14157,7 @@ emits.loop_exit:
 
 ; Origin: Forth 94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `<#`, `#>`, `hold`.
+; See: `<#`, `#>`, `hold`.
 ;
 ; }doc
 
@@ -14226,7 +14226,7 @@ to_digit.end
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `hold`, `ud/mod`, `>digit`.
+; See: `hold`, `ud/mod`, `>digit`.
 ;
 ; }doc
 
@@ -14283,7 +14283,7 @@ to_digit.end
 ;
 ; Rotate the top three stack entries in reverse order.
 ;
-; See also: `rot`, `over`, `tuck`, `swap`, `roll`, `pick`.
+; See: `rot`, `over`, `tuck`, `swap`, `roll`, `pick`.
 ;
 ; }doc
 
@@ -14350,7 +14350,7 @@ hash_s.begin:
 ; must be used or preserved before the buffer is moved or
 ; overwritten.
 ;
-; See also: `<#`, `#s`, `sign` ,`#>`, `>stringer`, `,s`,
+; See: `<#`, `#s`, `sign` ,`#>`, `>stringer`, `,s`,
 ; `cmove`.
 ;
 ; }doc
@@ -14377,7 +14377,7 @@ hash_s.begin:
 ; : 0d.r ( d -- ) 0 d.r ;
 ; ----
 
-; See also: `d.r`, `0.r`.
+; See: `d.r`, `0.r`.
 ;
 ; }doc
 
@@ -14410,7 +14410,7 @@ hash_s.begin:
 ; than _n_, an error condition exists, which depends on the
 ; system.], Forth-94 (DOUBLE), Forth-2012 (DOUBLE).
 ;
-; See also: `d>str`, `ud.r`, `.r`, `0d.r`, `<#`.
+; See: `d>str`, `ud.r`, `.r`, `0d.r`, `<#`.
 ;
 ; }doc
 
@@ -14438,7 +14438,7 @@ hash_s.begin:
 ; : 0.r ( n -- ) 0 .r ;
 ; ----
 
-; See also: `.r`, `0d.r`.
+; See: `.r`, `0d.r`.
 ;
 ; }doc
 
@@ -14472,7 +14472,7 @@ hash_s.begin:
 ; than _n2_, an error condition exists, which depends on the
 ; system.], Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See also: `u.r`, `d.r`, `0.r`, `s>d`.
+; See: `u.r`, `d.r`, `0.r`, `s>d`.
 ;
 ; }doc
 
@@ -14507,7 +14507,7 @@ hash_s.begin:
 ; Display signed integer _n_ according to current `base`,
 ; followed by one blank.
 ;
-; See also: `?`.
+; See: `?`.
 ;
 ; }doc
 
@@ -14554,7 +14554,7 @@ if 1 ; developing
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `u.r`, `ud.`, `.`.
+; See: `u.r`, `ud.`, `.`.
 
   _literal 0 ; XXX TODO -- `s>d`
   dw d_dot_ ; XXX TODO -- `ud.`
@@ -14703,7 +14703,7 @@ endif
 ; Origin: Forth-79 (Reference Word Set), Forth-83 (Uncontrolled
 ; Reference Words), Forth-94 (FACILITY), Forth-2012 (FACILITY).
 ;
-; See also: `cls`.
+; See: `cls`.
 ;
 ; }doc
 
@@ -14803,7 +14803,7 @@ system_stack_pointer:
 
 ; Origin: Forth-94 (TOOLS EXT), Forth-2012 (TOOLS EXT).
 ;
-; See also: `save-mode`, `default-mode`, `(bye)`, `warm`,
+; See: `save-mode`, `default-mode`, `(bye)`, `warm`,
 ; `cold`.
 ;
 ; }doc
@@ -14826,7 +14826,7 @@ system_stack_pointer:
 ; Number Extension Word Set), Forth-94 (CORE), Forth-2012
 ; (CORE).
 ;
-; See also: `drop`, `nip`.
+; See: `drop`, `nip`.
 ;
 ; }doc
 
@@ -14847,7 +14847,7 @@ system_stack_pointer:
 ; Number Extension Word Set), Forth-94 (CORE), Forth-2012
 ; (CORE).
 ;
-; See also: `swap`, `2over`.
+; See: `swap`, `2over`.
 ;
 ; }doc
 
@@ -14890,7 +14890,7 @@ system_stack_pointer:
 ;
 ; Origin: Fig-Forth's ``limit`` constant.
 ;
-; See also: `unused`, `farlimit`.
+; See: `unused`, `farlimit`.
 ;
 ; }doc
 
@@ -14914,7 +14914,7 @@ system_stack_pointer:
 ;
 ; Origin: Fig-Forth's ``limit`` constant.
 ;
-; See also: `farunused`, `limit`, `far-banks`.
+; See: `farunused`, `limit`, `far-banks`.
 ;
 ; }doc
 
@@ -14939,7 +14939,7 @@ system_stack_pointer:
 
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See also: `limit`, `farunused`.
+; See: `limit`, `farunused`.
 ;
 ; }doc
 
@@ -14962,7 +14962,7 @@ system_stack_pointer:
 ; : farunused ( -- u ) farlimit @ np @ - ;
 ; ----
 
-; See also: `farlimit`, `unused`.
+; See: `farlimit`, `unused`.
 ;
 ; }doc
 
@@ -15023,7 +15023,7 @@ at_dfa.last_line:
 ; the cursor position at the upper left corner (column 0, row
 ; 0).
 ;
-; See also: `attr!`, `attr-cls`, `page`.
+; See: `attr!`, `attr-cls`, `page`.
 ;
 ; }doc
 
@@ -15046,7 +15046,7 @@ at_dfa.last_line:
 ; coordinates at the lower left corner (x 0, y 0) and reset the
 ; cursor position at the top left corner (column 0, row 0).
 ;
-; See also: `cls`, `page`.
+; See: `cls`, `page`.
 ;
 ; }doc
 
@@ -15095,7 +15095,7 @@ attr_cls.a: ; alternative entry point used by `cls`
 ;
 ; ``home`` is a deferred word, whose default action is `(home)`.
 ;
-; See also: `at-xy`, `home?`.
+; See: `at-xy`, `home?`.
 ;
 ; }doc
 
@@ -15132,7 +15132,7 @@ attr_cls.a: ; alternative entry point used by `cls`
 ;
 ; Origin: Forth-94 (FACILITY), Forth-2012 (FACILITY).
 ;
-; See also: `home`.
+; See: `home`.
 ;
 ; }doc
 
@@ -15194,7 +15194,7 @@ mode_32_xy.end:
 ;
 ; ``xy`` is a deferred word whose default action is `mode-32-xy`.
 ;
-; See also: `at-xy`.
+; See: `at-xy`.
 ;
 ; }doc
 
@@ -15276,7 +15276,7 @@ border.a:
 ; Number Extension Word Set), Forth-94 (DOUBLE), Forth-2012
 ; (DOUBLE).
 ;
-; See also: `constant`, `cconstant`, `2!>`, `2const`,
+; See: `constant`, `cconstant`, `2!>`, `2const`,
 ; `[2const]`, `2value`, `2variable`.
 ;
 ; }doc
@@ -15302,7 +15302,7 @@ do_two_constant:
 ; Number Extension Word Set), Forth-94 (CORE), Forth-2012
 ; (CORE).
 ;
-; See also: `2!`, `@`, `c@`.
+; See: `2!`, `@`, `c@`.
 ;
 ; }doc
 
@@ -15351,7 +15351,7 @@ two_fetch.hl:
 ; Number Extension Word Set), Forth-94 (DOUBLE), Forth-2012
 ; (DOUBLE).
 ;
-; See also: `cells`, `literal`, `variable`, `2variable`,
+; See: `cells`, `literal`, `variable`, `2variable`,
 ; `2constant`.
 ;
 ; }doc
@@ -15374,7 +15374,7 @@ two_fetch.hl:
 ; Number Extension Word Set), Forth-94 (CORE), Forth-2012
 ; (CORE).
 ;
-; See also: `over`, `2swap`.
+; See: `over`, `2swap`.
 ;
 ; }doc
 
@@ -15401,7 +15401,7 @@ two_fetch.hl:
 ;
 ; Origin: DX-Forth.
 ;
-; See also: `rp`, `exit`, `next`.
+; See: `rp`, `exit`, `next`.
 ;
 ; }doc
 
@@ -15432,7 +15432,7 @@ two_fetch.hl:
 ; Forth-83 (Required Word Set), Forth-94 (CORE), Forth-2012
 ; (CORE).
 ;
-; See also: `?exit`, `0exit`, `-exit`, `+exit`.
+; See: `?exit`, `0exit`, `-exit`, `+exit`.
 ;
 ; }doc
 
@@ -15482,7 +15482,7 @@ execute_hl:
 ; ``?exit`` can be used in interpretation mode to stop the
 ; interpretation of a block.
 ;
-; See also: `exit`, `0exit`, `-exit`, `+exit`.
+; See: `exit`, `0exit`, `-exit`, `+exit`.
 ;
 ; }doc
 
@@ -15577,7 +15577,7 @@ throw.end:
 ; : (abort) ( -- ) sp0 @ sp! boot quit ;
 ; ----
 
-; See also: `error`, `abort`, `boot`.
+; See: `error`, `abort`, `boot`.
 ;
 ; }doc
 
@@ -15607,7 +15607,7 @@ throw.end:
 ; (Required Word Set), Forth-94 (CORE, EXCEPTION EXT),
 ; Forth-2012 (CORE, EXCEPTION EXT).
 ;
-; See also: `(abort)`, `abort"`, `throw`, `error`.
+; See: `(abort)`, `abort"`, `throw`, `error`.
 ;
 ; }doc
 
@@ -15642,7 +15642,7 @@ throw.end:
 
 ; Origin: Forth-94 (CORE, FILE), Forth-2012 (CORE, FILE).
 ;
-; See also: `parse-string`, `s\"`, `s'`, `s""`, `."`.
+; See: `parse-string`, `s\"`, `s'`, `s""`, `."`.
 ;
 ; }doc
 
@@ -15671,7 +15671,7 @@ throw.end:
 ; : ?\ ( "ccc<eol>" -- ) if postpone \ then ; immediate
 ; ----
 ;
-; See also: `?(`, `?-->`, `\`.
+; See: `?(`, `?-->`, `\`.
 ;
 ; }doc
 
@@ -15698,7 +15698,7 @@ question_backslash.exit
 ;
 ; Origin: Forth-94 (BLOCK EXT), Forth-2012 (BLOCK EXT).
 ;
-; See also: `(`.
+; See: `(`.
 ;
 ; }doc
 
@@ -15732,7 +15732,7 @@ backslash.loading:
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE EXT),
 ; Forth-2012 (CORE EXT).
 ;
-; See also: `."`, `(`.
+; See: `."`, `(`.
 ;
 ; }doc
 

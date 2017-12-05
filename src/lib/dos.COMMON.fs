@@ -49,7 +49,7 @@
   \ 1 drive set-drive \ on any DOS -- portable code
   \ ----
 
-  \ See also: `first-drive`, `max-drives`.
+  \ See: `first-drive`, `max-drives`.
   \
   \ }doc
 
@@ -65,7 +65,7 @@
   \ If _u_ is greater than the maximum number of disk drives,
   \ throw exception #-35 ("invalid block number").
   \
-  \ See also: `(>drive-block`, `block-drives`, `?block-drive`,
+  \ See: `(>drive-block`, `block-drives`, `?block-drive`,
   \ `?drives`.
   \
   \ }doc
@@ -81,7 +81,7 @@
   \ If _u_ is `not-block-drive`, throw exception #-35 ("invalid
   \ block number").
   \
-  \ See also: `(>drive-block`, `block-drives`, `?drive#`,
+  \ See: `(>drive-block`, `block-drives`, `?drive#`,
   \ `?drives`.
   \
   \ }doc
@@ -138,7 +138,7 @@ need ?drive# need block-drive@ need ?block-drive
   \ ``(>drive-block`` becomes the action of `>drive-block`
   \ after `block-drives` has been loaded.
   \
-  \ See also: `?drive#`, `?block-drive`, `set-drive`,
+  \ See: `?drive#`, `?block-drive`, `set-drive`,
   \ `set-block-drives`.
   \
   \ }doc
@@ -172,7 +172,7 @@ need ?drive# need block-drive@ need ?block-drive
   \ Fill `block-drives` with `not-block-drive`, making no disk
   \ drive be used as block drive.
   \
-  \ See also: `set-block-drives`, `get-block-drives`.
+  \ See: `set-block-drives`, `get-block-drives`.
   \
   \ }doc
 
@@ -187,7 +187,7 @@ need ?drive# need block-drive@ need ?block-drive
   \ Get drive _c_ (DOS dependent) currently used as block drive
   \ number _n_ (0 index).
   \
-  \ See also: `block-drive!`, `get-block-drives`.
+  \ See: `block-drive!`, `get-block-drives`.
   \
   \ }doc
 
@@ -202,7 +202,7 @@ need ?drive# need block-drive@ need ?block-drive
   \ Set drive _c_ (DOS dependent) as block drive number _n_ (0
   \ index).
   \
-  \ See also: `block-drive@`, `set-block-drives`.
+  \ See: `block-drive@`, `set-block-drives`.
   \
   \ }doc
 
@@ -219,7 +219,7 @@ need ?drive# need block-drive@ need ?block-drive
   \ If _n_ is greater than the maximum number of disk drives,
   \ throw exception #-287 ("wrong number of drives").
   \
-  \ See also: `set-block-drives`.  `?block-drive`, `?drive#`.
+  \ See: `set-block-drives`.  `?block-drive`, `?drive#`.
   \
   \ }doc
 
@@ -249,7 +249,7 @@ need ?drives need -block-drives need block-drive!
   \ last block available on the new configuration, but
   \ `first-locatable` is not modified.
   \
-  \ See also: `-block-drives`, `#block-drives`, `block-drive!`,
+  \ See: `-block-drives`, `#block-drives`, `block-drive!`,
   \ `get-block-drives`.
   \
   \ }doc
@@ -275,7 +275,7 @@ need block-drive@
   \
   \ If _n_ is zero, no drive is used for blocks.
   \
-  \ See also: `-block-drives`, `#block-drives`, `block-drive!`.
+  \ See: `-block-drives`, `#block-drives`, `block-drive!`.
   \
   \ }doc
 

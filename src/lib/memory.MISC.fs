@@ -47,7 +47,7 @@ code -! ( n|u a -- )
   \
   \ Subtract _n|u_ from the single-cell number stored at _a_.
   \
-  \ See also: `+!`, `1-!`, `c-!`.
+  \ See: `+!`, `1-!`, `c-!`.
   \
   \ }doc
 
@@ -68,7 +68,7 @@ code c+! ( c ca -- )
   \
   \ Add _c_ to the character stored at _ca_
   \
-  \ See also: `c-!`, `c1+!`, `+!`.
+  \ See: `c-!`, `c1+!`, `+!`.
   \
   \ }doc
 
@@ -89,7 +89,7 @@ code c-! ( c ca -- )
   \
   \ Subtract _c_ from the character stored at _ca_
   \
-  \ See also: `c+!`, `c1-!`, `-!`.
+  \ See: `c+!`, `c1-!`, `-!`.
   \
   \ }doc
 
@@ -107,7 +107,7 @@ code c-! ( c ca -- )
   \
   \ Increment the character stored at _ca_.
   \
-  \ See also: `c1-!`, `c+!`, `1+!`.
+  \ See: `c1-!`, `c+!`, `1+!`.
   \
   \ }doc
 
@@ -123,7 +123,7 @@ code c-! ( c ca -- )
   \
   \ Decrement the character stored at _ca_.
   \
-  \ See also: `c1+!`, `c-!`, `1-!`.
+  \ See: `c1+!`, `c-!`, `1-!`.
   \
   \ }doc
 
@@ -148,7 +148,7 @@ code 1+! ( a -- )
   \
   \ Increment the single-cell number stored at _a_.
   \
-  \ See also: `c1+!`, `1-!`, `+!`.
+  \ See: `c1+!`, `1-!`, `+!`.
   \
   \ }doc
 
@@ -173,7 +173,7 @@ code 1-! ( a -- )
   \
   \ Decrement the single-cell number stored at _a_.
   \
-  \ See also: `1+!`, `c1-!`, `-!`.
+  \ See: `1+!`, `c1-!`, `-!`.
   \
   \ }doc
 
@@ -190,7 +190,7 @@ code 1-! ( a -- )
   \ incremented by one cell.
   \ This is handy for stepping through cell arrays.
   \
-  \ See also: `@`, `2@+`, `c@+`.
+  \ See: `@`, `2@+`, `c@+`.
   \
   \ }doc
 
@@ -205,7 +205,7 @@ code 1-! ( a -- )
   \ incremented by two cells.
   \ This is handy for stepping through double-cell arrays.
   \
-  \ See also: `2@`, `@+`, `c@+`.
+  \ See: `2@`, `@+`, `c@+`.
   \
   \ }doc
 
@@ -221,7 +221,7 @@ code 1-! ( a -- )
   \
   \ This word is an `alias` of `count`.
   \
-  \ See also: `c@`, `2@+`, `@+`.
+  \ See: `c@`, `2@+`, `@+`.
   \
   \ }doc
 
@@ -237,7 +237,7 @@ code 1-! ( a -- )
   \ space, being _x[1]_ the first one stored and _x[u]_ the
   \ last one.
   \
-  \ See also: `,`, `nn,`, `n@`, `n!`.
+  \ See: `,`, `nn,`, `n@`, `n!`.
   \
   \ }doc
 
@@ -252,7 +252,7 @@ code 1-! ( a -- )
   \ store also _u_ cells _x[u]..x[1]_ into data space, being
   \ _x[1]_ the first one stored and _x[u]_ the last one.
   \
-  \ See also: `,`, `n,`, `nn!`.
+  \ See: `,`, `n,`, `nn!`.
   \
   \ }doc
 
@@ -268,7 +268,7 @@ code 1-! ( a -- )
   \ If _u_ is not zero, read _u_ cells _x[u]..x[1]_ from _a_,
   \ being _x[1]_ the first one stored and _x[u]_ the last one.
   \
-  \ See also: `nn@`, `@`, `nn!`.
+  \ See: `nn@`, `@`, `nn!`.
   \
   \ }doc
 
@@ -284,7 +284,7 @@ code 1-! ( a -- )
   \ cell address, being _x[1]_ the first cell stored there and
   \ _x[u]_ the last one.
   \
-  \ See also: `n@`, `@`, `nn!`.
+  \ See: `n@`, `@`, `nn!`.
   \
   \ }doc
 
@@ -299,7 +299,7 @@ code 1-! ( a -- )
   \ If _u_ is not zero, store _u_ cells at address _a_, being
   \ _x[1]_ the first cell stored there and _x[u]_ the last one.
   \
-  \ See also: `nn!`, `!`, `n@`.
+  \ See: `nn!`, `!`, `n@`.
   \
   \ }doc
 
@@ -314,7 +314,7 @@ code 1-! ( a -- )
   \ _u_ cells _x[u]..x[1]_ at the next cell address, being
   \ _x[1]_ the first one stored and _x[u]_ the last one.
   \
-  \ See also: `n!`, `!`, `nn@`.
+  \ See: `n!`, `!`, `nn@`.
   \
   \ }doc
 
@@ -329,7 +329,7 @@ code 1-! ( a -- )
   \
   \ Convert bit number _n_ to a bitmask _b_ with bit _n_ set.
   \
-  \ See also: `bit?`, `set-bit`, `reset-bit`.
+  \ See: `bit?`, `set-bit`, `reset-bit`.
   \
   \ }doc
 
@@ -342,7 +342,7 @@ code 1-! ( a -- )
   \
   \ Is bit _n_ of _b_ set?
   \
-  \ See also: `bit?`, `set-bit`, `bit>mask`.
+  \ See: `bit?`, `set-bit`, `bit>mask`.
   \
   \ }doc
 
@@ -355,7 +355,7 @@ code 1-! ( a -- )
   \
   \ Set bit _n_ of _b1_, returning the result _b2_.
   \
-  \ See also: `bit?`, `set-bit`, `bit>mask`.
+  \ See: `bit?`, `set-bit`, `bit>mask`.
   \
   \ }doc
 
@@ -368,7 +368,7 @@ code 1-! ( a -- )
   \
   \ Reset bit _n_ of _b1_, returning the result _b2_.
   \
-  \ See also: `bit?`, `set-bit`, `bit>mask`.
+  \ See: `bit?`, `set-bit`, `bit>mask`.
   \
   \ }doc
 
@@ -407,7 +407,7 @@ code c@and ( b1 ca -- b2 )
   \ Fetch the caracter at _ca_ and do a bit-by-bit logical
   \ `and` of it with _b1_, returning the result _b2_.
   \
-  \ See also: `c@and?`, `ctoggle`.
+  \ See: `c@and?`, `ctoggle`.
   \
   \ }doc
 
@@ -441,7 +441,7 @@ code ctoggle ( b ca -- )
   \
   \ Invert the bits at _ca_ specified by the bitmask _b_.
   \
-  \ See also: `c@and`.
+  \ See: `c@and`.
   \
   \ }doc
 
@@ -456,7 +456,7 @@ code ctoggle ( b ca -- )
   \
   \ Store _x1_ into _a_ and return its previous contents _x2_.
   \
-  \ See also: `c!exchange`, `exchange`.
+  \ See: `c!exchange`, `exchange`.
   \
   \ }doc
 
@@ -489,7 +489,7 @@ code c!exchange ( c1 ca -- c2 )
   \ : c!exchange ( c1 ca -- c2 ) dup c@ rot rot c! ;
   \ ----
 
-  \ See also: `!exchange`, `cexchange`.
+  \ See: `!exchange`, `cexchange`.
   \
   \ }doc
 
@@ -532,7 +532,7 @@ code c!exchange ( c1 ca -- c2 )
   \
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
   \
-  \ See also: `dp`, `aligned`.
+  \ See: `dp`, `aligned`.
   \
   \ }doc
 
@@ -552,7 +552,7 @@ code c!exchange ( c1 ca -- c2 )
   \
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
   \
-  \ See also: `align`.
+  \ See: `align`.
   \
   \ }doc
 
@@ -567,7 +567,7 @@ code c!exchange ( c1 ca -- c2 )
   \ Divide _n_ by the single-cell number stored at _a_ and store
   \ the quotient in _a_
   \
-  \ See also: `2/!`, `*!`, `+!`, `-!`.
+  \ See: `2/!`, `*!`, `+!`, `-!`.
   \
   \ }doc
 
@@ -580,7 +580,7 @@ code c!exchange ( c1 ca -- c2 )
   \ Multiply _n|u_ by the single-cell number stored at _a_ and store
   \ the product in _a_
   \
-  \ See also: `2*!` `/!`, `+!`, `-!`.
+  \ See: `2*!` `/!`, `+!`, `-!`.
   \
   \ }doc
 
@@ -592,7 +592,7 @@ code c!exchange ( c1 ca -- c2 )
   \
   \ Do a `2*` shift to the single-cell number stored at _a_.
   \
-  \ See also: `2/!`, `2*`.
+  \ See: `2/!`, `2*`.
   \
   \ }doc
 
@@ -604,7 +604,7 @@ code c!exchange ( c1 ca -- c2 )
   \
   \ Do a `2/` shift to the single-cell number stored at _a_.
   \
-  \ See also: `2*!`, `2/`.
+  \ See: `2*!`, `2/`.
   \
   \ }doc
 
@@ -618,7 +618,7 @@ code c!exchange ( c1 ca -- c2 )
   \
   \ Exchange the cells stored at _a1_ and _a2_.
   \
-  \ See also: `cexchange`, `!exchange`.
+  \ See: `cexchange`, `!exchange`.
   \
   \ }doc
 
@@ -652,7 +652,7 @@ code cexchange ( ca1 ca2 -- )
   \ : cexchange ( ca1 ca2 -- ) 2dup c@ swap c@ rot c! swap c! ;
   \ ----
 
-  \ See also: `exchange`, `c!exchange`.
+  \ See: `exchange`, `c!exchange`.
   \
   \ }doc
 

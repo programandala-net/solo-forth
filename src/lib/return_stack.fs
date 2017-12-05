@@ -109,7 +109,7 @@ code nr> ( -- x1..xn n ) ( R: x1..xn n -- )
   \ _+n_ is the number of single-cell values contained in the
   \ return stack.
   \
-  \ See also: `rp0`, `rp`, `depth`, `fdepth`.
+  \ See: `rp0`, `rp`, `depth`, `fdepth`.
   \
   \ }doc
 
@@ -129,7 +129,7 @@ code nr> ( -- x1..xn n ) ( R: x1..xn n -- )
   \
   \ Fetch _x1_ from the return stack.
   \
-  \ See also: `r@`.
+  \ See: `r@`.
   \
   \ }doc
 
@@ -150,7 +150,7 @@ code 2rdrop ( R: x1 x2 -- )
   \
   \ Remove _x1 x2_ from the return stack.
   \
-  \ See also: `rdrop`,`2drop`.
+  \ See: `rdrop`,`2drop`.
   \
   \ }doc
 
@@ -175,7 +175,7 @@ code dup>r ( x -- x ) ( R: -- x )
   \
   \ Origin: IsForth.
   \
-  \ See also: `dup`, >r`.
+  \ See: `dup`, >r`.
   \
   \ }doc
 

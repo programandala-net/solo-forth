@@ -35,7 +35,7 @@
   \
   \ Return the current graphic coordinates _gx gy_.
   \
-  \ See also: `g-x`, `g-y`, `g-at-xy`.
+  \ See: `g-x`, `g-y`, `g-at-xy`.
   \
   \ }doc
 
@@ -48,7 +48,7 @@
   \
   \ Return the current graphic x coordinate _gx_.
   \
-  \ See also: `g-xy`, `g-y`, `g-at-xy`.
+  \ See: `g-xy`, `g-y`, `g-at-xy`.
   \
   \ }doc
 
@@ -61,7 +61,7 @@
   \
   \ Return the current graphic y coordinate _gy_.
   \
-  \ See also: `g-xy`, `g-x`, `g-at-xy`.
+  \ See: `g-xy`, `g-x`, `g-at-xy`.
   \
   \ }doc
 
@@ -74,7 +74,7 @@
   \
   \ Set the current graphic coordinates _gx gy_.
   \
-  \ See also: `g-xy`, `g-at-y`, `g-at-x`, `g-home`.
+  \ See: `g-xy`, `g-at-y`, `g-at-x`, `g-home`.
   \
   \ }doc
 
@@ -88,7 +88,7 @@
   \ Set the current graphic x coordinate _gx_, without changing
   \ the current graphic y coordinate.
   \
-  \ See also: `g-at-xy`, `g-at-y`.
+  \ See: `g-at-xy`, `g-at-y`.
   \
   \ }doc
 
@@ -102,7 +102,7 @@
   \ Set the current graphic y coordinate _gy_, without changing
   \ the current graphic x coordinate.
   \
-  \ See also: `g-at-xy`, `g-at-x`.
+  \ See: `g-at-xy`, `g-at-x`.
   \
   \ }doc
 
@@ -115,7 +115,7 @@
   \
   \ Set the graphic coordinates to 0, 0.
   \
-  \ See also: `g-at-xy`.
+  \ See: `g-at-xy`.
   \
   \ }doc
 

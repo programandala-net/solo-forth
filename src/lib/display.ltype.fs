@@ -71,7 +71,7 @@ variable #ltyped
   \ Display character _c_ as part of the left-justified displaying
   \ system.
   \
-  \ See also: `ltype`, `lspace`.
+  \ See: `ltype`, `lspace`.
   \
   \ }doc
 
@@ -82,7 +82,7 @@ variable #ltyped
   \ Display a space as part of the left-justified printing
   \ system.
   \
-  \ See also: `lemit`, `ltype`.
+  \ See: `lemit`, `ltype`.
   \
   \ }doc
 
@@ -94,7 +94,7 @@ variable #ltyped
   \
   \ Set `ltyped#` and `#indented` to zero.
   \
-  \ See also: `ltyped`.
+  \ See: `ltyped`.
   \
   \ }doc
 
@@ -129,7 +129,7 @@ variable #ltyped
   \ Is the cursor neither at the home position nor at the start of a
   \ line?  ``lcr?`` is part of the left-justified displaying system.
   \
-  \ See also: `lcr`, `ltype`.
+  \ See: `lcr`, `ltype`.
   \
   \ }doc
 
@@ -144,7 +144,7 @@ defer (lcr) ( -- ) ' cr ' (lcr) defer! -->
   \ data of the left-justified displaying system.  ``(lcr)`` is
   \ a hook for the application, for special cases.
   \
-  \ See also: `ltype`.
+  \ See: `ltype`.
   \
   \ }doc
 
@@ -160,7 +160,7 @@ defer (lcr) ( -- ) ' cr ' (lcr) defer! -->
   \ start of a line, move it to the next row. ``lcr`` is part
   \ of the left-justified displaying system. 
   \
-  \ See also: `lcr?`, `(lcr)`, `ltype`.
+  \ See: `lcr?`, `(lcr)`, `ltype`.
   \
   \ }doc
 
@@ -211,7 +211,7 @@ variable lwidth columns lwidth !
   \ Display character string _ca len_ left-justified from the
   \ current cursor position.
   \
-  \ See also: `/ltype`.
+  \ See: `/ltype`.
   \
   \ }doc
 

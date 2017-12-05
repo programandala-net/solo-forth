@@ -121,7 +121,7 @@ create tape-header  /tape-header 2 * allot
   \ | IX+$10 | IX+$21 | hi    | -   | -   | -     | ...i.e. without variables
   \ |===
 
-  \ See also: `tape-filename`, `tape-filetype`, `tape-start`,
+  \ See: `tape-filename`, `tape-filetype`, `tape-start`,
   \ `tape-length`, `any-tape-filename`, `?set-tape-filename`.
   \
   \ }doc
@@ -135,7 +135,7 @@ create tape-header  /tape-header 2 * allot
   \ _n_ is the maximum length of a tape filename, which is 10
   \ characters.
   \
-  \ See also: `tape-filename`. `/filename`.
+  \ See: `tape-filename`. `/filename`.
   \
   \ }doc
 
@@ -148,7 +148,7 @@ tape-header constant tape-filetype ( -- ca ) 3 tape-filetype c!
   \ Address of the file type (one byte) in `tape-header`.
   \ Its default value is 3 (code file).
   \
-  \ See also: `last-tape-filetype`.
+  \ See: `last-tape-filetype`.
   \
   \ }doc
 
@@ -160,7 +160,7 @@ tape-header 1+ constant tape-filename ( -- ca )
   \
   \ Address of the filename in `tape-header`.
   \
-  \ See also: `/tape-filename`, `set-tape-filename`,
+  \ See: `/tape-filename`, `set-tape-filename`,
   \ `last-tape-filename`.
   \
   \ }doc
@@ -173,7 +173,7 @@ tape-header 11 + constant tape-length ( -- a )
   \
   \ Address of the file length in `tape-header`.
   \
-  \ See also: `last-tape-length`.
+  \ See: `last-tape-length`.
   \
   \ }doc
 
@@ -185,7 +185,7 @@ tape-header 13 + constant tape-start ( -- a )
   \
   \ Address of the file start in `tape-header`.
   \
-  \ See also: `last-tape-start`.
+  \ See: `last-tape-start`.
   \
   \ }doc
 
@@ -297,7 +297,7 @@ code (tape-file>) ( -- )
   \ message. This will be avoided in a future version of Solo
   \ Forth.
   \
-  \ See also: `>tape-file`, `(tape-file>)`, `>file`.
+  \ See: `>tape-file`, `(tape-file>)`, `>file`.
   \
   \ }doc
 
@@ -345,7 +345,7 @@ code (>tape-file) ( -- )
   \ Write a memory region _ca1 len1_ into a tape file _ca2
   \ len2_.
   \
-  \ See also: `tape-file>`, `(>tape-file)`, `>file`.
+  \ See: `tape-file>`, `(>tape-file)`, `>file`.
   \
   \ }doc
 
@@ -368,7 +368,7 @@ tape-header /tape-header + constant last-tape-header ( -- ca )
   \ It can be used by the application to know the details of
   \ the last tape file that was loaded.
   \
-  \ See also: `last-tape-filename`, `last-tape-filetype`,
+  \ See: `last-tape-filename`, `last-tape-filetype`,
   \ `last-tape-start`, `last-tape-length`.
   \
   \ }doc
@@ -381,7 +381,7 @@ last-tape-header constant last-tape-filetype ( -- ca )
   \
   \ Address of the file type (one byte) in `last-tape-header`.
   \
-  \ See also: `tape-filetype`.
+  \ See: `tape-filetype`.
   \
   \ }doc
 
@@ -393,7 +393,7 @@ last-tape-header 1+ constant last-tape-filename ( -- ca )
   \
   \ Address of the filename in `last-tape-header`.
   \
-  \ See also: `/tape-filename`, `tape-filename`.
+  \ See: `/tape-filename`, `tape-filename`.
   \
   \ }doc
 
@@ -405,7 +405,7 @@ last-tape-header 11 + constant last-tape-length ( -- a )
   \
   \ Address of the file length in `last-tape-header`.
   \
-  \ See also: `tape-length`.
+  \ See: `tape-length`.
   \
   \ }doc
 
@@ -417,7 +417,7 @@ last-tape-header 13 + constant last-tape-start ( -- a ) ?)
   \
   \ Address of the file start in `last-tape-header`.
   \
-  \ See also: `tape-start`.
+  \ See: `tape-start`.
   \
   \ }doc
 
@@ -433,7 +433,7 @@ last-tape-header 13 + constant last-tape-start ( -- a ) ?)
   \ Write the display memory into a tape file _ca
   \ len_.
   \
-  \ See also: `>tape-file`.
+  \ See: `>tape-file`.
   \
   \ }doc
 
@@ -448,7 +448,7 @@ last-tape-header 13 + constant last-tape-start ( -- a ) ?)
   \ Write the display memory into a tape file _ca
   \ len_.
   \
-  \ See also: `>tape-file`.
+  \ See: `>tape-file`.
   \
   \ }doc
 

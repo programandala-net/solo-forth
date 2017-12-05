@@ -44,7 +44,7 @@
   \ deferred word `number-point?`, which is used in `number?`,
   \ and whose default action is `standard-number-point?`.
   \
-  \ See also: `extended-number-point?`.
+  \ See: `extended-number-point?`.
   \
   \ }doc
 
@@ -65,7 +65,7 @@
   \ deferred word `number-point?`, which is used in `number?`,
   \ and whose default action is `standard-number-point?`.
   \
-  \ See also: `classic-number-point?`.
+  \ See: `classic-number-point?`.
   \
   \ }doc
 

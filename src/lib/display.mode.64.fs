@@ -486,7 +486,7 @@ variable mode-64o-font
   \ program is responsible for initializing the contents of
   \ this variable before executing `mode-64o`.
   \
-  \ See also: `owen-64cpl-font`.
+  \ See: `owen-64cpl-font`.
   \
   \ }doc
 
@@ -519,7 +519,7 @@ variable mode-64o-font
   \ compared to the Sinclair BASIC convention and `mode-32`.
   \ This will be changed in a later version of the code.
   \
-  \ See also: `current-mode`, `set-font`, `set-mode-output`,
+  \ See: `current-mode`, `set-font`, `set-mode-output`,
   \ `columns`, `rows`, `mode-64o-emit`, `mode-64o-xy`,
   \ `mode-64o-font`, `>form`, `mode-64o-output_`.
   \

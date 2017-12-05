@@ -243,7 +243,7 @@ push_dos_ior:
 ;   Fz = 0
 ; ....
 
-; See also: `dos-c_`, `dos-hl_`, `dos-alt-a-preserve-ip_`,
+; See: `dos-c_`, `dos-hl_`, `dos-alt-a-preserve-ip_`,
 ; `dos-alt-a-restore-ip_`.
 ;
 ; }doc
@@ -274,7 +274,7 @@ push_dos_ior:
 ;   Fz = 0
 ; ....
 
-; See also: `dos-hl_`, `dos-alt-a_`, `dos-alt-a-preserve-ip_`,
+; See: `dos-hl_`, `dos-alt-a_`, `dos-alt-a-preserve-ip_`,
 ; `dos-alt-a-restore-ip_`.
 ;
 ; }doc
@@ -304,7 +304,7 @@ push_dos_ior:
 ;   Fz = 0
 ; ....
 
-; See also: `dos-c_`, `dos-alt-a_`, `dos-alt-a-preserve-ip_`,
+; See: `dos-c_`, `dos-alt-a_`, `dos-alt-a-preserve-ip_`,
 ; `dos-alt-a-restore-ip_`.
 ;
 ; }doc
@@ -337,7 +337,7 @@ push_dos_ior:
 ;   Fz = 0
 ; ....
 
-; See also: `dos-c_`, `dos-hl_`, `dos-alt-a_`,
+; See: `dos-c_`, `dos-hl_`, `dos-alt-a_`,
 ; `dos-alt-a-restore-ip_`.
 ;
 ; }doc
@@ -375,7 +375,7 @@ push_dos_ior:
 ;   Fz = 0
 ; ....
 
-; See also: `dos-c_`, `dos-hl_`, `dos-alt-a-preserve-ip_`,
+; See: `dos-c_`, `dos-hl_`, `dos-alt-a-preserve-ip_`,
 ; `dos-alt-a_`.
 ;
 ; }doc
@@ -406,7 +406,7 @@ push_dos_ior:
 ;   TOS = Forth exception code (-1012..-1001)
 ; ....
 
-; See also: `dosior>ior`.
+; See: `dosior>ior`.
 ;
 ; }doc
 
@@ -429,7 +429,7 @@ push_dos_ior:
 ;   dup if  1000 + negate  then   ;
 ; ----
 
-; See also: `pushdosior`.
+; See: `pushdosior`.
 ;
 ; }doc
 
@@ -510,7 +510,7 @@ dosior_hl_to_ior_hl:
 ; : sector#>dos ( n -- x ) sectors/track /mod sector>dos  ;
 ; ----
 
-; See also: `sectors/track`, `sector>dos`, `transfer-sector`.
+; See: `sectors/track`, `sector>dos`, `transfer-sector`.
 ;
 ; }doc
 
@@ -538,7 +538,7 @@ dosior_hl_to_ior_hl:
 ; : block-sector#>dos ( n -- x ) sectors/track + sector#>dos ;
 ; ----
 
-; See also: `sectors/track`, `sector#>dos`, `transfer-block`.
+; See: `sectors/track`, `sector#>dos`, `transfer-block`.
 ;
 ; }doc
 
@@ -560,7 +560,7 @@ dosior_hl_to_ior_hl:
 ; The high byte of _x_ is the track (0..79 for side 0; 80..159
 ; for side 1); its low byte is the sector (0..15).
 ;
-; See also: `block-sector#>dos`, `transfer-block`.
+; See: `block-sector#>dos`, `transfer-block`.
 ;
 ; }doc
 
@@ -591,7 +591,7 @@ transfer_sectors.command: equ $+1
 ;
 ; Set the write mode for `transfer-sectors` and `transfer-block`.
 ;
-; See also: `read-mode`.
+; See: `read-mode`.
 ;
 ; }doc
 
@@ -607,7 +607,7 @@ transfer_sectors.command: equ $+1
 ;
 ; Set the read mode for `transfer-sectors` and `transfer-block`.
 ;
-; See also: `write-mode`.
+; See: `write-mode`.
 ;
 ; }doc
 
@@ -637,7 +637,7 @@ transfer_mode:
 ;   transfer-sectors throw  ;
 ; ----
 
-; See also: `transfer-sectors`.
+; See: `transfer-sectors`.
 ;
 ; }doc
 
@@ -658,7 +658,7 @@ transfer_mode:
 ;
 ; ``init-drive`` is used by `set-drive`.
 ;
-; See also: `read-system-track`.
+; See: `read-system-track`.
 ;
 ; }doc
 
@@ -688,7 +688,7 @@ transfer_mode:
 ;
 ; ``read-system-track`` is used by `set-drive`.
 ;
-; See also: `init-drive`.
+; See: `init-drive`.
 ;
 ; }doc
 
@@ -721,7 +721,7 @@ transfer_mode:
 ;
 ; Set drive _n_ (0..3) as the current one.
 ;
-; See also: `init-drive`, `read-system-track`.
+; See: `init-drive`, `read-system-track`.
 ;
 ; }doc
 
@@ -886,7 +886,7 @@ endif
 ;
 ; Display TR-DOS variables related to disk drives.
 ;
-; See also: `.step-rates`, `.fda`.
+; See: `.step-rates`, `.fda`.
 ;
 ; }doc
 
@@ -956,7 +956,7 @@ dot_drives.exit
 ;
 ; Display the configured step rates of the TR-DOS disk drives.
 ;
-; See also: `.drives`, `.fda`.
+; See: `.drives`, `.fda`.
 ;
 ; }doc
 
@@ -994,7 +994,7 @@ dot_drives.exit
 ;
 ; Display the contents of TR-DOS File Descriptor Area.
 ;
-; See also: `.drives`, `.step-rates`.
+; See: `.drives`, `.step-rates`.
 ;
 ; }doc
 

@@ -43,7 +43,7 @@
   \
   \ ``cslit`` is compiled by `csliteral`.
   \
-  \ See also: `slit`.
+  \ See: `slit`.
   \
   \ }doc
 
@@ -65,7 +65,7 @@
   \
   \ ``csliteral`` is an `immediate` and `compile-only` word.
   \
-  \ See also: `sliteral`.
+  \ See: `sliteral`.
   \
   \ }doc
 
@@ -87,7 +87,7 @@
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See also: `csliteral`.
+  \ See: `csliteral`.
   \
   \ }doc
 

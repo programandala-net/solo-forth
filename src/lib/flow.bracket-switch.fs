@@ -77,7 +77,7 @@ need link@ need link, need pick
   \ associated matched _xt_. If no match is found, leave _n_ on
   \ the stack and execute the default xt.
   \
-  \ See also: `:switch`, `[switch`, `<switch`.
+  \ See: `:switch`, `[switch`, `<switch`.
   \
   \ }doc
 
@@ -98,7 +98,7 @@ need link@ need link, need pick
   \ 1. link (to the last clause of the switch)
   \ 2. default xt
   \
-  \ See also: `<switch`, `[switch`.
+  \ See: `<switch`, `[switch`.
   \
   \ }doc
 
@@ -117,7 +117,7 @@ need link@ need link, need pick
   \ 2. key
   \ 3. xt
   \
-  \ See also: `:switch`, `[switch`.
+  \ See: `:switch`, `[switch`.
   \
   \ }doc
 
@@ -140,7 +140,7 @@ need link@ need link, need pick
   \
   \ Origin: SwiftForth.
   \
-  \ See also: `[switch`, `runs`, `run`.
+  \ See: `[switch`, `runs`, `run`.
   \
   \ }doc
 
@@ -162,7 +162,7 @@ need link@ need link, need pick
   \
   \ Origin: SwiftForth.
   \
-  \ See also: `runs`, `run:`.
+  \ See: `runs`, `run:`.
   \
   \ }doc
 
@@ -178,7 +178,7 @@ need alias  ' drop alias switch] ( head -- ) ?)
   \
   \ Origin: SwiftForth.
   \
-  \ See also: `[switch`, `[+switch`, `runs`, `run:`.
+  \ See: `[switch`, `[+switch`, `runs`, `run:`.
   \
   \ }doc
 
@@ -195,7 +195,7 @@ need alias  ' drop alias switch] ( head -- ) ?)
   \
   \ Origin: SwiftForth.
   \
-  \ See also: `[switch`, `switch]`.
+  \ See: `[switch`, `switch]`.
   \
   \ }doc
 
@@ -214,7 +214,7 @@ need alias  ' drop alias switch] ( head -- ) ?)
   \
   \ Origin: SwiftForth.
   \
-  \ See also: `[switch`, `switch]`.
+  \ See: `[switch`, `switch]`.
   \
   \ }doc
 

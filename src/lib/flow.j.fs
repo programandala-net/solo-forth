@@ -45,7 +45,7 @@ code j ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
   \ Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
   \ Forth-2012 (CORE).
   \
-  \ See also: `j'`, `i`, `k`.
+  \ See: `j'`, `i`, `k`.
   \
   \ }doc
 
@@ -69,7 +69,7 @@ code k ( -- n|u )
   \
   \ Origin: Forth-83 (Controlled reference words).
   \
-  \ See also: `k'`, `i`, `j`.
+  \ See: `k'`, `i`, `j`.
   \
   \ }doc
 
@@ -98,7 +98,7 @@ code i' ( -- n|u ) ( R: do-sys -- do-sys )
   \
   \ Origin: Comus.
   \
-  \ See also: `i`, `j'`, `k'`.
+  \ See: `i`, `j'`, `k'`.
   \
   \ }doc
 
@@ -125,7 +125,7 @@ code j' ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
   \
   \ Origin: Comus.
   \
-  \ See also: `j`, `i'`, `k'`.
+  \ See: `j`, `i'`, `k'`.
   \
   \ }doc
 
@@ -152,7 +152,7 @@ code k' ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
   \
   \ Origin: Comus.
   \
-  \ See also: `k`, `i'`, `j'`.
+  \ See: `k`, `i'`, `j'`.
   \
   \ }doc
 

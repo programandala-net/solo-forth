@@ -101,7 +101,7 @@ need alias need char-position?
   \   s" abc" ?ccase  .a .b .c  end?ccase  ."  The End" cr ;
   \ ----
   \
-  \ See also: `ccase`, `ccase0`.
+  \ See: `ccase`, `ccase0`.
   \
   \ }doc
 
@@ -180,7 +180,7 @@ need alias need char-position?
   \   ."  The End" cr ;
   \ ----
   \
-  \ See also: `ccase` `?ccase`.
+  \ See: `ccase` `?ccase`.
   \
   \ }doc
 
@@ -265,7 +265,7 @@ need char-position?
   \   ."  The End" cr ;
   \ ----
   \
-  \ See also: `ccase0`, `?ccase`.
+  \ See: `ccase0`, `?ccase`.
   \
   \ }doc
 

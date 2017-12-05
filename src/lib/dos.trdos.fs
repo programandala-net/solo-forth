@@ -88,7 +88,7 @@ fda $0F + constant fda-filetrack ?)
   \ | +0xF   | 1     | `fda-filetrack`     | First track of the file
   \ |===
 
-  \ See also: `/fda`, `read-file-descriptor`,
+  \ See: `/fda`, `read-file-descriptor`,
   \ `write-file-descriptor`.
   \
   \ }doc
@@ -104,7 +104,7 @@ fda $0F + constant fda-filetrack ?)
   \ by the filename stored at ``fda-filename`` and the
   \ character stored ad `fda-filetype.`
   \
-  \ See also: `/filename`.
+  \ See: `/filename`.
   \
   \ }doc
 
@@ -142,7 +142,7 @@ fda $0F + constant fda-filetrack ?)
   \ `fda-filetype` is 'B' (BASIC program), this cell contains
   \ the length of the BASIC program, including its variables.
   \
-  \ See also: `fda-filelength`.
+  \ See: `fda-filelength`.
   \
   \ }doc
 
@@ -153,7 +153,7 @@ fda $0F + constant fda-filetrack ?)
   \ Fourth field of `fda` (File Descriptor Area).  _a_ is the
   \ address of a cell containing the file length in bytes.
   \
-  \ See also: `fda-filestart`, `fda-filesectors`.
+  \ See: `fda-filestart`, `fda-filesectors`.
   \
   \ }doc
 
@@ -164,7 +164,7 @@ fda $0F + constant fda-filetrack ?)
   \ Fifth field of `fda` (File Descriptor Area).  _ca_ is the
   \ address of a byte containing the file length in sectors.
   \
-  \ See also: `fda-filetrack`, `fda-filesector`,
+  \ See: `fda-filetrack`, `fda-filesector`,
   \ `fda-filelength`.
   \
   \ }doc
@@ -176,7 +176,7 @@ fda $0F + constant fda-filetrack ?)
   \ Sixth field of `fda` (File Descriptor Area).  _ca_ is the
   \ address of a byte containing the first sector of the file.
   \
-  \ See also: `fda-filetrack`, `fda-filesectors`.
+  \ See: `fda-filetrack`, `fda-filesectors`.
   \
   \ }doc
 
@@ -187,7 +187,7 @@ fda $0F + constant fda-filetrack ?)
   \ Seventh field of `fda` (File Descriptor Area).  _ca_ is the
   \ address of a byte containing the first track of the file.
   \
-  \ See also: `fda-filesector`, `fda-filesectors`.
+  \ See: `fda-filesector`, `fda-filesectors`.
   \
   \ }doc
 
@@ -237,7 +237,7 @@ fda $0F + constant fda-filetrack ?)
   \ If the filetype is not specified in a filename, 'C' is
   \ used.
   \
-  \ See also: `set-filename`, `fda`.
+  \ See: `set-filename`, `fda`.
   \
   \ }doc
 
@@ -252,7 +252,7 @@ fda $0F + constant fda-filetrack ?)
   \
   \ Erase the filename stored at _ca_ and set its type to 'C'.
   \
-  \ See also: `-fda-filename`, `set-filename`.
+  \ See: `-fda-filename`, `set-filename`.
   \
   \ }doc
 
@@ -267,7 +267,7 @@ fda $0F + constant fda-filetrack ?)
   \ Erase the filename stored at TR-DOS `fda` (File Descriptor
   \ Area) with spaces, and set its type to 'C'.
   \
-  \ See also: `-filename`, `set-filename`.
+  \ See: `-filename`, `set-filename`.
   \
   \ }doc
 
@@ -290,7 +290,7 @@ need -fda-filename need /filename need fda
   \ _ca len_ does not include the file type at the end (at
   \ character offset +8), 'C' (code file) is used by default.
   \
-  \ See also: `-fda-filename`, `/filename`.
+  \ See: `-fda-filename`, `/filename`.
   \
   \ }doc
 
@@ -305,7 +305,7 @@ need -fda-filename need /filename need fda
   \ Return the filename _ca len_ that is stored in `fda` (File
   \ Descriptor Area).
   \
-  \ See also: `set-filename`, `fda-filename`, `/filename`,
+  \ See: `set-filename`, `fda-filename`, `/filename`,
   \ `filename>filetype`.
   \
   \ }doc
@@ -322,7 +322,7 @@ need -fda-filename need /filename need fda
   \ assumed to be `/filename`, i.e., _ca len_ is a complete
   \ filename.
   \
-  \ See also: `set-filename`, `get-filename`.
+  \ See: `set-filename`, `get-filename`.
   \
   \ }doc
 
@@ -348,7 +348,7 @@ need -fda-filename need /filename need fda
   \ : get-drive ( -- b ) $5FC6 c@ ;
   \ ----
 
-  \ See also: `set-drive`.
+  \ See: `set-drive`.
   \
   \ }doc
 
@@ -371,7 +371,7 @@ code (acat ( -- ior )
   \ return error result _ior_.  ``(acat`` is a factor of
   \ `acat`.
   \
-  \ See also: `set-drive`.
+  \ See: `set-drive`.
   \
   \ }doc
 
@@ -383,7 +383,7 @@ code (acat ( -- ior )
   \
   \ Display an abbreviated catalogue of the current disk.
   \
-  \ See also: `set-drive`, `(acat`.
+  \ See: `set-drive`, `(acat`.
   \
   \ }doc
 
@@ -449,7 +449,7 @@ code (file>) ( ca len -- ior )
   \
   \ ``(file>)`` is a factor of `file>`.
   \
-  \ See also: `fda-filestart`, `fda-filelength`.
+  \ See: `fda-filestart`, `fda-filelength`.
   \
   \ }doc
 
@@ -574,7 +574,7 @@ code fda-filestatus ( -- a ior )
   \ the TR-DOS File Descriptor Area; otherwise _ior_ is the
   \ corresponding result code and _a_ is useless.
   \
-  \ See also: `file-status`.
+  \ See: `file-status`.
   \
   \ }doc
 
@@ -594,7 +594,7 @@ code fda-filestatus ( -- a ior )
   \
   \ Origin: Forth-94 (FILE-EXT), Forth-2012 (FILE-EXT).
   \
-  \ See also: `file-exists?`, `file-start`, `file-length`,
+  \ See: `file-exists?`, `file-start`, `file-length`,
   \ `file-type`, `find-file`, `file-dir#`, `file-sectors`,
   \ `file-sector`, `file-track`, `delete-file`, `rename-file`.
   \
@@ -613,7 +613,7 @@ code fda-filestatus ( -- a ior )
   \ If the file named in the character string _ca len_ is
   \ found, _f_ is _true_. Otherwise _f_ is _false_.
   \
-  \ See also: `file-status`.
+  \ See: `file-status`.
   \
   \ }doc
 
@@ -632,7 +632,7 @@ code fda-filestatus ( -- a ior )
   \ Otherwise _ior_ is an exception code and _ca2_ is
   \ undefined.
   \
-  \ See also: `file-status`, `fda-filestart`.
+  \ See: `file-status`, `fda-filestart`.
   \
   \ }doc
 
@@ -650,7 +650,7 @@ code fda-filestatus ( -- a ior )
   \ _ior_ is zero and _len2_ is the file length.  Otherwise
   \ _ior_ is an exception code and _len2_ is undefined.
   \
-  \ See also: `file-status`, `fda-filelength`.
+  \ See: `file-status`, `fda-filelength`.
   \
   \ }doc
 
@@ -675,7 +675,7 @@ code fda-filestatus ( -- a ior )
   \ characters, filetype 'C' (code file) is assumed by default.
   \ Therefore ``file-type`` is almost useless on TR-DOS.
   \
-  \ See also: `file-status`, `fda-filetype`.
+  \ See: `file-status`, `fda-filetype`.
   \
   \ }doc
 
@@ -690,7 +690,7 @@ code fda-filestatus ( -- a ior )
   \ found, return address _a_ of the updated `fda` (File
   \ Descriptor Area). Otherwise return zero.
   \
-  \ See also: `file-status`.
+  \ See: `file-status`.
   \
   \ }doc
 
@@ -719,7 +719,7 @@ code fda-filedir# ( -- n ior )
   \ directory number.  Otherwise _ior_ is an exception code and
   \ _n_ is undefined.
   \
-  \ See also: `file-dir#`, `fda-filestatus`.
+  \ See: `file-dir#`, `fda-filestatus`.
   \
   \ }doc
 
@@ -736,7 +736,7 @@ code fda-filedir# ( -- n ior )
   \ found, _ior_ is zero and _n_ is the file directory number.
   \ Otherwise _ior_ is an exception code and _n_ is undefined.
   \
-  \ See also: `file-status`, `fda-filedir#`.
+  \ See: `file-status`, `fda-filedir#`.
   \
   \ }doc
 
@@ -756,7 +756,7 @@ code fda-filedir# ( -- n ior )
   \ found, _ior_ is zero and _n_ is the length in sectors.
   \ Otherwise _ior_ is an exception code and _n_ is undefined.
   \
-  \ See also: `file-status`, `fda-filesectors`.
+  \ See: `file-status`, `fda-filesectors`.
   \
   \ }doc
 
@@ -774,7 +774,7 @@ code fda-filedir# ( -- n ior )
   \ successfully found, _ior_ is zero and _n_ is the sector.
   \ Otherwise _ior_ is an exception code and _n_ is undefined.
   \
-  \ See also: `file-status`, `fda-filesector`.
+  \ See: `file-status`, `fda-filesector`.
   \
   \ }doc
 
@@ -792,7 +792,7 @@ code fda-filedir# ( -- n ior )
   \ is zero and _n_ is the track.  Otherwise _ior_ is an
   \ exception code and _n_ is undefined.
   \
-  \ See also: `file-status`, `fda-filetrack`.
+  \ See: `file-status`, `fda-filetrack`.
   \
   \ }doc
 
@@ -831,7 +831,7 @@ code (delete-file) ( -- ior )
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
-  \ See also: `undelete-file`, `(delete-file`, `rename-file`,
+  \ See: `undelete-file`, `(delete-file`, `rename-file`,
   \ `file-status`.
   \
   \ }doc
@@ -930,7 +930,7 @@ create tmp-filename /filename allot
   \ 3. TR-DOS does not reuse the space occupied by a deleted
   \ file, until the disk is defragmented
   \
-  \ See also: `delete-file`.
+  \ See: `delete-file`.
   \
   \ }doc
 
@@ -954,7 +954,7 @@ create tmp-filename /filename allot
   \ Display the filename stored at _ca_, using the TR-DOS
   \ filename format.
   \
-  \ See also: `.fda-filename`, `/filename`.
+  \ See: `.fda-filename`, `/filename`.
   \
   \ }doc
 
@@ -969,7 +969,7 @@ create tmp-filename /filename allot
   \ Display the contents of `fda-filename`, using the TR-DOS
   \ filename format.
   \
-  \ See also: `.filename`, `/filename`.
+  \ See: `.filename`, `/filename`.
   \
   \ }doc
 
@@ -983,7 +983,7 @@ create tmp-filename /filename allot
   \
   \ _f_ is true if `fda` contains a BASIC program file.
   \
-  \ See also: `fda-empty?`, `fda-deleted?`.
+  \ See: `fda-empty?`, `fda-deleted?`.
   \
   \ }doc
 
@@ -997,7 +997,7 @@ create tmp-filename /filename allot
   \
   \ _f_ is true if `fda` contains a deleted file.
   \
-  \ See also: `fda-empty?`, `fda-basic?`.
+  \ See: `fda-empty?`, `fda-basic?`.
   \
   \ }doc
 
@@ -1012,7 +1012,7 @@ create tmp-filename /filename allot
   \ _f_ is true if `fda` is empty, i.e. it's unused, it does
   \ not contain a file descriptor.
   \
-  \ See also: `fda-deleted?`, `fda-basic?`.
+  \ See: `fda-deleted?`, `fda-basic?`.
   \
   \ }doc
 
@@ -1041,7 +1041,7 @@ need fda-basic? need fda-empty? need fda-deleted?
   \
   \ ``cat-fda`` is a factor of `?cat-fda`.
   \
-  \ See also: `.fda-filename`, `fda-basic?`.
+  \ See: `.fda-filename`, `fda-basic?`.
   \
   \ }doc
 
@@ -1057,7 +1057,7 @@ need fda-basic? need fda-empty? need fda-deleted?
   \
   \ ``?cat-fda`` is a factor of `cat`.
   \
-  \ See also: `fda-deleted?`, `cat-fda`.
+  \ See: `fda-deleted?`, `cat-fda`.
   \
   \ }doc
 
@@ -1076,7 +1076,7 @@ need fda-basic? need fda-empty? need fda-deleted?
   \
   \ Show a disk catalogue of the current drive.
   \
-  \ See also: `acat`, `?cat-fda`, `cat-fda`, `set-drive`.
+  \ See: `acat`, `?cat-fda`, `cat-fda`, `set-drive`.
   \
   \ }doc
 
@@ -1144,7 +1144,7 @@ need read-file-descriptor need write-file-descriptor
 
   \ Origin: Forth-94 (FILE EXT), Forth-2012 (FILE EXT).
   \
-  \ See also: `file-status`, `delete-file`.
+  \ See: `file-status`, `delete-file`.
   \
   \ }doc
 
