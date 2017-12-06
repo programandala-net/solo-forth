@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705141115
+  \ Last modified: 201712061818
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2017.
+  \ Marcos Cruz (programandala.net), 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -47,7 +47,7 @@ assembler-wordlist dup >order set-current need ?rel
   \
   \ al-id ( -- b )
   \
-  \ _b_ is th identifier of absolute references created by
+  \ _b_ is the identifier of absolute references created by
   \ `al#`.  ``rl-ad`` is used as a bitmask added to the label
   \ number stored in `l-refs`.
   \
@@ -63,9 +63,9 @@ create max-labels 8 c,  create max-l-refs 16 c,
   \
   \ _ca_ is the address of a byte containing the maximum number
   \ (count) of labels that can be defined by `l:`.  Its default
-  \ value is 8. The program can change the value, but the
-  \ default one should be restored after the code word has been
-  \ compiled.
+  \ value is 8, i.e. labels 0..7 can be used. The program can
+  \ change the value, but the default one should be restored
+  \ after the code word has been compiled.
   \
   \ ``max-labels`` is used by `init-labels` to allocate the
   \ `labels` table.
@@ -73,15 +73,15 @@ create max-labels 8 c,  create max-l-refs 16 c,
   \ Usage example:
 
   \ ----
-  \ need assembler  also assembler need l:
-  \ max-labels c@ #24 max-labels c!
-  \ previous
+  \ need assembler need l:
+  \ assembler-wordlist >order    max-labels c@
+  \                          #24 max-labels c! previous
   \
   \ code my-word ( -- )
   \   \ Z80 code that needs #24 labels
   \ end-code
   \
-  \ max-labels c! \ restore the default value
+  \ assembler-wordlist >order max-labels c! previous
   \ ----
 
   \ See: `max-l-refs`.
@@ -104,15 +104,15 @@ create max-labels 8 c,  create max-l-refs 16 c,
   \ Usage example:
 
   \ ----
-  \ need assembler  also assembler need l:
-  \ max-l-refs c@ #20 max-l-refs c!
-  \ previous
+  \ need l:
+  \ assembler-wordlist >order     max-l-refs c@
+  \                           #20 max-l-refs c! previous
   \
   \ code my-word ( -- )
   \   \ Z80 code that needs #20 label references
   \ end-code
   \
-  \ max-l-refs c! \ restore the default value
+  \ assembler-wordlist >order max-l-refs c! previous
   \ ----
 
   \ See: `max-labels`.
@@ -311,11 +311,11 @@ init-labels ' init-labels ' init-asm defer!
   \ al#  ( -- )
   \
   \ Create an absolute reference to an assembler label defined
-  \ by `l:`. The label number has been compiled in the last cell
-  \ of the latest Z80 instruction.  If the corresponding label
-  \ is already defined, its value is patched into the latest
-  \ Z80 instruction.  Otherwise it will be patched after the
-  \ label has been defined by `l:`.
+  \ by `l:`. The label number has been compiled in the last
+  \ cell of the latest Z80 instruction.  If the corresponding
+  \ label is already defined, its value is patched into the
+  \ latest Z80 instruction.  Otherwise it will be patched when
+  \ the label is defined by `l:`.
   \
   \ Usage example:
 
@@ -344,10 +344,9 @@ init-labels ' init-labels ' init-asm defer!
   \
   \ Create a relative reference to assembler label number _n_,
   \ defined by `l:`.  If label _n_ is already defined, _a_ is
-  \ its value. Otherwise _a_ is a temporary address just to be
+  \ its value. Otherwise _a_ is a temporary address to be
   \ consumed by the relative jump instruction, and the actual
-  \ address will be resolved after the label has been defined
-  \ by `l:`.
+  \ address will be resolved when the label is defined by `l:`.
   \
   \ Usage example:
 
@@ -414,7 +413,7 @@ init-labels ' init-labels ' init-asm defer!
   \ references to it that could have been created by `rl#` or
   \ `al#`.
   \
-  \ See: `l!`.
+  \ See: `l!`, `.l`.
   \
   \ }doc
 
@@ -422,20 +421,21 @@ set-current set-order
 
 ( .l )
 
-  \ XXX TMP -- For debugging.
+need dump need l:
 
-need dump
-
-assembler-wordlist >order need l:
+assembler-wordlist >order 
 
 : .l ( -- ) labels @ /labels dump cr l-refs @ /l-refs dump ;
 
-   \ doc{
+  \ doc{
   \
   \ .l ( -- )
   \
   \ Dump the contents of the tables pointed by `labels` and
   \ `l-refs`.
+  \
+  \ ``.l`` is a debugging tool for `assembler` labels defined
+  \ by `l:`.
   \
   \ }doc
 
@@ -500,5 +500,7 @@ previous
   \ 2017-03-27: Add `l!` and rewrite `l:` after it.
   \
   \ 2017-05-14: Improve documentation.
+  \
+  \ 2017-12-06: Improve documentation.
 
   \ vim: filetype=soloforth
