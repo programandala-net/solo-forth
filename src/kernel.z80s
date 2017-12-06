@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201712022250
+; Last modified: 201712061135
 
 include version.z80s
 
@@ -5362,7 +5362,7 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also. `>r`, `r>`, `rdrop`, `r'@`.
+; See: `>r`, `r>`, `rdrop`, `r'@`.
 ;
 ; }doc
 
@@ -12319,7 +12319,9 @@ cold.hash_words:
   ; Set the screen to its default status:
   _literal 127
   dw last_font_char_,c_store_
-  dw terminal_,default_font_,default_colors_
+  dw terminal_
+  dw default_mode_,reset_default_mode_
+  dw default_font_,default_colors_
 
   ; Display the greeting message:
 cold.home:
@@ -14782,9 +14784,27 @@ system_stack_pointer:
 ;
 ; A deferred word that activates the default screen mode. It's
 ; set to `noop` until the first mode change is done. Then it's
-; vectored to `mode-32`.  It's used by `bye`.
+; vectored to `mode-32`.  It's used by `bye` and `cold`.
+;
+; See: `reset-default-mode`.
 ;
 ; }doc
+
+; ----------------------------------------------
+  _code_header reset_default_mode_,'reset-default-mode'
+
+; doc{
+;
+; reset-default-mode ( -- )
+;
+; Set `default-mode` to its default action `noop`.  It's used by
+; `cold`.
+;
+; }doc
+
+  ld hl,noop_
+  ld (default_mode_+1),hl
+  _jp_next
 
 ; ----------------------------------------------
   _colon_header bye_,'bye'

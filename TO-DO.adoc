@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-12-05
+:revdate: 2017-12-06
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -110,10 +110,6 @@ examples: `lshift`, `(g-emit)` and family, `f!`, `f@`,
 
 // Bugs {{{1
 == Bugs ==
-
-.2017-12-05:
-
-Fix: Add `default-mode` to `cold`.
 
 .2017-03-22:
 
