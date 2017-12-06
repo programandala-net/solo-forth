@@ -155,9 +155,11 @@ convention.
 // Interpreter/compiler {{{1
 == Interpreter/compiler ==
 
-.2017-11-27:
+.2017-12-06:
 
-Add `cs-swap` to the kernel.
+Replace `error.definition_not_finished` (non-standard code #-264) with
+`error.control_structure_mismatch` (standard code #-22) in `?csp`?
+This is the exception code used in Gforth's `?csp`.
 
 .2017-05-06, 2017-07-27:
 

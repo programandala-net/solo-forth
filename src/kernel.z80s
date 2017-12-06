@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201712061135
+; Last modified: 201712061529
 
 include version.z80s
 
@@ -267,7 +267,7 @@ error.dictionary_overflow:          equ -008
 error.not_found:                    equ -013
 error.compilation_only:             equ -014
 error.zero_length_name:             equ -016
-error.conditionals_not_paired:      equ -022
+error.control_structure_mismatch:   equ -022
 error.invalid_block_number:         equ -035
 error.search_order_overflow:        equ -049
 error.search_order_underflow:       equ -050
@@ -8642,8 +8642,8 @@ name_to_string.loop_exit:
 ;
 ; ?csp ( -- )
 ;
-; Throw error #-264 (definition not finished) if the current data stack
-; position does not match the value saved by `!csp`.
+; Throw error #-264 (definition not finished) if the current
+; data stack position does not match the value saved by `!csp`.
 ;
 ; // XXX TODO and `checking` is not zero.
 ;
