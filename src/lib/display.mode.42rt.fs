@@ -5,13 +5,13 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201712051418
+  \ Last modified: 201712061640
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ A 42 CPL display mode that adapts the current 32 CPL font
+  \ A 42 CPL display mode that adapts the current 32-CPL font
   \ at real time.
 
   \ ===========================================================
@@ -72,9 +72,14 @@ create mode-42rt-redefined-chars
   $00 c, $44 c, $44 c, $28 c, $10 c, $10 c, $10 c, $00 c,
   $00 c, $78 c, $84 c, $B4 c, $A4 c, $B4 c, $84 c, $78 c,
 
+need where need ?depth
+  \ XXX TMP -- debugging tools
+
 -->
 
 ( mode-42rt )
+
+need assembler need l: need os-chars need os-attr-p
 
 create mode-42rt-output_ ( -- a ) asm
 
@@ -103,7 +108,6 @@ create mode-42rt-output_ ( -- a ) asm
   \ works in a string and can get the coordinates in advance:
 
   exde, a and, $0002 h ldp#, b sbcp, exde, nc? ?ret,
-
   \   ex   de,hl ; preserve HL ; XXX OLD
   \   and  a
   \   ld   hl,$0002
@@ -112,9 +116,7 @@ create mode-42rt-output_ ( -- a ) asm
   \   ret  nc ; if not, return
 
   h incp,  m d ld, b decp, m inc, m e ld,
-  {check_coordinates_in_DE} call, al#
-  {update_coordinates_and_return} rl# jr,
-
+  #06 call, al#  #00 rl# jr,
   \   inc  hl
   \   ld   d,(hl) ; get row
   \   dec  bc
@@ -125,15 +127,14 @@ create mode-42rt-output_ ( -- a ) asm
   \   jr   update_coordinates_and_return
 
   0D cp#, z? rif
-    mode-42rtc-coordinates d ftp, {next_row} call, al#
-    {update_coordinates_and_return} l:
-    mode-42rtc-coordinates d stp, ret, rthen
+    mode-42rt-coordinates d ftp, #07 call, al#
   \ check_return_character:
   \   cp   $0D
   \   jr   nz,check_printable_character
   \   ld   de,(coordinates)
   \   call next_row
-  \
+
+    #00 l: mode-42rt-coordinates d stp, ret, rthen
   \ update_coordinates_and_return:
   \   ld   (coordinates),de
   \   ret
@@ -152,34 +153,32 @@ create mode-42rt-output_ ( -- a ) asm
   \   ld   h,$00
   \   ld   l,a
 
-  mode-42rt-removable-columns 32 - d ldp#, d addp, m a ld,
+  mode-42rt-removable-columns #32 - d ldp#, d addp, m a ld,
   \   ld   de,removable_columns-32
   \   add  hl,de
   \   ld   a,(hl)
-  20 cp#, {convert_rom_character_to_42cpl} rl# nc? ?jr,
+  20 cp#, #01 rl# nc? ?jr,
   \   cp   $20 ; redefined character instead?
   \   jr   nc,convert_rom_character_to_42cpl ; if not, jump
-  mode-42rt-redenide-characters d ldp#, a l ld,
+  mode-42rt-redefined-chars d ldp#, a l ld,
   \   ld   de,redefined_characters
   \   ld   l,a
-  {character_bitmap} call, al# h b ld, l c ld,
+  #04 call, al# h b ld, l c ld, #02 rl# jr,
   \   call character_bitmap
   \   ld   b,h ; XXX TODO -- why this?
   \   ld   c,l ; XXX TODO -- why this?
-  {display_character_bitmap} rl# jr, -->
   \   jr   display_character_bitmap
 
-( mode-42rt )
-
-  {convert_rom_character_to_42cpl} l:
+  #01 l: os-chars d ftp, c l ld, #04 call, al# -->
   \ convert_rom_character_to_42cpl:
   \   ; C = character code
   \   ; A = bitmask of the removable columns
-
-  os-chars d ftp, c l ld, {character_bitmap} call, al#
   \   ld   de,$3C00 ; ROM font
   \   ld   l,c
   \   call character_bitmap
+
+( mode-42rt )
+
   mode-42rt-workspace d ldp#, d push, exx, a c ld, cpl, a b ld,
   \   ld   de,workspace
   \   push de
@@ -190,7 +189,6 @@ create mode-42rt-output_ ( -- a ) asm
   exx, 08 b ld#,
   \   exx
   \   ld   b,$08
-
   rbegin m a ld, h incp, exx, a e ld, c and, a d ld, e a ld,
   \ label_eaea:
   \   ld   a,(hl)
@@ -211,13 +209,12 @@ create mode-42rt-output_ ( -- a ) asm
   \
   \   pop  bc
 
+  #02 l: #05 call, al# e inc,
   \ display_character_bitmap:
   \
   \   ; HL = address of the character bitmap
   \   ; BC = address of the character bitmap?
   \
-
-  {check_coordinates} call, al# e inc,
   \   call check_coordinates
   \   inc  e
   mode-42rt-coordinates d stp, e dec, e a ld, a sla, a l ld,
@@ -226,7 +223,7 @@ create mode-42rt-output_ ( -- a ) asm
   \   ld   a,e
   \   sla  a
   \   ld   l,a
-  a sla, l a add, a l ld, a srl, a srl, a srl, a e ld, l a ld,
+  a sla, l add, a l ld, a srl, a srl, a srl, a e ld, l a ld,
   \   sla  a
   \   add  a,l
   \   ld   l,a
@@ -244,7 +241,7 @@ create mode-42rt-output_ ( -- a ) asm
   \   sra  a
   \   sra  a
   \   add  a,$58
-  a h ld, d a ld, 07 and#, rrca, rrca, rrca, e a add, a l ld,
+  a h ld, d a ld, 07 and#, rrca, rrca, rrca, e add, a l ld,
   \   ld   h,a
   \   ld   a,d
   \   and  $07
@@ -264,7 +261,7 @@ create mode-42rt-output_ ( -- a ) asm
   \   jr   c,label_eb35
   \   ld   (hl),e
   \ label_eb35:
-  h decp, d a ld, F8 and#, 40 add#, a h ld, h push exx, h pop,
+  h decp, d a ld, F8 and#, 40 add#, a h ld, h push, exx, h pop,
   \   dec  hl
   \   ld   a,d
   \   and  $F8
@@ -279,7 +276,7 @@ create mode-42rt-output_ ( -- a ) asm
 
 ( mode-42rt )
 
-  rbegin af push, b a ftap, exx, h push, 00 c ld#, 03FF d ldp#,
+  rbegin af push, b ftap, exx, h push, 00 c ld#, 03FF d ldp#,
   \ label_eb42:
   \   push af
   \   ld   a,(bc)
@@ -287,7 +284,8 @@ create mode-42rt-output_ ( -- a ) asm
   \   push hl
   \   ld   c,$00
   \   ld   de,$03FF
-  exaf, a and, {label_eb5d} rl# z? ?jr, a b ld, exaf,
+
+  exaf, a and, #03 rl# z? ?jr, a b ld, exaf,
   \   ex   af,af'
   \   and  a
   \   jr   z,label_eb5d
@@ -305,7 +303,7 @@ create mode-42rt-output_ ( -- a ) asm
   \   djnz label_eb51
   \   ex   af,af'
 
-  {label_eb5d} l: exaf, a b ld, m a ld, d and, b or, a m ld,
+  #03 l: exaf, a b ld, m a ld, d and, b or, a m ld,
   \ label_eb5d:
   \   ex   af,af'
   \   ld   b,a
@@ -313,6 +311,7 @@ create mode-42rt-output_ ( -- a ) asm
   \   and  d
   \   or   b
   \   ld   (hl),a
+
   h incp, m a ld, e and, c or, a m ld, h pop, h inc, exx,
   \   inc  hl
   \   ld   a,(hl)
@@ -322,18 +321,18 @@ create mode-42rt-output_ ( -- a ) asm
   \   pop  hl
   \   inc  h
   \   exx
-  b incp, af pop, a dec,
+
+  b incp, af pop, a dec, z? runtil exx, h pop, exx, ret,
   \   inc  bc
   \   pop  af
   \   dec  a
-  z? runtil exx, h pop, exx, ret,
   \   jr   nz,label_eb42
   \   exx     ; XXX TODO remove
   \   push hl ; XXX TODO remove
   \   exx     ; XXX TODO remove
   \   ret
 
-  {character_bitmap} l:
+  #04 l: 0 h ld#, h addp, h addp, h addp, d addp, ret,
   \ character_bitmap:
   \
   \   ; In:
@@ -342,7 +341,6 @@ create mode-42rt-output_ ( -- a ) asm
   \   ; Out:
   \   ;   HL = address of the character bitmap
   \
-  0 h ld#, h addp, h addp, h addp, d addp, ret,
   \   ld   h,$00
   \   add  hl,hl
   \   add  hl,hl
@@ -350,19 +348,20 @@ create mode-42rt-output_ ( -- a ) asm
   \   add  hl,de
   \   ret
 
-  {check_coordinates} l: mode-42rt-coordinates d ftp,
+  #05 l: mode-42rt-coordinates d ftp,
   \ check_coordinates:
   \   ld   de,(coordinates) ; XXX TODO -- hardcode the coordinates
-  {check_coordinates_in_de} l: e a ld, 2A cp#,
+
+  #06 l: e a ld, 2A cp#, nc? rif #07 l: d inc, 00 e ld#, rthen
   \ check_coordinates_in_DE:
   \   ld   a,e    ; column
   \   cp   $2A    ; end of row?
-  nc? rif d inc, 00 e ld#, rthen
   \   jr   c,check_end_of_screen ; if so, jump
   \ next_row:
   \   inc  d      ; next row
   \   ld   e,$00  ; first column
   \ check_end_of_screen:
+
   d a ld, 18 cp#, c? ?ret, 00 d ld#, ret,
   \   ld   a,d    ; row
   \   cp   $18    ; end of screen?
@@ -371,7 +370,7 @@ create mode-42rt-output_ ( -- a ) asm
   \   ld   d,$00  ; if so, go to the first row
   \   ret
 
-end-asm -->
+end-asm
 
   \ ============================================================
   \ Original code
@@ -625,11 +624,9 @@ end-asm -->
   \ EC18 00 44 44 28 10 10 10 00
   \ EC20 00 78 84 B4 A4 B4 84 78
 
-( mode-42rt )
-
 code mode-42rt-emit ( c -- )
-  exx, b pop, c a ld, mode-64o-output_ call,
-  exx, jpnext, end-code
+  exx, b pop, c a ld, mode-42rt-output_ call,
+  exx, jpnext, end-code -->
 
   \ doc{
   \
@@ -734,5 +731,9 @@ variable mode-42rt-font  rom-font bl 8 * + mode-42rt-font !
   \ 2017-05-15: Start adapting the code to the Forth assembler.
   \
   \ 2017-12-05: Advance the conversion of the original code.
+  \
+  \ 2017-12-06: Convert the labels. Compact the code, saving
+  \ one block. Need `assembler` and `l:`. Fix assembly errors.
+  \ First successful compilation.
 
   \ vim: filetype=soloforth

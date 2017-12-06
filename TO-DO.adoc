@@ -2454,6 +2454,10 @@ Update the date with interrupts.
 // Tools {{{1
 == Tools ==
 
+.2017-12-06:
+
+Improve `where`: display also the numbers of line and column.
+
 .2017-01-06:
 
 Study the editor of Pygmy Forth.
