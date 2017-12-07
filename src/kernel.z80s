@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201712072216
+; Last modified: 201712080055
 
 include version.z80s
 
@@ -12295,29 +12295,12 @@ warm_start:
 ;
 ; }doc
 
-  ; _____________________________
-
-  ; Splitting of `cold` in code and colon parts:
-
-  ;        Words Data/code space Name space
-  ;        ----- --------------- ----------
-  ;              BEFORE    AFTER
-  ;              ------   ------
-  ; G+DOS    510  32220    32267      59757
-  ; +3DOS    521  32028    32075      43193
-  ; TR-DOS   522  31371    31418      59563
-
-  ; _____________________________
-
-
   ; ............................
   ; First part
 
   ; The first part of `cold` contains the initialization actions
-  ; that need less bytes in Z80 than in Forth. This part saves
-  ; 47 bytes.
+  ; that need less bytes in Z80 than in Forth.
 
-if 1 ; XXX NEW
   ; Init `farlimit`:
   if !plus3dos
     ld hl,$0000 ; use 64 KiB
@@ -12325,15 +12308,11 @@ if 1 ; XXX NEW
     ld hl,$C000 ; use 48 KiB (16 KiB are used for cache and RAM disk)
   endif
   ld (farlimit_dfa),hl
-endif
 
-if 1 ; XXX NEW
   ; Init the name-space pointer:
   ld hl,(names_pointer_init_value)
   ld (names_pointer),hl
-endif
 
-if 1 ; XXX NEW
   ; Restore the dictionary to its default state:
   ld hl,(latest_nt_in_root_word_list.init_value)
   ld (root_wordlist_dfa),hl
@@ -12345,27 +12324,20 @@ if 1 ; assembler_core_in_kernel
 endif
   ld hl,(latest_wordlist.init_value)
   ld (latest_wordlist_dfa),hl
-endif
 
-if 1 ; XXX NEW
   ; Restore the word count:
 cold.hash_words: equ $+1
   ld hl,0
   ld (hash_words_dfa),hl
-endif
 
-if 1 ; XXX NEW
   ; Set `warn` and `init-asm` to their default action `noop`:
   ld hl,noop_
   ld (warn_+1),hl
   ld (init_asm_+1),hl
-endif
 
-if 1 ; XXX NEW
   ; Set the `last-font-char`:
   ld a,127
   ld (last_font_char_),a
-endif
 
   call do_colon ; execute the compiled words that follow
 
@@ -12384,22 +12356,6 @@ endif
   dw lit_,far_banks_dfa ; ...which are the default far-banks...
   dw two_store_ ; ...to be restored
 
-if 0 ; XXX OLD
-  ; Init `farlimit`:
-  if !plus3dos
-    dw lit_,$0000 ; use 64 KiB
-  else
-    dw lit_,$C000 ; use 48 KiB (16 KiB are used for cache and RAM disk)
-  endif
-  dw farlimit_,store_
-endif
-
-if 0 ; XXX OLD
-  ; Init the name-space pointer:
-  dw lit_,names_pointer_init_value,fetch_
-  dw lit_,names_pointer,store_
-endif
-
   ; Empty the disk buffer:
   dw empty_buffers_
 
@@ -12415,46 +12371,9 @@ endif
   _literal default_user_variables_end-default_user_variables_start ; length
   dw c_move_
 
-if 0 ; XXX OLD
-  ; Restore the dictionary to its default state:
-  dw lit_,latest_nt_in_root_word_list.init_value,fetch_
-  dw lit_,root_wordlist_dfa,store_
-  dw lit_,latest_nt_in_forth_word_list.init_value,fetch_
-  dw lit_,forth_wordlist_dfa,store_
-if 1 ; assembler_core_in_kernel
-  dw lit_,latest_nt_in_assembler_word_list.init_value,fetch_
-  dw lit_,assembler_wordlist_dfa,store_
-endif
-  dw lit_,latest_wordlist.init_value,fetch_
-  dw lit_,latest_wordlist_dfa,store_
-endif
-
-if 0 ; XXX OLD
-  ; Restore the word count:
-  dw lit_
-cold.hash_words:
-  dw 0
-  dw lit_,hash_words_dfa,store_
-endif
-
-if 0 ; XXX OLD
-  ; Set `warn` and `init-asm` to their default action `noop`:
-  dw lit_,noop_,dup_
-  dw lit_,warn_
-  dw defer_store_
-  dw lit_,init_asm_
-  dw defer_store_
-endif
-
   dw only_,forth_,definitions_  ; init the search order
   dw default_header_ ; set the default action of `header`
   dw decimal_
-
-if 0 ; XXX OLD
-  ; Set the `last-font-char`:
-  _literal 127
-  dw last_font_char_,c_store_
-endif
 
   ; Set the screen to its default status:
   dw terminal_
