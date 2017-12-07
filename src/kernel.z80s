@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201712071612
+; Last modified: 201712071825
 
 include version.z80s
 
@@ -1228,8 +1228,8 @@ if 1 ; abase
 ;
 ; abase ( -- a )
 ;
-; _a_ is the address of a cell where the current value of `base`
-; is preserved by `asm`.
+; A variable. _a_ is the address of a cell where the current
+; value of `base` is preserved by `asm`.
 ;
 ; }doc
 
@@ -1299,8 +1299,8 @@ endif
 ;
 ; lower_ ( -- a )
 ;
-; _a_ is the address of a routine that converts to uppercase the
-; ASCII character hold in the A register.
+; A constant. _a_ is the address of a routine that converts to
+; uppercase the ASCII character hold in the A register.
 ;
 ; See: `lower`, `upper_`.
 ;
@@ -1315,11 +1315,11 @@ endif
 ;
 ; next ( -- a )
 ;
-; _a_ is the address of the main entry point of the Forth inner
-; interpreter.  It is the address Forth words jump to at the
-; end.  The code at _a_ executes the word whose execution token
-; is in the address pointed by the Forth IP (the Z80 BC
-; register).
+; A constant. _a_ is the address of the main entry point of the
+; Forth inner interpreter.  It is the address Forth words jump
+; to at the end.  The code at _a_ executes the word whose
+; execution token is in the address pointed by the Forth IP (the
+; Z80 BC register).
 ;
 ; In Solo Forth, the Z80 IX register contains _a_, which must be
 ; preserved across Forth words.
@@ -1337,10 +1337,10 @@ endif
 ;
 ; pusha ( -- a )
 ;
-; _a_ is the address of a secondary entry point of the Forth
-; inner interpreter.  The code at _a_ pushes the A register onto
-; the stack and then continues at the address returned by
-; `next`.
+; A constant. _a_ is the address of a secondary entry point of
+; the Forth inner interpreter.  The code at _a_ pushes the A
+; register onto the stack and then continues at the address
+; returned by `next`.
 ;
 ; ``pusha`` is useful for exiting from a `code` word using an
 ; absolute conditional jump, or to save the bytes needed to
@@ -1359,10 +1359,10 @@ endif
 ;
 ; pushhl ( -- a )
 ;
-; _a_ is the address of a secondary entry point of the Forth
-; inner interpreter.  The code at _a_ pushes the HL register
-; onto the stack and then continues at the address returned by
-; `next`.
+; A constant. _a_ is the address of a secondary entry point of
+; the Forth inner interpreter.  The code at _a_ pushes the HL
+; register onto the stack and then continues at the address
+; returned by `next`.
 ;
 ; ``pushhl`` is useful for exiting from a `code` word using an
 ; absolute conditional jump.
@@ -1383,10 +1383,10 @@ endif
 ;
 ; fetchhl ( -- a )
 ;
-; _a_ is the address of a secondary entry point in the code of
-; `@`.  The code at _a_ fetches the cell pointed by the HL
-; register, pushes it onto the stack and then continues at the
-; address returned by `next`.
+; A constant. _a_ is the address of a secondary entry point in
+; the code of `@`.  The code at _a_ fetches the cell pointed by
+; the HL register, pushes it onto the stack and then continues
+; at the address returned by `next`.
 ;
 ; See: `pushhl`.
 ;
@@ -1500,7 +1500,7 @@ endif
 ;
 ; max-drives ( -- b )
 ;
-; A constant that returns the maximum number of drives
+; A character constant. _b_ is the maximum number of drives
 ; available in the DOS.
 ;
 ; See: `first-drive`, `drive`.
@@ -1516,7 +1516,7 @@ endif
 ;
 ; first-drive ( -- c )
 ;
-; A constant that returns the identifier _c_ of the first drive
+; A character constant. _c_ is the identifier of the first drive
 ; available in the DOS.
 ;
 ; See: `max-drives`, `drive`.
@@ -1722,9 +1722,9 @@ question_previous_bank:
 ;
 ; bank-index ( -- ca )
 ;
-; A byte variable. _ca_ is the address of an address unit
+; A character variable. _ca_ is the address of an address unit
 ; containing the bank index (0 .. 3) calculated by the latest
-; execution of `far`
+; execution of `far`.
 ;
 ; See: `far-banks`, `bank`, `banks`.
 ;
@@ -1878,8 +1878,8 @@ call_ix:
 ;
 ; noop_ ( -- a )
 ;
-; _a_ is the address of a routine that does nothing, except
-; executing a Z80 ``ret`` to return.
+; A constant. _a_ is the address of a routine that does nothing,
+; except executing a Z80 ``ret`` to return.
 ;
 ; See: `noop`.
 ;
@@ -2095,11 +2095,10 @@ get_order.exit
 ;
 ; max-order ( -- n )
 ;
-; A constant that returns the maximum number _n_ of word lists
-; in the search order.
+; A constant. _n_ is the maximum number of word lists in the
+; search order.
 ;
-; See: `context`, `#order`, `set-order`, `get-order`,
-; `>order`.
+; See: `context`, `#order`, `set-order`, `get-order`, `>order`.
 ;
 ; }doc
 
@@ -2504,9 +2503,9 @@ push_hl:
 ;
 ; default-bank# ( -- ca )
 ;
-; _ca_ is the address of an address unit containing the value of
-; the default `bank` paged in at $C000 .. $FFFF. Its default value
-; is zero.
+; A constant. _ca_ is the address of an address unit containing
+; the value of the default `bank` paged in at $C000 .. $FFFF.
+; Its default value is zero.
 ;
 ; See: `set-default-bank`, `get-default-bank`, `banks`,
 ; `far-banks`.
@@ -2580,12 +2579,10 @@ push_hl:
 
 ; doc{
 ;
-; /stringer ( -- n )
+; /stringer ( -- len )
 ;
-; A constant. _n_ is the maximum size of the `stringer`, in
-; characters.
-;
-; See in `stringer` an example how to move and resize the
+; A constant. _len_ is the maximum size of the `stringer`, in
+; characters. See how to configure it in the documentation of
 ; `stringer`.
 ;
 ; See: `+stringer`, `empty-stringer`, `default-stringer'.
@@ -2619,9 +2616,8 @@ push_hl:
 ;
 ; stringer ( -- a )
 ;
-; A constant that returns the base address of the ``stringer``,
-; which is the circular string buffer used by all string
-; operations.
+; A constant. _a_ is the base address of the ``stringer``, which
+; is the circular string buffer used by all string operations.
 ;
 ; A program can move and resize the ``stringer`` if needed.
 ; Example:
@@ -4113,7 +4109,7 @@ skip.end:
 ;
 ; last-font-char ( -- ca )
 ;
-; A byte variable. _ca_ is the address of an address unit
+; A character variable. _ca_ is the address of an address unit
 ; containing the code of the last character displayed from the
 ; current font by the current action of `emit`.  Higher
 ; characters are managed apart, usually displayed by `emit-udg`,
@@ -4295,10 +4291,10 @@ emit_udg.address
 ;
 ; printing ( -- a )
 ;
-; _a_ is the address of a cell containing the printer flag.
-; ``printing`` is set by `printer`, reset by `terminal` and
-; checked by `page`. ``printing`` should not be changed directly
-; by the program.
+; A variable. _a_ is the address of a cell containing the
+; printer flag.  ``printing`` is set by `printer`, reset by
+; `terminal` and checked by `page`. ``printing`` should not be
+; changed directly by the program.
 ;
 ; }doc
 
@@ -4541,7 +4537,7 @@ endif
 ;
 ; cursor-char ( -- ca )
 ;
-; A byte variable. _ca_ is the address of an address unit
+; A character variable. _ca_ is the address of an address unit
 ; containing the character code of the cursor used by `xkey`.
 ; Note this is a character variable, thus it has to be fetched
 ; with `c@` and modified with `c!`.
@@ -4972,7 +4968,7 @@ u_m_slash_mod.4:
 ;
 ; /user ( -- n )
 ;
-; _n_ is the length of the user area.
+; A constant. _n_ is the length of the user area.
 ;
 ; See: `up`.
 ;
@@ -5005,7 +5001,7 @@ u_m_slash_mod.4:
 ;
 ; up0 ( -- a )
 ;
-; _a_ is the default address of the user area.
+; A constant. _a_ is the default address of the user area.
 ;
 ; }doc
 
@@ -5018,7 +5014,7 @@ u_m_slash_mod.4:
 ;
 ; np ( -- a )
 ;
-; A variable. _a_ is the address of a cell containing the
+; A constant. _a_ is the address of a cell containing the
 ; name-space pointer, which points to the next free address
 ; where the next word header will be stored.
 ;
@@ -5040,8 +5036,8 @@ u_m_slash_mod.4:
 ;
 ; np0 ( -- a )
 ;
-; Return the bottom (initial) address of the name-space pointer
-; `np`.
+; A constant. _a_ is the the bottom (initial) address of the
+; name-space pointer `np`.
 ;
 ; }doc
 
@@ -5161,7 +5157,7 @@ u_m_slash_mod.4:
 ;
 ; rp ( -- a )
 ;
-; Address of the return stack pointer.
+; A constant. _a_ is the address of the return stack pointer.
 ;
 ; See: `rp@`, `rp!`.
 ;
@@ -6187,7 +6183,7 @@ store.de_into_hl_pointer:
 ;
 ; docolon ( -- a )
 ;
-; A constant that returns the address of the colon interpreter.
+; A constant. _a_ is the address of the colon interpreter.
 ;
 ; ``dolocon`` is used by `does>`.
 ;
@@ -6593,7 +6589,7 @@ do_user:
 ;
 ; bl ( -- c )
 ;
-; _c_ is the character value for a space.
+; A character constant. _c_ is the character value for a space.
 ;
 ; Because space is used throughout Forth as the standard
 ; delimiter, ``bl`` is the only way a program has to find and
@@ -6610,10 +6606,10 @@ do_user:
 
 ; doc{
 ;
-; c/l ( -- c )
+; c/l ( -- b )
 ;
-; _c_ is the number of characters per line in a `block` source:
-; 64.
+; A character constant. _b_ is the number of characters per line in a
+; `block` source: 64.
 ;
 ; See: `l/scr`.
 ;
@@ -6628,9 +6624,10 @@ do_user:
 
 ; doc{
 ;
-; l/scr ( -- c )
+; l/scr ( -- b )
 ;
-; _c_ is the number of lines per `block` source: 16.
+; A character constant. _b_ is the number of lines per `block`
+; source: 16.
 ;
 ; See: `c/l`.
 ;
@@ -6648,7 +6645,7 @@ do_user:
 ; disk-buffer ( -- a )
 ;
 ; A constant. _a_ is the address of the disk `buffer`. The cell
-; pointed by _a_ contains the disk buffer identifier.
+; stored at _a_ is the disk buffer identifier.
 ;
 ; See: `buffer-data`.
 ;
@@ -6663,9 +6660,9 @@ do_user:
 ;
 ; buffer-data ( -- ca )
 ;
-; A constant. _ca_ is the address of the disk `buffer` contents.
+; A constant. _ca_ is the address of the disk `buffer` data.
 ;
-; See: `disk-buffer`.
+; See: `disk-buffer`, `b/buf`.
 ;
 ; }doc
 
@@ -6678,9 +6675,10 @@ do_user:
 
 ; doc{
 ;
-; b/buf ( -- c )
+; b/buf ( -- n )
 ;
-; _c_ is the number of bytes per `block` `buffer`: 1024.
+; A constant.  _n_ is the number of bytes per `block` `buffer`:
+; 1024.
 ;
 ; Origin: fig-Forthfootnote[In fig-Forth the size of each disk
 ; buffer was the size of a disk sector, usually 128 bytes by the
@@ -6700,7 +6698,7 @@ do_user:
 ;
 ; b/sector ( -- n )
 ;
-; Bytes per disk sector.
+; A constant. _n_ is the number of bytes per sectors.
 ;
 ; See: `sectors/block`, `sectors/track`.
 ;
@@ -6715,9 +6713,9 @@ do_user:
 
 ; doc{
 ;
-; sectors/track ( -- n )
+; sectors/track ( -- b )
 ;
-; Sectors per disk track.
+; A character constant. _b_ is the number of sectors per track.
 ;
 ; See: `b/sector`, `sectors/block`, `blocks/disk`.
 ;
@@ -6730,9 +6728,9 @@ do_user:
 
 ; doc{
 ;
-; sectors/block ( -- n )
+; sectors/block ( -- b )
 ;
-; Sectors per block.
+; A character constant. _b_ is the number of sectors per block.
 ;
 ; See: `b/sector`, `sectors/track`, `blocks/disk`.
 ;
@@ -6747,7 +6745,7 @@ do_user:
 ;
 ; blocks/disk ( -- n )
 ;
-; A constant. Number of blocks per disk.
+; A constant. _n_ is the number of blocks per disk.
 ;
 ; See: `sectors/block`, `sectors/track`.
 ;
@@ -7165,6 +7163,17 @@ else
   dw forth_wordlist_dfa
 endif
 
+; doc{
+;
+; latest-wordlist ( -- a )
+;
+; A variable. _a_ is the address of a cell containing the latest
+; word list created.
+;
+; See:  `wordlist`, `latest`.
+;
+; }doc
+
 ; ----------------------------------------------
   _constant_header tib_,'tib'
 
@@ -7172,7 +7181,7 @@ endif
 ;
 ; tib ( -- a )
 ;
-; _a_ is the address of the terminal input buffer.
+; A constant. _a_ is the address of the terminal input buffer.
 ;
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE EXT,
 ; obsolescent).
@@ -7188,9 +7197,10 @@ endif
 
 ; doc{
 ;
-; /tib ( -- n )
+; /tib ( -- b )
 ;
-; _n_ is the maximum size of the terminal input buffer,
+; A character constant. _b_ is the maximum size of the terminal
+; input buffer,
 ;
 ; See: `tib`, `#tib`.
 ;
@@ -7205,8 +7215,8 @@ endif
 ;
 ; #tib ( -- a )
 ;
-; _a_ is the address of a cell containing the number of
-; characters in the terminal input buffer.
+; A variable. _a_ is the address of a cell containing the number
+; of characters in the terminal input buffer.
 ;
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE EXT,
 ; obsolescent).
@@ -8101,13 +8111,16 @@ to_name.next:
 ;
 ; banks ( -- n )
 ;
-; _n_ is the number of 16-KiB RAM memory banks:
-;
+; A character constant. _n_ is the number of 16-KiB RAM memory
+; banks:
+
 ; |===
 ; | Computer          | Banks
 ;
 ; | ZX Spectrum 128  >|     8
 ; | ZX Spectrum +2   >|     8
+; | ZX Spectrum +2A  >|     8
+; | ZX Spectrum +2B  >|     8
 ; | ZX Spectrum +3   >|     8
 ; | ZX Spectrum +3e  >|     8
 ; | Pentagon 128     >|     8
@@ -8145,7 +8158,7 @@ banks: equ (pentagon+scorpion+128*(!(pentagon || scorpion) and 1))/16
 ;
 ; ram ( -- n )
 ;
-; _n_ is the total RAM size in kibibytes.
+; A constant. _n_ is the total RAM size in kibibytes.
 ;
 ; NOTE: On G+DOS, the RAM size includes the 8 KiB of the Plus D
 ; interface.
@@ -8949,10 +8962,9 @@ postpone.end:
 ;
 ; word-length-mask ( -- b )
 ;
-; _b_ is the bitmask of the word length.
+; A character constant. _b_ is the bitmask of the word length.
 ;
-; See: `smudge-mask`, `immediate-mask`,
-; `compile-only-mask`.
+; See: `smudge-mask`, `immediate-mask`, `compile-only-mask`.
 ;
 ; }doc
 
@@ -8965,7 +8977,7 @@ postpone.end:
 ;
 ; smudge-mask ( -- b )
 ;
-; _b_ is the bitmask of the `smudge` bit.
+; A character constant. _b_ is the bitmask of the `smudge` bit.
 ;
 ; See: `word-length-mask`, `immediate-mask`,
 ; `compile-only-mask`.
@@ -9561,7 +9573,7 @@ simple_accept.end
 ;
 ; (source-id) ( -- a )
 ;
-; A variable. _a_ is the address of a cell containinig the value
+; A constant. _a_ is the address of a cell containinig the value
 ; returned by `source-id`.
 ;
 ; }doc
@@ -9575,7 +9587,7 @@ simple_accept.end
 ;
 ; source-id ( -- 0 | -1 )
 ;
-; Identifies the input source as follows:
+; Identify the input source as follows:
 ;
 ; |===
 ; |  0 | User input device
@@ -9595,7 +9607,7 @@ simple_accept.end
 ;
 ; #block-drives ( -- ca )
 ;
-; A character variable that holds the number of block drives
+; A character variable. _ca is the number of block drives
 ; defined in `block-drives`, i.e. the number of drives that are
 ; used for blocks.  ``#block-drives`` could be modified
 ; manually, provided also `block-drives` is configured
@@ -9785,11 +9797,11 @@ fill.done:
 ;
 ; /hold ( -- len )
 ;
-; _len_ is the length of the pictured output string buffer,
-; which is located right below `pad`.
+; A character constant. _len_ is the length of the pictured
+; output string buffer, which is located right below `pad`.
 ;
-; ``/hold`` is a character constant; its default value is 68. It
-; may be changed by `c!>`.
+; The default value of ``/hold`` is 68. It may be changed by
+; `c!>`.
 ;
 ; See: `hld`, `<#`, `/pad`.
 ;
@@ -10494,9 +10506,9 @@ error.message:
 
 ; doc{
 ;
-; #words ( -- u )
+; #words ( -- n )
 ;
-; _u_ is the number of words currently defined in the system,
+; _n_ is the number of words currently defined in the system,
 ; which is updated by `header,`.
 ;
 ; }doc
@@ -11246,6 +11258,8 @@ endif
 ; ----------------------------------------------
   _variable_header interpret_table_,'interpret-table'
 
+  ; XXX FIXME -- not used, bad value, bad description
+
 ; doc{
 ;
 ; interpret-table ( -- a )
@@ -11378,10 +11392,10 @@ interpret.end:
 ;
 ; immediate-mask ( -- b )
 ;
-; _b_ is the bitmask of the precedence bit, set by `immediate`.
+; A character constant. _b_ is the bitmask of the precedence
+; bit, set by `immediate`.
 ;
-; See: `compile-only-mask`, `smudge-mask`,
-; `word-length-mask`.
+; See: `compile-only-mask`, `smudge-mask`, `word-length-mask`.
 ;
 ; }doc
 
@@ -11514,8 +11528,8 @@ endif
 ;
 ; compile-only-mask ( -- b )
 ;
-; Constant that holds the bitmask of the compile-only bit, set
-; by `compile-only`.
+; A character constant. _b_ is the bitmask of the compile-only
+; bit, set by `compile-only`.
 ;
 ; See: `immediate-mask`, `smudge-mask`, `word-length-mask`.
 ;
@@ -14761,9 +14775,10 @@ page.display:
 ;
 ; os-sp ( -- a )
 ;
-; _a_ is the address of a cell containing a copy of the OS stack
-; pointer, which is saved when the Forth system is entered from
-; BASIC, and then restored by `(bye)` before returning to BASIC.
+; A variable. _a_ is the address of a cell containing a copy of
+; the OS stack pointer, which is saved when the Forth system is
+; entered from BASIC, and then restored by `(bye)` before
+; returning to BASIC.
 ;
 ; }doc
 

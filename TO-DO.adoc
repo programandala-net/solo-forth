@@ -641,9 +641,9 @@ them for double numbers.
 
 NOTE: Milestone: 0.14.0
 
-Make `type-ascii` configurable: store the common char in a character variable.
-In fact, it would be enough to write `emit-ascii`, because `emit` is deferred,
-and use `type`.
+Make `type-ascii` configurable: store the common character in a
+character variable.  In fact, it would be enough to write
+`emit-ascii`, because `emit` is deferred, and use `type`.
 
 Make `type` deferred, to be configured as `fartype` or other when needed.
 
@@ -697,6 +697,21 @@ Improve tab control.
 
 // Documentation {{{1
 == Documentation ==
+
+.2017-12-07:
+
+Improve the documentation of constants and variables in the library
+after the convention used in the kernel, i.e. "A [character]
+constant|variable|value. _x_ is...".
+
+.2017-12-07:
+
+Remove "char" from the stack notation section of the manual.  Update
+the documentation, for example: `parse ( char "ccc<char>" -- ca len )`
+with `parse ( c "ccc<c>" -- ca len )`.
+
+Also `<chars>` in the stack notation table: `word ( c
+"<chars>ccc<char>" -- ca )`?
 
 .2017-12-05:
 
@@ -2333,7 +2348,7 @@ Make `allocate-stringer` return an _ior_.
 .2017-01-27:
 
 Generalize `parse-esc-string` and `(parse-esc-string)` to accept a
-delimiter char, like `parse`. Then implement `.\(`.
+delimiter character, like `parse`. Then implement `.\(`.
 
 .2017-01-22:
 
