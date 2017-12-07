@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201712071825
+; Last modified: 201712072109
 
 include version.z80s
 
@@ -12280,6 +12280,7 @@ warm_start:
   dw warm_
 
 ; ----------------------------------------------
+;  _code_header cold_,'cold'
   _colon_header cold_,'cold'
 
 ; doc{
@@ -12289,16 +12290,27 @@ warm_start:
 ; Restore the Forth system to its default status, i.e. as if it
 ; were just booted the first time.
 ;
+; This word is a `code` word, but at the end it executes
+; `(cold)`, which is written in Forth.
+;
 ; Origin: fig-Forth.
 ;
 ; See: `warm`.
 ;
 ; }doc
 
-  ; XXX TODO -- Make `cold` a `code` word in order to save space
-  ; from basic init operations, e.g. modifying memory. Then
-  ; continue execution into a colon word called `(cold)`, which
-  ; finishes the high-level tasks.
+  ; _____________________________
+  ;
+  ; Before splitting `cold` in code and colon parts:
+
+  ;        Words Data/code space Name space
+  ;        ----- --------------- ----------
+  ; G+DOS    510           32220      59757
+  ; +3DOS    521           32028      43193
+  ; TR-DOS   522           31371      59563
+  ; _____________________________
+
+  ; call do_colon
 
   ; Init the memory configuration:
   dw limit_,off_

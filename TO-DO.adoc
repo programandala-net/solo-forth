@@ -1398,6 +1398,11 @@ Change: modify `expect` after Spectrum Forth-83.
 
 .2017-12-07:
 
+Idea: a word between `warm` and `cold`: do `warm` and also clear the
+dictionary.
+
+.2017-12-07:
+
 Move the +3DOS first-boot initialization of banks 1346 to `cold`.
 First, `cold` must be converted into a code word, and write `(cold)`.
 
@@ -2150,13 +2155,14 @@ lines in the library.
 // Optimizations {{{1
 == Optimizations ==
 
-.2017-02-04:
+.2017-02-04, 2017-12-07:
 
 NOTE: Milestone: 0.14.0
 
 Make `cold` a code word in order to save space from basic init
-operations, e.g. modifying memory. Then continue execution into a
-colon word called `(cold)`, which finishes the high-level tasks.
+operations, e.g. modifying memory. Then continue execution into an
+unnamed colon word using `call do_colon`, to finish the high-level
+tasks. [XXX UNDER DEVELOPMENT 2017-12-07].
 
 Identify operations in `cold` that can be factored out as code words,
 to save space. For example, the patching of `cold.home`.
