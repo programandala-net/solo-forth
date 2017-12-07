@@ -1,13 +1,11 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-10-22
+:revdate: 2017-12-07
 :toc:
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
-
-// Last modified 201704272010
 
 // tag::description[]
 
@@ -68,9 +66,8 @@ very beginning.  Besides, there's a
 http://programandala.net/en.program.solo_forth.history.html[development
 history until v0.12.0 (2016-12-31)].
 
-At the time of writing (2017-04-27) Solo Forth is under active
-development. It's very stable, and it's being used to develop two
-projects in Forth:
+As of 2017-12-07 Solo Forth is under active development. It's very
+stable, and it's being used to develop two projects in Forth:
 http://programandala.net/en.program.nuclear_waste_invaders.html[Nuclear
 Waste Invaders] and
 http://programandala.net/en.program.black_flag.html[Black Flag].
@@ -82,31 +79,27 @@ http://programandala.net/en.program.black_flag.html[Black Flag].
 [id=_computers]
 == Supported computers and disk operating systems
 
-Solo Forth needs a ZX Spectrum or compatible computer with disk drives
-and at least 128 KiB of RAM.  Therefore it can not run on the original
-ZX Spectrum 48, but in theory it could be used to develop Forth
-programs for it.
+Solo Forth needs a ZX Spectrum or compatible computer with a disk
+drive and at least 128 KiB of RAM.  Therefore it can not run on the
+original ZX Spectrum 48, but in theory it could be used to develop
+Forth programs for it.
 
 .Supported computers and disk operating systems
 |===
-| Computer        | Disk interface | DOS
+| Computer        | Disk interface        | DOS
 
-.2+| ZX Spectrum 128
-|                   Beta 128       | TR-DOS
-|                   Plus D         | G+DOS
-
-.2+| ZX Spectrum +2
-|                   Beta 128       | TR-DOS
-|                   Plus D         | G+DOS
-
-| ZX Spectrum +3  |                | +3DOS
-| ZX Spectrum +3e |                | +3DOS
-
-| Pentagon 128    |                | TR-DOS
-| Pentagon 512    |                | TR-DOS
-| Pentagon 1024   |                | TR-DOS
-| Scorpion ZS 256 |                | TR-DOS
-
+| Pentagon 128    |                       | TR-DOS
+| Pentagon 512    |                       | TR-DOS
+| Pentagon 1024   |                       | TR-DOS
+| Scorpion ZS 256 |                       | TR-DOS
+| ZX Spectrum 128 | Beta 128              | TR-DOS
+| ZX Spectrum 128 | Plus D                | G+DOS
+| ZX Spectrum +2  | Beta 128              | TR-DOS
+| ZX Spectrum +2  | Plus D                | G+DOS
+| ZX Spectrum +2A | (External disk drive) | +3DOS
+| ZX Spectrum +2B | (External disk drive) | +3DOS
+| ZX Spectrum +3  |                       | +3DOS
+| ZX Spectrum +3e |                       | +3DOS
 |===
 
 // end::computers[]
@@ -133,15 +126,17 @@ Coupé,role="external"] (the powerful quite compatible cousin of ZX
 Spectrum) would not be a trivial task, because of the quite different
 OS and memory bank switching, but feasible.
 
+At the time of writing the only planned port is for
+http://specnext.com[ZX Spectrum Next].
+
 === Summary of the DOS support
 
 ==== G+DOS
 
 // tag::gplusdos_support_summary[]
 
-G+DOS is the best supported DOS at the moment. Block disks are fully
-supported, but some file-management words are not implemented yet,
-especially the standard Forth words.
+Block disks are fully supported, but some file-management words are
+not implemented yet, especially the standard Forth words.
 
 // end::gplusdos_support_summary[]
 
@@ -149,9 +144,11 @@ especially the standard Forth words.
 
 // tag::trdos_support_summary[]
 
-TR-DOS is well supported. Block disks are fully supported, but many
-file-management words are not implemented yet, especially the standard
-Forth words.
+Block disks are fully supported, but many file-management words are
+not implemented yet, especially the standard Forth words.
+
+NOTE: Only double-sided 80-track disks (i.e. 640 KiB) are supported
+for Forth blocks. Other formats can be used for files.
 
 // end::trdos_support_summary[]
 
@@ -159,13 +156,11 @@ Forth words.
 
 // tag::plus3dos_support_summary[]
 
+Block disks are fully supported, but most file-management words are
+not implemented yet, though standard Forth words are better supported
+than on G+DOS or TR-DOS.
 
-NOTE: The +3DOS support does not work fine because of a recently
-introduced bug, which will be fixed in version 0.14.0.
-
-The +3DOS support is still basic. Only the first drive can be used for
-block disks and most file-management words are not implemented yet,
-but standard Forth words are better supported than on G+DOS or TR-DOS.
+NOTE: Only double-sided 80-track disks (i.e. 780 KiB) are supported.
 
 // end::plus3dos_support_summary[]
 
@@ -233,8 +228,7 @@ follows:
 
 - Disk 0 is the boot disk. It contains the BASIC loader, the Solo
   Forth binary, some addons (i.e. compiled code that is not part of
-  the library yet) and fonts for the supported screen modes.  Two
-  +3DOS boot disk images are included, with different sizes.  Several
+  the library yet) and fonts for the supported screen modes.  Several
   TR-DOS disk images are included, for specific models of Pentagon and
   Scorpion computers (in a future version, one single disk will
   contain all the executables, and the right one will be selected
@@ -256,7 +250,57 @@ DOS commands.
 [id=_run]
 == How to run
 
-=== On ZX Spectrum 128 (or ZX Spectrum +2) with the Plus D interface
+=== Pentagon 128
+
+1. Run a ZX Spectrum emulator and select a Pentagon 128.  Make sure
+   the disk drives configuration is double-sided 80-track disks.
+2. "Insert" the disk image file <disks/trdos/disk_0_boot.trd> as disk
+   'A'.
+3. Choose "TR DOS" from the computer start menu. This will enter the
+   TR-DOS command linefootnoteref:[trdoscli].
+4. Press the `R` key to get the `RUN` command and press the Enter key.
+   Solo Forth will be loaded from disk.
+
+=== Pentagon 512
+
+1. Run a ZX Spectrum emulator and select a Pentagon 512.  Make sure
+   the disk drives configuration is double-sided 80-track disks.
+2. "Insert" the disk image file
+   <disks/trdos/disk_0_boot.pentagon_512.trd> as disk 'A'.
+3. Choose "128k menu"footnoteref:[pentagonboot,In theory, choosing
+   option "TR-DOS" from the system service menu should work. But it
+   seems it depends on a specific version of TR-DOS.  This alternative
+   method is longer, but it works with the TR-DOS 5.03 ROM. It will be
+   improved in future versions of the manual.] from the computer start
+   menu (the reset service menu). This will enter a ZX Spectrum 128
+   style menu. Choose "TR-DOS".  This will enter the TR-DOS command
+   linefootnoteref:[trdoscli].
+4. Press the `R` key to get the `RUN` command and press the Enter key.
+   Solo Forth will be loaded from disk.
+
+=== Pentagon 1024
+
+1. Run a ZX Spectrum emulator and select a Pentagon 1024.  Make sure
+   the disk drives configuration is double-sided 80-track disks.
+2. "Insert" the disk image file
+   <disks/trdos/disk_0_boot.pentagon_1024.trd> as disk 'A'.
+3. Choose "128k menu"footnoteref:[pentagonboot] from the computer
+   start menu (the reset service menu). This will enter a ZX Spectrum
+   128 style menu. Choose "TR-DOS".  This will enter the TR-DOS
+   command linefootnoteref:[trdoscli].
+4. Press the `R` key to get the `RUN` command and press the Enter key.
+   Solo Forth will be loaded from disk.
+
+=== Scorpion ZS 256
+
+1. Run a ZX Spectrum emulator and select a Scorpion ZS 256.  Make sure
+   the disk drives configuration is double-sided 80-track disks.
+2. "Insert" the disk image file
+   <disks/trdos/disk_0_boot.scorpion_zs_256.trd> as disk 'A'.
+3. Choose "128 TR DOS" from the computer start menu.  Solo Forth will
+   be loaded from disk.
+
+=== ZX Spectrum 128/+2 with the Plus D interface
 
 1. Run a ZX Spectrum emulator and select a ZX Spectrum 128 (or ZX
    Spectrum +2) with the Plus D disk interface.
@@ -266,10 +310,11 @@ DOS commands.
 4. Type `run` in BASIC. G+DOS will be loaded from disk, and Solo Forth
    as well.
 
-=== On ZX Spectrum 128 (or ZX Spectrum +2) with the Beta 128 interface
+=== ZX Spectrum 128/+2 with the Beta 128 interface
 
 1. Run a ZX Spectrum emulator and select a ZX Spectrum 128 (or ZX
-   Spectrum +2) with the Beta 128 interface.
+   Spectrum +2) with the Beta 128 interface.  Make sure the disk
+   drives configuration is double-sided 80-track disks.
 2. "Insert" the disk image file <disks/trdos/disk_0_boot.trd> as disk
    A of the Beta 128 interface.
 3. Choose "128 BASIC" from the computer start menu.
@@ -285,7 +330,7 @@ DOS commands.
 5. Press the `R` key to get the `RUN` command and press the Enter key.
    Solo Forth will be loaded from disk.
 
-=== On ZX Spectrum +3 (or ZX Spectrum +3e)
+=== ZX Spectrum +3/+3e
 
 // XXX REMARK -- A problem with Asciidoctor makes the rendering of the
 // ZX Spectrum +3e link text fail. It seems the error condition has to
@@ -296,58 +341,13 @@ DOS commands.
 
 1. Run a ZX Spectrum emulator and select a ZX Spectrum +3 (or
    http://www.worldofspectrum.org/zxplus3e/[ZX
-   Spectrum{sp}+3e,role="external"]).
+   Spectrum{sp}+3e,role="external"]).  Make sure the disk drives
+   configuration is double-sided 80-track disks.
 2. "Insert" the disk image file <disks/plus3dos/disk_0_boot.180.dsk>
    (or <disks/plus3dos/disk_0_boot.720.dsk>, depending on the capacity
    of the drive) as disk 'A'.
 3. Choose "Loader" from the computer start menu. Solo Forth will be
    loaded from disk.
-
-=== On Pentagon 128
-
-1. Run a ZX Spectrum emulator and select a Pentagon 128.
-2. "Insert" the disk image file <disks/trdos/disk_0_boot.trd> as disk
-   'A'.
-3. Choose "TR DOS" from the computer start menu. This will enter the
-   TR-DOS command linefootnoteref:[trdoscli].
-4. Press the `R` key to get the `RUN` command and press the Enter key.
-   Solo Forth will be loaded from disk.
-
-=== On Pentagon 512
-
-1. Run a ZX Spectrum emulator and select a Pentagon 512.
-2. "Insert" the disk image file
-   <disks/trdos/disk_0_boot.pentagon_512.trd> as disk 'A'.
-3. Choose "128k menu"footnoteref:[pentagonboot,In theory, choosing
-   option "TR-DOS" from the system service menu should work. But it
-   seems it depends on a specific version of TR-DOS.  This alternative
-   method is longer, but it works with the TR-DOS 5.03 ROM. It will be
-   improved in future versions of the manual.] from the computer start
-   menu (the reset service menu). This will enter a ZX Spectrum 128
-   style menu. Choose "TR-DOS".  This will enter the TR-DOS command
-   linefootnoteref:[trdoscli].
-4. Press the `R` key to get the `RUN` command and press the Enter key.
-   Solo Forth will be loaded from disk.
-
-=== On Pentagon 1024
-
-1. Run a ZX Spectrum emulator and select a Pentagon 1024.
-2. "Insert" the disk image file
-   <disks/trdos/disk_0_boot.pentagon_1024.trd> as disk 'A'.
-3. Choose "128k menu"footnoteref:[pentagonboot] from the computer
-   start menu (the reset service menu). This will enter a ZX Spectrum
-   128 style menu. Choose "TR-DOS".  This will enter the TR-DOS
-   command linefootnoteref:[trdoscli].
-4. Press the `R` key to get the `RUN` command and press the Enter key.
-   Solo Forth will be loaded from disk.
-
-=== On Scorpion ZS 256
-
-1. Run a ZX Spectrum emulator and select a Scorpion ZS 256.
-2. "Insert" the disk image file
-   <disks/trdos/disk_0_boot.scorpion_zs_256.trd> as disk 'A'.
-3. Choose "128 TR DOS" from the computer start menu.  Solo Forth will
-   be loaded from disk.
 
 // end::run[]
 
@@ -355,9 +355,6 @@ DOS commands.
 
 [id=_library]
 == The library
-
-NOTE: The library can not be used on +3DOS because of a recently
-introduced bug, which will be fixed in version 0.14.0.
 
 The library disk contains the source code in Forth blocks, written
 directly on the disk sectors, without any filesystem.  In order to use
@@ -390,7 +387,7 @@ the library, follow these steps:
 
 == Documentation
 
-A HTML manual is included in the <doc> directory (actually, there are
+An HTML manual is included in the <doc> directory (actually, there are
 three versions of the manual, one for each supported DOS, but at the
 moment the only difference is the glossary).  The manual is
 automatically built from the source files, which are almost fully

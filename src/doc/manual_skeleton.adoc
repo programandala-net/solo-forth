@@ -1,6 +1,6 @@
 = Solo Forth %VERSION% %DOS%
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-09-07
+:revdate: 2017-12-07
 :toc:
 :toclevels: 1
 :toc-placement!:
@@ -157,7 +157,7 @@ include::../README.adoc[tags=disks]
 
 === About the disk image formats
 
-.MGT
+==== MGT
 
 The MGT disk image file format (used for G+DOS disks) does not include
 format-describing metadata: The MGT file is just a dump of the
@@ -172,7 +172,7 @@ All this means the MGT disk images actually are identical to Forth
 block files, as used by modern Forth systems.  Therefore, for example,
 they can be browsed with a Forth block editor.
 
-.TRD
+==== TRD
 
 Also the TRD disk images, one of the formats used for TR-DOS disk
 images, are dumps of the original disks, without any format-describing
@@ -186,7 +186,7 @@ the following restriction: blocks 0..3 will be shown as garbage (they
 are track 0 of the disk), while the actual first Forth block of the
 disk (block 0) will be shown as block 4.
 
-.DSK
+==== DSK
 
 The DSK disk image format, used for +3DOS and other systems, is quite
 a different thing: It contains a lot of metadata to describe the
