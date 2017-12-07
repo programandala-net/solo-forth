@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-12-06
+:revdate: 2017-12-07
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -107,6 +107,11 @@ examples: `lshift`, `(g-emit)` and family, `f!`, `f@`,
 
 // Benchmarks {{{1
 == Benchmarks ==
+
+.2017-12-07:
+
+Benchmark variables before and after Moving the Z80 labels `do_create`
+and `do_variable` to the `next` entry of the inner interpreter.
 
 // Bugs {{{1
 == Bugs ==
@@ -288,7 +293,11 @@ Implement Gforth's `]]`  and `[[`.
 // Control structures {{{1
 == Control structures ==
 
-.2017-08-09, 2017-11-27
+.2017-12-07:
+
+Rewrite `+perform` in Z80.
+
+.2017-08-09, 2017-11-27:
 
 ....
 Subject: Re: Multiple WHILE's
@@ -1372,6 +1381,19 @@ Change: modify `expect` after Spectrum Forth-83.
 // Kernel {{{1
 == Kernel ==
 
+.2017-12-07:
+
+Move the +3DOS first-boot initialization of banks 1346 to `cold`.
+First, `cold` must be converted into a code word, and write `(cold)`.
+
+.2017-12-07:
+
+Move the default contents of `farlimit` and `far-banks`, which are
+hardcoded in `cold`, to the parameter area. When these values are
+changed by the application, probably the new values should be
+preserved by `cold`. Therefore the application should be able to
+configure also the defaults.
+
 .2017-05-09:
 
 `0= ?exit` is used twice in the kernel: in `?(` and `save-buffers`. 4
@@ -1710,10 +1732,6 @@ Floating-point words `flit`, `fliteral`. From PFE: `fround>s`,
 
 // Memory {{{1
 == Memory ==
-
-.2017-05-06:
-
-Should `cold` restore the default values of `limit` and `farlimit`?
 
 .2017-04-09:
 
