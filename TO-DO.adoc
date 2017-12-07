@@ -2155,18 +2155,6 @@ lines in the library.
 // Optimizations {{{1
 == Optimizations ==
 
-.2017-02-04, 2017-12-07:
-
-NOTE: Milestone: 0.14.0
-
-Make `cold` a code word in order to save space from basic init
-operations, e.g. modifying memory. Then continue execution into an
-unnamed colon word using `call do_colon`, to finish the high-level
-tasks. [XXX UNDER DEVELOPMENT 2017-12-07].
-
-Identify operations in `cold` that can be factored out as code words,
-to save space. For example, the patching of `cold.home`.
-
 // Parsing {{{1
 == Parsing ==
 
