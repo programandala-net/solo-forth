@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201712051558
+# Last modified: 201712071517
 
 # ==============================================================
 # Author
@@ -359,11 +359,8 @@ tmp/disk_0_boot.plus3dos.tap: \
 		tmp/img.tap
 	cat $^ > $@
 
-disks/plus3dos/disk_0_boot.720.dsk: tmp/disk_0_boot.plus3dos.tap
+disks/plus3dos/disk_0_boot.dsk: tmp/disk_0_boot.plus3dos.tap
 	tap2dsk -720 -label SoloForth $< $@
-
-disks/plus3dos/disk_0_boot.180.dsk: tmp/disk_0_boot.plus3dos.tap
-	tap2dsk -180 -label SoloForth $< $@
 
 # ----------------------------------------------
 # TR-DOS boot disk
@@ -1156,3 +1153,5 @@ oldbackup:
 # manual.
 #
 # 2017-12-05: Don't make a +3DOS 180 KiB boot disk anymore.
+#
+# 2017-12-07: Fix rule of +3DOS boot disk.
