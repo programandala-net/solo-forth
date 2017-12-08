@@ -1401,18 +1401,13 @@ Change: modify `expect` after Spectrum Forth-83.
 Idea: a word between `warm` and `cold`: do `warm` and also clear the
 dictionary.
 
-.2017-12-07:
+.2017-12-07, 2017-12-08:
 
-Move the +3DOS first-boot initialization of banks 1346 to `cold`.
-First, `cold` must be converted into a code word, and write `(cold)`.
-
-.2017-12-07:
-
-Move the default contents of `farlimit` and `far-banks`, which are
-hardcoded in `cold`, to the parameter area. When these values are
-changed by the application, probably the new values should be
-preserved by `cold`. Therefore the application should be able to
-configure also the defaults.
+Move the default contents of `farlimit` and `far-banks`, and the
+configuration of RAM banks on +3DOS, which are hardcoded in `cold`, to
+the parameter area. When these values are changed by the application,
+probably the new values should be preserved by `cold`. Therefore the
+application should be able to configure also the defaults.
 
 .2017-05-09:
 
