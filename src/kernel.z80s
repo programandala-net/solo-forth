@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201712080104
+; Last modified: 201712080128
 
 include version.z80s
 
@@ -10522,7 +10522,7 @@ error.message:
 ;
 ; header, ( ca len -- )
 ;
-; Create a definition header in the names space using the name
+; Create a definition header in the name space using the name
 ; _ca len_ and hide it by setting its `smudge` bit.
 ;
 ; The execution token pointer of the new header points to the
@@ -15026,8 +15026,8 @@ system_stack_pointer:
 ; farlimit ( -- a )
 ;
 ; A variable. _a_ is the address of a cell containing the
-; address above the highest address usable by the names space
-; (the names space is the region addressed by `np`). Its default
+; address above the highest address usable by the name space
+; (the name space is the region addressed by `np`). Its default
 ; value, which is restored by `cold`, is $0000 in G+DOS and
 ; TR-DOS, and $C000 on +3DOS.
 ;
