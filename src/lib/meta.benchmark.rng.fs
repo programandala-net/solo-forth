@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201711281158
+  \ Last modified: 201712090122
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,6 +23,44 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ ===========================================================
+  \ Usage
+
+  \ First, insert disk 1 (library) into the first disk drive
+  \ and disk 3 (workbench) into the second disk drive.
+
+  \ Load `need` and `set-block-drives` from the library:
+
+  \ ----
+  \ 1 load  need set-block-drives
+  \ ----
+
+  \ Then set both drives as block drives, depending on your
+  \ DOS:
+
+  \ On G+DOS:
+  \ ----
+  \ 2 1 2 set-block-drives
+  \ ----
+
+  \ On +3DOS:
+  \ ----
+  \ 'B' 'A' 2 set-block-drives
+  \ ----
+
+  \ On TR-DOS:
+  \ ----
+  \ 1 0 2 set-block-drives
+  \ ----
+
+  \ Load and run the tests:
+
+  \ ----
+  \ need 16b-rng-px-benchs
+  \ need 8b-rng-px-benchs
+  \ show-rng
+  \ ----
 
 ( rnd-bench )
 
@@ -64,8 +102,9 @@ create sample  /sample allot
 
   \ RNG pixel bench basic tools, common to 16-bit and 8-bit.
 
-need set-pixel need bench{ need fast-pixels need u% need 3dup
-need 2rdrop need display>tape-file
+need set-pixel need ud. need fast-pixels need u% need 3dup
+need 2rdrop need display>tape-file need dticks need delapsed
+need dticks>ms
 
 256 192 * constant #pixels
   \ Number of pixels of the screen.
@@ -93,14 +132,14 @@ defer .cycles ( -- )
 : (.cycles) ( -- ) cycles ?  s" cycles" ?cycles type ;
   \ Display the number of cycles.
 
-: .time ( d -- ) bench. ." per cycle" cr ;
-
-: .result ( ca len d -- ) 2>r pixels >r  .title cr  r> .pixels
-                          cr 2r> .time .cycles ; -->
-  \ Calculate and display the result of the benchmark.
-  \ _d_ is the time in ticks; _ca len_ is the title.
+: .time ( d -- ) dticks>ms ud. ." ms per cycle" cr ; -->
 
 ( rng-px-bench )
+
+: .result ( ca len d -- ) 2>r pixels >r  .title cr  r> .pixels
+                          cr 2r> .time .cycles ;
+  \ Calculate and display the result of the benchmark.
+  \ _d_ is the time in ticks; _ca len_ is the title.
 
 defer random-coords ( -- gx gy )
   \ Random graphic coordinates. Configurable depending on the
@@ -115,7 +154,7 @@ defer random-coords ( -- gx gy )
   \ of cycles, just to show that the benchmark is running.
 
 : (rnd-px-bench) ( -- d )
-  1 cycles +!  signal  bench{ fill-screen }bench ;
+  1 cycles +!  signal  dticks fill-screen delapsed ;
   \ Do one cycle of the benchmark and return its result.
 
 : save-result ( -- ) s" rng-px-bench" display>tape-file ;
@@ -186,8 +225,13 @@ defer single-cycle ( -- )
 : create-rng-px-bench ( xt1 xt2 xt3 "name" -- )
   create , , , ;
   \ Create an RNG pixel benchmark _name_ for the `random` word
-  \ _xt2_, with initialization _xt1_ and title _ca len_.
+  \ _xt2_, with initialization _xt1_ and title string
+  \ returned by _x3_.
+  \
+  \ Data field address of _name_:
+  \
   \ Cell offset    Description
+  \ -----------    -----------------------------------
   \ +0             xt3, which returns the title string
   \ +1             xt2, `random`
   \ +2             xt1, `random` init
@@ -471,7 +515,7 @@ need 16b-rng-px-bench need :noname
   rloc 2@ $6363 um* rot 0 d+ over rloc 2! ;
   \ good values for 16-bit systems: 61BF 62DC 6594 6363 5E9B 65E8
 
-: cgm-6363-random ( n -- 0..n-1 " cgm-6363-rnd um* nip ;
+: cgm-6363-random ( n -- 0..n-1 ) cgm-6363-rnd um* nip ;
 
 need 16b-rng-px-bench need :noname
 
@@ -579,7 +623,7 @@ need 16b-rng-px-bench need :noname
   \ Random number generator by J. E. Rickenbacker, published on
   \ Forth Dimensions (volume 2, number 2, page 34, 1980-07).
 
-need os-seed
+need os-seed need */
 
 : jer-rnd ( -- n )
   os-seed @ 259 * 3 + 32767 and dup os-seed ! ;
@@ -1673,5 +1717,15 @@ need 8b-rng-px-bench need :noname
   \
   \ 2017-11-28: Update: replace "frames" words with "ticks"
   \ words; update comments accordingly.
+  \
+  \ 2017-12-06: Replace `bench{` and family with `dticks` and
+  \ family.
+  \
+  \ 2017-12-07: Fix recent bug in `.time`. Improve
+  \ documentation of the module. Fix code typo in
+  \ `cgm-6363-random`.
+  \
+  \ 2017-12-09: Update with `need */`, since `*/` was moved to
+  \ the library.
 
   \ vim: filetype=soloforth
