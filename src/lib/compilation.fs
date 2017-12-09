@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201712091420
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,9 +23,9 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( [false] [true] [if] [else] [then] )
+( [false] [true] [if] )
 
-[unneeded] [true]  ?\  0 constant [false] immediate
+[unneeded] [true] ?\ 0 constant [false] immediate
 
   \ doc{
   \
@@ -37,7 +37,7 @@
   \
   \ }doc
 
-[unneeded] [false] ?\ -1 constant [true]  immediate
+[unneeded] [false] ?\ -1 constant [true] immediate
 
   \ doc{
   \
@@ -49,21 +49,19 @@
   \
   \ }doc
 
-  \ Note: `[if]` uses 132 bytes of data space (not including
-  \ `str=`).
+[unneeded] [if] ?(
 
-[unneeded] [if] [unneeded] [then] [unneeded] [else] and and ?(
+  \ Note: `[if]` uses 120 bytes of data space.
 
 : [else] ( "ccc" -- )
-  1 begin  begin  parse-name dup while  2dup s" [if]" str=
-                  if    2drop 1+
-                  else  2dup s" [else]" str=
-                        if    2drop 1- dup if  1+  then
-                        else  s" [then]" str= if  1-  then
-                        then
-                  then  ?dup 0= if exit then
-           repeat  2drop
-    refill 0= until  drop ; immediate
+  1 begin begin  parse-name dup while 2dup s" [if]" str=
+                 if   2drop 1+
+                 else 2dup s" [else]" str=
+                      if   2drop 1- dup 0<> abs +
+                      else s" [then]" str= + then
+                 then ?dup 0= ?exit
+          repeat 2drop
+    refill 0= until drop ; immediate
 
   \ doc{
   \
@@ -82,7 +80,7 @@
   \
   \ }doc
 
-: [if] ( f "ccc" -- ) 0= if postpone [else] then ; immediate
+: [if] ( f "ccc" -- ) ?exit postpone [else] ; immediate
 
   \ doc{
   \
@@ -1155,5 +1153,9 @@ variable warnings  warnings on
   \ 2017-05-10: Add `no-exit`.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2017-12-09: Improve `[if]` and `[else]` replacing
+  \ conditionals with calculations and using `?exit`. This
+  \ saves 12 bytes.
 
   \ vim: filetype=soloforth
