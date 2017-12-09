@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709081737
+  \ Last modified: 201712090118
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( form>xy >form form (at-xy columns rows set-mode-output )
 
-[unneeded] form>xy ?( need columns need rows
+[unneeded] form>xy ?( need columns need rows need */
 
 : form>xy ( cols rows -- x y )
   xy swap >r rows */ r> swap >r columns */ r> ; ?)
@@ -212,5 +212,8 @@ code (banked-mode-output) ( -- )
   \ `_jp_next` in Z80 comments.
   \
   \ 2017-09-08: Compact the code, saving one block.
+  \
+  \ 2017-12-09: Update with `need */`, since `*/` was moved to
+  \ the library.
 
   \ vim: filetype=soloforth

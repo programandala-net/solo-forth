@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712040056
+  \ Last modified: 201712090121
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -490,7 +490,7 @@ need bench{ need }bench. need under+
 
 ( hz>bleep-bench )
 
-need bench{ need }bench.
+need bench{ need }bench. need */
 
 : hz>bleep1 ( frequency duration1 -- duration2 pitch )
   over 1000 */ swap  4375 100 rot */ 30 - ;
@@ -2929,5 +2929,8 @@ need bench{ need }bench.
   \ words; update headings of tables accordingly.
   \
   \ 2017-12-04: Add `s>d-bench`.
+  \
+  \ 2017-12-09: Update with `need */`, since `*/` was moved to
+  \ the library.
 
   \ vim: filetype=soloforth

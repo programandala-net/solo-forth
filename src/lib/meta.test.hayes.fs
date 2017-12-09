@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201712090124
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -240,7 +240,7 @@ testing( s>d * m* um*)
 
 testing( fm/mod sm/rem um/mod */ */mod / /mod mod)
 
-need fm/mod
+need fm/mod need */
 
 { 0 s>d 1 fm/mod -> 0 0 } { 1 s>d 1 fm/mod -> 0 1 }
 { 2 s>d 1 fm/mod -> 0 2 } { -1 s>d 1 fm/mod -> 0 -1 }
@@ -883,5 +883,8 @@ decimal cr .( Test passed) cr
   \ deactivated by default.
   \
   \ 2017-02-19: Need `do`, which has been moved to the library.
+  \
+  \ 2017-12-09: Update with `need */`, since `*/` was moved to
+  \ the library.
 
   \ vim: filetype=soloforth

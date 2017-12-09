@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201711261724
+  \ Last modified: 201712090113
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -98,7 +98,7 @@ code +under ( n1|u1 n2|u2 x -- n3|u3 x )
 
 ( % u% u>ud within between gcd )
 
-[unneeded] % ?\ : % ( n1 n2 -- n3 ) 100 swap */ ;
+[unneeded] % ?\ need */ : % ( n1 n2 -- n3 ) 100 swap */ ;
 
   \ doc{
   \
@@ -904,11 +904,9 @@ need sqrt need d2* need cell-bits
   \
   \ }doc
 
-( fm/mod )
+( fm/mod */ )
 
-  \ Credit:
-  \
-  \ Code from Z88 CamelForth.
+[unneeded] fm/mod ?(
 
 : fm/mod ( d1 n1 -- n2 n3 )
   dup >r                \ save divisor
@@ -917,7 +915,11 @@ need sqrt need d2* need cell-bits
   if
     swap r> +           \ add divisor to remainder
     swap 1-             \ decrement quotient
-  else r> drop then ;
+  else r> drop then ; ?)
+
+  \ Credit:
+  \
+  \ Code from Z88 CamelForth.
 
   \ doc{
   \
@@ -947,6 +949,25 @@ need sqrt need d2* need cell-bits
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
   \
   \ See: `sm/rem`, `m/`.
+  \
+  \ }doc
+
+[unneeded] */ ?\ : */ ( n1 n2 n3 -- n4 ) */mod nip ;
+
+  \ Credit:
+  \ Code from Abersoft Forth.
+
+  \ doc{
+  \
+  \ */ ( n1 n2 n3 -- n4 )
+  \
+  \ Multiply _n1_ by _n2_ producing the intermediate
+  \ _d_. Divide _d_ by _n3_ giving the quotient _n4_.
+  \
+  \ Origin: fig-Forth, Forth-79 (Required Word Set), Forth-94
+  \ (CORE), Forth-2012 (CORE).
+  \
+  \ See: `*/mod`, `m*/`, `*`, `/`, '*/_`, `*/-`.
   \
   \ }doc
 
@@ -1302,5 +1323,7 @@ code join ( b1 b2 -- x )
   \ 2017-07-27: Add `8+` and `8-`. Improve documentation.
   \
   \ 2017-11-26: Improve documentation.
+  \
+  \ 2017-12-09: Move `*/` from the kernel.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201711281156
+  \ Last modified: 201712090125
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -42,7 +42,7 @@ need random need randomize need udg: need inkey
 need between need ocr need ticks need inverse
 need j need between need rows need last-column need last-row
 need cyan need white need set-ink need set-bright
-need /udg need set-udg need get-udg need rom-font
+need /udg need set-udg need get-udg need rom-font need */
 
 wordlist dup constant siderator-2-wordlist
          dup >order set-current
@@ -295,5 +295,8 @@ run-message
   \
   \ 2017-11-28: Update: replace `frames@` with `ticks`; fix
   \ `init`.
+  \
+  \ 2017-12-09: Update with `need */`, since `*/` was moved to
+  \ the library.
 
   \ vim: filetype=soloforth

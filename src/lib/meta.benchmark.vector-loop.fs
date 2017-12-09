@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201712090122
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -43,7 +43,7 @@
   \ Uses BEGIN ... UNTIL loops; all tested Forth have them
   \ Some small Forth are missing DO ... LOOP or FOR ... NEXT
 
-need bench{
+need bench{ need */
 
 1000 constant vsize  \ vector size
 
@@ -196,5 +196,8 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
   \ code of `next` in the kernel and note the results.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2017-12-09: Update with `need */`, since `*/` was moved to
+  \ the library.
 
   \ vim: filetype=soloforth
