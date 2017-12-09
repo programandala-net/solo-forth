@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201704091928
+  \ Last modified: 201712092316
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -84,12 +84,12 @@ wordlist dup constant gil-heap-wordlist dup set-current >order
   \ Return the bytes _n2_ required by a bitmap of _n1_ chunks.
 
 ' heap alias heap-chunks ( -- a )
-  \ Address that holds the number of chunks of the current
-  \ heap.
+  \ Address of a cell containing the number of chunks of the
+  \ current heap.
 
 : heap-unused-chunks ( -- a ) heap-chunks cell+ ;
-  \ Address that holds the number of unused chunks of the
-  \ current heap.
+  \ Address of a cell containing the number of unused chunks of
+  \ the current heap.
 
 : heap-map ( -- a ) heap-unused-chunks cell+ ;
   \ Address of the current heap's map.
@@ -279,6 +279,8 @@ previous ?)
   \ 2017-04-09: Add the "gil-" prefix to the interface words,
   \ which are the actions associated to the standard words.
   \ Compact the code, saving one block.
+  \
+  \ 2017-12-09: Improve documentation.
 
   \ vim: filetype=soloforth
 

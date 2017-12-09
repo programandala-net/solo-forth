@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712092235
+  \ Last modified: 201712092315
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -36,8 +36,9 @@
   \
   \ accept-xy ( -- a )
   \
-  \ A double variable that holds the cursor position at the
-  \ start of the most recent `accept`.
+  \ A variable. _a_ is the address of a double cell containing
+  \ the cursor position at the start of the most recent
+  \ `accept`.
   \
 
 variable accept-buffer    \ address of the edited string
@@ -45,8 +46,8 @@ variable accept-buffer    \ address of the edited string
   \
   \ accept-buffer ( -- a )
   \
-  \ A variable that holds the buffer address used by
-  \ the latest execution of `accept`.
+  \ A variable. _a_ is the address of a cell containing the
+  \ buffer address used by the latest execution of `accept`.
   \
 
 variable /accept          \ max length of the edited string
@@ -54,8 +55,8 @@ variable /accept          \ max length of the edited string
   \
   \ /accept ( -- a )
   \
-  \ A variable that holds the buffer max length used by
-  \ the latest execution of `accept`.
+  \ A variable. _a_ is the address of a cell containing the
+  \ buffer max length used by the latest execution of `accept`.
   \
 
 variable >accept          \ offset to the cursor position
@@ -63,8 +64,9 @@ variable >accept          \ offset to the cursor position
   \
   \ >accept ( -- a )
   \
-  \ A variable that holds the offset of the cursor in the
-  \ string being edited by `accept`.
+  \ A variable. _a_ is the address of a cell containing the
+  \ offset of the cursor in the string being edited by
+  \ `accept`.
   \
 
 : at-accept ( -- ) accept-xy 2@ at-xy ;
@@ -682,5 +684,7 @@ need kk-ports
   \
   \ 2017-12-09: Need `[defined]`, which was moved to the
   \ library.
+  \
+  \ 2017-12-09: Improve documentation.
 
   \ vim: filetype=soloforth

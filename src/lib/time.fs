@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712041740
+  \ Last modified: 201712092330
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -537,8 +537,9 @@ code ms ( u -- )
   \
   \ date ( -- a )
   \
-  \ Address of a variable that holds the date used by
-  \ `set-date` and `get-date`, with the following structure:
+  \ _a_ is the address of a 3-cell table containing the date
+  \ used by `set-date` and `get-date`, with the following
+  \ structure:
 
   \ ....
   \ +0 day   (1 byte)
@@ -882,5 +883,7 @@ need reset-dticks need dticks need dticks>cs
   \ 2017-12-04: Add `elapsed`, `delapsed`, `timer` and
   \ `dtimer`.  Fix and improve documentation. Make `dticks>ms`
   \ and `set-time` faster. Add `expired` and `dexpired`.
+  \
+  \ 2017-12-09: Improve documentation.
 
   \ vim: filetype=soloforth

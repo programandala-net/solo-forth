@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704161738
+  \ Last modified: 201712092301
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -51,8 +51,9 @@ variable last-locatable  blocks/disk 1- last-locatable !
   \
   \ first-locatable ( -- a )
   \
-  \ A variable that holds the number of the first block to be
-  \ searched by `located` and its descendants.
+  \ A variable. _a_ is the address of a cell containing  the
+  \ number of the first block to be searched by `located` and
+  \ its descendants.
   \
   \ See: `last-locatable`, `need-from`.
   \
@@ -62,8 +63,9 @@ variable last-locatable  blocks/disk 1- last-locatable !
   \
   \ default-first-locatable ( -- a )
   \
-  \ A variable that holds the default number of the first block
-  \ to be searched by `located` and its descendants.
+  \ A variable. _a_ is the address of a cell containing the
+  \ default number of the first block to be searched by
+  \ `located` and its descendants.
   \
   \ See: `first-locatable`.
   \
@@ -73,9 +75,10 @@ variable last-locatable  blocks/disk 1- last-locatable !
   \
   \ last-locatable ( -- a )
   \
-  \ A variable that holds the number of the last block to be
-  \ searched by `located` and its descendants. Its default
-  \ value is the last block of the disk.
+  \ A variable. _a_ is the address of a cell containing the
+  \ number of the last block to be searched by `located` and
+  \ its descendants. Its default value is the last block of the
+  \ disk.
   \
   \ See: `first-locatable`.
   \
@@ -687,5 +690,7 @@ need get-drive
   \ documentation.
   \
   \ 2017-04-16: Improve documentation.
+  \
+  \ 2017-12-09: Improve documentation of variables.
 
   \ vim: filetype=soloforth

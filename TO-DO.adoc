@@ -661,12 +661,6 @@ prints the carriage return, increasing the line number. Somehow the
 behaviour must be unified in all modes. The behaviour of `mode-64o`
 seems more logical.
 
-.2016-10-28:
-
-NOTE: Milestone: 0.14.0
-
-Simplify `u.r`.
-
 .2015-09-05:
 
 There's an example how to change and restore a channel in print-42, by
@@ -759,13 +753,6 @@ ____
 
 Fix: Glossary cross references to Forth words that contain a
 backslash, or that are included in code examples, are corrupted.
-
-.2017-04-17:
-
-NOTE: Milestone: 0.14.0
-
-Change notation "A variable that holds x" to "A variable. _a_ is the
-address of a cell/double cell/byte containing x". It's clearer.
 
 .2017-04-16:
 

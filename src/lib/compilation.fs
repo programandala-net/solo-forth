@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712092245
+  \ Last modified: 201712092303
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -229,7 +229,7 @@
   \
   \ If _xt_ is for a word defined by `variable`, `2variable`,
   \ `cvariable`, `constant`, `2constant` and `cconstant`, _dfa_
-  \ is the address that holds their value.
+  \ is the address containing their value.
   \
   \ If _xt_ is for a word defined by `:`, _dfa_ is the address
   \ of its compiled definition.
@@ -875,9 +875,10 @@ variable warnings  warnings on
   \
   \ warnings ( -- a )
   \
-  \ User variable that holds a flag. If it's zero, no warning
-  \ is shown when a compiled word is not unique in the
-  \ compilation word list.  Its default value is _true_.
+  \ A user variable. _a_ is the address of a cell containing a
+  \ flag. If it's zero, no warning is shown when a compiled
+  \ word is not unique in the compilation word list.  Its
+  \ default value is _true_.
   \
   \ }doc
 

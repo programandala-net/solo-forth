@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201712092312
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -31,9 +31,9 @@ variable r#
   \
   \ r# ( -- a )
   \
-  \ A variable that holds the location of the editing cursor,
-  \ an offset from the top of the current block. Its default
-  \ value is zero.
+  \ A variable. _a_ is the address of a cell containing the
+  \ location of the editing cursor, an offset from the top of
+  \ the current block. Its default value is zero.
   \
   \ Origin: fig'Forth's user variable `r#`.
   \
@@ -57,5 +57,7 @@ variable r#
   \
   \ 2016-12-08: Rename the module filename with uppercase
   \ "COMMON", after the new convention.
+  \
+  \ 2017-12-09: Improve documentation.
 
   \ vim: filetype=soloforth

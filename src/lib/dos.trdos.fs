@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703212058
+  \ Last modified: 201712092311
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -98,7 +98,7 @@ fda $0F + constant fda-filetrack ?)
   \ fda-filename ( -- ca )
   \
   \ First field of `fda` (File Descriptor Area).  _ca_ is the
-  \ address of a 8-byte area that holds the filename.
+  \ address of an 8-byte area that holds the filename.
   \
   \ WARNING: The actual filename is a 9-character string formed
   \ by the filename stored at ``fda-filename`` and the
@@ -1210,5 +1210,7 @@ need read-file-descriptor need write-file-descriptor
   \
   \ 2017-03-21: Adapt to the new implementation of assembler
   \ labels.
+  \
+  \ 2017-12-09: Improve documentation.
 
   \ vim: filetype=soloforth

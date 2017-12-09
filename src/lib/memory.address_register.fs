@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201707271630
+  \ Last modified: 201712092315
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -41,10 +41,11 @@ variable a
   \
   \ a ( -- a )
   \
-  \ A variable that holds the address register.
+  \ A variable. _a_ is the address of a cell containing the
+  \ address register.
   \
-  \ See: `a!`, `a@`, `!a`, `@a`, `c!a`, `c@a`, `!a+`,
-  \ `@a+`, `c!a+`, `c@a+`.
+  \ See: `a!`, `a@`, `!a`, `@a`, `c!a`, `c@a`, `!a+`, `@a+`,
+  \ `c!a+`, `c@a+`.
   \
   \ }doc
 
@@ -284,5 +285,7 @@ code c@a+ ( -- c ) 2A c, a , 5E c, 23 c, 16 c, 00 c,
   \
   \ 2017-07-27: Replace `jp next` with the actual macro
   \ `_jp_next` in Z80 comments.
+  \
+  \ 2017-12-09: Improve documentation.
 
   \ vim: filetype=soloforth

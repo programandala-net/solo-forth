@@ -47,8 +47,9 @@ variable /tabulate  8 /tabulate !
   \
   \ /tabulate ( -- a )
   \
-  \ A variable that holds the number of spaces that `tabulate`
-  \ counts for. Its default value is 8.
+  \ A variable. _a_ is the address of a cell containing the
+  \ number of spaces that `tabulate` counts for. Its default
+  \ value is 8.
   \
   \ See `tabulate`.
   \
@@ -213,5 +214,7 @@ variable /tabulate  8 /tabulate !
   \ 2017-03-29: Improve documentation.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2017-05-07: Improve documentation of variables.
 
   \ vim: filetype=soloforth

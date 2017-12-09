@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132022
+  \ Last modified: 201712092330
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -84,9 +84,9 @@ variable assert-level ( -- a ) 1 assert-level !
   \
   \ assert-level ( -- a )
   \
-  \ Variable that holds the highest assertions that are turned
-  \ on (0..3).  Its default value is 1: all assertions above 1
-  \ are turned off.
+  \ A variable. _a_ is the address of a cell containing the
+  \ highest assertions that are turned on (0..3).  Its default
+  \ value is 1: all assertions above 1 are turned off.
   \
   \ Origin: Gforth.
   \
@@ -235,5 +235,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \ 2017-02-27: Improve documentation.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2017-12-09: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201712092245
+; Last modified: 201712092333
 
 include version.z80s
 
@@ -7234,8 +7234,8 @@ endif
 ;
 ; input-buffer ( -- a )
 ;
-; A double-cell variable that holds the address and length of
-; the current input buffer.
+; A double variable. _a_ is the address of a double cell
+; containing the address and length of the current input buffer.
 ;
 ; See: `source`, `set-source`.
 ;
@@ -9985,8 +9985,9 @@ parse.end:
 ;
 ; parsed-name ( -- a )
 ;
-; A double variable that holds the address and length of the
-; most recently name parsed by `parse-name`.
+; A variable. _a_ is the address of a double cell containing the
+; address and length of the most recently name parsed by
+; `parse-name`.
 ;
 ; }doc
 

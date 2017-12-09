@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705091222
+  \ Last modified: 201712092306
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -51,11 +51,11 @@ code get-font ( -- a )
   \
   \ rom-font ( -- a )
   \
-  \ A constant that holds the address _a_ of the ROM font,
-  \ which is 15360 ($3C00), the bitmap address of character 0,
-  \ 256 bytes below the bitmap of the space (character 32),
-  \ which is the first printable character. This is the default
-  \ hold in `os-chars`.
+  \ A constant. _a_ is the address _a_ of the ROM font, which
+  \ is 15360 ($3C00), the bitmap address of character 0, 256
+  \ bytes below the bitmap of the space (character 32), which
+  \ is the first printable character. This is the default hold
+  \ in `os-chars`.
   \
   \ See: `default-font`, `set-font`, `get-font`,
   \ `outlet-autochars`.
@@ -241,5 +241,7 @@ code outlet-autochars ( a -- )
   \ 2017-03-13: Improve documentation.
   \
   \ 2017-05-09: Remove `jppushl,`.
+  \
+  \ 2017-12-09: Improve documentation.
 
   \ vim: filetype=soloforth

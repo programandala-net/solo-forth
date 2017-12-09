@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201712092304
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -43,8 +43,8 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
   \
   \ bitmasks ( -- ca )
   \
-  \ Address of a table that holds the bitmasks for bits 0..7
-  \ as used by `bit-array`.
+  \ Address of an 8-byte table containing the bitmasks for bits
+  \ 0..7 as used by `bit-array`.
   \
   \ }doc
 
@@ -122,5 +122,7 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
   \ 2017-03-13: Improve documentation.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2017-12-09: Improve documentation.
 
   \ vim: filetype=soloforth

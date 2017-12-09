@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712051556
+  \ Last modified: 201712092310
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -677,9 +677,9 @@ create cat-entries 16 c,
   \
   \ cat-entries ( -- ca )
   \
-  \ A character variable that holds the number of entries
-  \ (minimum 2) of the `cat-buffer`, and used by `(cat`.  Its
-  \ default value is 16.
+  \ A character variable. _ca_ is the address of a character
+  \ containing the number of entries (minimum 2) of the
+  \ `cat-buffer`, and used by `(cat`.  Its default value is 16.
   \
   \ See: `/cat-entry`.
   \
@@ -1016,5 +1016,7 @@ need (cat need tab need 3dup need 3drop
   \
   \ 2017-12-05: Improve documentation. Rewrite `headed` in Z80.
   \ Fix Z80 opcode in `do-dos-open_`.
+  \
+  \ 2017-12-09: Improve documentation.
 
   \ vim: filetype=soloforth

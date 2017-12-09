@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705052338
+  \ Last modified: 201712092313
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,7 +33,7 @@ wordlist constant environment-wordlist ( -- wid )
   \
   \ environment-wordlist ( -- wid )
   \
-  \ A constant that holds the word list identifier _wid_ where
+  \ A constant. _wid_ is the identifier of the word list where
   \ the environmental queries are defined.
   \
   \ See: `environment?`.
@@ -339,5 +339,7 @@ set-current previous
   \ 2017-04-01: Improve documentation.
   \
   \ 2017-05-05: Improve documentation.
+  \
+  \ 2017-12-09: Improve documentation.
 
   \ vim: filetype=soloforth

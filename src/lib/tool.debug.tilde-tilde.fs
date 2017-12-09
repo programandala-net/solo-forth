@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703161734
+  \ Last modified: 201712092331
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,9 +33,9 @@ variable ~~?  ~~? on
   \
   \ ~~? ( -- a )
   \
-  \ A variable that holds a flag. When the flag is true, the
-  \ debugging code compiled by `~~` is executed, else ignored.
-  \ Its default value is true.
+  \ A variable. _a_ is the address of a cell containing a flag.
+  \ When the flag is true, the debugging code compiled by `~~`
+  \ is executed, else ignored.  Its default value is true.
   \
   \ }doc
 
@@ -45,9 +45,9 @@ create ~~y  0 c,
   \
   \ ~~y ( -- ca )
   \
-  \ A character variable that holds the row the debugging
-  \ information compiled by `~~` will be printed at.  Its
-  \ default value is zero.
+  \ A character variable. _ca_ is the address of a character
+  \ containing the row the debugging information compiled by
+  \ `~~` will be printed at.  Its default value is zero.
   \
   \ }doc
 
@@ -57,10 +57,11 @@ create ~~quit-key 'q' c,
   \
   \ ~~quit-key ( -- ca )
   \
-  \ A character variable that holds the key code used to quit
-  \ at the debugging points compiled by `~~`. If its value is
-  \ not zero, `~~control` will wait for a key press in order to
-  \ quit the debugging.  Its default value is the code of 'q'.
+  \ A character variable. _ca_ is the address of a character
+  \ containing the key code used to quit at the debugging
+  \ points compiled by `~~`. If its value is not zero,
+  \ `~~control` will wait for a key press in order to quit the
+  \ debugging.  Its default value is the code of 'q'.
   \
   \ See: `~~resume-key`.
   \
@@ -72,13 +73,14 @@ create ~~resume-key bl c,
   \
   \ ~~resume-key ( -- ca )
   \
-  \ A character variable that holds the key code used to resume
-  \ execution at the debugging points compiled by `~~`.  If
-  \ ``~~resume-key`` contains zero, `~~control` will not wait
-  \ for a key.  If ``~~resume-key`` contains $FF, `~~control`
-  \ will wait for any key.  Otherwise `~~control` will wait for
-  \ the key stored at ``~~resume-key``, whose default value is
-  \ `bl`, the code of the space character.
+  \ A character variable. _ca_ is the address of a character
+  \ containing the key code used to resume execution at the
+  \ debugging points compiled by `~~`.  If ``~~resume-key``
+  \ contains zero, `~~control` will not wait for a key.  If
+  \ ``~~resume-key`` contains $FF, `~~control` will wait for
+  \ any key.  Otherwise `~~control` will wait for the key
+  \ stored at ``~~resume-key``, whose default value is `bl`,
+  \ the code of the space character.
   \
   \ See: `~~quit-key`.
   \
@@ -315,5 +317,7 @@ defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
   \ Change the behaviour of `~~control`: check if
   \ `~~resume-key` contains $FF instead of a negative value.
   \ Update and improve documentation.
+  \
+  \ 2017-12-09: Improve documentation.
 
   \ vim: filetype=soloforth
