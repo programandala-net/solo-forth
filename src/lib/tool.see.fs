@@ -39,7 +39,7 @@
 get-current  also forth definitions decimal
 
 need body>name need name>body need case
-need recurse need >body need body>
+need recurse need >body need body> need [undefined]
 
 variable see-level  see-level off \ depth of nesting
 variable see-address  \ in the word being decoded
@@ -293,5 +293,8 @@ previous set-current
   \ `see` is compiled.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2017-12-09: Need `[undefined]`, which is moved to the
+  \ library.
 
   \ vim: filetype=soloforth

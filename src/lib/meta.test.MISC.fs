@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712051941
+  \ Last modified: 201712092233
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -959,7 +959,7 @@ synonym2 if-s2 if
      \ 10                -7       3               -1
      \ -10               -7      -3                1
 
-[defined] (/) ?\ defer (/)
+defer (/) ( d n1 -- n2 n3 )
 
 : ((/-test)) ( dividend divisor -- )
   >r s>d r> (/) swap . . space ;
@@ -1438,5 +1438,7 @@ blk @ 1+ blk @ 2+ thru
   \ 2017-05-21: Add `csprite-test`.
   \
   \ 2017-12-05: Add `64cpl-fonts-test`.
+  \
+  \ 2017-12-09: Remove useless `[defined] (/) ?\`.
 
   \ vim: filetype=soloforth

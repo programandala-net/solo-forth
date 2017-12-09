@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201711272244
+  \ Last modified: 201712092220
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -35,9 +35,8 @@
 
 need thens
 
-[defined] alias dup 0= ?\   ' 0 alias case
-                       ?\ 0 cconstant case
-                       immediate compile-only
+0 cconstant case immediate compile-only
+
   \ doc{
   \
   \ case
@@ -93,10 +92,8 @@ need thens
   \
   \ }doc
 
-[defined] alias dup 0=
-?\ ' else alias endof ( orig1 -- orig2 )
-?\ : endof ( orig1 -- orig2 ) postpone else ;
-immediate compile-only
+: endof ( orig1 -- orig2 )
+  postpone else ; immediate compile-only
 
   \ doc{
   \
@@ -539,5 +536,9 @@ need between
   \ 2017-11-27: Improve documentation. Fix needing of
   \ `greater-of`. Need `nup` instead of define it. Use `thens`
   \ in `endcase`. Test `within-of`.
+  \
+  \ 2017-12-09: Remove optional usage of `alias` to define
+  \ `case` and `endof`, since `[defined]` is moved to the
+  \ library.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712090121
+  \ Last modified: 201712092233
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1323,7 +1323,7 @@ need ticks need reset-ticks need rnd
 
 : drnd ( -- d ) rnd rnd ;
 
-[defined] (/) ?\ defer (/)
+defer (/) ( d n1 -- n2 n3 )
 
 : (/-bench) ( n -- )
   reset-ticks
@@ -2932,5 +2932,7 @@ need bench{ need }bench.
   \
   \ 2017-12-09: Update with `need */`, since `*/` was moved to
   \ the library.
+  \
+  \ 2017-12-09: Remove useless `[defined] (/) ?\`.
 
   \ vim: filetype=soloforth

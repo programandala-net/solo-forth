@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201711281730
+  \ Last modified: 201712092235
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -319,7 +319,7 @@ code -keys ( -- )
   \
   \ ===========================================================
 
-[defined] /kk ?\ 4 cconstant /kk
+need [defined]  [defined] /kk ?\ 4 cconstant /kk
 
   \ doc{
   \
@@ -679,5 +679,8 @@ need kk-ports
   \ 2017-05-07: Improve documentation.
   \
   \ 2017-11-28: Add `-keys`, `new-key`, `new-key-`.
+  \
+  \ 2017-12-09: Need `[defined]`, which was moved to the
+  \ library.
 
   \ vim: filetype=soloforth

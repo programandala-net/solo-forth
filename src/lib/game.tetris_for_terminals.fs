@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201711281122
+  \ Last modified: 201712092236
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -49,10 +49,6 @@
 ( tt )
 
 only forth also definitions
-
-  \ [undefined] forget-tt ?\ forget-tt
-  \ marker forget-tt
-  \ XXX TODO
 
 need random need j need >= need <= need 2/ need value
 need d<> need d= need case need ms need ticks need yes?

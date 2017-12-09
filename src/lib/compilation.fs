@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712091420
+  \ Last modified: 201712092245
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -312,7 +312,9 @@
   \
   \ }doc
 
-( >name )
+( >name [defined] [undefined] )
+
+[unneeded] >name ?(
 
 need >>name need name>name need name>>
 
@@ -321,7 +323,7 @@ need >>name need name>name need name>>
     dup >>name >r
     far@ over = if  drop r> exit  then
     r> name>name name>>
-  np@ over u< until  2drop false ;
+  np@ over u< until  2drop false ; ?)
 
   \ 2017-01-20 Note:
   \
@@ -348,9 +350,51 @@ need >>name need name>name need name>>
   \
   \ Origin: Gforth.
 
+[unneeded] [defined]
+
+?\ : [defined] ( "name" -- f ) defined 0<> ; immediate
+
+  \ doc{
+  \
+  \ [defined] ( "name" -- f )
+  \
+  \ Parse _name_. Return a true flag if _name_ is the name of a
+  \ word that can be found in the current search order; else
+  \ return a false flag.
+  \
+  \ ``[defined]`` is an `immediate` word.
+  \
+  \ Origin: Forth-2012 (TOOLS EXT).
+  \
+  \ See: `defined`, `[undefined]`.
+  \
+  \ }doc
+
+[unneeded] [undefined] ?( need [defined]
+
+: [undefined] ( "name" -- f )
+  postpone [defined] 0= ; immediate ?)
+
+  \ doc{
+  \
+  \ [undefined] ( "name" -- f )
+  \
+  \ Parse _name_. Return a false flag if _name_ is the name of a
+  \ word that can be found in the current search order; else
+  \ return a true flag.
+  \
+  \ ``[undefined]`` is an `immediate` word.
+  \
+  \ Origin: Forth-2012 (TOOLS EXT).
+  \
+  \ See: `[defined]`.
+  \
+  \ }doc
+
 ( name>interpret name>compile comp' [comp'] )
 
 [unneeded] name>interpret ?(
+
 : name>interpret ( nt -- xt | 0 )
   dup name> swap compile-only? 0= and ; ?)
 
@@ -461,6 +505,7 @@ need >>name need name>name need name>>
   \ }doc
 
 [unneeded] [compile]
+
 ?\ : [compile] ( "name" -- ) ' compile, ; immediate
 
   \ doc{
@@ -489,6 +534,7 @@ need >>name need name>name need name>>
   \ }doc
 
 [unneeded] smudged
+
 ?\ : smudged ( nt -- ) dup farc@ smudge-mask xor swap farc! ;
 
   \ doc{
@@ -505,6 +551,7 @@ need >>name need name>name need name>>
   \ }doc
 
 [unneeded] smudge
+
 ?\ need smudged  : smudge ( -- ) latest smudged ;
 
   \ doc{
@@ -643,7 +690,9 @@ need >>name need name>name need name>>
 [unneeded] save-here [unneeded] restore-here and ?( need there
 
 variable here-backup
+
 : save-here ( -- ) here here-backup ! ;
+
 : restore-here ( -- ) here-backup @ there ; ?)
 
   \ XXX TODO -- behead `here-backup`
@@ -1156,6 +1205,7 @@ variable warnings  warnings on
   \
   \ 2017-12-09: Improve `[if]` and `[else]` replacing
   \ conditionals with calculations and using `?exit`. This
-  \ saves 12 bytes.
+  \ saves 12 bytes.  Move `[defined]` and `[undefined]` from
+  \ the kernel.
 
   \ vim: filetype=soloforth

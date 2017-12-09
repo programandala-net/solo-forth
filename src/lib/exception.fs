@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712080122
+  \ Last modified: 201712092216
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -62,8 +62,6 @@
   \ Credit:
   \
   \ The code of `abort"` was adapted from DZX-Forth.
-
-[defined] abort-message ?\ 2variable abort-message
 
 : (abort") ( x -- ) r> count rot if   abort-message 2! -2 throw
                                  then + >r ;
@@ -319,6 +317,9 @@ s" Standard error codes" located errors-block !
   \
   \ 2017-12-08: Update source style (spacing). Improve
   \ documentation.
+  \
+  \ 2017-12-09: Remove optional definition of `abort-message`,
+  \ which is defined in the kernel.
 
   \ vim: filetype=soloforth
 

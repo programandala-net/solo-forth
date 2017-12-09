@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201705071835
+  \ Last modified: 201712092222
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -50,7 +50,7 @@
 
 only forth definitions
 
-need columns need rows need udg-group need rnd need ??
+need columns need rows need udg-group need rnd need ?? need 8*
 3 constant /kk need pressed?
 
 need cvariable need 2/ need gxy>scra
@@ -297,8 +297,6 @@ variable ball-frame  first-ball-frame ball-frame !
 : score-player2 ( -- ) 1 points2 +! .points2 ;
   \ Increase player 2's points by one.
 
-[defined] 8* ?\ : 8* ( n1 -- n2 ) 2* 2* 2* ;
-
 : hit-racket1? ( -- f )
   x @ racket1-x @ 8* 1- >
   x @ racket1-x @ 8* racket-size 8* + <  and ;
@@ -530,5 +528,7 @@ run-message
   \ compilation, but also to restart a new game.
   \
   \ 2017-05-07: Rename `print-points` and friends to `.points`.
+  \
+  \ 2017-12-09: Need `8*` instead of redefining it.
 
   \ vim: filetype=soloforth

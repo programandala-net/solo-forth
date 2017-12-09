@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071743
+  \ Last modified: 201712092227
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -106,8 +106,7 @@ dup >order set-current case-sensitive @ case-sensitive on
   \ \x = hex character code
   \ Parse the 8-bit hex number of a character code.
 
-[defined]   alias ?\ '"' 1 2constant "  13 1 2constant n
-[undefined] alias ?\ ' q alias "       ' r alias n
+'"' 1 2constant "  13 1 2constant n
   \ \" = double quote
   \ \n = new line
 
@@ -517,5 +516,9 @@ need parse-char need char>string
   \ 2017-05-05: Improve documentation.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2017-12-09: Don't use `alias` as an alternative to define
+  \ `"` and `n`, since `[defined]` and `[undefined]` are moved
+  \ to the library.
 
   \ vim: filetype=soloforth

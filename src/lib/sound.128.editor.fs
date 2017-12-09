@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071838
+  \ Last modified: 201712092228
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -28,7 +28,7 @@
 get-current  forth-wordlist set-current
 
 need :noname need c1+! need c1-! need inverse need case
-need value need play  [defined] /sound ?\ 14 constant /sound
+need value need play need /sound
 
 wordlist constant edit-sound-wordlist
 edit-sound-wordlist dup >order set-current
@@ -148,5 +148,8 @@ set-current  previous
   \ library, with `?do`.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2017-12-09: Need `/sound` instead of redefining it, since
+  \ `[defined]` is moved to the library.
 
   \ vim: filetype=soloforth
