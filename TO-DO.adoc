@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-12-09
+:revdate: 2017-12-10
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -754,18 +754,6 @@ ____
 Fix: Glossary cross references to Forth words that contain a
 backslash, or that are included in code examples, are corrupted.
 
-.2017-04-16:
-
-NOTE: Milestone: 0.14.0
-
-Document the folllowing words: `>>link name>> >>name >body body>`.
-
-.2017-03-17:
-
-NOTE: Milestone: 0.14.0
-
-Finish documentation of <flow.case.fs>.
-
 .2017-03-15:
 
 Add exception codes to the manual, by including and filtering the
@@ -852,12 +840,6 @@ cases.
 
 Remove the documentation of DOS subroutines that is duplicated in its
 corresponding entry constant, and put a note instead.
-
-.2017-02-08:
-
-NOTE: Milestone: 0.14.0
-
-Build the HTML version of <README.adoc>.
 
 .2017-01-23:
 
@@ -2087,6 +2069,10 @@ for the end user.
 // Names {{{1
 == Names ==
 
+.2017-12-10:
+
+Write `?name-too-long` and use it in `header,`?
+
 .2017-05-20:
 
 Rename `ocr-charset` to `ocr-font`.
@@ -2111,11 +2097,13 @@ Rename `!exchange` to `!@`?
 Rename `(0-1-8-color.` and `(0-9-color.` after the current convention
 for machine code routines.
 
-.2017-02-17:
+.2017-02-17, 2017-12-10:
 
 NOTE: Milestone: 0.14.0
 
 Rename `?name-too-short` to `?empty-name`, or `?no-name`.
+
+Or remove it and use `dup 0= -16 ?throw` in `input-stream-header`.
 
 .2017-01-02:
 

@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201712092333
+; Last modified: 201712100130
 
 include version.z80s
 
@@ -7989,6 +7989,8 @@ u_less_than.de_hl:
 ;
 ; Origin: Gforth.
 ;
+; See: `name>`, `>body`, `name>body`.
+;
 ; }doc
 
   ; XXX TODO -- Finish the documentation. This note from Gforth
@@ -8504,6 +8506,9 @@ endif ; pentagon=512 or pentagon=1024
 ; : name> ( nt -- xt ) [ 2 cells ] literal - far@ ;
 ; ----
 
+; See: `>name`, `name>body`, `name>str`, `name>string`,
+; `name>immediate?`, `name>name`.
+;
 ; }doc
 
   _literal 2*cell
@@ -8526,7 +8531,7 @@ endif ; pentagon=512 or pentagon=1024
 ; : name>str ( nt -- ca len ) farcount word-length-mask and ;
 ; ----
 
-; See: `name>string`.
+; See: `name>string`, `name>immediate?`, `name>`, `name>body`.
 ;
 ; }doc
 
@@ -8554,7 +8559,7 @@ endif ; pentagon=512 or pentagon=1024
 ;   loop  2drop default-bank 2r> ;
 ; ----
 
-; See: `name>str`.
+; See: `name>str`, `name>immediate?`, `name>`, `name>body`.
 ;
 ; }doc
 
@@ -11514,7 +11519,8 @@ endif
 ; : name>immediate? ( nt -- xt f ) dup name> swap immediate? ;
 ; ----
 
-; See: `immediate?`, `name>`.
+; See: `immediate?`, `name>`, `name>body`, `name>str`,
+; `name>string`.
 ;
 ; }doc
 

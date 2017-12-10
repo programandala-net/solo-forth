@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712092303
+  \ Last modified: 201712100130
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -126,7 +126,7 @@
   \
   \ Get _nt_ from its _dfa_.
   \
-  \ See: `name>body`, `link>name`.
+  \ See: `name>body`, `link>name`, `>name`.
   \
   \ }doc
 
@@ -139,7 +139,7 @@
   \
   \ Get _dfa_ from its _nt_.
   \
-  \ See: `body>name`.
+  \ See: `body>name`, `>body`, `name>`, `name>>`, `name>name`.
   \
   \ }doc
 
@@ -163,9 +163,10 @@
   \
   \ name>link ( nt -- lfa )
   \
-  \ Get _lfa_ from its _nt_.
+  \ Convert _nt_ into its corresponding _lfa_.
   \
-  \ See: `link>name`.
+  \ See: `link>name`, `name>`, `name>body`, `name>>`,
+  \ `name>name`.
   \
   \ }doc
 
@@ -191,20 +192,50 @@
   \
   \ Get the next _nt2_ from _nt1_.
   \
-  \ See: `name<name`.
+  \ See: `name<name`, `name>`, `name>body`, `name>>`.
   \
   \ }doc
 
 ( >>link name>> >>name >body body> '' [''] )
 
 [unneeded] >>link
-?\ need alias  ' cell+ alias >>link ( xtp -- lfa )
+?\ need alias ' cell+ alias >>link ( xtp -- lfa )
+
+  \ doc{
+  \
+  \ >>link ( xtp -- lfa )
+  \
+  \ Convert _xtp_ into its corresponding _lfa_.
+  \
+  \ See: `>>name`, `name>link`.
+  \
+  \ }doc
 
 [unneeded] name>>
 ?\ : name>> ( nt -- xtp ) cell- cell- ;
 
+  \ doc{
+  \
+  \ name>> ( nt -- xtp )
+  \
+  \ Convert _nt_ into its corresponding _xtp_.
+  \
+  \ See: `>>name`, `name>`, `name>body`, `name>name`.
+  \
+  \ }doc
+
 [unneeded] >>name
 ?\ : >>name ( xtp -- nt ) cell+ cell+ ;
+
+  \ doc{
+  \
+  \ >>name ( xtp -- nt )
+  \
+  \ Convert _xtp_ into its corresponding _nt_.
+  \
+  \ See: `name>>`, `>>link`, `>name`.
+  \
+  \ }doc
 
 [unneeded] >body
 ?\ code >body  E1 c, 23 c, 23 c, 23 c, E5 c, jpnext, end-code
@@ -220,7 +251,7 @@
   \
   \ >body  ( xt -- dfa )
   \
-  \ _dfa_ is the data-field address corresponding to _xt_.
+  \ Convert _xt_ into its corresponding _dfa_.
   \
   \ If _xt_ is for a word defined by `create`, _dfa_ is the
   \ address that `here` would have returned had it been
@@ -242,7 +273,7 @@
   \ Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
   \ Forth-2012 (CORE).
   \
-  \ See: `body>`.
+  \ See: `body>`, `name>body`, `>name`.
   \
   \ }doc
 
@@ -260,10 +291,9 @@
   \
   \ body>  ( dfa -- xt )
   \
-  \ _xt_ is the execution token corresponding to the data-field
-  \ address _dfa_.
+  \ Convert _dfa_ into its correspoding _xt_.
   \
-  \ See: `>body`.
+  \ See: `>body`, `body>name`.
   \
   \ }doc
 
@@ -349,6 +379,8 @@ need >>name need name>name need name>>
   \ original name is found first.
   \
   \ Origin: Gforth.
+  \
+  \ See: `>>name`.
 
 [unneeded] [defined]
 
@@ -1208,5 +1240,7 @@ variable warnings  warnings on
   \ conditionals with calculations and using `?exit`. This
   \ saves 12 bytes.  Move `[defined]` and `[undefined]` from
   \ the kernel.
+  \
+  \ 2017-12-10: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712092220
+  \ Last modified: 201712100141
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -87,8 +87,8 @@ need thens
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See: `default-of`, `less-of`, `greater-of`,
-  \ `between-of`, `within-of`, `or-of`, `any-of`.
+  \ See: `default-of`, `less-of`, `greater-of`, `between-of`,
+  \ `within-of`, `or-of`, `any-of`.
   \
   \ }doc
 
@@ -175,9 +175,9 @@ need between
   \ Compilation:
   \
   \ Put _of-sys_ onto the control flow stack. Append the
-  \ run-time semantics given below to to the current
-  \ definition. The semantics are incomplete until resolved by
-  \ a consumer of _of-sys_, such as `endof`.
+  \ run-time semantics given below to the current definition.
+  \ The semantics are incomplete until resolved by a consumer
+  \ of _of-sys_, such as `endof`.
   \
   \ Run-time:
   \
@@ -336,9 +336,9 @@ need between
   \ Compilation:
   \
   \ Put _of-sys_ onto the control flow stack. Append the
-  \ run-time semantics given below to to the current
-  \ definition. The semantics are incomplete until resolved by
-  \ a consumer of _of-sys_, such as `endof`.
+  \ run-time semantics given below to the current definition.
+  \ The semantics are incomplete until resolved by a consumer
+  \ of _of-sys_, such as `endof`.
   \
   \ Run-time:
   \
@@ -366,16 +366,9 @@ need between
   \ }doc
 
 : default-of ( -- )
+  \ Compilation: ( C: -- of-sys )
+  \ Run-time: ( x -- )
   postpone dup postpone of ; immediate compile-only
-
-  \ Usage example:
-
-  \ : test ( x -- )
-  \   case
-  \     1 of       ." one"   endof
-  \     2 of       ." two"   endof
-  \     default-of ." other" endof
-  \   endcase ;
 
   \ Credit:
   \
@@ -383,6 +376,41 @@ need between
   \ posted to <comp.lang.forth>:
   \ Message-ID: <64b90787-344c-4ee0-a0e4-4e2c12b3dec3@googlegroups.com>
   \ Date: Fri, 24 Jan 2014 02:08:22 -0800 (PST)
+
+  \ doc{
+  \
+  \ default-of
+  \   Compilation: ( C: -- of-sys )
+  \   Run-time:    ( x -- )
+
+  \ An alternative to mark the default clause of a `case`
+  \ structure.
+  \
+  \ Compilation:
+  \
+  \ Put _of-sys_ onto the control flow stack. Append the
+  \ run-time semantics given below to the current definition.
+  \ The semantics are incomplete until resolved by a consumer
+  \ of _of-sys_, such as `endof`.
+  \
+  \ Run-time:
+  \
+  \ Discard _x_ and continue execution.
+  \
+  \ ``default-of`` is an `immediate` and `compile-only` word.
+  \
+  \ Usage example:
+
+  \ ----
+  \ : test ( x -- )
+  \   case
+  \     1 of       ." one"   endof
+  \     2 of       ." two"   endof
+  \     default-of ." other" endof
+  \   endcase ;
+  \ ----
+
+  \ }doc
 
 ( within-of or-of )
 
@@ -420,9 +448,9 @@ need between
   \ Compilation:
   \
   \ Put _of-sys_ onto the control flow stack. Append the
-  \ run-time semantics given below to to the current
-  \ definition. The semantics are incomplete until resolved by
-  \ a consumer of _of-sys_, such as `endof`.
+  \ run-time semantics given below to the current definition.
+  \ The semantics are incomplete until resolved by a consumer
+  \ of _of-sys_, such as `endof`.
   \
   \ Run-time:
   \
@@ -480,9 +508,9 @@ need between
   \ Compilation:
   \
   \ Put _of-sys_ onto the control flow stack. Append the
-  \ run-time semantics given below to to the current
-  \ definition. The semantics are incomplete until resolved by
-  \ a consumer of _of-sys_, such as `endof`.
+  \ run-time semantics given below to the current definition.
+  \ The semantics are incomplete until resolved by a consumer
+  \ of _of-sys_, such as `endof`.
   \
   \ Run-time:
   \
@@ -540,5 +568,7 @@ need between
   \ 2017-12-09: Remove optional usage of `alias` to define
   \ `case` and `endof`, since `[defined]` is moved to the
   \ library.
+  \
+  \ 2017-12-10: Improve documentation.
 
   \ vim: filetype=soloforth
