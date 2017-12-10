@@ -41,12 +41,6 @@ new definition, making it a colon definition.
 
 ____
 
-.2017-12-10:
-
-NOTE: Milestone: 0.14.0
-
-Improve `(;code)` with `latestxt`. Remove note from `latestxt`.
-
 .2017-03-26, 2017-12-05:
 
 NOTE: Milestone: 0.14.0
@@ -464,7 +458,8 @@ ____
 
 NOTE: Milestone: 0.14.0
 
-Rewrite the `does>` part of `value` and friends with `;code`.
+Rewrite the `does>` part of `value` and friends with `;code`, jumping
+into the corresponding code words of the kernel, eg. `@`, `2@`.
 
 .2017-03-30:
 
@@ -594,16 +589,6 @@ non-standard character 96 is needed.
   temporarily?  This will ruin alternative fonts.
 - Simpler: Provide an alternative standard font in disk.
 
-.2017-02-25:
-
-Add '$' prefix to `hex.`, '%' to `bin.` and '#' to `dec.`.
-
-.2017-02-04:
-
-Rename `mode-32-emit` to `mode-32rom-emit` and write an alternative
-word `mode-32iso-emit` to print characters 128 .. 255 also from the
-current font.  This will make it possible to use 8-bit character sets.
-
 .2017-01-18, 2017-02-04:
 
 Current versions of `type-right-field` and `type-center-field` use
@@ -627,10 +612,10 @@ tables will be different for the future set of words that type without
 padding spaces, so finally the number of different words will grow
 anyway.
 
-.2017-01-02:
+.2017-01-02, 2017-12-10:
 
-Adapt the banked screen mode (which uses the unfinsihed implementation
-of a code bank for addons) to far memory or remove it.
+Adapt `banked-mode-42` and `set-banked-mode-output` to far memory or
+remove them.
 
 .2016-12-30:
 
@@ -646,8 +631,10 @@ Windows:
 
 .2016-12-20:
 
-Move `.0000` and `.00` from the time module to the printing module, and factor
-them for double numbers.
+NOTE: Milestone: 0.14.0
+
+Move `.0000` and `.00` from the time module to the printing module,
+and factor them for double numbers.
 
 .2016-11-26:
 

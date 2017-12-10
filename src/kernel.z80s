@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201712101734
+; Last modified: 201712101825
 
 include version.z80s
 
@@ -7964,9 +7964,6 @@ u_less_than.de_hl:
 ;
 ; }doc
 
-  ; XXX TODO -- Move to the library?  Note: Used by `mode-32` in
-  ; the library.
-
   dw lastxt_,fetch_
   dw exit_
 
@@ -9048,16 +9045,14 @@ base_store:
 ; Definition:
 
 ; ----
-; : (;code) ( -- ) ( R: a -- ) r> latest name> 1+ ! ;
+; : (;code) ( -- ) ( R: a -- ) r> latestxt 1+ ! ;
 ; ----
 
 ; See: `latest`, `name>`.
 ;
 ; }doc
 
-  dw from_r_
-  dw latest_,from_name_,one_plus_
-  dw store_
+  dw from_r_,latestxt_,one_plus_,store_
   dw exit_
 
 ; ----------------------------------------------
