@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091459
+  \ Last modified: 201712101202
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -67,7 +67,7 @@ need ?rel need inverse-cond
 0 cconstant b   1 cconstant c   2 cconstant d   3 cconstant e
 4 cconstant h   5 cconstant l   6 cconstant m   7 cconstant a
 
-6 cconstant sp  6 cconstant af
+6 cconstant sp
 
 DD cconstant ix-op  FD cconstant iy-op
 
@@ -92,6 +92,15 @@ DD cconstant ix-op  FD cconstant iy-op
   (c does> ( reg -- ) ( reg dfa ) c@ swap 8* + c, ;
   \ 1-byte opcode with register encoded in bits 3-5.
 
+: m3p ( 8b "name" -- )
+  (c does> ( reg -- )
+  ( reg dfa ) c@ swap %11111110 and 8* + c, ;
+  \ 1-byte opcode with register encoded in bits 3-5, accepting
+  \ any register in range A..L. `m3p` is a variant of `m3`
+  \ which is used to define `push,` and `pop,`. This way
+  \ those instructions accept register A instead of double
+  \ register AF, making the syntax regular.
+
 : m4 ( 8b "name" -- ) (c does> ( 8b -- ) ( 8b dfa ) c@ c, c, ;
   \ 1-byte opcode with 1-byte parameter.
 
@@ -104,7 +113,7 @@ DD cconstant ix-op  FD cconstant iy-op
 
 : m7 ( 8b "name" -- )
   (c does> ( reg bit -- )
-    ( reg bit dfa ) CB c, c@ swap 8* + + c, ;  -->
+  ( reg bit dfa ) CB c, c@ swap 8* + + c, ;  -->
   \ Bit manipulation of registers.
 
 ( assembler )
@@ -144,9 +153,9 @@ rlca, 08 m1 exaf, 09 m3 addp, 0A m3 ftap, 0B m3 decp, 0F m1
 rrca, 10 m9 djnz, 17 m1 rla, 18 m9 jr,  1F m1 rra, 22 m5 sthl,
 27 m1 daa, 2A m5 fthl, 2F m1 cpl, 32 m5 sta, 37 m1 scf, 3A m5
 fta, 3F m1 ccf, 76 m1 halt, 80 m2 add, 88 m2 adc, 90 m2 sub, 98
-m2 sbc, B8 m2 cp, C1 m3 pop, C5 m3 push, C6 m4 add#, C7 m2 rst,
-C9 m1 ret, CE m4 adc#, D3 m4 out, 41 m3 outbc, D6 m4 sub#, D9
-m1 exx, DB m4 in, 40 m3 inbc, 0DE m4 sbc#, E3 m1 exsp, E6 m4
+m2 sbc, B8 m2 cp, C1 m3p pop, C5 m3p push, C6 m4 add#, C7 m2
+rst, C9 m1 ret, CE m4 adc#, D3 m4 out, 41 m3 outbc, D6 m4 sub#,
+D9 m1 exx, DB m4 in, 40 m3 inbc, 0DE m4 sbc#, E3 m1 exsp, E6 m4
 and#, E9 m1 jphl, EB m1 exde, EE m4 xor#, F3 m1 di,  F6 m4 or#,
 F9 m1 ldsp, FB m1 ei, FE m4 cp#, 00 m6 rlc, 08 m6 rrc, 10 m6
 rl, 18 m6 rr, 20 m6 sla, 28 m6 sra, 30 m6 sll, 38 m6 srl,  40
@@ -735,5 +744,9 @@ macro call-xt, ( xt -- ) 21 c, , execute-hl, endm
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
   \ Finish documentation of conditions (`z?`, `nz?`...).
   \ Document `?ret,`, `?call`, `?jp,`, `?jr,`.
+  \
+  \ 2017-12-10: Add `m3p` to define `push,` and `pop,` with.
+  \ This makes register A usable with those instructions
+  \ instead of register AF.  Remove constant `af.`
 
   \ vim: filetype=soloforth

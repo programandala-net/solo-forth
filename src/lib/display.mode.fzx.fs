@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071832
+  \ Last modified: 201712101210
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -179,7 +179,7 @@ create (fzx-emit) ( -- )
     \ now HL references shift/width in char table
   a xor, rld,
     \ now A = char shift
-  af push, rld,
+  a push, rld,
     \ now A = (width - 1)
   0000 sta, >amark 1 unresolved !
     \ store the width at width1
@@ -243,7 +243,7 @@ create (fzx-emit) ( -- )
     \ begin  (scroll-1px-up) call  step
   rthen
 
-  af pop, BF add#,
+  a pop, BF add#,
     \ now A = shift
     \ now A = range 0..191
 
@@ -378,5 +378,8 @@ code fzx-emit ( c -- )
   \ convention for display modes.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2017-12-10: Update to `a push,` and `a pop,`, after the
+  \ change in the assembler.
 
   \ vim: filetype=soloforth

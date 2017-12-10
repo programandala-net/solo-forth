@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201707271950
+  \ Last modified: 201712101211
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -413,7 +413,7 @@ code make-block-chars ( a -- )
   h pop, b push,
   #128 a ld#,  \ first char is #128
   rbegin
-    af push, a b ld, 0B3B call, af pop, a inc,
+    a push, a b ld, 0B3B call, a pop, a inc,
   #144 cp#, nz? runtil  \ last char is #143
   b pop, jpnext, end-code ?)
 
@@ -1084,5 +1084,8 @@ exx, jpnext, end-code
   \
   \ 2017-07-27: Replace `jp next` with the actual macro
   \ `_jp_next` in Z80 comments. Improve documentation.
+  \
+  \ 2017-12-10: Update to `a push,` and `a pop,`, after the
+  \ change in the assembler.
 
   \ vim: filetype=soloforth

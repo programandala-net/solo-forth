@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712051706
+  \ Last modified: 201712101210
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -266,8 +266,8 @@ create (mode-64o-output_ ( -- a ) asm
   \         ld      e, a            ; store low byte of offset in E
   \
 
-  mode-64o-column fta, rra, af push, 40 h ld#, a l ld, d addp,
-  exde, af pop, h pop, 8 b ld#, c? rif
+  mode-64o-column fta, rra, a push, 40 h ld#, a l ld, d addp,
+  exde, a pop, h pop, 8 b ld#, c? rif
   \ ; add the column
   \
   \         ld      a, (col)        ; get the column
@@ -558,5 +558,8 @@ need mode-32 need (at-xy need set-mode-output need >form
   \ 2017-12-05: Extract from <display.mode.64.fs>. Move
   \ `mode-64o-font` to <display.mode.64.COMMON.fs> and rename
   \ it `mode-64-font`.
+  \
+  \ 2017-12-10: Update to `a push,` and `a pop,`, after the
+  \ change in the assembler.
 
   \ vim: filetype=soloforth

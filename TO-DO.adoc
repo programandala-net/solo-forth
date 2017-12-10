@@ -40,29 +40,6 @@ Make `hook,` and `prt,` optional.
 Study changes needed to use `ix addp,` instead of `addix,`;
 this means `h addp,` should be used instead of `addp,`
 
-.2017-03-10, 2017-03-12, 2017-03-26, 2017-09-09:
-
-Remove the need to use `af` only for `push,` and `pop,`.
-
-The solution is a variant of `m3` to limit the register numbers:
-
-----
-: m3p ( 8b "name" -- )
-  (c does> ( reg -- ) ( reg dfa ) %1111110 and c@ swap 8* + c, ;
-  \ 1-byte opcode with register encoded in bits 3-5.
-----
-
-Then use it instead of `m3` to define `push,` and `pop,`:
-
-----
-C1 m3p pop, C5 m3p push,
-----
-
-This makes `6 cconstant af` unnecessary; and makes the syntax regular,
-making `a pop,` and `a push,` possible (even low-registers are
-allowed, like `c pop,`). But `m3p` needs more memory than the `af`
-constant.
-
 .2017-03-07:
 
 Add a small layer on the assembler to compile it into the Plus D

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705062207
+  \ Last modified: 201712101210
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -214,7 +214,7 @@ rstep b pop, ret,
   \   and a
   \   ret z
   \
-rbegin af push, #10 call, al# 01 a ld#, #7 call, al# af pop,
+rbegin a push, #10 call, al# 01 a ld#, #7 call, al# a pop,
   \ lfe0bh:
   \   push af
   \   call sub_fe17h
@@ -851,6 +851,9 @@ need gigatype need 2/
   \ `gigatype-style`. This makes the usage simpler and
   \ compatible with the ordinary `type`. Update and improve
   \ documentation.
+  \
+  \ 2017-12-10: Update to `a push,` and `a pop,`, after the
+  \ change in the assembler.
 
   \ vim: filetype=soloforth
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712090122
+  \ Last modified: 201712101212
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1294,7 +1294,7 @@ code libzx-3-crnd ( -- b )
   \     - current values of various registers
   \     - a flat incremented value
 
-  b push, af push,
+  b push, a push,
     \ save Forth IP and the AF register
 
   \ 1) advance ROM pointer
@@ -1366,7 +1366,7 @@ code libzx-2-crnd ( -- b )
   \     - current values of various registers
   \     - a flat incremented value
 
-  b push, af push,
+  b push, a push,
     \ save Forth IP and the AF register
 
   \ 1) advance ROM pointer
@@ -1437,7 +1437,7 @@ code libzx-1-crnd ( -- b )
   \     - current values of various registers
   \     - a flat incremented value
 
-  b push, af push,
+  b push, a push,
     \ save Forth IP and the AF register
 
   \ 1) advance ROM pointer
@@ -1510,7 +1510,7 @@ code libzx-crnd ( -- b )
   \     - current values of various registers
   \     - a flat incremented value
 
-  b push, af push,
+  b push, a push,
     \ save Forth IP and the AF register
 
   \ 1) advance ROM pointer
@@ -1727,5 +1727,8 @@ need 8b-rng-px-bench need :noname
   \
   \ 2017-12-09: Update with `need */`, since `*/` was moved to
   \ the library.
+  \
+  \ 2017-12-10: Update to `a push,` and `a pop,`, after the
+  \ change in the assembler.
 
   \ vim: filetype=soloforth

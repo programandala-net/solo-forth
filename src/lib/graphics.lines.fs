@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201707271623
+  \ Last modified: 201712101211
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -363,7 +363,7 @@ code orthodraw ( gx gy gxinc gyinc len -- )
     \   pop de
     \   ld l,e            ; L = gx
 
-  rbegin af push, h push, b push, h b ldp,
+  rbegin a push, h push, b push, h b ldp,
     \ begin:
     \   push af           ; save registers
     \   push hl           ;
@@ -385,7 +385,7 @@ code orthodraw ( gx gy gxinc gyinc len -- )
     \   ld a,l
     \   add a,c
     \   ld l,a            ; update coordinate gy
-  af pop, a dec, z? runtil
+  a pop, a dec, z? runtil
     \   pop  af           ;
     \   dec  a            ;
     \   jr   nz,begin     ; repeat for all pixels
@@ -468,7 +468,7 @@ code ortholine ( gx gy gxinc gyinc len -- )
     \   pop de
     \   ld l,e            ; L = gx
 
-  rbegin af push, h push, b push, h b ldp,
+  rbegin a push, h push, b push, h b ldp,
     \ begin:
     \   push af           ; save registers
     \   push hl           ;
@@ -498,7 +498,7 @@ code ortholine ( gx gy gxinc gyinc len -- )
     \   ld a,l
     \   add a,c
     \   ld l,a            ; update coordinate gy
-  af pop, a dec, z? runtil
+  a pop, a dec, z? runtil
     \   pop  af           ;
     \   dec  a            ;
     \   jr   nz,begin     ; repeat for all pixels
@@ -563,5 +563,8 @@ code ortholine ( gx gy gxinc gyinc len -- )
   \
   \ 2017-07-27: Replace `jp next` with the actual macro
   \ `_jp_next` in Z80 comments.
+  \
+  \ 2017-12-10: Update to `a push,` and `a pop,`, after the
+  \ change in the assembler.
 
   \ vim: filetype=soloforth

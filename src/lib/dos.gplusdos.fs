@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201712101211
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -358,7 +358,7 @@ code (delete-file) ( -- ior )
   b push,  \ save the Forth IP
   ufia ix ldp#, heraz hook,  \ delete the file
   b pop, next ix ldp#, \ restore the Forth registers
-  af push, ' dosior>ior jp, end-code
+  a push, ' dosior>ior jp, end-code
 
   \ doc{
   \
@@ -459,7 +459,7 @@ code (>file) ( -- ior )
     hsvbk hook, \ save to file
     nc? rif  cfsm hook,  rthen  \ close the file if no error
   rthen  b pop, next ix ldp#,  \ restore the Forth registers
-  af push, ' dosior>ior jp, end-code
+  a push, ' dosior>ior jp, end-code
 
   \ doc{
   \
@@ -502,7 +502,7 @@ code (file>) ( ca len -- ior )
     b pop, d pop, b tstp, z?  rif
       hd0b b ftp, d tstp, z? rif  hd0d d ftp,  rthen
     rthen  hldbk hook,
-  rthen b pop, next ix ldp#, af push, ' dosior>ior jp, end-code
+  rthen b pop, next ix ldp#, a push, ' dosior>ior jp, end-code
 
   \ doc{
   \
@@ -593,7 +593,7 @@ code (file-status) ( -- a ior )
       \ Load the file header.
       a xor, \ set no error
   rthen  b pop, next ix ldp#, \ restore the Forth registers
-  af push, ' dosior>ior jp, end-code
+  a push, ' dosior>ior jp, end-code
 
   \ XXX TODO --  Update also the file directory number
   \ (`fstr1`) and the directory description (`nstr1`).
@@ -787,10 +787,10 @@ code (file>screen) ( -- ior )
             d incp, b decp, b a ld, c or,
     z? runtil dos-out,
     \ rbegin
-    \   lbyte hook,  af push,  10 hook,  af pop,  13 cp#,
+    \   lbyte hook,  a push,  10 hook,  a pop,  13 cp#,
     \ z runtil
 
-  rthen b pop, next ix ldp#, af push, ' dosior>ior jp, end-code
+  rthen b pop, next ix ldp#, a push, ' dosior>ior jp, end-code
         \ restore the Forth registers and save the ior
 
   \ Display the contents of a file on the screen, line by line,
@@ -833,7 +833,7 @@ need assembler need rest need get-drive
 
 code (cd3 ( -- ior )
   b push, rest hook, b pop, next ix ldp#,
-  af push, ' dosior>ior jp, end-code
+  a push, ' dosior>ior jp, end-code
 
 : cd3 ( n -- ior )
   get-drive >r set-drive throw (cd3 r> set-drive throw ;
@@ -856,7 +856,7 @@ code cd2 ( n -- ior )
   b push,  \ save the Forth IP
   dos-in, l a ld, ufia1 sta, rest hook,
   b pop, next ix ldp#, \ restore the Forth registers
-  af push, ' dosior>ior jp, end-code
+  a push, ' dosior>ior jp, end-code
 
   \ XXX REMARK -- It seems the `rest` hook does not use the
   \ drive specified in UFIA passed in IX, like the RAMSOFT's
@@ -880,7 +880,7 @@ code cd1 ( n -- ior )
   b push,  \ save the Forth IP
   l a ld, dstr1 sta, ufia ix ldp#, rest hook,
   b pop, next ix ldp#, \ restore the Forth registers
-  af push, ' dosior>ior jp, end-code
+  a push, ' dosior>ior jp, end-code
 
   \ XXX REMARK -- It seems the `rest` hook does not use the
   \ drive specified in UFIA passed in IX, like the RAMSOFT's
@@ -910,7 +910,7 @@ create (cd0-error ( -- a ) asm
     \ Restore the Forth registers.
   0000 h ldp#, 2066 h stp,
     \ Clear G+DOS D_ERR_SP.
-  af push, ' dosior>ior jp, end-asm
+  a push, ' dosior>ior jp, end-asm
     \ Return the ior.
 
 code cd0 ( -- ior )
@@ -1054,7 +1054,7 @@ create back-from-dos-error_ ( -- a ) asm
     \ Restore the Forth registers.
   0000 h ldp#, 2066 h stp,
     \ Clear G+DOS D_ERR_SP.
-  af push, ' dosior>ior jp, end-asm
+  a push, ' dosior>ior jp, end-asm
     \ Return the ior.
 
   \ XXX TODO -- Rewrite with Z80 opcodes.
@@ -1446,5 +1446,8 @@ code (rename-file ( -- ior )
   \ 2017-05-07: Improve documentation.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2017-12-10: Update to `a push,` and `a pop,`, after the
+  \ change in the assembler.
 
   \ vim: filetype=soloforth
