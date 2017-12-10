@@ -8,6 +8,45 @@
 // Assembler {{{1
 == Assembler ==
 
+.2017-12-10:
+
+`;uses` from F83:
+
+____
+
+;USES
+
+   This is a new syntax that can be used to compile a code
+   field whose code already exists.  Similar to ;CODE
+____
+
+----
+: (;USES)     (S -- )   R> @  LAST @ NAME>  !  ;
+VOCABULARY ASSEMBLER
+: ;USES       (S -- )   ?CSP   COMPILE  (;USES)
+    [COMPILE] [   REVEAL   ASSEMBLER   ; IMMEDIATE
+: (;CODE)     (S -- )   R>    LAST @ NAME>  !  ;
+: ;CODE       (S -- )   ?CSP   COMPILE  (;CODE)
+    [COMPILE] [   REVEAL   ASSEMBLER   ; IMMEDIATE  HEX
+----
+
+From _Inside F83_:
+
+____
+
+`;USES`
+
+Insert the following code routine address into the code field of the
+new definition, making it a colon definition.
+
+____
+
+.2017-12-10:
+
+NOTE: Milestone: 0.14.0
+
+Improve `(;code)` with `latestxt`. Remove note from `latestxt`.
+
 .2017-03-26, 2017-12-05:
 
 NOTE: Milestone: 0.14.0
@@ -51,15 +90,9 @@ NOTE: Milestone: 0.14.0
 
 Move private words of `l:` to a word list.
 
-.2017-02-21:
+.2017-02-21, 2017-12-10:
 
-Rewrite `execute-hl` and `call-xt` with Z80 opcodes.
-
-.2017-02-16:
-
-NOTE: Milestone: 0.14.0
-
-Try `;code`. Its definition should include `asm`.
+Rewrite `execute-hl` with Z80 opcodes.
 
 .2017-01-13:
 
@@ -427,7 +460,9 @@ ____
 // Data structures {{{1
 == Data structures ==
 
-.2017-04-18:
+.2017-04-18, 2017-12-10
+
+NOTE: Milestone: 0.14.0
 
 Rewrite the `does>` part of `value` and friends with `;code`.
 
@@ -669,11 +704,10 @@ Improve tab control.
 // Documentation {{{1
 == Documentation ==
 
-.2017-12-07:
+.2017-12-10:
 
-Improve the documentation of constants and variables in the library
-after the convention used in the kernel, i.e. "A [character]
-constant|variable|value. _x_ is...".
+Add stack comments to sections "Compilation:" and "Run-time:".  See
+`does>`.
 
 .2017-12-07:
 
@@ -688,17 +722,14 @@ Also `<chars>` in the stack notation table: `word ( c
 
 Include the PNG of the 64-cpl fonts from Einar Saukas' 64#4.
 
-.2017-11-27:
-
-Finish the documentation of <flow.case.fs>: `endcase`, `less-of`,
-`greater-of`
-
 .2017-07-22:
 
 Fix the EPUB version of the manual. Create it with xsltproc instead of
 Pandoc.
 
 .2017-05-11:
+
+NOTE: Milestone: 0.14.0
 
 Uso "bytes" instead of "address units", which is needed only in the
 standard.

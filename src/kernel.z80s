@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201712100130
+; Last modified: 201712101734
 
 include version.z80s
 
@@ -1964,8 +1964,8 @@ endif
 ;
 ; asm ( -- )
 ;
-; Enter the `assembler` mode. Push `assembler-wordlist` on the
-; search `order`.
+; Enter the `assembler` mode. ``asm`` is executed by `code` and
+; `;code`.
 ;
 ; Definition:
 
@@ -1974,8 +1974,7 @@ endif
 ;   !csp init-asm base @ abase ! hex assembler-wordlist >order ;
 ; ----
 
-; See: `end-asm`, `code`, `init-asm`, `abase`,
-; `!csp`, `hex`.
+; See: `end-asm`, `init-asm`, `abase`, `!csp`, `hex`.
 ;
 ; }doc
 
@@ -6196,7 +6195,7 @@ store.de_into_hl_pointer:
 
 ; doc{
 ;
-; : ( "name" -- -sys )
+; : ( "name" -- )
 ;
 ; Parse _name_. Create a definition for _name_, called a "colon
 ; definition". Enter  compilation  `state` and  start  the
@@ -9074,18 +9073,18 @@ base_store:
 ; high-level defining word.  Used in the form:
 
 ; ----
-; : definer ... create ... does> ... ;
+; : namex ... create ... does> ... ;
 ;
-; definer name
+; namex name
 ; ----
 
 ; where `create` could be also any user defined word which
 ; executes `create`.
 
 ; ``does>`` marks the termination of the defining part of the
-; defining word _definer_ and then begins the definition of the
+; defining word _namex_ and then begins the definition of the
 ; execution-time action for words that will later be defined by
-; _definer_.  When _name_ is later executed, the address of
+; _namex_.  When _name_ is later executed, the address of
 ; _name_'s parameter field is placed on the stack and then the
 ; sequence of words between ``does>`` and `;` are executed.
 ;
@@ -9099,11 +9098,11 @@ base_store:
 ;   postpone (;code) docolon call, ; immediate compile-only
 ; ----
 
-; Detailed description, after Forth-2012:
+; Detailed description:
 ;
 ; Compilation:
 ;
-; Append the run-time  semantics below  to the  current
+; Append the run-time  semantics below to the current
 ; definition.  Append the initiation semantics given below to
 ; the current definition.
 ;
@@ -9114,11 +9113,11 @@ base_store:
 ; semantics given  below. Return  control  to the  calling
 ; definition  specified  by _nest-sys1_.
 ;
-; Initiation: ``( i*x -- i*x dfa ) ( R: -- nest-sys2)``
+; Initiation: ``( i*x -- i*x dfa ) ( R: -- nest-sys2 )``
 ;
 ; Save information _nest-sys2_  about the calling definition.
-; Place _name_'s data field address on the stack. The stack
-; effects _i*x_ represent arguments to name.
+; Place _name_'s data field address _dfa_ on the stack. The
+; stack effects _i*x_ represent arguments to name.
 ;
 ; _name_ execution: ``( i*x -- j*x )``
 ;

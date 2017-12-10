@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-05-10
+" Updated:  2017-12-10
 "
 " See change log at the end of the file.
 
@@ -146,6 +146,7 @@ syn keyword soloforthDefine docolon
 syn keyword soloforthDefine does>
 syn keyword soloforthDefine end-structure
 syn keyword soloforthDefine field:
+syn keyword soloforthDefine finish-code
 syn keyword soloforthDefine header
 syn keyword soloforthDefine header,
 syn keyword soloforthDefine hidden
@@ -1190,6 +1191,8 @@ let b:current_syntax = "soloforth"
 " 2017-05-10: Update the assembler. Add `0.r` and `0d.r`.
 "
 " 2017-05-11: Add `catcher`.
+"
+" 2017-12-10: Add `finish-code`.
 
 " --------------------------------------------------------------
 

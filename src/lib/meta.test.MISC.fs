@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712092233
+  \ Last modified: 201712101736
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -22,6 +22,18 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( ;code-test )
+
+need assembler need ;code
+
+: borderer ( n -- )
+  create c, ;code ( -- ) ( dfa )
+    h pop, m a ld, FE out, jpnext, end-code
+
+0 borderer black-border  1 borderer blue-border
+
+blue-border key drop black-border
 
 ( 64cpl-fonts-test )
 
@@ -1440,5 +1452,7 @@ blk @ 1+ blk @ 2+ thru
   \ 2017-12-05: Add `64cpl-fonts-test`.
   \
   \ 2017-12-09: Remove useless `[defined] (/) ?\`.
+  \
+  \ 2017-12-10: Add `;code-test`.
 
   \ vim: filetype=soloforth
