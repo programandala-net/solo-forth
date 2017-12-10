@@ -678,6 +678,10 @@ Improve tab control.
 // Documentation {{{1
 == Documentation ==
 
+.2017-12-10
+
+Add usage example to `[switch`.
+
 .2017-12-10:
 
 Add stack comments to sections "Compilation:" and "Run-time:".  See

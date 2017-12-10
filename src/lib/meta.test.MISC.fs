@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712101736
+  \ Last modified: 201712110006
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -841,52 +841,63 @@ need [: need recurse
 
   \ 2015-11-15: Test passed
   \ 2016-11-25: Test passed
+  \ 2017-12-10: Test passed
 
-need :switch need <switch need :noname need >body
+need :switch need :noname need >body
 
-: one   ( -- ) ." unu " ;
-: two   ( -- ) ." du " ;
-: three ( -- ) ." tri " ;
+: one   ( -- )   ." unu " ;
+: two   ( -- )   ." du "  ;
+: three ( -- )   ." tri " ;
+  \ clauses
+
 : many  ( n -- ) . ." is too much! " ;
+  \ default action
 
-' many :switch numbers
-  \ `many` is the default action of the new switch `numbers`
+' many :switch .number
 
   ' one   1 <switch
   ' two   2 <switch
   ' three 3 <switch  drop
 
-cr 1 numbers 2 numbers 3 numbers 4 numbers
+cr 1 .number 2 .number 3 .number 4 .number
 
-' numbers >body  :noname  ." kvar " ; 4 <switch drop
+' .number >body  :noname  ." kvar " ; 4 <switch drop
   \ add a new clause for number 4
 
-cr 1 numbers 2 numbers 3 numbers 4 numbers
+cr 1 .number 2 .number 3 .number 4 .number
 
 ( [switch-test )
 
   \ 2015-11-15: Test passed
   \ 2016-11-25: Test passed
+  \ 2017-12-10: Test passed
 
-need :switch-test need [switch need [+switch
-need runs need run:
+need [switch need [+switch need runs need run:
 
-[switch sugar-numbers many
+: one   ( -- )   ." unu " ;
+: two   ( -- )   ." du "  ;
+: three ( -- )   ." tri " ;
+  \ clauses
+
+: many  ( n -- ) . ." is too much! " ;
+  \ default action
+
+[switch .sugar-number many
   1 runs one  2 runs two  3 runs three  switch]
 
-cr 1 sugar-numbers 3 sugar-numbers 4 sugar-numbers
+cr 1 .sugar-number 3 .sugar-number 4 .sugar-number
 
 : four  ." kvar " ;
 
-[+switch sugar-numbers  4 runs four  switch]
+[+switch .sugar-number  4 runs four  switch]
   \ add a new clause for number 4
 
-cr 1 sugar-numbers 3 sugar-numbers 4 sugar-numbers
+cr 1 .sugar-number 3 .sugar-number 4 .sugar-number
 
-[+switch sugar-numbers  5 run: ." kvin" ;  switch]
+[+switch .sugar-number  5 run: ." kvin" ;  switch]
   \ add a new unnamed clause for number 5
 
-cr 1 sugar-numbers 4 sugar-numbers 5 sugar-numbers
+cr 1 .sugar-number 4 .sugar-number 5 .sugar-number
 
 ( alias-test synonym-test )
 
@@ -1454,5 +1465,8 @@ blk @ 1+ blk @ 2+ thru
   \ 2017-12-09: Remove useless `[defined] (/) ?\`.
   \
   \ 2017-12-10: Add `;code-test`.
+  \
+  \ 2017-12-11: Check and modify `:switch-test` and
+  \ `[switch-test`.
 
   \ vim: filetype=soloforth

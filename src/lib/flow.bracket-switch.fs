@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201712102325
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -29,6 +29,251 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+( switcher :switch <switch )
+
+  \ Raw version, without syntactic sugar
+
+[unneeded] switcher [unneeded] :switch and ?( need link@
+
+: switcher ( i*x n a -- j*x )
+  dup cell+ @ >r \ save default xt
+  begin  link@ ?dup while ( n a )
+    2dup cell+ @ = if \ match
+      nip cell+ cell+ perform rdrop exit
+    then
+  repeat r> execute ; ?)
+
+  \ doc{
+  \
+  \ switcher ( i*x n a -- j*x )
+  \
+  \ Search the linked list from its head _a_ for a match to the
+  \ value _n_. If a match is found, discard _n_ and execute the
+  \ associated matched _xt_. If no match is found, leave _n_ on
+  \ the stack and execute the default _xt_.
+  \
+  \ ``switcher`` is a common factor of `:switch` and `[switch`,
+  \ two variants of the same control structure.
+  \
+  \ Origin: SwiftForth.
+  \
+  \ }doc
+
+[unneeded] <switch [unneeded] :switch and ?(
+
+need pick need link,
+
+: <switch ( a xt n -- a ) 2 pick link, , , ; ?)
+
+  \ doc{
+  \
+  \ <switch ( a xt n -- a )
+  \
+  \ Define a new clause of a `:switch` structure whose head is
+  \ _a_ to execute _xt_ when the key _n_ is matched.
+  \
+  \ The switch clauses are 3-cell structures:
+
+  \ . Link to the previous clause of the switch
+  \ . Key
+  \ . Execution token
+
+  \ Origin: SwiftForth.
+  \
+  \ }doc
+
+[unneeded] :switch ?( need switcher need <switch
+
+: :switch ( xt "name" -- a )
+  create >mark swap , does> ( n -- ) ( n dfa ) switcher ; ?)
+
+  \ doc{
+  \
+  \ :switch ( xt "name" -- a )
+  \
+  \ Create a code switch _name_ whose default action is given
+  \ by _xt_. Leave the address _a_ of the head of its list on
+  \ the stack.
+  \
+  \ The head _a_ of the switch structure is the address of a
+  \ 2-cell structure, with the following contents:
+
+  \ . Link to the last clause of the switch
+  \ . Execution token of the default action
+
+  \ Usage example:
+
+  \ ----
+  \ : one   ( -- )   ." unu " ;
+  \ : two   ( -- )   ." du "  ;
+  \ : three ( -- )   ." tri " ;
+  \   \ clauses of the switch
+  \
+  \ : many  ( n -- ) . ." is too much! " ;
+  \   \ default action of the switch
+  \
+  \ ' many :switch .number
+  \
+  \   ' one   1 <switch
+  \   ' two   2 <switch
+  \   ' three 3 <switch drop
+  \
+  \ cr 1 .number 2 .number 3 .number 4 .number
+  \
+  \ ' .number >body  :noname  ." kvar " ; 4 <switch drop
+  \   \ add a new nameless clause for number 4
+  \
+  \ cr 1 .number 2 .number 3 .number 4 .number
+  \
+  \ ----
+
+  \ NOTE: `[switch` is the syntactic-sugar variant of
+  \ ``:switch``.
+  \
+  \ Origin: SwiftForth.
+  \
+  \ See: `<switch`, `[switch`, `switcher`.
+  \
+  \ }doc
+
+( [+switch [switch runs run: )
+
+  \ Complete version, with syntactic sugar
+
+[unneeded] [+switch
+
+?\ need >body : [+switch ( "name" -- a ) ' >body ;
+
+  \ doc{
+  \
+  \ [+switch ( "name" -- a )
+  \
+  \ Open the `[switch` structure _name_ to include additional
+  \ clauses.  The default behavior remains unchanged. The
+  \ additions, like the original clauses, are terminated by
+  \ `switch]`.  Leave the head _a_ of the given `[switch`
+  \ _name_, for clauses to append to.
+  \
+  \ Origin: SwiftForth.
+  \
+  \ See: `runs`, `run`.
+  \
+  \ }doc
+
+[unneeded] [switch ?( need switcher
+
+: [switch ( "name1" "name2" -- a )
+  create >mark ' , does> ( n -- ) ( n dfa ) switcher ;
+
+  \ doc{
+  \
+  \ [switch ( "name1" "name2" -- a )
+  \
+  \ Start the definition of a switch structure _name1_
+  \ consisting of a linked list of single-precision numbers and
+  \ associated behaviors, with its default action _name2_.  The
+  \ head _a_ of the switch is left on the stack for defining
+  \ clauses.  The switch definition will be terminated by
+  \ `switch]`, and can be extended by `[+switch`.
+  \
+  \ Usage example:
+
+  \ ----
+  \ : one   ( -- )   ." unu " ;
+  \ : two   ( -- )   ." du "  ;
+  \ : three ( -- )   ." tri " ;
+  \   \ clauses
+  \
+  \ : many  ( n -- ) . ." is too much! " ;
+  \   \ default action
+  \
+  \ [switch .number many
+  \   1 runs one  2 runs two  3 runs three  switch]
+  \
+  \ cr 1 .number 3 .number 4 .number
+  \
+  \ : four  ." kvar " ;
+  \
+  \ [+switch .number  4 runs four  switch]
+  \   \ add a new clause for number 4
+  \
+  \ cr 1 .number 3 .number 4 .number
+  \
+  \ [+switch .number  5 run: ." kvin" ;  switch]
+  \   \ add a new unnamed clause for number 5
+  \
+  \ cr 1 .number 4 .number 5 .number
+  \ ----
+
+  \ NOTE: ``[switch`` is the syntactic-sugar variant of
+  \ `:switch`.
+  \
+  \ Origin: SwiftForth.
+  \
+  \ See: `runs`, `run:`.
+  \
+  \ }doc
+
+: switch] ( a -- ) drop ; ?)
+
+  \ doc{
+  \
+  \ switch] ( a -- )
+  \
+  \ Terminate a switch structure (or the latest additions to
+  \ it) by marking the end of its linked list.  Discard the
+  \ switch head _a_ from the stack.
+  \
+  \ Origin: SwiftForth.
+  \
+  \ See: `[switch`, `[+switch`, `runs`, `run:`.
+  \
+  \ }doc
+
+[unneeded] runs ?( need <switch
+
+: runs ( a n "name" -- a ) ' swap <switch ; ?)
+
+  \ doc{
+  \
+  \ runs ( a n "name" -- )
+  \
+  \ Add a clause to a `[switch` structure whose head is _a_.
+  \ The key value of the clause is _n_ and its associated
+  \ behavior is the previously defined _name_.
+  \
+  \ Origin: SwiftForth.
+  \
+  \ See: `[switch`, `switch]`.
+  \
+  \ }doc
+
+[unneeded] run: ?( need evaluate need <switch need :noname
+
+: run: ( a n "ccc<semicolon>" -- a )
+  :noname ';' parse evaluate postpone ; ( xt )
+  swap <switch ; ?)
+
+  \ doc{
+  \
+  \ run: ( a n "ccc<semicolon>" -- a )
+  \
+  \ Add a clause to a `[switch` structure whose head is _a_.
+  \ The key value of the clause is _n_ and its associated
+  \ behavior is one or more previously defined words, ending
+  \ with `;`.
+  \
+  \ Origin: SwiftForth.
+  \
+  \ See: `switch]`.
+  \
+  \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2015-11-15: Adapt the original code.
+  \
   \ 2016-04-24: Add `need :noname` and `need pick`, because
   \ those words have been moved from the kernel to the library.
   \
@@ -53,176 +298,12 @@
   \ interpretation.
   \
   \ 2017-02-17: Update notation "behaviour" to "action".
-
-( switcher :switch <switch )
-
-  \ Raw version, without syntactic sugar
-
-need link@ need link, need pick
-
-: switcher ( i*x n head -- j*x )
-  dup cell+ @ >r  \ save default xt
-  begin  link@ ?dup while ( n a )
-    2dup cell+ @ = if   \ match
-      nip cell+ cell+ perform  rdrop exit
-    then
-  repeat  r> execute ;
-
-  \ doc{
-  \
-  \ switcher ( i*x n head -- j*x )
-  \
-  \ Search the linked list from its _head_ for a match to the
-  \ value _n_. If a match is found, discard _n_ and execute the
-  \ associated matched _xt_. If no match is found, leave _n_ on
-  \ the stack and execute the default xt.
-  \
-  \ See: `:switch`, `[switch`, `<switch`.
-  \
-  \ }doc
-
-: :switch ( xt "name" -- head )
-  create  >mark swap ,  does> ( n -- ) ( n dfa ) switcher ;
-
-  \ doc{
-  \
-  \ :switch ( xt "name" -- head )
-  \
-  \ Create a code switch whose default action is given by
-  \ _xt_. Leave the address of the _head_ of its list on the
-  \ stack.
-  \
-  \ The _head_ of the switch structure is the address of a
-  \ 2-cell structure:
-  \
-  \ 1. link (to the last clause of the switch)
-  \ 2. default xt
-  \
-  \ See: `<switch`, `[switch`.
-  \
-  \ }doc
-
-: <switch ( head xt n -- head ) 2 pick link,  , , ;
-
-  \ doc{
-  \
-  \ <switch ( head xt n -- head )
-  \
-  \ Define a new clause to execute _xt_ when the key _n_
-  \ is matched.
-  \
-  \ The switch clauses are 3-cell structures:
-  \
-  \ 1. link (to the previous clause of the switch)
-  \ 2. key
-  \ 3. xt
-  \
-  \ See: `:switch`, `[switch`.
-  \
-  \ }doc
-
-( [+switch [switch switch] runs run: )
-
-  \ Complete version, with syntactic sugar
-
-[unneeded] [+switch
-?\ need >body  : [+switch ( "name" -- head ) ' >body ;
-
-  \ doc{
-  \
-  \ [+switch ( "name" -- head )
-  \
-  \ Open the switch structure _name_ to include additional
-  \ clauses.  The default behavior remains unchanged. The
-  \ additions, like the original clauses, are terminated by
-  \ `switch]`.  Leave the _head_ of the given switch _name_,
-  \ for clauses to append to.
-  \
-  \ Origin: SwiftForth.
-  \
-  \ See: `[switch`, `runs`, `run`.
-  \
-  \ }doc
-
-[unneeded] [switch [unneeded] switch] and ?( need switcher
-
-: [switch ( "name1" "name2" -- head )
-  create  >mark ' ,  does> ( n -- ) ( n dfa ) switcher ;
-
-  \ doc{
-  \
-  \ [switch ( "name1" "name2" -- head )
-  \
-  \ Start the definition of a switch structure _name1_
-  \ consisting of a linked list of single-precision numbers and
-  \ associated behaviors, with its default action _name2_.
-  \ The _head_ of the switch is left on the stack for defining
-  \ clauses.  The switch definition will be terminated by
-  \ `switch]`, and can be extended by `[+switch`.
-  \
-  \ Origin: SwiftForth.
-  \
-  \ See: `runs`, `run:`.
-  \
-  \ }doc
-
-need alias  ' drop alias switch] ( head -- ) ?)
-
-  \ doc{
-  \
-  \ switch] ( head -- )
-  \
-  \ Terminate a switch structure (or the latest additions to
-  \ it) by marking the end of its linked list.  Discard the
-  \ switch _head_ from the stack.
-  \
-  \ Origin: SwiftForth.
-  \
-  \ See: `[switch`, `[+switch`, `runs`, `run:`.
-  \
-  \ }doc
-
-[unneeded] runs ?( need <switch
-: runs ( head n "name" -- head ) ' swap <switch ; ?)
-
-  \ doc{
-  \
-  \ runs ( head n "name" -- )
-  \
-  \ Add a clause to a switch structure _head_.  The key value
-  \ of the clause is _n_ and its associated behavior is the
-  \ previously defined _name_.
-  \
-  \ Origin: SwiftForth.
-  \
-  \ See: `[switch`, `switch]`.
-  \
-  \ }doc
-
-[unneeded] run: ?( need evaluate need <switch need :noname
-: run: ( head n "ccc<semicolon>" -- head )
-  :noname ';' parse evaluate postpone ; ( xt )
-  swap <switch ; ?)
-
-  \ doc{
-  \
-  \ run: ( head n "ccc<semicolon>" -- head )
-  \
-  \ Add a clause to a switch structure _head_.  The key value
-  \ of the clause is _n_ and its associated behavior is one or
-  \ more previously defined words, ending with `;`.
-  \
-  \ Origin: SwiftForth.
-  \
-  \ See: `[switch`, `switch]`.
-  \
-  \ }doc
-
-  \ ===========================================================
-  \ Change log
-
-  \ 2015-11-15: Adapt the original code.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2017-12-10: Fix change log.
+  \
+  \ 2017-12-10: Improve documentation. Improve needing. Unalias
+  \ `switch]`.
 
   \ vim: filetype=soloforth
