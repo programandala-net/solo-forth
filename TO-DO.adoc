@@ -2364,10 +2364,6 @@ Make the tape words return a standard _ior_.
 // Time {{{1
 == Time ==
 
-.2017-12-10:
-
-Remove `.system-time`, `.system-date`.
-
 .2017-11-28:
 
 Calculate `ticks/second` after the lina Forth system.

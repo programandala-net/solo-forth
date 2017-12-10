@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712101943
+  \ Last modified: 201712102002
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -641,9 +641,7 @@ code ms ( u -- )
   \
   \ }doc
 
-( .time .system-time .date .system-date )
-
-  \ XXX TODO document
+( .time .date .time&date time&date )
 
 [unneeded] .time ?( need .00
 
@@ -659,10 +657,6 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] .system-time ?( need get-time need .time
-
-: .system-time ( -- ) get-time .time ; ?)
-
 [unneeded] .date ?( need .0000 need .00
 
 : .date ( day month year -- ) .0000 ." -" .00 ." -" .00 ;
@@ -676,12 +670,6 @@ code ms ( u -- )
   \ See: `.time`, `.time&date`, `time&date`, `.0000`, `.00`.
   \
   \ }doc
-
-[unneeded] .system-date ?( need get-date need .date
-
-: .system-date ( -- ) get-date  .date ; ?)
-
-( .time&date time&date )
 
 [unneeded] .time&date ?( need .date need .time
 
@@ -883,6 +871,7 @@ need reset-dticks need dticks need dticks>cs
   \ 2017-12-09: Improve documentation.
   \
   \ 2017-12-10: Move `.00` and `.0000` to <display.numbers.fs>.
-  \ Improve documentation.
+  \ Improve documentation. Remove `.system-time` and
+  \ `.system-date`.
 
   \ vim: filetype=soloforth
