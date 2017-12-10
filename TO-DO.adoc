@@ -94,12 +94,6 @@ Modify words that restore IX: use the current contents of `next`
 instead of its default value. This way the value of IX can be changed
 to implement a debugger or multitasking.
 
-.2017-01-13, 2017-02-16:
-
-Rename `end-code` to `;c`?  `end-code` is more legible, but space is
-precious in blocks.  `end-code` is not in Forth-94 or Forth-2012 (only
-mentioned), but it was in Forth-79 and Forth-83, and it's in Gforth.
-
 .2016-11-26, 2016-12-30 .. 2017-01-02:
 
 NOTE: Milestone: 0.14.0
@@ -628,13 +622,6 @@ Windows:
 - Scroll support, with configurable pause.
 - Rewrite `wcls` in Z80, or use `spaces` instead of `type`
 - Save and restore windows, in Z80.
-
-.2016-12-20:
-
-NOTE: Milestone: 0.14.0
-
-Move `.0000` and `.00` from the time module to the printing module,
-and factor them for double numbers.
 
 .2016-11-26:
 
@@ -2376,6 +2363,10 @@ Make the tape words return a standard _ior_.
 
 // Time {{{1
 == Time ==
+
+.2017-12-10:
+
+Remove `.system-time`, `.system-date`.
 
 .2017-11-28:
 

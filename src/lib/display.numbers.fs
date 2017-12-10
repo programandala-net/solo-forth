@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705092051
+  \ Last modified: 201712101955
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,7 +23,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( ud.r u.r ud. holds )
+( ud.r u.r ud. holds .00 .0000 )
 
 [unneeded] ud.r
 ?\ : ud.r ( ud n -- ) >r <# #s #> r> over - 0 max spaces type ;
@@ -108,6 +108,30 @@
   \ Origin: Forth-2012 (CORE EXT).
   \
   \ See: `hold`.
+  \
+  \ }doc
+
+[unneeded] .00 ?\ : .00 ( +n -- ) s>d <# # # #> type ;
+
+  \ doc{
+  \
+  \ .00 ( +n -- )
+  \
+  \ Display _+n_ with two digits.
+  \
+  \ See: `.0000`, `.time`, `.date`.
+  \
+  \ }doc
+
+[unneeded] .0000 ?\ : .0000 ( +n -- ) s>d <# # # # # #> type ;
+
+  \ doc{
+  \
+  \ .0000 ( +n -- )
+  \
+  \ Display _+n_ with four digits.
+  \
+  \ See: `.00`, `.date`.
   \
   \ }doc
 
@@ -403,5 +427,8 @@ need base' need base> need binary
   \ 2017-05-07: Improve documentation.
   \
   \ 2017-05-09: Fix typo.
+  \
+  \ 2017-12-10: Move `.00` and `.0000` from <time.fs>.
+  \ Document them.
 
   \ vim: filetype=soloforth

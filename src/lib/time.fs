@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712092330
+  \ Last modified: 201712101943
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -641,13 +641,9 @@ code ms ( u -- )
   \
   \ }doc
 
-( .00 .0000 .time .system-time .date .system-date )
+( .time .system-time .date .system-date )
 
   \ XXX TODO document
-
-[unneeded] .00 ?\ : .00 ( n -- ) s>d <# # # #> type ;
-
-[unneeded] .0000 ?\ : .0000 ( n -- ) s>d <# # # # # #> type ;
 
 [unneeded] .time ?( need .00
 
@@ -659,7 +655,7 @@ code ms ( u -- )
   \
   \ Display the given time in ISO 8601 extended format.
   \
-  \ See: `.date`, `.time&date`, `time&date`.
+  \ See: `.date`, `.time&date`, `time&date`, `.00`.
   \
   \ }doc
 
@@ -677,7 +673,7 @@ code ms ( u -- )
   \
   \ Display the given time in ISO 8601 extended format.
   \
-  \ See: `.time`, `.time&date`, `time&date`.
+  \ See: `.time`, `.time&date`, `time&date`, `.0000`, `.00`.
   \
   \ }doc
 
@@ -885,5 +881,8 @@ need reset-dticks need dticks need dticks>cs
   \ and `set-time` faster. Add `expired` and `dexpired`.
   \
   \ 2017-12-09: Improve documentation.
+  \
+  \ 2017-12-10: Move `.00` and `.0000` to <display.numbers.fs>.
+  \ Improve documentation.
 
   \ vim: filetype=soloforth
