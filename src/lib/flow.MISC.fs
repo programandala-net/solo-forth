@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712111647
+  \ Last modified: 201712111905
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -179,6 +179,8 @@ code call ( a -- )
   \
   \ }doc
 
+[unneeded] 0repeat ?( need cs-dup
+
 : 0repeat
   \ Compilation: ( dest -- dest )
   \ Run-time:    ( f -- )
@@ -217,10 +219,9 @@ code call ( a -- )
   \
   \ }doc
 
-[unneeded] recurse ?(
+[unneeded] recurse
 
-: recurse ( -- )
-  latestxt compile, ; immediate compile-only ?)
+?\ : recurse ( -- ) latestxt compile, ; immediate compile-only
 
   \ doc{
   \
