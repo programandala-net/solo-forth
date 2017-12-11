@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201707271623
+  \ Last modified: 201712110053
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -48,7 +48,7 @@
   \ }doc
 
 [unneeded] pick ?(
-code pick ( xu .. x1 x0 u -- xu .. x1 x0 xu )
+code pick ( x#u .. x#1 x#0 u -- x#u .. x#1 x#0 x#u )
   E1 c,  29 c,  39 c,  C3 c, fetchhl , end-code ?)
     \ pop hl
     \ add hl,hl
@@ -57,7 +57,7 @@ code pick ( xu .. x1 x0 u -- xu .. x1 x0 xu )
 
   \ doc{
   \
-  \ pick ( xu .. x1 x0 u -- xu .. x1 x0 xu )
+  \ pick ( x#u .. x#1 x#0 u -- x#u .. x#1 x#0 x#u )
   \
   \ See: `roll`, `rot`.
   \
@@ -65,7 +65,7 @@ code pick ( xu .. x1 x0 u -- xu .. x1 x0 xu )
 
 [unneeded] roll ?( need assembler need unresolved need >amark
 
-code roll ( xu xn .. x0 u -- xn .. x0 xu )
+code roll ( x#u x#u-1 .. x#0 u -- x#u-1 .. x#0 x#u )
 
   h pop, h addp, h d ldp, sp addp,
     \ pop hl
@@ -107,7 +107,7 @@ code roll ( xu xn .. x0 u -- xn .. x0 xu )
 
   \ doc{
   \
-  \ roll ( xu xn .. x0 u -- xn .. x0 xu )
+  \ roll ( x#u x#u-1 .. x#0 u -- x#u-1 .. x#0 x#u )
   \
   \ See: `pick`, `rot`.
   \
@@ -519,5 +519,7 @@ code >false ( x -- false ) E1 c, ' false jp, end-code ?)
   \
   \ 2017-07-27: Replace `jp next` with the actual macro
   \ `_jp_next` in Z80 comments.
+  \
+  \ 2017-12-11: Improve stack comments of `roll` and `pick`.
 
   \ vim: filetype=soloforth

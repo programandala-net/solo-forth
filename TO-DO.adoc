@@ -678,9 +678,9 @@ Improve tab control.
 // Documentation {{{1
 == Documentation ==
 
-.2017-12-10
+.2017-12-11:
 
-Add usage example to `[switch`.
+Improve documentation of `switch:`.
 
 .2017-12-10:
 
@@ -779,9 +779,7 @@ included in the glossary with a link to the section.
 Document 
 <flow.select.fs>,
 <flow.dijktstra.fs>,
-<flow.case.fs>,
-<flow.begincase.fs>,
-<flow.doer.fs>, `is`, `[is]`, `<is>`.
+`is`, `[is]`, `<is>`.
 
 .2017-02-27:
 
