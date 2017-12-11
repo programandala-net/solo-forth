@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705092024
+  \ Last modified: 201712112258
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,14 +25,14 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( rnd random random-range fast-rnd fast-random )
+( rnd random fast-rnd fast-random )
 
-[unneeded] rnd [unneeded] random and ?(
+[unneeded] rnd ?(
 
 2variable rnd-seed  $0111 rnd-seed !
 
 : rnd ( -- u )
-  rnd-seed 2@ $62DC um* rot 0 d+ over rnd-seed 2! ;
+  rnd-seed 2@ $62DC um* rot 0 d+ over rnd-seed 2! ; ?)
 
   \ doc{
   \
@@ -40,9 +40,11 @@
   \
   \ Return a random number _u_.
   \
-  \ See: `random`, `random-range`, `fast-rnd`.
+  \ See: `random`, `random-within`, `fast-rnd`.
   \
   \ }doc
+
+[unneeded] random ?( need rnd
 
 : random ( n1 -- n2 ) rnd um* nip ; ?)
 
@@ -52,7 +54,7 @@
   \
   \ Return a random number _n2_ from 0 to _n1_ minus 1.
   \
-  \ See: `rnd`, `random-range`, `fast-random`.
+  \ See: `rnd`, `random-within`, `fast-random`.
   \
   \ }doc
 
@@ -64,20 +66,6 @@
   \ Found here (2015-12-13):
   \ http://web.archive.org/web/20060707001752/http://www.tinyboot.com/index.html
   \ http://web.archive.org/web/20060714230130/http://tinyboot.com:80/rng.txt
-
-[unneeded] random-range  ?( need random
-
-: random-range ( n1 n2 -- n3 ) over - 1+ random + ; ?)
-
-  \ doc{
-  \
-  \ random-range ( n1 n2 -- n3 )
-  \
-  \ Return a random number from _n1_ (min) to _n2_ (max).
-  \
-  \ See: `random`.
-  \
-  \ }doc
 
 [unneeded] fast-rnd ?( need os-seed
 
@@ -177,6 +165,37 @@ code fast-rnd ( -- u )
   \      ld (randSeed),hl
   \      ret
   \ ----
+
+( random-within random-between )
+
+[unneeded] random-within ?( need random
+
+: random-within ( n1 n2 -- n3 ) over - random + ; ?)
+
+  \ doc{
+  \
+  \ random-within ( n1 n2 -- n3 )
+  \
+  \ Return a random number _n3_ from _n1_ (min) to _n2_ (max).
+  \
+  \ See: `randow-between`, `random`, `within`.
+  \
+  \ }doc
+
+[unneeded] random-between ?( need random-within
+
+: random-between ( n1 n2 -- n3 ) 1+ random-within ; ?)
+
+  \ doc{
+  \
+  \ random-between ( n1 n2 -- n3 )
+  \
+  \ Return a random number _n3_ from _n1_ (min) to _n2-1_
+  \ (max).
+  \
+  \ See: `random-within`, `random`, `between`.
+  \ 
+  \ }doc
 
 ( crnd crandom -1|1 -1..1 randomize randomize0 )
 
@@ -344,5 +363,8 @@ code crnd ( -- b )
   \ with Z80 opcodes.
   \
   \ 2017-05-09: Remove `jppushhl,`. Improve documentation.
+  \
+  \ 2017-12-11: Add `random-within`. Rewrite `random-range` as
+  \ `random-between`. Improve needing of `rnd`.
 
   \ vim: filetype=soloforth

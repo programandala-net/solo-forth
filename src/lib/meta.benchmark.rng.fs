@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712101212
+  \ Last modified: 201712112236
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -61,6 +61,53 @@
   \ need 8b-rng-px-benchs
   \ show-rng
   \ ----
+
+( random-range-bench )
+
+need rnd need random need dticks need dtimer
+
+
+: random-within0 ( n1 n2 -- n3 ) over - random + ;
+
+: random-within1 ( n1 n2 -- n3 ) over - rnd swap mod + ;
+
+: random-between0 ( n1 n2 -- n3 ) 1+ over - random + ;
+
+: random-between1 ( n1 n2 -- n3 ) 1+ over - rnd swap mod + ;
+
+: random-between0f ( n1 n2 -- n3 ) 1+ random-within0 ;
+
+: random-between1f ( n1 n2 -- n3 ) 1+ random-within1 ;
+
+
+-->
+
+( random-range-bench )
+
+: run ( n -- )
+  >r cr
+  dticks r@ 0 ?do 10 20 random-within0 drop loop dtimer
+  ." random-within0" cr
+  dticks r@ 0 ?do 10 20 random-within1 drop loop dtimer
+  ." random-within1" cr
+  dticks r@ 0 ?do 10 20 random-between0 drop loop dtimer
+  ." random-between0" cr
+  dticks r@ 0 ?do 10 20 random-between1 drop loop dtimer
+  ." random-between1" cr
+  dticks r@ 0 ?do 10 20 random-between0f drop loop dtimer
+  ." random-between0f" cr
+  dticks r@ 0 ?do 10 20 random-between1f drop loop dtimer
+  ." random-between1f" cr
+  rdrop ;
+
+  \ Variant           Ticks in 65535 iterations
+  \ --------------    -------------------------
+  \ random-within0     4901
+  \ random-within1     8505
+  \ random-between0    4987
+  \ random-between1    8587
+  \ random-between0f   5272
+  \ random-between1f   8822
 
 ( rnd-bench )
 
@@ -1730,5 +1777,7 @@ need 8b-rng-px-bench need :noname
   \
   \ 2017-12-10: Update to `a push,` and `a pop,`, after the
   \ change in the assembler.
+  \
+  \ 2017-12-11: Add `random-range-bench`.
 
   \ vim: filetype=soloforth
