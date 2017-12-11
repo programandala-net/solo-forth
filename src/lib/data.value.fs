@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705151136
+  \ Last modified: 201712111851
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,8 +25,9 @@
 
 ( cvalue value 2value to )
 
-[unneeded] cvalue
-?\ : cvalue ( c "name"  -- ) create 0 c, c, does> 1+ c@ ;
+[unneeded] cvalue ?( need to
+
+: cvalue ( c "name"  -- ) create 0 c, c, does> 1+ c@ ; ?)
 
   \ doc{
   \
@@ -40,8 +41,9 @@
   \
   \ }doc
 
-[unneeded] value
-?\ : value ( n "name"  -- ) create 1 c, , does> 1+ @ ;
+[unneeded] value ?( need to
+
+: value ( n "name"  -- ) create 1 c, , does> 1+ @ ; ?)
 
   \ doc{
   \
@@ -57,8 +59,9 @@
   \
   \ }doc
 
-[unneeded] 2value
-?\ : 2value ( x1 x2 "name"  -- ) create 2 c, 2, does> 1+ 2@ ;
+[unneeded] 2value ?( need to
+
+: 2value ( x1 x2 "name"  -- ) create 2 c, 2, does> 1+ 2@ ; ?)
 
   \ doc{
   \
@@ -74,10 +77,7 @@
   \
   \ }doc
 
-[unneeded] cvalue [unneeded] value [unneeded] 2value and and
-[defined] to or ?(
-
-need >body need array>
+[unneeded] to ?( need >body need array>
 
 create to> ' c! , ' ! , ' 2! ,
 
@@ -87,7 +87,7 @@ create to> ' c! , ' ! , ' 2! ,
   \ Run-time        ( i*x -- )
   ' >body dup 1+ swap c@ to> array>
   compiling? if swap postpone literal @ compile, exit then
-             perform ; immediate
+             perform ; immediate ?)
 
   \ doc{
   \
@@ -142,5 +142,7 @@ create to> ' c! , ' ! , ' 2! ,
   \ 2017-04-16: Improve documentation.
   \
   \ 2017-05-15: Improve documentation.
+  \
+  \ 2017-12-11: Fix and improve needing of `to`.
 
   \ vim: filetype=soloforth
