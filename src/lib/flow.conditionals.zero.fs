@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201707271622
+  \ Last modified: 201712111554
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -57,7 +57,7 @@
   \   Compilation: ( C: dest -- orig dest )
   \   Run-time:    ( f -- )
   \
-  \ Faster and smaller alternative to the idiom `0= while`.
+  \ Faster and smaller alternative to the idiom ``0= while``.
   \
   \ ``0while`` is an `immediate` and `compile-only` word.
   \
@@ -73,9 +73,11 @@
 
   \ doc{
   \
-  \ 0until ( f -- )
+  \ 0until
+  \   Compilation: ( C: dest -- )
+  \   Run-time:    ( f -- )
   \
-  \ Faster and smaller alternative to the idiom `0= until`.
+  \ Faster and smaller alternative to the idiom ``0= until``.
   \
   \ ``0until`` is an `immediate` and `compile-only` word.
   \
@@ -100,8 +102,8 @@ code 0exit ( f -- ) ( R: nest-sys | -- nest-sys | )
   \ If _f_ is zero, return control to the calling definition,
   \ specified by _nest-sys_.
   \
-  \ `0exit` is not intended to be used within a `loop`.  Use
-  \ ``0= if unloop exit then`` instead.
+  \ WARNING: ``0exit`` is not intended to be used within a
+  \ `loop`.  Use ``0= if unloop exit then`` instead.
   \
   \ ``0exit`` can be used in interpretation mode to stop the
   \ interpretation of a block.
@@ -137,5 +139,7 @@ code 0exit ( f -- ) ( R: nest-sys | -- nest-sys | )
   \
   \ 2017-07-27: Replace `jp next` with the actual macro
   \ `_jp_next` in Z80 comments.
+  \
+  \ 2017-12-11: Improve documentation.
 
   \ vim: filetype=soloforth

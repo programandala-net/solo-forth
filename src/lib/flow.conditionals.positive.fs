@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201707271622
+  \ Last modified: 201712111555
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -38,7 +38,7 @@
   \   Compilation: ( C: -- orig )
   \   Run-time:    ( f -- )
   \
-  \ Faster and smaller alternative to the idiom `0>= if`.
+  \ Faster and smaller alternative to the idiom ``0>= if``.
   \
   \ ``+if`` is an `immediate` and `compile-only` word.
   \
@@ -51,7 +51,7 @@
 : +while
   \ Compilation: ( C: dest -- orig dest )
   \ Run-time:    ( f -- )
-  postpone +if  postpone cs-swap ; immediate compile-only ?)
+  postpone +if postpone cs-swap ; immediate compile-only ?)
 
   \ doc{
   \
@@ -59,7 +59,7 @@
   \   Compilation: ( C: dest -- orig dest )
   \   Run-time:    ( f -- )
   \
-  \ Faster and smaller alternative to the idiom `0>= while`.
+  \ Faster and smaller alternative to the idiom ``0>= while``.
   \
   \ ``+while`` is an `immediate` and `compile-only` word.
   \
@@ -80,7 +80,7 @@
   \   Compilation: ( C: dest -- )
   \   Run-time:    ( f -- )
   \
-  \ Faster and smaller alternative to the idiom `0>= until`.
+  \ Faster and smaller alternative to the idiom ``0>= until``.
   \
   \ ``+until`` is an `immediate` and `compile-only` word.
   \
@@ -104,8 +104,8 @@ code +exit ( n -- ) ( R: nest-sys | -- nest-sys | )
   \ If _n_ is positive, return control to the calling
   \ definition, specified by _nest-sys_.
   \
-  \ `+exit` is not intended to be used within a `loop`.  Use
-  \ ``0>= if unloop exit then`` instead.
+  \ WARNING: `+exit` is not intended to be used within a
+  \ `loop`.  Use ``0>= if unloop exit then`` instead.
   \
   \ ``+exit`` can be used in interpretation mode to stop the
   \ interpretation of a block.
@@ -133,6 +133,8 @@ code +exit ( n -- ) ( R: nest-sys | -- nest-sys | )
   \
   \ 2017-07-27: Replace `jp next` with the actual macro
   \ `_jp_next` in Z80 comments.
+  \
+  \ 2017-12-11: Improve documentation.
 
   \ vim: filetype=soloforth
 
