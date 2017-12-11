@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712111522
+  \ Last modified: 201712111543
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -132,65 +132,93 @@ code call ( a -- )
   \
   \ }doc
 
-( ?repeat recurse ?? )
+( ?repeat 0repeat recurse ?? )
 
-[unneeded] ?repeat ?( need cs-dup
+[unneeded] ?repeat ?( need cs-dup need 0until
 
 : ?repeat
   \ Compilation: ( dest -- dest )
   \ Run-time:    ( f -- )
-  cs-dup postpone until ; immediate ?)
+  cs-dup postpone 0until ; immediate compile-only ?)
 
   \ Credit:
   \
-  \ Code from the documentation of Forth-2012 and Forth-94.
-
-  \ Old history:
-  \
-  \ 2016-03-04: Copy the code of `?repeat` from the Forth-2012
-  \ documentation.
-  \ 2016-04-28: Fix the stack notation of `?repeat`.
-  \ 2016-11-26: Move to <flow.misc.fsb>.
+  \ Adapted from the documentation of Forth-2012 and Forth-94.
 
   \ doc{
   \
   \ ?repeat
   \   Compilation: ( dest -- dest )
   \   Run-time:    ( f -- )
+
   \
-  \ An alternative exit point for `begin until` loops.
+  \ An alternative exit point for `begin` ... `until` loops:
+  \ If _f_ is non-zero, continue execution at `begin`.
   \
-  \ ``?repeat`` is an `immediate` word.
+  \ ``?repeat`` is an `immediate` and `compile-only` word.
+  \
+  \ Usage example:
+
+  \ ----
+  \ : test ( -- )
+  \     begin
+  \       ...
+  \     flag ?repeat  \ Go back to `begin` if flag is non-zero
+  \       ...
+  \     flag 0repeat  \ Go back to `begin` if flag is zero
+  \       ...
+  \     flag until    \ Go back to `begin` if flag is false
+  \     ...
+  \   ;
+  \ ----
+
+  \ See: `0repeat`.
+  \
+  \ }doc
+
+: 0repeat
+  \ Compilation: ( dest -- dest )
+  \ Run-time:    ( f -- )
+  cs-dup postpone until ; immediate compile-only ?)
+
+  \ Credit:
+  \
+  \ Adapted from the documentation of Forth-2012 and Forth-94.
+
+  \ doc{
+  \
+  \ 0repeat
+  \   Compilation: ( dest -- dest )
+  \   Run-time:    ( f -- )
+  \
+  \ An alternative exit point for `begin` ... `until` loops:
+  \ If _f_ is zero, continue execution at `begin`.
+  \
+  \ ``0repeat`` is an `immediate` word.
   \
   \ Usage example:
   \
   \ ----
-  \ : xx ( -- )
+  \ : test ( -- )
   \     begin
   \       ...
-  \     flag ?repeat  \ Go back to `begin` if flag is false
+  \     flag 0repeat  \ Go back to `begin` if flag is zero
   \       ...
-  \     flag ?repeat  \ Go back to `begin` if flag is false
+  \     flag ?repeat  \ Go back to `begin` if flag is non-zero
   \       ...
   \     flag until    \ Go back to `begin` if flag is false
   \     ...
-  \ ;
+  \   ;
   \ ----
 
+  \ See: `?repeat`.
+  \
   \ }doc
 
 [unneeded] recurse ?(
 
 : recurse ( -- )
   latestxt compile, ; immediate compile-only ?)
-
-  \ Old history:
-  \
-  \ 2015-06-05: Written in the kernel.
-  \ 2016-04-17: Moved to the library.
-  \ 2016-04-24: Fixed with `latestxt`: now it can be used
-  \ in words created with `:noname`.
-  \ 2016-11-26: Move to <flow.misc.fsb>.
 
   \ doc{
   \
@@ -297,12 +325,6 @@ code call ( a -- )
   \ Factoring", by Richard Astle, published on Forth Dimensions
   \ (volume 17, number 4, page 19, 1995-11).
 
-  \ Old history:
-  \
-  \ 2015-11-07: First version.
-  \ 2016-04-26: Documented.
-  \ 2016-11-26: Move to <flow.misc.fsb>.
-
 [unneeded] retry ?( need name>body
 
 : retry ( -- )
@@ -325,7 +347,7 @@ code call ( a -- )
 : ?retry
   \ Compilation: ( -- )
   \ Run-time: ( f -- )
-  postpone if  postpone retry  postpone then
+  postpone if postpone retry postpone then
   ; immediate compile-only ?)
 
   \ doc{
@@ -338,7 +360,7 @@ code call ( a -- )
   \
   \ ``?retry`` is an `immediate` and `compile-only` word.
   \
-  \ See: `retry`.
+  \ See: `retry`, `?repeat`, `0repeat`.
   \
   \ }doc
 
@@ -378,13 +400,13 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ doc{
   \
   \ cond
-  \   Compilation: ( C: -- 0 )
+  \   Compilation: ( C: -- cs-mark )
   \   Run-time:    ( -- )
 
   \
   \ Compilation: Mark the start of a ``cond`` .. `thens`
-  \ structure.  Leave _0_ on the control-flow stack, as a mark
-  \ for `thens`.
+  \ structure.  Leave _cs-mark_ on the control-flow stack, to
+  \ be checked by `thens`.
   \
   \ Run-time: Continue execution.
   \
@@ -402,7 +424,7 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \   thens ;
   \ ----
 
-  \ See: `case`.
+  \ See: `case`, `cs-mark`.
   \
   \ }doc
 
@@ -452,6 +474,28 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ ===========================================================
   \ Change log
 
+  \ --------------------------------------------
+  \ Old
+
+  \ 2015-06-05: Write `recurse` in the kernel.
+  \
+  \ 2015-11-07: First version of `retry`.
+  \
+  \ 2016-03-04: Copy the code of `?repeat` from the Forth-2012
+  \ documentation.
+  \
+  \ 2016-04-17: Move `recurse` to the library.
+  \
+  \ 2016-04-24: Fix `recurse` with `latestxt`: now it can be used
+  \ in words created with `:noname`.
+  \
+  \ 2016-04-26: Document `retry`.
+  \
+  \ 2016-04-28: Fix the stack notation of `?repeat`.
+
+  \ --------------------------------------------
+  \ New
+
   \ 2016-11-26: Create this module to combine the modules that
   \ contain small control flow structures, in order to save
   \ blocks: <flow.base-execute.fsb>, <flow.call.fsb>,
@@ -498,6 +542,7 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ 2017-12-03: Improve documentation.
   \
   \ 2017-12-11: Update `cond` and `thens` with `cs-mark` and
-  \ `cs-test`.
+  \ `cs-test`. Update the change log with the old changes of
+  \ the former modules. Rewrite `?repeat`. Add `0repeat`.
 
   \ vim: filetype=soloforth
