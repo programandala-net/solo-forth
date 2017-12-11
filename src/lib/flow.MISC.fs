@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712111543
+  \ Last modified: 201712111647
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -62,8 +62,8 @@
 [unneeded] call ?(
 
 code call ( a -- )
-  E1 c,  C5 c,  CD c, >mark  C1 c,  DD c, 21 c, next , jpnext,
-                      >resolve E9 c, end-code ?)
+  E1 c, C5 c, CD c, >mark C1 c, DD c, 21 c, next , jpnext,
+                    >resolve E9 c, end-code ?)
 
   \   pop hl
   \   push bc
@@ -80,12 +80,14 @@ code call ( a -- )
   \
   \ Call a machine code subroutine at _a_.
   \
+  \ See: `execute-hl,`, `call-xt,`.
+  \
   \ }doc
 
 [unneeded] don't ?(
 
 : don't ( n1 n2 -- | n1 n2 )
-  2dup = if  2drop unnest unnest  then ; compile-only ?)
+  2dup = if 2drop unnest unnest then ; compile-only ?)
 
   \ doc{
   \
@@ -152,8 +154,9 @@ code call ( a -- )
   \   Run-time:    ( f -- )
 
   \
-  \ An alternative exit point for `begin` ... `until` loops:
-  \ If _f_ is non-zero, continue execution at `begin`.
+  \ An alternative exit point for `begin` ... `until` loops: If
+  \ _f_ is non-zero, continue execution at `begin`, otherwise
+  \ continue execution after `until`.
   \
   \ ``?repeat`` is an `immediate` and `compile-only` word.
   \
@@ -187,17 +190,16 @@ code call ( a -- )
 
   \ doc{
   \
-  \ 0repeat
-  \   Compilation: ( dest -- dest )
-  \   Run-time:    ( f -- )
+  \ 0repeat Compilation: ( dest -- dest ) Run-time:    ( f -- )
   \
-  \ An alternative exit point for `begin` ... `until` loops:
-  \ If _f_ is zero, continue execution at `begin`.
+  \ An alternative exit point for `begin` ... `until` loops: If
+  \ _f_ is zero, continue execution at `begin`, otherwise
+  \ continue execution after `until`.
   \
   \ ``0repeat`` is an `immediate` word.
   \
   \ Usage example:
-  \
+
   \ ----
   \ : test ( -- )
   \     begin
@@ -544,5 +546,6 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ 2017-12-11: Update `cond` and `thens` with `cs-mark` and
   \ `cs-test`. Update the change log with the old changes of
   \ the former modules. Rewrite `?repeat`. Add `0repeat`.
+  \ Improve documentation.
 
   \ vim: filetype=soloforth

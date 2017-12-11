@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712101202
+  \ Last modified: 201712111652
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -621,7 +621,7 @@ macro execute-hl, ( -- )
   \ Compile an `execute` with the _xt_ hold in the HL register.
   \ ``execute-hl,`` is used to call Forth words from Z80.
   \
-  \ See: `call-xt,`.
+  \ See: `call-xt,`, `call`.
   \
   \ }doc
 
@@ -638,6 +638,8 @@ macro call-xt, ( xt -- ) 21 c, , execute-hl, endm
   \
   \ ``call-xt,`` is the low-level equivalent of `execute`: it's
   \ used to call a colon word from a code word.
+  \
+  \ See: `call`.
   \
   \ }doc
 
@@ -748,5 +750,7 @@ macro call-xt, ( xt -- ) 21 c, , execute-hl, endm
   \ 2017-12-10: Add `m3p` to define `push,` and `pop,` with.
   \ This makes register A usable with those instructions
   \ instead of register AF.  Remove constant `af.`
+  \
+  \ 2017-12-11: Improve documentation.
 
   \ vim: filetype=soloforth
