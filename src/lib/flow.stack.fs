@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712111514
+  \ Last modified: 201712111901
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -120,9 +120,7 @@
   \
   \ }doc
 
-[unneeded] cs-mark
-
-?\ 0 cconstant cs-mark ( C: -- cs-mark )
+[unneeded] cs-mark ?\ 0 cconstant cs-mark ( C: -- cs-mark )
 
   \ Credit:
   \ Control-Flow Stack Extensions
@@ -140,9 +138,9 @@
   \
   \ }doc
 
-[unneeded] cs-test
+[unneeded] cs-test ?( need cs-mark
 
-?\ : cs-test ( -- f ) ( C: x -- x ) dup cs-mark <> ;
+: cs-test ( -- f ) ( C: x -- x ) dup cs-mark <> ; ?)
 
   \ Credit:
   \ Control-Flow Stack Extensions
