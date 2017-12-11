@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712110006
+  \ Last modified: 201712111500
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -22,6 +22,60 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( {if-test )
+
+  \ Credit:
+  \
+  \ Based on:
+  \
+  \ M. Edward Borasky, 1996-08-03, "Towards a Discipline of ANS
+  \ Forth Programming", published on Forth Dimensions (volume
+  \ 18, number 4, pp 5-14), 1996-12.
+
+need {if
+
+: test1 ( x1 x2 --  )
+  ." {if --- test1" cr
+  {if  2dup = if> cr over . ." = " dup .
+  |if| 2dup > if> cr over . ." > " dup .
+  |if| 2dup < if> cr over . ." < " dup .
+  if}  2drop ;
+
+: test2 ( x1 x2 --  )
+  ." {if --- test2" cr
+  {if  2dup > if> cr over . ." > " dup .
+  |if| 2dup < if> cr over . ." < " dup .
+  if}  2drop ;
+
+5 0 test1 0 5 test1 5 5 test1
+
+5 0 test2 0 5 test2 5 5 test2
+
+( {do-test )
+
+  \ Credit:
+  \
+  \ Based on:
+  \
+  \ M. Edward Borasky, 1996-08-03, "Towards a Discipline of ANS
+  \ Forth Programming", published on Forth Dimensions (volume
+  \ 18, number 4, pp 5-14), 1996-12.
+
+need {do need {if-test
+
+variable x 5 6553 * x !
+variable y 5 6551 * y !
+
+: useful ( -- )
+  {do  x @ y @ > do> y @ negate x +!
+  |do| y @ x @ > do> x @ negate y +!
+  do} ;
+
+: test ( -- )
+  cr ." Before: x, y = " x ? y ?
+  cr ." useful"
+  cr ." After:  x, y = " x ? y ? cr ;
 
 ( ;code-test )
 
@@ -1467,6 +1521,6 @@ blk @ 1+ blk @ 2+ thru
   \ 2017-12-10: Add `;code-test`.
   \
   \ 2017-12-11: Check and modify `:switch-test` and
-  \ `[switch-test`.
+  \ `[switch-test`. Add `{if-test` and `{do-test`.
 
   \ vim: filetype=soloforth

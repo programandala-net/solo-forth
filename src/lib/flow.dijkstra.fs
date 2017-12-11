@@ -3,17 +3,23 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201712111500
 
   \ ===========================================================
   \ Description
 
-  \ The Dijkstra control structures.
+  \ An implementation of the
+  \ Dijkstra Guarded Command Control Structures.
 
   \ ===========================================================
-  \ Author
+  \ Authors
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ M. Edward Borasky, 1996-08-03, "Towards a Discipline of ANS
+  \ Forth Programming", published on Forth Dimensions (volume
+  \ 18, number 4, pp 5-14), 1996-12.
+  \
+  \ Modified and adapted to Solo Forth by Marcos Cruz
+  \ (programandala.net), 2015, 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -22,81 +28,145 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-
 ( {if if} if> |if| )
 
-  \ Dijkstra Guarded Command Control Structures
+need cs-swap
 
-  \ Credit:
+: {if \ Compilation: ( -- 0 )
+  0 ; immediate compile-only
+
+  \ doc{
   \
-  \ Adapted from: Dijkstra Guarded Command Control Structures
-  \ M. Edward Borasky, 1996-08-03. Listing in "Towards a
-  \ Discipline of ANS Forth Programming". Originally published
-  \ on Forth Dimensions (volume 18, number 4, pp 5-14).
-  \ Adapted to hForth v0.9.9 by Wonyong Koh.
+  \ {if
+  \   Compilation: ( -- 0 )
+  \
+  \ Start a ``{if`` control structure.
+  \
+  \ See: `if}`, `if>`, `|if|`.
+  \
+  \ }doc
 
-need cs-roll
+: if> \ Compilation: ( count -- count+1 ) ( C: -- orig1 )
+  1+ >r postpone if r> ; immediate compile-only
 
-: {if ( -- 0 ) 0 ; immediate compile-only
-  \ start a conditional
-  \ put counter on stack
-
-: if>
-  \ ( count -- count+1 )
-  \ ( c: -- orig1 )
-  1+ >r postpone if  r> ; immediate compile-only
-  \ right-arrow for {if ... if}
+  \ doc{
+  \
+  \ if>
+  \   Compilation: ( count -- count+1 )
+  \                ( C: -- orig1 )
+  \
+  \ Part of the `{if` control structure.
+  \
+  \ }doc
 
 : |if|
   \ ( count -- count )
-  \ ( c: orig ... orig1 -- orig ... orig2 )
-  >r postpone ahead \ new orig
-  1 cs-roll postpone then \ resolve old orig
+  \ ( C: orig ... orig1 -- orig ... orig2 )
+  >r postpone ahead       \ new _orig_
+  cs-swap postpone then \ resolve old _orig_
   r> ; immediate compile-only
-  \ bar for {if ... if}
 
-: if} \ end of conditional
-  \ ( count -- )
-  \ ( c: orig1 ... orign -- )
-  >r  postpone ahead
-  1 cs-roll postpone then \ resolve old orig
+  \ doc{
+  \
+  \ |if|
+  \   Compilation: ( count -- count )
+  \                ( C: orig .. orig1 -- orig .. orig2 )
+  \
+  \ Part of the `{if` control structure.
+  \
+  \ }doc
+
+: if}
+  \ Compilation: ( count -- ) ( C: orig#1 .. orig#n -- )
+  >r postpone ahead
+  cs-swap postpone then \ resolve old _orig_
   -22 postpone literal postpone throw
-    \ 'control structure mismatch'
-  r> 0 ?do  postpone then  loop ; immediate compile-only
-  \ end a conditional
+    \ -22 = "control structure mismatch"
+  r> 0 ?do postpone then loop ; immediate compile-only
+
+  \ XXX TODO -- use `thens`
+
+  \ doc{
+  \
+  \ if}
+  \   Compilation: ( count -- )
+  \                ( C: orig#1 .. orig#n -- )
+  \
+  \ Terminate  a `{if` control structure.
+  \
+  \ }doc
 
 ( {do do} do> |do| )
 
-  \ Dijkstra Guarded Command Control Structures
+need cs-swap need cs-dup
 
-  \ Credit:
+: {do
+  \ Compilation: ( C: -- dest )
+  \ Run-time:    ( -- )
+  postpone begin ; immediate compile-only
+
+  \ doc{
   \
-  \ Adapted from: Dijkstra Guarded Command Control Structures
-  \ M. Edward Borasky, 1996-08-03. Listing in "Towards a
-  \ Discipline of ANS Forth Programming" Originally published
-  \ on Forth Dimensions (number 18, number 4, pages 5-14).
-  \ Adapted to hForth v0.9.9 by Wonyong Koh
+  \ {do
+  \   Compilation: ( C: -- dest )
+  \   Run-time:    ( -- )
+  \
+  \ Start a ``{do`` control structure.
+  \
+  \ See: `do}`, `|do|`, `do>`.
+  \
+  \ }doc
 
-need cs-pick need cs-roll
+: do>
+  \ Compilation: ( C: dest -- orig dest )
+  postpone if cs-swap ; immediate compile-only
 
-: {do ( c: -- dest ) postpone begin ; immediate compile-only
-  \ start a loop
+  \ doc{
+  \
+  \ do>
+  \   Compilation: ( C: dest -- orig dest )
+  \
+  \ Part of the `{do` control structure.
+  \
+  \ }doc
 
-: do> ( c: dest -- orig1 dest )
-  postpone if  1 cs-roll ; immediate compile-only
-  \ right arrow for {do ... od}
+: |do|
+  \ Compilation: ( C: orig dest -- dest )
+  cs-dup  postpone again \ resolve a copy of _dest_
+  cs-swap postpone then  \ resolve old _orig_
+  ; immediate compile-only
 
-: |do| ( c: orig1 dest -- dest )
-  0 cs-pick postpone again \ resolve a copy of dest
-  1 cs-roll postpone then \ resolve old orig
- ; immediate compile-only
-  \ bar for {do ... do}
+  \ doc{
+  \
+  \ |do|
+  \   Compilation: ( C: orig dest -- dest )
+  \
+  \ Part of the `{do` control structure.
+  \
+  \ }doc
 
-: do} ( c: orig dest -- )
-  \ end of loop
-  postpone again \ resolve dest
-  postpone then \ resolve orig
- ; immediate compile-only
-  \ end a loop
+: do}
+  \ Compilation: ( C: orig dest -- )
+  \ Run-time:    ( -- )
+  postpone again \ resolve _dest_
+  postpone then  \ resolve _orig_
+  ; immediate compile-only
+
+  \ doc{
+  \
+  \ do}
+  \   Compilation: ( C: orig dest -- )
+  \   Run-time:    ( -- )
+  \
+  \ Terminate a `{do` control structure.
+  \
+  \ }doc
+
+  \ ===========================================================
+  \ Change log
+
+  \ 2017-12-11: Improve file header. Prepare documentation.
+  \ Replace `1 cs-roll` and `0 cs-pick` with `cs-swap` and
+  \ `cs-dup`.
 
   \ vim: filetype=soloforth
