@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-12-10
+" Updated:  2017-12-11
 "
 " See change log at the end of the file.
 
@@ -557,9 +557,12 @@ syn keyword soloforthStack 2swap
 syn keyword soloforthStack ?dup
 syn keyword soloforthStack bounds
 syn keyword soloforthStack cs-drop
+syn keyword soloforthStack cs-dup
+syn keyword soloforthStack cs-mark
 syn keyword soloforthStack cs-pick
 syn keyword soloforthStack cs-roll
 syn keyword soloforthStack cs-swap
+syn keyword soloforthStack cs-test
 syn keyword soloforthStack depth
 syn keyword soloforthStack drop
 syn keyword soloforthStack dup
@@ -1193,6 +1196,8 @@ let b:current_syntax = "soloforth"
 " 2017-05-11: Add `catcher`.
 "
 " 2017-12-10: Add `finish-code`.
+"
+" 2017-12-11: Add `cs-dup`, `cs-mark`, `cs-test`.
 
 " --------------------------------------------------------------
 

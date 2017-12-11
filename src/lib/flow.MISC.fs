@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712032231
+  \ Last modified: 201712111522
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -368,9 +368,12 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
 
 ( cond thens )
 
-[unneeded] cond ?( need thens
+[unneeded] cond ?( need cs-mark need thens
 
-0 constant cond immediate compile-only ?)
+: cond
+  \ Compilation: ( C: -- cs-mark )
+  \ Run-time:    ( -- )
+  cs-mark ; immediate compile-only ?)
 
   \ doc{
   \
@@ -403,18 +406,20 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \
   \ }doc
 
-[unneeded] thens ?(
+[unneeded] thens ?( need cs-test
 
 : thens
-  \ Compilation: ( C: 0 orig#1 .. orig#n -- )
+  \ Compilation: ( C: cs-mark orig#1 .. orig#n -- )
   \ Run-time:    ( -- )
-  begin ?dup while postpone then repeat
+  begin cs-test while postpone then repeat drop
   ; immediate compile-only ?)
 
   \ doc{
   \
-  \ thens Compilation: ( C: 0 orig#1 .. orig#n -- ) Run-time:
-  \ ( -- )
+  \ thens
+  \   Compilation: ( C: cs-mark orig#1 .. orig#n -- )
+  \   Run-time:    ( -- )
+
   \
   \ Compilation: Resolve all forward references _orig#1 ..
   \ orign#n_ with `then` until _0_ is found.
@@ -424,9 +429,11 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ ``thens`` is an `immediate` and `compile-only` word.
   \
   \ ``thens`` is a factor of `endcase` and other control
-  \ structures, but it's also the end of the `cond` .. ``thens``
-  \ structure.
-
+  \ structures, but it's also the end of the `cond` ..
+  \ ``thens`` structure.
+  \
+  \ See: `cs-mark`, `cs-test`.
+  \
   \ }doc
 
   \ Credit of the `cond thens` structure:
@@ -436,6 +443,11 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ Newsgroups: comp.lang.forth
   \ Message-ID: <260620020959020469%neilbawd@earthlink.net>
   \ Date: Wed, 26 Jun 2002 16:58:18 GMT
+  \
+  \ The usage of `cs-mark` and `cs-test` was borrowed from:
+  \
+  \ Control-Flow Stack Extensions
+  \ http://dxforth.netbay.com.au/cfsext.html
 
   \ ===========================================================
   \ Change log
@@ -484,5 +496,8 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ 2017-12-02: Improve documentation.
   \
   \ 2017-12-03: Improve documentation.
+  \
+  \ 2017-12-11: Update `cond` and `thens` with `cs-mark` and
+  \ `cs-test`.
 
   \ vim: filetype=soloforth
