@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712121432
+  \ Last modified: 201712121944
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,6 +27,79 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( past?-bench )
+
+need dnegate need ticks need dticks need d0< need du<
+need timer
+
+: dpast1? ( d -- f ) dnegate dticks d+ d0< 0= ;
+
+: dpast2? ( d -- f ) dticks du< ;
+
+: past1? ( n -- f ) ticks swap - 0< 0= ;
+
+: past2? ( n -- f ) ticks u< ;
+
+: run ( n -- )
+  >r cr ." dpast1? " ticks r@ 0 ?do 0. dpast1? drop loop timer
+     cr ." dpast2? " ticks r@ 0 ?do 0. dpast2? drop loop timer
+     cr ." past1?  " ticks r@ 0 ?do 0  past1?  drop loop timer
+     cr ." past2?  " ticks r> 0 ?do 0  past2?  drop loop timer
+     ;
+
+  \ 2017-12-12:
+
+  \        Ticks
+  \        -----------------------------
+  \ Times  dpast1? dpast2? past1? past2?
+  \ -----  ------- ------- ------ ------
+  \   100        4       3      2      2
+  \  1000       33      35     22     17
+  \ 10000      332     350    218    172
+  \ 20000      664     700    430    345 
+  \ 65535     2176    2292   1432   1131
+
+( negate-+-bench )
+
+  \ 2017-12-12
+
+need ticks need timer
+
+: run ( n -- )
+  >r
+  cr ." negate + "
+  ticks r@ 0 ?do 0 negate 0 + drop loop timer
+  cr ." swap - "
+  ticks r> 0 ?do 0 0 swap -   drop loop timer ;
+
+  \        Ticks
+  \        ------------------
+  \ Times  negate +  swap -
+  \ -----  --------  --------
+  \ 10000        93        91
+  \ 20000       186       182
+  \ 65535       609       597
+
+( dnegate-d+-bench )
+
+  \ 2017-12-12
+
+need d- need dticks need dtimer
+
+: run ( n -- )
+  >r
+  cr ." dnegate d+ "
+  dticks r@ 0 ?do 0. dnegate 0. d+ 2drop loop dtimer
+  cr ." 2swap d- "
+  dticks r> 0 ?do 0. 0. 2swap d-   2drop loop dtimer ;
+
+  \        Ticks
+  \        ------------------
+  \ Times  dnegate d+  2swap d-
+  \ -----  ----------  --------
+  \ 10000         136       881
+  \ 65535         135       889
 
 ( s>d-bench )
 
@@ -3005,6 +3078,7 @@ need bench{ need }bench.
   \ 2017-12-09: Remove useless `[defined] (/) ?\`.
   \
   \ 2017-12-12: Rename `>name-bench` `>name-bench1`.  Add
-  \ `>name-bench2`
+  \ `>name-bench2`, `dnegate-d+-bench`, `negate-+-bench`,
+  \ `past?-bench`.
 
   \ vim: filetype=soloforth

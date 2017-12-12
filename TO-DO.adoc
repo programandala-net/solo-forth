@@ -2467,8 +2467,6 @@ NOTE: Milestone: 0.14.0
 Adapt from lina:
 
 ----
-: PAST? DNEGATE TICKS D+ SWAP DROP 0< 0= ;                     
-
 DECIMAL TICKS DNEGATE 1000 MS TICKS D+ DROP                    
    CONSTANT TICKS-PER-SECOND                                   
 ----
