@@ -514,6 +514,17 @@ several aliases and synonyms of one single word.
 // Display {{{1
 == Display ==
 
+.2017-12-12:
+
+NOTE: Milestone: 0.14.0
+
+Rename third-party display modes after a common convention, using the
+initials of their original authors:
+
+-`mode-64o` (Owen) --> `mode-64ao` (Andrew Owen)
+-`mode-64s` (Saukas) --> `mode-64es` (Einar Saukas)
+-`mode-42rt` (real-time) --> `mode-42pw` (P. Wardle)
+
 .2017-05-15:
 
 Document the control characters accepted by each mode, especially the
