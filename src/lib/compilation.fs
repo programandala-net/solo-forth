@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712100130
+  \ Last modified: 201712120213
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -177,7 +177,8 @@
   \
   \ name<name ( nt1 -- nt2 )
   \
-  \ Get the previous _nt2_ from _nt1_.
+  \ Get the previous _nt2_ from _nt1_, i.e. _nt2_ is the
+  \ word that was defined before _nt1_.
   \
   \ See: `name>name`.
   \
@@ -190,7 +191,14 @@
   \
   \ name>name ( nt1 -- nt2 )
   \
-  \ Get the next _nt2_ from _nt1_.
+  \ Get the next _nt2_ from _nt1_, i.e. _nt2_ is the word that
+  \ was defined after _nt1_.
+  \
+  \ WARNING: ``name>name`` is not absolutely reliable, because
+  \ _nt2_ is calculated after the name length of _nt1_.  If
+  \ something was compiled in name space or the name-space
+  \ pointer `np` was altered after the definition identified by
+  \ _nt1_, the result _nt2_ will be wrong.
   \
   \ See: `name<name`, `name>`, `name>body`, `name>>`.
   \
@@ -342,6 +350,23 @@
   \
   \ }doc
 
+( >name )
+
+need array> need name>> need name<name
+
+: >name ( xt -- nt | 0 )
+  #order @ 0 ?do
+    i context array> @ @ ( xt nt0 )
+    begin  dup
+    while  2dup name>> far@ = if nip unloop exit then name<name
+    repeat drop
+  loop drop false ;
+
+  \ 2017-12-12 XXX NEW
+
+  \ An alternative `>name` that searches backwards all word
+  \ lists.
+
 ( >name [defined] [undefined] )
 
 [unneeded] >name ?(
@@ -354,6 +379,8 @@ need >>name need name>name need name>>
     far@ over = if  drop r> exit  then
     r> name>name name>>
   np@ over u< until  2drop false ; ?)
+
+  \ 2017-12-12: XXX OLD
 
   \ 2017-01-20 Note:
   \
@@ -1242,5 +1269,7 @@ variable warnings  warnings on
   \ the kernel.
   \
   \ 2017-12-10: Improve documentation.
+  \
+  \ 2017-12-12: Improve documentation.
 
   \ vim: filetype=soloforth

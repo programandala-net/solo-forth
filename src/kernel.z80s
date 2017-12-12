@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201712101825
+; Last modified: 201712120301
 
 include version.z80s
 
@@ -7983,20 +7983,22 @@ u_less_than.de_hl:
 ; additional headers created by `alias` or `synonym`, its
 ; original name is found first.
 ;
+; WARNING: This implementation of `name>` is not absolutely
+; reliable, because the dictionary is searched from oldest to
+; newest definitions: The address of the next name field address
+; is calculated from the name length of the previous one.  If
+; something was compiled in name space between both definition
+; headers, the result _nt_ will be wrong, or `>name` may never
+; return.
+;
 ; Origin: Gforth.
 ;
-; See: `name>`, `>body`, `name>body`.
+; See: `name>`, `>body`, `name>body`, `name>name`.
 ;
 ; }doc
 
-  ; XXX TODO -- Finish the documentation. This note from Gforth
-  ; is applicable:
-  ;
-  ; `>name` is not absolutely reliable. It may give false
-  ; positives and produce a wrong _nt_.
-
-  ; XXX TODO -- Move to the library -- or use the alternative
-  ; implementation in Forth that has been written there.
+  ; XXX TODO -- 2017-12-12 Replace with the new version in
+  ; Forth, in the library.
 
   pop de ; xt
   push bc ; save Forth IP

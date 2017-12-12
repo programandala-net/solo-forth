@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712092233
+  \ Last modified: 201712120309
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -630,10 +630,77 @@ result 255 2constant new
   \            substitute-error @ ?dup 0=
   \            if  substitutions @  then ;
 
-( >name-bench )
+( >name-bench2 )
+
+  \ 2017-12-12
+  \ Compare two versions of `>name`.
+
+need bench{ need }bench.  need >>name need name>>
+need name>name need array> need name<name
+
+: >name-forward ( xt -- nt | 0 )
+  0 begin ( xt xtp )
+    dup >>name >r  far@ over = if  drop r> exit  then
+    r> name>name name>>
+  np@ over u< until  2drop false ;
+  \ Search all words from oldest to newest.
+  \ This is a copy of `>name2` from `>name-bench1`.
+
+  \ WARNING: This implementation of `name>` is not absolutely
+  \ reliable, because the dictionary is searched from oldest to
+  \ newest definitions: The address of the next name field
+  \ address is calculated from the name length of the previous
+  \ one.  If something was compiled in name space between both
+  \ definition headers, the result will be wrong, or `>name`
+  \ may never return.
+
+: >name-backward ( xt -- nt | 0 )
+  #order @ 0 ?do
+    i context array> @ @ ( xt nt0 )
+    begin  dup
+    while  2dup name>> far@ = if nip unloop exit then name<name
+    repeat drop
+  loop drop false ; -->
+  \ Search all word lists, from newest to oldest,
+  \ for _xt_, searching each word list from newest to oldest
+  \ word.
+
+( >name-bench2 )
+
+: run ( u -)
+  cr ." Results for " dup u. ." iterations"
+  dup cr ." forward >name  : "
+      bench{ 0 ?do
+        [ latestxt ] literal
+        >name-forward drop  loop }bench.
+      cr ." backward >name : "
+      bench{ 0 ?do
+        [ root-wordlist >order ' forth previous ] literal
+        >name-backward drop  loop }bench. ;
+
+  \ 2017-12-12
+
+  \ Times Ticks (20 ms)
+  \ ----- -----------------------------
+  \       forward >name  backward >name
+  \       -------------  --------------
+  \ 00010           379             183
+  \ 00100          3788            1803
+  \ 01000         37902           17996
+
+( >name-bench1 )
+
+  \ 2017-01-20
 
   \ Compare the current version of `>name`, which is written in
   \ Z80 in the kernel, with a new version written in Forth.
+
+  \ WARNING: These implementations of `name>` are not
+  \ absolutely reliable, because the dictionary is searched
+  \ from oldest to newest definitions: The address of the next
+  \ name field address is calculated from the name length of
+  \ the previous one.  If something was compiled in name space
+  \ between both definition headers, the result will be wrong.
 
 need bench{ need }bench.
 need >>name need name>> need name>name
@@ -655,8 +722,6 @@ need >>name need name>> need name>name
       bench{ 0 ?do  latestxt >name  drop  loop }bench.
       cr ." >name in Forth: "
       bench{ 0 ?do  latestxt >name2 drop  loop }bench. ;
-
-  \ 2017-01-20
 
   \ Times Ticks (20 ms)
   \ ----- -----------------------------------

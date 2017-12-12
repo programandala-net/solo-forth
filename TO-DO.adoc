@@ -476,7 +476,9 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 // Dictionary {{{1
 == Dictionary ==
 
-.2017-01-20, 2017-01-21:
+.2017-01-20, 2017-01-21, 2017-12-12:
+
+NOTE: Milestone: 0.14.0
 
 Problem: when data are compiled into the headers space, `>name` can not work,
 because it searches the dictionary from oldest to newest.
@@ -490,8 +492,13 @@ Solution 3: Search all word lists, which are chained from
 `latest-wordlist`. Of course, the search will be from newest to oldest
 word list and from newest to oldest word... But the process should
 examine all words of the system, and keep the _nt_ of the oldest word
-this the _xt_ that is searched for. This is slow, but saves the
+with the _xt_ that is searched for. This is slow, but saves the
 additional link.
+
+NOTE: If the search is done backwards, the names of the aliases will
+be found first. Now the names or the original words are found first.
+Therefore perhaps some aliases defined in the kernel should be moved
+before their corresponding original.
 
 // Display {{{1
 == Display ==
