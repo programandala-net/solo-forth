@@ -1190,9 +1190,7 @@ cr jk-test
 
   \ 2016-05-01
 
-need color need permcolor
-
-: c? ( ca -- ) c@ . ;
+need color need permcolor need c?
 
 : .color ( -- )
   cr ." os-attr-t " os-attr-t c?
@@ -1524,6 +1522,7 @@ blk @ 1+ blk @ 2+ thru
   \ `[switch-test`. Add `{if-test` and `{do-test`.
   \
   \ 2017-12-12: Need `>name`, which has been moved to the
-  \ library.
+  \ library. Need `c?`, which has been moved to
+  \ <memory.MISC.fs>.
 
   \ vim: filetype=soloforth

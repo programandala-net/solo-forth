@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201712121648
+; Last modified: 201712121830
 
 include version.z80s
 
@@ -5960,6 +5960,8 @@ endif
 
 ; Origin: Comus.
 ;
+; See: `on`, `coff`.
+;
 ; }doc
 
   pop hl
@@ -5985,6 +5987,8 @@ endif
 ; ----
 
 ; Origin: Comus.
+;
+; See: `off`.
 ;
 ; }doc
 
@@ -14436,6 +14440,8 @@ hash_s.begin:
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-94
 ; (TOOLS), Forth-2012 (TOOLS).
+;
+; See: `c?`, `@`.
 ;
 ; }doc
 

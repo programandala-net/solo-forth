@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712121614
+  \ Last modified: 201712121834
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -385,7 +385,7 @@ code 1-! ( a -- )
   \
   \ }doc
 
-( c@and ctoggle )
+( c@and ctoggle coff )
 
   \ Credit:
   \
@@ -457,6 +457,43 @@ code ctoggle ( b ca -- )
   \ Invert the bits at _ca_ specified by the bitmask _b_.
   \
   \ See: `cset`, `creset`, `c@and`.
+  \
+  \ }doc
+
+[unneeded] coff
+
+?\ code coff ( ca -- ) E1 c, 36 c, 00 c, jpnext, end-code
+  \ pop hl
+  \ ld (hl),0
+  \ _jp_next
+
+  \ doc{
+  \
+  \ coff ( ca -- )
+  \
+  \ Store `false` at _ca_.
+  \
+  \ ``coff`` is written in Z80. Its equivalent definition in
+  \ Forth is the following:
+
+  \ ----
+  \ : coff ( ca -- ) false swap c! ;
+  \ ----
+
+  \ See: `off`.
+  \
+  \ }doc
+
+[unneeded] c? ?\ : c? ( ca -- ) c@ . ;
+
+  \ doc{
+  \
+  \ c? ( ca -- )
+  \
+  \ Display the 1-byte unsigned integer stored at _ca_, using
+  \ the format of `.`.
+  \
+  \ See: `?`, `c@`.
   \
   \ }doc
 
@@ -737,5 +774,7 @@ code cexchange ( ca1 ca2 -- )
   \
   \ 2017-05-10: Improve documentation. Rewrite `cexchange` and
   \ `c!exchange` in Z80.
+  \
+  \ 2017-12-12: Add `coff`.
 
   \ vim: filetype=soloforth
