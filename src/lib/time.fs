@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712122050
+  \ Last modified: 201712122139
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -100,7 +100,7 @@ code ms ( u -- )
   \ Origin: Comus.
   \
   \ See: `set-ticks`, `reset-ticks`, `ticks/second`,
-  \ `ticks>seconds`, `os-frames`, `bench{`.
+  \ `ticks>seconds`, `ms>ticks`, `os-frames`, `bench{`.
   \
   \ }doc
 
@@ -260,7 +260,22 @@ code ms ( u -- )
   \
   \ }doc
 
-( elapsed delapsed timer dtimer past? dpast? )
+( ms>ticks elapsed delapsed timer dtimer past? dpast? )
+
+[unneeded] ms>ticks ?( need ms/tick
+
+: ms>ticks ( n1 -- n2 ) ms/tick / ; ?)
+
+  \ doc{
+  \
+  \ ms>ticks ( n1 -- n2 )
+  \
+  \ Convert _n1_ milisecnods to the corresponding number _n2_
+  \ of `ticks`.
+  \
+  \ See: `ms/tick`.
+  \
+  \ }doc
 
 [unneeded] elapsed ?( need ticks
 
@@ -393,7 +408,7 @@ code ms ( u -- )
 
 [unneeded] ticks>ms ?( need ms/tick
 
-: ticks>ms ( n1 -- n2 ) ms/tick ; ?)
+: ticks>ms ( n1 -- n2 ) ms/tick / ; ?)
 
   \ doc{
   \
@@ -401,7 +416,7 @@ code ms ( u -- )
   \
   \ Convert clock ticks _n1_ to milliseconds _n2_.
   \
-  \ See: `dticks>ms`, `ticks>seconds`, `ticks>cs`,
+  \ See: `ms>ticks`, `dticks>ms`, `ticks>seconds`, `ticks>cs`,
   \ `ticks/second`, `ticks`.
   \
   \ }doc
@@ -878,6 +893,6 @@ need reset-dticks need dticks need dticks>cs
   \ `.system-date`.
   \
   \ 2017-12-12: Rename `expired` `past?`, and `dexpired`
-  \ `dpast?`.
+  \ `dpast?`. Add `ms>ticks`.
 
   \ vim: filetype=soloforth
