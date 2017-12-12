@@ -274,11 +274,12 @@ a trick is `[ dup ] literal` and a `drop` after `;`.
 In order to save compilation time, move inner words to the bottom of
 the dictionary. Example: `(loop)`, `clit`, `back`, `digit`...
 
-.2016-03-19:
+.2016-03-19, 2017-12-12:
 
-Separate header flags from the length byte of the name field.  This way more
-bits will fit (alias, deferred, special behaviour), and word names will be
-actual strings.
+Separate header flags from the length byte of the name field.  This
+way more bits will fit (alias, synonym, special behaviour), word names
+will be actual strings, and searching the dictionary will be a bit
+faster.
 
 .2017-08-17:
 
@@ -491,13 +492,24 @@ synonym clear page
 ----
 
 Solution 1: Examine all words of the system, and return the last
-match, not the first one. This is slow.
+match, not the first one.  Pro: Simple. Con: Always slow, no matter
+the size of the dictionary.
 
-Solution 2: Mark aliases and synonyms with a bit in the header.
+Solution 2: Mark aliases and synonyms with a bit in the header.  Pro:
+Definitive and useful for other needs. Con: One byte must be added to
+the header.
 
 Solution 3: Distinguish aliases and synonyms using the content of its
-code field address, e.g. using a specific jump or compiling a Z80 noop
-first.
+code field address, e.g. using a specific jump, or a jump with a
+previous Z80 noop. Cons:
+
+- every alias or synonym uses 3 or 4 bytes of data space.
+- small time delay for the jump, as deferred words.
+- distinguishing an alias or synonym from their "original" or from a
+  deferred word needs more calculations.
+
+Anyway, the problem can not be fully solved, because there could be
+several aliases and synonyms of one single word.
 
 // Display {{{1
 == Display ==
@@ -688,6 +700,11 @@ Improve tab control.
 
 // Documentation {{{1
 == Documentation ==
+
+.2017-12-12:
+
+Add cross-referentes to `defer` to all deferred words. Already done in
+the kernel.
 
 .2017-12-11:
 
@@ -1549,9 +1566,9 @@ ROTATE         n1 n2 -- n3
   \ B.  Uncontrolled Reference Words).
 ....
 
-.2016-05-31:
+.2016-05-31, 2016-08-05, 2017-02-04, 2017-12-12:
 
-The idiom `-1 =` is used 3 times in the kernel. It could be defined this way:
+The idiom `-1 =` is used twice in the kernel. It could be defined this way:
 
 ----
   _code_header minus_one_equals_,'-1='
@@ -1585,12 +1602,7 @@ minus_one_equals.hl:
   ; 11 B
 ----
 
-And an alias `true=` could be defined.
-
-6 bytes would be saved in the kernel thanks to any of these definitions, but
-they need 14 or 11 bytes...
-
-More options (2016-08-05):
+Or:
 
 ----
   _code_header minus_one_equals_,'-1='
@@ -1607,6 +1619,8 @@ minus_one_equals.hl:
   ; 11 B
 ----
 
+Or:
+
 ----
   _code_header minus_one_equals_,'-1='
 
@@ -1622,7 +1636,7 @@ minus_one_equals.hl:
   ; 09 B
 ----
 
-Better (2017-02-04):
+Or:
 
 ----
   _code_header minus_one_equals_,'-1='
@@ -1637,6 +1651,26 @@ minus_one_equals.hl:
 
   ; 10 B
 ----
+
+Or:
+
+----
+  _code_header minus_one_equals_,'-1='
+
+  pop hl
+minus_one_equals.hl:
+  inc h
+  inc l
+  jr zero_equals.hl
+
+  ; 05 B
+----
+
+Therefore, replacing two instances of `-1 =` with calls to `-1=` would
+save only 1 byte in total (because `-1` is a code word), but probably
+the code would be a bit faster.
+
+And an alias `true=` could be defined as well.
 
 .2016-05-07:
 
@@ -1732,7 +1766,7 @@ implementation of the A register, from Z88 CamelForth.
 
 Add `get-far-banks`, `set-far-banks`.
 
-.2017-02-20:
+.2017-02-20, 2017-12-12:
 
 Idea to support memory larger than 128 KiB, provided Pentagon and
 Scorpion:
@@ -1742,6 +1776,9 @@ to use a different set of banks.
 
 But there could be an optional, similar system to use 32-bit
 addresses... `farfar-banks`, `vfar-banks`, `32far-banks`.
+
+Using several switchable configurations of `far-banks` seems easier,
+though.
 
 .2017-01-26:
 
@@ -1877,6 +1914,10 @@ Study the way v.Forth manages the interrupts and adapt it.
 // Library {{{1
 == Library ==
 
+.2017-12-12:
+
+Reduce the number of aliases in the libray.
+
 .2017-03-28, 2017-09-09:
 
 Move words from <chars.fs> to <strings.MISC.fs>?
@@ -1895,11 +1936,6 @@ without modifying `first-locatable`.
 
 Don't include the new block 0 files into the old disks (games, tests,
 benchmarks) that included the library at the start.
-
-.2017-02-16:
-
-Move `>name` to the library, and make the alternative slower
-implementation optional.
 
 .2017-01-31:
 

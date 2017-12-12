@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705101815
+  \ Last modified: 201712121614
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -96,6 +96,7 @@ code c-! ( c ca -- )
 ( c1+! c1-! 1+! 1-! )
 
 [unneeded] c1+!
+
 ?\ code c1+! ( ca -- ) E1 c, 34 c, jpnext, end-code
     \ pop hl
     \ inc (hl)
@@ -112,6 +113,7 @@ code c-! ( c ca -- )
   \ }doc
 
 [unneeded] c1-!
+
 ?\ code c1-! ( ca -- ) E1 c, 35 c, jpnext, end-code
     \ pop hl
     \ dec (hl)
@@ -180,6 +182,7 @@ code 1-! ( a -- )
 ( @+ 2@+ c@+ )
 
 [unneeded] @+
+
 ?\ : @+ ( a -- a' x ) dup cell+ swap @ ;
 
   \ doc{
@@ -195,6 +198,7 @@ code 1-! ( a -- )
   \ }doc
 
 [unneeded] 2@+
+
 ?\ : 2@+ ( a -- a' xd ) dup cell+ cell+ swap 2@ ;
 
   \ doc{
@@ -242,6 +246,7 @@ code 1-! ( a -- )
   \ }doc
 
 [unneeded] nn, ?( need need-here need-here n,
+
 : nn, ( x[u]..x[1] u -- ) dup , n, ; ?)
 
   \ doc{
@@ -257,6 +262,7 @@ code 1-! ( a -- )
   \ }doc
 
 [unneeded] n@ ?(
+
 : n@ ( a u -- x[u]..x[1] )
   tuck 1- cells + \ point _a_ to _x[u]_
   swap 0 ?do dup i cells - @ swap loop drop ; ?)
@@ -273,6 +279,7 @@ code 1-! ( a -- )
   \ }doc
 
 [unneeded] nn@ ?( need need-here need-here n@
+
 : nn@ ( a -- x[1]..x[u] u | 0 ) dup @ >r cell+ r@ n@ r> ; ?)
 
   \ doc{
@@ -289,6 +296,7 @@ code 1-! ( a -- )
   \ }doc
 
 [unneeded] n! ?(
+
 : n! ( x[u]..x[1] u a -- )
   swap 0 ?do dup >r ! r> cell+ loop drop ; ?)
 
@@ -304,6 +312,7 @@ code 1-! ( a -- )
   \ }doc
 
 [unneeded] nn! ?( need need-here need-here n!
+
 : nn! ( x[u]..x[1] u a -- ) 2dup ! cell+ n! ; ?)
 
   \ doc{
@@ -321,6 +330,7 @@ code 1-! ( a -- )
 ( bit>mask bit? set-bit reset-bit )
 
 [unneeded] bit>mask
+
 ?\ need lshift : bit>mask ( n -- b ) 1 swap lshift ;
 
   \ doc{
@@ -334,6 +344,7 @@ code 1-! ( a -- )
   \ }doc
 
 [unneeded] bit?
+
 ?\ need bit>mask : bit? ( b n -- f ) bit>mask and 0<> ;
 
   \ doc{
@@ -347,6 +358,7 @@ code 1-! ( a -- )
   \ }doc
 
 [unneeded] set-bit?
+
 ?\ need bit>mask : set-bit ( b1 n -- b2 ) bit>mask or ;
 
   \ doc{
@@ -360,6 +372,7 @@ code 1-! ( a -- )
   \ }doc
 
 [unneeded] reset-bit? ?( need bit>mask
+
 : reset-bit ( b1 n -- b2 ) bit>mask invert and ; ?)
 
   \ doc{
@@ -391,6 +404,7 @@ code 1-! ( a -- )
   \ is zero, else _true_.
 
 [unneeded] c@and ?(
+
 code c@and ( b1 ca -- b2 )
   E1 c, D1 c, 78 03 + c, A6 c, C3 c, pusha , jpnext,
     \ pop hl
@@ -407,7 +421,7 @@ code c@and ( b1 ca -- b2 )
   \ Fetch the caracter at _ca_ and do a bit-by-bit logical
   \ `and` of it with _b1_, returning the result _b2_.
   \
-  \ See: `c@and?`, `ctoggle`.
+  \ See: `c@and?`, `ctoggle`, `cset`, `creset`.
   \
   \ }doc
 
@@ -426,6 +440,7 @@ code c@and ( b1 ca -- b2 )
   \   \ Reset the bits at _ca_ specified by the bitmask _b_.
 
 [unneeded] ctoggle ?(
+
 code ctoggle ( b ca -- )
   E1 c, D1 c, 7E c, A8 03 + c, 70 07 + c, jpnext, end-code ?)
     \ pop hl
@@ -441,13 +456,14 @@ code ctoggle ( b ca -- )
   \
   \ Invert the bits at _ca_ specified by the bitmask _b_.
   \
-  \ See: `c@and`.
+  \ See: `cset`, `creset`, `c@and`.
   \
   \ }doc
 
 ( !exchange c!exchange reserve alloted align aligned )
 
 [unneeded] !exchange
+
 ?\ : !exchange ( x1 a -- x2 ) dup @ rot rot ! ;
 
   \ doc{
@@ -494,6 +510,7 @@ code c!exchange ( c1 ca -- c2 )
   \ }doc
 
 [unneeded] reserve
+
 ?\ : reserve ( n -- a ) here tuck over erase allot ;
 
   \ doc{
@@ -516,8 +533,7 @@ code c!exchange ( c1 ca -- c2 )
   \
   \ }doc
 
-[unneeded] align
-?\ need alias ' noop alias align immediate
+[unneeded] align ?\ need alias ' noop alias align immediate
 
   \ doc{
   \
@@ -536,8 +552,7 @@ code c!exchange ( c1 ca -- c2 )
   \
   \ }doc
 
-[unneeded] aligned
-?\ need alias ' noop alias aligned immediate
+[unneeded] aligned ?\ need alias ' noop alias aligned immediate
 
   \ doc{
   \
@@ -608,8 +623,8 @@ code c!exchange ( c1 ca -- c2 )
   \
   \ }doc
 
-
 [unneeded] exchange
+
 ?\ : exchange ( a1 a2 -- ) 2dup @ swap @  rot ! swap ! ;
 
   \ doc{

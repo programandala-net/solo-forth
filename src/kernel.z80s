@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201712121430
+; Last modified: 201712121648
 
 include version.z80s
 
@@ -1955,6 +1955,8 @@ endif
 ; assembler labels module in order to init the labels.  Its
 ; default action is `noop`.
 ;
+; See: `defer`.
+;
 ; }doc
 
 ; ----------------------------------------------
@@ -3564,7 +3566,7 @@ to_number.end:
 ; the period.
 ;
 ; See: `classic-number-point?`, `extended-number-point?`,
-; `dpl`.
+; `dpl`, `defer`.
 ;
 ; }doc
 
@@ -3587,7 +3589,8 @@ to_number.end:
 ; : standard-number-point? ( c -- f ) '.' = ;
 ; ----
 
-; See: `classic-number-point?`, `extended-number-point?`.
+; See: `classic-number-point?`, `extended-number-point?`,
+; `defer`.
 ;
 ; }doc
 
@@ -4279,7 +4282,7 @@ emit_udg.address
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See: `emit-udg`.
+; See: `emit-udg`, `defer`.
 ;
 ; }doc
 
@@ -4493,7 +4496,7 @@ endif
 ; _f_ is true if the break key is pressed. ``break-key?`` is a
 ; deferred word whose default action is `default-break-key?`.
 ;
-; See: `key?`.
+; See: `key?`, `defer`.
 ;
 ; }doc
 
@@ -4662,8 +4665,8 @@ wait_for_key:
 ;
 ; (cr) ( -- )
 ;
-; Default action of the deferred word `cr`:
 ; Transmit a carriage return to the selected output device.
+; ``(cr)`` is the default action of the deferred word `cr`:
 ;
 ; }doc
 
@@ -4684,6 +4687,8 @@ wait_for_key:
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See: `defer`.
 ;
 ; }doc
 
@@ -6022,6 +6027,15 @@ endif
 ;
 ; Set the bits at _ca_ specified by the bitmask _b_.
 ;
+; ``cset`` is written in Z80. Its equivalent definition in
+; Forth is the following.
+
+; ----
+; : cset ( b ca -- ) tuck c@ or swap c! ;
+; ----
+
+; See: `creset`, `ctoggle`, `c@and`.
+;
 ; }doc
 
   pop hl ; address
@@ -6039,6 +6053,15 @@ endif
 ; creset ( b ca -- )
 ;
 ; Reset the bits at _ca_ specified by the bitmask _b_.
+;
+; ``creset`` is written in Z80. Its equivalent definition in
+; Forth is the following.
+
+; ----
+; : creset ( b ca -- ) tuck c@ swap invert and swap c! ;
+; ----
+
+; See: `cset`, `ctoggle`, `c@and`.
 ;
 ; }doc
 
@@ -9289,12 +9312,14 @@ minus_trailing.begin:
 ;
 ; _len2_ is the length of the string stored at _ca1_.
 ;
-; Origin: Forth-94 (CORE), Forth-2012 (CORE).
-;
 ; In Solo Forth ``accept`` is a deferred word. Its default
 ; action is `simple-accept`, which provides only the basic
 ; editing options. Alternative definitions are provided in the
 ; library.
+;
+; Origin: Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See: `defer`.
 ;
 ; }doc
 
@@ -9869,7 +9894,7 @@ parse.end:
 ; `default-header`. Its alternative temporary action is
 ; `nextname-header`.
 ;
-; See: `header,`.
+; See: `header,`, `defer`.
 ;
 ; }doc
 
@@ -10363,6 +10388,8 @@ error.message:
 ; ``warn`` is a deferred word which is called by `header,` and
 ; whose default action is `noop`. Alternative actions are
 ; provided by `warn.message`, `warn.throw` and `warn-throw`.
+;
+; See: `defer`.
 ;
 ; }doc
 
@@ -11721,6 +11748,8 @@ question_paren.exit:
 ; A deferred word called by `quit` after interpreting a command.
 ; Its default action is the word `.ok`.
 ;
+; See: `defer`.
+;
 ; }doc
 
 ; ----------------------------------------------
@@ -11774,9 +11803,16 @@ quit.begin:
 ;
 ; (defer) ( -- )
 ;
-; Default action of an uninitialized deferred word: `error`
-; #-261 ("deferred word is uninitialized").
+; `throw` `error` #-261 ("deferred word is uninitialized".
+; ``(defer)`` is the default action of the uninitialized
+; deferred words.
 ;
+; Definition:
+
+; ----
+; : (defer) ( -- ) #-261 error ;
+; ----
+
 ; See: `defer`.
 ;
 ; }doc
@@ -12017,7 +12053,7 @@ endif
 ; A deferred word executed by `abort`. By default it does
 ; nothing. It is changed by `turnkey`.
 ;
-; See: `cold`.
+; See: `cold`, `defer`.
 ;
 ; }doc
 
@@ -12686,6 +12722,8 @@ endif
 ;
 ; Origin: fig-Forth.
 ;
+; See: `defer`.
+;
 ; }doc
 
 ; ----------------------------------------------
@@ -12961,6 +12999,8 @@ endif
 ; ``.throw` is a deferred word whose default action is
 ; `.throw#`.
 ;
+; See: `defer`.
+;
 ; }doc
 
   ; Credit:
@@ -13068,6 +13108,8 @@ endif
 ; ``>drive-block`` is a deferred word whose default action is
 ; `noop`.  Its action is set to `(>drive-block` when
 ; `set-block-drives` is loaded.
+;
+; See: `defer`.
 ;
 ; }doc
 
@@ -14653,7 +14695,7 @@ system_stack_pointer:
 ; set to `noop` until the first mode change is done. Then it's
 ; vectored to `mode-32`.  It's used by `bye` and `cold`.
 ;
-; See: `reset-default-mode`.
+; See: `reset-default-mode`, `defer`.
 ;
 ; }doc
 
@@ -14982,7 +15024,7 @@ attr_cls.a: ; alternative entry point used by `cls`
 ;
 ; ``home`` is a deferred word, whose default action is `(home)`.
 ;
-; See: `at-xy`, `home?`.
+; See: `at-xy`, `home?`, `defer`.
 ;
 ; }doc
 
@@ -15019,7 +15061,7 @@ attr_cls.a: ; alternative entry point used by `cls`
 ;
 ; Origin: Forth-94 (FACILITY), Forth-2012 (FACILITY).
 ;
-; See: `home`.
+; See: `home`, `defer`.
 ;
 ; }doc
 
@@ -15081,7 +15123,7 @@ mode_32_xy.end:
 ;
 ; ``xy`` is a deferred word whose default action is `mode-32-xy`.
 ;
-; See: `at-xy`.
+; See: `at-xy`, `defer`.
 ;
 ; }doc
 
