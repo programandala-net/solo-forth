@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201712101210
+  \ Last modified: 201712121802
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -41,7 +41,12 @@ create mode-42rt-workspace 8 allot
 
 create mode-42rt-removable-columns
 
-  \ Data showing which columns to remove from each character
+  \ Data showing which columns to remove from each character,
+  \ for characters in range $20..$7F.
+  \
+  \ A datum in range $00..$20 indicates an alternative
+  \ definition is used insted, and the datum is used as index
+  \ in the table `mode-42rt-redefined-chars`.
 
   $FE c, $FE c, $80 c, $E0 c, $80 c, $00 c, $01 c, $80 c,
   $80 c, $80 c, $80 c, $80 c, $80 c, $80 c, $80 c, $80 c,
@@ -85,13 +90,8 @@ also assembler max-labels c@ 9 max-labels c! previous
 
 create mode-42rt-output_ ( -- a ) asm
 
-  \ Credit:
-  \
-  \ Original routine "PRINT42" from Your Sinclair #78 (1992-06)
-  \ by P Wardle.
-  \
-  \ Modified by Marcos Cruz (programandala.net) to adapt it to
-  \ Solo Forth, 2017-04.
+  \ _a_ is the address of a Z80 routine that displays the
+  \ character in register A in `mode-42rt`.
   \
   \ Recognized:
   \
@@ -100,7 +100,15 @@ create mode-42rt-output_ ( -- a ) asm
   \ XXX TODO -- Not recognized:
   \
   \ Character #22 + y-pos + x-pos.
+
+  \ Credit:
   \
+  \ Original routine "PRINT42" from Your Sinclair #78 (1992-06)
+  \ by P Wardle.
+  \
+  \ Modified by Marcos Cruz (programandala.net) to adapt it to
+  \ Solo Forth, 2017-04.
+
   \ ============================================================
 
   \ 16 cp#, #00 rl# nz? ?jr,
@@ -146,16 +154,13 @@ create mode-42rt-output_ ( -- a ) asm
   \   ld   (coordinates),de
   \   ret
 
-  bl cp#, c? ?ret, exx, h push, exx, a c ld, 00 h ld#, a l ld,
+  bl cp#, c? ?ret, a c ld, 00 h ld#, a l ld,
   \ check_printable_character:
   \   cp   32 ; printable character (space or higher)?
   \   ret  c  ; if not, return
   \
   \ printable_character:
   \   ; Form the new 6-bit wide characters and alter colors to match
-  \   exx     ; XXX TODO remove?
-  \   push hl ; XXX TODO remove?
-  \   exx     ; XXX TODO remove?
   \   ld   c,a
   \   ld   h,$00
   \   ld   l,a
@@ -340,14 +345,11 @@ create mode-42rt-output_ ( -- a ) asm
   \   inc  h
   \   exx
 
-  b incp, a pop, a dec, z? runtil exx, h pop, exx, ret,
+  b incp, a pop, a dec, z? runtil ret,
   \   inc  bc
   \   pop  af
   \   dec  a
   \   jr   nz,label_eb42
-  \   exx     ; XXX TODO remove
-  \   push hl ; XXX TODO remove
-  \   exx     ; XXX TODO remove
   \   ret
 
   #05 l: 0 h ld#, h addp, h addp, h addp, d addp, ret,
@@ -759,5 +761,8 @@ variable mode-42rt-font  rom-font bl 8 * + mode-42rt-font !
   \
   \ 2017-12-10: Update to `a push,` and `a pop,`, after the
   \ change in the assembler.
+  \
+  \ 2017-12-12: Improve documentation. Remove saving/restoring
+  \ of register HL', used by BASIC.
 
   \ vim: filetype=soloforth
