@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712120309
+  \ Last modified: 201712121432
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -645,7 +645,7 @@ need name>name need array> need name<name
   np@ over u< until  2drop false ;
   \ Search all words from oldest to newest.
   \ This is a copy of `>name2` from `>name-bench1`.
-
+  \
   \ WARNING: This implementation of `name>` is not absolutely
   \ reliable, because the dictionary is searched from oldest to
   \ newest definitions: The address of the next name field
@@ -668,18 +668,23 @@ need name>name need array> need name<name
 ( >name-bench2 )
 
 : run ( u -)
+
   cr ." Results for " dup u. ." iterations"
+
   dup cr ." forward >name  : "
       bench{ 0 ?do
         [ latestxt ] literal
         >name-forward drop  loop }bench.
+          \ Search forward for the latest header.
+  
       cr ." backward >name : "
       bench{ 0 ?do
         [ root-wordlist >order ' forth previous ] literal
         >name-backward drop  loop }bench. ;
+          \ Search backward for the oldest header.
 
   \ 2017-12-12
-
+  \
   \ Times Ticks (20 ms)
   \ ----- -----------------------------
   \       forward >name  backward >name
@@ -693,8 +698,10 @@ need name>name need array> need name<name
   \ 2017-01-20
 
   \ Compare the current version of `>name`, which is written in
-  \ Z80 in the kernel, with a new version written in Forth.
-
+  \ Z80 in the kernel [and removed on 2017-12-12 from version
+  \ 0.14.0-pre.369], with an equivalent new version written in
+  \ Forth.
+  \
   \ WARNING: These implementations of `name>` are not
   \ absolutely reliable, because the dictionary is searched
   \ from oldest to newest definitions: The address of the next
@@ -705,16 +712,11 @@ need name>name need array> need name<name
 need bench{ need }bench.
 need >>name need name>> need name>name
 
-  \ unused  \ XXX TMP --
-
 : >name2 ( xt -- nt | 0 )
   0 begin ( xt xtp )
     dup >>name >r  far@ over = if  drop r> exit  then
     r> name>name name>>
   np@ over u< until  2drop false ;
-
-  \ unused - cr . .( B of data space used)  \ XXX TMP --
-  \ XXX REMARK -- 49 B of data space used
 
 : run ( u -)
   cr ." Results for " dup u. ." iterations"
@@ -723,6 +725,8 @@ need >>name need name>> need name>name
       cr ." >name in Forth: "
       bench{ 0 ?do  latestxt >name2 drop  loop }bench. ;
 
+  \ 2017-01-20
+  \
   \ Times Ticks (20 ms)
   \ ----- -----------------------------------
   \       >name in Z80  >name in Forth
@@ -2999,5 +3003,8 @@ need bench{ need }bench.
   \ the library.
   \
   \ 2017-12-09: Remove useless `[defined] (/) ?\`.
+  \
+  \ 2017-12-12: Rename `>name-bench` `>name-bench1`.  Add
+  \ `>name-bench2`
 
   \ vim: filetype=soloforth

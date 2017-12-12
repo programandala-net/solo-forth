@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712120213
+  \ Last modified: 201712121453
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -117,8 +117,9 @@
 
 ( body>name name>body link>name name>link name<name name>name )
 
-[unneeded] body>name
-?\ need body> : body>name ( dfa -- nt ) body> >name ;
+[unneeded] body>name ?( need body> need >name
+
+: body>name ( dfa -- nt ) body> >name ; ?)
 
   \ doc{
   \
@@ -131,6 +132,7 @@
   \ }doc
 
 [unneeded] name>body
+
 ?\ need >body : name>body ( nt -- dfa ) name> >body ;
 
   \ doc{
@@ -144,6 +146,7 @@
   \ }doc
 
 [unneeded] link>name
+
 ?\ need alias ' cell+ alias link>name ( nt -- dfa )
 
   \ doc{
@@ -157,6 +160,7 @@
   \ }doc
 
 [unneeded] name>link
+
 ?\ need alias ' cell- alias name>link ( nt -- lfa )
 
   \ doc{
@@ -171,6 +175,7 @@
   \ }doc
 
 [unneeded] name<name
+
 ?\ need name>link : name<name ( nt1 -- nt2 ) name>link far@ ;
 
   \ doc{
@@ -185,6 +190,7 @@
   \ }doc
 
 [unneeded] name>name
+
 ?\ need >>name : name>name ( nt1 -- nt2 ) name>str + >>name ;
 
   \ doc{
@@ -207,6 +213,7 @@
 ( >>link name>> >>name >body body> '' [''] )
 
 [unneeded] >>link
+
 ?\ need alias ' cell+ alias >>link ( xtp -- lfa )
 
   \ doc{
@@ -220,6 +227,7 @@
   \ }doc
 
 [unneeded] name>>
+
 ?\ : name>> ( nt -- xtp ) cell- cell- ;
 
   \ doc{
@@ -233,6 +241,7 @@
   \ }doc
 
 [unneeded] >>name
+
 ?\ : >>name ( xtp -- nt ) cell+ cell+ ;
 
   \ doc{
@@ -246,6 +255,7 @@
   \ }doc
 
 [unneeded] >body
+
 ?\ code >body  E1 c, 23 c, 23 c, 23 c, E5 c, jpnext, end-code
   \ ( xt -- dfa )
   \ pop hl
@@ -286,6 +296,7 @@
   \ }doc
 
 [unneeded] body>
+
 ?\ code body> E1 c, 2B c, 2B c, 2B c, E5 c, jpnext, end-code
   \ ( dfa -- xt )
   \ pop hl
@@ -306,6 +317,7 @@
   \ }doc
 
 [unneeded] '' ?( need need-here need-here name>>
+
 : '' ( "name" -- xtp ) defined dup ?defined name>> ; ?)
 
   \ doc{
@@ -331,6 +343,7 @@
   \ }doc
 
 [unneeded] [''] ?( need need-here need-here ''
+
 : ['']  '' postpone literal ; immediate compile-only ?)
   \ Compilation: ( "name" -- )
 
@@ -350,9 +363,9 @@
   \
   \ }doc
 
-( >name )
+( >name [defined] [undefined] )
 
-need array> need name>> need name<name
+[unneeded] >name ?( need array> need name>> need name<name
 
 : >name ( xt -- nt | 0 )
   #order @ 0 ?do
@@ -360,54 +373,28 @@ need array> need name>> need name<name
     begin  dup
     while  2dup name>> far@ = if nip unloop exit then name<name
     repeat drop
-  loop drop false ;
+  loop drop false ; ?)
 
-  \ 2017-12-12 XXX NEW
-
-  \ An alternative `>name` that searches backwards all word
-  \ lists.
-
-( >name [defined] [undefined] )
-
-[unneeded] >name ?(
-
-need >>name need name>name need name>>
-
-: >name ( xt -- nt | 0 )
-  0 begin ( xt xtp )
-    dup >>name >r
-    far@ over = if  drop r> exit  then
-    r> name>name name>>
-  np@ over u< until  2drop false ; ?)
-
-  \ 2017-12-12: XXX OLD
-
-  \ 2017-01-20 Note:
+  \ doc{
   \
-  \ Alternative implementation of `>name` in Forth.
-  \
-  \ Data space used:
-  \
-  \ -  49 B without requirements
-  \ -  78 B with requirements
-  \
-  \ The Z80 implementation in the kernel uses 94 B
-  \ and is 580% faster. See `>name-bench`.
-
   \ >name ( xt -- nt | 0 )
   \
   \ Try to find the name token _nt_ of the word represented by
   \ execution token _xt_. Return 0 if it fails.
   \
-  \ ``>name`` searches all headers, from the oldest one to the
-  \ newest one, for the first one whose _xtp_ (execution token
-  \ pointer) contains _xt_.  This way, when a word has
-  \ additional headers created by `alias` or `synonym`, its
-  \ original name is found first.
+  \ WARNING: ``>name`` searches all word lists, from newest to
+  \ oldest; and the searching of every word list is done also
+  \ from the newest to the oldest definition.  The first header
+  \ whose execution token pointer contains _xt_ is a match.
+  \ Therefore, when a word has additional headers created by
+  \ `alias` or `synonym`, the _nt_ of its latest alias or
+  \ synonym is found first.
   \
   \ Origin: Gforth.
   \
-  \ See: `>>name`.
+  \ See: `name>`, `>body`, `name>body`, `name>name`, `>>name`.
+  \
+  \ }doc
 
 [unneeded] [defined]
 
@@ -1013,7 +1000,7 @@ variable warnings  warnings on
   \
   \ }doc
 
-[unneeded] warn.message ?( need ?warn
+[unneeded] warn.message ?( need ?warn need >name
 
 : warn.message ( ca len -- ca len )
   ?warn ( ca len xt ) ." redefined " >name .name ;
@@ -1270,6 +1257,7 @@ variable warnings  warnings on
   \
   \ 2017-12-10: Improve documentation.
   \
-  \ 2017-12-12: Improve documentation.
+  \ 2017-12-12: Improve documentation. Add new version of
+  \ `>name`.
 
   \ vim: filetype=soloforth

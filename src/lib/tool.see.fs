@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201712121441
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -38,7 +38,7 @@
 
 get-current  also forth definitions decimal
 
-need body>name need name>body need case
+need body>name need name>body need case need >name
 need recurse need >body need body> need [undefined]
 
 variable see-level  see-level off \ depth of nesting
@@ -295,6 +295,9 @@ previous set-current
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
   \
   \ 2017-12-09: Need `[undefined]`, which is moved to the
+  \ library.
+  \
+  \ 2017-12-12: Need `>name`, which has been moved to the
   \ library.
 
   \ vim: filetype=soloforth

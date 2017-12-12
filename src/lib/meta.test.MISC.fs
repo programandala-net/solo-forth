@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712111500
+  \ Last modified: 201712121440
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -645,7 +645,7 @@ s" Say '%hello%' in %lang%" substitute-test
 
 ( >name-test )
 
-need far,
+need far, need >name
 
 variable name0  1000 far,
 variable name1
@@ -1086,7 +1086,7 @@ need catch
 
 ( type-fields-test )
 
-need type-left need type-center need type-right
+need type-left need type-center need type-right need >name
 
 s" La Mancha" 2constant text
 
@@ -1522,5 +1522,8 @@ blk @ 1+ blk @ 2+ thru
   \
   \ 2017-12-11: Check and modify `:switch-test` and
   \ `[switch-test`. Add `{if-test` and `{do-test`.
+  \
+  \ 2017-12-12: Need `>name`, which has been moved to the
+  \ library.
 
   \ vim: filetype=soloforth

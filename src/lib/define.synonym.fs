@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071754
+  \ Last modified: 201712121442
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( synonym )
 
-need alias need nextname
+need alias need nextname need >name
 
 : synonym ( "newname" "oldname" -- )
   parse-name nextname ' dup >r alias
@@ -68,5 +68,8 @@ need alias need nextname
   \ 2017-02-17: Update cross references.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2017-12-12: Need `>name`, which has been moved to the
+  \ library.
 
   \ vim: filetype=soloforth

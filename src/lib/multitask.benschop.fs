@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not finished
 
-  \ Last modified: 201702220020
+  \ Last modified: 201712121440
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -31,7 +31,7 @@
 
 ( benschop-multitasker )
 
-need user  user (wait)  ' noop (wait) !
+need >name  need user  user (wait)  ' noop (wait) !
 
 code switch
   rptr ldhl h push d push h clr sp addp exde uptr
@@ -106,5 +106,8 @@ code (start)
   \
   \ 2016-12-20: Move the `(wait)` user variable from the
   \ kernel.
+  \
+  \ 2017-12-12: Need `>name`, which has been moved to the
+  \ library.
 
   \ vim: filetype=soloforth
