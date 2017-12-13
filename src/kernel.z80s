@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201712121830
+; Last modified: 201712130218
 
 include version.z80s
 
@@ -1226,7 +1226,7 @@ if 1 ; abase
 
 ; doc{
 ;
-; abase ( -- a )
+; abase ( -- a ) "a-base"
 ;
 ; A variable. _a_ is the address of a cell where the current
 ; value of `base` is preserved by `asm`.
@@ -1335,7 +1335,7 @@ endif
 
 ; doc{
 ;
-; pusha ( -- a )
+; pusha ( -- a ) "push-a"
 ;
 ; A constant. _a_ is the address of a secondary entry point of
 ; the Forth inner interpreter.  The code at _a_ pushes the A
@@ -1357,7 +1357,7 @@ endif
 
 ; doc{
 ;
-; pushhl ( -- a )
+; pushhl ( -- a ) "push-h-l"
 ;
 ; A constant. _a_ is the address of a secondary entry point of
 ; the Forth inner interpreter.  The code at _a_ pushes the HL
@@ -1381,7 +1381,7 @@ endif
 
 ; doc{
 ;
-; fetchhl ( -- a )
+; fetchhl ( -- a ) "fetch-h-l"
 ;
 ; A constant. _a_ is the address of a secondary entry point in
 ; the code of `@`.  The code at _a_ fetches the cell pointed by
@@ -1399,7 +1399,7 @@ endif
 
 ; doc{
 ;
-; jpnext, ( -- )
+; jpnext, ( -- ) "j-p-next-comma"
 ;
 ; Compile a Z80 jump to `next`.
 ;
@@ -1416,7 +1416,7 @@ endif
 
 ; doc{
 ;
-; jp, ( a -- )
+; jp, ( a -- ) "j-p-comma"
 ;
 ; Compile the Z80 opcode to jump to _a_.
 ;
@@ -1439,7 +1439,7 @@ endif
 
 ; doc{
 ;
-; call, ( a -- )
+; call, ( a -- ) "call-comma"
 ;
 ; Compile the Z80 opcode to call _a_.
 ;
@@ -1585,7 +1585,7 @@ endif
 
 ; doc{
 ;
-; ?next-bank ( a -- a|a' )
+; ?next-bank ( a -- a|a' ) "question-next-bank"
 ;
 ; If the actual far-memory address _a_ ($C000 .. $FFFF) has
 ; increased to the next bank ($0000 .. $3FFF), convert it to the
@@ -1661,7 +1661,7 @@ new_bank:
 
 ; doc{
 ;
-; ?previous-bank ( a -- a|a' )
+; ?previous-bank ( a -- a|a' ) "question-previous-bank"
 ;
 ; If the actual far-memory address _a_ ($C000 .. $FFFF) has
 ; decreased to the previous bank ($8000 .. $BFFF), convert it to
@@ -1856,7 +1856,7 @@ far.hl.mod:
 
 ; doc{
 ;
-; noop ( -- )
+; noop ( -- ) "no-op"
 ;
 ; Do nothing.
 ;
@@ -1876,7 +1876,7 @@ call_ix:
 
 ; doc{
 ;
-; noop_ ( -- a )
+; noop_ ( -- a ) "no-op-underscore"
 ;
 ; A constant. _a_ is the address of a routine that does nothing,
 ; except executing a Z80 ``ret`` to return.
@@ -1894,7 +1894,7 @@ endif
 
 ; doc{
 ;
-; g+dos ( -- )
+; g+dos ( -- ) "g-plus-dos"
 ;
 ; An alias of `noop` that is defined only in the G+DOS version
 ; of Solo Forth.  Its goal is to check the DOS a program is
@@ -1913,7 +1913,7 @@ endif
 
 ; doc{
 ;
-; tr-dos ( -- )
+; tr-dos ( -- ) "t-r-dos"
 ;
 ; An alias of `noop` that is defined only in the TR-DOS version
 ; of Solo Forth.  Its goal is to check the DOS a program is
@@ -1932,7 +1932,7 @@ endif
 
 ; doc{
 ;
-; +3dos ( -- )
+; +3dos ( -- ) "plus-three-dos"
 ;
 ; An alias of `noop` that is defined only in the +3DOS version
 ; of Solo Forth.  Its goal is to check the DOS a program is
@@ -2110,7 +2110,7 @@ get_order.exit
 
 ; doc{
 ;
-; ?order ( n -- )
+; ?order ( n -- ) "question-order"
 ;
 ; If _n_ is not a valid size for the search order, throw an
 ; exception.
@@ -2184,7 +2184,7 @@ set_order.loop_exit
 
 ; doc{
 ;
-; >order ( wid -- )
+; >order ( wid -- ) "to-order"
 ;
 ; Push word list identifier _wid_ on the search order.
 ;
@@ -2354,7 +2354,7 @@ endif
 
 ; doc{
 ;
-; slit ( -- ca len )
+; slit ( -- ca len ) "s-lit"
 ;
 ; Return a string that is compiled after the calling word, and
 ; adjust the instruction pointer to step over the inline string.
@@ -2416,7 +2416,7 @@ parse_string.interpreting:
 
 ; doc{
 ;
-; clit ( -- b )
+; clit ( -- b ) "c-lit"
 ;
 ; Return _b_, which was compiled by `cliteral` after ``clit``.
 ;
@@ -2439,7 +2439,7 @@ push_a:
 
 ; doc{
 ;
-; 2lit ( -- x1 x2 )
+; 2lit ( -- x1 x2 ) "two-lit"
 ;
 ; Return _x1 x2_, which was compiled by `2literal` after
 ; ``2lit``.
@@ -2502,7 +2502,7 @@ push_hl:
 
 ; doc{
 ;
-; default-bank# ( -- ca )
+; default-bank# ( -- ca ) "default-bank-hash"
 ;
 ; A constant. _ca_ is the address of an address unit containing
 ; the value of the default `bank` paged in at $C000 .. $FFFF.
@@ -2580,7 +2580,7 @@ push_hl:
 
 ; doc{
 ;
-; /stringer ( -- len )
+; /stringer ( -- len ) "slash-stringer"
 ;
 ; A constant. _len_ is the maximum size of the `stringer`, in
 ; characters. See how to configure it in the documentation of
@@ -2597,7 +2597,7 @@ push_hl:
 
 ; doc{
 ;
-; +stringer ( -- a )
+; +stringer ( -- a ) "plus-stringer"
 ;
 ; A variable. _a_ is the address of a cell containing the
 ; pointer of the `stringer`, i.e. an offset to its first free
@@ -2650,7 +2650,7 @@ push_hl:
 
 ; doc{
 ;
-; ?stringer ( len -- )
+; ?stringer ( len -- ) "question-stringer"
 ;
 ; Make sure there's room in the `stringer` for _len_ characters.
 ;
@@ -2716,7 +2716,7 @@ question_stringer_.enough:
 
 ; doc{
 ;
-; >stringer ( ca1 len1 -- ca2 len1 )
+; >stringer ( ca1 len1 -- ca2 len1 ) "to-stringer"
 
 ; Copy string _ca1 len1_ to the `stringer` and return it as _ca2
 ; len1_.
@@ -2785,7 +2785,7 @@ question_stringer_.enough:
 
 ; doc{
 ;
-; >mark ( C: -- orig )
+; >mark ( C: -- orig ) "forward-mark"
 ;
 ; Compile space in the dictionary for a branch address which
 ; will later be resolved by `>resolve`.
@@ -2815,7 +2815,7 @@ question_stringer_.enough:
 
 ; doc{
 ;
-; >resolve ( C: orig -- )
+; >resolve ( C: orig -- ) "forward-resolve"
 ;
 ; Resolve a forward branch by placing the address of the current
 ; data-space pointer into the space compiled by `>mark`.
@@ -2859,7 +2859,7 @@ question_stringer_.enough:
 
 ; doc{
 ;
-; <mark ( C: -- dest )
+; <mark ( C: -- dest ) "backward-mark"
 ;
 ; _dest_ is the current data-space pointer, to be used as the
 ; destination of a backward branch.  _dest_ is typically only
@@ -2878,7 +2878,7 @@ question_stringer_.enough:
 
 ; doc{
 ;
-; , ( x -- )
+; , ( x -- ) "comma"
 ;
 ; Reserve one cell of data space and store _x_ in the cell.
 ;
@@ -2903,7 +2903,7 @@ question_stringer_.enough:
 
 ; doc{
 ;
-; compile, ( xt -- )
+; compile, ( xt -- ) "compile-comma"
 ;
 ; Append the execution semantics of the definition represented
 ; by _xt_ to the execution semantics of the current definition.
@@ -2922,7 +2922,7 @@ question_stringer_.enough:
 
 ; doc{
 ;
-; <resolve ( C: dest -- )
+; <resolve ( C: dest -- ) "backward-resolve"
 ;
 ; Resolve a backward branch.  Compile a branch address using
 ; _dest_, the address left by `<mark`,  as the destination
@@ -2940,7 +2940,7 @@ question_stringer_.enough:
 
 ; doc{
 ;
-; 0branch ( f -- )
+; 0branch ( f -- ) "zero-branch"
 ;
 ; A run-time procedure to branch conditionally. If  _f_
 ; is false (zero), the following in-line address is copied to IP
@@ -2965,7 +2965,7 @@ question_stringer_.enough:
 
 ; doc{
 ;
-; ?branch ( f -- )
+; ?branch ( f -- ) "question-branch"
 ;
 ; A run-time procedure to branch conditionally. If  _f_ is not
 ; not zero, the following in-line address is copied to IP to
@@ -3018,7 +3018,7 @@ question_stringer_.enough:
 
 ; doc{
 ;
-; (?do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys | )
+; (?do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys | ) "paren-question-do"
 ;
 ; If _n1|u1_ is equal to _n2|u2_, continue execution at the
 ; location given by the consumer of the _do-sys_ left by `?do`
@@ -3053,7 +3053,7 @@ question_stringer_.enough:
 
 ; doc{
 ;
-; ?do
+; ?do "question-do"
 ;   Compilation: ( -- do-sys )
 ;
 
@@ -3112,12 +3112,12 @@ question_stringer_.enough:
 
 ; doc{
 ;
-; +loop ( -- )
+; +loop "plus-loop"
 ;   Compilation: ( do-sys -- )
 ;
 
-; Compile `(+loop)` and resolve the _do-sys_ address left by
-; `do`, `?do` or `-do`.
+; Compilation: Compile `(+loop)` and resolve the _do-sys_
+; address left by `do`, `?do` or `-do`.
 ;
 ; ``+loop`` is an `immediate` and `compile-only` word.
 ;
@@ -3143,7 +3143,7 @@ question_stringer_.enough:
 
 ; doc{
 ;
-; (do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
+; (do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys ) "paren-do"
 ;
 ; Set up loop control parameters _loop-sys_ with index _n2|u2_
 ; and limit _n1|u1_ and continue executing immediately following
@@ -3293,7 +3293,7 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
 
 ; doc{
 ;
-; (+loop) ( n -- ) ( R: loop-sys1 -- loop-sys2 )
+; (+loop) ( n -- ) ( R: loop-sys1 -- loop-sys2 ) "paren-plus-loop"
 ;
 ; Add _n_ to the loop index. If the loop index did not cross the
 ; boundary between the loop limit minus one and the loop limit,
@@ -3358,7 +3358,7 @@ paren_loop.continue:
 
 ; doc{
 ;
-; (loop) ( R: loop-sys1 -- loop-sys2 )
+; (loop) ( R: loop-sys1 -- loop-sys2 ) "paren-loop"
 ;
 ; Increment the loop index by one.  If the loop index did not
 ; cross the boundary between the loop limit minus one and the
@@ -3396,7 +3396,7 @@ paren_loop.continue:
 
 ; doc{
 ;
-; digit? ( c n -- u true | false )
+; digit? ( c n -- u true | false ) "digit-question"
 ;
 ; Convert the ascii character _c_ (using base _n_) to its binary
 ; equivalent _u_, accompanied by a true flag. If the conversion
@@ -3492,7 +3492,7 @@ number_base.current:
 
 ; doc{
 ;
-; >number ( ud1 ca1 len1 -- ud2 ca2 len2 )
+; >number ( ud1 ca1 len1 -- ud2 ca2 len2 ) "to-number"
 
 ; _ud2_ is the unsigned result of converting the characters
 ; within the string specified by _ca1 len1_ into digits, using
@@ -3558,7 +3558,7 @@ to_number.end:
 
 ; doc{
 ;
-; number-point? ( c -- f )
+; number-point? ( c -- f ) "number-point-question"
 ;
 ; _f_ is true if character _c_ is a valid point in a number.
 ; ``number-point?`` is a deferred word used in `number?`. Its
@@ -3575,7 +3575,7 @@ to_number.end:
 
 ; doc{
 ;
-; standard-number-point? ( c -- f )
+; standard-number-point? ( c -- f ) "standard-number-point-question"
 ;
 ; _f_ is true if if character _c_ is a valid point in a number.
 ; The only allowed point is period.
@@ -3603,7 +3603,7 @@ to_number.end:
 
 ; doc{
 ;
-; number? ( ca len -- 0 | n 1 | d 2 )
+; number? ( ca len -- 0 | n 1 | d 2 ) "number-question"
 ;
 ; Convert a string _ca len_ to a number, using the current value
 ; of `base`.. Return 0 if the conversion is not possible. If the
@@ -3738,7 +3738,7 @@ number_question.end:
 
 ; doc{
 ;
-; char? ( ca len -- c true | false )
+; char? ( ca len -- c true | false ) "char-question"
 ;
 ; If the string _ca len_ is the representation of a character,
 ; return the character _c_ and _true_; else return _false_.
@@ -3749,8 +3749,8 @@ number_question.end:
 ; : char? ( ca len -- c true | false )
 ;   3 = if
 ;     dup c@ ''' <> if
-;       dup [ 2 chars ] literal + c@ ''' <>
-;       if  char+ c@ true exit  then
+;       dup [ 2 chars ] cliteral + c@ ''' <>
+;       if char+ c@ true exit then
 ;     then
 ;   then
 ;   drop false ;
@@ -3786,7 +3786,7 @@ char_question.not:
 
 ; doc{
 ;
-; skip-sign? ( ca len -- ca' len' f )
+; skip-sign? ( ca len -- ca' len' f ) "skip-sign-question"
 ;
 ; If number string _ca len_ starts with a minus sign, remove it
 ; and return the result string _ca' len'_ and a true flag _f_;
@@ -4199,7 +4199,7 @@ mode_32_emit.a
 
 ; doc{
 ;
-; emit-udg ( c|n -- )
+; emit-udg ( c|n -- ) "emit-u-d-g"
 ;
 ; Display the UDG _c|n_ from the current UDG set, which is
 ; pointed by `os-udg`.
@@ -4247,7 +4247,7 @@ emit_udg.address
 
 ; doc{
 ;
-; emit-udga ( ca -- )
+; emit-udga ( ca -- ) "emit-u-d-g-a"
 ;
 ; Display the UDG defined at _ca_, i.e, the 8 bytes of the UDG
 ; are stored at _ca_, in the usual ZX Spectrum font/UDG format:
@@ -4474,7 +4474,7 @@ endif
 
 ; doc{
 ;
-; default-break-key? ( -- f )
+; default-break-key? ( -- f ) "default-break-key-question"
 ;
 ; _f_ is true if the default break key (Shift+Space) is pressed.
 ; ``default-break-key?`` is the default action of the deferred
@@ -4491,7 +4491,7 @@ endif
 
 ; doc{
 ;
-; break-key? ( -- f )
+; break-key? ( -- f ) "break-key-question"
 ;
 ; _f_ is true if the break key is pressed. ``break-key?`` is a
 ; deferred word whose default action is `default-break-key?`.
@@ -4505,7 +4505,7 @@ endif
 
 ; doc{
 ;
-; key? ( -- f )
+; key? ( -- f ) "key-question"
 ;
 ; If a character is available, return true. Otherwise, return
 ; false. If non-character keyboard events are available before
@@ -4575,7 +4575,7 @@ endif
 
 ; doc{
 ;
-; xkey ( -- c )
+; xkey ( -- c ) "x-key"
 ;
 ; Show a cursor, wait for the next terminal key struck; if it's
 ; the caps lock key, toggle caps and keep waiting; else leave
@@ -4663,7 +4663,7 @@ wait_for_key:
 
 ; doc{
 ;
-; (cr) ( -- )
+; (cr) ( -- ) "paren-c-r"
 ;
 ; Transmit a carriage return to the selected output device.
 ; ``(cr)`` is the default action of the deferred word `cr`:
@@ -4679,7 +4679,7 @@ wait_for_key:
 
 ; doc{
 ;
-; cr ( -- )
+; cr ( -- ) "c-r"
 ;
 ; Transmit a carriage return to the selected output device.
 ;
@@ -4697,7 +4697,7 @@ wait_for_key:
 
 ; doc{
 ;
-; cmove> ( ca1 ca2 u -- )
+; cmove> ( ca1 ca2 u -- ) "c-move-up"
 ;
 ; If _u_ is greater than zero, copy _u_ consecutive characters
 ; from the data space  starting at _ca1_ to that starting at
@@ -4727,7 +4727,7 @@ wait_for_key:
 
 ; doc{
 ;
-; cmove ( ca1 ca2 u -- )
+; cmove ( ca1 ca2 u -- ) "c-move"
 ;
 ; If _u_ is greater than zero, copy _u_ consecutive characters
 ; from the data space  starting at _ca1_ to that starting at
@@ -4783,7 +4783,7 @@ move.do:
 
 ; doc{
 ;
-; smove ( ca1 len1 ca2 -- )
+; smove ( ca1 len1 ca2 -- ) "s-move"
 ;
 ; Move the string _ca1 len1_ to _ca2_.
 ;
@@ -4804,7 +4804,7 @@ move.do:
 
 ; doc{
 ;
-; um* ( u1 u2 -- ud )
+; um* ( u1 u2 -- ud ) "u-m-star"
 ;
 ; Multiply _u1_ by _u2_, giving the unsigned double-cell product
 ; _ud_.  All values and arithmetic are unsigned.
@@ -4830,7 +4830,7 @@ move.do:
 
 ; doc{
 ;
-; um/mod ( ud u1 -- u2 u3 )
+; um/mod ( ud u1 -- u2 u3 ) "u-m-slash-mod"
 ;
 ; Divide _ud_ by _u1_, giving the quotient _u3_ and the
 ; remainder _u2_.  All values and arithmetic are unsigned.
@@ -4943,7 +4943,7 @@ u_m_slash_mod.4:
 
 ; doc{
 ;
-; xor ( x1 x2 -- x3 )
+; xor ( x1 x2 -- x3 ) "x-or"
 ;
 ; _x3_ is the bit-by-bit exclusive-or of _x1_ with _x2_.
 ;
@@ -4970,7 +4970,7 @@ u_m_slash_mod.4:
 
 ; doc{
 ;
-; /user ( -- n )
+; /user ( -- n ) "slash-user"
 ;
 ; A constant. _n_ is the length of the user area.
 ;
@@ -4985,7 +4985,7 @@ u_m_slash_mod.4:
 
 ; doc{
 ;
-; up ( -- a )
+; up ( -- a ) "u-p"
 ;
 ; A variable. _a_ is the address of a cell containing the user
 ; area pointer.
@@ -5003,7 +5003,7 @@ u_m_slash_mod.4:
 
 ; doc{
 ;
-; up0 ( -- a )
+; up0 ( -- a ) "u-p-zero"
 ;
 ; A constant. _a_ is the default address of the user area.
 ;
@@ -5016,7 +5016,7 @@ u_m_slash_mod.4:
 
 ; doc{
 ;
-; np ( -- a )
+; np ( -- a ) "n-p"
 ;
 ; A constant. _a_ is the address of a cell containing the
 ; name-space pointer, which points to the next free address
@@ -5038,7 +5038,7 @@ u_m_slash_mod.4:
 
 ; doc{
 ;
-; np0 ( -- a )
+; np0 ( -- a ) "n-p-zero"
 ;
 ; A constant. _a_ is the the bottom (initial) address of the
 ; name-space pointer `np`.
@@ -5052,7 +5052,7 @@ u_m_slash_mod.4:
 
 ; doc{
 ;
-; np@ ( -- a )
+; np@ ( -- a ) "n-p-fetch"
 ;
 ; Fetch the content of the name-space pointer `np`.
 ;
@@ -5076,7 +5076,7 @@ u_m_slash_mod.4:
 
 ; doc{
 ;
-; np! ( a -- )
+; np! ( a -- ) "n-p-store"
 ;
 ; Store _a_ into the name-space pointer `np`.
 ;
@@ -5103,7 +5103,7 @@ u_m_slash_mod.4:
 
 ; doc{
 ;
-; ,np ( x -- )
+; ,np ( x -- ) "comma-n-p"
 ;
 ; Store _x_ into the address pointed by the name-space pointer,
 ; advancing the name-space pointer.
@@ -5122,7 +5122,7 @@ u_m_slash_mod.4:
 
 ; doc{
 ;
-; sp@ ( -- a )
+; sp@ ( -- a ) "s-p-fetch"
 ;
 ; Fetch the content of the stack pointer. _a_ is the address of
 ; the top of the stack just before ``sp@`` was executed.
@@ -5144,7 +5144,7 @@ u_m_slash_mod.4:
 
 ; doc{
 ;
-; sp! ( a -- )
+; sp! ( a -- ) "s-p-store"
 ;
 ; Store _a_ into the stack pointer.
 ;
@@ -5159,7 +5159,7 @@ u_m_slash_mod.4:
 
 ; doc{
 ;
-; rp ( -- a )
+; rp ( -- a ) "r-p"
 ;
 ; A constant. _a_ is the address of the return stack pointer.
 ;
@@ -5179,7 +5179,7 @@ u_m_slash_mod.4:
 
 ; doc{
 ;
-; rp@ ( -- a )
+; rp@ ( -- a ) "r-p-fetch"
 ;
 ; Fetch the content of the return stack pointer.
 ;
@@ -5203,7 +5203,7 @@ u_m_slash_mod.4:
 
 ; doc{
 ;
-; rp! ( a -- )
+; rp! ( a -- ) "r-p-store"
 ;
 ; Store _a_ into the return stack pointer.
 ;
@@ -5227,7 +5227,7 @@ u_m_slash_mod.4:
 
 ; doc{
 ;
-; >r ( x -- ) ( R: -- x )
+; >r ( x -- ) ( R: -- x ) "to-r"
 ;
 ; Move _x_ from the data stack to the return stack.
 ;
@@ -5253,7 +5253,7 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 
 ; doc{
 ;
-; r> ( -- x ) ( R: x -- )
+; r> ( -- x ) ( R: x -- ) "r-from"
 ;
 ; Move _x_ from the return stack to the data stack.
 ;
@@ -5278,7 +5278,7 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 
 ; doc{
 ;
-; rdrop ( R: x -- )
+; rdrop ( R: x -- ) "r-drop"
 ;
 ; Remove _x_ from the return stack.
 ;
@@ -5299,7 +5299,7 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 
 ; doc{
 ;
-; 2>r ( x1 x2 -- ) ( R: -- x1 x2 )
+; 2>r ( x1 x2 -- ) ( R: -- x1 x2 ) "two-to-r"
 ;
 ; Move _x1 x2_ from the data stack to the return stack.
 ; Semantically equivalent to ``swap >r >r``.
@@ -5321,7 +5321,7 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 
 ; doc{
 ;
-; 2r> ( -- x1 x2 ) ( R: x1 x2 -- )
+; 2r> ( -- x1 x2 ) ( R: x1 x2 -- ) "two-r-from"
 ;
 ; Move _x1 x2_ from the return stack to the data stack.
 ; Semantically equivalent to ``r> r> swap``.
@@ -5344,7 +5344,7 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 
 ; doc{
 ;
-; 2r@ ( -- x1 x2 ) ( R: x1 x2 -- x1 x2 )
+; 2r@ ( -- x1 x2 ) ( R: x1 x2 -- x1 x2 ) "two-r-fetch"
 ;
 ; Copy _x1 x2_ from the return stack to the data stack.
 ; Semantically equivalent to ``r> r> 2dup >r >r swap``.
@@ -5367,7 +5367,7 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 
 ; doc{
 ;
-; r@ ( -- x ) ( R: x -- x )
+; r@ ( -- x ) ( R: x -- x ) "r-fetch"
 ;
 ; Copy _x_ from the return stack to the data stack.
 ;
@@ -5386,7 +5386,7 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 
 ; doc{
 ;
-; 0= ( x -- f )
+; 0= ( x -- f ) "zero-equals"
 ;
 ; _f_ is true if and only if _x_ is equal to zero.
 ;
@@ -5444,7 +5444,7 @@ zero_equals.hl:
 
 ; doc{
 ;
-; 0<> ( x -- f )
+; 0<> ( x -- f ) "zero-not-equals"
 ;
 ; _f_ is true if and only if _x_ is not equal to zero.
 ;
@@ -5465,7 +5465,7 @@ zero_equals.hl:
 
 ; doc{
 ;
-; 0< ( x -- f )
+; 0< ( x -- f ) "0-less"
 ;
 ; _f_ is true if and only if _n_ is less than zero.
 ;
@@ -5498,7 +5498,7 @@ true_if_cy:
 
 ; doc{
 ;
-; 0> ( n -- f )
+; 0> ( n -- f ) "zero-greater"
 ;
 ; _f_ is true if and only if _n_ is greater than zero.
 ;
@@ -5521,7 +5521,7 @@ true_if_cy:
 
 ; doc{
 ;
-; + ( n1|u1 n2|u2 -- n3|u3 )
+; + ( n1|u1 n2|u2 -- n3|u3 ) "plus"
 ;
 ; Add _n1|u1_ to _n2|u2_, giving the sum _n3|u3_.
 ;
@@ -5543,7 +5543,7 @@ true_if_cy:
 
 ; doc{
 ;
-; d+ ( d1|ud1 d2|ud2 -- d3|ud3 )
+; d+ ( d1|ud1 d2|ud2 -- d3|ud3 ) "d-plus"
 ;
 ; Add _d2|ud2_ to _d1|ud1_, giving the sum _d3|ud3_.
 ;
@@ -5666,7 +5666,7 @@ negate_hl:
 
 ; doc{
 ;
-; dnegate ( d1 -- d2 )
+; dnegate ( d1 -- d2 ) "d-negate"
 ;
 ; Negate _d1_, giving its arithmetic inverse _d2_.
 ;
@@ -5846,9 +5846,8 @@ endif
 
 ; doc{
 ;
-; cs-swap
-;   \ ( C: orig#1|dest#1 orig#2|dest#2 --
-;   \      orig#2|dest#2 orig#1|dest#1 )
+; cs-swap "c-s-swap"
+;   ( C: orig#1|dest#1 orig#2|dest#2 -- orig#2|dest#2 orig#1|dest#1 )
 
 ;
 ; Exchange the top two control-flow stack items.
@@ -5895,7 +5894,7 @@ endif
 
 ; doc{
 ;
-; 2dup ( x1 x2 -- x1 x2 x1 x2 )
+; 2dup ( x1 x2 -- x1 x2 x1 x2 ) "two-dup"
 ;
 ; Duplicate cell pair _x1 x2_.
 ;
@@ -5920,7 +5919,7 @@ endif
 
 ; doc{
 ;
-; +! ( n|u a -- )
+; +! ( n|u a -- ) "plus-store"
 ;
 ; Add _n|u_ to the single-cell number at _a_.
 ;
@@ -6003,7 +6002,7 @@ endif
 
 ; doc{
 ;
-; c@and? ( b ca -- f )
+; c@and? ( b ca -- f ) "c-fetch-and-question"
 ;
 ; Fetch the caracter at _ca_ and do a bit-by-bit logical "and"
 ; of it with _b_. Return false if the result is zero, else
@@ -6027,7 +6026,7 @@ endif
 
 ; doc{
 ;
-; cset ( b ca -- )
+; cset ( b ca -- ) "c-set"
 ;
 ; Set the bits at _ca_ specified by the bitmask _b_.
 ;
@@ -6054,7 +6053,7 @@ endif
 
 ; doc{
 ;
-; creset ( b ca -- )
+; creset ( b ca -- ) "c-reset"
 ;
 ; Reset the bits at _ca_ specified by the bitmask _b_.
 ;
@@ -6082,7 +6081,7 @@ endif
 
 ; doc{
 ;
-; 2! ( x1 x2 a -- )
+; 2! ( x1 x2 a -- ) "two-store"
 ;
 ; Store the cell pair _x1 x2_ at _a_, with _x2_ at _a_ and _x1_
 ; at the next consecutive cell. It is equivalent to the sequence
@@ -6161,7 +6160,7 @@ two_store.into_hl_pointer:
 
 ; doc{
 ;
-; ! ( x a -- )
+; ! ( x a -- ) "store"
 ;
 ; Store _x_ at _a_.
 ;
@@ -6186,7 +6185,7 @@ store.de_into_hl_pointer:
 
 ; doc{
 ;
-; c! ( c ca -- )
+; c! ( c ca -- ) "c-store"
 ;
 ; Store _c_ at _ca_.
 ;
@@ -6207,7 +6206,7 @@ store.de_into_hl_pointer:
 
 ; doc{
 ;
-; docolon ( -- a )
+; docolon ( -- a ) "do-colon"
 ;
 ; A constant. _a_ is the address of the colon interpreter.
 ;
@@ -6222,7 +6221,7 @@ store.de_into_hl_pointer:
 
 ; doc{
 ;
-; : ( "name" -- )
+; : ( "name" -- ) "colon"
 ;
 ; Parse _name_. Create a definition for _name_, called a "colon
 ; definition". Enter  compilation  `state` and  start  the
@@ -6308,7 +6307,7 @@ do_colon:
 
 ; doc{
 ;
-; noname? ( -- a )
+; noname? ( -- a ) "no-name-question"
 ;
 ; A variable. _a_ is the address of a cell containing a flag:
 ; Was the word being defined created by `:noname`? ``noname?``
@@ -6363,7 +6362,7 @@ do_colon:
 
 ; doc{
 ;
-; ;
+; ; "semicolon"
 ;   Compilation: ( -- )
 ;   Run-time:    ( -- ) ( R: nest-sys -- )
 ;
@@ -6379,9 +6378,8 @@ do_colon:
 ; Definition:
 
 ; ----
-; : ;
-;   \ Compilation: ( -- )
-;   \ Run-time:    ( -- ) ( R: nest-sys -- )
+; : ; \ Compilation: ( -- )
+;     \ Run-time:    ( -- ) ( R: nest-sys -- )
 ;   postpone exit finish-code ;
 ; ----
 
@@ -6400,7 +6398,7 @@ do_colon:
 
 ; doc{
 ;
-; cconstant ( c "name" -- )
+; cconstant ( c "name" -- ) "c-constant"
 ;
 ; Parse _name_. Create a definition for _name_ that will place
 ; _c_ on the stack. _name_ is referred to as a "c-constant".
@@ -6423,7 +6421,7 @@ do_c_constant:
 
 ; doc{
 ;
-; c@ ( ca -- c )
+; c@ ( ca -- c ) "c-fetch"
 ;
 ; Fetch the character _c_ stored at _ca_.
 ;
@@ -6470,7 +6468,7 @@ do_constant:
 
 ; doc{
 ;
-; @ ( a -- x )
+; @ ( a -- x ) "fetch"
 ;
 ; _x_ is the value stored at _a_.
 ;
@@ -6526,7 +6524,7 @@ fetch.hl:
 
 ; doc{
 ;
-; (user) ( +n "name" -- )
+; (user) ( +n "name" -- ) "paren-user"
 ;
 ; Create a user variable _name_.  _+n_ is the offset within the
 ; user area where the value for _name_ is stored.  Execution of
@@ -6613,7 +6611,7 @@ do_user:
 
 ; doc{
 ;
-; bl ( -- c )
+; bl ( -- c ) "b-l"
 ;
 ; A character constant. _c_ is the character value for a space.
 ;
@@ -6632,7 +6630,7 @@ do_user:
 
 ; doc{
 ;
-; c/l ( -- b )
+; c/l ( -- b ) "c-slash-l"
 ;
 ; A character constant. _b_ is the number of characters per line in a
 ; `block` source: 64.
@@ -6650,7 +6648,7 @@ do_user:
 
 ; doc{
 ;
-; l/scr ( -- b )
+; l/scr ( -- b ) "l-slash-s-c-r"
 ;
 ; A character constant. _b_ is the number of lines per `block`
 ; source: 16.
@@ -6701,7 +6699,7 @@ do_user:
 
 ; doc{
 ;
-; b/buf ( -- n )
+; b/buf ( -- n ) "b-slash-buf"
 ;
 ; A constant.  _n_ is the number of bytes per `block` `buffer`:
 ; 1024.
@@ -6722,7 +6720,7 @@ do_user:
 
 ; doc{
 ;
-; b/sector ( -- n )
+; b/sector ( -- n ) "b-slash-sector"
 ;
 ; A constant. _n_ is the number of bytes per sectors.
 ;
@@ -6739,7 +6737,7 @@ do_user:
 
 ; doc{
 ;
-; sectors/track ( -- b )
+; sectors/track ( -- b ) "sectors-slash-track"
 ;
 ; A character constant. _b_ is the number of sectors per track.
 ;
@@ -6754,7 +6752,7 @@ do_user:
 
 ; doc{
 ;
-; sectors/block ( -- b )
+; sectors/block ( -- b ) "sectors-slash-block"
 ;
 ; A character constant. _b_ is the number of sectors per block.
 ;
@@ -6769,7 +6767,7 @@ do_user:
 
 ; doc{
 ;
-; blocks/disk ( -- n )
+; blocks/disk ( -- n ) "blocks-slash-disk"
 ;
 ; A constant. _n_ is the number of blocks per disk.
 ;
@@ -6784,7 +6782,7 @@ do_user:
 
 ; doc{
 ;
-; +origin ( n -- a )
+; +origin ( n -- a ) "plus-origin"
 ;
 ; Leave the memory address relative by _n_ bytes to the origin
 ; parameter area.  ``+origin`` is used to access or modify the
@@ -6807,7 +6805,7 @@ do_user:
 
 ; doc{
 ;
-; sp0 ( -- a )
+; sp0 ( -- a ) "s-p-zero"
 ;
 ; A user variable. _a_ is the address of a cell containing the
 ; address of the bottom of the data stack.
@@ -6826,7 +6824,7 @@ do_user:
 
 ; doc{
 ;
-; rp0 ( -- a )
+; rp0 ( -- a ) "r-p-zero"
 ;
 ; A user variable. _a_ is the address of a cell containing the
 ; address of the bottom of the return stack.
@@ -6873,7 +6871,7 @@ do_user:
 
 ; doc{
 ;
-; lastblk ( -- a )
+; lastblk ( -- a ) "last-b-l-k"
 ;
 ; A user variable. _a_ is the address of a cell containing the
 ; `block` number of the block most recently or loaded (e.g. with
@@ -6907,7 +6905,7 @@ do_user:
 
 ; doc{
 ;
-; dp ( -- a )
+; dp ( -- a ) "d-p"
 ;
 ; A user variable. _a_ is the address of a cell containing the
 ; data-space pointer.  The value may be read by `here` and
@@ -6924,7 +6922,7 @@ do_user:
 
 ; doc{
 ;
-; udp ( -- a )
+; udp ( -- a ) "u-d-p"
 ;
 ; A user variable. _a_ is the address of a cell containing an
 ; offset from the start of the current user area to the free
@@ -6939,7 +6937,7 @@ do_user:
 
 ; doc{
 ;
-; lastxt ( -- a )
+; lastxt ( -- a ) "last-x-t"
 ;
 ; A user variable. _a_ is the address of a cell containing the
 ; execution token of the last word defined.
@@ -6955,7 +6953,7 @@ do_user:
 
 ; doc{
 ;
-; >in ( -- a )
+; >in ( -- a ) "to-in"
 ;
 ; A user variable. _a_ is the address of a cell containing the
 ; offset in characters from the start of the input buffer to the
@@ -6970,7 +6968,7 @@ do_user:
 
 ; doc{
 ;
-; blk ( -- a )
+; blk ( -- a ) "b-l-k"
 ;
 ; A user variable. _a_ is the address of a cell containing the
 ; number of the disk `block` being interpreted.
@@ -6988,7 +6986,7 @@ do_user:
 
 ; doc{
 ;
-; scr ( -- a )
+; scr ( -- a ) "s-c-r"
 ;
 ; A user variable. _a_ is the address of a cell containing the
 ; number of the `block` most recently listed by `list`. ``scr``
@@ -7028,7 +7026,7 @@ do_user:
 
 ; doc{
 ;
-; hld ( -- a )
+; hld ( -- a ) "h-l-d"
 ;
 ; A user variable. _a_ is the address of a cell containing the
 ; address of the latest character of text during numeric output
@@ -7105,7 +7103,7 @@ do_user:
 
 ; doc{
 ;
-; dpl ( -- a )
+; dpl ( -- a ) "d-p-l"
 ;
 ; A user variable. _a_ is the address of a cell containing the
 ; number of places after the decimal point on double-integer
@@ -7128,7 +7126,7 @@ do_user:
 
 ; doc{
 ;
-; csp ( -- a )
+; csp ( -- a ) "c-s-p"
 ;
 ; A user variable. _a_ is the address of a cell containing the
 ; current data stack position saved by `!csp`.
@@ -7146,7 +7144,7 @@ do_user:
 
 ; doc{
 ;
-; #order ( -- a )
+; #order ( -- a ) "hash-order"
 ;
 ; A user variable. _a_ is the address of a cell containing the
 ; number of word lists in the search `order`.
@@ -7205,7 +7203,7 @@ endif
 
 ; doc{
 ;
-; tib ( -- a )
+; tib ( -- a ) "t-i-b"
 ;
 ; A constant. _a_ is the address of the terminal input buffer.
 ;
@@ -7223,7 +7221,7 @@ endif
 
 ; doc{
 ;
-; /tib ( -- b )
+; /tib ( -- b ) "slash-t-i-b"
 ;
 ; A character constant. _b_ is the maximum size of the terminal
 ; input buffer,
@@ -7239,7 +7237,7 @@ endif
 
 ; doc{
 ;
-; #tib ( -- a )
+; #tib ( -- a ) "hash-t-i-b"
 ;
 ; A variable. _a_ is the address of a cell containing the number
 ; of characters in the terminal input buffer.
@@ -7308,7 +7306,7 @@ source.other:
 
 ; doc{
 ;
-; 2+ ( n1 -- n2 )
+; 2+ ( n1 -- n2 ) "two-plus"
 ;
 ; Add 2 to _n1_, according to the operation of `+`, giving _n2_.
 ;
@@ -7336,7 +7334,7 @@ source.other:
 
 ; doc{
 ;
-; cell+ ( a1 -- a2 )
+; cell+ ( a1 -- a2 ) "cell-plus"
 ;
 ; Add the size in address units of a cell to _a1_, giving _a2_.
 ;
@@ -7351,7 +7349,7 @@ source.other:
 
 ; doc{
 ;
-; 1- ( n1 -- n2 )
+; 1- ( n1 -- n2 ) "one-minus"
 ;
 ; Subtract 1 from _n1_, according to the operation of `-`,
 ; giving _n2_.
@@ -7375,7 +7373,7 @@ source.other:
 
 ; doc{
 ;
-; char- ( n1 -- n2 )
+; char- ( n1 -- n2 ) "char-minus"
 ;
 ; Subtract the size in address units of a character to _n1_,
 ; giving _n2_.
@@ -7393,7 +7391,7 @@ source.other:
 
 ; doc{
 ;
-; 1+ ( n1 -- n2 )
+; 1+ ( n1 -- n2 ) "one-plus"
 ;
 ; Add 1 to _n1_, according to the operation of `+`, giving _n2_.
 ;
@@ -7416,7 +7414,7 @@ source.other:
 
 ; doc{
 ;
-; char+ ( n1 -- n2 )
+; char+ ( n1 -- n2 ) "char-plus"
 ;
 ; Add the size in address units of a character to _n1_, giving
 ; _n2_.
@@ -7434,7 +7432,7 @@ source.other:
 
 ; doc{
 ;
-; 2- ( n1 -- n2 )
+; 2- ( n1 -- n2 ) "two-minus"
 ;
 ; Subtract 2 from _n1_, according to the operation of `-`,
 ; giving _n2_.
@@ -7459,7 +7457,7 @@ source.other:
 
 ; doc{
 ;
-; cell- ( a1 -- a2 )
+; cell- ( a1 -- a2 ) "cell-minus"
 ;
 ; Subtract the size in address units of a cell from _a1_, giving
 ; _a2_.
@@ -7475,7 +7473,7 @@ source.other:
 
 ; doc{
 ;
-; 2* ( x1 -- x2 )
+; 2* ( x1 -- x2 ) "two-star"
 ;
 ; _x2_ is the result of shifting _x1_ one bit toward the
 ; most-significant bit, filling the vacated least-significant
@@ -7564,9 +7562,9 @@ source.other:
 
 ; doc{
 ;
-; s, ( ca len -- )
+; s, ( ca len -- ) "s-comma"
 ;
-; Compile a string.
+; Compile the string _ca len_.
 ;
 ; Definition:
 
@@ -7574,6 +7572,8 @@ source.other:
 ; : s, ( ca len -- ) dup c, tuck here swap cmove allot ;
 ; ----
 
+; See: `c,`, `here`, `cmove`, `allot`, `count`.
+;
 ; }doc
 
   dw dup_,c_comma_,tuck_,here_,swap_,c_move_,allot_
@@ -7589,7 +7589,7 @@ source.other:
 
 ; doc{
 ;
-; 2, ( x1 x2 -- )
+; 2, ( x1 x2 -- ) "2-comma"
 ;
 ; Definition:
 
@@ -7617,7 +7617,7 @@ two_comma.allot:
 
 ; doc{
 ;
-; c, ( c -- )
+; c, ( c -- ) "c-comma"
 ;
 ; Reserve space for one character in the data space and store
 ; _c_ in the space.
@@ -7646,7 +7646,7 @@ two_comma.allot:
 
 ; doc{
 ;
-; - ( n1|u1 n2|u2 -- n3|u3 )
+; - ( n1|u1 n2|u2 -- n3|u3 ) "minus"
 ;
 ; Substract _n2|u2_ from _n1|u1_, giving the difference _n3|u3_.
 ;
@@ -7669,7 +7669,7 @@ two_comma.allot:
 
 ; doc{
 ;
-; <> ( x1 x2 -- f )
+; <> ( x1 x2 -- f ) "not-equals"
 ;
 ; _f_ is true only and only if _x1_ is not bit-for-bit the
 ; same as _x1_.
@@ -7693,7 +7693,7 @@ two_comma.allot:
 
 ; doc{
 ;
-; = ( x1 x2 -- f )
+; = ( x1 x2 -- f ) "equals"
 ;
 ; _f_ is true only and only if _x1_ is bit-for-bit the same as
 ; _x1_.
@@ -7718,7 +7718,7 @@ two_comma.allot:
 
 ; doc{
 ;
-; -1 ( -- -1 )
+; -1 ( -- -1 ) "minus-one"
 ;
 ; Return _-1_. ``-1`` is not a `constant`, but a `code` word,
 ; which is faster.
@@ -7752,7 +7752,7 @@ two_comma.allot:
 
 ; doc{
 ;
-; < ( n1 n2 -- f )
+; < ( n1 n2 -- f ) "less-than"
 ;
 ; _f_ is true if and only if _n1_ is less than _n2_.
 ;
@@ -7797,7 +7797,7 @@ less_than.reverse
 
 ; doc{
 ;
-; u> ( u1 u2 -- f )
+; u> ( u1 u2 -- f ) "u-greater-than"
 ;
 ; _f_ is true if and only if _u1_ is greater than _u2_.
 ;
@@ -7817,7 +7817,7 @@ u_greater_than.hl:
 
 ; doc{
 ;
-; u< ( u1 u2 -- f )
+; u< ( u1 u2 -- f ) "u-less-than"
 ;
 ; _f_ is true if and only if _u1_ is less than _u2_.
 ;
@@ -7848,7 +7848,7 @@ u_less_than.de_hl:
 
 ; doc{
 ;
-; > ( n1 n2 -- f )
+; > ( n1 n2 -- f ) "greater-than"
 ;
 ; _f_ is true if and only if _n1_ is greater than _n2_.
 ;
@@ -7910,7 +7910,7 @@ u_less_than.de_hl:
 
 ; doc{
 ;
-; ?dup ( x -- 0 | x x )
+; ?dup ( x -- 0 | x x ) "question-dup"
 ;
 ; Duplicate _x_ if it is non-zero.
 ;
@@ -7983,7 +7983,7 @@ u_less_than.de_hl:
 
 ; doc{
 ;
-; latestxt ( -- xt )
+; latestxt ( -- xt ) "latest-x-t"
 ;
 ; Leave the execution token of the last word defined.
 ;
@@ -8262,7 +8262,7 @@ endif ; pentagon=512 or pentagon=1024
 
 ; doc{
 ;
-; farc@ ( ca -- c )
+; farc@ ( ca -- c ) "far-c-fetch"
 ;
 ; Fetch _c_ from far-memory address _ca_.
 ;
@@ -8286,7 +8286,7 @@ endif ; pentagon=512 or pentagon=1024
 
 ; doc{
 ;
-; farc! ( c ca -- )
+; farc! ( c ca -- ) "far-c-store"
 ;
 ; Store _c_ into far-memory address _ca_.
 ;
@@ -8306,7 +8306,7 @@ endif ; pentagon=512 or pentagon=1024
 
 ; doc{
 ;
-; far@ ( a -- x )
+; far@ ( a -- x ) "far-fetch"
 ;
 ; Fetch _x_ from far-memory address _a_.
 ;
@@ -8346,7 +8346,7 @@ endif ; pentagon=512 or pentagon=1024
 
 ; doc{
 ;
-; far! ( x a -- )
+; far! ( x a -- ) "far-store"
 ;
 ; Store _x_ into far-memory address _a_.
 ;
@@ -8386,7 +8386,7 @@ endif ; pentagon=512 or pentagon=1024
 
 ; doc{
 ;
-; name> ( nt -- xt )
+; name> ( nt -- xt ) "name-to"
 ;
 ; Definition:
 
@@ -8408,7 +8408,7 @@ endif ; pentagon=512 or pentagon=1024
 
 ; doc{
 ;
-; name>str ( nt -- ca len )
+; name>str ( nt -- ca len ) "name-to-s-t-r"
 ;
 ; Convert the name token _nt_ to its name string _ca len_ in
 ; far memory.
@@ -8431,7 +8431,7 @@ endif ; pentagon=512 or pentagon=1024
 
 ; doc{
 ;
-; name>string ( nt -- ca len )
+; name>string ( nt -- ca len ) "name-to-string"
 ;
 ; Convert the name token _nt_ to its name string _ca len_
 ; in the `stringer`.
@@ -8470,7 +8470,7 @@ name_to_string.loop_exit:
 
 ; doc{
 ;
-; !csp ( -- )
+; !csp ( -- ) "store-c-s-p"
 ;
 ; Save the current data stack position, `sp@`, into `csp`, to be
 ; checked later by `?csp`.  ``!csp`` is used by `:`, `:noname`
@@ -8494,7 +8494,7 @@ name_to_string.loop_exit:
 
 ; doc{
 ;
-; ?throw ( f n -- )
+; ?throw ( f n -- ) "question-throw"
 ;
 ; If _f_ is non-zero, `throw` exception code _n_
 ;
@@ -8516,7 +8516,7 @@ name_to_string.loop_exit:
 
 ; doc{
 ;
-; compiling? ( -- f )
+; compiling? ( -- f ) "compiling-question"
 ;
 ; _f_ is true if `state` is not zero, i.e. the Forth system is
 ; in compilation state.
@@ -8539,7 +8539,7 @@ name_to_string.loop_exit:
 
 ; doc{
 ;
-; executing? ( -- f )
+; executing? ( -- f ) "executing-question"
 ;
 ; _f_ is true if `state` is zero, i.e. the Forth system is not
 ; in compilation state.
@@ -8564,7 +8564,7 @@ name_to_string.loop_exit:
 
 ; doc{
 ;
-; ?csp ( -- )
+; ?csp ( -- ) "question-c-s-p"
 ;
 ; Throw error #-264 (definition not finished) if the current
 ; data stack position does not match the value saved by `!csp`.
@@ -8585,7 +8585,7 @@ name_to_string.loop_exit:
 
 ; doc{
 ;
-; ?loading ( -- )
+; ?loading ( -- ) "question-loading"
 ;
 ; If a `block` is not being loaded, i.e., if the content of
 ; `blk` is zero, `throw` exception code #-265 ("loading only").
@@ -8603,7 +8603,7 @@ name_to_string.loop_exit:
 
 ; doc{
 ;
-; loading? ( -- f )
+; loading? ( -- f ) "loading-question"
 ;
 ; If a `block` is being loaded, i.e., if the content of
 ; `blk` is non-zero, return true; else return false.
@@ -8704,7 +8704,7 @@ postpone.end:
 
 ; doc{
 ;
-; [ ( -- )
+; [ ( -- ) "left-bracket"
 ;
 ; Enter interpretation `state`.
 ;
@@ -8731,7 +8731,7 @@ postpone.end:
 
 ; doc{
 ;
-; ] ( -- )
+; ] ( -- ) "right-bracket"
 ;
 ; Enter compilation `state`.
 ;
@@ -8925,7 +8925,7 @@ base_store:
 
 ; doc{
 ;
-; (;code) ( -- ) ( R: a -- )
+; (;code) ( -- ) ( R: a -- ) "paren-semicolon-code"
 ;
 ; Rewrite the code field of the most recently defined high-level
 ; word (it can not be a `code` word) to point to the following
@@ -8952,7 +8952,7 @@ base_store:
 
 ; doc{
 ;
-; does>
+; does> "does"
 ;   Compilation: ( -- )
 ;   Run-time:    ( -- ) ( R: nest-sys -- )
 ;
@@ -9146,7 +9146,7 @@ type.loop_exit
 
 ; doc{
 ;
-; -trailing ( ca1 len1 -- ca2 len2 )
+; -trailing ( ca1 len1 -- ca2 len2 ) "minus-trailing"
 ;
 ; Adjust the length of a string _ca1 len1_ to suppress the
 ; trailing blanks, returning the result _ca2 len2_.
@@ -9189,7 +9189,7 @@ minus_trailing.begin:
 
 ; doc{
 ;
-; -leading ( ca1 len1 -- ca2 len2 )
+; -leading ( ca1 len1 -- ca2 len2 ) "minus-leading"
 ;
 ; Adjust the start and length of a string _ca1 len1_ to suppress
 ; the leading blanks, returning the result _ca2 len2_.
@@ -9212,7 +9212,7 @@ minus_trailing.begin:
 
 ; doc{
 ;
-; (.") ( -- )
+; (.") ( -- ) "paren-dot-quote"
 ;
 ; Type the compiled string that follows. ``(.")`` is the
 ; run-time procedure compiled by `."`.
@@ -9243,7 +9243,7 @@ minus_trailing.begin:
 
 ; doc{
 ;
-; ," ( "ccc<quote>" -- )
+; ," ( "ccc<quote>" -- ) "comma-quote"
 ;
 ; Parse "ccc" delimited by a double-quote and compile the
 ; string.
@@ -9270,7 +9270,7 @@ minus_trailing.begin:
 
 ; doc{
 ;
-; ."
+; ." "dot-quote"
 ;   Compilation: ( "ccc<quote>" -- )
 ;   Run-time: ( -- )
 
@@ -9464,7 +9464,7 @@ simple_accept.end
 
 ; doc{
 ;
-; (source-id) ( -- a )
+; (source-id) ( -- a ) "paren-source-i-d"
 ;
 ; A constant. _a_ is the address of a cell containinig the value
 ; returned by `source-id`.
@@ -9478,7 +9478,7 @@ simple_accept.end
 
 ; doc{
 ;
-; source-id ( -- 0 | -1 )
+; source-id ( -- 0 | -1 ) "source-i-d"
 ;
 ; Identify the input source as follows:
 ;
@@ -9498,7 +9498,7 @@ simple_accept.end
 
 ; doc{
 ;
-; #block-drives ( -- ca )
+; #block-drives ( -- ca ) "hash-block-drives"
 ;
 ; A character variable. _ca is the number of block drives
 ; defined in `block-drives`, i.e. the number of drives that are
@@ -9531,7 +9531,7 @@ simple_accept.end
 
 ; doc{
 ;
-; block? ( u -- f )
+; block? ( u -- f ) "block-question"
 ;
 ; _f_ is true if _u_ is a valid `block` number.
 ;
@@ -9688,7 +9688,7 @@ fill.done:
 
 ; doc{
 ;
-; /hold ( -- len )
+; /hold ( -- len ) "slash-hold"
 ;
 ; A character constant. _len_ is the length of the pictured
 ; output string buffer, which is located right below `pad`.
@@ -9758,7 +9758,7 @@ fill.done:
 
 ; doc{
 ;
-; 1/string ( ca1 len1 -- ca1+1 len1-1 )
+; 1/string ( ca1 len1 -- ca1+1 len1-1 ) "one-slash-string"
 ;
 ; Adjust the character string _ca1 len1_ by 1 character.
 ;
@@ -9779,7 +9779,7 @@ fill.done:
 
 ; doc{
 ;
-; /string ( ca1 len1 n -- ca2 len2 )
+; /string ( ca1 len1 n -- ca2 len2 ) "slash-string"
 ;
 ; Adjust the character string _ca1 len1_ by _n_ characters.  The
 ; resulting character string _ca2 len2_ begins at _ca1_ plus _n_
@@ -9907,7 +9907,7 @@ parse.end:
 
 ; doc{
 ;
-; ?name-too-short ( ca len -- )
+; ?name-too-short ( ca len -- ) "question-name-too-short"
 ;
 ; If name _ca len_ is empty, `throw` exception code #-16.
 ;
@@ -10106,7 +10106,7 @@ far_lowers.end:
 
 ; doc{
 ;
-; undefined? ( ca len -- f )
+; undefined? ( ca len -- f ) "undefined-question"
 ;
 ; Find name _ca len_.  If the definition is
 ; not found after searching the active search
@@ -10214,7 +10214,7 @@ far_place.copy_char:
 
 ; doc{
 ;
-; error# ( -- a )
+; error# ( -- a ) "error-hash"
 ;
 ; A variable. _a_ is the address of a cell containing the number
 ; of the last error issued by `error`.
@@ -10253,7 +10253,7 @@ far_place.copy_char:
 
 ; doc{
 ;
-; .error-word ( -- )
+; .error-word ( -- ) "dot-error-word"
 ;
 ; Display the string identified by the cell pair stored in
 ; `parsed-name`, followed by a question mark.
@@ -10356,7 +10356,7 @@ error.message:
 
 ; doc{
 ;
-; .name ( nt -- )
+; .name ( nt -- ) "dot-name"
 ;
 ; Display the name of the word identified by _nt_.
 ;
@@ -10402,7 +10402,7 @@ error.message:
 
 ; doc{
 ;
-; #words ( -- n )
+; #words ( -- n ) "hash-words"
 ;
 ; _n_ is the number of words currently defined in the system,
 ; which is updated by `header,`.
@@ -10416,7 +10416,7 @@ error.message:
 
 ; doc{
 ;
-; header, ( ca len -- )
+; header, ( ca len -- ) "header-comma"
 ;
 ; Create a definition header in the name space using the name
 ; _ca len_ and hide it by setting its `smudge` bit.
@@ -10636,7 +10636,7 @@ compare.end:
 
 ; doc{
 ;
-; str= ( ca1 len1 ca2 len2 -- f )
+; str= ( ca1 len1 ca2 len2 -- f ) "s-t-r-equals"
 ;
 ; _f_ is true if string _ca1 len1_ is lexicographically equal to
 ; string _ca2 len2_.
@@ -10770,7 +10770,7 @@ search.failed:
 
 ; doc{
 ;
-; sliteral
+; sliteral "s-literal"
 ;   Compilation: ( ca1 len1 -- )
 ;   Run-time:    ( -- ca2 len1 )
 
@@ -10800,7 +10800,7 @@ search.failed:
 
 ; doc{
 ;
-; byte? ( x -- f )
+; byte? ( x -- f ) "byte-question"
 ;
 ; _f_ is true if _x_ is an 8-bit number. Used by `1literal`.
 ;
@@ -10818,7 +10818,7 @@ search.failed:
 
 ; doc{
 ;
-; cliteral ( b -- )
+; cliteral ( b -- ) "c-literal"
 ;
 ; Compile _b_ in the current definition.
 ;
@@ -10872,7 +10872,7 @@ search.failed:
 
 ; doc{
 ;
-; 1literal ( x -- )
+; 1literal ( x -- ) "one-literal"
 ;
 ; If _x_ is a byte, execute `cliteral`, else execute `literal`.
 ;
@@ -10904,7 +10904,7 @@ search.failed:
 
 ; doc{
 ;
-; 2literal ( x1 x2 -- )
+; 2literal ( x1 x2 -- ) "two-literal"
 ;
 ; Compile _x1 x2_ in the current definition.
 ;
@@ -10980,7 +10980,7 @@ endif
 
 ; doc{
 ;
-; ?stack ( -- )
+; ?stack ( -- ) "question-stack"
 ;
 ; `throw` an error if the data stack is out of bounds.
 ;
@@ -11004,7 +11004,7 @@ endif
 
 ; doc{
 ;
-; ?rstack ( -- )
+; ?rstack ( -- ) "question-r-stack"
 ;
 ; `throw` an error if the return stack is out of bounds.
 ;
@@ -11302,7 +11302,7 @@ interpret.end:
 
 ; doc{
 ;
-; lex? ( nt b -- f )
+; lex? ( nt b -- f ) "lex-question"
 ;
 ; Test the bits at _nt_ specified by the bitmask _b_.
 ; Return true if the result is non-zero, else return false.
@@ -11331,7 +11331,7 @@ endif
 
 ; doc{
 ;
-; lex! ( b nt -- )
+; lex! ( b nt -- ) "lex-store"
 ;
 ; Set the bits of the mask _b_ in the length byte of _nt_.
 ;
@@ -11376,7 +11376,7 @@ endif
 
 ; doc{
 ;
-; immediate? ( nt -- f )
+; immediate? ( nt -- f ) "immediate-question"
 ;
 ; _f_ is true if the word _nt_ is immediate.
 ;
@@ -11462,7 +11462,7 @@ endif
 
 ; doc{
 ;
-; compile-only? ( nt -- f )
+; compile-only? ( nt -- f ) "compile-only-question"
 ;
 ; _f_ is true if the word _nt_ is compile-only.
 ;
@@ -11484,7 +11484,7 @@ endif
 
 ; doc{
 ;
-; wordlist, ( -- )
+; wordlist, ( -- ) "wordlist-comma"
 ;
 ; Compile the contents of a new word list.
 ; The structure is the following:
@@ -11540,7 +11540,7 @@ endif
 
 ; doc{
 ;
-; dovocabulary ( -- )
+; dovocabulary ( -- ) "do-vocabulary"
 ;
 ; Change the behaviour of the latest word defined:
 ; Replace the first word list in the search order with
@@ -11648,7 +11648,7 @@ do_vocabulary:
 
 ; doc{
 ;
-; ( ( "ccc<paren>" -- )
+; ( ( "ccc<paren>" -- ) "paren"
 ;
 ; Parse _ccc_ delimited by a right parenthesis.  The number of
 ; characters in _ccc_ may be zero to the number of characters in
@@ -11678,7 +11678,7 @@ do_vocabulary:
 
 ; doc{
 ;
-; ?) ( -- )
+; ?) ( -- ) "question-right-paren"
 ;
 ; Do nothing. `?(` parses until ``?)`` is found.
 ;
@@ -11691,7 +11691,7 @@ do_vocabulary:
 
 ; doc{
 ;
-; ?( ( f "ccc<space><question><paren><space>" -- )
+; ?( ( f "ccc<space><question><paren><space>" -- ) "question-paren"
 ;
 ; If _f_ is not zero, parse and discard until `?)` is found or
 ; until the end of the parse area is reached.
@@ -11732,7 +11732,7 @@ question_paren.exit:
 
 ; doc{
 ;
-; .ok ( -- )
+; .ok ( -- ) "dot-ok"
 ;
 ; Display "ok". ``.ok`` is the default action of `ok`.
 ;
@@ -11805,7 +11805,7 @@ quit.begin:
 
 ; doc{
 ;
-; (defer) ( -- )
+; (defer) ( -- ) "paren-defer"
 ;
 ; `throw` `error` #-261 ("deferred word is uninitialized".
 ; ``(defer)`` is the default action of the uninitialized
@@ -11852,7 +11852,7 @@ quit.begin:
 
 ; doc{
 ;
-; >action ( xt -- a )
+; >action ( xt -- a ) "to-action"
 ;
 ; Return the address _a_ that contains the execution token
 ; currently associated to the deferred word _xt_.
@@ -11866,7 +11866,7 @@ quit.begin:
 
 ; doc{
 ;
-; defer! ( xt1 xt2 -- )
+; defer! ( xt1 xt2 -- ) "defer-store"
 ;
 ; Set the deferred word _xt2_ to execute _xt1_.
 ;
@@ -11914,7 +11914,7 @@ quit.begin:
 
 ; doc{
 ;
-; .version ( -- )
+; .version ( -- ) "dot-version"
 ;
 ; Display the Solo Forth `version`.
 ;
@@ -11973,7 +11973,7 @@ if 1 ; developing
 
 ; doc{
 ;
-; .words ( -- )
+; .words ( -- ) "dot-words"
 ;
 ; Display a message informing about the number of words defined
 ; in the system.
@@ -12021,7 +12021,7 @@ if 1 ; developing
 
 ; doc{
 ;
-; .unused ( -- )
+; .unused ( -- ) "dot-unused"
 ;
 ; Display the total RAM in the system, and the amount of space
 ; remaining in the regions addressed by `here` and `np`, in
@@ -12387,7 +12387,7 @@ common_start:
 
 ; doc{
 ;
-; d>s ( d -- n )
+; d>s ( d -- n ) "d-to-s"
 ;
 ; _n_ is the equivalent of _d_. The high cell of _d_ is
 ; discarded.
@@ -12407,6 +12407,8 @@ if size_optimization
 
   dw dup_,zero_less_than_
   dw exit_
+
+  ; XXX TODO -- benchmark
 
 else
 
@@ -12429,7 +12431,7 @@ endif
 
 ; doc{
 ;
-; s>d ( n -- d )
+; s>d ( n -- d ) "s-to-d"
 ;
 ; Sign extend a single number _n_ to form a double number _d_.
 ;
@@ -12452,7 +12454,7 @@ endif
 
 ; doc{
 ;
-; ?negate ( n1 n2 -- n1|n3 )
+; ?negate ( n1 n2 -- n1|n3 ) "question-negate"
 ;
 ; If _n2_ is negative, negate _n1_, giving its arithmetic
 ; inverse _n3_.
@@ -12481,7 +12483,7 @@ question_negate.hl:
 
 ; doc{
 ;
-; ?dnegate ( d1 n -- d1|d2 )
+; ?dnegate ( d1 n -- d1|d2 ) "question-d-negate"
 ;
 ; If _n_ is negative, negate _d1_, giving its arithmetic inverse
 ; _d2_.
@@ -12531,7 +12533,7 @@ question_d_negate.hl:
 
 ; doc{
 ;
-; dabs ( d -- ud )
+; dabs ( d -- ud ) "d-abs"
 ;
 ; Leave the absolute value _ud_ of a double number _d_.
 ;
@@ -12552,7 +12554,7 @@ question_d_negate.hl:
 
 ; doc{
 ;
-; umax ( u1 u2 -- u1 | u2 )
+; umax ( u1 u2 -- u1 | u2 ) "u-max"
 ;
 ; _u3_ is the greater of _u1_ and _u2_.
 ;
@@ -12573,7 +12575,7 @@ question_d_negate.hl:
 
 ; doc{
 ;
-; umin ( u1 u2 -- u1 | u2 )
+; umin ( u1 u2 -- u1 | u2 ) "u-min"
 ;
 ; _u3_ is the lesser of _u1_ and _u2_.
 ;
@@ -12648,7 +12650,7 @@ max.2:
 
 ; doc{
 ;
-; m* ( n1 n2 -- d )
+; m* ( n1 n2 -- d ) "m-star"
 ;
 ; Multiply _n1_ by _n2_, giving the result _d_.
 ;
@@ -12697,7 +12699,7 @@ endif
 
 ; doc{
 ;
-; m/ ( d n1 -- n2 n3 )
+; m/ ( d n1 -- n2 n3 ) "m-slash"
 ;
 ; A mixed magnitude math operator which leaves the signed
 ; remainder _n2_ and signed quotient _n3_ from a double number
@@ -12735,7 +12737,7 @@ endif
 
 ; doc{
 ;
-; sm/rem ( d n1 -- n2 n3 )
+; sm/rem ( d n1 -- n2 n3 ) "s-m-slash-rem"
 ;
 ; Symmetric division:
 ;
@@ -12788,7 +12790,7 @@ endif
 
 ; doc{
 ;
-; * ( n1|u1 n2|u2 -- n3|u3 )
+; * ( n1|u1 n2|u2 -- n3|u3 ) "star"
 ;
 ; Multiply _n1|u1_ by _n2|u2_ giving the product _n3|u3_.
 ;
@@ -12821,7 +12823,7 @@ endif
 
 ; doc{
 ;
-; /mod ( n1 n2 -- n3 n4 )
+; /mod ( n1 n2 -- n3 n4 ) "slash-mod"
 ;
 ; Divide _n1_ by _n2_, giving the remainder _n3_ and the
 ; quotient _n4_.
@@ -12841,7 +12843,7 @@ endif
 
 ; doc{
 ;
-; / ( n1 n2 -- n3 )
+; / ( n1 n2 -- n3 ) "slash"
 ;
 ; Divide _n1_ by _n2_, giving the quotient _n3_.
 ;
@@ -12897,7 +12899,7 @@ endif
 
 ; doc{
 ;
-; */mod ( n1 n2 n3 -- n4 n5 )
+; */mod ( n1 n2 n3 -- n4 n5 ) "star-slash-mod"
 ;
 ; Multiply _n1_ by _n2_ producing the intermediate
 ; result _d_. Divide _d_ by _n3_ producing the remainder
@@ -12927,7 +12929,7 @@ endif
 
 ; doc{
 ;
-; line>string ( n1 n2 -- ca len )
+; line>string ( n1 n2 -- ca len ) "line-to-string"
 ;
 ; Convert the line number _n1_ and the screen number _n2_ to a
 ; string _ca len_ in the disk buffer containing the data.
@@ -12958,7 +12960,7 @@ endif
 
 ; doc{
 ;
-; dec. ( n -- )
+; dec. ( n -- ) "dec-dot"
 ;
 ; Display _n_ as a signed decimal number, followed by a space.
 ;
@@ -12976,7 +12978,7 @@ endif
 
 ; doc{
 ;
-; .throw# ( n -- )
+; .throw# ( n -- ) "dot-throw-hash"
 ;
 ; Display the number of `throw` code _n_, as a decimal number,
 ; prefixed with a '#' and followed by a space.
@@ -12995,7 +12997,7 @@ endif
 
 ; doc{
 ;
-; .throw ( n -- )
+; .throw ( n -- ) "dot-throw"
 ;
 ; Display a message giving information about the condition
 ; associated with the `throw` code _n_.
@@ -13015,7 +13017,7 @@ endif
 
 ; doc{
 ;
-; updated? ( -- f )
+; updated? ( -- f ) "updated-question"
 ;
 ; _f_ is true if the current disk buffer is marked as
 ; modified.
@@ -13066,7 +13068,7 @@ endif
 
 ; doc{
 ;
-; buffer-id ( -- x )
+; buffer-id ( -- x ) "buffer-i-d"
 ;
 ; _x_ is the identifier of the disk buffer.
 ;
@@ -13104,7 +13106,7 @@ endif
 
 ; doc{
 ;
-; >drive-block ( u1 -- u2 )
+; >drive-block ( u1 -- u2 ) "to-drive-block"
 ;
 ; Convert block _u1_ to its equivalent _u2_ in its corresponding
 ; disk drive, which is set the current drive.
@@ -13368,7 +13370,7 @@ block.end:
 
 ; doc{
 ;
-; terminal>source ( -- )
+; terminal>source ( -- ) "terminal-to-source"
 ;
 ; Set the terminal as the current source.
 ;
@@ -13393,7 +13395,7 @@ block.end:
 
 ; doc{
 ;
-; block>source ( u -- )
+; block>source ( u -- ) "block-to-source"
 ;
 ; Set `block` _u_ as the current source.
 ;
@@ -13416,7 +13418,7 @@ block.end:
 
 ; doc{
 ;
-; (load) ( u -- )
+; (load) ( u -- ) "paren-load"
 ;
 ; Make block _u_ the current input source and interpret it.
 
@@ -13473,7 +13475,7 @@ block.end:
 
 ; doc{
 ;
-; --> ( -- ) \ "next-screen"
+; --> ( -- ) "next-block"
 ;
 ; Continue interpretation with the next block.
 ;
@@ -13530,7 +13532,7 @@ block.end:
 
 ; doc{
 ;
-; ?defined ( f -- )
+; ?defined ( f -- ) "question-defined"
 ;
 ; If _f_ is false, `throw` exception code #-13 (not found).
 ;
@@ -13548,7 +13550,7 @@ block.end:
 
 ; doc{
 ;
-; ' ( "name" -- xt )
+; ' ( "name" -- xt ) "tick"
 ;
 ; If _name_ is found in the current search order, return its
 ; execution token _xt_, else throw an exception.
@@ -13574,7 +13576,7 @@ block.end:
 
 ; doc{
 ;
-; [']
+; ['] "bracket-tick"
 ;   Compilation: ( "name" -- )
 ;
 ; Compilation: If _name_ is found in the current search order,
@@ -13683,9 +13685,8 @@ block.end:
 ; Definition:
 
 ; ----
-; : until
-;   \ Compilation: ( C: dest -- )
-;   \ Run-time:    ( f -- )
+; : until \ Compilation: ( C: dest -- )
+;         \ Run-time:    ( f -- )
 ;   compile 0branch <resolve ; immediate compile-only
 ; ----
 
@@ -13725,9 +13726,8 @@ block.end:
 ; Definition:
 
 ; ----
-; : again
-;   \ Compilation: ( C: dest -- )
-;   \ Run-time:    ( -- )
+; : again \ Compilation: ( C: dest -- )
+;         \ Run-time:    ( -- )
 ;   compile branch <resolve ; immediate compile-only
 ; ----
 
@@ -13765,9 +13765,8 @@ block.end:
 ; Definition:
 
 ; ----
-; : repeat
-;   \ Compilation: ( C: orig dest -- )
-;   \ Run-time:    ( -- )
+; : repeat \ Compilation: ( C: orig dest -- )
+;          \ Run-time:    ( -- )
 ;   postpone again postpone then ; immediate compile-only
 ; ----
 
@@ -13788,8 +13787,8 @@ block.end:
 ; doc{
 ;
 ; if
-;   \ Compilation: ( C: -- orig )
-;   \ Run-time:    ( f -- )
+;   Compilation: ( C: -- orig )
+;   Run-time:    ( f -- )
 
 ;
 ; Compilation: Compile a conditional `0branch` and put the
@@ -13804,9 +13803,8 @@ block.end:
 ; Definition:
 
 ; ----
-; : if
-;   \ Compilation: ( C: -- orig )
-;   \ Run-time:    ( f -- )
+; : if \ Compilation: ( C: -- orig )
+;      \ Run-time:    ( f -- )
 ;   compile 0branch >mark ; immediate compile-only
 ; ----
 
@@ -13844,9 +13842,8 @@ if.do:
 ; Definition:
 
 ; ----
-; : ahead
-;   \ Compilation: ( C: -- orig )
-;   \ Run-time:    ( -- )
+; : ahead \ Compilation: ( C: -- orig )
+;         \ Run-time:    ( -- )
 ;   compile branch >mark ; immediate compile-only
 ; ----
 
@@ -13880,9 +13877,8 @@ if.do:
 ; Definition:
 
 ; ----
-; : else
-;   \ Compilation: ( C: orig1 -- orig2 )
-;   \ Run-time:    ( -- )
+; : else \ Compilation: ( C: orig1 -- orig2 )
+;        \ Run-time:    ( -- )
 ;   ahead cs-swap then ; immediate compile-only
 ; ----
 
@@ -13920,9 +13916,8 @@ if.do:
 ; Definition:
 
 ; ----
-; : while
-;   \ Compilation: ( C: dest -- orig dest )
-;   \ Run-time:    ( f -- )
+; : while \ Compilation: ( C: dest -- orig dest )
+;         \ Run-time:    ( f -- )
 ;   postpone if cs-swap ; immediate compile-only
 ; ----
 
@@ -14003,7 +13998,7 @@ emits.loop_exit:
 
 ; doc{
 ;
-; <# ( -- )
+; <# ( -- ) "less-hash"
 ;
 ; Initialize the pictured numeric output process:
 ; Set `hld` to its initial value, right below `pad`.
@@ -14029,7 +14024,7 @@ emits.loop_exit:
 
 ; doc{
 ;
-; #> ( xd -- ca len )
+; #> ( xd -- ca len ) "hash-greater"
 ;
 ; End the pictured numeric output conversion that was started by
 ; `<#`: Drop _xd_ and make the pictured numeric output string
@@ -14087,7 +14082,7 @@ sign.end:
 
 ; doc{
 ;
-; >digit ( n -- c )
+; >digit ( n -- c ) "to-digit"
 ;
 ; Convert a number to its character digit: 0 .. 9A .. Z.
 ;
@@ -14121,7 +14116,7 @@ to_digit.end
 
 ; doc{
 ;
-; # ( ud1 -- ud2 )
+; # ( ud1 -- ud2 ) "hash"
 ;
 ; Divide _ud1_ by the number in `base`, giving the quotient
 ; _ud2_ and the remainder _n_. (_n_ is the least significant
@@ -14153,7 +14148,7 @@ to_digit.end
 
 ; doc{
 ;
-; ud/mod ( ud1 u2 -- u3 ud4 )
+; ud/mod ( ud1 u2 -- u3 ud4 ) "u-d-slash-mod"
 ;
 ; An unsigned mixed magnitude math operation which leaves a
 ; double quotient _ud4_ and remainder _u3_, from a double
@@ -14193,7 +14188,7 @@ to_digit.end
 
 ; doc{
 ;
-; -rot ( x1 x2 x3 -- x3 x1 x2 )
+; -rot ( x1 x2 x3 -- x3 x1 x2 ) "minus-rot"
 ;
 ; Rotate the top three stack entries in reverse order.
 ;
@@ -14218,7 +14213,7 @@ to_digit.end
 
 ; doc{
 ;
-; #s ( ud1 -- ud2 )
+; #s ( ud1 -- ud2 ) "hash-s"
 ;
 ; Convert one digit of _ud1_ according to the rule for `#`.
 ; Continue conversion until the quotient is zero. _ud2_ is zero.
@@ -14245,7 +14240,7 @@ hash_s.begin:
 
 ; doc{
 ;
-; d>str ( d>str -- ca len )
+; d>str ( d>str -- ca len ) "d-to-s-t-r"
 ;
 ; Convert _d_ to string _ca len_ in the pictured numeric output
 ; string buffer.
@@ -14278,7 +14273,7 @@ hash_s.begin:
 
 ; doc{
 ;
-; 0d.r ( d -- )
+; 0d.r ( d -- ) "zero-d-dot-r"
 ;
 ; Display _d_ according to current base, with no leading or
 ; trailing spaces.  ``d0.r`` is a faster alternative to the
@@ -14305,7 +14300,7 @@ hash_s.begin:
 
 ; doc{
 ;
-; d.r ( d n -- )
+; d.r ( d n -- ) "d-dot-r"
 ;
 ; Display _d_ right aligned in a field _n_ characters wide. If
 ; the number of characters required to display _d_ is greater
@@ -14339,7 +14334,7 @@ hash_s.begin:
 
 ; doc{
 ;
-; 0.r ( n -- )
+; 0.r ( n -- ) "zero-dot-r"
 ;
 ; Display _n_ according to current base, with no leading or
 ; trailing spaces.  ``0.r`` is a faster alternative to the idiom
@@ -14366,7 +14361,7 @@ hash_s.begin:
 
 ; doc{
 ;
-; .r ( n1 n2 -- )
+; .r ( n1 n2 -- ) "dot-r"
 ;
 ; Display _n1_ right aligned in a field _n2_ characters wide. If
 ; the number of characters required to display _n1_ is greater
@@ -14398,7 +14393,7 @@ hash_s.begin:
 
 ; doc{
 ;
-; d. ( d -- )
+; d. ( d -- ) "d-dot"
 ;
 ; Display _d_ according to current base, followed by one blank.
 ;
@@ -14416,7 +14411,7 @@ hash_s.begin:
 
 ; doc{
 ;
-; . ( n -- )
+; . ( n -- ) "dot"
 ;
 ; Display signed integer _n_ according to current `base`,
 ; followed by one blank.
@@ -14433,7 +14428,7 @@ hash_s.begin:
 
 ; doc{
 ;
-; ? ( a -- )
+; ? ( a -- ) "question"
 ;
 ; Display the 1-cell signed integer stored at _a_, using the
 ; format of `.`.
@@ -14457,7 +14452,7 @@ if 1 ; developing
 
   ; XXX TODO -- Move to the library.
 
-; u. ( u -- )
+; u. ( u -- ) "u-dot"
 ;
 ; Display _u_ in free field format.
 ;
@@ -14638,7 +14633,7 @@ page.display:
 
 ; doc{
 ;
-; os-sp ( -- a )
+; os-sp ( -- a ) "os-s-p"
 ;
 ; A variable. _a_ is the address of a cell containing a copy of
 ; the OS stack pointer, which is saved when the Forth system is
@@ -14658,7 +14653,7 @@ system_stack_pointer:
 
 ; doc{
 ;
-; (bye) ( -- )
+; (bye) ( -- ) "paren-bye"
 ;
 ; Restore the two lower lines of the screen, as expected by
 ; BASIC, set interrupt mode 1, restore the OS stack pointer,
@@ -14753,7 +14748,7 @@ system_stack_pointer:
 
 ; doc{
 ;
-; 2drop ( x1 x2 -- )
+; 2drop ( x1 x2 -- ) "two-drop"
 ;
 ; Remove cell pair _x1 x2_ from the stack.
 ;
@@ -14774,7 +14769,7 @@ system_stack_pointer:
 
 ; doc{
 ;
-; 2swap ( x1 x2 x3 x4 -- x3 x4 x1 x2 )
+; 2swap ( x1 x2 x3 x4 -- x3 x4 x1 x2 ) "two-swap"
 ;
 ; Exchange the top two cell pairs.
 ;
@@ -14909,7 +14904,7 @@ system_stack_pointer:
 
 ; doc{
 
-; mode-32-at-xy ( col row -- )
+; mode-32-at-xy ( col row -- ) "mode-32-at-x-y"
 ;
 ; Default action of `at-xy`, in `mode-32`.
 ;
@@ -14951,7 +14946,7 @@ at_dfa.last_line:
 
 ; doc{
 ;
-; cls ( -- )
+; cls ( -- ) "c-l-s"
 ;
 ; Clear the screen with the current attribute, reset the graphic
 ; coordinates at the lower left corner (gx 0, gy 0) and reset
@@ -14975,7 +14970,7 @@ at_dfa.last_line:
 
 ; doc{
 ;
-; attr-cls ( b -- )
+; attr-cls ( b -- ) "attr-c-l-s"
 ;
 ; Clear the screen with the attribute _b_, reset the graphic
 ; coordinates at the lower left corner (x 0, y 0) and reset the
@@ -15039,7 +15034,7 @@ attr_cls.a: ; alternative entry point used by `cls`
 
 ; doc{
 ;
-; (home) ( -- )
+; (home) ( -- ) "paren-home"
 ;
 ; Default action of `home`: Set the cursor position at the
 ; top left position (column 0, row 0).
@@ -15057,7 +15052,7 @@ attr_cls.a: ; alternative entry point used by `cls`
 
 ; doc{
 ;
-; at-xy ( col row -- )
+; at-xy ( col row -- ) "at-x-y"
 ;
 ; Set the cursor coordinates to column _col_ and row _row_.  The
 ; upper left corner is column zero, row zero.
@@ -15076,7 +15071,7 @@ attr_cls.a: ; alternative entry point used by `cls`
 
 ; doc{
 ;
-; mode-32-xy ( -- col row )
+; mode-32-xy ( -- col row ) "mode-32-x-y"
 ;
 ; Return the current cursor coordinates _col row_ in `mode-32`
 ; and `mode-32iso`.
@@ -15123,7 +15118,7 @@ mode_32_xy.end:
 
 ; doc{
 ;
-; xy ( -- col row )
+; xy ( -- col row ) "x-y"
 ;
 ; Return the current column and row of the text cursor.
 ;
@@ -15201,7 +15196,7 @@ border.a:
 
 ; doc{
 ;
-; 2constant ( x1 x2 "name" -- )
+; 2constant ( x1 x2 "name" -- ) "two-constant"
 ;
 ; Parse _name_. `create` a definition for _name_ that will place
 ; _x1 x2_ on the stack.  _name_ is referred to as a
@@ -15227,7 +15222,7 @@ do_two_constant:
 
 ; doc{
 ;
-; 2@ ( a -- x1 x2 )
+; 2@ ( a -- x1 x2 ) "two-fetch"
 ;
 ; Fetch the cell pair _x1 x2_ stored at _a_. _x2_ is stored at
 ; _a_ and _x1_ is stored at the next consecutive cell. It is
@@ -15265,7 +15260,7 @@ two_fetch.hl:
 
 ; doc{
 ;
-; 2variable ( "name" -- )
+; 2variable ( "name" -- ) "two-variable"
 ;
 ; Parse _name_.  `create` a definition for _name_, which is
 ; referred to as a "two-variable".  `allot` two cells of data space,
@@ -15301,7 +15296,7 @@ two_fetch.hl:
 
 ; doc{
 ;
-; 2over ( x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2 )
+; 2over ( x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2 ) "two-over"
 ;
 ; Copy cell pair _x1 x2_ on top of the stack.
 ;
@@ -15411,7 +15406,7 @@ execute_hl:
 
 ; doc{
 ;
-; ?exit ( f -- ) ( R: nest-sys | -- nest-sys | )
+; ?exit ( f -- ) ( R: nest-sys | -- nest-sys | ) "question-exit"
 ;
 ; If _f_ is zero, do nothing. Otherwise return control to the
 ; calling definition, specified by _nest-sys_.
@@ -15508,7 +15503,7 @@ throw.end:
 
 ; doc{
 ;
-; (abort) ( -- )
+; (abort) ( -- ) "paren-abort"
 ;
 ; Restart the system by emptying the stack and performing
 ; `quit`.
@@ -15561,10 +15556,10 @@ throw.end:
 
 ; doc{
 ;
-; s"
-;   \ Compilation:    ( "ccc<quote>" -- )
-;   \ Interpretation: ( "ccc<quote>" -- ca len )
-;   \ Run-time:       ( -- ca len )
+; s" "s-quote"
+;   Compilation:    ( "ccc<quote>" -- )
+;   Interpretation: ( "ccc<quote>" -- ca len )
+;   Run-time:       ( -- ca len )
 ;
 ; Parse _ccc_ delimited by a double quote.  If interpreting, copy
 ; the parsed string to the `stringer` and return it as _ca len_.
@@ -15597,7 +15592,7 @@ throw.end:
 
 ; doc{
 ;
-; ?\ ( f "ccc<eol>" -- )
+; ?\ ( f "ccc<eol>" -- ) "question-backslash"
 ;
 ; If _f_ is not zero, execute `\`, else do nothing.
 ;
@@ -15630,7 +15625,7 @@ question_backslash.exit
 
 ; doc{
 ;
-; \ ( "ccc<eol>" -- )
+; \ ( "ccc<eol>" -- ) "backslash"
 ;
 ; If `blk` contains zero, parse and discard the remainder of the
 ; parse area; otherwise parse and discard the portion of the
@@ -15665,7 +15660,7 @@ backslash.loading:
 
 ; doc{
 ;
-; .( ( "ccc<paren>" -- )
+; .( ( "ccc<paren>" -- ) "dot-paren"
 ;
 ; Parse and display _ccc_ delimited by a right parenthesis.
 ;

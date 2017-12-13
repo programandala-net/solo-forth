@@ -477,6 +477,17 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 // Dictionary {{{1
 == Dictionary ==
 
+.2017-12-13:
+
+Keep notation ">str" coherent.
+
+Rename `name>string` `name>stringer`.
+
+Rename `name>str` `name>string` (after Gforth)?
+
+Rename `line>string` `line>str`?
+
+
 .2017-12-12:
 
 NOTE: Milestone: 0.14.0
@@ -784,12 +795,12 @@ backslash, or that are included in code examples, are corrupted.
 Add exception codes to the manual, by including and filtering the
 corresponding library modules.
 
-.2017-03-13:
+.2017-03-13, 2017-12-13:
 
 NOTE: Milestone: 0.14.0
 
-Add the corresponding English names to words that need them, e.g.
-"next-screen" for `-->`.
+Add the corresponding English names to words that need them in the
+library (already done in the kernel).
 
 .2017-03-10:
 
