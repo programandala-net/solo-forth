@@ -8929,7 +8929,7 @@ base_store:
 ;
 ; Rewrite the code field of the most recently defined high-level
 ; word (it can not be a `code` word) to point to the following
-; machine code sequence.
+; machine code sequence, which is at _a_.
 ;
 ; ``(;code)`` is the run-time procedure compiled by `;code` and
 ; `does>`.
@@ -8940,7 +8940,7 @@ base_store:
 ; : (;code) ( -- ) ( R: a -- ) r> latestxt 1+ ! ;
 ; ----
 
-; See: `latest`, `name>`.
+; See: `latestxt`.
 ;
 ; }doc
 

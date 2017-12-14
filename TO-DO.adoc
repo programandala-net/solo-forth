@@ -1,12 +1,105 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-12-12
+:revdate: 2017-12-14
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
 // Assembler {{{1
 == Assembler ==
+
+.2017-12-14:
+
+Adapt `inline` from Richard W.M. Jones' Jonesforth
+(http://annexia.org/forth):
+
+----
+(
+
+  INLINE can be used to inline an assembler primitive into the current
+  (assembler) word.
+
+	For example:
+
+		: 2DROP INLINE DROP INLINE DROP ;CODE
+
+  will build an efficient assembler word 2DROP which contains the
+  inline assembly code for DROP followed by DROP (eg. two 'pop %eax'
+  instructions in this case).
+
+	Another example.  Consider this ordinary FORTH definition:
+
+		: C@++ ( addr -- addr+1 byte ) DUP 1+ SWAP C@ ;
+
+  (it is equivalent to the C operation '*p++' where p is a pointer to
+  char).  If we notice that all of the words used to define C@++ are
+  in fact assembler primitives, then we can write a faster (but
+  equivalent) definition like this:
+
+		: C@++ INLINE DUP INLINE 1+ INLINE SWAP INLINE C@ ;CODE
+
+  One interesting point to note is that this "concatenative" style of
+  programming allows you to write assembler words portably.  The above
+  definition would work for any CPU architecture.
+
+  There are several conditions that must be met for INLINE to be used
+  successfully:
+
+  (1) You must be currently defining an assembler word (ie. : ...
+  ;CODE).
+
+  (2) The word that you are inlining must be known to be an assembler
+  word.  If you try to inline a FORTH word, you'll get an error
+  message.
+
+  (3) The assembler primitive must be position-independent code and
+  must end with a single NEXT macro.
+
+  Exercises for the reader: (a) Generalise INLINE so that it can
+  inline FORTH words when building FORTH words. (b) Further generalise
+  INLINE so that it does something sensible when you try to inline
+  FORTH into assembler and vice versa.
+
+  The implementation of INLINE is pretty simple.  We find the word in
+  the dictionary, check it's an assembler word, then copy it into the
+  current definition, byte by byte, until we reach the NEXT macro
+  (which is not copied).) HEX : =NEXT		( addr -- next? ) DUP C@ AD <>
+  IF DROP FALSE EXIT THEN 1+ DUP C@ FF <> IF DROP FALSE EXIT THEN 1+
+  C@ 20 <> IF      FALSE EXIT THEN TRUE ; DECIMAL
+
+( (INLINE) is the lowlevel inline function. )
+: (INLINE)	( cfa -- )
+	@			( remember codeword points to the code )
+	BEGIN			( copy bytes until we hit NEXT macro )
+		DUP =NEXT NOT
+	WHILE
+		DUP C@ C,
+		1+
+	REPEAT
+	DROP
+;
+
+: INLINE IMMEDIATE
+	WORD FIND		( find the word in the dictionary )
+	>CFA			( codeword )
+
+	DUP @ DOCOL = IF	( check codeword <> DOCOL (ie. not a FORTH word) )
+		." Cannot INLINE FORTH words" CR ABORT
+	THEN
+
+	(INLINE)
+;
+
+HIDE =NEXT
+----
+
+`;code` is standard and can not be reused, but anymay a simpler syntax
+is possible and desirable, because `inline` must be used with all
+words:
+
+----
+inline: c@++ dup 1+ swap c@ ;inline
+----
 
 .2017-12-10:
 
@@ -157,6 +250,14 @@ convention.
 
 // Interpreter/compiler {{{1
 == Interpreter/compiler ==
+
+.2017-12-14:
+
+From CHForth's <MISCUTIL.FRT>:
+
+----
+: eval" postpone s" postpone evaluate ; immediate compile-only
+----
 
 .2017-12-06:
 
@@ -525,6 +626,28 @@ several aliases and synonyms of one single word.
 // Display {{{1
 == Display ==
 
+.2017-12-14:
+
+From CHForth's <MISCUTIL.FRT>:
+
+----
+: >graphic ( c -- c' ) dup bl < if drop '.' then ;
+----
+
+.2017-12-13:
+
+From CHForth:
+
+----
+SILENT ( -- )
+    Suppress output to screen or printer.
+----
+
+.2017-12-13:
+
+In CHForth, `type-ascii` is called `stype`, and `emit-ascii` is called
+`semit`.
+
 .2017-12-12:
 
 NOTE: Milestone: 0.14.0
@@ -722,6 +845,15 @@ Improve tab control.
 
 // Documentation {{{1
 == Documentation ==
+
+.2017-12-14:
+
+Remove "implementation-dependent". See `:`.
+
+.2017-12-14:
+
+Remove "colon-sys" or add it everywhere: `:`, `;`...
+It's not used in Solo Forth.
 
 .2017-12-12:
 
@@ -1370,6 +1502,20 @@ Name for graphic fill: `flood`.
 // Keyboard {{{1
 == Keyboard ==
 
+.2017-12-13:
+
+From CHForth:
+
+----
+STOP?              "stop-question"                         EXTRA
+    ( -- flag )
+    Return false is no key is pressed. Exception -28 occurs when
+    the escape key was pressed. If the key was not space, return
+    true. Wait for a second keypress and return true if it was not
+    space, false otherwise. Exception -28 occurs when the escape key
+    was pressed.
+----
+
 .2016-12-26:
 
 Remove `discard-key`? It does exactly the same as `key drop`, but faster, and
@@ -1456,6 +1602,24 @@ does nothing, as expected.
 
 // Maths {{{1
 == Maths ==
+
+.2017-12-14:
+
+From CHForth's <MISCUTIL.FRT>:
+
+----
+: 2^x 1 swap lshift ;
+
+: DLSHIFT
+        0
+        ?do     d2*
+        loop ;
+
+: DRSHIFT
+        0
+        ?do     d2/ $7FFF and
+        loop ;
+----
 
 .2017-07-15, 2017-11-26:
 
@@ -1767,6 +1931,37 @@ Floating-point words `flit`, `fliteral`. From PFE: `fround>s`,
 
 // Memory {{{1
 == Memory ==
+
+.2017-12-14:
+
+Idea from Walter Elehew's L.O.V.E. Forth, 1991:
+
+____
+
+THREAD SEGMENT
+--------------
+        Forth high-level (:) words are compiled into a sequence of 16
+bit addresses, called threads. This segment contains these threads,
+CONSTANT and LITERAL values, and pointers to data and code.  In the
+majority of applications this segment fills up the fastest.
+
+Basic operators:
+        TS:@ TS:! TS:,  TS:HERE
+        Note that there are no single byte operators - all elements in
+        this segment are two bytes.
+
+        EXECUTE      ( TS:addr  --  )
+        Accepts the code field address.
+
+        TS:DUMP      ( TS:addr, #bytes --  )
+        Dumps bytes from the specified address.
+
+        Many words with compile-time usage accept or return addresses in
+        this segment:
+____
+
+L.O.V.E. Forth runs on DOS using 5 segments. See its <SEGMENT.DOC> for
+details. 
 
 .2017-04-09:
 
@@ -2318,6 +2513,35 @@ Finish the conversion of 128K sound explosions. More details in the source.
 
 // Strings {{{1
 == Strings ==
+
+.2017-12-14:
+
+From CHForth's <MAKEHELP.FRT>:
+
+----
+: COMPARE-UPPERCASE     ( c-addr1 u1 c-addr2 u2 -- -1 | 0 | 1 )
+        LOCALS| u2 c2 u1 c1 |
+        u1 u2 MIN 0
+        DO      c1 I + C@ >UPC
+                c2 I + C@ >UPC -
+                ?DUP
+                IF      0<
+                        IF      -1
+                        ELSE    1
+                        THEN
+                        UNLOOP EXIT
+                THEN
+        LOOP
+        u1 u2 -
+        DUP
+        IF      0<
+                IF      -1
+                ELSE    1
+                THEN
+        THEN
+    ;
+----
+
 
 .2017-12-02:
 

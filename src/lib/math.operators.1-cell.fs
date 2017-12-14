@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712090113
+  \ Last modified: 201712131926
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1153,15 +1153,15 @@ code split ( x -- b1 b2 )
   \ Credit:
   \
   \ Idea from IsForth.
+  \ Also found in CHForth.
 
   \ doc{
   \
   \ split ( x -- b1 b2 )
   \
-  \ Get _b1_ and _b2_ from the 2 bytes which compose _x_: _b1_
-  \ is the low-order byte and _b2_ is the high-order byte.
+  \ _b1_ is the low byte of _x_ and _b2_ is the high byte of _x_.
   \
-  \ Origin: IsForth.
+  \ Origin: IsForth, CHForth.
   \
   \ See: `join`, `flip`.
   \
@@ -1325,5 +1325,8 @@ code join ( b1 b2 -- x )
   \ 2017-11-26: Improve documentation.
   \
   \ 2017-12-09: Move `*/` from the kernel.
+  \
+  \ 2017-12-13: Improve documentation.
+
 
   \ vim: filetype=soloforth

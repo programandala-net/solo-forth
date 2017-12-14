@@ -57,7 +57,7 @@ need timer
   \   100        4       3      2      2
   \  1000       33      35     22     17
   \ 10000      332     350    218    172
-  \ 20000      664     700    430    345 
+  \ 20000      664     700    430    345
   \ 65535     2176    2292   1432   1131
 
 ( negate-+-bench )
@@ -749,7 +749,7 @@ need name>name need array> need name<name
         [ latestxt ] literal
         >name-forward drop  loop }bench.
           \ Search forward for the latest header.
-  
+
       cr ." backward >name : "
       bench{ 0 ?do
         [ root-wordlist >order ' forth previous ] literal

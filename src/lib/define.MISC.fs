@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712101731
+  \ Last modified: 201712140257
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -46,14 +46,16 @@
 
 [unneeded] ;code ?(
 
-: ;code ( -- ) postpone (;code) finish-code asm
-  ; immediate compile-only ?)
+: ;code
+  \ Compilation: ( C: colon-sys -- )
+  \ Run-time:    ( -- ) ( R: nest-sys -- )
+  postpone (;code) finish-code asm ; immediate compile-only ?)
 
   \ doc{
   \
   \ ;code
   \   Compilation: ( C: colon-sys -- )
-  \   Run-time: ( -- ) ( R: nest-sys -- )
+  \   Run-time:    ( -- ) ( R: nest-sys -- )
 
   \ Define the execution-time action of a word created by a
   \ low-level defining word.  Used in the form:
@@ -264,5 +266,7 @@
   \
   \ 2017-12-10: Add missing `asm` to `;code`. Improve
   \ documentation.
+  \
+  \ 2017-12-14: Improve documentation.
 
   \ vim: filetype=soloforth
