@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712152209
+  \ Last modified: 201712152324
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -203,8 +203,9 @@
   \ WARNING: ``name>name`` is not absolutely reliable, because
   \ _nt2_ is calculated after the name length of _nt1_.  If
   \ something was compiled in name space or the name-space
-  \ pointer `np` was altered after the definition identified by
-  \ _nt1_, the result _nt2_ will be wrong.
+  \ pointer `np` was altered between the definition identified
+  \ by _nt1_ and the following definition, the result _nt2_
+  \ will be wrong.
   \
   \ See: `name<name`, `name>`, `name>body`, `name>>`.
   \
@@ -393,12 +394,12 @@ need array> need name>> need name<name need wordlist>link
   \ whose execution token pointer contains _xt_ is a match.
   \ Therefore, when a word has additional headers created by
   \ `alias` or `synonym`, the _nt_ of its latest alias or
-  \ synonym is found first.  See `>name/order` for an
-  \ alternative.
+  \ synonym is found first.
   \
   \ Origin: Gforth.
   \
-  \ See: `name>`, `>body`, `name>body`, `name>name`, `>>name`.
+  \ See: `>name/order`, `>oldest-name/order`, `name>`, `>body`,
+  \ `name>body`, `name>name`, `>>name`.
   \
   \ }doc
 
@@ -408,9 +409,9 @@ need array> need name>> need name<name need wordlist>link
 
 need array> need name>> need name<name
 
-: >name/order ( xt -- nt | 0 )
+: >name/order ( xt -- nt|0 )
   #order @ 0 ?do
-    i context array> @ @ ( xt nt0 )
+    i context array> @ @ ( xt nt1 )
     begin  dup
     while  2dup name>> far@ = if nip unloop exit then name<name
     repeat drop
@@ -424,16 +425,17 @@ need array> need name>> need name<name
   \ execution token _xt_, in the current search `order`. Return
   \ 0 if it fails.
   \
-  \ NOTE: ``>name`` searches all word lists in the current
-  \ search `order`; and the searching of every word list is
-  \ done from the newest to the oldest definition.  The first
-  \ header whose execution token pointer contains _xt_ is a
-  \ match.  Therefore, when a word has additional headers
+  \ NOTE: ``>name/order`` searches all word lists in the
+  \ current search `order`, and the searching of every word
+  \ list is done from the newest to the oldest definition.  The
+  \ first header whose execution token pointer contains _xt_ is
+  \ a match.  Therefore, when a word has additional headers
   \ created by `alias` or `synonym`, the _nt_ of its latest
   \ alias or synonym in the current search order is found
-  \ first.  See `>name` for an alternative.
+  \ first.
   \
-  \ See: `name>`, `>body`, `name>body`, `name>name`, `>>name`.
+  \ See: `>name`, `>oldest-name/order`, `name>`, `>body`,
+  \ `name>body`, `name>name`, `name>>`.
   \
   \ }doc
 
@@ -475,6 +477,42 @@ need array> need name>> need name<name
   \ Origin: Forth-2012 (TOOLS EXT).
   \
   \ See: `[defined]`.
+  \
+  \ }doc
+
+( >oldest-name/order )
+
+[unneeded] >oldest-name/order ?(
+
+need array> need name>> need name<name
+
+: >oldest-name/order ( xt -- nt|0 )
+  0 swap \ default result
+  #order @ 0 ?do
+    i context array> @ @ ( nt|0 xt nt1 )
+    begin  dup
+    while  2dup name>> far@ = if rot drop tuck then name<name
+    repeat drop
+  loop drop ; ?)
+
+  \ doc{
+  \
+  \ >oldest-name/order ( xt -- nt | 0 )
+  \
+  \ Try to find the oldest name token _nt_ of the word
+  \ represented by execution token _xt_, in the current search
+  \ `order`. Return 0 if it fails.
+  \
+  \ NOTE: ``>oldest-name/order`` searches all word lists in the
+  \ current search `order`, and the searching of every word
+  \ list is done from the newest to the oldest definition.  The
+  \ latest header whose execution token pointer contains _xt_
+  \ is a match.  Therefore, when a word has additional headers
+  \ created by `alias` or `synonym`, the _nt_ of the original
+  \ word is returned.
+  \
+  \ See: `>oldest-name`, `>name`, `name>`, `>body`,
+  \ `name>body`, `name>name`, `name>>`.
   \
   \ }doc
 
@@ -1302,6 +1340,7 @@ variable warnings  warnings on
   \ `>name`.
   \
   \ 2017-12-15: Rewrite `>name` to search all word lists; write
-  \ `>name/order` to use the current search order.
+  \ `>name/order` to use the current search order. Add
+  \ `>oldest-name/order`.
 
   \ vim: filetype=soloforth

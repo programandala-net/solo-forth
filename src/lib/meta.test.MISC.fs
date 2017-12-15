@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712152209
+  \ Last modified: 201712152324
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -682,7 +682,7 @@ defined name1 cr .name
 
 only forth definitions
 
-need >name need >name/order need alias
+need >name need >name/order need >oldest-name/order need alias
 
 : the-original ;
 
@@ -692,18 +692,12 @@ wordlist constant the-wordlist  the-wordlist set-current
 
 only forth definitions
 
-  page
-  ' the-original >name
-  .(    ' the-original >name .name ) cr
-  .( should print "the-alias": ) .name cr
+  ' the-original >name cr .( "the-alias": ) .name
 
-  ' the-original >name/order
-  .(    ' the-original >name/order .name ) cr
-  .( should print "the-original": ) .name cr
+  ' the-original >name/order cr .( "the-original": ) .name
 
-  \ ' the original >oldest-name
-  \ .(    ' the original >oldest-name .name ) cr
-  \ .( should print "the-original": ) .name cr
+  the-wordlist >order ' the-original >oldest-name/order
+  cr .( "the-original": ) .name previous
 
 ( transient-test )
 
