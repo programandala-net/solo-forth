@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-12-14
+:revdate: 2017-12-15
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -12,7 +12,7 @@
 
 Simplify `>>` with `dump`.
 
-.2017-12-14:
+.2017-12-14, 2017-12-15:
 
 Adapt `inline` from Richard W.M. Jones' Jonesforth
 (http://annexia.org/forth):
@@ -104,6 +104,28 @@ words:
 ----
 inline: c@++ dup 1+ swap c@ ;inline
 ----
+
+The same idea could be used also for colon words, saving the
+threading, using a common syntax:
+
+----
+: a-colon ... ;
+: normal bla bla bla ;
+: faster inline bla bla bla end-inline ;
+
+code code-a ... end-code
+code code-b ... end-code
+code code-c ... end-code
+code fast-code inline code-a code-b code-c end-inline end-code
+----
+
+Or different definers:
+
+----
+inline: faster bla bla bla end-inline ;
+inline-code fast-code code-a code-b code-c end-inline end-code
+----
+
 
 .2017-12-10:
 
@@ -581,6 +603,19 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 
 // Dictionary {{{1
 == Dictionary ==
+
+.2017-12-15:
+
+From _Special Words in Forth_, paper by Stephen Pelc, EuroForth 2017:
+
+----
+SEARCH-NAME
+\ c-addr len -- ior | xt 0
+Perform the SEARCH-WORDLIST operation on all wordlists
+within the current search order. On failure, just an ior
+(say -13) is returned. On success, the word’s xt and 0
+are returned.
+----
 
 .2017-12-12, 2017-12-15:
 

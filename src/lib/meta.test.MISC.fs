@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712121440
+  \ Last modified: 201712152209
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -643,7 +643,12 @@ s" I program in %lang%" substitute-test
 
 s" Say '%hello%' in %lang%" substitute-test
 
-( >name-test )
+( >name-test0 )
+
+  \ 2017-01-20
+  \
+  \ 2017-12-15: This test is obsolete: The new version of
+  \ `>name` searches from newest to oldest definitions.
 
 need far, need >name
 
@@ -668,8 +673,37 @@ defined name1 cr .name
   \ between both headers:
 
 ' name1 >name dup 0=
- ?\ .( not found!)  \ or simply hang!
  ?\ .name
+ ?\ .( not found!)  \ or simply hang in an endless searching!
+
+( >name-test1 )
+
+  \ 2017-12-15
+
+only forth definitions
+
+need >name need >name/order need alias
+
+: the-original ;
+
+wordlist constant the-wordlist  the-wordlist set-current
+
+' the-original alias the-alias
+
+only forth definitions
+
+  page
+  ' the-original >name
+  .(    ' the-original >name .name ) cr
+  .( should print "the-alias": ) .name cr
+
+  ' the-original >name/order
+  .(    ' the-original >name/order .name ) cr
+  .( should print "the-original": ) .name cr
+
+  \ ' the original >oldest-name
+  \ .(    ' the original >oldest-name .name ) cr
+  \ .( should print "the-original": ) .name cr
 
 ( transient-test )
 
@@ -1524,5 +1558,8 @@ blk @ 1+ blk @ 2+ thru
   \ 2017-12-12: Need `>name`, which has been moved to the
   \ library. Need `c?`, which has been moved to
   \ <memory.MISC.fs>.
+  \
+  \ 2017-12-15: Rename `>name-test` `>name-test0` and fix it.
+  \ Add `>name-test1`.
 
   \ vim: filetype=soloforth

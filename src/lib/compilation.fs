@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712121453
+  \ Last modified: 201712152209
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -363,17 +363,22 @@
   \
   \ }doc
 
-( >name [defined] [undefined] )
+( >name )
 
-[unneeded] >name ?( need array> need name>> need name<name
+[unneeded] >name ?(
+
+need array> need name>> need name<name need wordlist>link
 
 : >name ( xt -- nt | 0 )
-  #order @ 0 ?do
-    i context array> @ @ ( xt nt0 )
-    begin  dup
-    while  2dup name>> far@ = if nip unloop exit then name<name
-    repeat drop
-  loop drop false ; ?)
+  latest-wordlist @ ( xt wid|0 )
+  begin  dup
+  while  tuck @ ( wid xt nt0 )
+         begin  ?dup
+         while  2dup ( wid xt nt0 xt nt0 )
+                name>> far@ = if nip nip ( nt0 ) exit then
+                ( wid xt nt0 ) name<name ( wid xt nt0' )
+         repeat ( wid xt ) swap wordlist>link @ ( xt wid|0 )
+  repeat nip ( 0 ) ; ?)
 
   \ doc{
   \
@@ -382,15 +387,51 @@
   \ Try to find the name token _nt_ of the word represented by
   \ execution token _xt_. Return 0 if it fails.
   \
-  \ WARNING: ``>name`` searches all word lists, from newest to
+  \ NOTE: ``>name`` searches all word lists, from newest to
   \ oldest; and the searching of every word list is done also
   \ from the newest to the oldest definition.  The first header
   \ whose execution token pointer contains _xt_ is a match.
   \ Therefore, when a word has additional headers created by
   \ `alias` or `synonym`, the _nt_ of its latest alias or
-  \ synonym is found first.
+  \ synonym is found first.  See `>name/order` for an
+  \ alternative.
   \
   \ Origin: Gforth.
+  \
+  \ See: `name>`, `>body`, `name>body`, `name>name`, `>>name`.
+  \
+  \ }doc
+
+( >name/order [defined] [undefined] )
+
+[unneeded] >name/order ?(
+
+need array> need name>> need name<name
+
+: >name/order ( xt -- nt | 0 )
+  #order @ 0 ?do
+    i context array> @ @ ( xt nt0 )
+    begin  dup
+    while  2dup name>> far@ = if nip unloop exit then name<name
+    repeat drop
+  loop drop 0 ; ?)
+
+  \ doc{
+  \
+  \ >name/order ( xt -- nt | 0 )
+  \
+  \ Try to find the name token _nt_ of the word represented by
+  \ execution token _xt_, in the current search `order`. Return
+  \ 0 if it fails.
+  \
+  \ NOTE: ``>name`` searches all word lists in the current
+  \ search `order`; and the searching of every word list is
+  \ done from the newest to the oldest definition.  The first
+  \ header whose execution token pointer contains _xt_ is a
+  \ match.  Therefore, when a word has additional headers
+  \ created by `alias` or `synonym`, the _nt_ of its latest
+  \ alias or synonym in the current search order is found
+  \ first.  See `>name` for an alternative.
   \
   \ See: `name>`, `>body`, `name>body`, `name>name`, `>>name`.
   \
@@ -1259,5 +1300,8 @@ variable warnings  warnings on
   \
   \ 2017-12-12: Improve documentation. Add new version of
   \ `>name`.
+  \
+  \ 2017-12-15: Rewrite `>name` to search all word lists; write
+  \ `>name/order` to use the current search order.
 
   \ vim: filetype=soloforth
