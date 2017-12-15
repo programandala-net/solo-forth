@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712150207
+  \ Last modified: 201712151306
 
   \ ===========================================================
   \ Description
@@ -121,14 +121,16 @@ need c@+ need for need 16hex. need 8hex.
 [unneeded] ;code ?(
 
 : ;code
-  \ Compilation: ( C: colon-sys -- )
+  \ Compilation: ( -- )
   \ Run-time:    ( -- ) ( R: nest-sys -- )
-  postpone (;code) finish-code asm ; immediate compile-only ?)
+  postpone (;code)
+  $E1 c, \ Z80 opcode for "pop hl"
+  finish-code asm ; immediate compile-only ?)
 
   \ doc{
   \
   \ ;code
-  \   Compilation: ( C: colon-sys -- )
+  \   Compilation: ( -- )
   \   Run-time:    ( -- ) ( R: nest-sys -- )
 
   \ Define the execution-time action of a word created by a
@@ -146,10 +148,9 @@ need c@+ need for need 16hex. need 8hex.
   \ ``;code`` marks the termination of the defining part of the
   \ defining word _namex_ and then begins the definition of the
   \ execution-time action for words that will later be defined
-  \ by _namex_.  When _name_ is later executed, the address of
-  \ _name_'s parameter field is placed on the stack and then
-  \ the `assembler` code between ``;code`` and `end-code` is
-  \ executed.
+  \ by _namex_.  When _name_ is called, its parameter field
+  \ address is in register HL and the `assembler` code compiled
+  \ between ``;code`` and `end-code` is executed.
   \
   \ Detailed description:
   \
@@ -157,8 +158,7 @@ need c@+ need for need 16hex. need 8hex.
   \
   \ Append the run-time semantics  below  to the  current
   \ definition. End  the  current definition, allow it to be
-  \ found  in the dictionary, and enter interpretation  state,
-  \ consuming _colon-sys_.
+  \ found  in the dictionary, and enter interpretation  state.
   \
   \ Enter `assembler` mode by executing `asm`, until `end-code`
   \ is executed.
@@ -188,9 +188,7 @@ need c@+ need for need 16hex. need 8hex.
 
   \ ----
   \ : border-changer ( n -- )
-  \   create c,
-  \   ;code ( -- )
-  \   ( dfa ) h pop, m a ld, FE out, jpnext, end-code
+  \   create c, ;code ( -- ) m a ld, FE out, jpnext, end-code
   \
   \ 0 border-changer black-border
   \ 1 border-changer blue-border
@@ -201,9 +199,7 @@ need c@+ need for need 16hex. need 8hex.
 
   \ ----
   \ : border-changer ( n -- )
-  \   create c,
-  \   does> ( -- )
-  \   ( dfa ) c@ border ;
+  \   create c, does> ( -- ) ( dfa ) c@ border ;
   \
   \ 0 border-changer black-border
   \ 1 border-changer blue-border
@@ -214,7 +210,7 @@ need c@+ need for need 16hex. need 8hex.
   \ (Assembler Extension Word Set), Forth-94 (TOOLS EXT),
   \ Forth-2012 (TOOLS EXT).
   \
-  \ See: `does>`, `asm`, `create`, `end-code`.
+  \ See: `(;code)`, `does>`, `asm`, `create`.
   \
   \ }doc
 
