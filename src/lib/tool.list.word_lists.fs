@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201712151558
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -85,11 +85,12 @@
   \
   \ List all wordlists defined in the system, either by name
   \ (if they have an associated name) or by number (its word
-  \ list identifier, if they have no associated name). The
-  \ word lists are listed in reverse chronological order: The
-  \ first word list listed is the most recently defined.
+  \ list identifier, if they have no associated name). The word
+  \ lists are listed in reverse chronological order: The first
+  \ word list listed is the most recently defined.
   \
-  \ See: `.wordlist`, `wordlist`, `latest-wordlist`.
+  \ See: `.wordlist`, `words`, `wordlist-words`, `wordlist`,
+  \ `latest-wordlist`.
   \
   \ }doc
 
@@ -149,5 +150,7 @@
   \ conditional interpretation.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-12-15: Improve documentation.
 
   \ vim: filetype=soloforth

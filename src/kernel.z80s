@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201712130218
+; Last modified: 201712151613
 
 include version.z80s
 
@@ -11490,9 +11490,11 @@ endif
 ; The structure is the following:
 ;
 ; |===
-; | +0 | _nt_ of the latest definition in the word list
-; | +2 | _wid_ of the previous word list, or zero
-; | +4 | _nt_ of the word list name, or zero
+; | Cell | Description
+;
+; | 0    | _nt_ of the latest definition in the word list
+; | 1    | _wid_ of the previous word list, or zero
+; | 2    | _nt_ of the word list name, or zero
 ; |===
 ;
 ; Definition:
@@ -11502,7 +11504,8 @@ endif
 ;   here 0 , latest-wordlist @ , latest-wordlist !  0 , ;
 ; ----
 
-; See: `wordlist`, `latest-wordlist`.
+; See: `wordlist`, `latest-wordlist`, `wordlist>link`,
+; `wordlist>name`.
 
 ; }doc
 
@@ -11525,10 +11528,14 @@ endif
 ;
 ; wordlist ( -- wid )
 ;
-; : wordlist ( -- wid )
-;   here wordlist, ;
-;
-; See: `set-order`, `vocabulary`.
+; Definition:
+
+; ----
+; : wordlist ( -- wid ) here wordlist, ;
+; ----
+
+; See: `wordlist,`, `set-order`, `vocabulary`,
+; `latest-wordlist`, `wordlist>link`, `wordlist>name`.
 ;
 ; }doc
 

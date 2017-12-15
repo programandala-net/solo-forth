@@ -582,6 +582,13 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 // Dictionary {{{1
 == Dictionary ==
 
+.2017-12-12, 2017-12-15:
+
+Reduce the number of aliases. There are 25 aliases in the kernel, and
+probably more in the library. Aliases save code space, but the current
+version of `>name` returns the name field address of the latest alias,
+what makes `see` display wrong names, e.g. `<resolve` instead of `,`.
+
 .2017-12-13:
 
 Keep notation ">str" coherent.
@@ -2134,10 +2141,6 @@ Study the way v.Forth manages the interrupts and adapt it.
 
 // Library {{{1
 == Library ==
-
-.2017-12-12:
-
-Reduce the number of aliases in the libray.
 
 .2017-03-28, 2017-09-09:
 

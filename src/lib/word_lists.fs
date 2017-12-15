@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201712151551
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -21,7 +21,7 @@
 ( wordlist>link wordlist>name wordlist-name@ wordlist-name! )
 
 [unneeded] wordlist>link
-?\ need alias  ' cell+ alias wordlist>link ( wid -- a ) exit
+?\ need alias  ' cell+ alias wordlist>link ( wid -- a )
 
   \ doc{
   \
@@ -362,5 +362,8 @@ variable -order-wid
   \ references.
   \
   \ 2017-02-20: Update notation of word sets.
+  \
+  \ 2017-12-15: Remove remaining `exit` at the end of
+  \ conditional interpretation.
 
   \ vim: filetype=soloforth
