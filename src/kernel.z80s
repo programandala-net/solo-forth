@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201712151613
+; Last modified: 201712152158
 
 include version.z80s
 
@@ -2086,7 +2086,7 @@ endif
   dw dup_,i_,minus_,one_minus_,cells_
   dw context_,plus_,fetch_,swap_
   dw paren_loop_
-get_order.exit
+get_order.exit:
   dw exit_
 
 ; ----------------------------------------------
@@ -2169,14 +2169,14 @@ get_order.exit
   dw zero_branch_,set_order.do
   dw drop_,root_wordlist_,dup_
   _literal 2
-set_order.do
+set_order.do:
   dw dup_,question_order_
   dw dup_,hash_order_,store_
   _literal 0
   dw paren_question_do_,set_order.loop_exit
   dw context_,i_,cells_,plus_,store_
   dw paren_loop_
-set_order.loop_exit
+set_order.loop_exit:
   dw exit_
 
 ; ----------------------------------------------
@@ -4184,9 +4184,9 @@ skip.end:
   jr z,mode_32_emit.l ; if equals, display it from the font
   jr c,emit_udg.l ; if greater, display it from the UDG set
   ; Otherwise, display it from the font.
-mode_32_emit.l
+mode_32_emit.l:
   ld a,l ; A =character
-mode_32_emit.a
+mode_32_emit.a:
   ld (iy+sys_scr_ct_offset),$FF ; no scroll message
   rst $10
   pop bc ; restore the Forth IP
@@ -4221,14 +4221,14 @@ mode_32_emit.a
 
   pop hl ; HL = UDG
   push bc ; save the Forth IP
-emit_udg.l
+emit_udg.l:
   ld de,(sys_udg)
   add hl,hl
   add hl,hl
   add hl,hl
   add hl,de
   ex de,hl ; DE = character address in the UDG set
-emit_udg.address
+emit_udg.address:
   ; DE = character address in the UDG set
   ld bc,(sys_s_posn) ; cursor position
   ld hl,(sys_df_cc) ; current screen address
@@ -4411,7 +4411,7 @@ if 0 ; XXX UNDER DEVELOPMENT
   dw question_dup_
   _literal 0
 
-translate_char.do_it
+translate_char.do_it:
   dw cell_plus_
   dw paren_translate_char_
   dw exit_
@@ -7787,7 +7787,7 @@ less_than.de_hl:
   jp p,false_    ; if +ve, result false
   jp true_       ; if -ve, result true
 
-less_than.reverse
+less_than.reverse:
   ; overflow
   jp m,false_    ; if -ve, result false
   jp true_       ; if +ve, result true
@@ -9137,7 +9137,7 @@ push_ahl:
   dw paren_question_do_,type.loop_exit ; ?do
   dw i_,c_fetch_,emit_
   dw paren_loop_ ; loop
-type.loop_exit
+type.loop_exit:
   dw exit_
 
 ; ----------------------------------------------
@@ -9376,7 +9376,7 @@ minus_trailing.begin:
   ; Code adapted from eForth.
 
   dw over_,plus_,over_
-simple_accept.begin                                    ; begin
+simple_accept.begin:                                   ; begin
   dw xkey_,dup_
   _literal carriage_return_char
   dw not_equals_
@@ -9389,10 +9389,10 @@ simple_accept.begin                                    ; begin
   dw zero_branch_,simple_accept.delete_end             ; if
   _literal backspace_char
   dw dup_,emit_,b_l_,emit_,emit_
-simple_accept.delete_end                               ; then
+simple_accept.delete_end:                              ; then
   dw from_r_,plus_
   dw branch_,simple_accept.repeat
-simple_accept.printable                                ; else
+simple_accept.printable:                               ; else
   ; printable
   dw to_r_,two_dup_,not_equals_                        ; more?
   dw r_fetch_
@@ -9400,11 +9400,11 @@ simple_accept.printable                                ; else
   dw greater_than_,and_                                ; and printable?
   dw zero_branch_,simple_accept.printable_end          ; if
   dw r_fetch_,over_,c_store_,char_plus_,r_fetch_,emit_
-simple_accept.printable_end                            ; then
+simple_accept.printable_end:                           ; then
   dw from_r_,drop_
-simple_accept.repeat
+simple_accept.repeat:
   dw branch_,simple_accept.begin                       ; repeat
-simple_accept.end
+simple_accept.end:
   ; ( bot eot cur c )
   dw drop_,nip_,swap_,minus_
   dw exit_
@@ -9579,7 +9579,7 @@ refill.block:
   dw block_question_
   dw exit_
 
-refill.not_loading
+refill.not_loading:
   dw false_,source_id_,question_exit_
   dw zero_equals_,query_
   dw exit_
@@ -10602,7 +10602,7 @@ compare.ready:
                          ; HL = ca1
                          ; BC = ca2
                          ; DE = length of the shorter string
-compare.char
+compare.char:
   ld a,e
   or d                   ; end of string?
   jr z,compare.match     ; is so, all chars matched
@@ -12429,7 +12429,7 @@ else
   or a
   jp p,s_to_d.end ; jump if positive
   dec hl
-s_to_d.end
+s_to_d.end:
   push de
   push hl
   _jp_next
@@ -14112,7 +14112,7 @@ sign.end:
   cp 10
   jr c,to_digit.end
   add a,7
-to_digit.end
+to_digit.end:
   add a,$30
   ld l,a
   push hl
@@ -14602,7 +14602,7 @@ blks.continue:
 endif
 
   dw paren_loop_
-blks.loop_exit
+blks.loop_exit:
   dw exit_
 
 endif
@@ -15621,7 +15621,7 @@ throw.end:
 
   dw zero_branch_,question_backslash.exit
   dw backslash_
-question_backslash.exit
+question_backslash.exit:
   dw exit_
 
   ; XXX TODO -- Use `0exit` to save the branch. But `0exit` is

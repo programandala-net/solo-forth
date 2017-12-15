@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712151551
+  \ Last modified: 201712152211
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -21,6 +21,7 @@
 ( wordlist>link wordlist>name wordlist-name@ wordlist-name! )
 
 [unneeded] wordlist>link
+
 ?\ need alias  ' cell+ alias wordlist>link ( wid -- a )
 
   \ doc{
@@ -36,6 +37,7 @@
   \ }doc
 
 [unneeded] wordlist>name
+
 ?\ : wordlist>name ( wid -- a ) cell+ cell+ ;
 
   \ doc{
@@ -50,9 +52,9 @@
   \
   \ }doc
 
-[unneeded] wordlist-name@ dup
-?\ need wordlist>name
-?\ : wordlist-name@ ( wid -- nt|0 ) wordlist>name @ ;
+[unneeded] wordlist-name@ ?( need wordlist>name
+
+: wordlist-name@ ( wid -- nt|0 ) wordlist>name @ ; ?)
 
   \ doc{
   \
@@ -65,9 +67,9 @@
   \
   \ }doc
 
-[unneeded] wordlist-name! dup
-?\ need wordlist>name
-?\ : wordlist-name! ( nt wid -- ) wordlist>name ! ;
+[unneeded] wordlist-name! ?( need wordlist>name
+
+: wordlist-name! ( nt wid -- ) wordlist>name ! ; ?)
 
   \ doc{
   \
@@ -84,6 +86,7 @@
 ( +order -order )
 
 [unneeded] +order
+
 ?\ need -order  : +order ( wid -- ) dup -order >order ;
 
   \ Credit:
@@ -103,9 +106,7 @@
   \
   \ }doc
 
-[unneeded] -order ?exit
-
-need n>r need under+
+[unneeded] -order ?( need n>r need under+
 
 variable -order-wid
   \ XXX TMP -- used as a local
@@ -115,7 +116,7 @@ variable -order-wid
   -order-wid !  get-order n>r r> dup
   begin dup  while  1-
     r@ -order-wid @ = if  rdrop -1 under+  else  r> -rot  then
-  repeat  drop set-order ;
+  repeat  drop set-order ; ?)
 
   \ Credit:
   \
@@ -137,6 +138,7 @@ variable -order-wid
 ( wordlist-of latest>wordlist wordlist>vocabulary vocabulary )
 
 [unneeded] wordlist-of
+
 ?\ need >body  : wordlist-of ( "name" -- wid ) ' >body @ ;
 
   \ doc{
@@ -169,6 +171,7 @@ variable -order-wid
   \ }doc
 
 [unneeded] wordlist>vocabulary ?( need latest>wordlist
+
 : wordlist>vocabulary ( wid "name" -- )
   create dup , latest>wordlist dovocabulary ; ?)
 
@@ -185,8 +188,8 @@ variable -order-wid
   \ }doc
 
 [unneeded] vocabulary ?( need wordlist>vocabulary
-: vocabulary ( "name" -- )
-  wordlist wordlist>vocabulary ; ?)
+
+: vocabulary ( "name" -- ) wordlist wordlist>vocabulary ; ?)
 
   \ doc{
   \
@@ -200,14 +203,14 @@ variable -order-wid
   \
   \ Origin: Forth-83 (Required Word Set).
   \
-  \ See: `wordlist`, `definitions`, `wordlist-of`.
+  \ See: `wordlist`, `definitions`, `wordlist-of`,
+  \ `set-current`.
   \
   \ }doc
 
 ( seal trail find-name-in find swap-current search-wordlist )
 
-[unneeded] seal
-?\ : seal ( -- ) 1 #order ! ;
+[unneeded] seal ?\ : seal ( -- ) 1 #order ! ;
 
   \ doc{
   \
@@ -238,6 +241,7 @@ variable -order-wid
   \ }doc
 
 [unneeded] find-name-in
+
 ?\ : find-name-in ( ca len wid -- nt | 0 ) @ find-name-from ;
 
   \ doc{
@@ -257,7 +261,7 @@ variable -order-wid
 
 : find ( ca -- ca 0 | xt 1 | xt -1 )
   dup count find-name dup
-  if  nip name>immediate? 1 or negate  then ; ?)
+  if nip name>immediate? 1 or negate then ; ?)
 
   \ doc{
   \
@@ -277,6 +281,7 @@ variable -order-wid
   \ }doc
 
 [unneeded] swap-current ?(
+
 : swap-current ( wid1 -- wid2 )
   get-current swap set-current ; ?)
 
@@ -297,6 +302,7 @@ variable -order-wid
   \ }doc
 
 [unneeded] search-wordlist ?(
+
 : search-wordlist ( ca len wid -- 0 | xt 1 | xt -1 )
   @ find-name-from dup 0= ?exit  name>immediate? 0= 1 or ; ?)
 
@@ -364,6 +370,7 @@ variable -order-wid
   \ 2017-02-20: Update notation of word sets.
   \
   \ 2017-12-15: Remove remaining `exit` at the end of
-  \ conditional interpretation.
+  \ conditional interpretation.  Improve documentation,
+  \ needings and layout.
 
   \ vim: filetype=soloforth
