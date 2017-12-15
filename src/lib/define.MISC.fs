@@ -3,14 +3,14 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712140257
+  \ Last modified: 201712150207
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ Miscellaneous definers that can be defined in less than one
-  \ block.
+  \ Miscellaneous definers and related words that can be
+  \ defined in less than one block.
 
   \ ===========================================================
   \ Author
@@ -24,9 +24,10 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( create: ;code :noname nextname )
+( create: :noname nextname )
 
 [unneeded] create:
+
 ?\ : create: ( "name" -- ) create hide ] ;
 
   \ Credit:
@@ -41,106 +42,6 @@
   \ Create a word _name_ which is compiled as a colon word but,
   \ when executed, will return the address of its data field
   \ address.
-  \
-  \ }doc
-
-[unneeded] ;code ?(
-
-: ;code
-  \ Compilation: ( C: colon-sys -- )
-  \ Run-time:    ( -- ) ( R: nest-sys -- )
-  postpone (;code) finish-code asm ; immediate compile-only ?)
-
-  \ doc{
-  \
-  \ ;code
-  \   Compilation: ( C: colon-sys -- )
-  \   Run-time:    ( -- ) ( R: nest-sys -- )
-
-  \ Define the execution-time action of a word created by a
-  \ low-level defining word.  Used in the form:
-
-  \ ----
-  \ : namex ... create ... ;code ... end-code
-  \
-  \ namex name
-  \ ----
-
-  \ where `create` could be also any user defined word which
-  \ executes `create`.
-
-  \ ``;code`` marks the termination of the defining part of the
-  \ defining word _namex_ and then begins the definition of the
-  \ execution-time action for words that will later be defined
-  \ by _namex_.  When _name_ is later executed, the address of
-  \ _name_'s parameter field is placed on the stack and then
-  \ the `assembler` code between ``;code`` and `end-code` is
-  \ executed.
-  \
-  \ Detailed description:
-  \
-  \ Compilation:
-  \
-  \ Append the run-time semantics  below  to the  current
-  \ definition. End  the  current definition, allow it to be
-  \ found  in the dictionary, and enter interpretation  state,
-  \ consuming _colon-sys_.
-  \
-  \ Enter `assembler` mode by executing `asm`, until `end-code`
-  \ is executed.
-  \
-  \ Run-time:
-  \
-  \ Replace the execution semantics of the most recent
-  \ definition, which should be defined with `create` or a
-  \ user-defined word that calls `create`, with the name
-  \ execution semantics given  below.  Return  control  to  the
-  \ calling  definition  specified by _nest-sys_.
-  \
-  \ Initiation: ``( i*x -- i*x dfa ) ( R: -- nest-sys2 )``
-  \
-  \ Save information _nest-sys2_  about the calling definition.
-  \ Place _name_'s data field address _dfa_ on the stack. The
-  \ stack effects _i*x_ represent arguments to name.
-  \
-  \ name Execution:
-  \
-  \ Perform the machine code sequence that was generated
-  \ following ``;code`` and finished by `end-code`.
-  \
-  \ ``;code`` is an `immediate` and `compile-only` word.
-  \
-  \ Usage example:
-
-  \ ----
-  \ : border-changer ( n -- )
-  \   create c,
-  \   ;code ( -- )
-  \   ( dfa ) h pop, m a ld, FE out, jpnext, end-code
-  \
-  \ 0 border-changer black-border
-  \ 1 border-changer blue-border
-  \ 2 border-changer red-border
-  \ ----
-
-  \ Which is equivalent to:
-
-  \ ----
-  \ : border-changer ( n -- )
-  \   create c,
-  \   does> ( -- )
-  \   ( dfa ) c@ border ;
-  \
-  \ 0 border-changer black-border
-  \ 1 border-changer blue-border
-  \ 2 border-changer red-border
-  \ ----
-
-  \ Origin: fig-Forth, Forth-79 (Assembler Word Set), Forth-83
-  \ (Assembler Extension Word Set), Forth-94 (TOOLS EXT),
-  \ Forth-2012 (TOOLS EXT).
-  \
-  \ See: `does>`, `asm`, `create`, `end-code`.
   \
   \ }doc
 
@@ -171,9 +72,10 @@
   \
   \ nextname-string ( -- a )
   \
-  \ A double variable that may hold the address and length of a
-  \ name to be used by the next defining word.  This variable
-  \ is set by `nextname`.
+  \ A double variable. _a_ is the address of a double-cell
+  \ containing the address and length of a name to be used by
+  \ the next defining word.  This variable is set by
+  \ `nextname`.
   \
   \ Origin: Gforth.
   \
@@ -189,13 +91,11 @@
   \ nextname-header ( -- )
   \
   \ Create a dictionary header using the name string set by
-  \ `nextname`.  Then restore the default action of
-  \ `header`.
+  \ `nextname`.  Then restore the default action of `header`.
   \
   \ Origin: Gforth.
   \
-  \ See: `nextname-string`.
-  \ `default-header`.
+  \ See: `nextname-string`.  `default-header`.
   \
   \ }doc
 
@@ -268,5 +168,7 @@
   \ documentation.
   \
   \ 2017-12-14: Improve documentation.
+  \
+  \ 2017-12-15: Move `;code` to <assembler.MISC.fs>.
 
   \ vim: filetype=soloforth

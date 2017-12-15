@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705100026
+  \ Last modified: 201712150207
 
   \ ===========================================================
   \ Description
@@ -23,7 +23,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( pushhlde << >> )
+( pushhlde << >> ;code )
 
 [unneeded] pushhlde ?(
 
@@ -38,8 +38,8 @@ previous set-current ?)
   \ pushhlde ( -- a )
   \
   \ _a_ is the address of a secondary entry point of the Forth
-  \ inner interpreter.  The code at _a_ pushes the DE and HL
-  \ registers onto the stack and then continues at the address
+  \ inner interpreter.  The code at _a_ pushes registers DE and
+  \ HL onto the stack and then continues at the address
   \ returned by `next`.
   \
   \ NOTE: DE is pushed first, so HL is left on top of the
@@ -118,6 +118,106 @@ need c@+ need for need 16hex. need 8hex.
   \
   \ }doc
 
+[unneeded] ;code ?(
+
+: ;code
+  \ Compilation: ( C: colon-sys -- )
+  \ Run-time:    ( -- ) ( R: nest-sys -- )
+  postpone (;code) finish-code asm ; immediate compile-only ?)
+
+  \ doc{
+  \
+  \ ;code
+  \   Compilation: ( C: colon-sys -- )
+  \   Run-time:    ( -- ) ( R: nest-sys -- )
+
+  \ Define the execution-time action of a word created by a
+  \ low-level defining word.  Used in the form:
+
+  \ ----
+  \ : namex ... create ... ;code ... end-code
+  \
+  \ namex name
+  \ ----
+
+  \ where `create` could be also any user defined word which
+  \ executes `create`.
+
+  \ ``;code`` marks the termination of the defining part of the
+  \ defining word _namex_ and then begins the definition of the
+  \ execution-time action for words that will later be defined
+  \ by _namex_.  When _name_ is later executed, the address of
+  \ _name_'s parameter field is placed on the stack and then
+  \ the `assembler` code between ``;code`` and `end-code` is
+  \ executed.
+  \
+  \ Detailed description:
+  \
+  \ Compilation:
+  \
+  \ Append the run-time semantics  below  to the  current
+  \ definition. End  the  current definition, allow it to be
+  \ found  in the dictionary, and enter interpretation  state,
+  \ consuming _colon-sys_.
+  \
+  \ Enter `assembler` mode by executing `asm`, until `end-code`
+  \ is executed.
+  \
+  \ Run-time:
+  \
+  \ Replace the execution semantics of the most recent
+  \ definition, which should be defined with `create` or a
+  \ user-defined word that calls `create`, with the name
+  \ execution semantics given  below.  Return  control  to  the
+  \ calling  definition  specified by _nest-sys_.
+  \
+  \ Initiation: ``( i*x -- i*x dfa ) ( R: -- nest-sys2 )``
+  \
+  \ Save information _nest-sys2_  about the calling definition.
+  \ Place _name_'s data field address _dfa_ on the stack. The
+  \ stack effects _i*x_ represent arguments to name.
+  \
+  \ name Execution:
+  \
+  \ Perform the machine code sequence that was generated
+  \ following ``;code`` and finished by `end-code`.
+  \
+  \ ``;code`` is an `immediate` and `compile-only` word.
+  \
+  \ Usage example:
+
+  \ ----
+  \ : border-changer ( n -- )
+  \   create c,
+  \   ;code ( -- )
+  \   ( dfa ) h pop, m a ld, FE out, jpnext, end-code
+  \
+  \ 0 border-changer black-border
+  \ 1 border-changer blue-border
+  \ 2 border-changer red-border
+  \ ----
+
+  \ Which is equivalent to:
+
+  \ ----
+  \ : border-changer ( n -- )
+  \   create c,
+  \   does> ( -- )
+  \   ( dfa ) c@ border ;
+  \
+  \ 0 border-changer black-border
+  \ 1 border-changer blue-border
+  \ 2 border-changer red-border
+  \ ----
+
+  \ Origin: fig-Forth, Forth-79 (Assembler Word Set), Forth-83
+  \ (Assembler Extension Word Set), Forth-94 (TOOLS EXT),
+  \ Forth-2012 (TOOLS EXT).
+  \
+  \ See: `does>`, `asm`, `create`, `end-code`.
+  \
+  \ }doc
+
   \ ===========================================================--
   \ Change log
 
@@ -128,6 +228,8 @@ need c@+ need for need 16hex. need 8hex.
   \ code of `<<` and `>>`.
   \
   \ 2017-05-10: Add `pushhlde`.
+  \
+  \ 2017-12-15: Move `;code` from <definer.MISC.fs>.
 
   \ vim: filetype=soloforth
 

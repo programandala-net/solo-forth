@@ -8,6 +8,10 @@
 // Assembler {{{1
 == Assembler ==
 
+.2017-12-15:
+
+Simplify `>>` with `dump`.
+
 .2017-12-14:
 
 Adapt `inline` from Richard W.M. Jones' Jonesforth
