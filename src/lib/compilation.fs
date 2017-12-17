@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712152324
+  \ Last modified: 201712172159
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -375,9 +375,8 @@ need array> need name>> need name<name need wordlist>link
   begin  dup
   while  tuck @ ( wid xt nt0 )
          begin  ?dup
-         while  2dup ( wid xt nt0 xt nt0 )
-                name>> far@ = if nip nip ( nt0 ) exit then
-                ( wid xt nt0 ) name<name ( wid xt nt0' )
+         while  2dup name>> far@ = if   nip nip ( nt0 ) exit
+                                   then name<name
          repeat ( wid xt ) swap wordlist>link @ ( xt wid|0 )
   repeat nip ( 0 ) ; ?)
 
@@ -398,8 +397,9 @@ need array> need name>> need name<name need wordlist>link
   \
   \ Origin: Gforth.
   \
-  \ See: `>name/order`, `>oldest-name/order`, `name>`, `>body`,
-  \ `name>body`, `name>name`, `>>name`.
+  \ See: `>name/order`, `>oldest-name`, `>oldest-name/order`,
+  \ `>oldest-name/fast`, `name>`, `>body`, `name>body`,
+  \ `name>name`, `>>name`.
   \
   \ }doc
 
@@ -434,8 +434,9 @@ need array> need name>> need name<name
   \ alias or synonym in the current search order is found
   \ first.
   \
-  \ See: `>name`, `>oldest-name/order`, `name>`, `>body`,
-  \ `name>body`, `name>name`, `name>>`.
+  \ See: `>name`, `>oldest-name/order`, `>oldest-name`,
+  \ `>oldest-name/fast`, `name>`, `>body`, `name>body`,
+  \ `name>name`, `name>>`.
   \
   \ }doc
 
@@ -480,6 +481,46 @@ need array> need name>> need name<name
   \
   \ }doc
 
+( >oldest-name )
+
+[unneeded] >oldest-name ?(
+
+need array> need name>> need name<name
+
+: >oldest-name ( xt -- nt|0 )
+  0 >r \ default result
+  latest-wordlist @ ( xt wid|0 )
+  begin  dup
+  while  tuck @ ( wid xt nt1 )
+
+    begin  ?dup
+    while  2dup name>> far@ = if rdrop dup >r then name<name
+    repeat ( wid xt ) swap wordlist>link @ ( xt wid|0 )
+
+  repeat 2drop r> ; ?)
+
+  \ doc{
+  \
+  \ >oldest-name ( xt -- nt | 0 )
+  \
+  \ Try to find the oldest name token _nt_ of the word
+  \ represented by execution token _xt_, in the current search
+  \ `order`. Return 0 if it fails.
+  \
+  \ NOTE: ``>oldest-name`` searches all word lists, from newest
+  \ to oldest; and the searching of every word list is done
+  \ also from the newest to the oldest definition.  The oldest
+  \ header whose execution token pointer contains _xt_ is a
+  \ match.  Therefore, when a word has additional headers
+  \ created by `alias` or `synonym`, the _nt_ of the original
+  \ word is returned.
+  \
+  \ See: `>oldest-name/order`, `>oldest-name/fast`, `>name`,
+  \ `>name/order`, `name>`, `>body`, `name>body`, `name>name`,
+  \ `name>>`.
+  \
+  \ }doc
+
 ( >oldest-name/order )
 
 [unneeded] >oldest-name/order ?(
@@ -506,13 +547,55 @@ need array> need name>> need name<name
   \ NOTE: ``>oldest-name/order`` searches all word lists in the
   \ current search `order`, and the searching of every word
   \ list is done from the newest to the oldest definition.  The
-  \ latest header whose execution token pointer contains _xt_
+  \ oldest header whose execution token pointer contains _xt_
   \ is a match.  Therefore, when a word has additional headers
   \ created by `alias` or `synonym`, the _nt_ of the original
   \ word is returned.
   \
-  \ See: `>oldest-name`, `>name`, `name>`, `>body`,
-  \ `name>body`, `name>name`, `name>>`.
+  \ See: `>oldest-name`, `>oldest-name/fast`, `>name`,
+  \ `>name/order`, `name>`, `>body`, `name>body`, `name>name`,
+  \ `name>>`.
+  \
+  \ }doc
+
+( >oldest-name/fast )
+
+[unneeded] >oldest-name/fast ?(
+
+need >>name need name>name need name>>
+
+: >oldest-name/fast ( xt -- nt | 0 )
+  0 begin ( xt xtp )
+    dup >>name >r
+    far@ over = if  drop r> exit  then
+    r> name>name name>>
+  np@ over u< until  2drop false ; ?)
+
+  \ doc{
+  \
+  \ >oldest-name/fast ( xt -- nt | 0 )
+  \
+  \ Try to find the name token _nt_ of the word represented by
+  \ execution token _xt_. Return 0 if it fails.
+  \
+  \ ``>oldest-name/fast`` searches the whole dictionary, from
+  \ the oldest definition to the newest one, for the first
+  \ definition whose execution token pointer contains _xt_.
+  \ This way, when a word has additional headers created by
+  \ `alias` or `synonym`, its original name is found first.
+  \
+  \ WARNING: ``>oldest-name/fast`` is not absolutely reliable,
+  \ because it uses `name>name` to calculate the address of the
+  \ next header.  If something other than definition headers
+  \ was compiled in name space or the name-space pointer `np`
+  \ was altered between two definitions, the linking will fail
+  \ and the algorithm probably will enter and endless loop.
+  \
+  \ Origin: Gforth.
+  \
+  \ See: `>oldest-name`, `>oldest-name/order`, `>name`,
+  \ `>name/order`, `name>`, `>body`, `name>body`, `name>name`,
+  \ `>>name`.
   \
   \ }doc
 
@@ -533,13 +616,14 @@ need array> need name>> need name<name
   \
   \ Origin: Forth-2012 (TOOLS EXT).
   \
+  \ See: `name>compile`, `'`, `compile-only?`, `name>`.
+  \
   \ }doc
 
 [unneeded] name>compile ?(
 
 : (comp') ( nt -- xt )
-  immediate?  if    ['] execute
-              else  ['] compile,  then ;
+  immediate? if ['] execute else ['] compile, then ;
 
   \ doc{
   \
@@ -548,6 +632,8 @@ need array> need name>> need name<name
   \ A factor of `name>compile`. If _nt_ is an `immediate` word,
   \ return the _xt_ of `execute`, else return the _xt_ of
   \ `compile,`.
+  \
+  \ See: `immediate?`.
   \
   \ }doc
 
@@ -565,7 +651,7 @@ need array> need name>> need name<name
   \
   \ Origin: Forth-2012 (TOOLS EXT).
   \
-  \ See: `(comp')`.
+  \ See: `name>interpret`, `comp'`, `(comp')`, `name>`.
   \
   \ }doc
 
@@ -582,6 +668,8 @@ need array> need name>> need name<name
   \ semantics of _name_.
   \
   \ Origin: Gforth.
+  \
+  \ See: `[comp']`, `name>compile`, `[']`.
   \
   \ }doc
 
@@ -602,6 +690,8 @@ need array> need name>> need name<name
   \ ``[comp']`` is an `immediate` and `compile-only` word.
   \
   \ Origin: Gforth.
+  \
+  \ See: `comp'`, `'`.
   \
   \ }doc
 
@@ -639,7 +729,7 @@ need array> need name>> need name<name
   \
   \ Parse _name_. Find _name_. If _name_ has other than default
   \ compilation semantics, append them to the current
-  \ definition; otherwise append the execution semantics of of
+  \ definition; otherwise append the execution semantics of
   \ _name_.
   \
   \ In other words: Force compilation of _name_. This allows
@@ -671,7 +761,7 @@ need array> need name>> need name<name
   \ ``smudged`` is obsolete. `hidden` and `revealed` are used
   \ instead.
   \
-  \ See: `smudge`.
+  \ See: `smudge`, `smudge-mask`.
   \
   \ }doc
 
@@ -683,7 +773,7 @@ need array> need name>> need name<name
   \
   \ smudge ( -- )
   \
-  \ Toggle the "smudge bit" of the latest definition's name
+  \ Toggle the "smudge bit" of the `latest` definition's name
   \ field.  This prevents an uncompleted definition from being
   \ found during dictionary searches, until compiling is
   \ completed without error.
@@ -852,8 +942,10 @@ variable here-backup
   \ exec ( "name" -- i*x )
   \
   \ Parse _name_.  If "name" is the name of a word in the
-  \ current search order, execute it; else throw exception
+  \ current search order, `execute` it; else throw exception
   \ #-13.
+  \
+  \ See: `defined`, `name>`.
   \
   \ }doc
 
@@ -865,10 +957,12 @@ variable here-backup
   \
   \ eval ( i*x "name" -- j*x )
   \
-  \ Parse and evaluate _name_.
+  \ Parse and `evaluate` _name_.
   \
   \ This is a common factor of `[const]`, `[2const]` and
   \ `[cconst]`.
+  \
+  \ See: `parse-name`.
   \
   \ }doc
 
@@ -1342,5 +1436,10 @@ variable warnings  warnings on
   \ 2017-12-15: Rewrite `>name` to search all word lists; write
   \ `>name/order` to use the current search order. Add
   \ `>oldest-name/order`.
+  \
+  \ 2017-12-16: Improve documentation.
+  \
+  \ 2017-12-17: Add `>oldest-name`, `>oldest-name/fast`.
+  \ Improve documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712152324
+  \ Last modified: 201712172219
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -683,6 +683,7 @@ defined name1 cr .name
 only forth definitions
 
 need >name need >name/order need >oldest-name/order need alias
+need >oldest-name need >oldest-name/fast
 
 : the-original ;
 
@@ -692,12 +693,16 @@ wordlist constant the-wordlist  the-wordlist set-current
 
 only forth definitions
 
-  ' the-original >name cr .( "the-alias": ) .name
+' the-original >name cr .( "the-alias": ) .name
 
-  ' the-original >name/order cr .( "the-original": ) .name
+' the-original >name/order cr .( "the-original": ) .name
 
-  the-wordlist >order ' the-original >oldest-name/order
-  cr .( "the-original": ) .name previous
+the-wordlist >order ' the-original >oldest-name/order
+cr .( "the-original": ) .name previous
+
+' the-original >oldest-name cr .( "the-original": ) .name
+
+' the-original >oldest-name/fast cr .( "the-original": ) .name
 
 ( transient-test )
 
@@ -1555,5 +1560,8 @@ blk @ 1+ blk @ 2+ thru
   \
   \ 2017-12-15: Rename `>name-test` `>name-test0` and fix it.
   \ Add `>name-test1`.
+  \
+  \ 2017-12-17: Add `>oldest-name` and `>oldest-name/fast`, to
+  \ `>name-test1`.
 
   \ vim: filetype=soloforth
