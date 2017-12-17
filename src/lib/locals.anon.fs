@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705220117
+  \ Last modified: 201712172225
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -36,7 +36,7 @@ variable anon> ( -- a )
 
   \ doc{
   \
-  \ anon>  ( -- a )
+  \ anon>  ( -- a ) "anon-to"
   \
   \ A variable. _a_ contains the address of the buffer used by
   \ local variables defined by `set-anon` and accessed by
@@ -77,12 +77,12 @@ variable anon> ( -- a )
   \
   \ }doc
 
-: set-anon ( x[n-1]..x[0] n -- )
+: set-anon ( x#n .. x#1 n -- )
   cells anon> @ swap bounds ?do i ! cell +loop ;
 
   \ doc{
   \
-  \ set-anon ( x[n-1]..x[0] n -- )
+  \ set-anon ( x#n .. x#1 n -- )
   \
   \ Store the given _n_ cells into the buffer pointed by
   \ `anon>`, which will be accessed by `anon`.
@@ -133,5 +133,9 @@ variable anon> ( -- a )
   \
   \ 2017-05-22: Fix usage example of `set-anon`. Improve
   \ documentation.
+  \
+  \ 2017-12-16: Improve documentation.
+  \
+  \ 2017-12-17: Improve documentation.
 
   \ vim: filetype=soloforth
