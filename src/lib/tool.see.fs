@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712121441
+  \ Last modified: 201712182259
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -38,7 +38,7 @@
 
 get-current  also forth definitions decimal
 
-need body>name need name>body need case need >name
+need body>name need name>body need case need >oldest-name
 need recurse need >body need body> need [undefined]
 
 variable see-level  see-level off \ depth of nesting
@@ -59,7 +59,9 @@ variable see-address  \ in the word being decoded
 : see-sliteral ( a1 -- a2 )
   cell+ dup count '"' emit type '"' emit  dup c@ + 1- ;
 
-: see-compile   ( a1 -- a2 ) cell+ dup @ >name .name ;  -->
+: see-compile   ( a1 -- a2 ) cell+ dup @ >oldest-name .name ;
+
+-->
 
 ( see )
 
@@ -132,7 +134,7 @@ defer .see-body-name ( dfa -- )
                 bl  of  drop            endof
                 swap recurse  \ default
           endcase  see-special  cell+  -1 see-level +!
-    repeat  indent >name .name
+    repeat  indent >oldest-name .name
             \ show the last word
   else  ." Not a colon definition."  then drop ;  -->
 
@@ -172,7 +174,7 @@ defer .see-body-name ( dfa -- )
 
 previous set-current
 
-( see-body-from see-xt )
+( see-body-from )
 
 get-current  also forth definitions
 
@@ -195,15 +197,18 @@ get-current  also forth definitions
   \
   \ }doc
 
+( see-xt )
+
 [unneeded] see-xt ?( need see need nuf?
 
 : see-xt ( xt -- ) dup colon-xt?  if  see-level off
-    dup see-address ! indent  ." : " dup >name .name >body
+    dup see-address !
+    dup >oldest-name indent  ." : " .name >body
     begin   ( dfa+n ) dup see-address !
             dup @ ( dfa+n xt ) dup colon-end? 0=  nuf? 0= and
     while   >body ( dfa+n dfa' ) indent+ body>name .name
             see-special  cell+  -1 see-level +!
-    repeat  indent >name .name
+    repeat  indent >oldest-name .name
   else  ." Not a colon definition."  then drop ; ?)
 
   \ XXX TODO -- factor with `see-body`
@@ -299,5 +304,7 @@ previous set-current
   \
   \ 2017-12-12: Need `>name`, which has been moved to the
   \ library.
+  \
+  \ 2017-12-18: Replace `>name` with `>oldest-name`.
 
   \ vim: filetype=soloforth
