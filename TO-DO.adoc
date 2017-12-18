@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-12-15
+:revdate: 2017-12-18
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -604,6 +604,22 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 // Dictionary {{{1
 == Dictionary ==
 
+.2017-12-18:
+
+Rename `>name` and friends:
+
+|===
+| Old                  | New
+
+| `>name`              | `>newest-name+`
+| `>name/order`        | `>newest-name`
+| `>oldest-name`       | `>oldest-name+`
+| `>oldest-name/order` | `>oldest-name`
+| `>oldest-name/fast`  | `>oldest-name>`
+|===
+
+Then create a deferred `>name`.
+
 .2017-12-15:
 
 From _Special Words in Forth_, paper by Stephen Pelc, EuroForth 2017:
@@ -635,39 +651,25 @@ Rename `name>str` `name>string` (after Gforth)?
 Rename `line>string` `line>str`?
 
 
-.2017-12-12:
+.2017-12-12, 2017-12-18:
 
-NOTE: Milestone: 0.14.0
+Improve `>oldest-name` and friends?
 
-Improve `>name`.
+Options:
 
-`>name` searches all word lists backwards. Therefore the first match
-is the most recent alias or synonym:
+. Mark aliases and synonyms with a bit in the header.  Pro:
+  `>oldest-name` Definitive and useful for other needs. Con: One byte
+  must be added to the header.
+. Distinguish aliases and synonyms using the content of its code field
+  address, e.g. using a specific jump, or a jump with a previous Z80
+  noop. Cons: every alias or synonym uses 3 or 4 bytes of data space;
+  small time delay for the jump, as deferred words; distinguishing an
+  alias or synonym from their "original" or from a deferred word needs
+  more calculations.
+. Combine both: create a deferred word but set a bit of its header.
+  The execution token of an alias will be different from its original.
+  Con: delay of the additional jump.
 
-----
-synonym clear page
-' page >name .name \ displays "clear"
-----
-
-Solution 1: Examine all words of the system, and return the last
-match, not the first one.  Pro: Simple. Con: Always slow, no matter
-the size of the dictionary.
-
-Solution 2: Mark aliases and synonyms with a bit in the header.  Pro:
-Definitive and useful for other needs. Con: One byte must be added to
-the header.
-
-Solution 3: Distinguish aliases and synonyms using the content of its
-code field address, e.g. using a specific jump, or a jump with a
-previous Z80 noop. Cons:
-
-- every alias or synonym uses 3 or 4 bytes of data space.
-- small time delay for the jump, as deferred words.
-- distinguishing an alias or synonym from their "original" or from a
-  deferred word needs more calculations.
-
-Anyway, the problem can not be fully solved, because there could be
-several aliases and synonyms of one single word.
 
 // Display {{{1
 == Display ==
