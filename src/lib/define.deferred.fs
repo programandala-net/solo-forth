@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071751
+  \ Last modified: 201712200045
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -32,15 +32,16 @@
   \
   \ deferred ( xt "name" -- )
   \
-  \ Create a deferred word _name_ that will execute _xt_.  The
-  \ effect is the same than `defer name  xt ' name defer!`.
+  \ Create a deferred word _name_ that will execute _xt_.
+  \ Therefore ``xt deferred name`` is equivalent to ``defer
+  \ name  xt ' name defer!``.
   \
   \ See: `defer`, `defer!`.
   \
   \ }doc
 
-[unneeded] defers
-?\ : defers ( "name" -- ) ' defer@ compile, ; immediate
+[unneeded] defers ?( need defer@
+: defers ( "name" -- ) ' defer@ compile, ; immediate ?)
 
   \ doc{
   \
@@ -53,6 +54,8 @@
   \ ``defers`` is an `immediate` word.
   \
   \ Origin: Gforth.
+  \
+  \ See: `defer`, `defer@`, `action-of`, `compile,`.
   \
   \ }doc
 
@@ -83,19 +86,22 @@
   \
   \ Is _xt_ a deferred word?
   \
-  \ The code of a deferred word starts with a Z80 jump ($C3) to
-  \ the word it's associated to.
+  \ NOTE: The code of a deferred word starts with a Z80 jump
+  \ ($C3) to the word it's associated to. This is what
+  \ ``deferred?`` checks.
+  \
+  \ See: `defer`, `defer@`, `action-of`.
   \
   \ }doc
 
-[unneeded] action-of ?exit
+[unneeded] action-of ?( need defer@
 
 : action-of
   \ Interpretation: ( "name" -- xt )
   \ Compilation:    ( "name" -- )
   \ Run-time:       ( -- xt )
   ' compiling? if    postpone literal postpone defer@
-               else  defer@  then ; immediate
+               else  defer@  then ; immediate ?)
   \ doc{
   \
   \ action-of ( -- )
@@ -121,6 +127,8 @@
   \ ``action-of`` is an `immediate` word.
   \
   \ Origin: Forth-2012 (CORE EXT).
+  \
+  \ See: `defer@`, `defers`.
   \
   \ }doc
 
@@ -168,5 +176,7 @@
   \ `>action`.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2017-12-20: Fix needing of `defer@`. Improve documentation.
 
   \ vim: filetype=soloforth
