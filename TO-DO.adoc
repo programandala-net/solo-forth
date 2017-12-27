@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-12-18
+:revdate: 2017-12-27
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -2558,6 +2558,12 @@ Finish the conversion of 128K sound explosions. More details in the source.
 // Strings {{{1
 == Strings ==
 
+.2017-12-27:
+
+Move the `stringer` buffer to the top of the dictionary, making it
+possible to to resize it at the start of the application, without
+wasting its original space.
+
 .2017-12-14:
 
 From CHForth's <MAKEHELP.FRT>:
@@ -2617,8 +2623,8 @@ ____
 .2017-04-17:
 
 It seems the only way to move `stringer` to `limit` (making it easier
-to reconfigure by the program, without wasting its original space)
-is modify `find-name-from` to page in the default bank before fetching
+to reconfigure by the program, without wasting its original space) is
+to modify `find-name-from` to page in the default bank before fetching
 every character...
 
 .2017-04-17:

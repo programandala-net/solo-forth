@@ -4,6 +4,7 @@
 # http://programandala.net/en.program.solo_forth.html
 
 # Last modified: 201712071517
+# See change loge at the end of the file.
 
 # ==============================================================
 # Author
@@ -61,11 +62,6 @@
 
 # zx7 (by Einar Saukas)
 # http://www.worldofspectrum.org/infoseekid.cgi?id=0027996
-
-# ==============================================================
-# History
-
-# See at the end of the file.
 
 # ==============================================================
 # Notes

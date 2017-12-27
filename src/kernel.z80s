@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201712182319
+; Last modified: 201712211432
 
 include version.z80s
 
@@ -7520,7 +7520,7 @@ source.other:
 ; chars ( n1 -- n2 )
 ;
 ; _n2_ is the size in address units of _n1_ characters.  In Solo
-; Forth, ``chars`` does nothing.
+; Forth ``chars`` does nothing, therefore _n1_ equals _n2_.
 ;
 ; ``chars`` is an `immediate` word.
 ;
@@ -9020,11 +9020,8 @@ base_store:
 ;
 ; }doc
 
-do_does: equ do_colon
-
   dw compile_,paren_semicolon_code_
-  dw lit_,do_does
-  dw call_comma_
+  dw do_colon_,call_comma_
   dw exit_
 
 ; ----------------------------------------------
@@ -11565,9 +11562,11 @@ endif
 
   dw paren_semicolon_code_
 do_vocabulary:
-  call do_does
+  call do_colon
   dw fetch_,context_,store_
   dw exit_
+
+  ; XXX TODO -- Move to the library.
 
 ; ----------------------------------------------
   _colon_header get_current_,'get-current'
