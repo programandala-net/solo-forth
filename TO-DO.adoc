@@ -2564,6 +2564,8 @@ Move the `stringer` buffer to the top of the dictionary, making it
 possible to to resize it at the start of the application, without
 wasting its original space.
 
+Problem: `default-stringer` would not be reliable.
+
 .2017-12-14:
 
 From CHForth's <MAKEHELP.FRT>:

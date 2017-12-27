@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201712211432
+; Last modified: 201712271340
 
 include version.z80s
 
@@ -2738,6 +2738,25 @@ question_stringer_.enough:
   dw exit_
 
 ; ----------------------------------------------
+  _code_header default_stringer_,'default-stringer'
+
+; doc{
+;
+; default-stringer  ( -- )
+;
+; Set the default values of `stringer` and `/stringer`.
+; ``default-stringer`` is executed by `cold`.
+;
+; }doc
+
+  ld hl,stringer
+  ld (stringer_dfa),hl
+  ld hl,stringer_size
+  ld (slash_stringer_dfa),hl
+
+  ; Execution continues in `empty-stringer`:
+
+; ----------------------------------------------
   _colon_header empty_stringer_,'empty-stringer'
 
 ; doc{
@@ -2759,26 +2778,6 @@ question_stringer_.enough:
 
   dw slash_stringer_,plus_stringer_,store_
   dw exit_
-
-; ----------------------------------------------
-  _colon_header default_stringer_,'default-stringer'
-
-; doc{
-;
-; default-stringer  ( -- )
-;
-; Set the default values of `stringer` and `/stringer`.
-; ``default-stringer`` is executed by `cold`.
-;
-; }doc
-
-  dw lit_,stringer,lit_,stringer_dfa,store_
-  dw lit_,stringer_size,lit_,slash_stringer_dfa,store_
-  dw empty_stringer_
-  dw exit_
-
-  ; XXX TODO -- Rewrite in Z80 to save some bytes. Jump to
-  ; `empty-stringer` at the end.
 
 ; ----------------------------------------------
   _colon_header forward_mark_,'>mark'
