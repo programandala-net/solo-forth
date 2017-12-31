@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712121944
+  \ Last modified: 201712311731
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,6 +27,29 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( 0>-bench )
+
+need ticks need timer
+
+: run ( n -- )
+  >r
+  cr ." 0< "
+  ticks r@ 0 ?do 1 0< drop -1 0< drop loop timer
+  cr ." 0> "
+  ticks r> 0 ?do 1 0> drop -1 0> drop loop timer ;
+
+  \ 2017-12-31:
+
+  \        Ticks
+  \        ----------------------
+  \ Times       0<             0>
+  \ -----  ------- --------------
+  \   100        1       2
+  \  1000       10      12
+  \ 10000      103     120 (1.16)
+  \ 20000      206     239 (1.16)
+  \ 65535      677     784 (1.15)
 
 ( past?-bench )
 
@@ -3080,5 +3103,7 @@ need bench{ need }bench.
   \ 2017-12-12: Rename `>name-bench` `>name-bench1`.  Add
   \ `>name-bench2`, `dnegate-d+-bench`, `negate-+-bench`,
   \ `past?-bench`.
+  \
+  \ 2017-12-31: Add `0>-bench`.
 
   \ vim: filetype=soloforth
