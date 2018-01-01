@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201801011843
+; Last modified: 201801011920
 
 include version.z80s
 
@@ -6527,20 +6527,16 @@ fetch.hl:
 ;
 ; Create a user variable _name_.  _+n_ is the offset within the
 ; user area where the value for _name_ is stored.  Execution of
-; _name_ leaves its absolute user area storage address.
+; _name_ leaves its absolute user area storage address. No user
+; space is allocated.
 ;
 ; ``(user)`` is a factor of `ucreate`.
 ;
-; Origin: ``user`` in fig-Forth, Forth-79 (Reference Word Set)
-; and Forth-83 (Uncontrolled Reference Words).
-;
-; See: `user`, `2user`.
+; See: `user`, `2user`, `uallot`.
 ;
 ; }doc
 
-  ; XXX TODO -- Rename to `user`? That was the original name in
-  ; fig-Forth, Forth-79 and Forth-83. Choose an alternative
-  ; for the current `user`, defined in the library.
+  ; XXX TODO -- Rename?
 
   dw c_constant_
   dw paren_semicolon_code_
@@ -6554,7 +6550,7 @@ do_user:
   _jp_next
 
   ; WARNING: `do_user` is used in `ucreate-cf?`, which is part
-  ; of the `see` utility. The address of `do_user` is calculated
+  ; of the `see` tool. The address of `do_user` is calculated
   ; from the code field address of `(user)`, after its current
   ; code.
 
