@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201712271340
+; Last modified: 201801011843
 
 include version.z80s
 
@@ -6553,6 +6553,11 @@ do_user:
   push hl
   _jp_next
 
+  ; WARNING: `do_user` is used in `ucreate-cf?`, which is part
+  ; of the `see` utility. The address of `do_user` is calculated
+  ; from the code field address of `(user)`, after its current
+  ; code.
+
 ; ----------------------------------------------
   _code_header one_,'1'
 
@@ -12012,7 +12017,7 @@ endif
   dw dot_version_
   dw dos_,type_
   dw paren_dot_quote_
-  _string "\rBy Marcos Cruz\r(programandala.net), 2015-2017\r"
+  _string "\rBy Marcos Cruz\r(programandala.net), 2015-2018\r"
 if 1 ; developing
   ; XXX TMP -- during the development
   dw dot_words_,cr_,dot_unused_
@@ -15504,6 +15509,28 @@ throw.end:
   dw exit_
 
 ; ----------------------------------------------
+  _colon_header empty_stack_,'empty-stack'
+
+; doc{
+;
+; empty-stack ( -- )
+;
+; Empty the data stack.
+;
+; Definition:
+
+; ----
+; : empty-stack ( -- ) sp0 @ sp! ;
+; ----
+
+; See: `sp0`, `sp!`, `(abort)`.
+;
+; }doc
+
+  dw sp0_,fetch_,sp_store_
+  dw exit_
+
+; ----------------------------------------------
   _colon_header paren_abort_,'(abort)'
 
 ; doc{
@@ -15516,14 +15543,14 @@ throw.end:
 ; Definition:
 
 ; ----
-; : (abort) ( -- ) sp0 @ sp! boot quit ;
+; : (abort) ( -- ) empty-stack boot quit ;
 ; ----
 
-; See: `error`, `abort`, `boot`.
+; See: `error`, `abort`, `boot`, `empty-stack`.
 ;
 ; }doc
 
-  dw sp0_,fetch_,sp_store_
+  dw empty_stack_
   dw boot_  ; XXX TODO -- not here?
   dw quit_
   ; No return from `quit`.

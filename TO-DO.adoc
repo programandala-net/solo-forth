@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-12-27
+:revdate: 2018-01-01
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -2492,6 +2492,8 @@ Add `4dup`.
 Add `+dup` and other missing members of the alternative sets.
 
 .2017-01-20:
+
+NOTE: Milestone: 0.15.0
 
 Make the return stack grow toward high memory and move it below the
 data stack.  This way both stacks can share a common free space.  This

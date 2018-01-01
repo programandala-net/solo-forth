@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-12-11
+" Updated:  2018-01-01
 "
 " See change log at the end of the file.
 
@@ -436,6 +436,7 @@ syn keyword soloforthMemory csb0
 syn keyword soloforthMemory default-bank
 syn keyword soloforthMemory dp
 syn keyword soloforthMemory empty-csb
+syn keyword soloforthMemory empty-stack
 syn keyword soloforthMemory empty-stringer
 syn keyword soloforthMemory erase
 syn keyword soloforthMemory far
@@ -1198,6 +1199,8 @@ let b:current_syntax = "soloforth"
 " 2017-12-10: Add `finish-code`.
 "
 " 2017-12-11: Add `cs-dup`, `cs-mark`, `cs-test`.
+"
+" 2018-01-01: Add `empty-stack`.
 
 " --------------------------------------------------------------
 
