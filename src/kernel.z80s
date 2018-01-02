@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201801011920
+; Last modified: 201801022354
 
 include version.z80s
 
@@ -14959,7 +14959,7 @@ at_dfa.last_line:
 ; the cursor position at the upper left corner (column 0, row
 ; 0).
 ;
-; See: `attr!`, `attr-cls`, `page`.
+; See: `attr!`, `attr-cls`, `page`, `wcls`.
 ;
 ; }doc
 
@@ -14982,7 +14982,7 @@ at_dfa.last_line:
 ; coordinates at the lower left corner (x 0, y 0) and reset the
 ; cursor position at the top left corner (column 0, row 0).
 ;
-; See: `cls`, `page`.
+; See: `cls`, `page`, `attr-wcls`.
 ;
 ; }doc
 

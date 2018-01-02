@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705212303
+  \ Last modified: 201801022338
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -295,7 +295,7 @@ variable current-window
   \
   \ }doc
 
-( wcr ?wcr wcls wstamp wblank )
+( wcr ?wcr wstamp wblank )
 
 
 [unneeded] wcr ?( need window need whome
@@ -340,31 +340,6 @@ variable current-window
   \
   \ }doc
 
-[unneeded] wcls ?(
-
-need window need clear-rectangle need attr@ need whome
-
-: wcls ( -- ) wx0 c@ wy0 c@ wcolumns c@ wrows c@ attr@
-              clear-rectangle whome ; ?)
-
-  \ XXX TODO -- Factor the fetching.
-  \
-  \ XXX TODO -- Write `attr-wcls` and rewrite `wcls` after it,
-  \ like `cls` and `attr-cls`.
-
-  \ doc{
-  \
-  \ wcls ( -- )
-  \
-  \ Clear the `current-window` with the current attribute and
-  \ reset its cursor position at the upper left corner (column
-  \ 0, row 0).
-  \
-  \ See: `wblank`, `attr@`, `whome`, `clear-rectangule`,
-  \ `cls`.
-  \
-  \ }doc
-
 [unneeded] wstamp ?( need window need ruler
 
 : wstamp ( c -- ) wcolumns c@ ruler ( ca len )
@@ -399,6 +374,64 @@ need window need clear-rectangle need attr@ need whome
   \ ``wblank`` is a slower but lighter alternative to `wcls`.
   \
   \ See: `wstamp`, `whome`, `wspace`.
+  \
+  \ }doc
+
+( wcls attr-wcls wcolor )
+
+[unneeded] wcls ?( need attr@ need attr-wcls
+
+: wcls ( -- ) attr@ attr-wcls ; ?)
+
+  \ doc{
+  \
+  \ wcls ( -- )
+  \
+  \ Clear the `current-window` with the current attribute and
+  \ reset its cursor position at the upper left corner (column
+  \ 0, row 0).
+  \
+  \ See: `attr-wcls`, `wblank`, `attr@`, `whome`,
+  \ `clear-rectangle`, `cls`.
+  \
+  \ }doc
+
+[unneeded] attr-wcls ?(
+
+need window need clear-rectangle need whome
+
+: attr-wcls ( c -- ) >r wx0 c@ wy0 c@ wcolumns c@ wrows c@
+                     r> clear-rectangle whome ; ?)
+
+  \ XXX TODO -- Factor out the fetching.
+
+  \ doc{
+  \
+  \ attr-wcls ( b -- )
+  \
+  \ Clear the `current-window` with color attribute _b_ and
+  \ reset its cursor position at the upper left corner (column
+  \ 0, row 0).
+  \
+  \ See: `wcolor`, `wcls`, `wblank`, `whome`,
+  \ `clear-rectangle`, `cls`.
+  \
+  \ }doc
+
+[unneeded] wcolor ?( need window need color-rectangle
+
+: wcolor ( c -- ) >r wx0 c@ wy0 c@ wcolumns c@ wrows c@
+                    r> color-rectangle ; ?)
+
+  \ XXX TODO -- Factor out the fetching.
+
+  \ doc{
+  \
+  \ wcolor ( b -- )
+  \
+  \ Color the `current-window` with color attribute _b_.
+  \
+  \ See: `attr-wcls`, `color-rectangle`.
   \
   \ }doc
 
@@ -564,5 +597,8 @@ need window need clear-rectangle need attr@ need whome
   \ the tests module.
   \
   \ 2017-05-21: Remove unnecessary requirements from `wtype`.
+  \
+  \ 2018-01-02: Add `attr-wcls` and rewrite `wcls` after it`.
+  \ Add `wcolor`.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201707271623
+  \ Last modified: 201801030000
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2018.
 
   \ ===========================================================
   \ License
@@ -118,9 +118,11 @@ code wipe-rectangle ( column row width height -- )
   \
   \ wipe-rectangle ( column row width height -- )
   \
-  \ Clear a screen rectangle at the given character coordinates and
-  \ of the given size in characters.  Only the bitmap is
+  \ Clear a screen rectangle at the given character coordinates
+  \ and of the given size in characters.  Only the bitmap is
   \ cleared. The color attributes remain unchanged.
+  \
+  \ See: `clear-rectangle`, `color-rectangle`, `wcls`.
   \
   \ }doc
 
@@ -206,9 +208,12 @@ code color-rectangle ( column row width height color -- )
   \
   \ color-rectangle ( column row width height color -- )
   \
-  \ Color a screen rectangle at the given character coordinates and
-  \ of the given size in characters.  Only the color attributes
-  \ are changed; the bitmap remains unchanged.
+  \ Color a screen rectangle at the given character coordinates
+  \ and of the given size in characters with the given color
+  \ attribute.  Only the color attributes are changed; the
+  \ bitmap remains unchanged.
+  \
+  \ See: `wcolor`, `wipe-rectangle`, `clear-rectangle`.
   \
   \ }doc
 
@@ -352,19 +357,23 @@ code clear-rectangle ( column row width height color -- )
   \
   \ clear-rectangle ( column row width height color -- )
   \
-  \ Wipe a screen rectangle at the given character coordinates and
-  \ of the given size in characters.  The bitmap is erased and
-  \ the color attributes are changed with the given color.
+  \ Clear a screen rectangle at the given character coordinates
+  \ and of the given size in characters.  The bitmap is erased
+  \ and the color attributes are changed with the given color
+  \ attribute.
   \
-  \ ``clear-rectangle`` is written in assembler and it combines the
-  \ functions of `wipe-rectangle` and `color-rectangle`. It may be
-  \ defined also this way (with slower but much smaller code):
+  \ ``clear-rectangle`` is written in Z80 and it combines the
+  \ functions of `wipe-rectangle` and `color-rectangle`. It may
+  \ be defined also this way (with slower but much smaller
+  \ code):
 
   \ ----
   \ : clear-rectangle ( column row width height color -- )
   \   >r 2over 2over wipe-rectangle r> color-rectangle ;
   \ ----
 
+  \ See: `attr-wcls`.
+  \
   \ }doc
 
   \ ===========================================================
@@ -388,5 +397,7 @@ code clear-rectangle ( column row width height color -- )
   \
   \ 2017-07-27: Replace `jp next` with the actual macro
   \ `_jp_next` in Z80 comments.
+  \
+  \ 2018-01-02: Improve documentation.
 
   \ vim: filetype=soloforth

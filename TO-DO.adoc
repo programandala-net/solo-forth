@@ -692,6 +692,11 @@ Options:
 // Display {{{1
 == Display ==
 
+.2018-01-02:
+
+Write `color` (`recolor`?) to change the attributes of the screen,
+completing the "color" series: `color-rectangle` and `wcolor`.
+
 .2017-12-14:
 
 From CHForth's <MISCUTIL.FRT>:
