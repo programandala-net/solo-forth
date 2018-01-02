@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-01-02
+:revdate: 2018-01-03
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1402,6 +1402,11 @@ This will save several blocks of source.
 
 // Graphics {{{1
 == Graphics ==
+
+.2018-01-03:
+
+Make `xy>gxy`, `x>gx` and `y>gy` compatible with 42-cpl and 64-cpl
+modes. Or add prefix "mode-32-" and write specific variants.
 
 .2017-05-13:
 

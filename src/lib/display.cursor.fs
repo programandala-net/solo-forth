@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709081810
+  \ Last modified: 201801030035
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -103,7 +103,7 @@
   \ }doc
 
 
-[unneeded] xy>r ?\ : xy>r ( R: -- col row ) r>    xy 2>r >r ;
+[unneeded] xy>r ?\ : xy>r ( R: -- col row ) r> xy 2>r >r ;
 
   \ doc{
   \
@@ -296,7 +296,7 @@ code xy>scra ( x y -- a )
   \
   \ See: `xy>scra_` , `gxy>scra`.
 
-( xy>gxy xy>gxy176 )
+( xy>gxy x>gx y>gy xy>gxy176 )
 
 [unneeded] xy>gxy ?(
 
@@ -331,6 +331,57 @@ code xy>gxy ( x y -- gx gy )
   \ `set-pixel`.
   \
   \ }doc
+  \
+  \ XXX TODO --  Adapt to 64-cpl and 42-cpl-modes. Or rename
+  \ with prefix "mode-32-".
+
+[unneeded] x>gx ?( need alias need 8*
+
+' 8* alias x>gx ( x -- gx ) ?)
+
+  \ doc{
+  \
+  \ x>gx ( x -- gx )
+  \
+  \ Convert cursor coordinate _x_ (0..31) to graphic coordinate
+  \ _gxa_ (0..255).
+  \
+  \ ``x>gx`` is an `alias` of `8*`.
+  \
+  \ See: `xy>gxy`, `xy>gxy176`.
+  \
+  \ }doc
+  \
+  \ XXX TODO --  Adapt to 64-cpl and 42-cpl-modes.
+
+[unneeded] y>gy ?(
+
+code y>gy ( y -- gx )
+  D1 c, E1 c, 29 c, 29 c, 29 c, E5 c, EB c, 29 c, 29 c, 29 c,
+  \ pop hl
+  \ add hl,hl
+  \ add hl,hl
+  \ add hl,hl
+  3E c, #191 c, 95 c, 6F c, E5 c, jpnext, end-code ?)
+  \ ld a,191
+  \ sub l
+  \ ld l,a
+  \ push hl
+  \ _jp_next
+
+  \ doc{
+  \
+  \ y>gy ( y -- gy )
+  \
+  \ Convert cursor coordinate _y_ (0..23) to graphic
+  \ coordinate _gy_ (0..191).
+  \
+  \ See: `xy>gxy`, `x>gx`.
+  \
+  \ }doc
+  \
+  \ XXX TODO --  Adapt to 64-cpl and 42-cpl-modes. Or rename
+  \ with prefix "mode-32-".
 
 [unneeded] xy>gxy176 ?(
 
@@ -513,5 +564,7 @@ code xy>attra ( col row -- a )
   \ 2017-05-09: Remove `jppushhl,`.
   \
   \ 2017-09-08: Add `home?`.
+  \
+  \ 2018-01-03: Add `x>gx`, `y>gy`.
 
   \ vim: filetype=soloforth
