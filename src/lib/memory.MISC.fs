@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801021849
+  \ Last modified: 201801022025
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -232,11 +232,11 @@ code 1-! ( a -- )
 [unneeded] c@1+ ?(
 
 code c@1+ ( ca -- c )
-  E1 c, 6E c, 2C c, 26 c, 00 c, E5 c, jpnext, end-code ?)
+  E1 c, 6E c, 26 c, 00 c, 23 c, E5 c, jpnext, end-code ?)
   \ pop hl
   \ ld l,(hl)
-  \ inc l
   \ ld h,0
+  \ inc hl
   \ push hl
   \ _jp_next
 
@@ -256,11 +256,11 @@ code c@1+ ( ca -- c )
 [unneeded] c@1- ?(
 
 code c@1- ( ca -- c )
-  E1 c, 6E c, 2D c, 26 c, 00 c, E5 c, jpnext, end-code ?)
+  E1 c, 6E c, 26 c, 00 c, 2B c, E5 c, jpnext, end-code ?)
   \ pop hl
   \ ld l,(hl)
-  \ dec l
   \ ld h,0
+  \ dec hl
   \ push hl
   \ _jp_next
 
