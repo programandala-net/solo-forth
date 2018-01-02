@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712121834
+  \ Last modified: 201801021849
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -179,7 +179,7 @@ code 1-! ( a -- )
   \
   \ }doc
 
-( @+ 2@+ c@+ )
+( @+ 2@+ c@+ c@1+ c@1- )
 
 [unneeded] @+
 
@@ -226,6 +226,54 @@ code 1-! ( a -- )
   \ This word is an `alias` of `count`.
   \
   \ See: `c@`, `2@+`, `@+`.
+  \
+  \ }doc
+
+[unneeded] c@1+ ?(
+
+code c@1+ ( ca -- c )
+  E1 c, 6E c, 2C c, 26 c, 00 c, E5 c, jpnext, end-code ?)
+  \ pop hl
+  \ ld l,(hl)
+  \ inc l
+  \ ld h,0
+  \ push hl
+  \ _jp_next
+
+  \ doc{
+  \
+  \ c@1+ ( ca -- c )
+  \
+  \ Fetch the character stored at _ca_, increment it and return
+  \ the result _c_.
+  \
+  \ ``c@1+`` is a faster alternative to the idiom ``c@ 1+``.
+  \
+  \ See: `c@1-`, `c@`, `1+`.
+  \
+  \ }doc
+
+[unneeded] c@1- ?(
+
+code c@1- ( ca -- c )
+  E1 c, 6E c, 2D c, 26 c, 00 c, E5 c, jpnext, end-code ?)
+  \ pop hl
+  \ ld l,(hl)
+  \ dec l
+  \ ld h,0
+  \ push hl
+  \ _jp_next
+
+  \ doc{
+  \
+  \ c@1- ( ca -- c )
+  \
+  \ Fetch the character stored at _ca_, decrement it and return
+  \ the result _c_.
+  \
+  \ ``c@1-`` is a faster alternative to the idiom ``c@ 1-``.
+  \
+  \ See: `c@1+`, `c@`, `1-`.
   \
   \ }doc
 
@@ -776,5 +824,7 @@ code cexchange ( ca1 ca2 -- )
   \ `c!exchange` in Z80.
   \
   \ 2017-12-12: Add `coff`.
+  \
+  \ 2018-01-02: Add `c@1+` and `c@1-`.
 
   \ vim: filetype=soloforth

@@ -604,6 +604,11 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 // Dictionary {{{1
 == Dictionary ==
 
+.2018-01-01:
+
+Rename `.name` (Gforth <=0.5.0, obsolete) `id.` (Gforth, fig-Forth)
+(`.id` in F83).
+
 .2017-12-18:
 
 Rename `>name` and friends:
