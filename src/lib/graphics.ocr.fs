@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705202219
+  \ Last modified: 201801022006
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,11 +27,11 @@
 
 need assembler need unresolved need >amark
 
-variable ocr-charset  $3D00 ocr-charset !
+variable ocr-font  $3D00 ocr-font !
 
   \ doc{
   \
-  \ ocr-charset ( -- a )
+  \ ocr-font ( -- a )
   \
   \ A variable. _a_ is the address of a cell containing the
   \ address of the first printable character in the character
@@ -53,13 +53,13 @@ create ocr-first bl c,
   \
   \ A character variable. _ca_ is the address of a byte
   \ containing the code of the first printable character in the
-  \ character set used by `ocr`, pointed by `ocr-charset`.  By
+  \ character set used by `ocr`, pointed by `ocr-font`.  By
   \ default it contais `bl`, the code of the space character.
   \
   \ The configuration of `ocr`, including this variable, can be
   \ changed by `ascii-ocr` and `udg-ocr`.
   \
-  \ See: `ocr-chars`, `ocr-charset`.
+  \ See: `ocr-chars`, `ocr-font`.
   \
   \ }doc
 
@@ -71,14 +71,14 @@ create ocr-chars 127 bl - c,
   \
   \ A character variable. _ca_ is the address of a byte
   \ containing the number of characters used by `ocr`, from the
-  \ address pointed by `ocr-charset`. By default it contais 95,
+  \ address pointed by `ocr-font`. By default it contais 95,
   \ the number of printable ASCII characters in the ROM
   \ character set.
   \
   \ The configuration of `ocr`, including this variable, can be
   \ changed by `ascii-ocr` and `udg-ocr`.
   \
-  \ See: `ocr-first`, `ocr-charset`.
+  \ See: `ocr-first`, `ocr-font`.
   \
   \ }doc
 
@@ -86,7 +86,7 @@ code ocr ( col line -- n )
 
   d pop, h pop, b push,
     \ get row, get col, save the Forth IP
-  l b ld, e c ld, ocr-charset fthl,
+  l b ld, e c ld, ocr-font fthl,
     \ B=colum, C=row, HL=udg
 
   c a ld, rrca, rrca, rrca, E0 and#, b xor, a e ld,
@@ -158,7 +158,7 @@ code ocr ( col line -- n )
   \
   \ Try to recognize the character printed at the given cursor
   \ coordinates, using the character set whose first printable
-  \ character is pointed by the variable `ocr-charset`. The
+  \ character is pointed by the variable `ocr-font`. The
   \ character variable `ocr-chars` contains the number of
   \ characters in the set, and its counterpart `ocr-first`
   \ contains the code of its first character.  If succesful,
@@ -178,7 +178,7 @@ code ocr ( col line -- n )
 [unneeded] ascii-ocr ?( need ocr need os-chars
 
 : ascii-ocr ( -- )
-  os-chars @ 256 + ocr-charset !
+  os-chars @ 256 + ocr-font !
   bl ocr-first c!  95 ocr-chars c! ; ?)
 
   \ doc{
@@ -188,7 +188,7 @@ code ocr ( col line -- n )
   \ Set `ocr` to work with the current ASCII charset, pointed
   \ by `os-chars`.
   \
-  \ See: `ocr-charset`, `ocr-first`, `ocr-chars`,
+  \ See: `ocr-font`, `ocr-first`, `ocr-chars`,
   \ `udg-ocr`, `set-font`.
   \
   \ }doc
@@ -196,7 +196,7 @@ code ocr ( col line -- n )
 [unneeded] udg-ocr ?( need ocr need os-udg
 
 : udg-ocr ( n -- )
-  os-udg @ ocr-charset !  0 ocr-first c!  ocr-chars c! ; ?)
+  os-udg @ ocr-font !  0 ocr-first c!  ocr-chars c! ; ?)
 
   \ doc{
   \
@@ -205,7 +205,7 @@ code ocr ( col line -- n )
   \ Set `ocr` to work with the first _n_ chars of the current
   \ UDG set, pointed by `os-udg`.
   \
-  \ See: `ocr-charset`, `ocr-first`, `ocr-chars`,
+  \ See: `ocr-font`, `ocr-first`, `ocr-chars`,
   \ `ascii-ocr`, `set-udg`.
   \
   \ }doc
@@ -246,5 +246,7 @@ code ocr ( col line -- n )
   \ 2017-05-20: Improve documentation. Create `ocr-first` and
   \ `ocr-chars` with `create` instead of `here` and `constant`;
   \ `create` is a bit faster at run-time.
+  \
+  \ 2018-01-02: Rename `ocr-charset` `ocr-font`.
 
   \ vim: filetype=soloforth

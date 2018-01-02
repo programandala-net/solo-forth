@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-01-01
+:revdate: 2018-01-02
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -12,7 +12,7 @@
 
 Simplify `>>` with `dump`.
 
-.2017-12-14, 2017-12-15:
+.2017-12-14, 2017-12-15, 2018-01-02:
 
 Adapt `inline` from Richard W.M. Jones' Jonesforth
 (http://annexia.org/forth):
@@ -97,7 +97,7 @@ Adapt `inline` from Richard W.M. Jones' Jonesforth
 HIDE =NEXT
 ----
 
-`;code` is standard and can not be reused, but anymay a simpler syntax
+`;code` is standard and can not be reused, but anyway a simpler syntax
 is possible and desirable, because `inline` must be used with all
 words:
 
@@ -126,6 +126,19 @@ inline: faster bla bla bla end-inline ;
 inline-code fast-code code-a code-b code-c end-inline end-code
 ----
 
+There are problems, though:
+
+- Matching `jp (ix)` (equivalent to "next") to finish the code
+  inlining is not reliable, because the bytes of the corresponding
+  opcode ($DD $E9) could be used as data, or as an address or as
+  instruction datum $DD followed by opcode $E9 (say `ld a,$DD`
+  followed by `jp (hl)`).
+- Matching `exit` to finish the colon inlining is not reliable,
+  because `exit` may be compiled explicitly, beside being compiled by
+  `;`.
+
+It is easier to define faster words when needed, as part of the
+application, than to write smart `inline:` and `inline-code`.
 
 .2017-12-10:
 
@@ -2364,10 +2377,6 @@ for the end user.
 .2017-12-10:
 
 Write `?name-too-long` and use it in `header,`?
-
-.2017-05-20:
-
-Rename `ocr-charset` to `ocr-font`.
 
 .2017-05-12:
 
