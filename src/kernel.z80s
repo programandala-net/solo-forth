@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201801031715
+; Last modified: 201801032007
 
 include version.z80s
 
@@ -6427,7 +6427,7 @@ do_c_constant:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See: `@`, `2@`, `c!`.
+; See: `@`, `2@`, `c!`, `c@1+`, `c@1-`, `c@2+`, `c@2-`.
 ;
 ; }doc
 
@@ -7315,7 +7315,7 @@ source.other:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set).
 ;
-; See: `2-`, `1+`, `8+`.
+; See: `2-`, `1+`, `8+`, `c@2+`.
 ;
 ; }doc
 
@@ -7359,7 +7359,7 @@ source.other:
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set).
 ;
-; See: `1+`, `2-`, `8-`.
+; See: `1+`, `2-`, `8-`, `c@1-`.
 ;
 ; }doc
 
@@ -7386,6 +7386,8 @@ source.other:
 ;
 ; }doc
 
+  ; XXX TODO -- Move to the library.
+
 ; ----------------------------------------------
   _code_header one_plus_,'1+'
 
@@ -7400,7 +7402,7 @@ source.other:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set).
 ;
-; See: `1-`, `2+`, `8+`.
+; See: `1-`, `2+`, `8+`, `c@1+`.
 ;
 ; }doc
 
@@ -7427,6 +7429,8 @@ source.other:
 ;
 ; }doc
 
+  ; XXX TODO -- Move to the library.
+
 ; ----------------------------------------------
   _code_header two_minus_,'2-'
 
@@ -7442,7 +7446,7 @@ source.other:
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set).
 ;
-; See: `2+`, `1-`, `8-`.
+; See: `2+`, `1-`, `8-`, `c@2-`.
 ;
 ; }doc
 

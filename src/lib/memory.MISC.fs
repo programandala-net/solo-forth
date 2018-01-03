@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801022025
+  \ Last modified: 201801032007
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -179,7 +179,7 @@ code 1-! ( a -- )
   \
   \ }doc
 
-( @+ 2@+ c@+ c@1+ c@1- )
+( @+ 2@+ c@+ )
 
 [unneeded] @+
 
@@ -229,6 +229,8 @@ code 1-! ( a -- )
   \
   \ }doc
 
+( c@1+ c@1- c@2+ c@2- )
+
 [unneeded] c@1+ ?(
 
 code c@1+ ( ca -- c )
@@ -244,12 +246,12 @@ code c@1+ ( ca -- c )
   \
   \ c@1+ ( ca -- c )
   \
-  \ Fetch the character stored at _ca_, increment it and return
-  \ the result _c_.
+  \ Fetch the character stored at _ca_, add 1 to it, according
+  \ to the operation of `+`, giving _c_.
   \
-  \ ``c@1+`` is a faster alternative to the idiom ``c@ 1+``.
+  \ ``c@1+`` is a faster alternative to ``c@ 1+``.
   \
-  \ See: `c@1-`, `c@`, `1+`.
+  \ See: `c@1-`, `c@2+`, `c@`, `1+`.
   \
   \ }doc
 
@@ -268,12 +270,62 @@ code c@1- ( ca -- c )
   \
   \ c@1- ( ca -- c )
   \
-  \ Fetch the character stored at _ca_, decrement it and return
-  \ the result _c_.
+  \ Fetch the character stored at _ca_, subtract 1 from it,
+  \ according to the operation of `-`, giving _c_.
   \
-  \ ``c@1-`` is a faster alternative to the idiom ``c@ 1-``.
+  \ ``c@1-`` is a faster alternative to ``c@ 1-``.
   \
-  \ See: `c@1+`, `c@`, `1-`.
+  \ See: `c@1+`, `c@2-`, `c@`, `1-`.
+  \
+  \ }doc
+
+[unneeded] c@2+ ?(
+
+code c@2+ ( ca -- c )
+  E1 c, 6E c, 26 c, 00 c, 23 c, 23 c, E5 c, jpnext, end-code ?)
+  \ pop hl
+  \ ld l,(hl)
+  \ ld h,0
+  \ inc hl
+  \ inc hl
+  \ push hl
+  \ _jp_next
+
+  \ doc{
+  \
+  \ c@2+ ( ca -- c )
+  \
+  \ Fetch the character stored at _ca_, add 2 to it, according
+  \ to the operation of `+`, and return the result _c_.
+  \
+  \ ``c@2+`` is a faster alternative to ``c@ 2+``.
+  \
+  \ See: `c@2-`, `c@1+`, `c@`, `2+`.
+  \
+  \ }doc
+
+[unneeded] c@2- ?(
+
+code c@2- ( ca -- c )
+  E1 c, 6E c, 26 c, 00 c, 2B c, 2B c, E5 c, jpnext, end-code ?)
+  \ pop hl
+  \ ld l,(hl)
+  \ ld h,0
+  \ dec hl
+  \ dec hl
+  \ push hl
+  \ _jp_next
+
+  \ doc{
+  \
+  \ c@2- ( ca -- c )
+  \
+  \ Fetch the character stored at _ca_, subtract 2 from it,
+  \ according to the operation of `-`, and giving _c_.
+  \
+  \ ``c@2-`` is a faster alternative to ``c@ 2-``.
+  \
+  \ See: `c@2+`, `c@1-`, `c@`, `2-`.
   \
   \ }doc
 
@@ -826,5 +878,7 @@ code cexchange ( ca1 ca2 -- )
   \ 2017-12-12: Add `coff`.
   \
   \ 2018-01-02: Add `c@1+` and `c@1-`.
+  \
+  \ 2018-01-03: Add `c@2+` and `c@2-`.
 
   \ vim: filetype=soloforth

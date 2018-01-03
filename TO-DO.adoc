@@ -432,6 +432,10 @@ Implement Gforth's `]]`  and `[[`.
 // Control structures {{{1
 == Control structures ==
 
+.2018-01-03:
+
+Add a no-return version of `execute`.
+
 .2017-12-11:
 
 Change `{if` and `if}` to use `cs-mark` and `thens` instead of a
@@ -1650,10 +1654,10 @@ way.
 
 Use `_jump` macros at the end of `umax`, `umin`, `dabs`, `abs`, etc.
 
-.2016-04-24, 2017-05-06, 2017-12-09:
+.2016-04-24, 2017-05-06, 2017-12-09, 2018-01-03:
 
 Words that can be moved to the library: `[defined]`, `[undefined]`,
-`umin`, `umax`...
+`umin`, `umax`, `char+`, `char-`...
 
 Study how to move `line>string` and `undefined?` to the library.  They
 are not used in the kernel, but they are needed by the `need` utility.
