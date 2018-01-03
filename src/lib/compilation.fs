@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801031718
+  \ Last modified: 201801031735
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -485,7 +485,7 @@ need array> need name>> need name<name
 
 [unneeded] >oldest-name ?(
 
-need array> need name>> need name<name
+need array> need name>> need name<name need wordlist>link
 
 : >oldest-name ( xt -- nt|0 )
   0 >r \ default result
@@ -1444,5 +1444,6 @@ variable warnings  warnings on
   \
   \ 2018-01-03: Update `1literal` to `xliteral`. Rename
   \ accordingly: `[1const]` -> `[xconst]`, `]1l` -> `]xl`.
+  \ Fix requirement of `>oldest-name`.
 
   \ vim: filetype=soloforth
