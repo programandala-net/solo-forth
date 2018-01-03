@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712172159
+  \ Last modified: 201801031718
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -836,7 +836,7 @@ need >>name need name>name need name>>
   \
   \ }doc
 
-( ]l ]2l ]1l ]cl save-here restore-here )
+( ]l ]2l ]xl ]cl save-here restore-here )
 
 [unneeded] ]l
 
@@ -850,7 +850,7 @@ need >>name need name>name need name>>
   \
   \ ``]l`` is an `immediate` and `compile-only` word.
   \
-  \ See: `]`, `literal`, `]2l`, `]1l`, `]cl`.
+  \ See: `]`, `literal`, `]2l`, `]xl`, `]cl`.
   \
   \ }doc
 
@@ -866,23 +866,23 @@ need >>name need name>name need name>>
   \
   \ ``]2l`` is an `immediate` and `compile-only` word.
   \
-  \ See: `]`, `2literal`, `]l`, `]1l`, `]cl`.
+  \ See: `]`, `2literal`, `]l`, `]xl`, `]cl`.
   \
   \ }doc
 
-[unneeded] ]1l
+[unneeded] ]xl
 
-?\ : ]1l ( x -- ) ] postpone 1literal ; immediate compile-only
+?\ : ]xl ( x -- ) ] postpone xliteral ; immediate compile-only
 
   \ doc{
   \
-  \ ]1l ( x -- )
+  \ ]xl ( x -- )
   \
-  \ A short form of the idiom `] 1literal`.
+  \ A short form of the idiom `] xliteral`.
   \
-  \ ``]1l`` is an `immediate` and `compile-only` word.
+  \ ``]xl`` is an `immediate` and `compile-only` word.
   \
-  \ See: `]`, `1literal`, `]2l`, `]l`, `]cl`.
+  \ See: `]`, `xliteral`, `]2l`, `]l`, `]cl`.
   \
   \ }doc
 
@@ -898,7 +898,7 @@ need >>name need name>name need name>>
   \
   \ ``]cl`` is an `immediate` and `compile-only` word.
   \
-  \ See: `]`, `cliteral`, `]2l`, `]l`, `]1l`.
+  \ See: `]`, `cliteral`, `]2l`, `]l`, `]xl`.
   \
   \ }doc
 
@@ -966,7 +966,7 @@ variable here-backup
   \
   \ }doc
 
-( [const] [2const] [1const] [cconst] )
+( [const] [2const] [xconst] [cconst] )
 
 [unneeded] [const] ?( need eval
 
@@ -994,7 +994,7 @@ variable here-backup
 
   \ ``[const]`` is an `immediate` and `compile-only` word.
   \
-  \ See: `const`, `[2const]`, `[1const]`, `[cconst]`, `eval`.
+  \ See: `const`, `[2const]`, `[xconst]`, `[cconst]`, `eval`.
   \
   \ }doc
 
@@ -1022,23 +1022,23 @@ variable here-backup
 
   \ ``[2const]`` is an `immediate` and `compile-only` word.
   \
-  \ See: `2const`, `[const]`, `[1const]`, `[cconst]`, `eval`.
+  \ See: `2const`, `[const]`, `[xconst]`, `[cconst]`, `eval`.
   \
   \ }doc
 
-[unneeded] [1const] ?( need eval
+[unneeded] [xconst] ?( need eval
 
-: [1const] ( "name" -- )
-  eval postpone 1literal ; immediate compile-only ?)
+: [xconst] ( "name" -- )
+  eval postpone xliteral ; immediate compile-only ?)
 
   \ doc{
   \
-  \ [1const] ( "name" -- )
+  \ [xconst] ( "name" -- )
   \
   \ Evaluate _name_. Then compile the single-cell value left on
-  \ the stack, using `1literal`.
+  \ the stack, using `xliteral`.
   \
-  \ ``[1const]`` is intented to compile constants as literals,
+  \ ``[xconst]`` is intented to compile constants as literals,
   \ when it's uncertain if the literal is a character or a
   \ cell, in order to gain execution speed. _name_ can be any
   \ word, as long as its execution returns a single-cell value
@@ -1048,10 +1048,10 @@ variable here-backup
 
   \ ----
   \ 48 constant zx
-  \ : test ( -- ) [1const] zx . ;
+  \ : test ( -- ) [xconst] zx . ;
   \ ----
 
-  \ ``[1const]`` is an `immediate` and `compile-only` word.
+  \ ``[xconst]`` is an `immediate` and `compile-only` word.
   \
   \ See: `[2const]`, `[const]`, `[cconst]`, `eval`.
   \
@@ -1080,7 +1080,7 @@ variable here-backup
 
   \ ``[cconst]`` is an `immediate` and `compile-only` word.
   \
-  \ See: `cconst`, `[2const]`, `[const]`, `[1const]`, `eval`.
+  \ See: `cconst`, `[2const]`, `[const]`, `[xconst]`, `eval`.
   \
   \ }doc
 
@@ -1441,5 +1441,8 @@ variable warnings  warnings on
   \
   \ 2017-12-17: Add `>oldest-name`, `>oldest-name/fast`.
   \ Improve documentation.
+  \
+  \ 2018-01-03: Update `1literal` to `xliteral`. Rename
+  \ accordingly: `[1const]` -> `[xconst]`, `]1l` -> `]xl`.
 
   \ vim: filetype=soloforth

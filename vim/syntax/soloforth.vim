@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2018-01-01
+" Updated:  2018-01-03
 "
 " See change log at the end of the file.
 
@@ -106,7 +106,6 @@ syn keyword soloforthDefine (user)
 syn keyword soloforthDefine +field
 syn keyword soloforthDefine ,
 syn keyword soloforthDefine /user
-syn keyword soloforthDefine 1literal
 syn keyword soloforthDefine 2constant
 syn keyword soloforthDefine 2field:
 syn keyword soloforthDefine 2lit
@@ -118,10 +117,10 @@ syn keyword soloforthDefine :noname
 syn keyword soloforthDefine ;
 syn keyword soloforthDefine ?defined
 syn keyword soloforthDefine ]
-syn keyword soloforthDefine ]1l
 syn keyword soloforthDefine ]2l
 syn keyword soloforthDefine ]cl
 syn keyword soloforthDefine ]l
+syn keyword soloforthDefine ]xl
 syn keyword soloforthDefine alias
 syn keyword soloforthDefine begin-structure
 syn keyword soloforthDefine cconstant
@@ -180,6 +179,7 @@ syn keyword soloforthDefine up0
 syn keyword soloforthDefine value
 syn keyword soloforthDefine variable
 syn keyword soloforthDefine word
+syn keyword soloforthDefine xliteral
 syn keyword soloforthFiles (load)
 syn keyword soloforthFiles +load
 syn keyword soloforthFiles +thru
@@ -1201,6 +1201,8 @@ let b:current_syntax = "soloforth"
 " 2017-12-11: Add `cs-dup`, `cs-mark`, `cs-test`.
 "
 " 2018-01-01: Add `empty-stack`.
+"
+" 2018-01-03: Update `1literal` to `xliteral`, `]1l` to `]xl`.
 
 " --------------------------------------------------------------
 

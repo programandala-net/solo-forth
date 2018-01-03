@@ -622,21 +622,21 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 Rename `.name` (Gforth <=0.5.0, obsolete) `id.` (Gforth, fig-Forth)
 (`.id` in F83).
 
-.2017-12-18:
+.2017-12-18, 2018-01-03:
 
 Rename `>name` and friends:
 
 |===
-| Old                  | New
+| Old                  | Alternative 0   | Alternative 1
 
-| `>name`              | `>newest-name+`
-| `>name/order`        | `>newest-name`
-| `>oldest-name`       | `>oldest-name+`
-| `>oldest-name/order` | `>oldest-name`
-| `>oldest-name/fast`  | `>oldest-name>`
+| `>name`              | `>newest-name+` | `>name-all`
+| `>name/order`        | `>newest-name`  | `>name-in-order`
+| `>oldest-name`       | `>oldest-name+` | `>oldest-name-all`
+| `>oldest-name/order` | `>oldest-name`  | `>oldest-name-in-order`
+| `>oldest-name/fast`  | `>oldest-name>` | `>oldest-linked-name`
 |===
 
-Then create a deferred `>name`.
+Maybe even create a deferred `>name`.
 
 .2017-12-15:
 

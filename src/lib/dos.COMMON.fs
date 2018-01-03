@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712051040
+  \ Last modified: 201801031719
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -56,7 +56,7 @@
 [unneeded] ?drive# ?(
 
 : ?drive# ( u -- )
-  [ max-drives 1- ] 1literal u> #-35 ?throw ; ?)
+  [ max-drives 1- ] xliteral u> #-35 ?throw ; ?)
 
   \ doc{
   \
@@ -314,5 +314,7 @@ need block-drive@
   \ 2017-04-21: Fix stack notation of `?drives`.
   \
   \ 2017-12-05: Fix and update stack notation.
+  \
+  \ 2018-01-03: Update `1literal` to `xliteral`.
 
   \ vim: filetype=soloforth

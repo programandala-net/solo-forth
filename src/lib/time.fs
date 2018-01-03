@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712122139
+  \ Last modified: 201801031719
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -393,7 +393,7 @@ code ms ( u -- )
 
 [unneeded] ticks>cs ?( need ms/tick
 
-: ticks>cs ( n1 -- n2 ) [ ms/tick 10 / ] 1literal * ; ?)
+: ticks>cs ( n1 -- n2 ) [ ms/tick 10 / ] xliteral * ; ?)
 
   \ doc{
   \
@@ -894,5 +894,7 @@ need reset-dticks need dticks need dticks>cs
   \
   \ 2017-12-12: Rename `expired` `past?`, and `dexpired`
   \ `dpast?`. Add `ms>ticks`.
+  \
+  \ 2018-01-03: Update `1literal` to `xliteral`.
 
   \ vim: filetype=soloforth

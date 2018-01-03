@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201801022354
+; Last modified: 201801031715
 
 include version.z80s
 
@@ -10799,7 +10799,7 @@ search.failed:
 ;
 ; byte? ( x -- f ) "byte-question"
 ;
-; _f_ is true if _x_ is an 8-bit number. Used by `1literal`.
+; _f_ is true if _x_ is an 8-bit number. Used by `xliteral`.
 ;
 ; }doc
 
@@ -10833,7 +10833,7 @@ search.failed:
 
 ; Origin: Comus.
 ;
-; See: `clit`, `2literal`, `1literal`, `]cl`.
+; See: `clit`, `2literal`, `xliteral`, `]cl`.
 ;
 ; }doc
 
@@ -10857,7 +10857,7 @@ search.failed:
 ; : literal ( x -- ) postpone lit , ; immediate compile-only
 ; ----
 
-; See: `lit`, `cliteral`, `2literal`, `1literal`, `]l`.
+; See: `lit`, `cliteral`, `2literal`, `xliteral`, `]l`.
 ;
 ; }doc
 
@@ -10865,27 +10865,26 @@ search.failed:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header one_literal_,'1literal',immediate+compile_only
+  _colon_header x_literal_,'xliteral',immediate+compile_only
 
 ; doc{
 ;
-; 1literal ( x -- ) "one-literal"
+; xliteral ( x -- ) "x-literal"
 ;
 ; If _x_ is a byte, execute `cliteral`, else execute `literal`.
 ;
-; ``1literal`` is used in `interpret-table` to compile the
+; ``xliteral`` is used in `interpret-table` to compile the
 ; single-cell literals. It is useful as an alternative to
 ; `literal`, in order to optimize the code when _x_ is unknown.
 ;
-; ``1literal`` is an `immediate` and `compile-only` word.
+; ``xliteral`` is an `immediate` and `compile-only` word.
 ;
 ; Definition:
 
 ; ----
-; : 1literal ( x -- )
-;   dup byte?
-;   if  postpone cliteral exit  then  postpone literal ;
-;   immediate compile-only
+; : xliteral ( x -- )
+;   dup byte? if   postpone cliteral exit
+;             then postpone literal ; immediate compile-only
 ; ----
 
 ; See: `2literal`, `]1l`, `byte?`.
@@ -10913,7 +10912,7 @@ search.failed:
 ; : 2literal ( x1 x2 -- ) postpone 2lit 2, ; immediate compile-only
 ; ----
 
-; See: `2lit`, `literal`, `cliteral`, `1literal`, `]2l`.
+; See: `2lit`, `literal`, `cliteral`, `xliteral`, `]2l`.
 ;
 ; }doc
 
@@ -11171,7 +11170,7 @@ endif
 ; | -4          | `execute`               | Compile an immediate word
 ; | -3          | `compile,`              | Compile an ordinary word
 ; | -2          | `2literal`              | Compile a 2-cell number
-; | -1          | `1literal`              | Compile a 1-cell number
+; | -1          | `xliteral`              | Compile a 1-cell number
 ; |  0          | `not-understood`        | Not a number (error)
 ; |  1          | 0                       | Interpret a 1-cell number (do nothing)
 ; |  2          | 0                       | Interpret a 2-cell number (do nothing)
@@ -11189,7 +11188,7 @@ endif
   dw execute_           ; ...immediate word
   dw compile_comma_     ; ...ordinary word
   dw two_literal_       ; ...2-cell number
-  dw one_literal_       ; ...1-cell number
+  dw x_literal_         ; ...1-cell number
 
 interpret_table.0:
   dw not_understood_    ; not a number (error)
