@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712100141
+  \ Last modified: 201801041928
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,9 +33,9 @@
   \ When `alias` is already defined,
   \ this version uses 40 bytes; else it uses 51 bytes.
 
-need thens
+need cs-mark need thens
 
-0 cconstant case immediate compile-only
+cs-mark cconstant case immediate compile-only
 
   \ doc{
   \
@@ -54,7 +54,8 @@ need thens
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
   \ See: `of`, `endof`, `default-of`, `less-of`,
-  \ `greater-of`, `between-of`, `within-of`, `or-of`, `any-of`.
+  \ `greater-of`, `between-of`, `within-of`, `or-of`, `any-of`,
+  \ `cond`, `thens`.
   \
   \ }doc
 
@@ -570,5 +571,8 @@ need between
   \ library.
   \
   \ 2017-12-10: Improve documentation.
+  \
+  \ 2018-01-04: Use `cs-mark` for `case`, because `thens` is
+  \ used in `endcase`.
 
   \ vim: filetype=soloforth
