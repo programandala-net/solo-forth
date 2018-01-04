@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801032007
+  \ Last modified: 201801041950
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -93,7 +93,7 @@ code c-! ( c ca -- )
   \
   \ }doc
 
-( c1+! c1-! 1+! 1-! )
+( c1+! c1-! ?c1-! 1+! 1-! )
 
 [unneeded] c1+!
 
@@ -125,7 +125,27 @@ code c-! ( c ca -- )
   \
   \ Decrement the character stored at _ca_.
   \
-  \ See: `c1+!`, `c-!`, `1-!`.
+  \ See: `?c1-!`, `c1+!`, `c-!`, `1-!`.
+  \
+  \ }doc
+
+[unneeded] ?c1-!
+
+?\ code ?c1-! ( ca -- )
+   E1 c, A6 c, CA c, next , 35 c, jpnext, end-code
+    \ pop hl
+    \ and (hl)
+    \ jp z,next
+    \ dec (hl)
+    \ _jp_next
+
+  \ doc{
+  \
+  \ ?c1-! ( ca - )
+  \
+  \ If the character stored at _ca_ is not zero, decrement it.
+  \
+  \ See: `c1-!`, `c1+!`, `c-!`, `1-!`.
   \
   \ }doc
 
@@ -880,5 +900,7 @@ code cexchange ( ca1 ca2 -- )
   \ 2018-01-02: Add `c@1+` and `c@1-`.
   \
   \ 2018-01-03: Add `c@2+` and `c@2-`.
+  \
+  \ 2018-01-04: Add `?c1-!`.
 
   \ vim: filetype=soloforth
