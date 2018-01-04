@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712111905
+  \ Last modified: 201801041616
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -26,7 +26,8 @@
 
 ( +perform base-execute call don't executions )
 
-[unneeded] +perform ( a n -- )
+[unneeded] +perform
+
 ?\ : +perform ( a n -- ) cells + perform ;
 
   \ doc{
@@ -39,11 +40,12 @@
   \
   \ If the execution token is zero, do nothing.
   \
-  \ See: `perform`, `execute`.
+  \ See: `perform`, `execute`, `array>`.
   \
   \ }doc
 
 [unneeded] base-execute
+
 ?\ : base-execute ( xt n -- ) base @ >r execute r> base ! ;
 
   \ Credit:
@@ -548,5 +550,9 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ `cs-test`. Update the change log with the old changes of
   \ the former modules. Rewrite `?repeat`. Add `0repeat`.
   \ Improve documentation.
+  \
+  \ 2018-01-03: Fix documentation layout.
+  \
+  \ 2018-01-04: Improve documentation.
 
   \ vim: filetype=soloforth

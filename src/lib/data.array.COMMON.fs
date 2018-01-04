@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705091231
+  \ Last modified: 201801041616
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -50,6 +50,8 @@ code array> ( n a1 -- a2 )
   \ : array> ( n a1 -- a2 ) swap cells + ;
   \ ----
 
+  \ See: `+perform`.
+  \
   \ }doc
 
 [unneeded] 2array> ?(
@@ -101,6 +103,8 @@ code 2array> ( n a1 -- a2 )
   \ 2017-03-21: Improve documentation.
   \
   \ 2017-05-09: Remove `jppushhl,`.
+  \
+  \ 2018-01-04: Improve documentation.
 
   \ vim: filetype=soloforth
 
