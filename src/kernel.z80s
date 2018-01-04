@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201801041924
+; Last modified: 201801042348
 
 include version.z80s
 
@@ -7483,12 +7483,12 @@ source.other:
 ; most-significant bit, filling the vacated least-significant
 ; bit with zero.
 ;
-; ``2*`` is equivalent to ``1 lshift``.
+; ``2*`` is equivalent to ``1 lshift``, but faster.
 ;
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
 ; Forth-2012 (CORE).
 ;
-; See: `lshift`, `8*`.
+; See: `lshift`, `8*`, `3*`, `*`.
 ;
 ; }doc
 

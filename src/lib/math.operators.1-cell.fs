@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712131926
+  \ Last modified: 201801042343
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -262,7 +262,7 @@ code even? ( n -- f )
   \
   \ }doc
 
-( 8* 8+ 8- )
+( 8* 8+ 8- 3* )
 
 [unneeded] 8* ?(
 
@@ -286,7 +286,7 @@ code 8* ( x1 -- x2 )
   \ This is the same as ``3 lshift`` or ``2* 2* 2*``, but
   \ faster.
   \
-  \ See: `2*`, `lshift`, `8+`, `8-`.
+  \ See: `2*`, `3*`, `lshift`, `8+`, `8-`, `*`.
   \
   \ }doc
 
@@ -334,6 +334,31 @@ code 8- ( n1 -- n2 ) e1 c, 11 c, 0008 , A7 c, ED c, 52 c, E5 c,
   \ This is the same as ``8 -`` but faster.
   \
   \ See: `8+`, `1-`, `2-`, `8*`.
+  \
+  \ }doc
+
+[unneeded] 3* ?(
+
+code 3* ( x1 -- x2 )
+  E1 c, 54 c, 5D c, 29 c, 19 c, E5 c, jpnext, end-code ?)
+  \ pop hl
+  \ ld d,h
+  \ ld e,l
+  \ add hl,hl
+  \ add hl,de
+  \ push hl
+  \ _jp_next
+
+  \ doc{
+  \
+  \ 3* ( n1 -- n2 )
+  \
+  \ Multiply _n1_ by 3 giving _n2_.
+  \
+  \ This is the same as ``3 *`` or ``dup dup + +``, but
+  \ faster.
+  \
+  \ See: `2*`, `8*`, `*`, `+`.
   \
   \ }doc
 
@@ -1327,6 +1352,8 @@ code join ( b1 b2 -- x )
   \ 2017-12-09: Move `*/` from the kernel.
   \
   \ 2017-12-13: Improve documentation.
+  \
+  \ 2018-01-04: Add `3*`. Improve documentation.
 
 
   \ vim: filetype=soloforth

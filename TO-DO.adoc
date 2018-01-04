@@ -1659,6 +1659,12 @@ does nothing, as expected.
 // Maths {{{1
 == Maths ==
 
+.2018-01-04:
+
+NOTE: Milestone: 0.14.0
+
+Make `2*` standard.
+
 .2017-12-14:
 
 From CHForth's <MISCUTIL.FRT>:
