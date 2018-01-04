@@ -631,12 +631,12 @@ within the current search order. On failure, just an ior
 are returned.
 ----
 
-.2017-12-12, 2017-12-15:
+.2017-12-12, 2017-12-15, 2018-01-04:
 
 Reduce the number of aliases. There are 25 aliases in the kernel, and
-probably more in the library. Aliases save code space, but the current
-version of `>name` returns the name field address of the latest alias,
-what makes `see` display wrong names, e.g. `<resolve` instead of `,`.
+probably more in the library. Aliases save code space, but `see` shows
+the oldest name associated to a code field what is the best option but
+can be inconvenient.
 
 .2017-12-13:
 
@@ -2778,6 +2778,11 @@ Update the date with interrupts.
 
 // Tools {{{1
 == Tools ==
+
+.2018-01-04:
+
+Improve `see-colon-body`: make recursion work also with non-colon
+words.
 
 .2017-12-06:
 
