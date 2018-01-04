@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201801032007
+; Last modified: 201801041924
 
 include version.z80s
 
@@ -13820,7 +13820,8 @@ block.end:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See: `again`, `until`, `ahead`, `0if`, `-if`, `+if`.
+; See: `again`, `until`, `ahead`, `0if`, `-if`, `+if`, `andif`,
+; `orif`.
 ;
 ; }doc
 
