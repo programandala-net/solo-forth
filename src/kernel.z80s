@@ -4169,8 +4169,8 @@ skip.end:
 ; |===
 
 ; When a standard character set is required, without the ROM
-; interpreting characters 128 .. 255 its own way, `mode-32iso-emit`
-; can be used instead.
+; interpreting characters 128 .. 255 its own way,
+; `mode-32iso-emit` can be used instead.
 ;
 ; See: `set-font`, `set-udg`.
 ;

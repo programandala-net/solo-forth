@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712101211
+  \ Last modified: 201801071939
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -23,7 +23,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( /udg /udg* udg-width udg> udg! udg: )
+( /udg /udg* /udg+ udg-width udg> udg! udg: )
 
 [unneeded] /udg ?\ 8 cconstant /udg
 
@@ -33,7 +33,7 @@
   \
   \ _b_ is the size of a UDG (User Defined Graphic), in bytes.
   \
-  \ See: `udg-width`, `udg!`.
+  \ See: `udg-width`, `udg!`, `/udg*`, `/udg+`.
   \
   \ }doc
 
@@ -43,10 +43,30 @@
   \
   \ /udg* ( n1 -- n2 )
   \
-  \ Multiply _n1_ by the `/udg`, resulting _n2_. Used by
-  \ `udg>`.
+  \ Multiply _n1_ by `/udg`, resulting _n2_. Used by `udg>`.
   \
-  \ ``/udg*`` is an `alias` of `8*`.
+  \ ``/udg*`` is equivalent to ``/udg *`` but faster: it's an
+  \ `alias` of `8*`.
+  \
+  \ See: `/udg+`.
+  \
+  \ }doc
+
+[unneeded] /udg+ ?\ need 8+ need alias ' 8+ alias /udg+
+
+  \ doc{
+  \
+  \ /udg+ ( n1 -- n2 )
+  \
+  \ Add `/udg` to _n1_, resulting _n2_.
+  \
+  \ ``/udg+`` is useful when UDG are referenced by address,
+  \ e.g. with `emit-udga` and `,udg-block`.
+  \
+  \ ``/udg+`` is equivalent to ``/udg +`` but faster: it's an
+  \ `alias` of `8+`.
+  \
+  \ See: `/udg*`.
   \
   \ }doc
 
@@ -181,8 +201,9 @@ create udg-blank '.' c,  create udg-dot 'X' c,
   \ udg-blank  ( -- ca )
   \
   \ A character variable. _ca_ is the address of a byte
-  \ containing character used by `grid` and `g` as a grid
-  \ blank. By default it's '.'.
+  \ containing the character used by `udg-group`, `udg-block`,
+  \ `,udg-block` and others as a grid blank. By default it's
+  \ '.'.
   \
   \ See: `udg-dot`, `udg-scan>binary`.
   \
@@ -193,8 +214,9 @@ create udg-blank '.' c,  create udg-dot 'X' c,
   \ udg-dot  ( -- ca )
   \
   \ A character variable. _ca_ is the address of a byte
-  \ containing the character used by `grid` and `g` as a grid
-  \ blank. By default it's 'X'.
+  \ containing the character used by `udg-group`, `udg-block`
+  \ `,udg-block` and others as a grid blank. By default it's
+  \ 'X'.
   \
   \ See: `udg-blank`, `udg-scan>binary`.
   \
@@ -213,7 +235,8 @@ create udg-blank '.' c,  create udg-dot 'X' c,
   \ Convert the characters `udg-blank` and `udg-dot` found in
   \ UDG scan string _ca len_ to '0' and '1' respectively.
   \
-  \ See: `udg-scan>number?`.
+  \ See: `udg-scan>number?`.  `udg-group`, `udg-block`,
+  \ `,udg-block`.
   \
   \ }doc
 
@@ -228,7 +251,7 @@ create udg-blank '.' c,  create udg-dot 'X' c,
   \ If so, return _n_ and _true_; else return _false_.
   \ The string is processed by `udg-scan>binary` first.
   \
-  \ See: `udg-scan>binary`, `udg-scan>number`.
+  \ See: `udg-scan>number`, `udg-dot`, `udg-blank`.
   \
   \ }doc
 
@@ -244,7 +267,7 @@ create udg-blank '.' c,  create udg-dot 'X' c,
   \ result _n_.  Otherwise `throw` exception #-290 (invalid UDG
   \ scan).
   \
-  \ See: `udg-scan>number?`, `udg-block`, `udg-group`.
+  \ See: `udg-scan>number?`, `udg-dot`, `udg-blank`.
   \
   \ }doc
 
@@ -303,12 +326,13 @@ here anon> ! 3 cells allot
   \
   \ udg-block ( width height c "name..." -- )
   \
-  \ Parse a UDG block, from UDG character _c_ (0..255). _width_
-  \ and _height_ are in characters.  The maximum _width_ is 7
-  \ (imposed by the size of Forth source blocks). _height_ has
-  \ no maximum, as the UDG block can ocuppy more than one Forth
-  \ block (provided the Forth block has no index line, i.e.
-  \ `load-program` is used to load the source).
+  \ Parse a UDG block, and store it from UDG character _c_
+  \ (0..255). _width_ and _height_ are in characters.  The
+  \ maximum _width_ is 7 (imposed by the size of Forth source
+  \ blocks). _height_ has no maximum, as the UDG block can
+  \ ocuppy more than one Forth block (provided the Forth block
+  \ has no index line, i.e. `load-program` is used to load the
+  \ source).
   \
   \ The scans can be formed by binary digits, by the characters
   \ hold in `udg-blank` and `udg-dot`, or any combination of
@@ -337,9 +361,95 @@ here anon> ! 3 cells allot
   \ ..XXXX....XXXX....XXXX....XXXX....XXXX..
   \ ----
 
-  \ See: `csprite`, `udg-group`.
+  \ See: `,udg-block`, `csprite`, `udg-group`.
   \
   \ }doc
+
+( ,udg-block )
+
+  \ XXX UNDER DEVELOPMENT
+
+need udg-scan>number need /udg*
+need udg-width need parse-name-thru need anon
+
+here anon> ! cell allot
+
+: ,udg-block ( width height "name..." -- )
+  swap 1 set-anon
+    \ Set an anonymous local variable:
+    \   [ 0 ] anon = _width_
+  /udg* 0 ?do parse-name-thru ( ca len )
+    [ 0 ] anon @ 0 ?do
+      over udg-width udg-scan>number c, udg-width /string
+  loop 2drop loop ;
+
+  \ doc{
+  \
+  \ ,udg-block ( width height "name..." -- )
+  \
+  \ Parse a UDG block, and store it from UDG character _c_
+  \ (0..255). _width_ and _height_ are in characters.  The
+  \ maximum _width_ is 7 (imposed by the size of Forth source
+  \ blocks). _height_ has no maximum, as the UDG block can
+  \ ocuppy more than one Forth block (provided the Forth block
+  \ has no index line, i.e. `load-program` is used to load the
+  \ source).
+  \
+  \ The scans can be formed by binary digits, by the characters
+  \ hold in `udg-blank` and `udg-dot`, or any combination of
+  \ both notations.
+  \
+  \ Usage example:
+
+  \ ----
+  \ here constant tank-graphic
+  \ 3 1 ,udg-block
+  \ ..........X..X..........
+  \ ...XXXXXX.X..X.XXXXXXX..
+  \ ..XXXXXXXXXXXXXXXXXXXXX.
+  \ .XXXXXXXXXXXXXXXXXXXXXXX
+  \ .XX.X.X.X.X.X.X.X.X.X.XX
+  \ ..XX..XX..XX..XX..XX.XX.
+  \ ...X.XXX.XXX.XXX.XXX.X..
+  \ ....X.X.X.X.X.X.X.X.X...
+  \ ----
+
+  \ See: `udga-emit`, `udg-block`, `csprite`, `udg-group`.
+  \
+  \ }doc
+
+-->
+
+( )
+
+  \ XXX TMP --
+
+here constant g1
+3 1 ,udg-block
+..........X..X..........
+...XXXXXX.X..X.XXXXXXX..
+..XXXXXXXXXXXXXXXXXXXXX.
+.XXXXXXXXXXXXXXXXXXXXXXX
+.XX.X.X.X.X.X.X.X.X.X.XX
+..XX..XX..XX..XX..XX.XX.
+...X.XXX.XXX.XXX.XXX.X..
+....X.X.X.X.X.X.X.X.X... cr .( done!) cr
+
+( )
+
+  \ XXX TMP --
+
+need udg-block
+
+3 1 0 udg-block
+..........X..X..........
+...XXXXXX.X..X.XXXXXXX..
+..XXXXXXXXXXXXXXXXXXXXX.
+.XXXXXXXXXXXXXXXXXXXXXXX
+.XX.X.X.X.X.X.X.X.X.X.XX
+..XX..XX..XX..XX..XX.XX.
+...X.XXX.XXX.XXX.XXX.X..
+....X.X.X.X.X.X.X.X.X... constant g2 cr .( done!) cr
 
 ( csprite )
 
@@ -376,8 +486,9 @@ here anon> ! 3 cells allot
   \ hold in `udg-blank` and `udg-dot`, or any combination of
   \ both notations.
   \
-  \ The difference with `udg-block` is ``csprite`` stores the
-  \ graphic by whole scans, not by characters.
+  \ The difference with `udg-block` and `,udg-block` is
+  \ ``csprite`` stores the graphic by whole scans, not by
+  \ characters.
   \
   \ Usage example:
 
@@ -1087,5 +1198,9 @@ exx, jpnext, end-code
   \
   \ 2017-12-10: Update to `a push,` and `a pop,`, after the
   \ change in the assembler.
+  \
+  \ 2018-01-06: Add prototype of `,udg-block`.
+  \
+  \ 2018-01-07: Add `/udg+`. Improve documentation.
 
   \ vim: filetype=soloforth
