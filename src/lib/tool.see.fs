@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801042057
+  \ Last modified: 201801071124
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -98,7 +98,33 @@ variable see-address
 
 : see-usage ( -- ) cr ." SPACE=more Q=quit other=deeper" cr ;
 
--->
+  \ doc{
+  \
+  \ see-usage ( -- )
+  \
+  \ Display the usage of `see`. This word is executed when
+  \ `manual-see` contains non-zero.
+  \
+  \ }doc
+
+variable manual-see manual-see on
+  \ XXX TODO -- Rename.
+  \ XXX UNDER DEVELOPMENT
+
+  \ doc{
+  \
+  \ manual-see ( -- a )
+  \
+  \ A variable. _a_ is the address of a cell containing a flag.
+  \ When the flag is non-zero, the decompilation of colon words
+  \ done by `see` can be controlled manually with some keys,
+  \ which are displayed at the start of the process.
+  \
+  \ See: `see-usage`.
+  \
+  \ }doc
+
+: ?see-usage ( -- ) manual-see @ if see-usage then ; -->
 
 ( see )
 
@@ -107,15 +133,21 @@ variable see-address
          dup @ ( dfa+n xt ) dup colon-end? 0=
   while  \ ( dfa+n xt )
          >body ( dfa+n dfa' ) dup indent+ body>oname.
-         key case 'q' of  empty-stack quit endof
-                  bl  of  drop             endof swap recurse
-             endcase see-special cell+ -1 see-level +!
-  repeat indent >oname. drop ;
+         manual-see @
+         if   key case 'q' of empty-stack quit endof
+                       bl  of drop             endof
+                       swap recurse
+              endcase
+         else drop
+         then see-special cell+ -1 see-level +!
+  repeat indent >oname. drop ; -->
   \ XXX TODO -- Make recursion work also with non-colon words.
 
+( see )
+
 : see-colon-body ( dfa -- )
-  see-usage dup body> see-address !
-            dup indent ." : " body>oname. (see-colon-body ;
+  ?see-usage dup body> see-address !
+             dup indent ." : " body>oname. (see-colon-body ;
 
   \ doc{
   \
@@ -124,19 +156,17 @@ variable see-address
   \ Decode the colon word's definition whose body is _dfa_.
   \ ``see-colon-body`` is a factor of `see-colon`.
   \
-  \ See: `see`, `see-colon-body>`, `see-xt`.
+  \ See: `see`, `see-colon-body>`, `see-xt`, `see-usage`.
   \
   \ }doc
 
 : ucreate-cf? ( c a -- )
-  $CD [ ' (user) >body 2 cells + ] literal d= ; -->
+  $CD [ ' (user) >body 2 cells + ] literal d= ;
   \ Is _c a_ the code field of a word created by `ucreate`,
   \ `user`, `2user` or `(user)`?
   \
   \ WARNING: the code address is calculated from the code field
   \ address of `(user)`, after its current code.
-
-( see )
 
 : colon-cf? ( c a -- ) $CD docolon d= ;
   \ Is _c a_ the code field of a word created by `:`?
@@ -355,5 +385,9 @@ need see
   \
   \ 2018-01-04: Replace `body>oname .name` with `body>oname.`,
   \ using `>oname.` to handle unnamed colon words.
+  \
+  \ 2018-01-06: Start implementing `manual-see`.
+  \
+  \ 2018-01-07: Finish implementation of `manual-see`.
 
   \ vim: filetype=soloforth
