@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801081626
+  \ Last modified: 201801081732
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,9 +23,42 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+( ,udg-block-test )
+
+  \ Credit:
+  \
+  \ Sample graphic from Nuclear Waste Invaders
+  \ (http://programandala.net/en.program.nuclear_waste_invaders.html)
+  \ as of 2018-01-08.
+
+
+need ,udg-block need /udg+
+
+3 cconstant tank-length  1 cconstant tank-height
+
+here tank-length tank-height ,udg-block
+
+  ..........X..X..........
+  ...XXXXXX.X..X.XXXXXXX..
+  ..XXXXXXXXXXXXXXXXXXXXX.
+  .XXXXXXXXXXXXXXXXXXXXXXX
+  .XX.X.X.X.X.X.X.X.X.X.XX
+  ..XX..XX..XX..XX..XX.XX.
+  ...X.XXX.XXX.XXX.XXX.X..
+  ....X.X.X.X.X.X.X.X.X... constant tank
+
+: .tank ( -- )
+  tank dup emit-udga /udg+ dup emit-udga /udg+ emit-udga ;
+
+cr .( Tank: ) .tank cr
+
 ( udg-block-test )
 
-  \ XXX TMP --
+  \ Credit:
+  \
+  \ Sample graphic from Nuclear Waste Invaders
+  \ (http://programandala.net/en.program.nuclear_waste_invaders.html)
+  \ as of 2018-01-08.
 
 need udg-block
 
@@ -1589,6 +1622,6 @@ blk @ 1+ blk @ 2+ thru
   \ 2017-12-17: Add `>oldest-name` and `>oldest-name/fast`, to
   \ `>name-test1`.
   \
-  \ 2018-01-08: Add `udg-block-test`.
+  \ 2018-01-08: Add `udg-block-test`, `,udg-block-test`.
 
   \ vim: filetype=soloforth
