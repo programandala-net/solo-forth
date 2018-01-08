@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712172219
+  \ Last modified: 201801081626
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -22,6 +22,31 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( udg-block-test )
+
+  \ XXX TMP --
+
+need udg-block
+
+3 cconstant tank-length  1 cconstant tank-height
+
+0 cconstant tank
+
+tank-length tank-height tank udg-block
+
+..........X..X..........
+...XXXXXX.X..X.XXXXXXX..
+..XXXXXXXXXXXXXXXXXXXXX.
+.XXXXXXXXXXXXXXXXXXXXXXX
+.XX.X.X.X.X.X.X.X.X.X.XX
+..XX..XX..XX..XX..XX.XX.
+...X.XXX.XXX.XXX.XXX.X..
+....X.X.X.X.X.X.X.X.X...
+
+: .tank ( -- ) tank dup emit-udg 1+ dup emit-udg 1+ emit-udg ;
+
+cr .( Tank: ) .tank cr
 
 ( {if-test )
 
@@ -1563,5 +1588,7 @@ blk @ 1+ blk @ 2+ thru
   \
   \ 2017-12-17: Add `>oldest-name` and `>oldest-name/fast`, to
   \ `>name-test1`.
+  \
+  \ 2018-01-08: Add `udg-block-test`.
 
   \ vim: filetype=soloforth

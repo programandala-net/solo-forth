@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801071939
+  \ Last modified: 201801081624
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -303,23 +303,21 @@ need parse-name-thru
 need udg-scan>number need udg> need /udg need /udg*
 need udg-width need parse-name-thru need j need anon
 
-here anon> ! 3 cells allot
+here anon> ! 2 cells allot
 
 : udg-block ( width height c "name..." -- )
-  3 set-anon
+  udg> rot 2 set-anon
     \ Set the anonymous local variables:
-    \   [ 0 ] anon = _c_
-    \   [ 1 ] anon = _height_
-    \   [ 2 ] anon = _width_
-  [ 1 ] anon @ /udg* 0 ?do parse-name-thru ( ca len )
-    [ 2 ] anon @ 0 ?do
+    \   [ 0 ] anon = _width_
+    \   [ 1 ] anon = address of _c_ in the current `udg-font`
+  /udg* 0 ?do parse-name-thru ( ca len )
+    [ 0 ] anon @ 0 ?do
       over udg-width udg-scan>number ( ca len b )
-      j /udg /mod [ 2 ] anon @ * i + /udg* +
+      j /udg /mod [ 0 ] anon @ * i + /udg* + ( ca len b +n )
         \ Calculate the offset from the address of _c_ in
         \ the UDG font, to store the scan _b_.
-      [ 0 ] anon @ udg> + c!
-        \ Store _b_ at the proper address in the UDG font,
-        \ i.e. the address of _c_ plus the offset.
+      [ 1 ] anon @ + c!
+        \ Store scan _b_ at the proper address in the UDG font.
       udg-width /string ( ca' len' ) loop 2drop loop ;
 
   \ doc{
@@ -370,16 +368,11 @@ here anon> ! 3 cells allot
   \ XXX UNDER DEVELOPMENT
 
 need udg-scan>number need /udg*
-need udg-width need parse-name-thru need anon
-
-here anon> ! cell allot
+need udg-width need parse-name-thru
 
 : ,udg-block ( width height "name..." -- )
-  swap 1 set-anon
-    \ Set an anonymous local variable:
-    \   [ 0 ] anon = _width_
-  /udg* 0 ?do parse-name-thru ( ca len )
-    [ 0 ] anon @ 0 ?do
+  /udg* 0 ?do dup parse-name-thru ( width width ca len )
+    rot 0 ?do
       over udg-width udg-scan>number c, udg-width /string
   loop 2drop loop ;
 
@@ -387,13 +380,12 @@ here anon> ! cell allot
   \
   \ ,udg-block ( width height "name..." -- )
   \
-  \ Parse a UDG block, and store it from UDG character _c_
-  \ (0..255). _width_ and _height_ are in characters.  The
-  \ maximum _width_ is 7 (imposed by the size of Forth source
-  \ blocks). _height_ has no maximum, as the UDG block can
-  \ ocuppy more than one Forth block (provided the Forth block
-  \ has no index line, i.e. `load-program` is used to load the
-  \ source).
+  \ Parse a UDG block, and compile it in data space.  _width_
+  \ and _height_ are in characters.  The maximum _width_ is 7
+  \ (imposed by the size of Forth source blocks). _height_ has
+  \ no maximum, as the UDG block can ocuppy more than one Forth
+  \ block (provided the Forth block has no index line, i.e.
+  \ `load-program` is used to load the source).
   \
   \ The scans can be formed by binary digits, by the characters
   \ hold in `udg-blank` and `udg-dot`, or any combination of
@@ -418,38 +410,41 @@ here anon> ! cell allot
   \
   \ }doc
 
--->
-
-( )
+( ,udg-block-test )
 
   \ XXX TMP --
 
-here constant g1
-3 1 ,udg-block
-..........X..X..........
-...XXXXXX.X..X.XXXXXXX..
-..XXXXXXXXXXXXXXXXXXXXX.
-.XXXXXXXXXXXXXXXXXXXXXXX
-.XX.X.X.X.X.X.X.X.X.X.XX
-..XX..XX..XX..XX..XX.XX.
-...X.XXX.XXX.XXX.XXX.X..
-....X.X.X.X.X.X.X.X.X... cr .( done!) cr
+need ,udg-block need /udg+
 
-( )
+1 cconstant tank-length  1 cconstant tank-height
 
-  \ XXX TMP --
+here constant tank
 
-need udg-block
+tank-length tank-height ,udg-block
 
-3 1 0 udg-block
-..........X..X..........
-...XXXXXX.X..X.XXXXXXX..
-..XXXXXXXXXXXXXXXXXXXXX.
-.XXXXXXXXXXXXXXXXXXXXXXX
-.XX.X.X.X.X.X.X.X.X.X.XX
-..XX..XX..XX..XX..XX.XX.
-...X.XXX.XXX.XXX.XXX.X..
-....X.X.X.X.X.X.X.X.X... constant g2 cr .( done!) cr
+  \ ..........X..X..........
+  \ ...XXXXXX.X..X.XXXXXXX..
+  \ ..XXXXXXXXXXXXXXXXXXXXX.
+  \ .XXXXXXXXXXXXXXXXXXXXXXX
+  \ .XX.X.X.X.X.X.X.X.X.X.XX
+  \ ..XX..XX..XX..XX..XX.XX.
+  \ ...X.XXX.XXX.XXX.XXX.X..
+  \ ....X.X.X.X.X.X.X.X.X...
+
+X.X.X.X.X.X.
+X....X.....X
+X....X.....X
+X....XXXXXXX
+XXXXXX.....X
+X....X.....X
+X....X.....X
+X.X.X.X.X.X.
+
+: .tank ( -- )
+  \ tank dup emit-udga /udg+ dup emit-udga /udg+ emit-udga ;
+  tank emit-udga ;
+
+cr .( Tank: ) .tank cr
 
 ( csprite )
 
@@ -1202,5 +1197,7 @@ exx, jpnext, end-code
   \ 2018-01-06: Add prototype of `,udg-block`.
   \
   \ 2018-01-07: Add `/udg+`. Improve documentation.
+  \
+  \ 2018-01-08: Improve `udg-block`. Advance `,udg-block`.
 
   \ vim: filetype=soloforth
