@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712200045
+  \ Last modified: 201801110045
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -26,6 +26,7 @@
 ( deferred defers defer@ action-of )
 
 [unneeded] deferred
+
 ?\ : deferred ( xt "name" -- ) defer latest name> defer! ;
 
   \ doc{
@@ -41,11 +42,18 @@
   \ }doc
 
 [unneeded] defers ?( need defer@
-: defers ( "name" -- ) ' defer@ compile, ; immediate ?)
+
+: defers ' defer@ compile, ; immediate ?)
+  \ Interpretation: ( "name" -- )
+  \ Compilation:    ( "name" -- )
+  \ Run-time:       ( -- )
 
   \ doc{
   \
-  \ defers ( "name" -- )
+  \ defers
+  \   Interpretation: ( "name" -- )
+  \   Compilation:    ( "name" -- )
+  \   Run-time:       ( -- )
   \
   \ Compile the present contents of the deferred word "name"
   \ into the current definition. I.e. this produces static
@@ -100,8 +108,8 @@
   \ Interpretation: ( "name" -- xt )
   \ Compilation:    ( "name" -- )
   \ Run-time:       ( -- xt )
-  ' compiling? if    postpone literal postpone defer@
-               else  defer@  then ; immediate ?)
+  ' compiling? if   postpone literal postpone defer@
+               else defer@ then ; immediate ?)
   \ doc{
   \
   \ action-of ( -- )
@@ -147,6 +155,7 @@
   \ XXX TODO -- Documentation.
 
 [unneeded] [is] ?(
+
 : [is] ( xt "name" -- )
   postpone ['] postpone defer! ; immediate compile-only ?)
 
@@ -178,5 +187,7 @@
   \ 2017-05-07: Improve documentation.
   \
   \ 2017-12-20: Fix needing of `defer@`. Improve documentation.
+  \
+  \ 2018-01-11: Update layout. Improve documentation.
 
   \ vim: filetype=soloforth

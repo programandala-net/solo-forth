@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712092310
+  \ Last modified: 201801110053
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -302,7 +302,7 @@ file-id-table max-file-id 1+ erase
   \ }doc
 
 [unneeded] w/o ?\ %010 cconstant w/o
-  
+
   \ doc{
   \
   \ w/o ( -- fam )
@@ -317,7 +317,7 @@ file-id-table max-file-id 1+ erase
   \ }doc
 
 [unneeded] r/w ?\ %011 cconstant r/w
-  
+
   \ doc{
   \
   \ r/w ( -- fam )
@@ -332,7 +332,7 @@ file-id-table max-file-id 1+ erase
   \ }doc
 
 [unneeded] s/r ?\ %101 cconstant s/r
-  
+
   \ doc{
   \
   \ r/w ( -- fam )
@@ -550,7 +550,8 @@ code (open-file ( ca fam fid -- fid ior )
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
-  \ See: `create-file`, `r/o`, `w/o`, `r/w`, `s/r`, `bin`.
+  \ See: `close-file`, `create-file`, `r/o`, `w/o`, `r/w`,
+  \ `s/r`, `bin`.
   \
   \ }doc
 
@@ -574,7 +575,7 @@ code (close-file ( fid -- ior )
   \ Close the file identified by _fid_ and return error result
   \ _ior_.
   \
-  \ ``(close-file`` is a factor of `(close-file`.
+  \ ``(close-file`` is a factor of `close-file`.
   \ ``(close-file`` closes the file, but does not update
   \ `file-id-table`.
   \
@@ -590,7 +591,7 @@ code (close-file ( fid -- ior )
   \ Close the file identified by _fid_ and return error result
   \ _ior_.
   \
-  \ See: `(close-file`.
+  \ See: `open-file`, `create-file`, `(close-file`.
   \
   \ }doc
 
@@ -1018,5 +1019,7 @@ need (cat need tab need 3dup need 3drop
   \ Fix Z80 opcode in `do-dos-open_`.
   \
   \ 2017-12-09: Improve documentation.
+  \
+  \ 2018-01-11: Improve documentation.
 
   \ vim: filetype=soloforth
