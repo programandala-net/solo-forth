@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712092311
+  \ Last modified: 201801110106
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -841,8 +841,16 @@ code (delete-file) ( -- ior )
 need assembler need --dos-commands--
 
 code read-system-track ( -- ior )
-  dos-read-file-descriptor a ld#, exaf,
+  dos-read-system-track a ld#, exaf,
   dos-alt-a-preserve-ip_ call, pushdosior jp, end-code
+
+  \ doc{
+  \
+  \ read-system-track ( -- ior )
+  \
+  \ Read the system track of the current disk of TR-DOS.
+  \
+  \ }doc
 
 ( read-file-descriptor write-file-descriptor )
 
@@ -1212,5 +1220,7 @@ need read-file-descriptor need write-file-descriptor
   \ labels.
   \
   \ 2017-12-09: Improve documentation.
+  \
+  \ 2018-01-11: Fix and document `read-system-track`.
 
   \ vim: filetype=soloforth
