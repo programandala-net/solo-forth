@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-01-04
+:revdate: 2018-01-11
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -529,19 +529,21 @@ Alternative:
   \ : +??  ( f -- )  0< ?exit  r> cell+ >r  ; compile-only
 ----
 
-.2016-05-07:
+.2016-05-07, 2018-01-11:
+
+NOTE: Milestone: 0.14.0
 
 Idea: Rename `branch`, `0branch` and `?branch` to `(branch)`, `(0branch)` and
 `(?branch)`.  Then write `branch`, `0branch` and `?branch` to compile them, as
 control structures.
 
 ----
-: branch  ( a -- )  postpone (branch) ,  ; immediate compile-only
-: ?branch  ( a -- )  postpone (?branch) ,  ; immediate compile-only
-: 0branch  ( a -- )  postpone (0branch) ,  ; immediate compile-only
+: branch  ( a -- ) postpone (branch)  , ; immediate compile-only
+: ?branch ( a -- ) postpone (?branch) , ; immediate compile-only
+: 0branch ( a -- ) postpone (0branch) , ; immediate compile-only
 ----
 
-Also `-branch`, in the library.
+Also `-branch` and `+branch` in the library.
 
 .2015-11-14:
 
@@ -830,9 +832,9 @@ anyway.
 Adapt `banked-mode-42` and `set-banked-mode-output` to far memory or
 remove them.
 
-.2016-12-30:
+.2016-12-30, 2018-01-11:
 
-Combine `clear-block` and family with the text windows.
+Combine `clear-rectangle` and family with the text windows.
 
 .2016-12-24, 2017-02-03:
 

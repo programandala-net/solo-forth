@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801042022
+  \ Last modified: 201801192058
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -506,7 +506,7 @@ code c@2- ( ca -- c )
   \
   \ }doc
 
-( c@and ctoggle coff )
+( c@and ctoggle coff con )
 
   \ Credit:
   \
@@ -583,9 +583,9 @@ code ctoggle ( b ca -- )
 
 [unneeded] coff
 
-?\ code coff ( ca -- ) E1 c, 36 c, 00 c, jpnext, end-code
+?\ code coff ( ca -- ) E1 c, 36 c, false c, jpnext, end-code
   \ pop hl
-  \ ld (hl),0
+  \ ld (hl),false
   \ _jp_next
 
   \ doc{
@@ -602,6 +602,33 @@ code ctoggle ( b ca -- )
   \ ----
 
   \ See: `off`.
+  \
+  \ }doc
+
+[unneeded] con
+
+?\ code con ( ca -- ) E1 c, 36 c, true c, jpnext, end-code
+  \ pop hl
+  \ ld (hl),true
+  \ _jp_next
+
+  \ doc{
+  \
+  \ con ( ca -- )
+  \
+  \ Store `true` at _ca_.
+  \
+  \ ``con`` is written in Z80. Its equivalent definition in
+  \ Forth is the following:
+
+  \ ----
+  \ : con ( ca -- ) true swap c! ;
+  \ ----
+
+  \ NOTE: The value actually stored is not `true`, which is a
+  \ cell, but its 8-bit equivalent $FF.
+  \
+  \ See: `coff`, `on`.
   \
   \ }doc
 
@@ -903,5 +930,7 @@ code cexchange ( ca1 ca2 -- )
   \ 2018-01-03: Add `c@2+` and `c@2-`.
   \
   \ 2018-01-04: Add `?c1-!`.
+  \
+  \ 2018-01-19: Add `con`.
 
   \ vim: filetype=soloforth
