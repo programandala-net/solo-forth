@@ -1,18 +1,18 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-01-11
+:revdate: 2018-01-20
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
 // Assembler {{{1
-== Assembler ==
+== Assembler
 
-.2017-12-15:
+=== 2017-12-15
 
 Simplify `>>` with `dump`.
 
-.2017-12-14, 2017-12-15, 2018-01-02:
+=== 2017-12-14, 2017-12-15, 2018-01-02
 
 Adapt `inline` from Richard W.M. Jones' Jonesforth
 (http://annexia.org/forth):
@@ -140,7 +140,7 @@ There are problems, though:
 It is easier to define faster words when needed, as part of the
 application, than to write smart `inline:` and `inline-code`.
 
-.2017-12-10:
+=== 2017-12-10
 
 `;uses` from F83:
 
@@ -173,13 +173,13 @@ new definition, making it a colon definition.
 
 ____
 
-.2017-03-26, 2017-12-05:
+=== 2017-03-26, 2017-12-05
 
 NOTE: Milestone: 0.14.0
 
 Document the instructions.
 
-.2017-03-12:
+=== 2017-03-12
 
 Make index register instructions optional. All of them:
 
@@ -196,37 +196,37 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
 : stpx, ( disp regpi regp -- ) 3dup 1+ stx, rot 1+ -rot stx, ;
 ----
 
-.2017-03-12:
+=== 2017-03-12
 
 Make `hook,` and `prt,` optional.
 
-.2017-03-12:
+=== 2017-03-12
 
 Study changes needed to use `ix addp,` instead of `addix,`;
 this means `h addp,` should be used instead of `addp,`
 
-.2017-03-07:
+=== 2017-03-07
 
 Add a small layer on the assembler to compile it into the Plus D
 memory, and use it from there.
 
-.2017-02-21:
+=== 2017-02-21
 
 NOTE: Milestone: 0.14.0
 
 Move private words of `l:` to a word list.
 
-.2017-02-21, 2017-12-10:
+=== 2017-02-21, 2017-12-10
 
 Rewrite `execute-hl` with Z80 opcodes.
 
-.2017-01-13:
+=== 2017-01-13
 
 Modify words that restore IX: use the current contents of `next`
 instead of its default value. This way the value of IX can be changed
 to implement a debugger or multitasking.
 
-.2016-11-26, 2016-12-30 .. 2017-01-02:
+=== 2016-11-26, 2016-12-30 .. 2017-01-02
 
 NOTE: Milestone: 0.14.0
 
@@ -236,25 +236,25 @@ examples: `lshift`, `(g-emit)` and family, `f!`, `f@`,
 `d-`, `@dos`, `c@dos`...
 
 // Benchmarks {{{1
-== Benchmarks ==
+== Benchmarks
 
-.2017-12-07:
+=== 2017-12-07
 
 Benchmark variables before and after Moving the Z80 labels `do_create`
 and `do_variable` to the `next` entry of the inner interpreter.
 
 // Bugs {{{1
-== Bugs ==
+== Bugs
 
-.2017-03-22:
+=== 2017-03-22
 
 Make `cold` set `set-block-drives` to the default value.
 
-.2017-02-11, 2017-12-05:
+=== 2017-02-11, 2017-12-05
 
 Fix: Crash when `mode-42` is loaded.
 
-.2017-01-11, 2017-01-24, 2017-01-25:
+=== 2017-01-11, 2017-01-24, 2017-01-25
 
 `view` gets trapped in `wait-for-key` at the end, why?
 
@@ -265,19 +265,19 @@ Update: It has nothing to do with `view`. The same happened after an
 error #-268. Somehow the flag of the last key pressed is not updated
 by the OS and the code is trapped in a loop. An emulator issue?
 
-.2017-01-04:
+=== 2017-01-04
 
 Check some of the RNG benchs.  The machine resets at the end of some
 of them. They are marked in the source.
 
 // Code style {{{1
-== Code style ==
+== Code style
 
-.2017-02-13:
+=== 2017-02-13
 
 Align comments of the kernel.
 
-.2017-01-06, 2017-02-13, 2017-02-22, 2017-02-24:
+=== 2017-01-06, 2017-02-13, 2017-02-22, 2017-02-24
 
 Finish changing the code style after Pygmy Forth:
 
@@ -288,9 +288,9 @@ Some times a word does not fit a block line because of the current
 convention.
 
 // Interpreter/compiler {{{1
-== Interpreter/compiler ==
+== Interpreter/compiler
 
-.2017-12-14:
+=== 2017-12-14
 
 From CHForth's <MISCUTIL.FRT>:
 
@@ -298,13 +298,13 @@ From CHForth's <MISCUTIL.FRT>:
 : eval" postpone s" postpone evaluate ; immediate compile-only
 ----
 
-.2017-12-06:
+=== 2017-12-06
 
 Replace `error.definition_not_finished` (non-standard code #-264) with
 `error.control_structure_mismatch` (standard code #-22) in `?csp`?
 This is the exception code used in Gforth's `?csp`.
 
-.2017-05-06, 2017-07-27:
+=== 2017-05-06, 2017-07-27
 
 Rewrite `compiling?` and `interpreting?` in Z80?
 
@@ -337,7 +337,7 @@ but it needs 6 bytes, plus 1 for the return, while the call needs 3
 bytes... It does not worth. Beside, this factoring would slow down all
 user variables a bit.
 
-.2017-03-28:
+=== 2017-03-28
 
 Adapt from 8080 F83 2.0:
 
@@ -348,56 +348,56 @@ Adapt from 8080 F83 2.0:
   \ compile and execute nameless FORTH code, then forget it
 ----
 
-.2017-01-23:
+=== 2017-01-23
 
 Rewrite `here` in Z80. `dp` must be an ordinary variable first.
 
-.2017-01-05, 2017-01-23:
+=== 2017-01-05, 2017-01-23
 
 Rewrite `there` in Z80 (`dp` must be an ordinary variable first) or remove it?
 
-.2016-11-20:
+=== 2016-11-20
 
 Add `fast` and `slow`, after ACE Forth, to deactivate/activate some checks:
 `?stacks`, `limit` and `farlimit` (not used yet), etc.
 
-.2016-05-17:
+=== 2016-05-17
 
 Improve the search order words, after Forth-2012.
 
-.2016-04-27:
+=== 2016-04-27
 
 Rewrite `'` after Gforth. See Gforth's `(')`, `name?int`,
 `name>int`, etc. Factor `defined` and `comp'` accordingly.
 
-.2016-05-18:
+=== 2016-05-18
 
 Remove the `root` word list. Set the minimum search order to `forth`.
 
-.2016-11-13:
+=== 2016-11-13
 
 Make `dp` an ordinary variable? Then `here`, `there` and `allot` could be
 improved, rewritten in Z80.
 
-.2016-05-15:
+=== 2016-05-15
 
 Check if `current-latest`, used in the library, can be replaced with `latest`.
 
-.2016-05-09:
+=== 2016-05-09
 
 Idea: in DX-Forth, `last` is a 2-cell variable that holds both the nt and the
 xt: `last @ ( nt )` and `last 2@ ( xt nt )`.
 
-.2016-04-29:
+=== 2016-04-29
 
 Factor the return stack manipulation done by `(.")` in order to
 reuse it in `(abort")` and `(warning")`. Use a variant of pForth's `param`.
 
-.2016-04-28:
+=== 2016-04-28
 
 Finish the implementation of control stack words.
 
-.2015-11-12:
+=== 2015-11-12
 
 `+bal`, `-bal` or similar, to change `csp`:
 
@@ -409,39 +409,39 @@ Finish the implementation of control stack words.
 But to compile an external number inside a definition,
 a trick is `[ dup ] literal` and a `drop` after `;`.
 
-.2015-06-09:
+=== 2015-06-09
 
 In order to save compilation time, move inner words to the bottom of
 the dictionary. Example: `(loop)`, `clit`, `back`, `digit`...
 
-.2016-03-19, 2017-12-12:
+=== 2016-03-19, 2017-12-12
 
 Separate header flags from the length byte of the name field.  This
 way more bits will fit (alias, synonym, special behaviour), word names
 will be actual strings, and searching the dictionary will be a bit
 faster.
 
-.2017-08-17:
+=== 2017-08-17
 
 `'` should warn when used with a `compile-only` word.
 
-.2017-08-17:
+=== 2017-08-17
 
 Implement Gforth's `]]`  and `[[`.
 
 // Control structures {{{1
-== Control structures ==
+== Control structures
 
-.2018-01-03:
+=== 2018-01-03
 
 Add a no-return version of `execute`.
 
-.2017-12-11:
+=== 2017-12-11
 
 Change `{if` and `if}` to use `cs-mark` and `thens` instead of a
 count.
 
-.2017-12-07:
+=== 2017-12-07
 
 Rewrite `+perform` in Z80.
 
@@ -470,7 +470,7 @@ VARIABLE #TIMES   ( # times already performed )   1 #TIMES !
   \ Re-execute the input stream a specified number of times.
 ----
 
-.2017-03-28:
+=== 2017-03-28
 
 From 8080 F83 2.0:
 
@@ -482,20 +482,20 @@ From 8080 F83 2.0:
 \      Where READY returns a flag.
 ----
 
-.2016-12-26:
+=== 2016-12-26
 
 Add default execution token to `switch:`.
 
-.2016-12-20:
+=== 2016-12-20
 
 Document the variants of `of`.
 
-.2016-12-07:
+=== 2016-12-07
 
 Use `>bstring` (new name for `>cell-string`), `2>bstring`, `c>bstring`
 (already exists as `char>string`).
 
-.2016-12-03:
+=== 2016-12-03
 
 Use a new kind of unconditional high-level branch at the end of `nest-source`
 and `unnest-source`:
@@ -506,7 +506,7 @@ goto  ( a -- )
 
 Make it consistent with the planned changes in the current low-level branches.
 
-.2016-11-26, 2017-01-23:
+=== 2016-11-26, 2017-01-23
 
 Change `??` to its old version, which is more useful:
 
@@ -529,7 +529,7 @@ Alternative:
   \ : +??  ( f -- )  0< ?exit  r> cell+ >r  ; compile-only
 ----
 
-.2016-05-07, 2018-01-11:
+=== 2016-05-07, 2018-01-11
 
 NOTE: Milestone: 0.14.0
 
@@ -545,11 +545,11 @@ control structures.
 
 Also `-branch` and `+branch` in the library.
 
-.2015-11-14:
+=== 2015-11-14
 
 Forth Dimensions v06n1p26: `it endit` control structure.
 
-.2015-10-25:
+=== 2015-10-25
 
 Ideas from cmForth:
 
@@ -574,7 +574,7 @@ auto-indexing memory instructions.
 ____
 
 // Data structures {{{1
-== Data structures ==
+== Data structures
 
 .2017-04-18, 2017-12-10
 
@@ -583,28 +583,28 @@ NOTE: Milestone: 0.14.0
 Rewrite the `does>` part of `value` and friends with `;code`, jumping
 into the corresponding code words of the kernel, eg. `@`, `2@`.
 
-.2017-03-30:
+=== 2017-03-30
 
 Improve the standard `to`: store an xt in the body of the values and
 execute it.
 
-.2017-01-18:
+=== 2017-01-18
 
 Write far-memory versions of `avalue`, `2avalue` and `cavalue`.
 
-.2016-12-30:
+=== 2016-12-30
 
 Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 
 // Dictionary {{{1
-== Dictionary ==
+== Dictionary
 
-.2018-01-01:
+=== 2018-01-01
 
 Rename `.name` (Gforth <=0.5.0, obsolete) `id.` (Gforth, fig-Forth)
 (`.id` in F83).
 
-.2017-12-18, 2018-01-03:
+=== 2017-12-18, 2018-01-03
 
 Rename `>name` and friends:
 
@@ -620,7 +620,7 @@ Rename `>name` and friends:
 
 Maybe even create a deferred `>name`.
 
-.2017-12-15:
+=== 2017-12-15
 
 From _Special Words in Forth_, paper by Stephen Pelc, EuroForth 2017:
 
@@ -633,14 +633,14 @@ within the current search order. On failure, just an ior
 are returned.
 ----
 
-.2017-12-12, 2017-12-15, 2018-01-04:
+=== 2017-12-12, 2017-12-15, 2018-01-04
 
 Reduce the number of aliases. There are 25 aliases in the kernel, and
 probably more in the library. Aliases save code space, but `see` shows
 the oldest name associated to a code field what is the best option but
 can be inconvenient.
 
-.2017-12-13:
+=== 2017-12-13
 
 Keep notation ">str" coherent.
 
@@ -651,7 +651,7 @@ Rename `name>str` `name>string` (after Gforth)?
 Rename `line>string` `line>str`?
 
 
-.2017-12-12, 2017-12-18:
+=== 2017-12-12, 2017-12-18
 
 Improve `>oldest-name` and friends?
 
@@ -672,14 +672,14 @@ Options:
 
 
 // Display {{{1
-== Display ==
+== Display
 
-.2018-01-02:
+=== 2018-01-02
 
 Write `color` (`recolor`?) to change the attributes of the screen,
 completing the "color" series: `color-rectangle` and `wcolor`.
 
-.2017-12-14:
+=== 2017-12-14
 
 From CHForth's <MISCUTIL.FRT>:
 
@@ -687,7 +687,7 @@ From CHForth's <MISCUTIL.FRT>:
 : >graphic ( c -- c' ) dup bl < if drop '.' then ;
 ----
 
-.2017-12-13:
+=== 2017-12-13
 
 From CHForth:
 
@@ -696,12 +696,12 @@ SILENT ( -- )
     Suppress output to screen or printer.
 ----
 
-.2017-12-13:
+=== 2017-12-13
 
 In CHForth, `type-ascii` is called `stype`, and `emit-ascii` is called
 `semit`.
 
-.2017-12-12:
+=== 2017-12-12
 
 NOTE: Milestone: 0.14.0
 
@@ -712,12 +712,12 @@ initials of their original authors:
 -`mode-64s` (Saukas) --> `mode-64es` (Einar Saukas)
 -`mode-42rt` (real-time) --> `mode-42pw` (P. Wardle)
 
-.2017-05-15:
+=== 2017-05-15
 
 Document the control characters accepted by each mode, especially the
 parameters of "at".
 
-.2017-05-15:
+=== 2017-05-15
 
 NOTE: Milestone: 0.14.0
 
@@ -727,32 +727,32 @@ actions of `emit` must be rewritten after them. This is what
 `mode-64o` does, in order to make the display mode effective in Forth
 (`emit`) and Z80 (`rst 10`).
 
-.2017-05-14:
+=== 2017-05-14
 
 Improve the transition between display modes: Convert the cursor
 coordinates of the previous mode.
 
-.2017-05-12, 2017-11-20, 2017-12-04:
+=== 2017-05-12, 2017-11-20, 2017-12-04
 
 Finish `ltype`, and make it compatible with Galope's `ltype`.
 
-.2017-05-12:
+=== 2017-05-12
 
 Make `wltype` simpler and faster.
 
 Write `wtype`.
 
-.2017-05-05:
+=== 2017-05-05
 
 Write the definitive version of `u.` in the library. The current one
 is temporary, for debugging.
 
-.2017-04-21, 2017-05-20:
+=== 2017-04-21, 2017-05-20
 
 Finish `mode-64s`, the port of "64#4", the the driver written by Einar
 Saukas.
 
-.2017-04-21, 2017-12-05:
+=== 2017-04-21, 2017-12-05
 
 NOTE: Milestone: 0.14.0
 
@@ -762,32 +762,32 @@ Fix: The default `mode-32` expects _row_ right after control character
 
 Update `(at-xy` and its documentation.
 
-.2017-04-20:
+=== 2017-04-20
 
 Write `mode-32udg-emit` to use the full UDG 0 .. 255 as a font, after the
 method used by `mode-32iso-emit`.
 
-.2017-04-20:
+=== 2017-04-20
 
 Change the order of the cursor coordinates embedded in strings, after
 the Forth convention? This is not possible with `mode-32-emit`, which
 uses the ROM routine.
 
-.2017-04-19, 2017-12-05:
+=== 2017-04-19, 2017-12-05
 
 Convert the ISO standard 64-cpl fonts included in mikroprint to the
 format used by `mode-64o` and `mode-64s`.
 
-.2017-04-17:
+=== 2017-04-17
 
 Import `center-type` from _Nuclear Waste Invaders_ and rename and
 modify `gigatype-center` accordingly.
 
-.2017-04-16:
+=== 2017-04-16
 
 Convert `columns` and `rows` to character constants.
 
-.2017-03-15:
+=== 2017-03-15
 
 Convert `previous-mode` and `current-mode` to deferred words; then
 remove `save-mode` and `restore-mode`. Calculate the gain in bytes and
@@ -795,7 +795,7 @@ simplicity.
 
 This changes implies moving `defer@` to the kernel.
 
-.2017-02-25:
+=== 2017-02-25
 
 The Forth Standard requires standard ASCII.  An alternative to
 non-standard character 96 is needed.
@@ -804,7 +804,7 @@ non-standard character 96 is needed.
   temporarily?  This will ruin alternative fonts.
 - Simpler: Provide an alternative standard font in disk.
 
-.2017-01-18, 2017-02-04:
+=== 2017-01-18, 2017-02-04
 
 Current versions of `type-right-field` and `type-center-field` use
 spaces. This creates a banner.
@@ -827,16 +827,16 @@ tables will be different for the future set of words that type without
 padding spaces, so finally the number of different words will grow
 anyway.
 
-.2017-01-02, 2017-12-10:
+=== 2017-01-02, 2017-12-10
 
 Adapt `banked-mode-42` and `set-banked-mode-output` to far memory or
 remove them.
 
-.2016-12-30, 2018-01-11:
+=== 2016-12-30, 2018-01-11
 
 Combine `clear-rectangle` and family with the text windows.
 
-.2016-12-24, 2017-02-03:
+=== 2016-12-24, 2017-02-03
 
 Windows:
 
@@ -844,7 +844,7 @@ Windows:
 - Rewrite `wcls` in Z80, or use `spaces` instead of `type`
 - Save and restore windows, in Z80.
 
-.2016-11-26:
+=== 2016-11-26
 
 NOTE: Milestone: 0.14.0
 
@@ -854,12 +854,12 @@ character variable.  In fact, it would be enough to write
 
 Make `type` deferred, to be configured as `fartype` or other when needed.
 
-.2016-11-21, 2017-12-05:
+=== 2016-11-21, 2017-12-05
 
 Add support for more control characters to an alternative version of
 `mode-64o` ar `mode-64s`.
 
-.2016-11-21, 2017-12-05:
+=== 2016-11-21, 2017-12-05
 
 In `mode-32`, one `cr` does nothing when the cursor is at the end of a
 line.  That is the default behaviour in Sinclair BASIC. The driver of
@@ -868,13 +868,13 @@ prints the carriage return, increasing the line number. Somehow the
 behaviour must be unified in all modes. The behaviour of `mode-64o`
 seems more logical.
 
-.2015-09-05:
+=== 2015-09-05
 
 There's an example how to change and restore a channel in print-42, by
 Ricardo Serral Wigge. Beside, it supports many (all?) control
 characters, unlike the implementation by Andy Jenkinson.
 
-.2015-09-11:
+=== 2015-09-11
 
 Idea: screen modes table?
 
@@ -888,41 +888,41 @@ Idea: screen modes table?
 It seems more versatile to create one word to select every mode and provide a
 common user interface to row, column, cpl, window...
 
-.2016-10-27:
+=== 2016-10-27
 
 Add `vemits`, inspired by TI BASIC's `call vchar()`.
 
-.2016-04-17:
+=== 2016-04-17
 
 Improve tab control.
 
 // Documentation {{{1
-== Documentation ==
+== Documentation
 
-.2017-12-14:
+=== 2017-12-14
 
 Remove "implementation-dependent". See `:`.
 
-.2017-12-14:
+=== 2017-12-14
 
 Remove "colon-sys" or add it everywhere: `:`, `;`...
 It's not used in Solo Forth.
 
-.2017-12-12:
+=== 2017-12-12
 
 Add cross-referentes to `defer` to all deferred words. Already done in
 the kernel.
 
-.2017-12-11:
+=== 2017-12-11
 
 Improve documentation of `switch:`.
 
-.2017-12-10:
+=== 2017-12-10
 
 Add stack comments to sections "Compilation:" and "Run-time:".  See
 `does>`.
 
-.2017-12-07:
+=== 2017-12-07
 
 Remove "char" from the stack notation section of the manual.  Update
 the documentation, for example: `parse ( char "ccc<char>" -- ca len )`
@@ -931,38 +931,38 @@ with `parse ( c "ccc<c>" -- ca len )`.
 Also `<chars>` in the stack notation table: `word ( c
 "<chars>ccc<char>" -- ca )`?
 
-.2017-12-05:
+=== 2017-12-05
 
 Include the PNG of the 64-cpl fonts from Einar Saukas' 64#4.
 
-.2017-07-22:
+=== 2017-07-22
 
 Fix the EPUB version of the manual. Create it with xsltproc instead of
 Pandoc.
 
-.2017-05-11:
+=== 2017-05-11
 
 NOTE: Milestone: 0.14.0
 
 Uso "bytes" instead of "address units", which is needed only in the
 standard.
 
-.2017-05-06:
+=== 2017-05-06
 
 Review and homogenize the layout of "Compilation" and "Run-time" stack
 notations.
 
-.2017-05-05:
+=== 2017-05-05
 
 Include the description of the attribute OS variables into the related
 words, or into a section of the manual.
 
-.2017-05-05:
+=== 2017-05-05
 
 Update stack notation and description of `if`, `while`, `until` and
 its variants after Forth-2012 (using _x_ instead of _f_)?
 
-.2017-05-04:
+=== 2017-05-04
 
 Add the following note to state-smart words:
 
@@ -970,103 +970,103 @@ ____
 WARNING: ``XXX`` is a state-smart word.
 ____
 
-.2017-04-27:
+=== 2017-04-27
 
 Fix: Glossary cross references to Forth words that contain a
 backslash, or that are included in code examples, are corrupted.
 
-.2017-03-15:
+=== 2017-03-15
 
 Add exception codes to the manual, by including and filtering the
 corresponding library modules.
 
-.2017-03-13, 2017-12-13:
+=== 2017-03-13, 2017-12-13
 
 NOTE: Milestone: 0.14.0
 
 Add the corresponding English names to words that need them in the
 library (already done in the kernel).
 
-.2017-03-10:
+=== 2017-03-10
 
 NOTE: Milestone: 0.14.0
 
 Add cross references to the original versions of alternative stack
 words, e.g. `-dup`, and alternative control flow words, e.g. `-if`.
 
-.2017-03-04:
+=== 2017-03-04
 
 Update the manual: RAM banks used as far memory, the RAM disk, the
 different configuration in +3DOS...
 
-.2017-02-28:
+=== 2017-02-28
 
 The HTML manual is >1.2 MiB.  Build it also in several linked parts.
 
-.2017-02-28:
+=== 2017-02-28
 
 Section about the AY-3-8912 sound generator, using the description
 from the ZX Spectrum 128 ROM0 disassembly.  Replace the extracts
 included in the glossary with a link to the section.
 
-.2017-02-27:
+=== 2017-02-27
 
 Document 
 <flow.select.fs>,
 <flow.dijktstra.fs>,
 `is`, `[is]`, `<is>`.
 
-.2017-02-27:
+=== 2017-02-27
 
 Markup the credit notices and add them to an annex of the manual.
 
-.2017-02-27:
+=== 2017-02-27
 
 Create <doc/extra/> to holed external useful documents about Forth and
 ZX Spectrum.
 
-.2017-02-24:
+=== 2017-02-24
 
 Add attributes to block quotes. See <sound.48.fs>.
 
-.2017-02-24:
+=== 2017-02-24
 
 Update "Warning:" and "Note:" to Asciidoctor markup "WARNING:" and
 "NOTE:" where appropiate.
 
-.2017-02-21, 2017-03-11:
+=== 2017-02-21, 2017-03-11
 
 Make one single manual, not one for each DOS. The issue about cross
 references of homonymous words has been be solved, but all such links
 need to be updated with the filename.
 
-.2017-02-20:
+=== 2017-02-20
 
 Improve Glosara with a link-only mode, in order to convert words
 mentioned in the main manual to cross references.
 
-.2017-02-17:
+=== 2017-02-17
 
 Include the execution table in the documentation of `interpret-table`.
 
-.2017-02-17:
+=== 2017-02-17
 
 In glossary entries, change "its equivalent code" to "its equivalent
 definition".  The reason is "Definition:" is used as heading in normal
 cases.
 
-.2017-02-15:
+=== 2017-02-15
 
 Remove the documentation of DOS subroutines that is duplicated in its
 corresponding entry constant, and put a note instead.
 
-.2017-01-23:
+=== 2017-01-23
 
 Homogenize and fix the notation about interpretation, compilation and
 execution/run-time semantics. Better yet, use the simpler convention of
 Forth-83.
 
-.2016-08-09, 2017-12-02:
+=== 2016-08-09, 2017-12-02
 
 Change the format of stack notation:
 
@@ -1074,14 +1074,14 @@ Change the format of stack notation:
 xn..x1 --> x#n .. x#1
 ----
 
-.2016-10-24:
+=== 2016-10-24
 
 Common notation for:
 
 - text coordinates: "col row" --> "x y"?
 - graphic coordinates: "x y" --> "gx gy"?
 
-.2016-06-01, 2017-04-17 2017-09-09:
+=== 2016-06-01, 2017-04-17 2017-09-09
 
 Change the stack notation back to classic Forth?:
 
@@ -1090,41 +1090,41 @@ Change the stack notation back to classic Forth?:
 - lfa
 - xtp -> cfaa/cfap
 
-.2016-05-11:
+=== 2016-05-11
 
 Homogenize the stack notation for character/bytes: only _c_.
 
-.2016-04-29, 2016-11-21:
+=== 2016-04-29, 2016-11-21
 
 Homogenize the stack notation for blocks and block lines.
 
 Change _n_ to _u_ for blocks and block lines. Consult the notation used in
 Forth-2012.
 
-.2016-04-28:
+=== 2016-04-28
 
 Homogenize the notation "Run-time" to "Execution".
 
-.2016-04-11:
+=== 2016-04-11
 
 Homogenize the following stack notations:
 
 - double, triple and quadruple numbers (or include all used
   conventions in the documentation).
 
-.2015-07-23:
+=== 2015-07-23
 
 Adapt the markups of Z88 CamelForth to extract the glossary from the
 source.
 
-.2017-11-06:
+=== 2017-11-06
 
 Change notation `"name"` to `_name_` in descriptions.
 
 // DOS {{{1
-== DOS ==
+== DOS
 
-.2017-03-12, 2017-03-13:
+=== 2017-03-12, 2017-03-13
 
 Support block files?
 
@@ -1142,7 +1142,7 @@ In practice, the problems to be solved are bigger than the possible
 benefit on a diskette-based system. Block files seems more useful on a
 hard drive, on IDEDOS or ResiDOS.
 
-.2017-02-13:
+=== 2017-02-13
 
 Decide if lower-level factor words return a _dosior_ or an _ior_.
 
@@ -1156,11 +1156,11 @@ Making the conversion in the upper-level calling words means pushing
 the _dosior_ in the factor, returning to `next`, and using
 `dosior>ior` in the calling word (5 bytes in total).
 
-.2017-02-09:
+=== 2017-02-09
 
 Study if `flush` should be added to `set-drive`.
 
-.2017-02-05:
+=== 2017-02-05
 
 Unify G+DOS `transfer-sector` and TR-DOS `transfer-sectors`. Make
 their behaviour and names identical. Write the +3DOS version too.
@@ -1168,11 +1168,11 @@ their behaviour and names identical. Write the +3DOS version too.
 // G+DOS {{{2
 === G+DOS ===
 
-.2017-12-05:
+=== 2017-12-05
 
 Fix: `cat` crashes the system.
 
-.2017-02-13:
+=== 2017-02-13
 
 Factor this common code to a routine to jump to:
 
@@ -1183,7 +1183,7 @@ Factor this common code to a routine to jump to:
 
 It could be in the kernel, right before `dosior>ior`, and run into it.
 
-.2017-02-13, 2017-03-08:
+=== 2017-02-13, 2017-03-08
 
 Fix: When the current disk is removed before doing `cat`, the
 corresponding exception is thrown. But the system does not recognize
@@ -1195,7 +1195,7 @@ Update: Same problem in BASIC. It seems an issue of G+DOS or the Fuse
 emulator. The disk is recognized after doing a `cat` of the other
 drive. Same problem in BASIC with DISCiPLE and GDOS.
 
-.2017-02-12:
+=== 2017-02-12
 
 Factor the following code, which reads a file header; it's used by two
 words:
@@ -1205,11 +1205,11 @@ words:
     rbegin  lbyte hook, d stap, d incp,  rstep
 ----
 
-.2017-02-12:
+=== 2017-02-12
 
 Rename the UFIA fields. See TR-DOS File Description Area.
 
-.2017-02-08:
+=== 2017-02-08
 
 Make `cat` and family check and use `printing`.
 
@@ -1223,73 +1223,73 @@ Make `cat` and family check and use `printing`.
   \   3 sstr1 c! s" forth?.*" wcat 2 sstr1 c!
 ----
 
-.2017-02-08:
+=== 2017-02-08
 
 Improve `set-drive`: check if there's a disk in the drive.
 
-.2017-01-05:
+=== 2017-01-05
 
 Simplify `!dos,`, `c!dos` and family.
 
-.2016-03-16, 2017-02-16:
+=== 2016-03-16, 2017-02-16
 
 Study what the unused RAM of the Plus D can be useful for.
 
 // TR-DOS {{{2
 === TR-DOS ===
 
-.2017-03-13:
+=== 2017-03-13
 
 Use the 8 free sectors of the system track for 2 additional blocks.
 This requires changes in the fsb2-trd converter.
 
-.2017-03-12:
+=== 2017-03-12
 
 Rename `read-file-descriptor` to `read-fda`.
 Rename `write-file-descriptor` to `write-fda`.
 
-.2017-03-11:
+=== 2017-03-11
 
 Improve `cat`: `read-file-descriptor` reads the system track every
 time. Explore the sector buffer instead.
 
-.2017-03-11:
+=== 2017-03-11
 
 Improve `undelete-file`: `read-file-descriptor` reads the system track every
 time. Explore the sector buffer instead.
 
-.2017-03-10:
+=== 2017-03-10
 
 TR-DOS disk operations can be interrupted with the Break key...  and
 the system returns to BASIC with error "BREAK into program"! There
 must be a way to deactivate this. Study the disassembly.
 
-.2017-03-08:
+=== 2017-03-08
 
 Make `(acat` aware of `printing` to use channel 2 or 3.
 A DOS-indepedent routine will be useful to set the A register.
 
-.2017-02-12:
+=== 2017-02-12
 
 Make the DOS commands independent to `need`.
 
-.2017-02-12:
+=== 2017-02-12
 
 Rewrite `dosior>ior` after G+DOS: Convert the AF register. Make the
 low-level words return it unchanged.
 
-.2017-02-05, 2017-03-11:
+=== 2017-02-05, 2017-03-11
 
 Move the Z80-symbol constants to the assembler word list.
 
 // +3DOS {{{2
 === +3DOS ===
 
-.2017-03-05:
+=== 2017-03-05
 
 Implement a `map-b` word with a custom _disk change_ routine.
 
-.2016-08-14:
+=== 2016-08-14
 
 `set-drive`, `open-disk` and `close-file` work on drive "a".  But when drive
 "b" is used, `close-file` returns ior -1006 (unrecognised disk format). This
@@ -1298,7 +1298,7 @@ is a problem of fsb2's fb2dsk.
 // Uni-DOS {{{2
 === Uni-DOS ===
 
-.2017-03-13:
+=== 2017-03-13
 
 The G+DOS version runs on Uni-DOS.
 
@@ -1311,13 +1311,13 @@ Notes:
 - `file>` works.
 
 // Errors {{{1
-== Errors ==
+== Errors
 
-.2017-05-05:
+=== 2017-05-05
 
 Use term "throw code" instead of "exception code"?
 
-.2016-11-27:
+=== 2016-11-27
 
 Rename?:
 
@@ -1325,12 +1325,12 @@ Rename?:
 - `warn-throw` to `error-warn`
 - `warn.message` to `message-warn`
 
-.2016-04-25:
+=== 2016-04-25
 
 Idea: Add `where` to the default exception message. In order to save space,
 `where` should be in the library and patch itself into the default message.
 
-.2015-09-20:
+=== 2015-09-20
 
 Idea:
 ____
@@ -1353,48 +1353,48 @@ Note: To convert an exception code in the range -257 to -511 to its
 corresponding DOS error code, use: 255 AND
 ____
 
-.2015-10-18:
+=== 2015-10-18
 
 `.warning`
 
 // Files {{{1
-== Files ==
+== Files
 
-.2016-03-02:
+=== 2016-03-02
 
 Adapt all file words to standard _ior_; remove _f n_.
 
 2016-04-09: already done?
 
-.2015-09-18:
+=== 2015-09-18
 
 New: `.files` (from Pygmy Forth).
 
 // Games {{{1
-== Games ==
+== Games
 
-.2016-12-27, 2017-01-13:
+=== 2016-12-27, 2017-01-13
 
 Extract the games, make them independent projects?
 
-.2016-05-13, 2017-01-13, 2017-05-08:
+=== 2016-05-13, 2017-01-13, 2017-05-08
 
 Convert the sample games to .fs.  and load them with `load-program`.
 This will save several blocks of source.
 
 // Graphics {{{1
-== Graphics ==
+== Graphics
 
-.2018-01-03:
+=== 2018-01-03
 
 Make `xy>gxy`, `x>gx` and `y>gy` compatible with 42-cpl and 64-cpl
 modes. Or add prefix "mode-32-" and write specific variants.
 
-.2017-05-13:
+=== 2017-05-13
 
 Rewrite a faster `gxy>attra` in Z80. Also `gxy>attr`.
 
-.2017-05-13:
+=== 2017-05-13
 
 From BBL:
 
@@ -1406,7 +1406,7 @@ circe ( x y radius color -- )
 fill-shape ( x y fill-color boundary-color -- )
 ----
 
-.2017-05-12:
+=== 2017-05-12
 
 Use names "-box" instead of "-rectangle"?
 
@@ -1414,7 +1414,7 @@ Use names "-box" instead of "-rectangle"?
 - A set to manipulate the contents of boxes, with caracter resolution.
   This set can be reused by the text windows.
 
-.2017-05-12:
+=== 2017-05-12
 
 From HARTFORTH (a Forth-79 compiler for TRS-80, by A.M. Graham, 1983):
 
@@ -1438,38 +1438,38 @@ BOX             x1 y1 x2 y2 ->       Draw a rectangular box, top left corner
                                    at x1,y1; bottom right corner at x2,y2.
 ....
 
-.2017-04-20:
+=== 2017-04-20
 
 Rewrite in Z80 the low-level words of <graphics.coordinates.fs>.
 
-.2017-03-29:
+=== 2017-03-29
 
 Reorganize relation between `slow-gxy>scra_`, `gxy>scra_` and
 `fast-gxy>scra_`. Remove `fast-gxy>scra_` and the deferred
 `gxy>scra_`, then rename `slow-gxy>scra_` to `gxy>scra_`.
 
-.2017-03-28:
+=== 2017-03-28
 
 Rewrite `set-flash` and `set-bright` in Z80 and use any non-zero
 parameter as _true_.
 
-.2017-03-19:
+=== 2017-03-19
 
 NOTE: Milestone: 0.14.0
 
 Use the alternative version of `xy>scra_`, which does not use the BC
 register.
 
-.2017-02-12:
+=== 2017-02-12
 
 Rename `border` to `set-border` and add `get-border`.
 
-.2017-02-08:
+=== 2017-02-08
 
 Make `circle-pixel` throw an error by default. It can not be a
 deferred word, because it must return the address of a routine.
 
-.2017-02-06:
+=== 2017-02-06
 
 Alternative method to set paper colors:
 
@@ -1488,28 +1488,28 @@ code on-blue  ( b1 -- b2 )
   h pop, h a ld, blue papery add#, pusha jp,  end-code
 ----
 
-.2017-02-04, 2017-05-21:
+=== 2017-02-04, 2017-05-21
 
 NOTE: Milestone: 0.14.0
 
 Improve the documentation about the usage of UDG codes greater than
 255.  `emit-udg` admits them.
 
-.2017-02-02:
+=== 2017-02-02
 
 Test the new version of `(cursor-addr)` and rename it to `(xy>address`
 or similar, and so its family. Be consistent with the planned names to
 get attribute addresses from cursor and graphic coordinates.
 
-.2017-02-02:
+=== 2017-02-02
 
 Fix `g-emit-routine`.
 
-.2017-02-01:
+=== 2017-02-01
 
 Finish `rdraw`.
 
-.2017-01-22, 2017-01-24, 2017-03-14:
+=== 2017-01-22, 2017-01-24, 2017-03-14
 
 NOTE: Milestone: 0.14.0
 
@@ -1521,7 +1521,7 @@ b)` and `gxy>attr ( x y -- b)`, but the name notation used can not be
 extended to the store variants. Instead, `xy>attr c!` and `gxy>attr
 c!` can be used.
 
-.2017-01-13:
+=== 2017-01-13
 
 Improve `ocr`: Return a flag apart from the code, in order to make it possible
 to recognize character zero:
@@ -1536,31 +1536,31 @@ Or write a variant:
   \ ocr?  ( col row -- c true | false )
 ----
 
-.2017-01-09, 2017-02-04:
+=== 2017-01-09, 2017-02-04
 
 Add `.udg"` as a fast way to print strings of UDG (0 .. 255).
 
-.2017-01-09, 2017-03-17:
+=== 2017-01-09, 2017-03-17
 
 Finish `udg-block`, combining it with the new `grid`.
 
-.2016-12-26:
+=== 2016-12-26
 
 Factor `adraw176` to write `aline176`, which uses `set-pixel` and is faster.
 Write a similar alternative to `rdraw`, `rline`.
 
-.2016-12-02,2017-04-20:
+=== 2016-12-02,2017-04-20
 
 Rewrite in Z80 the low-level words of <display.attributes.fs>.
 
-.2015-09-05:
+=== 2015-09-05
 
 Name for graphic fill: `flood`.
 
 // Keyboard {{{1
-== Keyboard ==
+== Keyboard
 
-.2017-12-13:
+=== 2017-12-13
 
 From CHForth:
 
@@ -1574,41 +1574,41 @@ STOP?              "stop-question"                         EXTRA
     was pressed.
 ----
 
-.2016-12-26:
+=== 2016-12-26
 
 Remove `discard-key`? It does exactly the same as `key drop`, but faster, and
 it uses only two bytes of data space (for `push ix`).
 
-.2016-12-26:
+=== 2016-12-26
 
 Test `break?`.
 
-.2016-11-25:
+=== 2016-11-25
 
 `akey` for `accept`, after SwiftForth.
 
-.2015-06-30:
+=== 2015-06-30
 
 New: command history, stored in the names bank.
 
-.2015-06-07:
+=== 2015-06-07
 
 Change: move key to the blocks, as `mode-key` or similar, and use a
 simpler `key` (`akey` from Afera).
 
-.2015-06-30:
+=== 2015-06-30
 
 Change: modify `expect` after Spectrum Forth-83.
 
 // Kernel {{{1
-== Kernel ==
+== Kernel
 
-.2017-12-07:
+=== 2017-12-07
 
 Idea: a word between `warm` and `cold`: do `warm` and also clear the
 dictionary.
 
-.2017-12-07, 2017-12-08:
+=== 2017-12-07, 2017-12-08
 
 Move the default contents of `farlimit` and `far-banks`, and the
 configuration of RAM banks on +3DOS, which are hardcoded in `cold`, to
@@ -1616,23 +1616,23 @@ the parameter area. When these values are changed by the application,
 probably the new values should be preserved by `cold`. Therefore the
 application should be able to configure also the defaults.
 
-.2017-05-09:
+=== 2017-05-09
 
 `0= ?exit` is used twice in the kernel: in `?(` and `save-buffers`. 4
 bytes could be saved by using `0exit` instead, which is in the
 library. But `0exit` needs 8 bytes. 2 more instances of `0= ?exit`
 would be needed to compensate.
 
-.2017-05-09:
+=== 2017-05-09
 
 Convert `fetchhl` to `jpfetchhl,`? The address is used only once, this
 way.
 
-.2016-10-27:
+=== 2016-10-27
 
 Use `_jump` macros at the end of `umax`, `umin`, `dabs`, `abs`, etc.
 
-.2016-04-24, 2017-05-06, 2017-12-09, 2018-01-03:
+=== 2016-04-24, 2017-05-06, 2017-12-09, 2018-01-03
 
 Words that can be moved to the library: `[defined]`, `[undefined]`,
 `umin`, `umax`, `char+`, `char-`...
@@ -1640,14 +1640,14 @@ Words that can be moved to the library: `[defined]`, `[undefined]`,
 Study how to move `line>string` and `undefined?` to the library.  They
 are not used in the kernel, but they are needed by the `need` utility.
 
-.2016-05-06:
+=== 2016-05-06
 
 Remove the routine `compare_de_hl_signed`, if possible.
 
 // Makefile {{{1
-== Makefile ==
+== Makefile
 
-.2017-02-14:
+=== 2017-02-14
 
 Fix:
 
@@ -1659,15 +1659,15 @@ This does not happen doing `make clean;make all`: the next `make all`
 does nothing, as expected.
 
 // Maths {{{1
-== Maths ==
+== Maths
 
-.2018-01-04:
+=== 2018-01-04
 
 NOTE: Milestone: 0.14.0
 
 Make `2*` standard.
 
-.2017-12-14:
+=== 2017-12-14
 
 From CHForth's <MISCUTIL.FRT>:
 
@@ -1685,35 +1685,35 @@ From CHForth's <MISCUTIL.FRT>:
         loop ;
 ----
 
-.2017-07-15, 2017-11-26:
+=== 2017-07-15, 2017-11-26
 
 Rename `polarity` `sgn`? First check which is the most common name.
 `sgn` is used by Forth Foundation Library in its config file, and by
 Gforth.
 
-.2017-05-05:
+=== 2017-05-05
 
 Convert `?` to code and make it run into `.`. This will save some
 bytes.
 
-.2017-05-05:
+=== 2017-05-05
 
 Convert `base.` into a complete definer, in order to make it more
 versatile. Then document it.
 
-.2017-05-05:
+=== 2017-05-05
 
 Finish `crshift`.
 
-.2017-05-05:
+=== 2017-05-05
 
 Fix `dsqrt`.
 
-.2017-03-29:
+=== 2017-03-29
 
 Finish `crshift`.
 
-.2017-03-29:
+=== 2017-03-29
 
 Variant of `+under`, from PFE's `(under+)`:
 
@@ -1721,68 +1721,68 @@ Variant of `+under`, from PFE's `(under+)`:
 : +under ( n1 n2 -- n1+n2 n2 ) tuck + swap ;
 ----
 
-.2017-03-19:
+=== 2017-03-19
 
 Gforth `s>number`, `s>number?`, `s>unumber?`.
 
-.2017-03-17, 2017-05-11:
+=== 2017-03-17, 2017-05-11
 
 Write `negate! ( a -- )` and `invert! ( a -- )`, in Z80.
 
-.2017-03-16:
+=== 2017-03-16
 
 Document the specifications of `rnd`.
 
-.2017-03-16:
+=== 2017-03-16
 
 Share a common random seed. Now `fast-rnd` uses the OS single-cell
 variable, while `rnd` uses a Forth double-cell variable.
 
-.2017-03-16:
+=== 2017-03-16
 
 NOTE: Milestone: 0.14.0
 
 Add `c+`, `c-` for byte calculations. Useful for screen increments.
 
-.2017-02-27:
+=== 2017-02-27
 
 Rewrite `between` in Z80, just to prepare the parameters and jump into
 `within`? Benchmark.
 
-.2017-02-20:
+=== 2017-02-20
 
 Rewrite in Z80: `u<=`, `u>=`, `<=`, `>=`, `0>=`, `0<=`.
 
-.2017-02-20:
+=== 2017-02-20
 
 Write `0min`.
 
-.2017-01-24:
+=== 2017-01-24
 
 Rewrite `?shift` in Z80.
 
-.2016-12-30:
+=== 2016-12-30
 
 Rewrite `du<` in Z80.
 
-.2016-12-30, 2017-04-20:
+=== 2016-12-30, 2017-04-20
 
 Remove module <math.number.prefix.fs>, unless the standard prefixes
 are made optional in the kernel.
 
-.2016-12-28:
+=== 2016-12-28
 
 ----
 : ?ifelse  ( x1 x2 f -- x1 | x2 )  if  drop  else  nip  then  ;
 : ifelse  ( x1 x2 f -- x1 | x2 )  rot ?ifelse  ;
 ----
 
-.2016-12-27, 2017-02-04:
+=== 2016-12-27, 2017-02-04
 
 If `base` were not a user variable, `binary`, `hex` and `decimal`
 would be smaller in Z80 than in Forth.
 
-.2015-07-23, 2017-01-26:
+=== 2015-07-23, 2017-01-26
 
 Idea: 2 more bytes for `base`, to be used as save-restore space.
 
@@ -1802,7 +1802,7 @@ Use this to factor `dec.` and write `decu.` or `udec.` (useful in
 
 `switch` is taken by a control flow structure.
 
-.2015-09-12:
+=== 2015-09-12
 
 ....
 
@@ -1816,7 +1816,7 @@ ROTATE         n1 n2 -- n3
   \ B.  Uncontrolled Reference Words).
 ....
 
-.2016-05-31, 2016-08-05, 2017-02-04, 2017-12-12:
+=== 2016-05-31, 2016-08-05, 2017-02-04, 2017-12-12
 
 The idiom `-1 =` is used twice in the kernel. It could be defined this way:
 
@@ -1922,40 +1922,40 @@ the code would be a bit faster.
 
 And an alias `true=` could be defined as well.
 
-.2016-05-07:
+=== 2016-05-07
 
 Implement 2-cell operators from Spectrum Forth-83. Most of them are written in
 Z80.
 
-.2016-05-01:
+=== 2016-05-01
 
 Change the order of the parameters of `%` and `u%`, after _Starting Forth_ pp
 103 .. 105.
 
-.2016-04-27:
+=== 2016-04-27
 
 Adapt `d>q`, `q>d`, `s>q`, `q+`, `q-`, `udm*` from Pygmy, in module
 "math.operators.4-cell.fs".
 
-.2016-04-18:
+=== 2016-04-18
 
 Modify `interpret` to be patched by a floating-point implementation in order
 to recognize floating-point numbers.
 
-.2016-04-18:
+=== 2016-04-18
 
 Make `number?` deferred, in order to add floating-point support.
 
-.2016-04-17:
+=== 2016-04-17
 
 `factorial`, from Forth-2012 documentation: examples in `recurse` and
 `repeat`.
 
-.2015-12-24:
+=== 2015-12-24
 
 Fractional arithmetic, Forth Dimensions volume 4-1.
 
-.2016-03-16:
+=== 2016-03-16
 
 Idea to improve `number?`, or to write an optional alternative: Return the
 chars and positions of every point, not only the last one. Convert `dpl` to a
@@ -1974,11 +1974,11 @@ A new variable `#dpl` would hold the number of points.
 // Floating point {{{2
 === Floating point ===
 
-.2016-04-22:
+=== 2016-04-22
 
 Document floating point.
 
-.2016-04-22:
+=== 2016-04-22
 
 Idea: Use the ROM calculator memories (0 .. 5) as floating-point non-recursive
 locals. Problem: some calculator's words use them (eg. `|over`).  They could be
@@ -1988,15 +1988,41 @@ they could be pointed to a frame in the return stack.
 Simpler idea: use the calculator memories them as is, as temporary storage.
 The ROM allocates 6*5 bytes, but 32*5 can be used.
 
-.2016-04-19:
+=== 2016-04-19
 
 Floating-point words `flit`, `fliteral`. From PFE: `fround>s`,
 `ftrunc>s` (being `f>s` a synonym), `1/f`, `f^2`, `f^n`, `f2/`, `f2*`.
 
 // Memory {{{1
-== Memory ==
+== Memory
 
-.2017-12-14:
+=== 2018-01-20
+
+Idea:
+
+----
+\ Copyright Leonard Zettel 1999
+\ This material is released to the public domain without
+\ warranty as to fitness for any purpose.
+\ Use at your own risk.
+
+\ Words to handle a user-created stack as a linked list with nodes of arbitrary size.
+
+: n! ( n1 .. nn addr n --) \ Store n1 to nn in consecutive cells
+                           \ starting at addr.
+  CELLS OVER + SWAP DO I ! 1 CELLS +LOOP ;
+
+: n@ ( addr n -- n1 .. nn) \ Fetch n consecutive values starting at
+                           \ addr + (wordsize)*(n-1) & leave them
+                           \ on the stack.
+  1- CELLS OVER + DO I @ -1 CELLS +LOOP ;
+----
+
+`n!` and `n@` already exist in the library, but the order of the values is
+reversed. They could be renamed `-n!` and `-n@`.
+
+
+=== 2017-12-14
 
 Idea from Walter Elehew's L.O.V.E. Forth, 1991:
 
@@ -2027,27 +2053,27 @@ ____
 L.O.V.E. Forth runs on DOS using 5 segments. See its <SEGMENT.DOC> for
 details. 
 
-.2017-04-09:
+=== 2017-04-09
 
 Improve `(heap-in` and `(heap-out` to preserve the current bank
 instead of restoring the default one.
 
-.2017-03-14:
+=== 2017-03-14
 
 `huge-banks` for 256 .. 1024 KiB models. A system analougous to
 `far-banks`.
 
-.2017-03-02:
+=== 2017-03-02
 
 Implement the proposed registers from _Updating the Forth Virtual
 Machine_, by Pelc, Euroforth 2008. Compare with the current
 implementation of the A register, from Z88 CamelForth.
 
-.2017-02-25:
+=== 2017-02-25
 
 Add `get-far-banks`, `set-far-banks`.
 
-.2017-02-20, 2017-12-12:
+=== 2017-02-20, 2017-12-12
 
 Idea to support memory larger than 128 KiB, provided Pentagon and
 Scorpion:
@@ -2061,19 +2087,19 @@ addresses... `farfar-banks`, `vfar-banks`, `32far-banks`.
 Using several switchable configurations of `far-banks` seems easier,
 though.
 
-.2017-01-26:
+=== 2017-01-26
 
 NOTE: Milestone: 0.14.0
 
 Rewrite `exchange` and `!exchange` in Z80.
 
-.2017-01-24:
+=== 2017-01-24
 
 ----
 : /pad  ( -- len )  limit @ pad -  ;
 ----
 
-.2016-11-15:
+=== 2016-11-15
 
 Write far-memory versions of some of the following words from the
 <memory.MISC.fs> module:
@@ -2088,25 +2114,25 @@ Write far-memory versions of some of the following words from the
   \ n, nn, n@ nn@ n! nn!
 ----
 
-.2016-11-13:
+=== 2016-11-13
 
 NOTE: Milestone: 0.14.0
 
 Remove `get-default-bank` and `set-default-bank`.
 
 // Misc {{{1
-== Misc ==
+== Misc
 
-.2016-05-18:
+=== 2016-05-18
 
 Factor `new-needed-word  2dup undefined?`.
 
-.2016-04-16, 2017-03-14:
+=== 2016-04-16, 2017-03-14
 
 Write `behead  ( "name" -- )`. DX-Forth uses `behead ( "name1" "name2" -- )`.
 `hidden  ( nt -- )` is already in the kernel.
 
-.2016-11-12:
+=== 2016-11-12
 
 Ideas from
 http://www.bedroomlan.org/hardware/cft/book/forth-programming-d2-reference[CFT
@@ -2160,7 +2186,7 @@ clock.
 
 ....
 
-.2015-06-10, 2015-09-22, 2017-05-07:
+=== 2015-06-10, 2015-09-22, 2017-05-07
 
 Add a word to do `terminal` and init the keyboard and `tib`, similar
 to the following word from Spectrum Forth-83, which uses it in `cold`
@@ -2173,9 +2199,9 @@ and `query`:
 ----
 
 // Multitasking {{{1
-== Multitasking ==
+== Multitasking
 
-.2017-01-28:
+=== 2017-01-28
 
 Make the following environment question depend on the current values,
 which can change when multitasking is active:
@@ -2188,59 +2214,59 @@ $2A +origin @ constant stack-cells ( -- n )
     \ Maximum size of the data stack, in cells.
 ----
 
-.2017-01-19:
+=== 2017-01-19
 
 Study the way v.Forth manages the interrupts and adapt it.
 
 // Library {{{1
-== Library ==
+== Library
 
-.2017-03-28, 2017-09-09:
+=== 2017-03-28, 2017-09-09
 
 Move words from <chars.fs> to <strings.MISC.fs>?
 
-.2017-02-22:
+=== 2017-02-22
 
 Compact and document the module <math.floating_point.rom.fs>.
 
-.2017-02-21:
+=== 2017-02-21
 
 Set `first-locatable` to 1 by default and review the block headers of
 the `need` tool. This way, any non-library disk can be used in drive 0
 without modifying `first-locatable`.
 
-.2017-02-20:
+=== 2017-02-20
 
 Don't include the new block 0 files into the old disks (games, tests,
 benchmarks) that included the library at the start.
 
-.2017-01-31:
+=== 2017-01-31
 
 Words that could be moved to the library, if the `need` tool didn't use them:
 `2over`, `line>string`.
 
 // Loading {{{1
-== Loading ==
+== Loading
 
-.2017-02-12:
+=== 2017-02-12
 
 Idea for a faster version of `(locate)`: Load only the first sector of
 the blocks, and do the search directly in the buffer, without the
 `line>string` step. It will be faster, but it's lower level and may
 give problems with recursion.
 
-.2017-01-06, 2017-05-08:
+=== 2017-01-06, 2017-05-08
 
 Improve `load-program`: save and restore the source, in order to
 continue loading after `load-program`. This way, several programs can
 be loaded this way.
 
-.2016-12-30:
+=== 2016-12-30
 
 Add `//` to ignore the rest of the source, as a shorter alternative to `exit`
 to exit the current block.
 
-.2016-12-29, 2017-03-15:
+=== 2016-12-29, 2017-03-15
 
 NOTE: Milestone: 0.14.0
 
@@ -2253,12 +2279,12 @@ but exceptions #-16 (attempt to use zero-length string as a name) or
 Replace `?dup 0= if drop false exit then` with `?dup 0= #-16 ?throw`.
 This change saves 5 bytes.
 
-.2016-12-03:
+=== 2016-12-03
 
 Make `need-here` unnecessary: Always check the current block, just in case.
 Many needed words are in the same block.
 
-.2016-11-22, 2016-12-31, 2017-02-16, 2017-03-07:
+=== 2016-11-22, 2016-12-31, 2017-02-16, 2017-03-07
 
 Write `needs` to do multiple `need` on one line of a block,
 saving space
@@ -2290,14 +2316,14 @@ Problem: `need(` should use `refill`, in case the list is splitted
 between two blocks of the program, where no block headers are
 used.
 
-.2016-11-19, 2016-12-29:
+=== 2016-11-19, 2016-12-29
 
 NOTE: Milestone: 0.15.0
 
 Finish the alternative version of `indexer` to index the blocks on the fly as
 they are being searched by `need` and family, i.e., not in advance.
 
-.2016-05-18, 2017-02-22:
+=== 2016-05-18, 2017-02-22
 
 Improve `need` to make several index lines possible, by making `(` executable:
 
@@ -2311,7 +2337,7 @@ See for example <chars.fs>, <keyboard.MISC.fs>.
 Problem: this would force changes in fsb and fsb2.
 
 // Local variables {{{1
-== Local variables ==
+== Local variables
 
 Examples from Forth Dimensions:
 
@@ -2335,17 +2361,17 @@ Examples from Forth Dimensions:
 // Forth modules {{{1
 == Forth modules
 
-.2017-01-05:
+=== 2017-01-05
 
 `>>link far!` is used in `forget-transient`, but it's what `unlink-internal`
 does. Factor and reuse.
 
-.2016-12-29:
+=== 2016-12-29
 
 Improve `transient` to actually unlink all the transient words?  This means
 backuping and restoring the latest definition of all word lists...
 
-.2016-12-07:
+=== 2016-12-07
 
 ....
 Newsgroups: comp.lang.forth
@@ -2370,33 +2396,33 @@ enabled the user to create modules that showed only words that are relevant
 for the end user.
 
 // Names {{{1
-== Names ==
+== Names
 
-.2017-12-10:
+=== 2017-12-10
 
 Write `?name-too-long` and use it in `header,`?
 
-.2017-05-12:
+=== 2017-05-12
 
 Rename `flip` to `swab`? `swab` was the name used by LaForth, c. 1980.
 Its origin seems to be a PDP-11 mnemonic for "swap byte".
 
-.2017-05-10:
+=== 2017-05-10
 
 Find better names for `0.r` and `0d.r`.
 
-.2017-05-10:
+=== 2017-05-10
 
 Rename `c!exchange` to `c!@`?
 
 Rename `!exchange` to `!@`?
 
-.2017-02-24:
+=== 2017-02-24
 
 Rename `(0-1-8-color.` and `(0-9-color.` after the current convention
 for machine code routines.
 
-.2017-02-17, 2017-12-10:
+=== 2017-02-17, 2017-12-10
 
 NOTE: Milestone: 0.14.0
 
@@ -2404,12 +2430,12 @@ Rename `?name-too-short` to `?empty-name`, or `?no-name`.
 
 Or remove it and use `dup 0= -16 ?throw` in `input-stream-header`.
 
-.2017-01-02:
+=== 2017-01-02
 
 Improve definition names in the `ocr` module: Use "font" instead of
 "charset".
 
-.2016-12-31, 2017-01-05, 2017-03-15:
+=== 2016-12-31, 2017-01-05, 2017-03-15
 
 NOTE: Milestone: 0.14.0
 
@@ -2422,31 +2448,31 @@ Anyway, this avoids the need to use backslash-delimited index block
 lines in the library.
 
 // Optimizations {{{1
-== Optimizations ==
+== Optimizations
 
 // Parsing {{{1
-== Parsing ==
+== Parsing
 
-.2016-05-13, 2017-02-22, 2017-05-08:
+=== 2016-05-13, 2017-02-22, 2017-05-08
 
 Improve `?(` with `refill`, to cross block boundaries?  This would be
 needed  for `load-program`.
 
-.2016-06-01, 2017-05-08:
+=== 2016-06-01, 2017-05-08
 
 When loading a program with `load-program`, make `(` behave like in the
 Forth-2012 FILE word set.
 
-.2015-10-15:
+=== 2015-10-15
 
 NOTE: Milestone: 0.14.0
 
 Adapt from Gforth: `noname`, analogous to `nextname`.
 
 // Program development {{{1
-== Program development ==
+== Program development
 
-.2017-02-25, 2017-05-10:
+=== 2017-02-25, 2017-05-10
 
 Move words that programs don't need (e.g. `greeting`, `.unused`,
 `version`...) to the top of the kernel definitions. Then write a word
@@ -2454,7 +2480,7 @@ to remove all of them, including itself, and sets the new values of
 the pointers. This way, the program can get rid of all of them at the
 start of the compilation and get some extra memory.
 
-.2017-02-25, 2017-11-29:
+=== 2017-02-25, 2017-11-29
 
 Options to make it easier to share code with other systems:
 
@@ -2464,12 +2490,12 @@ Options to make it easier to share code with other systems:
   (like Gforth).
 
 // Project tree {{{1
-== Project tree ==
+== Project tree
 
 // Stacks {{{1
-== Stacks ==
+== Stacks
 
-.2017-05-12:
+=== 2017-05-12
  
 From LaForth:
 
@@ -2485,7 +2511,7 @@ From LaForth:
 ----
 
 
-.2017-03-29, 2017-05-10:
+=== 2017-03-29, 2017-05-10
 
 Use the code of `rp@` as storage of the pointer. This save one cell
 from the parameter area of the kernel. Or use any `ld
@@ -2495,15 +2521,15 @@ the 10 saved T-cycles. `>r` is a good candidate. Better yet, the
 
 But this change would be incompatible with multitasking.
 
-.2017-03-21:
+=== 2017-03-21
 
 Add `4dup`.
 
-.2017-03-21:
+=== 2017-03-21
 
 Add `+dup` and other missing members of the alternative sets.
 
-.2017-01-20:
+=== 2017-01-20
 
 NOTE: Milestone: 0.15.0
 
@@ -2521,7 +2547,7 @@ Newsgroups: comp.lang.forth
 Date: Tue, 04 Oct 2016 20:46:33 +0200
 ....
 
-.2017-01-20:
+=== 2017-01-20
 
 Implement this, as a simpler alternative to `xstack`:
 
@@ -2545,7 +2571,7 @@ Newsgroups: comp.lang.forth
 Date: Tue, 04 Oct 2016 20:46:33 +0200
 ....
 
-.2017-01-07:
+=== 2017-01-07
 
 Notes about nested `need`:
 
@@ -2554,25 +2580,25 @@ cells for data, `need` uses 2 cells for the string, the rest must be used for
 calls.
 
 // Sound {{{1
-== Sound ==
+== Sound
 
-.2017-05-05:
+=== 2017-05-05
 
 Include the Note Frequencies table into the manual.
 
-.2017-01-24:
+=== 2017-01-24
 
 Convert `middle-scale` to mHz (milihertzs) for greater accuracy and
 write `mhz>bleep`.
 
-.2016-10-10:
+=== 2016-10-10
 
 Finish the conversion of 128K sound explosions. More details in the source.
 
 // Strings {{{1
-== Strings ==
+== Strings
 
-.2017-12-27:
+=== 2017-12-27
 
 Move the `stringer` buffer to the top of the dictionary, making it
 possible to to resize it at the start of the application, without
@@ -2580,7 +2606,7 @@ wasting its original space.
 
 Problem: `default-stringer` would not be reliable.
 
-.2017-12-14:
+=== 2017-12-14
 
 From CHForth's <MAKEHELP.FRT>:
 
@@ -2609,22 +2635,22 @@ From CHForth's <MAKEHELP.FRT>:
 ----
 
 
-.2017-12-02:
+=== 2017-12-02
 
 Rename `sconstants` `csconstants`.
 
-.2017-11-19:
+=== 2017-11-19
 
 Improve `sconstant` or write a variant to store long strings: store
 only the text, not the length, and create a `2constant` to return
 address and length.
 
-.2017-11-08:
+=== 2017-11-08
 
 Compare the stringer to its latest version in Galope, for possible
 improvements.
 
-.2017-05-04:
+=== 2017-05-04
 
 Add `shold` (from DX-Forth):
 
@@ -2636,42 +2662,42 @@ Add string c-addr u to the beginning of the pictured numeric
 output string.
 ____
 
-.2017-04-17:
+=== 2017-04-17
 
 It seems the only way to move `stringer` to `limit` (making it easier
 to reconfigure by the program, without wasting its original space) is
 to modify `find-name-from` to page in the default bank before fetching
 every character...
 
-.2017-04-17:
+=== 2017-04-17
 
 Make `allocate-stringer` return an _ior_.
 
-.2017-01-27:
+=== 2017-01-27
 
 Generalize `parse-esc-string` and `(parse-esc-string)` to accept a
 delimiter character, like `parse`. Then implement `.\(`.
 
-.2017-01-22:
+=== 2017-01-22
 
 Improve `substitute` and `replaces` with a configurable search order, similar
 to that implemented for escaped strings.
 
-.2017-01-07:
+=== 2017-01-07
 
 Rename `char>string` or write after `c>bstring`, which
 does the same but in `pad`.
 
-.2016-12-23:
+=== 2016-12-23
 
 Document `s\"` and `.\"`.
 
-.2016-12-16:
+=== 2016-12-16
 
 Remove bounds checking from `}` (Noble's arrays)
 and keep a copy of it as `?}`, for debugging.
 
-.2016-12-07:
+=== 2016-12-07
 
 NOTE: Milestone: 0.14.0
 
@@ -2689,20 +2715,20 @@ area)? Another option: "stringer".
 `X>padbstr` :: temporary binary string in `pad`
 `X>padzone` :: temporary binary string in `pad`
 
-.2016-11-19:
+=== 2016-11-19
 
 Study the strings stack included in Spectrum Forth-83
 (file <objects>).
 
-.2015-09-12:
+=== 2015-09-12
 
 Implement a configurable case mode for `search` and `compare`? See how
 Z88 CamelForth does it. Also DX-Forth has this feature.
 
 // Tape {{{1
-== Tape ==
+== Tape
 
-.2017-02-08, 2017-03-06, 2017-03-22:
+=== 2017-02-08, 2017-03-06, 2017-03-22
 
 Fix `tape-file>`: when the file length attribute is not zero (zero
 means undefined) or the real file lenght to be loaded, the ROM routine
@@ -2713,33 +2739,33 @@ no lines).
 The simplest solution seems to remove the parameter and always use 0
 internally.
 
-.2016-04-11:
+=== 2016-04-11
 
 Make the tape words return a standard _ior_.
 
 // Time {{{1
-== Time ==
+== Time
 
-.2017-11-28:
+=== 2017-11-28
 
 Calculate `ticks/second` after the lina Forth system.
 
-.2017-11-28:
+=== 2017-11-28
 
 Convert `get-time` to `uptime`.  Then rewrite `set-time` after
 `set-date` and rewrite `get-time` to make a calculation from the set
 time and the current ticks count...
 
-.2017-05-12:
+=== 2017-05-12
 
 Words to adapt from LaForth (chapter 9 of the documentation): `cdn`,
 `dmy`, `wends`, `wdays`.
 
-.2017-03-29, 2017-11-28:
+=== 2017-03-29, 2017-11-28
 
 Fix: `0 ticks-pause` (Z80 version) does `$FFFF ticks-pause`.
 
-.2017-02-13, 2017-03-17:
+=== 2017-02-13, 2017-03-17
 
 Try simpler alternative to `ms`, based on this loop found in the Plus
 D disassembly:
@@ -2754,14 +2780,14 @@ rest_1:
 
 But it needs to be adjusted slightly depending on the machine.
 
-.2017-12-04:
+=== 2017-12-04
 
 NOTE: Milestone: 0.14.0
 
 Deprecate `bench{`, `}bench` and family, or replace with `ticks`,
 `elapsed`, `timer` and family.
 
-.2017-12-04:
+=== 2017-12-04
 
 NOTE: Milestone: 0.14.0
 
@@ -2772,90 +2798,90 @@ DECIMAL TICKS DNEGATE 1000 MS TICKS D+ DROP
    CONSTANT TICKS-PER-SECOND                                   
 ----
 
-.2016-12-20:
+=== 2016-12-20
 
 Use `chars` in offsets of `get-date` and `set-date`.
 
-.2015-12-14:
+=== 2015-12-14
 
 Update the date with interrupts.
 
-.2016-11-18, 2016-11-19:
+=== 2016-11-18, 2016-11-19
 
 `utime`, `cputime`? (See Gforth)
 
 // Tools {{{1
-== Tools ==
+== Tools
 
-.2018-01-04:
+=== 2018-01-04
 
 Improve `see-colon-body`: make recursion work also with non-colon
 words.
 
-.2017-12-06:
+=== 2017-12-06
 
 Improve `where`: display also the numbers of line and column.
 
-.2017-01-06:
+=== 2017-01-06
 
 Study the editor of Pygmy Forth.
 
-.2016-11-28:
+=== 2016-11-28
 
 Improve `see`: decode `does>`.
 
-.2016-11-26, 2017-02-06:
+=== 2016-11-26, 2017-02-06
 
 Rename `.unused` to `.free` (if other info is added).
 
-.2016-11-25:
+=== 2016-11-25
 
 NOTE: Milestone: 0.14.0
 
 Write `ed:` after TurboForth.
 
-.2016-11-19:
+=== 2016-11-19
 
 Make `editor` defered, in order to load more than one editor at the same time.
 
 // User variables {{{1
-== User variables ==
+== User variables
 
-.2017-11-27:
+=== 2017-11-27
 
 Add `: #user ( -- n ) udp @ ;`.  `#user` is proposed by Andrew Haley
 in _A multi-tasking wordset for Standard Forth`, EuroForth 2017.
 
-.2016-11-27:
+=== 2016-11-27
 
 Update the user variables that are initialized (`warnings` has been removed,
 but its place is used by `lastblk`, which does not need initialization).
 
-.2016-11-18:
+=== 2016-11-18
 
 Rename `(user)` to `user`? That was the original name in fig-Forth, Forth-79
 and Forth-83. Choose an alternative for the current `user`, defined in the
 library.
 
-.2015-09-13:
+=== 2015-09-13
 
 NOTE: Milestone: 0.14.0
 
 `rp` should be a user variable.
 
-.2015-06-30:
+=== 2015-06-30
 
 Change: compare the user variables with those of Spectrum Forth-83.
 
 
 // Vim support {{{1
-== Vim support ==
+== Vim support
 
-.2017-02-22:
+=== 2017-02-22
 
 Fix coloring of paren comments: make it multiline.
 
-.2017-02-27:
+=== 2017-02-27
 
 Include the mappings of the fsb converter.  Study how Vim can load
 them when the filetype is set in the mode line, not with a specific
