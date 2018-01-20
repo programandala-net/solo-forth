@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712111851
+  \ Last modified: 201801200135
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -115,6 +115,8 @@ create to> ' c! , ' ! , ' 2! ,
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
+  \ See: `!>`, `c!>`, `2!>`.
+  \
   \ }doc
 
   \ ===========================================================
@@ -144,5 +146,7 @@ create to> ' c! , ' ! , ' 2! ,
   \ 2017-05-15: Improve documentation.
   \
   \ 2017-12-11: Fix and improve needing of `to`.
+  \
+  \ 2018-01-20: Improve documentation.
 
   \ vim: filetype=soloforth

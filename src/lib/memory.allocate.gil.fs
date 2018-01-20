@@ -17,7 +17,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ ===========================================================
   \ Credit
@@ -245,7 +245,7 @@ need gil-heap-wordlist gil-heap-wordlist >order
   \ Print the map of the current memory `heap`, in the
   \ implementation based on code written by Javier Gil, whose
   \ words are defined in `gil-heap-wordlist`.
-  \ 
+  \
   \ Occupied chunks are marked with a 'x'; free chunks are
   \ marked with a '-'.
   \
