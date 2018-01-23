@@ -1661,12 +1661,6 @@ does nothing, as expected.
 // Maths {{{1
 == Maths
 
-=== 2018-01-04
-
-NOTE: Milestone: 0.14.0
-
-Make `2*` standard.
-
 === 2017-12-14
 
 From CHForth's <MISCUTIL.FRT>:
@@ -1737,12 +1731,6 @@ Document the specifications of `rnd`.
 
 Share a common random seed. Now `fast-rnd` uses the OS single-cell
 variable, while `rnd` uses a Forth double-cell variable.
-
-=== 2017-03-16
-
-NOTE: Milestone: 0.14.0
-
-Add `c+`, `c-` for byte calculations. Useful for screen increments.
 
 === 2017-02-27
 
@@ -2113,12 +2101,6 @@ Write far-memory versions of some of the following words from the
   \ exchange reserve alloted
   \ n, nn, n@ nn@ n! nn!
 ----
-
-=== 2016-11-13
-
-NOTE: Milestone: 0.14.0
-
-Remove `get-default-bank` and `set-default-bank`.
 
 // Misc {{{1
 == Misc

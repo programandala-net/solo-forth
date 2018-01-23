@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -23,40 +23,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( get-default-bank set-default-bank /bank bank-start )
-
-
-[unneeded] get-default-bank
-
-?\ : get-default-bank ( -- +n ) default-bank# c@ ;
-
-  \ doc{
-  \
-  \ get-default-bank ( -- +n )
-  \
-  \ Get the current default bank _+n_ by fetching the contents
-  \ of `default-bank#`.
-  \
-  \ See: `set-default-bank`, `default-bank`, `bank`,
-  \ `banks`.
-  \
-  \ }doc
-
-[unneeded] set-default-bank
-
-?\ : set-default-bank ( +n -- ) default-bank# c! ;
-
-  \ doc{
-  \
-  \ set-default-bank ( +n -- )
-  \
-  \ Set _+n_ as the default memory bank by modifyng the
-  \ contents of `default-bank#`.
-  \
-  \ See: `get-default-bank`, `default-bank`, `bank`,
-  \ `banks`.
-  \
-  \ }doc
+( /bank bank-start )
 
 [unneeded] /bank ?\ $4000 constant /bank
 
@@ -107,5 +74,8 @@
   \ 2017-02-21: Improve documentation.
   \
   \ 2017-05-11: Move `/bank` and `bank-start` from the kernel.
+  \
+  \ 2018-01-23: Remove `get-default-bank` and
+  \ `set-default-bank`.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201801192058
+; Last modified: 201801232003
 
 include version.z80s
 
@@ -2508,8 +2508,7 @@ push_hl:
 ; the value of the default `bank` paged in at $C000 .. $FFFF.
 ; Its default value is zero.
 ;
-; See: `set-default-bank`, `get-default-bank`, `banks`,
-; `far-banks`.
+; See: `banks`, `far-banks`.
 ;
 ; }doc
 
@@ -8075,7 +8074,7 @@ ram_kib: equ banks*16+(8*(gplusdos and 1))
 ; Page in the default memory `bank`, wich can be configured with
 ; `default-bank#`, at $C000 .. $FFFF.
 ;
-; See: `set-default-bank`, `get-default-bank`, `banks`.
+; See: `banks`.
 ;
 ; }doc
 
