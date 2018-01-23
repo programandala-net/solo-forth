@@ -847,7 +847,7 @@ code cexchange ( ca1 ca2 -- )
   \
   \ ``cexchange`` is written in Z80. An equivalent definition
   \ in Forth is the following:
-  \ 
+  \
   \ ----
   \ : cexchange ( ca1 ca2 -- ) 2dup c@ swap c@ rot c! swap c! ;
   \ ----

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712092301
+  \ Last modified: 201801210203
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,7 +23,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -293,8 +293,7 @@ defer reneed ( "name" -- ) defer needed ( ca len -- )
   \
   \ }doc
 
-: [unneeded] ( "name" -- f )
-  postpone [needed] 0= ; immediate
+: [unneeded] ( "name" -- f ) postpone [needed] 0= ; immediate
 
   \ doc{
   \
@@ -692,5 +691,7 @@ need get-drive
   \ 2017-04-16: Improve documentation.
   \
   \ 2017-12-09: Improve documentation of variables.
+  \
+  \ 2018-01-21: Fix layout of one-liner.
 
   \ vim: filetype=soloforth
