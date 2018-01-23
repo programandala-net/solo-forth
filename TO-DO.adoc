@@ -2221,6 +2221,23 @@ Study the way v.Forth manages the interrupts and adapt it.
 // Library {{{1
 == Library
 
+=== 2018-01-21
+
+Idea:
+
+Rename `[needed]` `needing` and make it non-immediate.
+Write an immediate optional version `[needing]`.
+
+Rename `[unneeded]` `unneeding` and make it non-immediate.  Write an
+immediate optional version `[unneeding]`.
+
+The new names seem better, since `needed` already exists as the
+non-parsing version of `need`.
+
+Some space would be saved in the library sources by using `needing X
+0(` instead of `[unneeded] X ?(`, i.e. with zero-version of the
+conditional comments.
+
 === 2017-03-28, 2017-09-09
 
 Move words from <chars.fs> to <strings.MISC.fs>?

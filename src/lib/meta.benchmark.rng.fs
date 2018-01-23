@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712112236
+  \ Last modified: 201801231606
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -15,7 +15,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -62,10 +62,40 @@
   \ show-rng
   \ ----
 
+( crandom-bench )
+
+need random need crnd need dticks need dtimer
+
+: crandom ( b1 -- b2 ) crnd swap mod ;
+
+  \ Being:
+  \ : random  ( n1 -- n2 ) rnd um* nip ;
+
+: run ( n -- )
+  >r cr
+  dticks r@ 0 ?do i  random drop loop dtimer
+  ." random" cr
+  dticks r@ 0 ?do i crandom drop loop dtimer
+  ." crandom" cr
+  dticks r@ 0 ?do i dup um* nip  drop loop dtimer
+  ." um* nip" cr
+  dticks r> 0 ?do i dup swap mod drop loop dtimer
+  ." swap mod" cr ;
+
+  \ 2018-01-23
+
+  \            ticks
+  \            ---------------------------------
+  \ iterations random   crandom um* nip swap mod
+  \ ---------- -------- ------- ------- --------
+  \         10        0       1       1        1
+  \        100        7       9       3        8
+  \       1000       67      88      27       84
+  \      10000      678     883     276      833
+
 ( random-range-bench )
 
 need rnd need random need dticks need dtimer
-
 
 : random-within0 ( n1 n2 -- n3 ) over - random + ;
 
@@ -1209,8 +1239,7 @@ code mb1-crnd ( -- b )
     \ ld  (seed),a
     \ jp push_a
 
-: mb1-crandom ( n1 -- n2 ) mb1-crnd um* nip ;
-  \ XXX FIXME -- it always return zero
+: mb1-crandom ( n1 -- n2 ) mb1-crnd swap mod ;
 
 need 8b-rng-px-bench need :noname
 
@@ -1221,6 +1250,7 @@ need 8b-rng-px-bench need :noname
 
   \ : mb1-rng-px-bench ( -- )
   \   s" Milos Bazelides 1" ['] mb1-crandom rng-px-bench ;
+  \ XXX OLD
 
 ( mb2-crnd mb2-rng-px-bench )
 
@@ -1255,8 +1285,7 @@ code mb2-crnd ( -- b )
     \ ld  (seed),a
     \ jp push_a
 
-: mb2-crandom ( n1 -- n2 ) mb2-crnd um* nip ;
-  \ XXX FIXME -- it always return zero
+: mb2-crandom ( n1 -- n2 ) mb2-crnd swap mod ;
 
 need 8b-rng-px-bench need :noname
 
@@ -1779,5 +1808,8 @@ need 8b-rng-px-bench need :noname
   \ change in the assembler.
   \
   \ 2017-12-11: Add `random-range-bench`.
+  \
+  \ 2018-01-23: Add `crandom-bench`. Fix `mb1-random` and
+  \ `mb2-random`.
 
   \ vim: filetype=soloforth

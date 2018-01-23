@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712112258
+  \ Last modified: 201801231614
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -16,7 +16,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -178,7 +178,7 @@ code fast-rnd ( -- u )
   \
   \ Return a random number _n3_ from _n1_ (min) to _n2_ (max).
   \
-  \ See: `randow-between`, `random`, `within`.
+  \ See: `random-between`, `random`, `within`.
   \
   \ }doc
 
@@ -194,10 +194,10 @@ code fast-rnd ( -- u )
   \ (max).
   \
   \ See: `random-within`, `random`, `between`.
-  \ 
+  \
   \ }doc
 
-( crnd crandom -1|1 -1..1 randomize randomize0 )
+( crnd -1|1 -1..1 randomize randomize0 )
 
 [unneeded] crnd ?( need os-seed
 
@@ -246,18 +246,7 @@ code crnd ( -- b )
   \
   \ Return a random 8-bit number _b_ (0..255).
   \
-  \ See: `crandom`, `rnd`.
-  \
-  \ }doc
-
-[unneeded] crandom
-?\ need crnd  : crandom ( b1 -- b2 ) crnd um* nip ;
-
-  \ doc{
-  \
-  \ crandom ( b1 -- b2 )
-  \
-  \ Return a random 8-bit number _b2_ in range _0..b1-1_
+  \ See: `rnd`.
   \
   \ }doc
 
@@ -356,7 +345,7 @@ code crnd ( -- b )
   \ 2017-02-17: Update cross references.
   \
   \ 2017-03-02: Fix `crnd` (a bug introduced when the word was
-  \ convernet to the new assembler).
+  \ converted to the new assembler).
   \
   \ 2017-03-16: Compact the code, saving two blocks.  Complete
   \ and improve documentation. Rewrite `fast-rnd` and `crnd`
@@ -366,5 +355,8 @@ code crnd ( -- b )
   \
   \ 2017-12-11: Add `random-within`. Rewrite `random-range` as
   \ `random-between`. Improve needing of `rnd`.
+  \
+  \ 2018-01-23: Fix, benchmark and remove `crandom`, which is
+  \ slower than `random`.  Fix cross reference.
 
   \ vim: filetype=soloforth
