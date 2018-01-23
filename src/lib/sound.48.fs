@@ -3,13 +3,13 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705051713
+  \ Last modified: 201801232130
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ Words related to 48k sound.
+  \ ZX Spectrum 48 sound words.
 
   \ ===========================================================
   \ Author
@@ -496,11 +496,11 @@ need beep>dhz need dhz>bleep
   \
   \ }doc
 
-( laser-gun ambulance )
+( laser-gun-sound ambulance-sound )
 
-[unneeded] laser-gun ?( need assembler
+[unneeded] laser-gun-sound ?( need assembler
 
-code laser-gun ( -- ) b push, 5 b ld#, 0500 h ldp#,
+code laser-gun-sound ( -- ) b push, 5 b ld#, 0500 h ldp#,
   <mark  0001 d ldp#,
          h push, 03B5 call, h pop,  \ ROM beeper
          0010 d ldp#, d subp,  nz? ?jr,
@@ -517,13 +517,13 @@ code laser-gun ( -- ) b push, 5 b ld#, 0500 h ldp#,
   \
   \ laser-gun ( -- )
   \
-  \ Laser gun sound for ZX Spectrum 48K.
+  \ Laser gun sound for ZX Spectrum 48.
   \
   \ }doc
 
-[unneeded] ambulance ?( need assembler
+[unneeded] ambulance-sound ?( need assembler
 
-code ambulance ( n -- )
+code ambulance-sound ( n -- )
 
   d pop, b push, e b ld,
 
@@ -546,7 +546,7 @@ code ambulance ( n -- )
   \
   \ ambulance ( n -- )
   \
-  \ Ambulance sound for ZX Spectrum 48K. Make it _n_ times.
+  \ Ambulance sound for ZX Spectrum 48. Make it _n_ times.
   \
   \ }doc
 
@@ -589,7 +589,7 @@ code white-noise ( u -- )
   \
   \ white-noise ( -- )
   \
-  \ White noise for ZX Spectrum 48K.  _u_ is the duration in
+  \ White noise for ZX Spectrum 48.  _u_ is the duration in
   \ number of sample bytes.
   \
   \ }doc
@@ -638,5 +638,7 @@ code white-noise ( u -- )
   \ 2017-03-13: Improve documentation.
   \
   \ 2017-05-05: Improve documentation.
+  \
+  \ 2018-01-23: Rename all sounds: add suffix "-sound".
 
   \ vim: filetype=soloforth
