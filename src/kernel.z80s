@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201801232003
+; Last modified: 201801241753
 
 include version.z80s
 
@@ -6437,6 +6437,9 @@ c_fetch.hl:
   push hl
   _jp_next
 
+  ; XXX WARNING -- `c_fetch.hl` is used by `cvalue`. The address
+  ; is calculated from the code field of `c@`.
+
 ; ----------------------------------------------
   _colon_header constant_,'constant'
 
@@ -6484,6 +6487,9 @@ fetch.hl:
   ld d,(hl)
   push de
   _jp_next
+
+  ; XXX WARNING -- `fetch.hl` is used by `value`. The address is
+  ; calculated from the code field of `@`.
 
 ; ----------------------------------------------
   _colon_header variable_,'variable'
@@ -15263,6 +15269,9 @@ two_fetch.hl:
   _jp_next      ; 08  2 ; jp (ix)
                 ; -- --
                 ; 84 13 Total
+
+  ; XXX WARNING -- `two_fetch.hl` is used by `2value`. The
+  ; address is calculated from the code field of `2@`.
 
 ; ----------------------------------------------
   _colon_header two_variable_,'2variable'

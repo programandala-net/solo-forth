@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712311731
+  \ Last modified: 201801241751
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -19,7 +19,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -1326,11 +1326,29 @@ variable var1  : variable-bench ( u -- )
   \ 2016-10-14 (1)   1000         6        6        6         7
   \                 10000        57       64       64        73
   \                 65535       371      423      418       476
+  \
+  \ 2018-01-24 (2)   1000        10       11        6         7
+  \                 10000       103      112       61        70
+  \                 65535       677      731      403       458
+  \
+  \ 2018-01-24 (3)   1000         5        7        7         7
+  \                 10000        58       63       61        70
+  \                 65535       378      414      404       458
 
 
   \ Notes:
+  \
   \ (1) Version 0.10.0-pre.79+20161014. The default `value` and
   \ `2value` are aliases of `constant` and `2constant`.
+  \
+  \ (2) Version 0.14.0-pre.422+20180124. `value` and `2value`
+  \ are standard. In order to share `to`, they store a type
+  \ identifier in their headers, which must be skiped in order
+  \ to fetch the actual value. That's why they are much slower
+  \ now.
+  \
+  \ (2) Version 0.14.0-pre.423+20180124. The run-time part of
+  \ `value` and `2value` has been rewriten in Z80.
 
 ( fetch-bench )
 
@@ -3105,5 +3123,7 @@ need bench{ need }bench.
   \ `past?-bench`.
   \
   \ 2017-12-31: Add `0>-bench`.
+  \
+  \ 2018-01-24. Update the results of `value-bench`.
 
   \ vim: filetype=soloforth

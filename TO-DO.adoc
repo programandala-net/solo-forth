@@ -567,18 +567,6 @@ ____
 // Data structures {{{1
 == Data structures
 
-.2017-04-18, 2017-12-10
-
-NOTE: Milestone: 0.14.0
-
-Rewrite the `does>` part of `value` and friends with `;code`, jumping
-into the corresponding code words of the kernel, eg. `@`, `2@`.
-
-=== 2017-03-30
-
-Improve the standard `to`: store an xt in the body of the values and
-execute it.
-
 === 2017-01-18
 
 Write far-memory versions of `avalue`, `2avalue` and `cavalue`.
