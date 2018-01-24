@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201801242008
+; Last modified: 201801242106
 
 include version.z80s
 
@@ -9909,23 +9909,6 @@ parse.end:
 ; }doc
 
 ; ----------------------------------------------
-  _colon_header question_name_too_short_,'?name-too-short'
-
-; doc{
-;
-; ?name-too-short ( ca len -- ) "question-name-too-short"
-;
-; If name _ca len_ is empty, `throw` exception code #-16.
-;
-; See: `header`.
-;
-; }doc
-
-  dw dup_,zero_equals_
-  _question_throw -16 ; attempt to use zero-length string as a name
-  dw exit_
-
-; ----------------------------------------------
   _colon_header input_stream_header_,'input-stream-header'
 
 ; doc{
@@ -9938,11 +9921,10 @@ parse.end:
 
 ; ----
 ; : input-stream-header ( "name" -- )
-;   parse-name ?name-too-short header, ;
+;   parse-name dup 0= #-16 ?throw header, ;
 ; ----
 
-; See: `header`, `header,`, `nextname-header`,
-; `parse-name`, `?name-too-short`.
+; See: `header`, `header,`, `nextname-header`, `parse-name`.
 ;
 ; }doc
 
@@ -9957,7 +9939,9 @@ input_stream_header.no_name:
   ; dw key_,drop_
 endif
 
-  dw parse_name_,question_name_too_short_,header_comma_
+  dw parse_name_,dup_,zero_equals_
+  _question_throw error.zero_length_name
+  dw header_comma_
   dw exit_
 
 ; ----------------------------------------------

@@ -2250,8 +2250,6 @@ needs word1 word2 word3 word4
 needs word5 word6 word7 word8
 ----
 
-NOTE: Milestone: 0.14.0
-
 Write `need( )` to do the same without the one-line limit:
 
 ----
@@ -2377,14 +2375,6 @@ Rename `!exchange` to `!@`?
 
 Rename `(0-1-8-color.` and `(0-9-color.` after the current convention
 for machine code routines.
-
-=== 2017-02-17, 2017-12-10
-
-NOTE: Milestone: 0.14.0
-
-Rename `?name-too-short` to `?empty-name`, or `?no-name`.
-
-Or remove it and use `dup 0= -16 ?throw` in `input-stream-header`.
 
 === 2017-01-02
 
