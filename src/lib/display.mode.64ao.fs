@@ -1,9 +1,9 @@
-  \ display.mode.64o.fs
+  \ display.mode.64ao.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712101210
+  \ Last modified: 201801242004
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -19,7 +19,7 @@
   \ http://www.worldofspectrum.org/forums/discussion/14526/redirect/p1
 
   \ Marcos Cruz (programandala.net) adapted it to Solo Forth,
-  \ 2015, 2016.
+  \ 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -28,7 +28,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( (mode-64o-output_ )
+( (mode-64ao-output_ )
 
   \ Credit:
   \
@@ -39,12 +39,12 @@
 
 need os-chars need assembler need l:
 
-create mode-64o-at-flag 0 c, \ XXX TODO -- move to the code
-create mode-64o-column 0 c,  create mode-64o-row 0 c,
+create mode-64ao-at-flag 0 c, \ XXX TODO -- move to the code
+create mode-64ao-column 0 c,  create mode-64ao-row 0 c,
 
 also assembler max-labels c@ 9 max-labels c! previous
 
-create (mode-64o-output_ ( -- a ) asm
+create (mode-64ao-output_ ( -- a ) asm
 
   \ Input:
   \   A = character code
@@ -87,7 +87,7 @@ create (mode-64o-output_ ( -- a ) asm
   \         ; A = character
   \
 
-  a b ld, mode-64o-at-flag fta, a and, z? rif
+  a b ld, mode-64ao-at-flag fta, a and, z? rif
 
   \         ld      b, a            ; save character
   \         ld      a, (at_flag)    ; value of AT flag
@@ -103,7 +103,7 @@ create (mode-64o-output_ ( -- a ) asm
   \         jr      nz, check_cr    ; if not test for CR
   \         ld      a,0xFF          ; next character will be column
 
-    #0 l: mode-64o-at-flag sta, ret,
+    #0 l: mode-64ao-at-flag sta, ret,
 
   \ save_at_flag_and_exit:
   \         ld      (at_flag), a
@@ -123,7 +123,7 @@ create (mode-64o-output_ ( -- a ) asm
   \         ld      a,63            ; maximum
   \ valid_col:
 
-    mode-64o-column sta, mode-64o-at-flag h ldp#, m dec, ret,
+    mode-64ao-column sta, mode-64ao-at-flag h ldp#, m dec, ret,
 
   \         ld      (col), a        ; store it in col
   \         ld      hl, at_flag     ; AT flag
@@ -142,9 +142,9 @@ create (mode-64o-output_ ( -- a ) asm
   \         ld      a, 23           ; maximum
   \ valid_row:
 
-( (mode-64o-output_ )
+( (mode-64ao-output_ )
 
-  mode-64o-row sta, a xor, #0 rl# jr,
+  mode-64ao-row sta, a xor, #0 rl# jr,
   \         ld      (row), a        ; store it in row
   \         xor     a               ; set a to zero
   \         jr      save_at_flag_and_exit
@@ -158,7 +158,7 @@ create (mode-64o-output_ ( -- a ) asm
   \         cp      0x08            ; cursor left?
   \         jr      z, do_left      ; if so, jump
   #4 call, al#
-  mode-64o-column h ldp#, m inc, m a ld, #64 cp#, nz? ?ret,
+  mode-64ao-column h ldp#, m inc, m a ld, #64 cp#, nz? ?ret,
   \         call    print_printable_character
   \         ld      hl, col         ; increment
   \         inc     (hl)            ; the column
@@ -166,21 +166,21 @@ create (mode-64o-output_ ( -- a ) asm
   \         cp      64              ; column 64?
   \         ret     nz              ; return if not
 
-  #2 l: a xor, mode-64o-column sta,
+  #2 l: a xor, mode-64ao-column sta,
   \ do_cr:
   \         xor     a               ; set A to zero
   \         ld      (col), a        ; reset column
-  mode-64o-row fta, #23 cp#, 0DFE z? ?jp,
+  mode-64ao-row fta, #23 cp#, 0DFE z? ?jp,
   \         ld      a, (row)        ; get the row
   \         cp      23              ; row 23?
   \         jp      z,rom_cl_all    ; if so, scroll
-  a inc, mode-64o-row sta, ret,
+  a inc, mode-64ao-row sta, ret,
   \         inc     a               ; increment the row
   \         ld      (row), a        ; write it back
   \         ret
 
-  #3 l: mode-64o-column fta, a and, z? rif
-    mode-64o-row fta, a and, z? ?ret,
+  #3 l: mode-64ao-column fta, a and, z? rif
+    mode-64ao-row fta, a and, z? ?ret,
   \ do_left:
   \         ld      a, (col)        ; get the column
   \         and     a               ; is it zero?
@@ -190,14 +190,14 @@ create (mode-64o-output_ ( -- a ) asm
   \         and     a               ; is it zero?
   \         ret z                   ; if so, return
 
-    a dec, mode-64o-row sta, #64 a ld#,
+    a dec, mode-64ao-row sta, #64 a ld#,
   \         ; the column is zero
   \         ; the row is not zero
   \         dec     a
   \         ld      (row),a
   \         ld      a,64            ; last column
 
-  rthen a dec, mode-64o-column sta, ret,
+  rthen a dec, mode-64ao-column sta, ret,
   \ do_left.same_line:
   \         dec     a
   \         ld      (col),a
@@ -223,7 +223,7 @@ create (mode-64o-output_ ( -- a ) asm
   \         sbc     hl, de          ; subtract DE to get original x7
   \
 
-( (mode-64o-output_ )
+( (mode-64ao-output_ )
 
   \ ; calculate address of first byte of character map in font
   \
@@ -247,7 +247,7 @@ create (mode-64o-output_ ( -- a ) asm
   \         ; HL holds address of first byte of character map in font
   \         push    hl              ; save font address
 
-  mode-64o-row fta, a b ld, %00011000 and#, a d ld, b a ld,
+  mode-64ao-row fta, a b ld, %00011000 and#, a d ld, b a ld,
   \ ; convert the row to the base screen address
   \
   \         ld      a, (row)        ; get the row
@@ -266,7 +266,7 @@ create (mode-64o-output_ ( -- a ) asm
   \         ld      e, a            ; store low byte of offset in E
   \
 
-  mode-64o-column fta, rra, a push, 40 h ld#, a l ld, d addp,
+  mode-64ao-column fta, rra, a push, 40 h ld#, a l ld, d addp,
   exde, a pop, h pop, 8 b ld#, c? rif
   \ ; add the column
   \
@@ -328,7 +328,7 @@ create (mode-64o-output_ ( -- a ) asm
   \         djnz    ll_lp           ; loop 8 times
   \         ret
 
-( (mode-64o-output_ )
+( (mode-64ao-output_ )
 
   rbegin m a ld,
   \ ; right nibble on right hand side
@@ -409,80 +409,80 @@ also assembler max-labels c! previous
 
   \ doc{
   \
-  \ (mode-64o-output_  ( -- a )
+  \ (mode-64ao-output_  ( -- a )
   \
   \ _a_ is the address of a Z80 routine, the low-level
-  \ `mode-64o` driver, which displays the character in the A
+  \ `mode-64ao` driver, which displays the character in the A
   \ register. The Forth IP is not preserved.
   \
-  \ ``mode-64o-output_`` is called by `mode-64o-output_` and
-  \ `mode-64o-emit``.
+  \ ``mode-64ao-output_`` is called by `mode-64ao-output_` and
+  \ `mode-64ao-emit``.
   \
   \ }doc
 
-( mode-64o-output_ mode-64o-emit )
+( mode-64ao-output_ mode-64ao-emit )
 
-need assembler need (mode-64o-output_
+need assembler need (mode-64ao-output_
 
-create mode-64o-output_ ( -- a )
-  asm b push, (mode-64o-output_ call, b pop, ret, end-asm
+create mode-64ao-output_ ( -- a )
+  asm b push, (mode-64ao-output_ call, b pop, ret, end-asm
 
   \ doc{
   \
-  \ mode-64o-output_ ( -- a )
+  \ mode-64ao-output_ ( -- a )
   \
   \ _a_ is the address of a Z80 routine, the entry to
-  \ `mode-64o` driver, which preserves the Forth IP and then
+  \ `mode-64ao` driver, which preserves the Forth IP and then
   \ displays the character in the A register by calling
-  \ `(mode-64o-output_`.
+  \ `(mode-64ao-output_`.
   \
   \ }doc
 
-code mode-64o-emit ( c -- )
-  exx, b pop, c a ld, (mode-64o-output_ call,
+code mode-64ao-emit ( c -- )
+  exx, b pop, c a ld, (mode-64ao-output_ call,
   exx, jpnext, end-code
 
   \ doc{
   \
-  \ mode-64o-emit ( c -- )
+  \ mode-64ao-emit ( c -- )
   \
-  \ Display character _c_ in `mode-64o`, by calling
-  \ `(mode-64o-output_`.
+  \ Display character _c_ in `mode-64ao`, by calling
+  \ `(mode-64ao-output_`.
   \
-  \ ``mode-64o-emit`` is configured by `mode-64o` as the action
+  \ ``mode-64ao-emit`` is configured by `mode-64ao` as the action
   \ of `emit`.
   \
   \ }doc
 
-( mode-64o )
+( mode-64ao )
 
-need mode-64o-output_ need mode-64o-emit need mode-64-font
+need mode-64ao-output_ need mode-64ao-emit need mode-64-font
 need mode-32 need (at-xy need set-mode-output need >form
 
-: mode-64o-xy ( -- col row )
-  mode-64o-column c@ mode-64o-row c@ ;
+: mode-64ao-xy ( -- col row )
+  mode-64ao-column c@ mode-64ao-row c@ ;
 
   \ doc{
   \
-  \ mode-64o-xy ( -- col row )
+  \ mode-64ao-xy ( -- col row )
   \
   \ Return the current cursor coordinates _col row_ in
-  \ `mode-64o`. ``mode-64o-xy`` is the action of `xy` when
-  \ `mode-64o` is active.
+  \ `mode-64ao`. ``mode-64ao-xy`` is the action of `xy` when
+  \ `mode-64ao` is active.
   \
   \ }doc
 
-: mode-64o ( -- )
+: mode-64ao ( -- )
   [ latestxt ] literal current-mode !
   mode-64-font @ $71 - set-font
-  mode-64o-output_ set-mode-output
-  ['] mode-64o-emit ['] emit  defer!
+  mode-64ao-output_ set-mode-output
+  ['] mode-64ao-emit ['] emit  defer!
   ['] (at-xy        ['] at-xy defer! 64 24 >form
-  ['] mode-64o-xy   ['] xy    defer! ;
+  ['] mode-64ao-xy   ['] xy    defer! ;
 
   \ doc{
   \
-  \ mode-64o ( -- )
+  \ mode-64ao ( -- )
   \
   \ Start the 64-cpl display mode based on:
 
@@ -502,8 +502,8 @@ need mode-32 need (at-xy need set-mode-output need >form
   \ This will be changed in a later version of the code.
   \
   \ See: `current-mode`, `set-font`, `set-mode-output`,
-  \ `columns`, `rows`, `mode-64o-emit`, `mode-64o-xy`,
-  \ `mode-64-font`, `>form`, `mode-64o-output_`.
+  \ `columns`, `rows`, `mode-64ao-emit`, `mode-64ao-xy`,
+  \ `mode-64-font`, `>form`, `mode-64ao-output_`.
   \
   \ }doc
 
@@ -561,5 +561,8 @@ need mode-32 need (at-xy need set-mode-output need >form
   \
   \ 2017-12-10: Update to `a push,` and `a pop,`, after the
   \ change in the assembler.
+  \
+  \ 2018-01-24: Update after the renaming of all display modes
+  \ files and words: "64o" (Owen) -> "64ao" (Andrew Owen).
 
   \ vim: filetype=soloforth

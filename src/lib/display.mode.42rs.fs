@@ -1,11 +1,11 @@
-  \ display.mode.42.fs
+  \ display.mode.42rs.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201704211748
+  \ Last modified: 201801241959
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -22,7 +22,7 @@
   \ http://microhobby.speccy.cz/mhf/066/MH066_24.jpg
 
   \ Marcos Cruz (programandala.net) integrated it into Solo
-  \ Forth, 2015, 2016, 2017.
+  \ Forth, 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -41,13 +41,13 @@
   \ XXX FIXME -- a pixel of the cursor is not deleted when
   \ backspace is used on the command line
 
-( mode-42 banked-mode-42 )
+( mode-42rs banked-mode-42rs )
 
-need mode-32 need (mode-42 need set-mode-output
+need mode-32 need (mode-42rs need set-mode-output
 need get-drive need drive need file>
 
-: mode-42 ( -- ) [ latestxt ] literal current-mode !
-                  (mode-42 set-mode-output ;
+: mode-42rs ( -- ) [ latestxt ] literal current-mode !
+                  (mode-42rs set-mode-output ;
   \ Set the 42 cpl printing mode: the driver, the font
   \ and `at-xy`.
 
@@ -56,20 +56,20 @@ get-drive  0 drive set-drive throw
            s" ea5a.f42" 0 0 file> throw  \ load the font
 set-drive throw
 
-( banked-mode-42 )
+( banked-mode-42rs )
 
-  \ XXX UNDER DEVELOPMENT -- A variant of `mode-42` that stores
+  \ XXX UNDER DEVELOPMENT -- A variant of `mode-42rs` that stores
   \ the driver and the font in the code bank.
 
   \ XXX FIXME -- crash!
 
-need mode-32 need (mode-42
+need mode-32 need (mode-42rs
 need drive need get-drive need file>
 
 need set-banked-mode-output need code-bank
 
-: banked-mode-42 ( -- ) [ latestxt ] literal current-mode !
-                         (mode-42 set-banked-mode-output ;
+: banked-mode-42rs ( -- ) [ latestxt ] literal current-mode !
+                         (mode-42rs set-banked-mode-output ;
 
 code-bank{  get-drive 0 drive set-drive throw
                         s" pr42.bin" 0 0 file> throw
@@ -77,15 +77,15 @@ code-bank{  get-drive 0 drive set-drive throw
             set-drive throw }code-bank
   \ Load the driver and the font into the code bank.
 
-( (mode-42 )
+( (mode-42rs )
 
 need columns need rows need set-font need (at-xy
 
-: mode-42-xy ( -- col row ) 0 0 ;  \ XXX TODO
+: mode-42rs-xy ( -- col row ) 0 0 ;  \ XXX TODO
 
-: (mode-42 ( -- a )
+: (mode-42rs ( -- a )
   42 to columns  24 to rows
-  ['] mode-42-xy ['] xy defer!
+  ['] mode-42rs-xy ['] xy defer!
   ['] (at-xy ['] at-xy defer!
   [ 64600 256 - ] literal set-font 63900 ;
   \ Set the 42 cpl font and `at-xy`;
@@ -124,5 +124,8 @@ need columns need rows need set-font need (at-xy
   \ 2017-04-21: Rename module and words after the new
   \ convention for display modes. Need `(at-xy`, which has been
   \ moved to the common module.
+  \
+  \ 2018-01-24: Update after the renaming of all display modes
+  \ files and words: "42" -> "42rs" (Ricardo Serral).
 
   \ vim: filetype=soloforth

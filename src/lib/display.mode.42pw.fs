@@ -1,11 +1,11 @@
-  \ display.mode.42rt.fs
+  \ display.mode.42pw.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201712121802
+  \ Last modified: 201801242001
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -24,7 +24,7 @@
   \ http://www.users.globalnet.co.uk/~jg27paw4/pourri/pourri.htm
 
   \ Marcos Cruz (programandala.net) integrated it into Solo
-  \ Forth, 2017.
+  \ Forth, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -33,20 +33,20 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( mode-42rt )
+( mode-42pw )
 
-create mode-42rt-coordinates 0 c, 0 c,
+create mode-42pw-coordinates 0 c, 0 c,
 
-create mode-42rt-workspace 8 allot
+create mode-42pw-workspace 8 allot
 
-create mode-42rt-removable-columns
+create mode-42pw-removable-columns
 
   \ Data showing which columns to remove from each character,
   \ for characters in range $20..$7F.
   \
   \ A datum in range $00..$20 indicates an alternative
   \ definition is used insted, and the datum is used as index
-  \ in the table `mode-42rt-redefined-chars`.
+  \ in the table `mode-42pw-redefined-chars`.
 
   $FE c, $FE c, $80 c, $E0 c, $80 c, $00 c, $01 c, $80 c,
   $80 c, $80 c, $80 c, $80 c, $80 c, $80 c, $80 c, $80 c,
@@ -61,14 +61,14 @@ create mode-42rt-removable-columns
   $FF c, $FF c, $FF c, $FF c, $FF c, $FF c, $FF c, $FF c,
   $FF c, $FF c, $FF c, $80 c, $80 c, $FF c, $80 c, $05 c, -->
 
-( mode-42rt-output )
+( mode-42pw-output )
 
-create mode-42rt-redefined-chars
+create mode-42pw-redefined-chars
 
   \ Completely redefined characters: %, &, 0, T, Y, (c)
   \
   \ These characters are pointed by values $00..$05 in the
-  \ `mode-42rt-removable-columns` table.
+  \ `mode-42pw-removable-columns` table.
 
   $00 c, $00 c, $64 c, $68 c, $10 c, $2C c, $4C c, $00 c,
   $00 c, $20 c, $50 c, $20 c, $54 c, $48 c, $34 c, $00 c,
@@ -82,16 +82,16 @@ need where need ?depth
 
 -->
 
-( mode-42rt )
+( mode-42pw )
 
 need assembler need l: need os-chars need os-attr-p
 
 also assembler max-labels c@ 9 max-labels c! previous
 
-create mode-42rt-output_ ( -- a ) asm
+create mode-42pw-output_ ( -- a ) asm
 
   \ _a_ is the address of a Z80 routine that displays the
-  \ character in register A in `mode-42rt`.
+  \ character in register A in `mode-42pw`.
   \
   \ Recognized:
   \
@@ -142,14 +142,14 @@ create mode-42rt-output_ ( -- a ) asm
   \   jr   update_coordinates_and_return
 
   #00 l: 0D cp#, z? rif
-    mode-42rt-coordinates d ftp, #08 call, al#
+    mode-42pw-coordinates d ftp, #08 call, al#
   \ check_return_character:
   \   cp   $0D
   \   jr   nz,check_printable_character
   \   ld   de,(coordinates)
   \   call next_row
 
-    #01 l: mode-42rt-coordinates d stp, ret, rthen
+    #01 l: mode-42pw-coordinates d stp, ret, rthen
   \ update_coordinates_and_return:
   \   ld   (coordinates),de
   \   ret
@@ -165,14 +165,14 @@ create mode-42rt-output_ ( -- a ) asm
   \   ld   h,$00
   \   ld   l,a
 
-  mode-42rt-removable-columns bl - d ldp#, d addp, m a ld,
+  mode-42pw-removable-columns bl - d ldp#, d addp, m a ld,
   \   ld   de,removable_columns-32
   \   add  hl,de
   \   ld   a,(hl)
   20 cp#, #02 rl# nc? ?jr,
   \   cp   $20 ; redefined character instead?
   \   jr   nc,convert_rom_character_to_42cpl ; if not, jump
-  mode-42rt-redefined-chars d ldp#, a l ld,
+  mode-42pw-redefined-chars d ldp#, a l ld,
   \   ld   de,redefined_characters
   \   ld   l,a
   #05 call, al# h b ld, l c ld, #03 rl# jr,
@@ -189,9 +189,9 @@ create mode-42rt-output_ ( -- a ) asm
   \   ld   l,c
   \   call character_bitmap
 
-( mode-42rt )
+( mode-42pw )
 
-  mode-42rt-workspace d ldp#, d push, exx, a c ld, cpl, a b ld,
+  mode-42pw-workspace d ldp#, d push, exx, a c ld, cpl, a b ld,
   \   ld   de,workspace
   \   push de
   \   exx
@@ -233,7 +233,7 @@ create mode-42rt-output_ ( -- a ) asm
   \   call check_coordinates
   \   inc  e
 
-  mode-42rt-coordinates d stp, e dec, e a ld, a sla, a l ld,
+  mode-42pw-coordinates d stp, e dec, e a ld, a sla, a l ld,
   \   ld   (coordinates),de
   \   dec  e
   \   ld   a,e
@@ -297,7 +297,7 @@ create mode-42rt-output_ ( -- a ) asm
   \   exx
   \   ld   a,$08
 
-( mode-42rt )
+( mode-42pw )
 
   rbegin a push, b ftap, exx, h push, 00 c ld#, 03FF d ldp#,
   \ label_eb42:
@@ -368,7 +368,7 @@ create mode-42rt-output_ ( -- a ) asm
   \   add  hl,de
   \   ret
 
-  #06 l: mode-42rt-coordinates d ftp,
+  #06 l: mode-42pw-coordinates d ftp,
   \ check_coordinates:
   \   ld   de,(coordinates) ; XXX TODO -- hardcode the coordinates
 
@@ -646,70 +646,70 @@ also assembler max-labels c! previous \ restore default
   \ EC18 00 44 44 28 10 10 10 00
   \ EC20 00 78 84 B4 A4 B4 84 78
 
-code mode-42rt-emit ( c -- )
-  d pop, b push, e a ld, mode-42rt-output_ call,
+code mode-42pw-emit ( c -- )
+  d pop, b push, e a ld, mode-42pw-output_ call,
          b pop, jpnext, end-code -->
 
   \ doc{
   \
-  \ mode-42rt-emit ( c -- )
+  \ mode-42pw-emit ( c -- )
   \
-  \ Display character _c_ in `mode-42rt`, by calling
-  \ `mode-64o-output_`.
+  \ Display character _c_ in `mode-42pw`, by calling
+  \ `mode-64ao-output_`.
   \
-  \ ``mode-42rt-emit`` is configured by `mode-42rt` as the
+  \ ``mode-42pw-emit`` is configured by `mode-42pw` as the
   \ action of `emit`.
   \
   \ }doc
 
-( mode-42rt )
+( mode-42pw )
 
 need mode-32 need (at-xy need set-mode-output need >form
 
-: mode-42rt-xy ( -- col row )
-  mode-42rt-coordinates c@
-  [ mode-42rt-coordinates 1+ ] literal c@ ;
+: mode-42pw-xy ( -- col row )
+  mode-42pw-coordinates c@
+  [ mode-42pw-coordinates 1+ ] literal c@ ;
 
   \ doc{
   \
-  \ mode-42rt-xy ( -- col row )
+  \ mode-42pw-xy ( -- col row )
   \
   \ Return the current cursor coordinates _col row_ in
-  \ `mode-42rt`. ``mode-64o-xy`` is the action of `xy` when
-  \ `mode-42rt` is active.
+  \ `mode-42pw`. ``mode-64ao-xy`` is the action of `xy` when
+  \ `mode-42pw` is active.
   \
   \ }doc
 
-variable mode-42rt-font  rom-font bl 8 * + mode-42rt-font !
+variable mode-42pw-font  rom-font bl 8 * + mode-42pw-font !
   \ XXX TODO -- Not used.
 
   \ doc{
   \
-  \ mode-42rt-font ( -- a )
+  \ mode-42pw-font ( -- a )
   \
   \ A variable. _a_ is the address of a cell containing the
-  \ address of the font used by `mode-42rt`. The font is a
+  \ address of the font used by `mode-42pw`. The font is a
   \ standard ZX Spectrum font (8x8-pixel characters, 32
   \ characters per line), which is converted to 42 characters
   \ per line at real time.  Note the address of the font must
   \ be the address of its character 32 (space).
   \
-  \ The default value of ``mode-42rt-font`` is `rom-font` plus
+  \ The default value of ``mode-42pw-font`` is `rom-font` plus
   \ 256 (the address of the space character in the ROM font).
   \
   \ }doc
 
-: mode-42rt ( -- )
+: mode-42pw ( -- )
   [ latestxt ] literal current-mode !
-  mode-42rt-font @ 256 - set-font
-  mode-42rt-output_ set-mode-output
-  ['] mode-42rt-emit ['] emit  defer!
+  mode-42pw-font @ 256 - set-font
+  mode-42pw-output_ set-mode-output
+  ['] mode-42pw-emit ['] emit  defer!
   ['] (at-xy         ['] at-xy defer! 42 24 >form
-  ['] mode-42rt-xy   ['] xy    defer! ;
+  ['] mode-42pw-xy   ['] xy    defer! ;
 
   \ doc{
   \
-  \ mode-42rt ( -- )
+  \ mode-42pw ( -- )
   \
   \ Start the 42 CPL display mode based on:
 
@@ -728,11 +728,11 @@ variable mode-42rt-font  rom-font bl 8 * + mode-42rt-font !
   \ WARNING: the "at" control character is followed by row and
   \ column, i.e. the order used in Sinclair BASIC strings. This
   \ is the order used also in `mode-32` and `mode-32iso`, but
-  \ not in `mode-64o`.
+  \ not in `mode-64ao`.
   \
   \ See: `current-mode`, `set-font`, `set-mode-output`,
-  \ `columns`, `rows`, `mode-42rt-emit`, `mode-42rt-xy`,
-  \ `mode-42rt-font`, `>form`, `mode-42rt-output_`.
+  \ `columns`, `rows`, `mode-42pw-emit`, `mode-42pw-xy`,
+  \ `mode-42pw-font`, `>form`, `mode-42pw-output_`.
   \
   \ }doc
 
@@ -764,5 +764,8 @@ variable mode-42rt-font  rom-font bl 8 * + mode-42rt-font !
   \
   \ 2017-12-12: Improve documentation. Remove saving/restoring
   \ of register HL', used by BASIC.
+  \
+  \ 2018-01-24: Update after the renaming of all display modes
+  \ files and words: "42rt" (real time) ->  "42pw" (P. Wardle).
 
   \ vim: filetype=soloforth

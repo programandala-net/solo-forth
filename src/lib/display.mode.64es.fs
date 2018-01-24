@@ -1,9 +1,9 @@
-  \ display.mode.64s.fs
+  \ display.mode.64es.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712051706
+  \ Last modified: 201801242005
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -19,7 +19,7 @@
   \ http://www.worldofspectrum.org/forums/discussion/14526/redirect/p1
 
   \ Marcos Cruz (programandala.net) adapted it to Solo Forth,
-  \ 2015, 2016.
+  \ 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -28,7 +28,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( mode-64s )
+( mode-64es )
 
   \ Version with integrated driver, adapted from 64#4, written
   \ by Einar Saukas.
@@ -42,11 +42,11 @@ need assembler need l:
 
   \ XXX TODO use common variables for all modes?
 
-create mode-64s-at-flag 0 c,
-create mode-64s-column 0 c,
-create mode-64s-row 0 c,
+create mode-64es-at-flag 0 c,
+create mode-64es-column 0 c,
+create mode-64es-row 0 c,
 
-create mode-64s-emit_ ( -- a ) asm
+create mode-64es-emit_ ( -- a ) asm
 
   \ Input:
   \   A = character code
@@ -63,7 +63,7 @@ create mode-64s-emit_ ( -- a ) asm
   \ ; CHANNEL WRAPPER FOR THE 64-COLUMN DISPLAY DRIVER
   \ ; Based on code by Tony Samuels from Your Spectrum issue 20, November 1985.
 
-  0 b ld#, mode-64s-at-flag h ldp#, m dec,
+  0 b ld#, mode-64es-at-flag h ldp#, m dec,
   #1 m? ?jp #al  #2 rl# z? ?jr
 
   \ CH_ADDR:
@@ -140,7 +140,7 @@ create mode-64s-emit_ ( -- a ) asm
 
   -->
 
-( mode-64s )
+( mode-64es )
 
   m inc, h incp, 0D cp#, #3 rl# z? ?jr,
 
@@ -322,28 +322,28 @@ create mode-64s-emit_ ( -- a ) asm
   \         defb    0               ; current row position (0-23)
 
 
-( mode-64s-emit )
+( mode-64es-emit )
 
-need assembler need mode-64s-emit_
+need assembler need mode-64es-emit_
 
-code mode-64s-emit ( c -- )
-  exx, b pop, c a ld, mode-64s-emit_ call,
+code mode-64es-emit ( c -- )
+  exx, b pop, c a ld, mode-64es-emit_ call,
   exx, jpnext, end-code
 
-( mode-64s )
+( mode-64es )
 
-need (at-xy need set-mode-output need mode-64s-emit
+need (at-xy need set-mode-output need mode-64es-emit
 need mode-64-font
 
-: mode-64s-xy ( -- col row ) 0 0 ;  \ XXX TODO
+: mode-64es-xy ( -- col row ) 0 0 ;  \ XXX TODO
 
-: mode-64s ( -- )
+: mode-64es ( -- )
   [ latestxt ] literal current-mode !
   2548 set-mode-output
   mode-64-font @ set-font
   64 to columns  24 to rows
-  ['] mode-64s-emit ['] emit  defer!
-  ['] mode-64s-xy   ['] xy    defer!
+  ['] mode-64es-emit ['] emit  defer!
+  ['] mode-64es-xy   ['] xy    defer!
   ['] (at-xy       ['] at-xy defer! ;
 
   \ ===========================================================
@@ -397,5 +397,8 @@ need mode-64-font
   \ 2017-12-05: Advance the conversion of the `mode-64s`'s
   \ code.  Extract from <display.mode.64.fs>.  Replace
   \ `mode-64s-chars` with `mode-64-font`.
+  \
+  \ 2018-01-24: Update after the renaming of all display modes
+  \ files and words: "64s" (Saukas) -> "64es" (Einar Saukas).
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201801241753
+; Last modified: 201801242008
 
 include version.z80s
 
@@ -6146,7 +6146,7 @@ two_store.into_hl_pointer:
 ; `last-font-char`.
 ;
 ; See: `get-font`, `rom-font`, `default-font`, `mode-32`,
-; `mode-32iso`, `mode-42`, `mode-64`.
+; `mode-32iso`, `mode-42rs`, `mode-64ao`.
 ;
 ; }doc
 
@@ -12085,7 +12085,7 @@ endif
 ; A variable. _a_ is the address of a cell containing the
 ; execution token of the word that activates the screen mode
 ; that was active before executing `bye` (e.g. `mode-32`,
-; `mode-32iso`, `mode-64o`).  ``previous-mode`` is updated by
+; `mode-32iso`, `mode-64ao`).  ``previous-mode`` is updated by
 ; `bye`, and used by `warm` to restore the `current-mode`.
 ;
 ; }doc
@@ -12104,7 +12104,7 @@ endif
 ;
 ; A variable. _a_ is the address of a cell containing the
 ; execution token of the word that activates the current screen
-; mode (e.g. `mode-32`, `mode-32iso`, `mode-64o`). It's set to
+; mode (e.g. `mode-32`, `mode-32iso`, `mode-64ao`). It's set to
 ; `noop` until the first mode change is done.
 ;
 ; See: `save-mode`, `restore-mode`.
@@ -12126,7 +12126,7 @@ endif
 ; Store the contents of `current-mode` into `previous-mode`.
 ;
 ; ``save-mode`` is executed by `bye` before setting the default
-; screen mode (e.g. `mode-32`, `mode-32iso`, `mode-64o`).
+; screen mode (e.g. `mode-32`, `mode-32iso`, `mode-64ao`).
 ;
 ; Definition:
 
@@ -15093,7 +15093,7 @@ attr_cls.a: ; alternative entry point used by `cls`
 ;
 ; ``mode-32-xy`` is the action of `xy` when `mode-32` or
 ; `mode-32iso` are active, or by default when no alternative
-; display mode has been used (e.g. `mode-64o`).
+; display mode has been used (e.g. `mode-64ao`).
 ;
 ; Definition:
 
