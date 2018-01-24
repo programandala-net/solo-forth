@@ -226,15 +226,6 @@ Modify words that restore IX: use the current contents of `next`
 instead of its default value. This way the value of IX can be changed
 to implement a debugger or multitasking.
 
-=== 2016-11-26, 2016-12-30 .. 2017-01-02
-
-NOTE: Milestone: 0.14.0
-
-Rewrite all small code words in Z80 opcodes, without assembler.
-examples: `lshift`, `(g-emit)` and family, `f!`, `f@`,
-`get-drive`, `set-drive`, `(delete-file)`, `n>r`, `nr>`,
-`d-`, `@dos`, `c@dos`...
-
 // Benchmarks {{{1
 == Benchmarks
 
@@ -531,7 +522,7 @@ Alternative:
 
 === 2016-05-07, 2018-01-11
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 Idea: Rename `branch`, `0branch` and `?branch` to `(branch)`, `(0branch)` and
 `(?branch)`.  Then write `branch`, `0branch` and `?branch` to compile them, as
@@ -2821,8 +2812,6 @@ Improve `see`: decode `does>`.
 Rename `.unused` to `.free` (if other info is added).
 
 === 2016-11-25
-
-NOTE: Milestone: 0.14.0
 
 Write `ed:` after TurboForth.
 
