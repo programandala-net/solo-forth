@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801241751
+  \ Last modified: 201801241946
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1291,63 +1291,83 @@ defer (fill)
   \ 01000  1693  1795    898
   \ 30000 50770 53863  26933
 
-( value-bench 2value-bench variable-bench 2variable-bench )
+( 2fetch-bench )
 
-  \ This benchmark compares the time needed to get the contents
-  \ of values and variables.
+  \ This benchmark compares fetching of 2-cell variables,
+  \ values, constants and literals.
 
+  \ Change log:
+  \
+  \ 2016-05-31: `2constant-bench`, `2literal-bench`.
+  \
   \ 2016-10-14: Update. Add `variable-bench` and
   \ `2variable-bench`.
+  \
+  \ 2018-01-24: Remove 1-cell benchmarks. Move old results to
+  \ `fetch-bencthmark`. Combine with `2constant-bench` and
+  \ `2literal-bench`.
 
-need value need 2value need bench{ need }bench.
+need 2value need bench{ need }bench.
 
-0 value val1  : value-bench ( u -- )
-                bench{  0 ?do  val1 drop  loop  }bench. ;
+0. 2value val2
 
-0. 2value val2  : 2value-bench ( u -- )
-                  bench{  0 ?do  val2 2drop  loop  }bench. ;
+: 2val-bench ( u -- ) bench{ 0 ?do val2 2drop loop }bench. ;
 
-variable var1  : variable-bench ( u -- )
-                 bench{  0 ?do  var1 @ drop  loop  }bench. ;
+2variable var2
 
-2variable var2  : 2variable-bench ( u -- )
-                  bench{  0 ?do  var2 2@ 2drop  loop  }bench. ;
+: 2var-bench ( u -- ) bench{ 0 ?do var2 2@ 2drop loop }bench. ;
+
+0. 2constant 2zero
+
+: 2con-bench ( u -- ) bench{ 0 ?do 2zero 2drop loop }bench. ;
+
+: 2lit-bench ( u -- )
+  bench{ 0 ?do [ 0. ] 2literal 2drop loop }bench. ;
 
 : run ( u -- )
-  cr dup ." value     " value-bench cr
-     dup ." 2value    " 2value-bench cr
-     dup ." variable  " variable-bench cr
-         ." 2variable " 2variable-bench cr ;
+  cr dup ." 2value    " 2val-bench cr
+     dup ." 2variable " 2var-bench cr
+     dup ." 2constant " 2con-bench cr
+         ." 2literal  " 2lit-bench cr ;
 
-  \ Date            Times Ticks (20 ms)
-  \ --------------  ----- -------------------------------------
-  \                           value   2value variable 2variable
-  \                       --------- -------- -------- ---------
-  \ 2016-10-14 (1)   1000         6        6        6         7
-  \                 10000        57       64       64        73
-  \                 65535       371      423      418       476
+  \ Date            Times Ticks
+  \ --------------  ----- --------------------
+  \                        2val 2var 2con 2lit
+  \                        ---- ---- ---- ----
+  \ 2016-05-31       1000               7    7
+  \                 10000              68   64
+  \                 65535             448  417
   \
-  \ 2018-01-24 (2)   1000        10       11        6         7
-  \                 10000       103      112       61        70
-  \                 65535       677      731      403       458
+  \ 2016-05-31 (0)  65535             435  417
   \
-  \ 2018-01-24 (3)   1000         5        7        7         7
-  \                 10000        58       63       61        70
-  \                 65535       378      414      404       458
+  \ 2016-10-14 (1)   1000      6   7
+  \                 10000     64  73
+  \                 65535    423 476
+  \
+  \ 2018-01-24 (2)   1000     11   7
+  \                 10000    112  70
+  \                 65535    731 458
+  \
+  \ 2018-01-24 (3)   1000      7   7    6    6
+  \                 10000     63  70   63   61
+  \                 65535    414 458  407  402
 
 
   \ Notes:
   \
-  \ (1) Version 0.10.0-pre.79+20161014. The default `value` and
+  \ 0) After improving `2constant` (version
+  \ 0.10.0-pre.13+20160531).
+  \
+  \ 1) Version 0.10.0-pre.79+20161014. The default `value` and
   \ `2value` are aliases of `constant` and `2constant`.
   \
-  \ (2) Version 0.14.0-pre.422+20180124. `value` and `2value`
+  \ 2) Version 0.14.0-pre.422+20180124. `value` and `2value`
   \ are standard. In order to share `to`, they store a type
   \ identifier in their headers, which must be skiped in order
   \ to fetch the actual value. That's why they are much slower
   \ now.
   \
-  \ (2) Version 0.14.0-pre.423+20180124. The run-time part of
+  \ 3) Version 0.14.0-pre.423+20180124. The run-time part of
   \ `value` and `2value` has been rewriten in Z80.
 
 ( fetch-bench )
@@ -1360,23 +1380,23 @@ variable var1  : variable-bench ( u -- )
 need value need cvalue need cvariable
 need bench{ need }bench.
 
-0 value val  : value-bench ( u -- )
-               bench{  0 ?do  val drop  loop  }bench. ;
+0 value val
+: val-bench ( u -- ) bench{ 0 ?do val drop loop }bench. ;
 
-0 cvalue cval  : cvalue-bench ( u -- )
-                 bench{  0 ?do  cval drop  loop  }bench. ;
+0 cvalue cval
+: cval-bench ( u -- ) bench{ 0 ?do cval drop loop }bench. ;
 
-variable var  : variable-bench ( u -- )
-                bench{  0 ?do  var @ drop  loop  }bench. ;
+variable var
+: var-bench ( u -- ) bench{ 0 ?do var @ drop loop }bench. ;
 
-cvariable cvar  : cvariable-bench ( u -- )
-                  bench{  0 ?do  cvar c@ drop  loop  }bench. ;
+cvariable cvar
+: cvar-bench ( u -- ) bench{ 0 ?do cvar c@ drop loop }bench. ;
 
 : run ( u -- )
-  cr dup ." value     " value-bench cr
-     dup ." cvalue    " cvalue-bench cr
-     dup ." variable  " variable-bench cr
-         ." cvariable " cvariable-bench cr ;
+  cr dup ." value     " val-bench cr
+     dup ." cvalue    " cval-bench cr
+     dup ." variable  " var-bench cr
+         ." cvariable " cvar-bench cr ;
 
   \ Date            Times Ticks (20 ms)
   \ --------------  ----- -------------------------------------
@@ -1385,51 +1405,79 @@ cvariable cvar  : cvariable-bench ( u -- )
   \ 2016-10-15 (1)   1000         6        5        6         6
   \                 10000        57       56       64        63
   \                 65535       371      366      418       413
-
+  \
+  \ 2018-01-24 (2)   1000        10                 6
+  \                 10000       103                61
+  \                 65535       677               403
+  \
+  \ 2018-01-24 (3)   1000         5        6        7         6
+  \                 10000        58       57       61        61
+  \                 65535       378      375      404       401
 
   \ Notes:
-  \ (1) Version 0.10.0-pre.79+20161014. The default `value` and
-  \ `cvalue` are aliases of `constant` and `cconstant`.
+  \
+  \ 1) Version 0.10.0-pre.79+20161014. The default `value` and
+  \ `2value` are aliases of `constant` and `2constant`.
+  \
+  \ 2) Version 0.14.0-pre.422+20180124. `value` and `cvalue`
+  \ are standard. In order to share `to`, they store a type
+  \ identifier in their headers, which must be skiped in order
+  \ to fetch the actual value. That's why they are much slower
+  \ now.
+  \
+  \ 3) Version 0.14.0-pre.423+20180124. The run-time part of
+  \ `value` and `cvalue` has been rewriten in Z80.
 
 ( store-bench )
 
-  \ This benchmark compares the time needed to store into
-  \ values and variables.
+  \ Compare storing into 1-cell and character values and
+  \ variables.
 
+  \ Change log:
+  \
   \ 2016-10-16: Start.
+  \
+  \ 2018-01-24: Update: replace `cto` with `to`.
 
 need value need cvalue need cvariable
 need bench{ need }bench.
 
 0 value val  0 cvalue cval  variable var  cvariable cvar
 
-: value-bench ( u -- )
-  bench{  0 ?do  i to val  loop  }bench. ;
+: val-bench ( u -- ) bench{ 0 ?do i to val loop }bench. ;
 
-: cvalue-bench ( u -- )
-  bench{  0 ?do  i cto cval  loop  }bench. ;
+: cval-bench ( u -- ) bench{ 0 ?do i to cval loop }bench. ;
 
-: variable-bench ( u -- )
-  bench{  0 ?do  i var !  loop  }bench. ;
+: var-bench ( u -- ) bench{ 0 ?do i var ! loop }bench. ;
 
-: cvariable-bench ( u -- )
-  bench{  0 ?do  i cvar c!  loop  }bench. ;
+: cvar-bench ( u -- ) bench{ 0 ?do i cvar c! loop }bench. ;
 
-: run ( u -- ) cr dup ." value     " value-bench cr
-                  dup ." cvalue    " cvalue-bench cr
-                  dup ." variable  " variable-bench cr
-                      ." cvariable " cvariable-bench cr ;
+: run ( u -- ) cr dup ." value     " val-bench cr
+                  dup ." cvalue    " cval-bench cr
+                  dup ." variable  " var-bench cr
+                      ." cvariable " cvar-bench cr ;
 
-  \ Date            Times Ticks (20 ms)
+  \ Date            Times Ticks
   \ --------------  ----- -------------------------------------
   \                           value   cvalue variable cvariable
   \                       --------- -------- -------- ---------
+  \
   \ 2016-10-16 (1)   1000         9        8        8         8
   \                 10000        87       84       81        79
   \                 65535       568      552      532       519
+  \
+  \ 2018-01-24 (2)   1000         8        8        8         8
+  \                 10000        85       83       79        76
+  \                 65535       554      542      521       500
 
   \ Notes:
-  \ (1) Version 0.10.0-pre.84+20161015.
+  \
+  \ 1) Version 0.10.0-pre.84+20161015. With non-standard `cto`
+  \ for "cvalues".
+  \
+  \ 2) Version 0.14.0-pre.423+20180124. With standard `to` for
+  \ "cvalues", and improved `value` and `cvalue` with run-time
+  \ code rewritten in Z80.
 
 ( to-value-bench to-2value-bench 2to-2value-bench )
 
@@ -2064,67 +2112,45 @@ noop noop noop noop noop noop noop noop noop noop noop noop ;
 
   \ Note: 1 tick = 20 ms.
 
-( 2constant-bench 2literal-bench )
+( constants-bench )
 
-need bench{ need }bench.
+  \ Compare all 1-cell and character constants: actual
+  \ constants, literals, code constants and values.
 
-  \ 2016-05-31
-
-0. 2constant 2zero
-
-: 2constant-bench ( u -- )
-  bench{ 0 ?do  2zero 2drop  loop  }bench. ;
-
-: 2literal-bench ( u -- )
-  bench{ 0 ?do  [ 0. ] 2literal 2drop  loop  }bench. ;
-
-: run ( u -- )
-  dup cr
-      ." 2constant " 2constant-bench cr
-      ." 2literal  " 2literal-bench cr ;
-
-  \ Date        Times Ticks (20 ms)
-  \ ----------  ----- ------------------
-  \                   2constant 2literal
-  \                   --------- --------
-  \ 2016-05-31   1000         7        7
-  \             10000        68       64
-  \             65535       448      417
-  \ (1)         65535       435      417
-
-  \ Notes:
-  \ (1) Same date, after improving `2constant`
-  \     (version 0.10.0-pre.13+20160531).
-
-( literal-bench cliteral-bench constant-bench cconstant-bench )
-
-need bench{ need }bench.
-
+  \ Change log:
+  \
   \ 2015: `constant` vs `cconstant`.
   \ 2016-02-16: `constant` vs `literal`.
   \ 2016-05-31: Combined, improved and completed with
   \ `cliteral` and code constants.
+  \ 2018-01-24: Add `value` and `cvalue`.
 
-1000 constant thousand  100 cconstant hundred
+need bench{ need }bench. need value need cvalue
+
+1000 constant thousand 100 cconstant hundred
 
 : constant-bench ( u -- )
-  bench{ 0 ?do  thousand drop  loop  }bench. ;
+  bench{ 0 ?do thousand drop loop }bench. ;
 
 : cconstant-bench ( u -- )
-  bench{ 0 ?do  hundred drop  loop  }bench. ;
+  bench{ 0 ?do hundred drop loop }bench. ;
 
 : code-constant-bench ( u -- )
-  bench{ 0 ?do  true drop  loop  }bench. ;
+  bench{ 0 ?do true drop loop }bench. ;
 
 : literal-bench ( u -- )
-  bench{ 0 ?do  [ 1000 ] literal drop  loop  }bench. ;
+  bench{ 0 ?do [ 1000 ] literal drop loop }bench. ;
 
 : cliteral-bench ( u -- )
-  bench{ 0 ?do  [ 100 ] cliteral drop  loop  }bench. ;
+  bench{ 0 ?do [ 100 ] cliteral drop loop }bench. ; -->
 
--->
+( constants-bench )
 
-( literal-bench cliteral-bench constant-bench cconstant-bench )
+1000 cvalue v1000 100 cvalue v100
+
+: value-bench ( u -- ) bench{ 0 ?do v1000 drop loop }bench. ;
+
+: cvalue-bench ( u -- ) bench{ 0 ?do v100 drop loop }bench. ;
 
 : run ( u -- )
   cr
@@ -2132,33 +2158,47 @@ need bench{ need }bench.
   dup ." cconstant     " cconstant-bench cr
   dup ." code constant " code-constant-bench cr
   dup ." literal       " literal-bench cr
-      ." cliteral      " cliteral-bench cr ;
+  dup ." cliteral      " cliteral-bench cr
+  dup ." value         " value-bench cr
+      ." cvalue        " cvalue-bench cr ;
 
-  \ Date            Times Ticks (20 ms)
-  \ --------------- ----- -------------------------------------
-  \                       const. cconst. code const. lit. clit.
-  \                       ------ ------- ----------- ---- -----
+  \ Date           Times Ticks
+  \ -------------- ----- ---------------------------
+  \                      con cco cod lit cli val cva
+  \                      --- --- --- --- --- --- ---
   \
-  \ 2015 (1)        32000            251         236
+  \ 2015 (1)       32000     251 236
   \
-  \ 2015-02-16       1000      6                        5
-  \                 52000    307                      284
-  \                 65535    386                      358
+  \ 2015-02-16      1000   6         5
+  \                52000 307         284
+  \                65535 386         358
   \
-  \ 2016-05-31      32000    189     187         161  173   169
-  \                 65535    387     383         330  355   346
-  \ 2016-05-31 (2)  65535    371     366         330  355   346
+  \ 2016-05-31     32000 189 187 161 173 169
+  \                65535 387 383 330 355 346
   \
-  \ 2016-10-14 (3)   1000      6
-  \                 10000     57
-  \                 52000    294
-  \                 65535    371     366         330  355   346
+  \ 2016-05-31 (2) 65535 371 366 330 355 346
+  \
+  \ 2016-10-14 (3)  1000   6
+  \                10000  57
+  \                52000 294
+  \                65535 371 366 330 355 346
+  \
+  \ 2018-01-24 (4)  1000   6   6   5   5   5   6   6
+  \                10000  55  55  50  52  51  58  58
+  \                32000 177 176 160 168 162 183 183
+  \                52000 288 285 259 272 264 298 298
+  \                65535 363 360 326 343 333 376 375
 
   \ Notes:
-  \ (1) With the old fig-Forth `do loop` structure.
-  \ (2) After improving `constant` and `cconstant`
-  \     (version 0.10.0-pre.12+20160531).
-  \ (3) Version 0.10.0-pre.79+20161014.
+  \
+  \ 1) With the old fig-Forth `do loop` structure.
+  \
+  \ 2) After improving `constant` and `cconstant` (version
+  \ 0.10.0-pre.12+20160531).
+  \
+  \ 3) Version 0.10.0-pre.79+20161014.
+  \
+  \ 4) Version 0.14.0-pre.423+20180124.
 
 ( d*-bench )
 
@@ -3124,6 +3164,9 @@ need bench{ need }bench.
   \
   \ 2017-12-31: Add `0>-bench`.
   \
-  \ 2018-01-24. Update the results of `value-bench`.
+  \ 2018-01-24. Combine and divide some benchmarks to make the
+  \ results more coherent and useful.  Update the results of
+  \ `fetch-bench`, `2fetch-bench`, `constants-bench`, and
+  \ `store-bench`.
 
   \ vim: filetype=soloforth

@@ -1713,6 +1713,8 @@ variable, while `rnd` uses a Forth double-cell variable.
 
 === 2017-02-27
 
+NOTE: Milestone: 0.14.0
+
 Rewrite `between` in Z80, just to prepare the parameters and jump into
 `within`? Benchmark.
 
