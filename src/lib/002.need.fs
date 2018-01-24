@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801210203
+  \ Last modified: 201801241527
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -129,13 +129,15 @@ defer unlocated ( block -- )
   \ ----------------------------
     \ XXX INFORMER -- alternative options for debugging
 
-  ?dup 0= if  drop false exit  then
+  ?dup 0= #-32 ?throw
   delimited last-locatable @ 1+  first-locatable @
   default-first-locatable @  first-locatable !
   ?do  0 i line>string 2over contains \ i home . \ XXX INFORMER
        if  2drop i unloop exit  then  break-key? #-28 ?throw
        i unlocated  loop  2drop 0 ;
-  \ Note: Error #-28 is "user interrupt".
+  \ Note:
+  \ Error #-32 is "invalid name argument".
+  \ Error #-28 is "user interrupt".
 
   \ doc{
   \
@@ -693,5 +695,7 @@ need get-drive
   \ 2017-12-09: Improve documentation of variables.
   \
   \ 2018-01-21: Fix layout of one-liner.
+  \
+  \ 2018-01-24: Improve error checking in `(locate)`.
 
   \ vim: filetype=soloforth

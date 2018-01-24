@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-01-20
+:revdate: 2018-01-24
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -2264,19 +2264,6 @@ be loaded this way.
 
 Add `//` to ignore the rest of the source, as a shorter alternative to `exit`
 to exit the current block.
-
-=== 2016-12-29, 2017-03-15
-
-NOTE: Milestone: 0.14.0
-
-`(located)  ( ca len -- block | false )` returns _false_ also when _ca
-len_ is empty, therefore the exception code thrown by the calling word
-is always #-268 (needed but not located).  This is not a big problem,
-but exceptions #-16 (attempt to use zero-length string as a name) or
-#-32 (invalid name argument) would be clearer:
-
-Replace `?dup 0= if drop false exit then` with `?dup 0= #-16 ?throw`.
-This change saves 5 bytes.
 
 === 2016-12-03
 
