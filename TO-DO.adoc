@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-01-24
+:revdate: 2018-01-25
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -241,9 +241,9 @@ and `do_variable` to the `next` entry of the inner interpreter.
 
 Make `cold` set `set-block-drives` to the default value.
 
-=== 2017-02-11, 2017-12-05
+=== 2017-02-11, 2017-12-05, 2018-01-25
 
-Fix: Crash when `mode-42` is loaded.
+Fix: Crash when `mode-42rs` is loaded.
 
 === 2017-01-11, 2017-01-24, 2017-01-25
 
@@ -653,6 +653,10 @@ Options:
 // Display {{{1
 == Display
 
+=== 2018-01-25
+
+Factor or rename `gigatype-title`.
+
 === 2018-01-02
 
 Write `color` (`recolor`?) to change the attributes of the screen,
@@ -685,14 +689,14 @@ In CHForth, `type-ascii` is called `stype`, and `emit-ascii` is called
 Document the control characters accepted by each mode, especially the
 parameters of "at".
 
-=== 2017-05-15
+=== 2017-05-15, 2018-01-25
 
 NOTE: Milestone: 0.14.0
 
 In `mode-32` and `mode-32iso`: The channel output must be patched
 (`set-mode-output`) with custom routines, and the corresponding
 actions of `emit` must be rewritten after them. This is what
-`mode-64o` does, in order to make the display mode effective in Forth
+`mode-64ao` does, in order to make the display mode effective in Forth
 (`emit`) and Z80 (`rst 10`).
 
 === 2017-05-14
@@ -715,18 +719,18 @@ Write `wtype`.
 Write the definitive version of `u.` in the library. The current one
 is temporary, for debugging.
 
-=== 2017-04-21, 2017-05-20
+=== 2017-04-21, 2017-05-20, 2018-01-25
 
-Finish `mode-64s`, the port of "64#4", the the driver written by Einar
+Finish `mode-64es`, the port of "64#4", the the driver written by Einar
 Saukas.
 
-=== 2017-04-21, 2017-12-05
+=== 2017-04-21, 2017-12-05, 2018-01-25
 
 NOTE: Milestone: 0.14.0
 
 Fix: The default `mode-32` expects _row_ right after control character
 22, and then _col_, i.e in the order used by Sinclair BASIC. But
-`mode-64o` and `mode-42` expect them in reverse order.
+`mode-64ao` and `mode-42rs` expect them in reverse order.
 
 Update `(at-xy` and its documentation.
 
@@ -741,10 +745,10 @@ Change the order of the cursor coordinates embedded in strings, after
 the Forth convention? This is not possible with `mode-32-emit`, which
 uses the ROM routine.
 
-=== 2017-04-19, 2017-12-05
+=== 2017-04-19, 2017-12-05, 2018-01-25
 
 Convert the ISO standard 64-cpl fonts included in mikroprint to the
-format used by `mode-64o` and `mode-64s`.
+format used by `mode-64ao` and `mode-64es`.
 
 === 2017-04-17
 
@@ -822,18 +826,18 @@ character variable.  In fact, it would be enough to write
 
 Make `type` deferred, to be configured as `fartype` or other when needed.
 
-=== 2016-11-21, 2017-12-05
+=== 2016-11-21, 2017-12-05, 2018-01-25
 
 Add support for more control characters to an alternative version of
-`mode-64o` ar `mode-64s`.
+`mode-64ao` or `mode-64es`.
 
-=== 2016-11-21, 2017-12-05
+=== 2016-11-21, 2017-12-05, 2018-01-25
 
 In `mode-32`, one `cr` does nothing when the cursor is at the end of a
 line.  That is the default behaviour in Sinclair BASIC. The driver of
-`mode-42` works the same way.  But the driver of `mode-64o` always
+`mode-42rs` works the same way.  But the driver of `mode-64ao` always
 prints the carriage return, increasing the line number. Somehow the
-behaviour must be unified in all modes. The behaviour of `mode-64o`
+behaviour must be unified in all modes. The behaviour of `mode-64ao`
 seems more logical.
 
 === 2015-09-05

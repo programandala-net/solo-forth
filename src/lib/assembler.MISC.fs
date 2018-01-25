@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712151306
+  \ Last modified: 201801250923
 
   \ ===========================================================
   \ Description
@@ -12,9 +12,9 @@
   \ assembler.
 
   \ ===========================================================
-  \ Authors
+  \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -81,7 +81,7 @@ need c@+ need for need 16hex. need 8hex.
   \
   \ }doc
 
-: >> ( ca n -- )
+: >> ( ca +n -- )
   depth 1- <> #-258 ?throw
   cr dup 16hex. here over - for  c@+ 8hex.  step drop ; ?)
 
@@ -226,6 +226,8 @@ need c@+ need for need 16hex. need 8hex.
   \ 2017-05-10: Add `pushhlde`.
   \
   \ 2017-12-15: Move `;code` from <definer.MISC.fs>.
+  \
+  \ 2018-01-25: Fix comments.
 
   \ vim: filetype=soloforth
 
