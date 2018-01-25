@@ -9506,11 +9506,17 @@ simple_accept.end:
 ;
 ; #block-drives ( -- ca ) "hash-block-drives"
 ;
-; A character variable. _ca is the number of block drives
-; defined in `block-drives`, i.e. the number of drives that are
-; used for blocks.  ``#block-drives`` could be modified
-; manually, provided also `block-drives` is configured
-; accordingly, but `set-block-drives` is provided for that.
+; A character variable. _ca is the address of an address unit
+; containing the number of block drives defined in
+; `block-drives`, i.e. the number of drives that are used for
+; blocks.  ``#block-drives`` could be modified manually,
+; provided also `block-drives` is configured accordingly, but
+; `set-block-drives` is provided for that.
+;
+; The default value of ``#block-drives`` is 1, which is restored
+; by `cold`.
+;
+; See: `max-blocks`.
 ;
 ; }doc
 
@@ -12309,6 +12315,10 @@ cold.hash_words: equ $+1
 
   ; Set the first drive as the current one:
   dw first_drive_,set_drive_
+
+  ; Restore default value of `#block-drives`:
+  _literal 1
+  dw hash_block_drives_,c_store_
 
   ; Restore the default stringer:
   dw default_stringer_
