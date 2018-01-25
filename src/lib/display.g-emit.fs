@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071831
+  \ Last modified: 201801250929
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -26,7 +26,7 @@
 ( (g-emit g-emit g-type )
 
 [unneeded] (g-emit ?( need assembler need g-emit_
-                       need os-chars need os-coords
+                      need os-chars need os-coords
 
 code (g-emit ( c -- )
   h pop, l a ld, b push, os-coords b ftp, os-chars d ftp,
@@ -52,17 +52,16 @@ code (g-emit ( c -- )
 need g-emit-udg need (g-emit need g-emitted
 
 : g-emit ( c -- )
-  dup 127 > if  g-emit-udg  else  (g-emit  then
-  g-emitted ; ?)
+  dup last-font-char c@ > if   g-emit-udg
+                          else (g-emit then g-emitted ; ?)
 
   \ doc{
   \
   \ g-emit ( gx gy c -- )
   \
   \ Display character _c_ (32..255) at the current graphic
-  \ coordinates.  If _c_ is 32..127, it is printed from the
-  \ main font.  If _c_ is 128..255, it is printed from the UDG
-  \ font.
+  \ coordinates.  If _c_ greater than `last-font-char` from the
+  \ UDG font, otherwise it is printed from the main font.
   \
   \ The character is printed with overprinting (equivalent to
   \ ``1 overprint``).
@@ -242,5 +241,7 @@ create g-emit_ ( -- a ) asm
   \ 2017-03-13: Update name: `(pixel-addr)` to `gxy>scra_`.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2018-01-25: Improve `g-emit` to use `last-font-char`.
 
   \ vim: filetype=soloforth

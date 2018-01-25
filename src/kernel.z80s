@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201801242106
+; Last modified: 201801250934
 
 include version.z80s
 
@@ -4111,13 +4111,13 @@ skip.end:
 ;
 ; A character variable. _ca_ is the address of an address unit
 ; containing the code of the last character displayed from the
-; current font by the current action of `emit`.  Higher
-; characters are managed apart, usually displayed by `emit-udg`,
-; depending on the actual implementation of `emit`, which is a
-; deferred word.
+; current font by the current action of `emit` and by `g-emit`.
+; Higher characters are managed apart, displayed by `emit-udg`
+; (depending on the actual implementation of `emit`, which is a
+; deferred word) or `g-emit-udg`.
 ;
-; At the moment, only `mode-32-emit` checks this value.
-; Eventually, also the alternative modes will use it.
+; At the moment, only `mode-32-emit` and `g-emit` check this
+; value.  Eventually, also the alternative modes will use it.
 ;
 ; ``last-font-char`` is a character variable, which must be set
 ; with `c!`.  Its default value is 127.
@@ -4213,7 +4213,7 @@ mode_32_emit.a:
 ; those variables updated, like `mode-32` and `mode-32iso`.
 ;
 ; See: `set-udg`, `emit-udga`, `emit`, `mode-32-emit`,
-; `last-font-char`.
+; `g-emit-udg`, `last-font-char`.
 ;
 ; }doc
 
@@ -4280,7 +4280,7 @@ emit_udg.address:
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See: `emit-udg`, `defer`.
+; See: `emit-udg`, `g-emit-udg`, `defer`.
 ;
 ; }doc
 
