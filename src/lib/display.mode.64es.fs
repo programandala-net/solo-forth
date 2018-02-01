@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801242005
+  \ Last modified: 201802012254
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -38,7 +38,7 @@
   \
   \ XXX UNDER DEVELOPMENT --
 
-need assembler need l:
+need assembler need l: need hook,
 
   \ XXX TODO use common variables for all modes?
 
@@ -400,5 +400,7 @@ need mode-64-font
   \
   \ 2018-01-24: Update after the renaming of all display modes
   \ files and words: "64s" (Saukas) -> "64es" (Einar Saukas).
+  \
+  \ 2018-02-01: Need `hook,`, which has been made optional.
 
   \ vim: filetype=soloforth

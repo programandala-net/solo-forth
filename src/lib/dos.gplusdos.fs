@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712101211
+  \ Last modified: 201802012254
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -353,6 +353,7 @@ code get-drive ( -- n )
 ( delete-file )
 
 need assembler need ufia need heraz need set-filename
+need hook,
 
 code (delete-file) ( -- ior )
   b push,  \ save the Forth IP
@@ -447,7 +448,7 @@ need ufia need get-drive
 ( >file )
 
 need assembler need ufia need set-code-file
-need hofile need hsvbk need cfsm
+need hofile need hsvbk need cfsm need hook,
 
 code (>file) ( -- ior )
 
@@ -488,7 +489,7 @@ code (>file) ( -- ior )
 ( file> )
 
 need assembler need ufia need set-code-file
-need hgfile need lbyte need hldbk
+need hgfile need lbyte need hldbk need hook,
 
 code (file>) ( ca len -- ior )
 
@@ -581,7 +582,7 @@ code (file>) ( ca len -- ior )
 ( file-status )
 
 need assembler need ufia need set-filename
-need hgfile need lbyte
+need hgfile need lbyte need hook,
 
 code (file-status) ( -- a ior )
   ufia ix ldp#, ix push,
@@ -768,7 +769,7 @@ code (file-status) ( -- a ior )
   \ Experimental code to read lines from a file
 
 need assembler need ufia need set-code-file
-need hgfile need lbyte need dos-in, need dos-out,
+need hgfile need lbyte need dos-in, need dos-out, need hook,
 
 code (file>screen) ( -- ior )
 
@@ -805,7 +806,7 @@ code (file>screen) ( -- ior )
 
   \ XXX TMP -- for debugging
 
-need assembler need dos-in, need dos-out, need patch
+need assembler need dos-in, need dos-out, need patch need hook,
 
 code g.100h ( u -- )
   h pop, b push,
@@ -829,7 +830,7 @@ code g.100i ( u -- )
 
   \ XXX UNDER DEVELOPMENT -- 2017-02-13
 
-need assembler need rest need get-drive
+need assembler need rest need get-drive need hook,
 
 code (cd3 ( -- ior )
   b push, rest hook, b pop, next ix ldp#,
@@ -849,7 +850,7 @@ code (cd3 ( -- ior )
 
   \ XXX UNDER DEVELOPMENT -- 2017-02-13
 
-need assembler need ufia1 need rest need dos-in,
+need assembler need ufia1 need rest need dos-in, need hook,
 
 code cd2 ( n -- ior )
   h pop,
@@ -873,7 +874,7 @@ code cd2 ( n -- ior )
 
   \ XXX UNDER DEVELOPMENT -- 2017-02-13
 
-need assembler need ufia need rest
+need assembler need ufia need rest need hook,
 
 code cd1 ( n -- ior )
   h pop,
@@ -1449,5 +1450,7 @@ code (rename-file ( -- ior )
   \
   \ 2017-12-10: Update to `a push,` and `a pop,`, after the
   \ change in the assembler.
+  \
+  \ 2018-02-01: Need `hook,`, which has been made optional.
 
   \ vim: filetype=soloforth

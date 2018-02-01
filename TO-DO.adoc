@@ -198,10 +198,6 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
 
 === 2017-03-12
 
-Make `hook,` and `prt,` optional.
-
-=== 2017-03-12
-
 Study changes needed to use `ix addp,` instead of `addix,`;
 this means `h addp,` should be used instead of `addp,`
 

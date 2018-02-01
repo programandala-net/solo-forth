@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712111652
+  \ Last modified: 201802012249
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -197,11 +197,6 @@ B0 m2 or, A8 m2 xor, -->
   \ Macro to test 16-bit register for zero.
 
 ( assembler )
-
-  \ ZX Spectrum specific
-
-CF m4 hook,  \ rst $08
-D7 m1 prt,   \ rst $16
 
   \ Index register opcodes
 
@@ -643,6 +638,22 @@ macro call-xt, ( xt -- ) 21 c, , execute-hl, endm
   \
   \ }doc
 
+( hook, prt, )
+
+  \ ZX Spectrum specific macros.
+
+need assembler
+
+get-current assembler-wordlist dup >order set-current
+
+[unneeded] hook, ?\ $CF m4 hook,
+  \ Equivalent to ``$08 rst,`` (``rst $08``).
+
+[unneeded] prt, ?\ $D7 m1 prt,
+  \ Equivalent to ``$16 rst,`` (``rst $16``).
+
+set-current
+
   \ ===========================================================
   \ Change log
 
@@ -752,5 +763,7 @@ macro call-xt, ( xt -- ) 21 c, , execute-hl, endm
   \ instead of register AF.  Remove constant `af.`
   \
   \ 2017-12-11: Improve documentation.
+  \
+  \ 2018-02-01: Make `hook,` and `prt,` optional.
 
   \ vim: filetype=soloforth

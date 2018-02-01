@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201802012255
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1018,7 +1018,7 @@ code ink. ( b -- ) 3E c, 10 c, (0-9-color. jp, end-code ?)
   \
   \ }doc
 
-[unneeded] (0-9-color. ?( need assembler
+[unneeded] (0-9-color. ?( need assembler need prt,
 
 create (0-9-color. ( -- a ) asm
 
@@ -1224,5 +1224,7 @@ create (0-9-color. ( -- a ) asm
   \ 2017-05-09: Remove `jppushhl,`.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2018-02-01: Need `prt,`, which has been made optional.
 
   \ vim: filetype=soloforth
