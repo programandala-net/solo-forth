@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801041922
+  \ Last modified: 201802011555
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -430,7 +430,7 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \
   \ ``cond`` is an `immediate` and `compile-only` word.
   \
-  \ Usage example:
+  \ Generic usage example:
 
   \ ----
   \ : test ( x -- )
@@ -439,6 +439,20 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \     test2 if action2 else
   \     test3 if action3 else
   \     default-action
+  \   thens ;
+  \ ----
+
+  \ Note: The tested value must be preserved and discarded by
+  \ the application. Example:
+
+  \ ----
+  \ : test ( ca len -- )
+  \   cond
+  \     2dup s" first"  str= if 2drop ." unua"  else
+  \     2dup s" second" str= if 2drop ." dua"   else
+  \     2dup s" third"  str= if 2drop ." tria"  else
+  \     2dup s" fourth" str= if 2drop ." kvara" else
+  \     type ." ?"
   \   thens ;
   \ ----
 
@@ -470,7 +484,7 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \
   \ ``thens`` is a factor of `endcase` and other control
   \ structures, but it's also the end of the `cond` ..
-  \ ``thens`` structure.
+  \ ``thens`` structure. See `cond` for an usage example.
   \
   \ See: `cs-mark`, `cs-test`, `andif`, `orif`.
   \
@@ -634,5 +648,7 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ 2018-01-03: Fix documentation layout.
   \
   \ 2018-01-04: Improve documentation. Add `andif` and `orif`.
+  \
+  \ 2018-02-01: Improve documentation of `cond` and `thens`.
 
   \ vim: filetype=soloforth

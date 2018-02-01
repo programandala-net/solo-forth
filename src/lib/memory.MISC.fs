@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801192058
+  \ Last modified: 201802011631
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -705,6 +705,8 @@ code c!exchange ( c1 ca -- c2 )
   \ Reserve _n_ address units of data space, erase the zone and
   \ return its address _a_.
   \
+  \ See: `allot`, `alloted`, `here`, `erase`.
+  \
   \ }doc
 
 [unneeded] alloted ?\ : allotted ( n -- a ) here swap allot ;
@@ -715,6 +717,8 @@ code c!exchange ( c1 ca -- c2 )
   \
   \ Reserve _n_ address units of data space and return its
   \ address _a_.
+  \
+  \ See: `allot`, `here`, `reserve`.
   \
   \ }doc
 
@@ -932,5 +936,7 @@ code cexchange ( ca1 ca2 -- )
   \ 2018-01-04: Add `?c1-!`.
   \
   \ 2018-01-19: Add `con`.
+  \
+  \ 2018-02-01: Improve documentation.
 
   \ vim: filetype=soloforth

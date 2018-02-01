@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-01-25
+:revdate: 2018-02-01
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1740,13 +1740,14 @@ are made optional in the kernel.
 If `base` were not a user variable, `binary`, `hex` and `decimal`
 would be smaller in Z80 than in Forth.
 
-=== 2015-07-23, 2017-01-26
+=== 2015-07-23, 2017-01-26, 2018-02-01
 
 Idea: 2 more bytes for `base`, to be used as save-restore space.
 
 ----
-  : switch  ( a1 -- )  dup cell+ exchange  ;
-    \ Exchange the 16-bit contents of a1 and the following cell.
+  : switch  ( a -- )  dup cell+ exchange  ;
+    \ Exchange the cells stored at _a_ and the address of the
+    \ following cell.
 
   \ Example:
 
@@ -1758,7 +1759,7 @@ Idea: 2 more bytes for `base`, to be used as save-restore space.
 Use this to factor `dec.` and write `decu.` or `udec.` (useful in
 `where`).
 
-`switch` is taken by a control flow structure.
+Name `switch` is taken by a control flow structure.
 
 === 2015-09-12
 
