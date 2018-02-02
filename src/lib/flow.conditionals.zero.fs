@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712111554
+  \ Last modified: 201802021559
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -36,12 +36,13 @@
   \ 0if
   \   Compilation: ( C: -- orig )
   \   Run-time:    ( f -- )
+
   \
   \ Faster and smaller alternative to the idiom ``0= if``.
   \
   \ ``0if`` is an `immediate` and `compile-only` word.
   \
-  \ See: `if`, `-if`, `+if`.
+  \ See: `if`, `-if`, `+if`, `0while`, `0until`, `0exit`.
   \
   \ }doc
 
@@ -56,12 +57,13 @@
   \ 0while
   \   Compilation: ( C: dest -- orig dest )
   \   Run-time:    ( f -- )
+
   \
   \ Faster and smaller alternative to the idiom ``0= while``.
   \
   \ ``0while`` is an `immediate` and `compile-only` word.
   \
-  \ See: `while`, `-while`, `+while`.
+  \ See: `while`, `-while`, `+while`, `0if`, `0until`, `0exit`.
   \
   \ }doc
 
@@ -76,12 +78,13 @@
   \ 0until
   \   Compilation: ( C: dest -- )
   \   Run-time:    ( f -- )
+
   \
   \ Faster and smaller alternative to the idiom ``0= until``.
   \
   \ ``0until`` is an `immediate` and `compile-only` word.
   \
-  \ See: `until`, `-until`, `+until`.
+  \ See: `until`, `-until`, `+until`, `0if`, `0while`, `0exit`.
   \
   \ }doc
 
@@ -108,7 +111,8 @@ code 0exit ( f -- ) ( R: nest-sys | -- nest-sys | )
   \ ``0exit`` can be used in interpretation mode to stop the
   \ interpretation of a block.
   \
-  \ See: `?exit`, `exit`, `-exit` ,`+exit`.
+  \ See: `?exit`, `exit`, `-exit` ,`+exit`, `0if`, `0while`,
+  \ `0until`.
   \
   \ }doc
 
@@ -141,5 +145,7 @@ code 0exit ( f -- ) ( R: nest-sys | -- nest-sys | )
   \ `_jp_next` in Z80 comments.
   \
   \ 2017-12-11: Improve documentation.
+  \
+  \ 2018-02-02: Improve documentation.
 
   \ vim: filetype=soloforth

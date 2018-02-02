@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801250923
+  \ Last modified: 201802021630
 
   \ ===========================================================
   \ Description
@@ -83,7 +83,7 @@ need c@+ need for need 16hex. need 8hex.
 
 : >> ( ca +n -- )
   depth 1- <> #-258 ?throw
-  cr dup 16hex. here over - for  c@+ 8hex.  step drop ; ?)
+  cr dup 16hex. here over - for c@+ 8hex. step drop ; ?)
 
   \ doc{
   \
@@ -228,6 +228,8 @@ need c@+ need for need 16hex. need 8hex.
   \ 2017-12-15: Move `;code` from <definer.MISC.fs>.
   \
   \ 2018-01-25: Fix comments.
+  \
+  \ 2018-02-02: Update code style of `>>`.
 
   \ vim: filetype=soloforth
 

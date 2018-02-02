@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712061818
+  \ Last modified: 201802021525
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -373,7 +373,7 @@ init-labels ' init-labels ' init-asm defer!
 : l-id># ( b -- n ) [ rl-id al-id or invert ] cliteral and ;
 
 : ?resolve-ref ( n1 n2 -- )
-  >l-ref dup c@ dup if   l-id># rot = if resolve-ref
+  >l-ref dup c@ dup if   l-id># rot = if   resolve-ref
                                       else drop then
                     else 2drop drop then ;
   \ If label reference _n2_ points to label _n1_, resolve it.
@@ -423,7 +423,7 @@ set-current set-order
 
 need dump need l:
 
-assembler-wordlist >order 
+assembler-wordlist >order
 
 : .l ( -- ) labels @ /labels dump cr l-refs @ /l-refs dump ;
 
@@ -502,5 +502,7 @@ previous
   \ 2017-05-14: Improve documentation.
   \
   \ 2017-12-06: Improve documentation.
+  \
+  \ 2018-02-02: Fix layout.
 
   \ vim: filetype=soloforth

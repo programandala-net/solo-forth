@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712111500
+  \ Last modified: 201802021645
 
   \ ===========================================================
   \ Description
@@ -19,7 +19,7 @@
   \ 18, number 4, pp 5-14), 1996-12.
   \
   \ Modified and adapted to Solo Forth by Marcos Cruz
-  \ (programandala.net), 2015, 2016, 2017.
+  \ (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -34,6 +34,8 @@ need cs-swap
 
 : {if \ Compilation: ( -- 0 )
   0 ; immediate compile-only
+
+  \ XXX TODO -- use `cs-mark`
 
   \ doc{
   \
@@ -168,5 +170,7 @@ need cs-swap need cs-dup
   \ 2017-12-11: Improve file header. Prepare documentation.
   \ Replace `1 cs-roll` and `0 cs-pick` with `cs-swap` and
   \ `cs-dup`.
+  \
+  \ 2018-02-02: Update notes.
 
   \ vim: filetype=soloforth

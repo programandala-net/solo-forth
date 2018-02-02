@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201802011629
+; Last modified: 201802021611
 
 include version.z80s
 
@@ -13703,13 +13703,10 @@ block.end:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See: `again`, `repeat`, `<resolve`, `compile`, `0until`,
-; `-until`, `+until`.
+; See: `while`, `again`, `repeat`, `<resolve`, `compile`,
+; `0until`, `-until`, `+until`.
 ;
 ; }doc
-
-  ; XXX TODO -- Finish the documentation: _f_ --> _x_, also for
-  ; `0until` and `-until`.
 
   dw compile_,zero_branch_
   dw backward_resolve_
@@ -13935,7 +13932,7 @@ if.do:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See: `if`, `cs-swap`, `postpone`, `0while`, `-while`,
+; See: `if`, `until`, `cs-swap`, `postpone`, `0while`, `-while`,
 ; `+while`.
 ;
 ; }doc
