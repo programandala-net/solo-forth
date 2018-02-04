@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705051942
+  \ Last modified: 201802041948
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -39,7 +39,7 @@ code -branch ( n -- )
 
   \ doc{
   \
-  \ -branch ( n -- )
+  \ -branch ( n -- ) "minus-branch"
   \
   \ A run-time procedure to branch conditionally. If  _n_ is
   \ negative, the following in-line address is copied to IP to
@@ -63,7 +63,7 @@ code +branch ( n -- )
 
   \ doc{
   \
-  \ +branch ( n -- )
+  \ +branch ( n -- ) "plus-branch"
   \
   \ A run-time procedure to branch conditionally. If  _n_ is
   \ positive, the following in-line address is copied to IP to
@@ -93,6 +93,9 @@ code +branch ( n -- )
   \ 2017-03-13: Improve documentation.
   \
   \ 2017-05-05: Improve documentation.
+  \
+  \ 2018-02-04: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth
 

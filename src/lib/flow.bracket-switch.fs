@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712102325
+  \ Last modified: 201802041948
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -20,7 +20,7 @@
   \ 1998-09).
   \
   \ Marcos Cruz (programandala.net) adapted the code to Solo
-  \ Forth, 2015, 2016, 2017.
+  \ Forth, 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -67,7 +67,7 @@ need pick need link,
 
   \ doc{
   \
-  \ <switch ( a xt n -- a )
+  \ <switch ( a xt n -- a ) "start-switch"
   \
   \ Define a new clause of a `:switch` structure whose head is
   \ _a_ to execute _xt_ when the key _n_ is matched.
@@ -89,7 +89,7 @@ need pick need link,
 
   \ doc{
   \
-  \ :switch ( xt "name" -- a )
+  \ :switch ( xt "name" -- a ) "colon-switch"
   \
   \ Create a code switch _name_ whose default action is given
   \ by _xt_. Leave the address _a_ of the head of its list on
@@ -146,7 +146,7 @@ need pick need link,
 
   \ doc{
   \
-  \ [+switch ( "name" -- a )
+  \ [+switch ( "name" -- a ) "bracket-plus-switch"
   \
   \ Open the `[switch` structure _name_ to include additional
   \ clauses.  The default behavior remains unchanged. The
@@ -167,7 +167,7 @@ need pick need link,
 
   \ doc{
   \
-  \ [switch ( "name1" "name2" -- a )
+  \ [switch ( "name1" "name2" -- a ) "bracket-switch"
   \
   \ Start the definition of a switch structure _name1_
   \ consisting of a linked list of single-precision numbers and
@@ -218,7 +218,7 @@ need pick need link,
 
   \ doc{
   \
-  \ switch] ( a -- )
+  \ switch] ( a -- ) "switch-bracket"
   \
   \ Terminate a switch structure (or the latest additions to
   \ it) by marking the end of its linked list.  Discard the
@@ -256,7 +256,7 @@ need pick need link,
 
   \ doc{
   \
-  \ run: ( a n "ccc<semicolon>" -- a )
+  \ run: ( a n "ccc<semicolon>" -- a ) "run-colon"
   \
   \ Add a clause to a `[switch` structure whose head is _a_.
   \ The key value of the clause is _n_ and its associated
@@ -305,5 +305,8 @@ need pick need link,
   \
   \ 2017-12-10: Improve documentation. Improve needing. Unalias
   \ `switch]`.
+  \
+  \ 2018-02-04: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

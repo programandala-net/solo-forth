@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801110053
+  \ Last modified: 201802041934
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2017.
+  \ Marcos Cruz (programandala.net), 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -29,7 +29,7 @@
 
   \ doc{
   \
-  \ /filename ( -- n )
+  \ /filename ( -- n ) "slash-filename"
   \
   \ Return the maximum length of a +3DOS filename, including
   \ drive, user area and filename extension.
@@ -42,7 +42,7 @@
 
   \ doc{
   \
-  \ /base-filename ( -- n )
+  \ /base-filename ( -- n ) "slash-basefilename"
   \
   \ Return the maximum length of a +3DOS base filename, i.e.,
   \ a filename without drive, user area and extension.
@@ -55,7 +55,7 @@
 
   \ doc{
   \
-  \ /filename-ext ( -- n )
+  \ /filename-ext ( -- n ) "slash-filename-ext"
   \
   \ Return the maximum length of a +3DOS filename extension
   \ excluding the dot.
@@ -72,7 +72,7 @@
 
   \ doc{
   \
-  \ >filename ( ca1 len1 -- ca2 )
+  \ >filename ( ca1 len1 -- ca2 ) "to-filename"
   \
   \ Convert the filename _ca1 len1_ to a $FF-terminated string
   \ at _ca2_ in the `stringer`.
@@ -100,7 +100,7 @@ code (rename-file ( ca1 ca2 -- ior )
 
   \ doc{
   \
-  \ (rename-file ( ca1 ca2 -- ior )
+  \ (rename-file ( ca1 ca2 -- ior ) "paren-rename-file"
   \
   \ Rename filename _ca1_ (a $FF-terminated string) to filename
   \ _ca2_ (a $FF-terminated string) and return error result
@@ -158,7 +158,7 @@ code get-1346 ( -- n1 n2 n3 n4 )
 
   \ doc{
   \
-  \ get-1346 ( -- n1 n2 n3 n4 )
+  \ get-1346 ( -- n1 n2 n3 n4 ) "get-1-3-4-6"
   \
   \ Return the +3DOS current configuration of RAM banks 1, 3, 4
   \ and 6, which are organized as an array of 128 sector
@@ -197,7 +197,7 @@ code set-1346 ( n1 n2 n3 n4 -- )
 
   \ doc{
   \
-  \ set-1346 ( n1 n2 n3 n4 -- )
+  \ set-1346 ( n1 n2 n3 n4 -- ) "set-1-3-4-6"
   \
   \ Set the +3DOS configuration of RAM banks 1, 3, 4 and 6,
   \ which are organized as an array of 128 sector buffers, each
@@ -235,7 +235,7 @@ code (delete-file ( ca -- ior )
 
   \ doc{
   \
-  \ (delete-file ( ca -- ior )
+  \ (delete-file ( ca -- ior ) "paren-delete-file"
   \
   \ Delete the disk file named in the $FF-terminated string
   \ _ca_ and return an error result _ior_.
@@ -290,7 +290,7 @@ file-id-table max-file-id 1+ erase
 
   \ doc{
   \
-  \ r/o ( -- fam )
+  \ r/o ( -- fam ) "r-o"
   \
   \ Return the "read only" file access method _fam_.
   \
@@ -305,7 +305,7 @@ file-id-table max-file-id 1+ erase
 
   \ doc{
   \
-  \ w/o ( -- fam )
+  \ w/o ( -- fam ) "w-o"
   \
   \ Return the "write only" file access method _fam_.
   \
@@ -320,7 +320,7 @@ file-id-table max-file-id 1+ erase
 
   \ doc{
   \
-  \ r/w ( -- fam )
+  \ r/w ( -- fam ) "r-w"
   \
   \ Return the "read/write" file access method _fam_.
   \
@@ -335,7 +335,7 @@ file-id-table max-file-id 1+ erase
 
   \ doc{
   \
-  \ r/w ( -- fam )
+  \ s/r ( -- fam ) "s-r"
   \
   \ Return the "shared read" file access method _fam_.
   \
@@ -570,7 +570,7 @@ code (close-file ( fid -- ior )
 
   \ doc{
   \
-  \ (close-file ( fid -- ior )
+  \ (close-file ( fid -- ior ) "paren-close-file"
   \
   \ Close the file identified by _fid_ and return error result
   \ _ior_.
@@ -663,7 +663,7 @@ need >filename need /base-filename need /filename-ext
 
   \ doc{
   \
-  \ /cat-entry ( -- n )
+  \ /cat-entry ( -- n ) "slash-cat-entry"
   \
   \ Return size _n_, in bytes, of every entry of the
   \ `cat-buffer` used by `cat`.
@@ -706,7 +706,7 @@ defer cat-buffer ' pad ' cat-buffer defer!
 
   \ doc{
   \
-  \ .filename-ext ( -- ca )
+  \ .filename-ext ( -- ca ) "dot-filename-ext"
   \
   \ Display the filename extension whose `/filename-ext`
   \ characters (left justified, space filled) are stored at
@@ -722,7 +722,7 @@ defer cat-buffer ' pad ' cat-buffer defer!
 
   \ doc{
   \
-  \ .filename ( ca -- )
+  \ .filename ( ca -- ) "dot-filename"
   \
   \ Display the filename whose characters are stored at _ca_,
   \ in two parts: `/base-filename` characters (left justified,
@@ -741,7 +741,7 @@ defer cat-buffer ' pad ' cat-buffer defer!
 
   \ doc{
   \
-  \ >cat-entry ( n -- ca )
+  \ >cat-entry ( n -- ca ) "to-cat-entry"
   \
   \ Convert `cat-buffer` entry _n_ to its address _ca_.
   \
@@ -771,7 +771,7 @@ variable full-cat  full-cat on
 
   \ doc{
   \
-  \ >cat ( ca len -- ca1 ca2 x )
+  \ >cat ( ca len -- ca1 ca2 x ) "to-cat"
   \
   \ Convert filename _ca len_ (wildcards permitted) to the
   \ parameters needed by `(cat`:
@@ -809,7 +809,7 @@ variable full-cat  full-cat on
 
   \ doc{
   \
-  \ more-cat? ( n -- f )
+  \ more-cat? ( n -- f ) "more-cat-question"
   \
   \ There may be more catalague entries to come after _n_ of
   \ them have been completed in `cat-buffer`?
@@ -830,7 +830,7 @@ code (cat ( ca1 ca2 x -- n ior )
 
   \ doc{
   \
-  \ (cat ( ca1 ca2 x -- n ior )
+  \ (cat ( ca1 ca2 x -- n ior ) "paren-cat"
   \
   \ Fill a buffer _ca2_ with part of the directory (sorted),
   \ using filename stored at _ca1_. Input and output
@@ -871,7 +871,7 @@ need (cat need 3dup need 3drop
 
   \ doc{
   \
-  \ .cat-entry ( ca -- )
+  \ .cat-entry ( ca -- ) "dot-cat-entry"
   \
   \ Display a catalogue entry stored at _ca_. Format of the
   \ entry:
@@ -894,7 +894,7 @@ need (cat need 3dup need 3drop
 
   \ doc{
   \
-  \ .cat ( n -- )
+  \ .cat ( n -- ) "dot-cat"
   \
   \ Display _n_ entries from `cat-buffer`.
   \
@@ -911,7 +911,7 @@ need (cat need 3dup need 3drop
 
   \ doc{
   \
-  \ wcat ( ca len -- )
+  \ wcat ( ca len -- ) "w-cat"
   \
   \ Show a wild-card disk catalogue using the wild-card
   \ filename _ca len_.
@@ -940,7 +940,7 @@ need (cat need tab need 3dup need 3drop
 
   \ doc{
   \
-  \ .acat ( n -- )
+  \ .acat ( n -- ) "dot-a-cat"
   \
   \ Display _n_ entries from `cat-buffer`, in abbreviated
   \ format.
@@ -958,7 +958,7 @@ need (cat need tab need 3dup need 3drop
 
   \ doc{
   \
-  \ wacat ( ca len -- )
+  \ wacat ( ca len -- ) "w-a-cat"
   \
   \ Show an abbreviated wild-card disk catalogue using the
   \ wild-card filename _ca len_.
@@ -971,7 +971,7 @@ need (cat need tab need 3dup need 3drop
 
   \ doc{
   \
-  \ acat ( -- )
+  \ acat ( -- ) "a-cat"
   \
   \ Show an abbreviated disk catalogue of the current drive.
   \
@@ -1021,5 +1021,8 @@ need (cat need tab need 3dup need 3drop
   \ 2017-12-09: Improve documentation.
   \
   \ 2018-01-11: Improve documentation.
+  \
+  \ 2018-02-04: Fix documentation. Improve documentation: add
+  \ pronunciation to words that need it.
 
   \ vim: filetype=soloforth

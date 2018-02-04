@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712092313
+  \ Last modified: 201802041943
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -46,7 +46,7 @@ wordlist constant environment-wordlist ( -- wid )
 
   \ doc{
   \
-  \ environment? ( ca len -- false | i*x true )
+  \ environment? ( ca len -- false | i*x true ) "environment-question"
   \
   \ The string _ca len_ is the identifier of an environmental
   \ query. If the string is not recognized, return a false
@@ -179,7 +179,7 @@ set-current previous
 
   \ doc{
   \
-  \ /counted-string ( -- n )
+  \ /counted-string ( -- n ) "slash-counted-string"
   \
   \ _n_ is the maximum size of a counted string, in characters.
   \
@@ -193,7 +193,7 @@ set-current previous
 
   \ doc{
   \
-  \ /pad ( -- n )
+  \ /pad ( -- n ) "slash-pad"
   \
   \ _n_ is the size of the scratch area pointed to by `pad`, in
   \ characters.
@@ -269,7 +269,7 @@ set-current previous
 
   \ doc{
   \
-  \ max-ud ( -- ud )
+  \ max-ud ( -- ud ) "max-u-d"
   \
   \ _ud_ is the largest usable unsigned double.
   \
@@ -341,5 +341,8 @@ set-current previous
   \ 2017-05-05: Improve documentation.
   \
   \ 2017-12-09: Improve documentation.
+  \
+  \ 2018-02-04: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

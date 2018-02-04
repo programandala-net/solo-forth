@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712101955
+  \ Last modified: 201802041816
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -34,7 +34,7 @@
 
   \ doc{
   \
-  \ ud.r ( ud n -- )
+  \ ud.r ( ud n -- ) "u-d-dot-r"
   \
   \ Display _ud_ right aligned in a field _n_ characters wide.
   \ If the number of characters required to display _ud_ is
@@ -54,7 +54,7 @@
 
   \ doc{
   \
-  \ u.r ( u n -- )
+  \ u.r ( u n -- ) "u-dot-r"
   \
   \ Display _u_ right aligned in a field _n_ characters wide.
   \ If the number of characters required to display _u_ is
@@ -82,7 +82,7 @@
 
   \ doc{
   \
-  \ ud. ( ud -- )
+  \ ud. ( ud -- ) "u-d-dot"
   \
   \ Display an usigned double number _ud_.
   \
@@ -115,7 +115,7 @@
 
   \ doc{
   \
-  \ .00 ( +n -- )
+  \ .00 ( +n -- ) "dot-zero-zero"
   \
   \ Display _+n_ with two digits.
   \
@@ -127,7 +127,7 @@
 
   \ doc{
   \
-  \ .0000 ( +n -- )
+  \ .0000 ( +n -- ) "dot-zero-zero-zero-zero"
   \
   \ Display _+n_ with four digits.
   \
@@ -149,7 +149,7 @@
 
   \ doc{
   \
-  \ bin. ( n -- )
+  \ bin. ( n -- ) "bin-dot"
   \
   \ Display _n_ as an unsigned binary number, followed by
   \ one space.
@@ -163,7 +163,7 @@
 
   \ doc{
   \
-  \ hex. ( n -- )
+  \ hex. ( n -- ) "hex-dot"
   \
   \ Display _n_ as an unsigned hexadecimal number, followed by
   \ one space.
@@ -188,7 +188,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
 
   \ doc{
   \
-  \ base' ( -- a )
+  \ base' ( -- a ) "base-tick"
   \
   \ A temporary variable used by `<hex`, `hex>`, `<bin` and
   \ `bin>`.  to store the current value of `base`.
@@ -199,7 +199,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
 
   \ doc{
   \
-  \ base> ( -- )
+  \ base> ( -- ) "base-from"
   \
   \ Restore the previous value of `base` from `base'`.
   \ ``base>`` is executed by `bin>` and `hex>`.
@@ -211,7 +211,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
 
   \ doc{
   \
-  \ (d. ( d n -- ca len )
+  \ (d. ( d n -- ca len ) "paren-d-dot"
   \
   \ Convert _d_ to an unsigned number in the current `base`,
   \ with _n_ digits, as string _ca len_.
@@ -225,7 +225,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
 
   \ doc{
   \
-  \ <hex ( -- )
+  \ <hex ( -- ) "start-hex"
   \
   \ Start a code zone where hexadecimal radix is the default,
   \ by save the current value of `base` to `base'` and
@@ -239,7 +239,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
 
   \ doc{
   \
-  \ hex> ( -- )
+  \ hex> ( -- ) "end-hex"
   \
   \ End a code zone where hexadecimal radix is the default, by
   \ restoring the value of `base` from `base'`.  The zone was
@@ -252,7 +252,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
 
   \ doc{
   \
-  \ (dhex. ( d n -- )
+  \ (dhex. ( d n -- ) "paren-d-hex-dot"
   \
   \ Display _d_ as an unsigned hexadecimal number with _n_ digits.
   \
@@ -265,7 +265,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
 
   \ doc{
   \
-  \ 32hex. ( d -- )
+  \ 32hex. ( d -- ) "32-hex-dot"
   \
   \ Display _d_ as an unsigned 32-bit hexadecimal number.
   \
@@ -278,7 +278,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
 
   \ doc{
   \
-  \ 16hex. ( d -- )
+  \ 16hex. ( d -- ) "16-hex-dot"
   \
   \ Display _d_ as an unsigned 16-bit hexadecimal number.
   \
@@ -291,7 +291,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
 
   \ doc{
   \
-  \ 8hex. ( d -- )
+  \ 8hex. ( d -- ) "8-hex-dot"
   \
   \ Display _d_ as an unsigned 8-bit hexadecimal number.
   \
@@ -323,7 +323,7 @@ need base' need base> need binary
 
   \ doc{
   \
-  \ <bin ( -- )
+  \ <bin ( -- ) "start-bin"
   \
   \ Start a code zone where binary radix is the default, by
   \ saving the current value of `base` to `base'` and executing
@@ -335,7 +335,7 @@ need base' need base> need binary
 
   \ doc{
   \
-  \ bin> ( -- )
+  \ bin> ( -- ) "end-bin"
   \
   \ End a code zone where binary radix is the default, by
   \ restoring the value of `base` from `base'`.  The zone was
@@ -349,7 +349,7 @@ need base' need base> need binary
 
   \ doc{
   \
-  \ (dbin. ( d n -- )
+  \ (dbin. ( d n -- ) "paren-d-bin-dot"
   \
   \ Display _d_ as an unsigned binary number with _n_ digits.
   \
@@ -362,7 +362,7 @@ need base' need base> need binary
 
   \ doc{
   \
-  \ 32bin. ( d -- )
+  \ 32bin. ( d -- ) "32-bin-dot"
   \
   \ Display _d_ as an unsigned 32-bit binary number.
   \
@@ -375,7 +375,7 @@ need base' need base> need binary
 
   \ doc{
   \
-  \ 16bin. ( n -- )
+  \ 16bin. ( n -- ) "16-bin-dot"
   \
   \ Display _n_ as an unsigned 16-bit binary number.
   \
@@ -388,7 +388,7 @@ need base' need base> need binary
 
   \ doc{
   \
-  \ 8bin. ( n -- )
+  \ 8bin. ( n -- ) "8-bin-dot"
   \
   \ Display _n_ as an unsigned 8-bit binary number.
   \
@@ -430,5 +430,8 @@ need base' need base> need binary
   \
   \ 2017-12-10: Move `.00` and `.0000` from <time.fs>.
   \ Document them.
+  \
+  \ 2018-02-04: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

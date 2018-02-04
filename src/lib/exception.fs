@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712092216
+  \ Last modified: 201802041945
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -30,7 +30,7 @@
 
   \ doc{
   \
-  \ ?compiling ( -- )
+  \ ?compiling ( -- ) "question-compiling"
   \
   \ If not compiling, `throw` exception #-14 ("interpreting a
   \ compile-only word").
@@ -44,7 +44,7 @@
 
   \ doc{
   \
-  \ ?executing ( -- )
+  \ ?executing ( -- ) "question-executing"
   \
   \ If not executing, `throw` exception #-263 ("execution
   \ only").
@@ -68,7 +68,7 @@
 
   \ doc{
   \
-  \ (abort")  ( x -- )
+  \ (abort")  ( x -- ) "paren-abort-quote"
   \
   \ If _x_ is not zero, perform the function of ``-2 throw``,
   \ displaying the string that was compiled inline by `abort"`.
@@ -87,7 +87,7 @@
 
   \ doc{
   \
-  \ abort"
+  \ abort" "abort-quote"
   \   Compilation: ( "ccc<quote>" -- )
   \   Run-time:    ( x -- )
   \
@@ -111,7 +111,7 @@
 
   \ doc{
   \
-  \ (warning") ( f -- )
+  \ (warning") ( f -- ) "paren-warning-quote"
   \
   \ If _f_ is not zero, display the in-line string; else do
   \ nothing.
@@ -128,7 +128,7 @@
 
   \ doc{
   \
-  \ warning"
+  \ warning" "warning-quote"
   \   Compilation: ( "ccc<quote>" -- )
   \   Execution:   ( f -- )
 
@@ -161,7 +161,7 @@
 
   \ doc{
   \
-  \ error>ordinal ( -n1 -- +n2 )
+  \ error>ordinal ( -n1 -- +n2 ) "error-to-ordinal"
   \
   \ Convert an error code _n1_ to its ordinal position _+n2_ in
   \ the library.
@@ -183,7 +183,7 @@
 
   \ doc{
   \
-  \ error>line ( -n1 -- n2 )
+  \ error>line ( -n1 -- n2 ) "error-to-line"
   \
   \ Convert error code _-n1_ to line _n2_ relative to the block
   \ that contains the error messages.
@@ -220,7 +220,7 @@ s" Standard error codes" located errors-block !
 
   \ doc{
   \
-  \ .throw-message ( n -- )
+  \ .throw-message ( n -- ) "dot-throw-message"
   \
   \ Extended action of the deferred word `.throw`: Display the
   \ text of the `throw` exception code _n_.  The variable
@@ -320,6 +320,9 @@ s" Standard error codes" located errors-block !
   \
   \ 2017-12-09: Remove optional definition of `abort-message`,
   \ which is defined in the kernel.
+  \
+  \ 2018-02-04: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201802041956
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,7 +23,7 @@
   \ Dimensions (volume 3, number 6, page 189, 1982-03).
 
   \ Marcos Cruz (programandala.net), adapted, renamed and
-  \ commented the original code, 2015, 2016, 2017.
+  \ commented the original code, 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -51,7 +51,7 @@
 
   \ doc{
   \
-  \ cases: ( "name" -- orig 0 )
+  \ cases: ( "name" -- orig 0 ) "cases-colon"
   \
   \ Define a `cases:` structure "name", built as an array of
   \ pairs (value and associated vector).
@@ -60,15 +60,15 @@
   \ Usage example:
   \
   \ ----
-  \ : say10      ." dek" ;
-  \ : say100     ." cent" ;
-  \ : say1000    ." mil" ;
+  \ : say-10     ." dek" ;
+  \ : say-100    ." cent" ;
+  \ : say-1000   ." mil" ;
   \ : say-other  ." alia" ;
   \
   \ cases: say ( n -- )
-  \     10 case>      say10
-  \    100 case>      say100
-  \   1000 case>      say1000
+  \     10 case>      say-10
+  \    100 case>      say-100
+  \   1000 case>      say-1000
   \        othercase> say-other
   \
   \ 10 say  100 say  1000 say  1001 say
@@ -81,7 +81,7 @@
 
   \ doc{
   \
-  \ case> ( orig counter selector "name" -- orig counter' )
+  \ case> ( orig counter selector "name" -- orig counter' ) "case-from"
   \
   \ Compile an option into a `cases:` structure. The given
   \ _selector_ will cause the word "name" to be executed.
@@ -94,7 +94,7 @@
 
   \ doc{
   \
-  \ othercase> ( orig counter "name" -- )
+  \ othercase> ( orig counter "name" -- ) "other-case-from"
   \
   \ Compile the default option of a `cases:` to be the word
   \ "name" . This must be the last option of the structure and
@@ -114,5 +114,8 @@
   \ documentation and file header.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2018-02-04: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

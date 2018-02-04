@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801031719
+  \ Last modified: 201802041821
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2017.
+  \ Marcos Cruz (programandala.net), 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -60,7 +60,7 @@
 
   \ doc{
   \
-  \ ?drive# ( u -- )
+  \ ?drive# ( u -- ) "question-drive-hash"
   \
   \ If _u_ is greater than the maximum number of disk drives,
   \ throw exception #-35 ("invalid block number").
@@ -76,7 +76,7 @@
 
   \ doc{
   \
-  \ ?block-drive# ( u -- )
+  \ ?block-drive# ( u -- ) "question-block-drive-hash"
   \
   \ If _u_ is `not-block-drive`, throw exception #-35 ("invalid
   \ block number").
@@ -130,7 +130,7 @@ need ?drive# need block-drive@ need ?block-drive
 
   \ doc{
   \
-  \ (>drive-block ( u1 -- u2 )
+  \ (>drive-block ( u1 -- u2 ) "paren-to-drive-block"
   \
   \ Convert block _u1_ to its equivalent _u2_ in its
   \ corresponding disk drive, which is set the current drive.
@@ -167,7 +167,7 @@ need ?drive# need block-drive@ need ?block-drive
 
   \ doc{
   \
-  \ -block-drives ( -- )
+  \ -block-drives ( -- ) "minus-block-drives"
   \
   \ Fill `block-drives` with `not-block-drive`, making no disk
   \ drive be used as block drive.
@@ -182,7 +182,7 @@ need ?drive# need block-drive@ need ?block-drive
 
   \ doc{
   \
-  \ block-drive@ ( n -- c ) >block-drive c@ ;
+  \ block-drive@ ( n -- c ) "block-drive-fetch"
   \
   \ Get drive _c_ (DOS dependent) currently used as block drive
   \ number _n_ (0 index).
@@ -197,7 +197,7 @@ need ?drive# need block-drive@ need ?block-drive
 
   \ doc{
   \
-  \ block-drive! ( c n -- ) >block-drive c@ ;
+  \ block-drive! ( c n -- ) "block-drive-store"
   \
   \ Set drive _c_ (DOS dependent) as block drive number _n_ (0
   \ index).
@@ -214,7 +214,7 @@ need ?drive# need block-drive@ need ?block-drive
 
   \ doc{
   \
-  \ ?drives ( n -- )
+  \ ?drives ( n -- ) "question-drives"
   \
   \ If _n_ is greater than the maximum number of disk drives,
   \ throw exception #-287 ("wrong number of drives").
@@ -316,5 +316,8 @@ need block-drive@
   \ 2017-12-05: Fix and update stack notation.
   \
   \ 2018-01-03: Update `1literal` to `xliteral`.
+  \
+  \ 2018-02-04: Fix documentation. Improve documentation: add
+  \ pronunciation to words that need it.
 
   \ vim: filetype=soloforth

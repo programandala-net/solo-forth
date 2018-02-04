@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802011555
+  \ Last modified: 201802041824
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -15,7 +15,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -32,7 +32,7 @@
 
   \ doc{
   \
-  \ +perform ( a n -- )
+  \ +perform ( a n -- ) "plus-perform"
   \
   \ Execute the execution token pointed by an offset of _n_
   \ cells from base address _a_, i.e., execute the contents of
@@ -96,8 +96,7 @@ code call ( a -- )
   \ don't ( n1 n2 -- | n1 n2 )
   \
   \ If _n1_ equals _n2_, remove them and exit the definition
-  \ that called ``don't``, else leave the _n1_ and _n2_ on the
-  \ stack.
+  \ that called ``don't``, else leave _n1 n2_ on the stack.
   \
   \ ``don't`` is a `compile-only` word.
   \
@@ -151,7 +150,7 @@ code call ( a -- )
 
   \ doc{
   \
-  \ ?repeat
+  \ ?repeat "question-repeat"
   \   Compilation: ( dest -- dest )
   \   Run-time:    ( f -- )
 
@@ -194,7 +193,9 @@ code call ( a -- )
 
   \ doc{
   \
-  \ 0repeat Compilation: ( dest -- dest ) Run-time:    ( f -- )
+  \ 0repeat "zero-repeat"
+  \   Compilation: ( dest -- dest )
+  \   Run-time:    ( f -- )
   \
   \ An alternative exit point for `begin` ... `until` loops: If
   \ _f_ is zero, continue execution at `begin`, otherwise
@@ -298,7 +299,7 @@ code call ( a -- )
 
   \ doc{
   \
-  \ ??
+  \ ?? "question-question"
   \   Compilation: ( "name" -- )
   \   Run-time:    ( f -- )
   \
@@ -357,9 +358,9 @@ code call ( a -- )
 
   \ doc{
   \
-  \ ?retry
-  \   \ Compilation: ( -- )
-  \   \ Run-time:    ( f -- )
+  \ ?retry "question-retry"
+  \   Compilation: ( -- )
+  \   Run-time:    ( f -- )
   \
   \ Do a conditional branch to the start of the word.
   \
@@ -382,7 +383,7 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
 
   \ doc{
   \
-  \ ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
+  \ ?leave ( f -- ) ( R: loop-sys -- | loop-sys ) "question-leave"
   \
   \ If _f_ is non-zero, discard the loop-control parameters for
   \ the current nesting level and continue execution
@@ -500,7 +501,7 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
 
   \ doc{
   \
-  \ andif                         "and-if"
+  \ andif "and-if"
   \   Compilation: ( C: -- orig )
   \   Run-time:    ( f -- )
   \
@@ -540,7 +541,7 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
 
   \ doc{
   \
-  \ orif                          "or-if"
+  \ orif "or-if"
   \   Compilation: ( C: -- orig )
   \   Run-time:    ( f -- )
   \
@@ -650,5 +651,8 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ 2018-01-04: Improve documentation. Add `andif` and `orif`.
   \
   \ 2018-02-01: Improve documentation of `cond` and `thens`.
+  \
+  \ 2018-02-04: Fix documentation layout. Improve
+  \ documentation: add pronunciation to words that need it.
 
   \ vim: filetype=soloforth

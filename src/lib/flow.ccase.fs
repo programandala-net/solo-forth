@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702280008
+  \ Last modified: 201802042000
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -24,7 +24,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
 
   \ ===========================================================
   \ Credit
@@ -48,7 +48,7 @@ need alias need char-position?
 
   \ doc{
   \
-  \ end?ccase
+  \ end?ccase "end-question-case"
   \   Compilation: ( C: orig -- )
   \   Run-time: ( -- )
   \
@@ -64,7 +64,7 @@ need alias need char-position?
 
   \ doc{
   \
-  \ (?ccase) ( c ca len -- )
+  \ (?ccase) ( c ca len -- ) "paren-question-c-case"
   \
   \ Run-time procedure compiled by `?ccase`.  If _c_ is in the
   \ string _ca len_, execute the n-th word compiled after
@@ -80,7 +80,10 @@ need alias need char-position?
 
   \ doc{
   \
-  \ ?ccase Compilation: ( C: -- orig ) Run-time: ( c ca len --)
+  \ ?ccase "question-c-case"
+  \   Compilation: ( C: -- orig )
+  \   Run-time: ( c ca len --)
+
   \
   \ Start a ``?ccase``..`end?ccase` structure. If _c_ is in the
   \ string _ca len_, execute the n-th word compiled after
@@ -115,7 +118,7 @@ need alias need char-position?
 
   \ doc{
   \
-  \ endccase0
+  \ endccase0 "end-c-case-zero"
   \   Compilation: ( C: orig -- )
   \   Run-time: ( -- )
   \
@@ -137,7 +140,7 @@ need alias need char-position?
 
   \ doc{
   \
-  \ (ccase0) ( c ca len -- )
+  \ (ccase0) ( c ca len -- ) "paren-c-case-zero"
   \
   \ Run-time procedure compiled by `ccase0`.  If _c_ is in the
   \ string _ca len_, execute the n-th word compiled after
@@ -154,8 +157,10 @@ need alias need char-position?
 
   \ doc{
   \
-  \ ccase0 Compilation: ( C: -- orig ) Run-time: ( c ca len --
-  \ )
+  \ ccase0 "c-case-zero"
+  \   Compilation: ( C: -- orig )
+  \   Run-time: ( c ca len -- )
+
   \
   \ Start a ``ccase0``..`endccase` structure. If _c_ is in the
   \ string _ca len_, execute the n-th word compiled after
@@ -199,9 +204,10 @@ need char-position?
 
   \ doc{
   \
-  \ endccase
+  \ endccase "end-c-case"
   \   Compilation: ( C: orig1 orig2 -- )
   \   Run-time: ( -- )
+
   \
   \ End of a `ccase` control structure.
   \ See `ccase` for a usage example.
@@ -221,7 +227,7 @@ need char-position?
 
   \ doc{
   \
-  \ (ccase) ( c ca len -- )
+  \ (ccase) ( c ca len -- ) "paren-c-case"
   \
   \ Run-time procedure compiled by `ccase`.  If _c_ is in the
   \ string _ca len_, execute the n-th word compiled after
@@ -239,7 +245,7 @@ need char-position?
 
   \ doc{
   \
-  \ ccase
+  \ ccase "c-case"
   \   Compilation: ( C: -- orig1 orig2 )
   \   Run-time: ( c ca len -- )
   \
@@ -279,5 +285,8 @@ need char-position?
   \ 2017-02-17: Update cross references.
   \
   \ 2017-02-27: Fix and improve documentation.
+  \
+  \ 2018-02-04: Fix documentation layout. Improve
+  \ documentation: add pronunciation to words that need it.
 
   \ vim: filetype=soloforth

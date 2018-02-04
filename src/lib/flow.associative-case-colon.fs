@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201802041946
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -17,7 +17,7 @@
   \ Original code by Frank Sergeant, for Pygmy Forth.
 
   \ Adapted by Marcos Cruz (programandala.net), 2015, 2016,
-  \ 2017.
+  \ 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -40,7 +40,7 @@ need create:
 
   \ doc{
 
-  \ associative-case: ( "name" -- )
+  \ associative-case: ( "name" -- ) "associative-case-colon"
   \
   \ Create an associative case definition "name":
   \ ``name ( i*x n -- j*x )``.
@@ -75,5 +75,8 @@ need create:
   \ 2017-02-22: Update markup in documentation.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2018-02-04: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

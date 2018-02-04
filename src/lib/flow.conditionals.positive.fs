@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802021559
+  \ Last modified: 201802042003
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -34,7 +34,7 @@
 
   \ doc{
   \
-  \ +if
+  \ +if "plus-if"
   \   Compilation: ( C: -- orig )
   \   Run-time:    ( f -- )
   \
@@ -56,7 +56,7 @@
 
   \ doc{
   \
-  \ +while ( n -- )
+  \ +while ( n -- ) "plus-while"
   \   Compilation: ( C: dest -- orig dest )
   \   Run-time:    ( f -- )
   \
@@ -77,7 +77,7 @@
 
   \ doc{
   \
-  \ +until
+  \ +until "plus-until"
   \   Compilation: ( C: dest -- )
   \   Run-time:    ( f -- )
   \
@@ -101,7 +101,7 @@ code +exit ( n -- ) ( R: nest-sys | -- nest-sys | )
 
   \ doc{
   \
-  \ +exit ( n -- ) ( R: nest-sys | -- nest-sys | )
+  \ +exit ( n -- ) ( R: nest-sys | -- nest-sys | ) "plus-exit"
   \
   \ If _n_ is positive, return control to the calling
   \ definition, specified by _nest-sys_.
@@ -140,6 +140,9 @@ code +exit ( n -- ) ( R: nest-sys | -- nest-sys | )
   \ 2017-12-11: Improve documentation.
   \
   \ 2018-02-02: Improve documentation.
+  \
+  \ 2018-02-04: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth
 

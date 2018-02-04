@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712092312
+  \ Last modified: 201802041939
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -29,7 +29,7 @@ variable r#
 
   \ doc{
   \
-  \ r# ( -- a )
+  \ r# ( -- a ) "r-slash"
   \
   \ A variable. _a_ is the address of a cell containing the
   \ location of the editing cursor, an offset from the top of
@@ -59,5 +59,8 @@ variable r#
   \ "COMMON", after the new convention.
   \
   \ 2017-12-09: Improve documentation.
+  \
+  \ 2018-02-04: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

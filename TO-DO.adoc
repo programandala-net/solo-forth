@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-02-02
+:revdate: 2018-02-04
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -905,7 +905,9 @@ NOTE: Milestone: 0.15.0
 Uso "bytes" instead of "address units", which is needed only in the
 standard.
 
-=== 2017-05-06
+=== 2017-05-06, 2018-02-04
+
+NOTE: Milestone: 0.14.0
 
 Review and homogenize the layout of "Compilation" and "Run-time" stack
 notations.
@@ -935,7 +937,7 @@ corresponding library modules.
 
 === 2017-03-13, 2017-12-13
 
-NOTE: Milestone: 0.15.0
+NOTE: Milestone: 0.14.0
 
 Add the corresponding English names to words that need them in the
 library (already done in the kernel).
@@ -2330,6 +2332,11 @@ for the end user.
 
 // Names {{{1
 == Names
+
+=== 2018-02-04
+
+Rename `case>` `thiscase`?
+Rename `othercase>` `othercase`?
 
 === 2017-12-10
 

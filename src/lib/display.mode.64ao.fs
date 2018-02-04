@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801242004
+  \ Last modified: 201802041810
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -409,7 +409,7 @@ also assembler max-labels c! previous
 
   \ doc{
   \
-  \ (mode-64ao-output_  ( -- a )
+  \ (mode-64ao-output_  ( -- a ) "paren-mode-64-a-o-output"
   \
   \ _a_ is the address of a Z80 routine, the low-level
   \ `mode-64ao` driver, which displays the character in the A
@@ -429,7 +429,7 @@ create mode-64ao-output_ ( -- a )
 
   \ doc{
   \
-  \ mode-64ao-output_ ( -- a )
+  \ mode-64ao-output_ ( -- a ) "mode-64-a-o-output-underscore"
   \
   \ _a_ is the address of a Z80 routine, the entry to
   \ `mode-64ao` driver, which preserves the Forth IP and then
@@ -444,7 +444,7 @@ code mode-64ao-emit ( c -- )
 
   \ doc{
   \
-  \ mode-64ao-emit ( c -- )
+  \ mode-64ao-emit ( c -- ) "mode-64-a-o-emit"
   \
   \ Display character _c_ in `mode-64ao`, by calling
   \ `(mode-64ao-output_`.
@@ -464,7 +464,7 @@ need mode-32 need (at-xy need set-mode-output need >form
 
   \ doc{
   \
-  \ mode-64ao-xy ( -- col row )
+  \ mode-64ao-xy ( -- col row ) "mode-64-a-o-x-y"
   \
   \ Return the current cursor coordinates _col row_ in
   \ `mode-64ao`. ``mode-64ao-xy`` is the action of `xy` when
@@ -482,7 +482,7 @@ need mode-32 need (at-xy need set-mode-output need >form
 
   \ doc{
   \
-  \ mode-64ao ( -- )
+  \ mode-64ao ( -- ) "mode-64-a-o"
   \
   \ Start the 64-cpl display mode based on:
 
@@ -564,5 +564,8 @@ need mode-32 need (at-xy need set-mode-output need >form
   \
   \ 2018-01-24: Update after the renaming of all display modes
   \ files and words: "64o" (Owen) -> "64ao" (Andrew Owen).
+  \
+  \ 2018-02-04: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

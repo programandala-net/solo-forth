@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702241541
+  \ Last modified: 201802041940
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -28,7 +28,7 @@
   \ Written by Chris A. Thornton, 1983.
 
   \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
-  \ 2015, 2016.
+  \ 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -86,7 +86,7 @@ need r# need top
 
   \ doc{
   \
-  \ #locate ( -- n1 n2 )
+  \ #locate ( -- n1 n2 ) "slash-locate"
   \
   \ From the cursor pointer `r#` compute the line number _n2_
   \ and the character offset _n1_ in line number _n2_.
@@ -97,7 +97,7 @@ need r# need top
 
   \ doc{
   \
-  \ #lead ( -- a n )
+  \ #lead ( -- a n ) "slash-lead"
   \
   \ From the cursor pointer `r#` compute the line address _a_
   \ in the block buffer and the offset from _a_ to the cursor
@@ -109,7 +109,7 @@ need r# need top
 
   \ doc{
   \
-  \ #lag ( -- ca n )
+  \ #lag ( -- ca n ) "slash-lag"
   \
   \ Return cursor address _ca_ and count _n_ after cursor till
   \ end of line.
@@ -120,7 +120,7 @@ need r# need top
 
   \ doc{
   \
-  \ -move ( ca n -- )
+  \ -move ( ca n -- ) "minus-move"
   \
   \ Move a line of text from _ca_ to line _n_ of current block.
   \
@@ -293,7 +293,7 @@ need r# need top
 
   \ doc{
   \
-  \ -text ( ca1 len1 ca2 -- f )
+  \ -text ( ca1 len1 ca2 -- f ) "minus-text"
   \
   \ Return a non-zero _f_ if string _ca1 len1_ exactly
   \ match string _ca2 len1_, else return a false flag.
@@ -322,7 +322,7 @@ need r# need top
 
   \ doc{
   \
-  \ 1line ( -- f )
+  \ 1line ( -- f ) "1-line"
   \
   \ Scan the cursor line for a match to `pad` text. Return flag
   \ and update the cursor `r#` to the end of matching text, or
@@ -436,7 +436,7 @@ need r# need top
 
   \ doc{
   \
-  \ (c) ( ca len -- )
+  \ (c) ( ca len -- ) "paren-c"
   \
   \ Copy the string _ca len_ to the cursor line at the cursor
   \ position.
@@ -496,5 +496,8 @@ only forth definitions
   \ library, with `?do`.
   \
   \ 2017-02-24: Add cross references to documentation.
+  \
+  \ 2018-02-04: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201711271852
+  \ Last modified: 201802042004
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -37,7 +37,7 @@
 
   \ doc{
   \
-  \ (dstep) ( R: x ud -- x ud' | x )
+  \ (dstep) ( R: x ud -- x ud' | x ) "paren-d-step"
   \
   \ The run-time procedure compiled by `dstep`.
   \
@@ -51,7 +51,7 @@
 
   \ doc{
   \
-  \ dfor
+  \ dfor "d-for"
   \   Compilation: ( R: -- dest )
   \   Run-time: ( ud -- )
 
@@ -74,7 +74,7 @@
 
   \ doc{
   \
-  \ dstep
+  \ dstep "d-step"
   \   Compilation: ( dest -- )
   \   Run-time:    ( R: ud -- ud' | )
 
@@ -101,7 +101,7 @@ need alias
 
   \ doc{
   \
-  \ dfor-i ( -- d )
+  \ dfor-i ( -- d ) "d-for-i"
   \
   \ Return the current index _d_ of a `dfor` loop.
   \
@@ -127,5 +127,8 @@ need alias
   \
   \ 2017-11-27: Make `times` faster and smaller. Improve
   \ documentation.
+  \
+  \ 2018-02-04: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

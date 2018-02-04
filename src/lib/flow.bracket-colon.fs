@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071821
+  \ Last modified: 201802041946
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -17,7 +17,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -35,7 +35,7 @@
 
   \ doc{
   \
-  \ [:
+  \ [: "bracket-colon"
   \   Compilation: ( -- orig xt )
   \
 
@@ -74,7 +74,7 @@
 
   \ doc{
   \
-  \ ;]
+  \ ;] "semicolon-bracket"
   \   Compilation: ( orig xt1 -- )
   \   Run-time:    ( -- xt2 )
   \
@@ -114,5 +114,8 @@
   \ 2017-03-18: Improve documentation.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2018-02-04: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

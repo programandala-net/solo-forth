@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801110106
+  \ Last modified: 201802041938
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -71,7 +71,7 @@ fda $0F + constant fda-filetrack ?)
 
   \ doc{
   \
-  \ fda ( -- ca )
+  \ fda ( -- ca ) "f-d-a"
   \
   \ Return the address _ca_ of TR-DOS File Descriptor Area,
   \ which has the following structure:
@@ -95,7 +95,7 @@ fda $0F + constant fda-filetrack ?)
 
   \ doc{
   \
-  \ fda-filename ( -- ca )
+  \ fda-filename ( -- ca ) "f-d-a-filename"
   \
   \ First field of `fda` (File Descriptor Area).  _ca_ is the
   \ address of an 8-byte area that holds the filename.
@@ -110,7 +110,7 @@ fda $0F + constant fda-filetrack ?)
 
   \ doc{
   \
-  \ fda-filetype ( -- ca )
+  \ fda-filetype ( -- ca ) "f-d-a-file-type"
   \
   \ Second field of `fda` (File Descriptor Area).  _ca_ is the
   \ address of a byte containing the filetype identifier
@@ -135,7 +135,7 @@ fda $0F + constant fda-filetrack ?)
 
   \ doc{
   \
-  \ fda-filestart ( -- a )
+  \ fda-filestart ( -- a ) "f-d-a-file-start"
   \
   \ Third field of `fda` (File Descriptor Area).  _a_ is the
   \ address of a cell containing the file start address.  If
@@ -148,7 +148,7 @@ fda $0F + constant fda-filetrack ?)
 
   \ doc{
   \
-  \ fda-filelength ( -- a )
+  \ fda-filelength ( -- a ) "f-d-a-file-length"
   \
   \ Fourth field of `fda` (File Descriptor Area).  _a_ is the
   \ address of a cell containing the file length in bytes.
@@ -159,7 +159,7 @@ fda $0F + constant fda-filetrack ?)
 
   \ doc{
   \
-  \ fda-filesectors ( -- ca )
+  \ fda-filesectors ( -- ca ) "f-d-a-file-sectors"
   \
   \ Fifth field of `fda` (File Descriptor Area).  _ca_ is the
   \ address of a byte containing the file length in sectors.
@@ -171,7 +171,7 @@ fda $0F + constant fda-filetrack ?)
 
   \ doc{
   \
-  \ fda-filesector ( -- ca )
+  \ fda-filesector ( -- ca ) "f-d-a-file-sector"
   \
   \ Sixth field of `fda` (File Descriptor Area).  _ca_ is the
   \ address of a byte containing the first sector of the file.
@@ -182,7 +182,7 @@ fda $0F + constant fda-filetrack ?)
 
   \ doc{
   \
-  \ fda-filetrack ( -- ca )
+  \ fda-filetrack ( -- ca ) "f-d-a-file-track"
   \
   \ Seventh field of `fda` (File Descriptor Area).  _ca_ is the
   \ address of a byte containing the first track of the file.
@@ -195,7 +195,7 @@ fda $0F + constant fda-filetrack ?)
 
   \ doc{
   \
-  \ /fda ( -- b )
+  \ /fda ( -- b ) "slash-f-d-a"
   \
   \ Return the length of TR-DOS `fda` (File Descriptor Area).
   \
@@ -207,7 +207,7 @@ fda $0F + constant fda-filetrack ?)
 
   \ doc{
   \
-  \ files/disk ( -- n )
+  \ files/disk ( -- n ) "files-slash-disk"
   \
   \ Return the maximum number _n_ of files on a disk, including
   \ the deleted files, which is 128.
@@ -218,7 +218,7 @@ fda $0F + constant fda-filetrack ?)
 
   \ doc{
   \
-  \ /filename ( -- len )
+  \ /filename ( -- len ) "slash-filename"
   \
   \ Return the maximum length _len_ of a TR-DOS filename, which
   \ is 9.  In TR-DOS, the last character of the filename
@@ -248,7 +248,7 @@ fda $0F + constant fda-filetrack ?)
 
   \ doc{
   \
-  \ -filename ( ca -- )
+  \ -filename ( ca -- ) "minus-filename"
   \
   \ Erase the filename stored at _ca_ and set its type to 'C'.
   \
@@ -262,7 +262,7 @@ fda $0F + constant fda-filetrack ?)
 
   \ doc{
   \
-  \ -fda-filename ( -- )
+  \ -fda-filename ( -- ) "minus-f-d-a-filename"
   \
   \ Erase the filename stored at TR-DOS `fda` (File Descriptor
   \ Area) with spaces, and set its type to 'C'.
@@ -316,7 +316,7 @@ need -fda-filename need /filename need fda
 
   \ doc{
   \
-  \ filename>filetype ( ca len -- c )
+  \ filename>filetype ( ca len -- c ) "filename-to-file-type"
   \
   \ Return the filetype _c_ of filename _ca len_. Note _len_ is
   \ assumed to be `/filename`, i.e., _ca len_ is a complete
@@ -365,7 +365,7 @@ code (acat ( -- ior )
 
   \ doc{
   \
-  \ (acat ( -- ior )
+  \ (acat ( -- ior ) "paren-a-cat"
   \
   \ Display an abbreviated catalogue of the current disk and
   \ return error result _ior_.  ``(acat`` is a factor of
@@ -379,7 +379,7 @@ code (acat ( -- ior )
 
   \ doc{
   \
-  \ acat ( -- ior )
+  \ acat ( -- ior ) "a-cat"
   \
   \ Display an abbreviated catalogue of the current disk.
   \
@@ -430,7 +430,7 @@ code (file>) ( ca len -- ior )
 
   \ doc{
   \
-  \ (file>) ( ca len -- ior )
+  \ (file>) ( ca len -- ior ) "paren-file-from"
   \
   \ Search the disk for the file whose filename is stored at
   \ `fda` and read its metadata into `fda`. Then read the file
@@ -458,7 +458,7 @@ code (file>) ( ca len -- ior )
 
   \ doc{
   \
-  \ file> ( ca1 len1 ca2 len2 -- ior )
+  \ file> ( ca1 len1 ca2 len2 -- ior ) "file-from"
   \
   \ Read the contents of a disk file, whose filename is defined
   \ by the string _ca1 len1_, to memory zone _ca2 len2_ (i.e.
@@ -567,7 +567,7 @@ code fda-filestatus ( -- a ior )
 
   \ doc{
   \
-  \ fda-filestatus ( -- a ior )
+  \ fda-filestatus ( -- a ior ) "f-d-a-file-status"
   \
   \ Return the status of the file whose filename is stored at
   \ `fda` If the file exists, _ior_ is zero and _a_ is `fda`,
@@ -608,7 +608,7 @@ code fda-filestatus ( -- a ior )
 
   \ doc{
   \
-  \ file-exists? ( ca len -- f )
+  \ file-exists? ( ca len -- f ) "file-exists-question"
   \
   \ If the file named in the character string _ca len_ is
   \ found, _f_ is _true_. Otherwise _f_ is _false_.
@@ -711,7 +711,7 @@ code fda-filedir# ( -- n ior )
 
   \ doc{
   \
-  \ fda-filedir# ( -- n ior )
+  \ fda-filedir# ( -- n ior ) "f-d-a-file-dir-slash"
   \
   \ Return the file directory number of the file whose filename
   \ is stored at `fda` (File Descriptor Area). If the file was
@@ -729,7 +729,7 @@ code fda-filedir# ( -- n ior )
 
   \ doc{
   \
-  \ file-dir# ( ca len -- n ior )
+  \ file-dir# ( ca len -- n ior ) "file-dir-slash"
   \
   \ Return the file directory number of the file named in the
   \ character string _ca len_. If the file was successfully
@@ -811,7 +811,7 @@ code (delete-file) ( -- ior )
 
   \ doc{
   \
-  \ (delete-file) ( -- ior )
+  \ (delete-file) ( -- ior ) "paren-delete-file"
   \
   \ Delete a disk file using the data hold in `dfa`.
   \ Return an error result _ior_.
@@ -886,7 +886,7 @@ create tmp-filename /filename allot
 
   \ doc{
   \
-  \ undelete-fda ( -- )
+  \ undelete-fda ( -- ) "undelete-f-d-a"
   \
   \ Restore the first character of `fda-filename` with the
   \ character hold in the TR-DOS variable $5D08, which holds
@@ -957,7 +957,7 @@ create tmp-filename /filename allot
 
   \ doc{
   \
-  \ .filename ( ca -- )
+  \ .filename ( ca -- ) "dot-filename"
   \
   \ Display the filename stored at _ca_, using the TR-DOS
   \ filename format.
@@ -972,7 +972,7 @@ create tmp-filename /filename allot
 
   \ doc{
   \
-  \ .fda-filename ( -- )
+  \ .fda-filename ( -- ) "dot-f-d-a-filename"
   \
   \ Display the contents of `fda-filename`, using the TR-DOS
   \ filename format.
@@ -987,7 +987,7 @@ create tmp-filename /filename allot
 
   \ doc{
   \
-  \ fda-basic? ( -- f )
+  \ fda-basic? ( -- f ) "f-d-a-basic-question"
   \
   \ _f_ is true if `fda` contains a BASIC program file.
   \
@@ -1001,7 +1001,7 @@ create tmp-filename /filename allot
 
   \ doc{
   \
-  \ fda-deleted? ( -- f )
+  \ fda-deleted? ( -- f ) "f-d-a-deleted-question"
   \
   \ _f_ is true if `fda` contains a deleted file.
   \
@@ -1015,7 +1015,7 @@ create tmp-filename /filename allot
 
   \ doc{
   \
-  \ fda-empty? ( -- f )
+  \ fda-empty? ( -- f ) "f-d-a-empty-question"
   \
   \ _f_ is true if `fda` is empty, i.e. it's unused, it does
   \ not contain a file descriptor.
@@ -1042,7 +1042,7 @@ need fda-basic? need fda-empty? need fda-deleted?
 
   \ doc{
   \
-  \ cat-fda ( n -- )
+  \ cat-fda ( n -- ) "cat-f-d-a"
   \
   \ Display catalogue entry _n_ of the current drive.
   \ The entry is already stored in `fda`.
@@ -1057,7 +1057,7 @@ need fda-basic? need fda-empty? need fda-deleted?
 
   \ doc{
   \
-  \ ?cat-fda ( n -- )
+  \ ?cat-fda ( n -- ) "question-cat-f-d-a"
   \
   \ If catalogue entry _n_ of the current drive is not a
   \ deleted file, display it.  The entry is already stored at
@@ -1222,5 +1222,8 @@ need read-file-descriptor need write-file-descriptor
   \ 2017-12-09: Improve documentation.
   \
   \ 2018-01-11: Fix and document `read-system-track`.
+  \
+  \ 2018-02-04: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

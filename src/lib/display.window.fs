@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801022338
+  \ Last modified: 201802041819
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -37,7 +37,7 @@ cconstant /window
 
   \ doc{
   \
-  \ /window ( -- n )
+  \ /window ( -- n ) "slash-window"
   \
   \ _n_ is the size in bytes of a `window` data structure:
 
@@ -69,7 +69,7 @@ variable current-window
 
   \ doc{
   \
-  \ wx ( -- ca )
+  \ wx ( -- ca ) "w-x"
   \
   \ _ca_ is the address of a byte containing the x cursor
   \ coordinate of the `current-window`.
@@ -82,7 +82,7 @@ variable current-window
 
   \ doc{
   \
-  \ wy ( -- ca )
+  \ wy ( -- ca ) "w-y"
   \
   \ _ca_ is the address of a byte containing the y cursor
   \ coordinate of the `current-window`.
@@ -95,7 +95,7 @@ variable current-window
 
   \ doc{
   \
-  \ wx0 ( -- ca )
+  \ wx0 ( -- ca ) "w-x-zero"
   \
   \ _ca_ is the address of a byte containing the left x
   \ coordinate on screen of the `current-window`.
@@ -108,7 +108,7 @@ variable current-window
 
   \ doc{
   \
-  \ wy0 ( -- ca )
+  \ wy0 ( -- ca ) "w-y-zero"
   \
   \ _ca_ is the address of a byte containing the top y
   \ coordinate on screen of the `current-window`.
@@ -121,7 +121,7 @@ variable current-window
 
   \ doc{
   \
-  \ wcolumns ( -- ca )
+  \ wcolumns ( -- ca ) "w-columns"
   \
   \ _ca_ is the address of a byte containing the width
   \ in characters of the `current-window`.
@@ -134,7 +134,7 @@ variable current-window
 
   \ doc{
   \
-  \ wrows ( -- ca )
+  \ wrows ( -- ca ) "w-rows"
   \
   \ _ca_ is the address of a byte containing the heigth in rows
   \ of the `current-window`.
@@ -186,7 +186,7 @@ variable current-window
 
   \ doc{
   \
-  \ wspace ( -- )
+  \ wspace ( -- ) "w-space"
   \
   \ Display one space in the `current-window`.
   \
@@ -200,7 +200,7 @@ variable current-window
 
   \ doc{
   \
-  \ wemit ( c -- )
+  \ wemit ( c -- ) "w-emit"
   \
   \ Display character _c_ in the `current-window`.
   \
@@ -212,7 +212,7 @@ variable current-window
 
   \ doc{
   \
-  \ wemit ( c -- )
+  \ wspace ( c -- ) "w-emit"
   \
   \ Display one space in the `current-window`.
   \
@@ -226,7 +226,7 @@ variable current-window
 
   \ doc{
   \
-  \ wfreecolumns ( -- n )
+  \ wfreecolumns ( -- n ) "w-free-columns"
   \
   \ _n_ is the number of free columns in the current line of
   \ the `current-window`.
@@ -241,7 +241,7 @@ variable current-window
 
   \ doc{
   \
-  \ (wat-xy ( col row -- )
+  \ (wat-xy ( col row -- ) "paren-w-at-x-y"
   \
   \ Set the cursor coordinates to `current-window` cursor
   \ coordinates _col row_.  The upper left corner of the
@@ -257,7 +257,7 @@ variable current-window
 
   \ doc{
   \
-  \ wat-xy ( col row -- )
+  \ wat-xy ( col row -- ) "w-at-x-y"
   \
   \ Store _col row_ as the `current-window` cursor coordinates
   \ and set the cursor coordinates  accordingly.  The upper
@@ -273,7 +273,7 @@ variable current-window
 
   \ doc{
   \
-  \ at-wxy ( -- )
+  \ at-wxy ( -- ) "at-w-x-y"
   \
   \ Set the cursor coordinates to the `current-window` cursor
   \ coordinates.
@@ -286,7 +286,7 @@ variable current-window
 
   \ doc{
   \
-  \ whome ( -- )
+  \ whome ( -- ) "w-home"
   \
   \ Set the `current-window` cursor coordinates to its top left
   \ corner: column zero, row zero.
@@ -307,7 +307,7 @@ variable current-window
 
   \ doc{
   \
-  \ wcr ( -- )
+  \ wcr ( -- ) "w-c-r"
   \
   \ Cause subsequent output to the `current-window` appear at
   \ the beginning of the next line.
@@ -326,7 +326,7 @@ variable current-window
 
   \ doc{
   \
-  \ wcr ( -- )
+  \ ?wcr ( -- ) "question-w-c-r"
   \
   \ If the column cursor coordinate of the `current-window` is not
   \ zero, cause subsequent output to the current window appear
@@ -348,7 +348,7 @@ variable current-window
 
   \ doc{
   \
-  \ wstamp ( c -- )
+  \ wstamp ( c -- ) "w-stamp"
   \
   \ Fill the `current-window` by displaying as many characters
   \ _c_ as needed, starting from the top left corner.
@@ -364,7 +364,7 @@ variable current-window
 
   \ doc{
   \
-  \ wblank ( -- )
+  \ wblank ( -- ) "w-blank"
   \
   \ Fill the `current-window` by displaying as many blanks
   \ (character `bl`) as needed, starting from the top left
@@ -385,7 +385,7 @@ variable current-window
 
   \ doc{
   \
-  \ wcls ( -- )
+  \ wcls ( -- ) "w-c-l-s-"
   \
   \ Clear the `current-window` with the current attribute and
   \ reset its cursor position at the upper left corner (column
@@ -407,7 +407,7 @@ need window need clear-rectangle need whome
 
   \ doc{
   \
-  \ attr-wcls ( b -- )
+  \ attr-wcls ( b -- ) "attr-w-c-l-s"
   \
   \ Clear the `current-window` with color attribute _b_ and
   \ reset its cursor position at the upper left corner (column
@@ -427,7 +427,7 @@ need window need clear-rectangle need whome
 
   \ doc{
   \
-  \ wcolor ( b -- )
+  \ wcolor ( b -- ) "w-color"
   \
   \ Color the `current-window` with color attribute _b_.
   \
@@ -444,7 +444,7 @@ need window need clear-rectangle need whome
 
   \ doc{
   \
-  \ wx+! ( n -- )
+  \ wx+! ( n -- ) "w-x-plus-store"
   \
   \ Add _n_ character positions to the column cursor coordinate
   \ of the current `window`. ``wx+!`` is a factor of `wtype+`.
@@ -455,7 +455,7 @@ need window need clear-rectangle need whome
 
   \ doc{
   \
-  \ wtyped ( -- a )
+  \ wtyped ( -- a ) "w-typed"
   \
   \ A variable. _a_ is the address o a cell containing a flag
   \ indicating if a space-delimited substring was found and
@@ -473,7 +473,7 @@ need window need clear-rectangle need whome
 
   \ doc{
   \
-  \ wtype+ ( ca len -- )
+  \ wtype+ ( ca len -- ) "w-type-plus"
   \
   \ Display string _ca len_ in the `current-window` and update
   \ the `window` coordinates accordingly.
@@ -487,7 +487,7 @@ need window need clear-rectangle need whome
 
   \ doc{
   \
-  \ /wtype ( ca len len1 n -- ca' len' )
+  \ /wtype ( ca len len1 n -- ca' len' ) "slash-w-type"
   \
   \ Display the first  _len1_ characters of string _ca len_ in
   \ the `current-window`, then remove the first _n_ characters
@@ -507,7 +507,7 @@ need window need clear-rectangle need whome
 
   \ doc{
   \
-  \ free/wtype ( ca len -- ca' len' )
+  \ free/wtype ( ca len -- ca' len' ) "free-slash-w-type"
   \
   \ Display in the `current-window` as many characters of
   \ string _ca len_ as fit in the current line, then remove
@@ -529,7 +529,7 @@ need window need clear-rectangle need whome
 
   \ doc{
   \
-  \ wtype ( ca len -- )
+  \ wtype ( ca len -- ) "w-type"
   \
   \ Display string _ca len_ in the `current-window`.
   \
@@ -553,7 +553,7 @@ need window need clear-rectangle need whome
 
   \ doc{
   \
-  \ wltype ( ca len -- )
+  \ wltype ( ca len -- ) "w-l-type"
   \
   \ Display string _ca len_ in the `current-window`, left
   \ justified.
@@ -600,5 +600,8 @@ need window need clear-rectangle need whome
   \
   \ 2018-01-02: Add `attr-wcls` and rewrite `wcls` after it`.
   \ Add `wcolor`.
+  \
+  \ 2018-02-04: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

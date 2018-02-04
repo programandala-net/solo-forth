@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712051904
+  \ Last modified: 201802041811
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -22,7 +22,7 @@
   \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027130
 
   \ Marcos Cruz (programandala.net) adapted the fonts to Solo
-  \ Forth, 2017.
+  \ Forth, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -134,7 +134,7 @@ decimal
 
   \ doc{
   \
-  \ mini-64cpl-font ( -- a )
+  \ mini-64cpl-font ( -- a ) "mini-64-c-p-l-font"
   \
   \ _a_ is the address of a 4x8-pixel font compiled in data
   \ space (336 bytes used), to be used in `mode-64o` by setting
@@ -225,7 +225,7 @@ decimal
 
   \ doc{
   \
-  \ nbot-64cpl-font ( -- a )
+  \ nbot-64cpl-font ( -- a ) "n-bot-64-c-p-l-font"
   \
   \ _a_ is the address of a 4x8-pixel font compiled in data
   \ space (336 bytes used), to be used in `mode-64o` by setting
@@ -318,7 +318,7 @@ decimal
 
   \ doc{
   \
-  \ omn1-64cpl-font ( -- a )
+  \ omn1-64cpl-font ( -- a ) "omn-1-64-c-p-l-font"
   \
   \ _a_ is the address of a 4x8-pixel font compiled in data
   \ space (336 bytes used), to be used in `mode-64o` by setting
@@ -409,7 +409,7 @@ decimal
 
   \ doc{
   \
-  \ omn2-64cpl-font ( -- a )
+  \ omn2-64cpl-font ( -- a ) "omn-2-64-c-p-l-font"
   \
   \ _a_ is the address of a 4x8-pixel font compiled in data
   \ space (336 bytes used), to be used in `mode-64o` by setting
@@ -501,7 +501,7 @@ decimal
 
   \ doc{
   \
-  \ owen-64cpl-font ( -- a )
+  \ owen-64cpl-font ( -- a ) "owen-64-c-p-l-font"
   \
   \ _a_ is the address of a 4x8-pixel font compiled in data
   \ space (336 bytes used), to be used in `mode-64o` by setting
@@ -541,5 +541,8 @@ decimal
   \ <display.mode.64o.fs>. Add the fonts by Einar Saukas,
   \ already included in disk 0: `mini-64cpl-font`,
   \ `nbot-64cpl-font`, `omn1-64cpl-font` and `omn2-64cpl-font`.
+  \
+  \ 2018-02-04: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

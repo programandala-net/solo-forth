@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802012254
+  \ Last modified: 201802041830
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -61,7 +61,7 @@
 
   \ doc{
   \
-  \ dos-in, ( -- )
+  \ dos-in, ( -- ) "dos-in-comma"
   \
   \ Compile the Z80 instruction ``in a,(231)``, which pages in
   \ the Plus D memory.
@@ -76,7 +76,7 @@
 
   \ doc{
   \
-  \ dos-out, ( -- )
+  \ dos-out, ( -- ) "dos-out-comma"
   \
   \ Compile the Z80 instruction ``out (231),a``, which pages out
   \ the Plus D memory.
@@ -91,7 +91,7 @@
 
   \ doc{
   \
-  \ /ufia ( -- n )
+  \ /ufia ( -- n ) "slash-u-f-i-a"
   \
   \ _n_ is the length of a UFIA (User File Information Area), a
   \ 24-byte structure which describes a file.
@@ -104,7 +104,7 @@
 
   \ doc{
   \
-  \ ufia1 ( -- a )
+  \ ufia1 ( -- a ) "u-f-i-a-1"
   \
   \ _a_ is the address of G+DOS UFIA1 (in the Plus D memory).
   \ A UFIA (User File Information Area) is a 24-byte structure
@@ -119,7 +119,7 @@
 
   \ doc{
   \
-  \ ufia2 ( -- a )
+  \ ufia2 ( -- a ) "u-f-i-a-2"
   \
   \ _a_ is the address of G+DOS UFIA2 (in the Plus D memory).
   \ A UFIA (User File Information Area) is a 24-byte structure
@@ -135,7 +135,7 @@
 
   \ doc{
   \
-  \ >ufiax ( a1 a2 -- )
+  \ >ufiax ( a1 a2 -- ) "to-u-f-i-a-x"
   \
   \ Move a UFIA (User File Information Area) from _a1_ to _a2_,
   \ with the Plus D Memory paged in.
@@ -155,7 +155,7 @@
 
   \ doc{
   \
-  \ >ufia1 ( a -- )
+  \ >ufia1 ( a -- ) "to-u-f-i-a-1"
   \
   \ Move a UFIA (User File Information Area) from _a_ to
   \ `ufia1`.
@@ -169,7 +169,7 @@
 
   \ doc{
   \
-  \ >ufia2 ( a -- )
+  \ >ufia2 ( a -- ) "to-u-f-i-a-2"
   \
   \ Move a UFIA (User File Information Area) from _a_ to
   \ `ufia2`.
@@ -186,7 +186,7 @@ create ufia  /ufia allot  ufia /ufia erase
 
   \ doc{
   \
-  \ ufia ( -- a )
+  \ ufia ( -- a ) "u-f-i-a"
   \
   \ Return constant address _a_ of a buffer used as UFIA (User
   \ File Information Area), a 24-byte structure which describes
@@ -363,7 +363,7 @@ code (delete-file) ( -- ior )
 
   \ doc{
   \
-  \ (delete-file) ( -- ior )
+  \ (delete-file) ( -- ior ) "paren-delete-file"
   \
   \ Delete a disk file using the data hold in `ufia`.
   \ Return an error result _ior_.
@@ -395,7 +395,7 @@ need ufia need get-drive
 
   \ doc{
   \
-  \ /filename ( -- b )
+  \ /filename ( -- b ) "slash-filename"
   \
   \ A constant that returns the maximum length of a G+DOS
   \ filename.
@@ -408,7 +408,7 @@ need ufia need get-drive
 
   \ doc{
   \
-  \ -filename ( -- )
+  \ -filename ( -- ) "minus-filename"
   \
   \ Blank the filename in `ufia`, i.e. replace it with spaces.
   \
@@ -464,7 +464,7 @@ code (>file) ( -- ior )
 
   \ doc{
   \
-  \ (>file) ( -- ior )
+  \ (>file) ( -- ior ) "paren-to-file"
   \
   \ Save a file to disk using the data hold in `ufia` and
   \ return error result _ior_.
@@ -477,7 +477,7 @@ code (>file) ( -- ior )
 
   \ doc{
   \
-  \ >file ( ca1 len1 ca2 len2 -- ior )
+  \ >file ( ca1 len1 ca2 len2 -- ior ) "to-file"
   \
   \ Save memory region _ca1 len1_ to a file named by the string
   \ _ca2 len2_, and return error result _ior_.
@@ -507,7 +507,7 @@ code (file>) ( ca len -- ior )
 
   \ doc{
   \
-  \ (file>) ( ca len -- ior )
+  \ (file>) ( ca len -- ior ) "paren-file-from"
   \
   \ Read a file from disk, using the data hold in `ufia` and
   \ the alternative destination zone _ca len_, following the
@@ -535,7 +535,7 @@ code (file>) ( ca len -- ior )
 
   \ doc{
   \
-  \ file> ( ca1 len1 ca2 len2 -- ior )
+  \ file> ( ca1 len1 ca2 len2 -- ior ) "file-from"
   \
   \ Read the contents of a disk file, whose filename is defined
   \ by the string _ca1 len1_, to memory zone _ca2 len2_ (i.e.
@@ -601,7 +601,7 @@ code (file-status) ( -- a ior )
 
   \ doc{
   \
-  \ (file-status) ( -- a ior )
+  \ (file-status) ( -- a ior ) "paren-file-status"
   \
   \ Return the status of the file whose name is hold in `ufia`.
   \ If the file exists, its file header is read into `ufia`,
@@ -639,7 +639,7 @@ code (file-status) ( -- a ior )
 
   \ doc{
   \
-  \ file-exists? ( ca len -- f )
+  \ file-exists? ( ca len -- f ) "file-exists-question"
   \
   \ If the file named in the character string _ca len_ is
   \ found, _f_ is _true_. Otherwise _f_ is _false_.
@@ -730,7 +730,7 @@ code (file-status) ( -- a ior )
 
   \ doc{
   \
-  \ file-dir# ( ca len -- n ior )
+  \ file-dir# ( ca len -- n ior ) "file-dir-slash"
   \
   \ Return the file directory number of the file named in the
   \ character string _ca len_. If the file was successfully
@@ -751,7 +751,7 @@ code (file-status) ( -- a ior )
 
   \ doc{
   \
-  \ file-dirdesc ( ca len -- n ior )
+  \ file-dirdesc ( ca len -- n ior ) "file-dir-desc"
   \
   \ Return the G+DOS file directory identifier of the file
   \ named in the character string _ca len_. If the file was
@@ -951,7 +951,7 @@ code ((cat ( -- ior )
 
   \ doc{
   \
-  \ ((cat ( -- ior )
+  \ ((cat ( -- ior ) "paren-paren-cat"
   \
   \ Show a disk catalogue of the current drive, calling the
   \ corresponding G+DOS hook command, which uses the data in
@@ -965,7 +965,7 @@ code ((cat ( -- ior )
 
   \ doc{
   \
-  \ (cat ( b -- )
+  \ (cat ( b -- ) "paren-cat"
   \
   \ Show a disk catalogue of the current drive, using the data
   \ in `ufia`, being _b_ the type of catalogue:
@@ -987,7 +987,7 @@ code ((cat ( -- ior )
 
   \ doc{
   \
-  \ wcat ( ca len -- )
+  \ wcat ( ca len -- ) "w-cat"
   \
   \ Show a wild-card disk catalogue of the current drive using
   \ the wild-card filename _ca len_.  See the Plus D manual for
@@ -1002,7 +1002,7 @@ code ((cat ( -- ior )
 
   \ doc{
   \
-  \ wacat ( ca len -- )
+  \ wacat ( ca len -- ) "w-a-cat"
   \
   \ Show a wild-card abbreviated disk catalogue of the current
   \ drive using the wild-card filename _ca len_.  See the Plus
@@ -1028,7 +1028,7 @@ code ((cat ( -- ior )
 
   \ doc{
   \
-  \ acat ( -- )
+  \ acat ( -- ) "a-cat"
   \
   \ Show an abbreviated disk catalogue of the current drive.
   \
@@ -1118,7 +1118,7 @@ code @dos ( a -- x )
          dos-out, d push, jpnext, end-code ?)
   \ doc{
   \
-  \ @dos ( a -- x )
+  \ @dos ( a -- x ) "fetch-dos"
   \
   \ Fetch the cell _x_ stored at Plus D memory address _a_.
   \
@@ -1136,7 +1136,7 @@ code c@dos ( ca -- b )
 
   \ doc{
   \
-  \ c@dos ( ca -- b )
+  \ c@dos ( ca -- b ) "c-fetch-dos"
   \
   \ Fetch byte _b_ stored at Plus D memory address _ca_.
   \
@@ -1155,7 +1155,7 @@ code !dos ( x a -- )
                 dos-out, jpnext, end-code ?)
   \ doc{
   \
-  \ !dos ( x a -- )
+  \ !dos ( x a -- ) "store-dos"
   \
   \ Store _x_ at the Plus D memory address _a_.
   \
@@ -1173,7 +1173,7 @@ code c!dos ( b ca -- )
 
   \ doc{
   \
-  \ c!dos ( b ca -- )
+  \ c!dos ( b ca -- ) "c-store-dos"
   \
   \ Store _b_ at the Plus D memory address _ca_.
   \
@@ -1213,7 +1213,7 @@ code c@dosvar ( n -- b )
 
   \ doc{
   \
-  \ c@dosvar ( n -- b )
+  \ c@dosvar ( n -- b ) "c-fetch-dos-var"
   \
   \ Fetch the contents _b_ of G+DOS variable _n_.
   \
@@ -1234,7 +1234,7 @@ code !dosvar ( x n -- )
 
   \ doc{
   \
-  \ !dosvar ( x n -- )
+  \ !dosvar ( x n -- ) "store-dos-var"
   \
   \ Store _x_ into the G+DOS variable _n_.
   \
@@ -1252,7 +1252,7 @@ code c!dosvar ( b n -- )
 
   \ doc{
   \
-  \ c!dosvar ( b n -- )
+  \ c!dosvar ( b n -- ) "c-store-dos-var"
   \
   \ Store _b_ into the G+DOS variable _n_.
   \
@@ -1313,7 +1313,7 @@ code (rename-file ( -- ior )
 
   \ doc{
   \
-  \ (rename-file ( -- ior )
+  \ (rename-file ( -- ior ) "paren-rename-file"
   \
   \ Rename the file named by the filename stored in `ufia1` to
   \ the filename stored in `ufia2`.  and return error result
@@ -1452,5 +1452,8 @@ code (rename-file ( -- ior )
   \ change in the assembler.
   \
   \ 2018-02-01: Need `hook,`, which has been made optional.
+  \
+  \ 2018-02-04: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

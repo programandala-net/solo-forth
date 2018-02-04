@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712090118
+  \ Last modified: 201802041812
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -32,7 +32,7 @@
 
   \ doc{
   \
-  \ form>xy ( cols rows -- x y )
+  \ form>xy ( cols rows -- x y ) "form-to-x-y"
   \
   \ _x y_ is the new cursor position corresponding to a display
   \ mode whose `form` is _cols rows_. _x y_ are calculated with
@@ -50,7 +50,7 @@
 
   \ doc{
   \
-  \ >form ( cols rows -- )
+  \ >form ( cols rows -- ) "to-form"
   \
   \ Adapt the cursor position of the current display mode to a
   \ display mode whose `form` is _cols rows_.
@@ -85,7 +85,7 @@
 
   \ doc{
   \
-  \ (at-xy  ( col row -- )
+  \ (at-xy  ( col row -- ) "paren-at-x-y"
   \
   \ Set the cursor coordinates to column _col_ and row _row_,
   \ by displaying control character 22 followed by _col_ and
@@ -215,5 +215,8 @@ code (banked-mode-output) ( -- )
   \
   \ 2017-12-09: Update with `need */`, since `*/` was moved to
   \ the library.
+  \
+  \ 2018-02-04: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth
