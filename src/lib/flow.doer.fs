@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712080239
+  \ Last modified: 201802051646
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -85,7 +85,9 @@ variable >;and ( -- a )
 
   \ doc{
   \
-  \ make Interpretation: ( "name" -- ) Compilation:    ( -- )
+  \ make
+  \   Interpretation: ( "name" -- )
+  \   Compilation:    ( -- )
   \
   \ Interpretation: Parse _name_, which is the name of a word
   \ created by `doer`, and make it execute the colon definition
@@ -128,7 +130,7 @@ variable >;and ( -- a )
 
   \ doc{
   \
-  \ ;and ( -- )
+  \ ;and ( -- ) "colon-and"
   \
   \ Allow continuation of a definition where `make` is used.
 
@@ -177,5 +179,8 @@ variable >;and ( -- a )
   \ 2017-12-08: Update code style.  Improve the calculation of
   \ `doer-noop`'s body.  Improve documentation. Make `;and` and
   \ `undo` optional.
+  \
+  \ 2018-02-05: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

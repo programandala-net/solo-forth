@@ -3,13 +3,18 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712152211
+  \ Last modified: 201802051651
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
   \ Words related to word lists.
+
+  \ ===========================================================
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -26,7 +31,7 @@
 
   \ doc{
   \
-  \ wordlist>link ( wid -- a )
+  \ wordlist>link ( wid -- a ) "wordlist-to-link"
   \
   \ Return the link field address _a_ of word-list identifier
   \ _wid_, which holds the word-list identifier of the previous
@@ -42,7 +47,7 @@
 
   \ doc{
   \
-  \ wordlist>name ( wid -- a )
+  \ wordlist>name ( wid -- a ) "wordlist-to-name"
   \
   \ Return the address _a_ which holds the _nt_ of word-list
   \ identifier _wid_ (or zero if the word list has no
@@ -58,7 +63,7 @@
 
   \ doc{
   \
-  \ wordlist-name@ ( wid -- nt|0 )
+  \ wordlist-name@ ( wid -- nt|0 ) "wordlist-name-fetch"
   \
   \ Fetch from the word-list identifier _wid_ its associated
   \ name _nt_, or zero if the word list has no associated name.
@@ -73,7 +78,7 @@
 
   \ doc{
   \
-  \ wordlist-name! ( nt wid -- )
+  \ wordlist-name! ( nt wid -- ) "wordlist-name-store"
   \
   \ Store _nt_ as the name associated to the word list
   \ identified by _wid_.  _nt_ is stored into the name field of
@@ -97,7 +102,7 @@
 
   \ doc{
   \
-  \ +order ( wid -- )
+  \ +order ( wid -- ) "plus-order"
   \
   \ Remove all instances of the word list identified by _wid_
   \ from the search order, then add it to the top.
@@ -126,7 +131,7 @@ variable -order-wid
 
   \ doc{
   \
-  \ -order ( wid -- )
+  \ -order ( wid -- ) "minus-order"
   \
   \ Remove all instances of word list identified by _wid_ from
   \ the search order.
@@ -160,7 +165,7 @@ variable -order-wid
 
   \ doc{
   \
-  \ latest>wordlist ( wid -- )
+  \ latest>wordlist ( wid -- ) "latest-to-wordlist"
   \
   \ Associate the latest name to the word list identified by
   \ _wid_.
@@ -177,7 +182,7 @@ variable -order-wid
 
   \ doc{
   \
-  \ wordlist>vocabulary ( wid "name" -- )
+  \ wordlist>vocabulary ( wid "name" -- ) "wordlist-to-vocabulary"
   \
   \ Create a vocabulary _name_ for the word list identified by
   \ _wid_.
@@ -372,5 +377,8 @@ variable -order-wid
   \ 2017-12-15: Remove remaining `exit` at the end of
   \ conditional interpretation.  Improve documentation,
   \ needings and layout.
+  \
+  \ 2018-02-05: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

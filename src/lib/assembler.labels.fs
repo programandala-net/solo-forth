@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802021525
+  \ Last modified: 201802051654
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,7 +33,7 @@ assembler-wordlist dup >order set-current need ?rel
 
   \ doc{
   \
-  \ rl-id ( -- b )
+  \ rl-id ( -- b ) "r-l-i-d"
   \
   \ _b_ is the identifier of relative references created by
   \ `rl#`.  ``rl-id`` is used as a bitmask added to the label
@@ -45,7 +45,7 @@ assembler-wordlist dup >order set-current need ?rel
 
   \ doc{
   \
-  \ al-id ( -- b )
+  \ al-id ( -- b ) "a-l-i-d"
   \
   \ _b_ is the identifier of absolute references created by
   \ `al#`.  ``rl-ad`` is used as a bitmask added to the label
@@ -123,7 +123,7 @@ create max-labels 8 c,  create max-l-refs 16 c,
 
   \ doc{
   \
-  \ /l-ref ( -- n )
+  \ /l-ref ( -- n ) "slash-l-ref"
   \
   \ _n_ is the size in bytes of each label reference stored in
   \ the `l-refs` table.
@@ -136,7 +136,7 @@ create max-labels 8 c,  create max-l-refs 16 c,
 
   \ doc{
   \
-  \ /l-refs ( -- n )
+  \ /l-refs ( -- n ) "slash-l-refs"
   \
   \ _n_ is the size in bytes of the `l-refs` table.
   \
@@ -148,7 +148,7 @@ create max-labels 8 c,  create max-l-refs 16 c,
 
   \ doc{
   \
-  \ /labels ( -- n )
+  \ /labels ( -- n ) "slash-labels"
   \
   \ _n_ is the size in bytes of the `labels` table.
   \
@@ -226,7 +226,7 @@ init-labels ' init-labels ' init-asm defer!
 
   \ doc{
   \
-  \ ?l# ( n -- )
+  \ ?l# ( n -- ) "question-l-hash"
   \
   \ If assembler label _n_ is out of range, `throw` exception
   \ #-283.
@@ -259,7 +259,7 @@ init-labels ' init-labels ' init-asm defer!
 
   \ doc{
   \
-  \ >l ( b -- a )
+  \ >l ( b -- a ) "to-l"
   \
   \ _a_ is the address of label _b_ in the `labels` table.
   \
@@ -269,7 +269,7 @@ init-labels ' init-labels ' init-asm defer!
 
   \ doc{
   \
-  \ resolve-al# ( orig b -- )
+  \ resolve-al# ( orig b -- ) "resolve-a-l-hash"
   \
   \ Resolve an absolute reference at _orig_ to label _b_.
   \
@@ -281,7 +281,7 @@ init-labels ' init-labels ' init-asm defer!
 
   \ doc{
   \
-  \ resolve-rl# ( orig b -- )
+  \ resolve-rl# ( orig b -- ) "resolve-r-l-hash"
   \
   \ Resolve a relative reference at _orig_ to label _b_.
   \
@@ -295,7 +295,7 @@ init-labels ' init-labels ' init-asm defer!
 
   \ doc{
   \
-  \ (resolve-ref ( orig b -- )
+  \ (resolve-ref ( orig b -- ) "paren-resolve-ref"
   \
   \ Resolve reference at _orig_ to label _b_.
   \
@@ -308,7 +308,7 @@ init-labels ' init-labels ' init-asm defer!
 
   \ doc{
   \
-  \ al#  ( -- )
+  \ al#  ( -- ) "a-l-hash"
   \
   \ Create an absolute reference to an assembler label defined
   \ by `l:`. The label number has been compiled in the last
@@ -340,7 +340,7 @@ init-labels ' init-labels ' init-asm defer!
 
   \ doc{
   \
-  \ rl#  ( n -- a )
+  \ rl#  ( n -- a ) "r-l-hash"
   \
   \ Create a relative reference to assembler label number _n_,
   \ defined by `l:`.  If label _n_ is already defined, _a_ is
@@ -387,7 +387,7 @@ init-labels ' init-labels ' init-asm defer!
 
   \ doc{
   \
-  \ l!  ( x n -- )
+  \ l!  ( x n -- ) "l-store"
   \
   \ If assembler label _n_ has been defined in the current
   \ definition, `throw` exception #-284 (assembly label number
@@ -404,7 +404,7 @@ init-labels ' init-labels ' init-asm defer!
 
   \ doc{
   \
-  \ l:  ( n -- )
+  \ l:  ( n -- ) "l-colon"
   \
   \ If assembler label _n_ has been defined in the current
   \ definition, `throw` exception #-284 (assembly label number
@@ -429,7 +429,7 @@ assembler-wordlist >order
 
   \ doc{
   \
-  \ .l ( -- )
+  \ .l ( -- ) "dot-l"
   \
   \ Dump the contents of the tables pointed by `labels` and
   \ `l-refs`.
@@ -504,5 +504,8 @@ previous
   \ 2017-12-06: Improve documentation.
   \
   \ 2018-02-02: Fix layout.
+  \
+  \ 2018-02-05: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

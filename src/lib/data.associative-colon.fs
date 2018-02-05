@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201711061902
+  \ Last modified: 201802051725
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -17,7 +17,7 @@
   \ Original code from F83, by Henry Laxen and Michael Perry.
 
   \ Adapted by Marcos Cruz (programandala.net), 2015, 2016,
-  \ 2017.
+  \ 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -40,7 +40,7 @@
 
   \ doc{
 
-  \ associative: ( n "name" -- )
+  \ associative: ( n "name" -- ) "associative-colon"
 
   \ Create a table lookup "name" with _n_ entries.
   \
@@ -80,5 +80,8 @@
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
   \
   \ 2017-11-06: Improve documentation with cross-reference.
+  \
+  \ 2018-02-05: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

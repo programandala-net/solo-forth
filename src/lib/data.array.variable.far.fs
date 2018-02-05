@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201802051721
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,7 +27,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2017.
+  \ Marcos Cruz (programandala.net), 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -46,7 +46,7 @@
 
   \ doc{
   \
-  \ faravariable ( n "name" -- )
+  \ faravariable ( n "name" -- ) "far-a-variable"
   \
   \ Create, in far memory, a 1-dimension single-cell variables
   \ array _name_ with _n_ elements and the execution semantics
@@ -70,7 +70,7 @@
 
   \ doc{
   \
-  \ far2avariable ( n "name" -- )
+  \ far2avariable ( n "name" -- ) "far-two-a-variable"
   \
   \ Create, in far memory, a 1-dimension double-cell variables
   \ array _name_ with _n_ elements and the execution semantics
@@ -94,7 +94,7 @@
 
   \ doc{
   \
-  \ farcavariable ( n "name" -- )
+  \ farcavariable ( n "name" -- ) "far-c-a-variable"
   \
   \ Create, in far memory, a 1-dimension character variables
   \ array _name_ with _n_ elements and the execution semantics
@@ -125,5 +125,8 @@
   \ in the kernel.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2018-02-05: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

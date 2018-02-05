@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801041616
+  \ Last modified: 201802051710
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -37,7 +37,7 @@ code array> ( n a1 -- a2 )
 
   \ doc{
   \
-  \ array> ( n a1 -- a2 )
+  \ array> ( n a1 -- a2 ) "array-from"
   \
   \ Return address _a2_ of element _n_ of a 1-dimension
   \ single-cell array _a1_. ``array>`` is a common factor of
@@ -67,7 +67,7 @@ code 2array> ( n a1 -- a2 )
 
   \ doc{
   \
-  \ 2array> ( n a1 -- a2 )
+  \ 2array> ( n a1 -- a2 ) "two-array-from"
   \
   \ Return address _a2_ of element _n_ of a 1-dimension
   \ single-cell array _a1_.  ``2array>`` is a common factor of
@@ -105,6 +105,9 @@ code 2array> ( n a1 -- a2 )
   \ 2017-05-09: Remove `jppushhl,`.
   \
   \ 2018-01-04: Improve documentation.
+  \
+  \ 2018-02-05: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth
 

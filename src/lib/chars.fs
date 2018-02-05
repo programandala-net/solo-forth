@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091049
+  \ Last modified: 201802051700
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -31,7 +31,7 @@
 
   \ doc{
   \
-  \ ascii-char? ( c -- f )
+  \ ascii-char? ( c -- f ) "ascii-char-question"
   \
   \ Is character _c_ an ASCII character, i.e. in the range
   \ 0..126?
@@ -44,7 +44,7 @@
 
   \ doc{
   \
-  \ control-char? ( c -- f )
+  \ control-char? ( c -- f ) "control-char-question"
   \
   \ Is character _c_ a control character, i.e. in the range
   \ 0..31?
@@ -61,7 +61,7 @@
 
   \ doc{
   \
-  \ printable-ascii-char? ( c -- f )
+  \ printable-ascii-char? ( c -- f ) "printable-ascii-char-question"
   \
   \ Is _c_ a printable ASCII character, i.e. in the range
   \ 32..126?
@@ -121,5 +121,8 @@ need printable-ascii-char?
   \ not 127.
   \
   \ 2017-09-09: Improve and fix documentation.
+  \
+  \ 2018-02-05: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

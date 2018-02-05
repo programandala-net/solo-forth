@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801031735
+  \ Last modified: 201802051708
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -29,7 +29,7 @@
 
   \ doc{
   \
-  \ [true]  ( -- true )
+  \ [true]  ( -- true ) "bracket-true"
   \
   \ ``[true]`` is an `immediate` word.
   \
@@ -41,7 +41,7 @@
 
   \ doc{
   \
-  \ [false]  ( -- false )
+  \ [false]  ( -- false ) "bracket-false"
   \
   \ ``[false]`` is an `immediate` word.
   \
@@ -65,7 +65,7 @@
 
   \ doc{
   \
-  \ [else] ( "ccc" -- )
+  \ [else] ( "ccc" -- ) "bracket-else"
   \
   \ Parse and discard space-delimited words from the parse
   \ area, including nested occurrences of ``[if] ... [then]``,
@@ -84,7 +84,7 @@
 
   \ doc{
   \
-  \ [if] ( f "ccc" -- )
+  \ [if] ( f "ccc" -- ) "bracket-if"
   \
   \ If _flag_ is true, do nothing. Otherwise, parse and discard
   \ space-delimited words from the parse area, including nested
@@ -105,7 +105,7 @@
 
   \ doc{
   \
-  \ [then] ( -- )
+  \ [then] ( -- ) "bracket-then"
   \
   \ Do nothing. ``[then]`` is parsed and recognized by `[if]`.
   \
@@ -123,7 +123,7 @@
 
   \ doc{
   \
-  \ body>name ( dfa -- nt )
+  \ body>name ( dfa -- nt ) "body-to-name"
   \
   \ Get _nt_ from its _dfa_.
   \
@@ -137,7 +137,7 @@
 
   \ doc{
   \
-  \ name>body ( nt -- dfa )
+  \ name>body ( nt -- dfa ) "name-to-body"
   \
   \ Get _dfa_ from its _nt_.
   \
@@ -151,7 +151,7 @@
 
   \ doc{
   \
-  \ link>name ( lfa -- nt )
+  \ link>name ( lfa -- nt ) "link-to-name"
   \
   \ Get _nt_ from its _lfa_.
   \
@@ -165,7 +165,7 @@
 
   \ doc{
   \
-  \ name>link ( nt -- lfa )
+  \ name>link ( nt -- lfa ) "name-to-link"
   \
   \ Convert _nt_ into its corresponding _lfa_.
   \
@@ -180,7 +180,7 @@
 
   \ doc{
   \
-  \ name<name ( nt1 -- nt2 )
+  \ name<name ( nt1 -- nt2 ) "name-from-name"
   \
   \ Get the previous _nt2_ from _nt1_, i.e. _nt2_ is the
   \ word that was defined before _nt1_.
@@ -195,7 +195,7 @@
 
   \ doc{
   \
-  \ name>name ( nt1 -- nt2 )
+  \ name>name ( nt1 -- nt2 ) "name-to-name"
   \
   \ Get the next _nt2_ from _nt1_, i.e. _nt2_ is the word that
   \ was defined after _nt1_.
@@ -219,7 +219,7 @@
 
   \ doc{
   \
-  \ >>link ( xtp -- lfa )
+  \ >>link ( xtp -- lfa ) "to-to-link"
   \
   \ Convert _xtp_ into its corresponding _lfa_.
   \
@@ -233,7 +233,7 @@
 
   \ doc{
   \
-  \ name>> ( nt -- xtp )
+  \ name>> ( nt -- xtp ) "name-from-from"
   \
   \ Convert _nt_ into its corresponding _xtp_.
   \
@@ -247,7 +247,7 @@
 
   \ doc{
   \
-  \ >>name ( xtp -- nt )
+  \ >>name ( xtp -- nt ) "to-to-name"
   \
   \ Convert _xtp_ into its corresponding _nt_.
   \
@@ -268,7 +268,7 @@
 
   \ doc{
   \
-  \ >body  ( xt -- dfa )
+  \ >body  ( xt -- dfa ) "to-body"
   \
   \ Convert _xt_ into its corresponding _dfa_.
   \
@@ -309,7 +309,7 @@
 
   \ doc{
   \
-  \ body>  ( dfa -- xt )
+  \ body> ( dfa -- xt ) "body-from"
   \
   \ Convert _dfa_ into its correspoding _xt_.
   \
@@ -324,7 +324,7 @@
   \ doc{
   \
   \
-  \ '' ( "name" -- xtp )
+  \ '' ( "name" -- xtp ) "tick-tick"
   \
   \ If _name_ is found in the current search order, return its
   \ execution-token pointer _xtp_, else throw an exception.
@@ -351,7 +351,7 @@
   \ doc{
   \
   \ ['']
-  \   Compilation: ( "name" -- )
+  \   Compilation: ( "name" -- ) "bracket-tick-tick"
 
   \
   \ If _name_ is found in the current search order, compile its
@@ -382,7 +382,7 @@ need array> need name>> need name<name need wordlist>link
 
   \ doc{
   \
-  \ >name ( xt -- nt | 0 )
+  \ >name ( xt -- nt | 0 ) "to-name"
   \
   \ Try to find the name token _nt_ of the word represented by
   \ execution token _xt_. Return 0 if it fails.
@@ -419,7 +419,7 @@ need array> need name>> need name<name
 
   \ doc{
   \
-  \ >name/order ( xt -- nt | 0 )
+  \ >name/order ( xt -- nt | 0 ) "to-name-slash-order"
   \
   \ Try to find the name token _nt_ of the word represented by
   \ execution token _xt_, in the current search `order`. Return
@@ -446,7 +446,7 @@ need array> need name>> need name<name
 
   \ doc{
   \
-  \ [defined] ( "name" -- f )
+  \ [defined] ( "name" -- f ) "bracket-defined"
   \
   \ Parse _name_. Return a true flag if _name_ is the name of a
   \ word that can be found in the current search order; else
@@ -467,7 +467,7 @@ need array> need name>> need name<name
 
   \ doc{
   \
-  \ [undefined] ( "name" -- f )
+  \ [undefined] ( "name" -- f ) "bracket-undefined"
   \
   \ Parse _name_. Return a false flag if _name_ is the name of a
   \ word that can be found in the current search order; else
@@ -501,7 +501,7 @@ need array> need name>> need name<name need wordlist>link
 
   \ doc{
   \
-  \ >oldest-name ( xt -- nt | 0 )
+  \ >oldest-name ( xt -- nt | 0 ) "to-oldest-name"
   \
   \ Try to find the oldest name token _nt_ of the word
   \ represented by execution token _xt_, in the current search
@@ -538,7 +538,7 @@ need array> need name>> need name<name
 
   \ doc{
   \
-  \ >oldest-name/order ( xt -- nt | 0 )
+  \ >oldest-name/order ( xt -- nt | 0 ) "to-oldest-name-slash-order"
   \
   \ Try to find the oldest name token _nt_ of the word
   \ represented by execution token _xt_, in the current search
@@ -573,7 +573,7 @@ need >>name need name>name need name>>
 
   \ doc{
   \
-  \ >oldest-name/fast ( xt -- nt | 0 )
+  \ >oldest-name/fast ( xt -- nt | 0 ) "to-oldest-name-slash-fast"
   \
   \ Try to find the name token _nt_ of the word represented by
   \ execution token _xt_. Return 0 if it fails.
@@ -608,7 +608,7 @@ need >>name need name>name need name>>
 
   \ doc{
   \
-  \ name>interpret ( nt -- xt | 0 )
+  \ name>interpret ( nt -- xt | 0 ) "name-to-interpret"
   \
   \ Return _xt_ that represents the interpretation semantics of
   \ the word _nt_. If _nt_ has no interpretation semantics,
@@ -627,7 +627,7 @@ need >>name need name>name need name>>
 
   \ doc{
   \
-  \ (comp') ( nt -- xt )
+  \ (comp') ( nt -- xt ) "paren-comp-tick"
   \
   \ A factor of `name>compile`. If _nt_ is an `immediate` word,
   \ return the _xt_ of `execute`, else return the _xt_ of
@@ -641,7 +641,7 @@ need >>name need name>name need name>>
 
   \ doc{
   \
-  \ name>compile ( nt -- x xt )
+  \ name>compile ( nt -- x xt ) "name-to-compile"
   \
   \ Compilation token _x xt_ represents the compilation
   \ semantics of the word _nt_. The  returned _xt_ has the
@@ -662,7 +662,7 @@ need >>name need name>name need name>>
 
   \ doc{
   \
-  \ comp' ( "name" -- x xt )
+  \ comp' ( "name" -- x xt ) "comp-tick"
   \
   \ Compilation token _x xt_ represents the compilation
   \ semantics of _name_.
@@ -680,7 +680,7 @@ need >>name need name>name need name>>
 
   \ doc{
   \
-  \ [comp']
+  \ [comp'] "bracket-comp-tick"
   \   Compilation: ( "name" -- )
   \   Run-time:    ( -- x xt )
   \
@@ -712,7 +712,7 @@ need >>name need name>name need name>>
 
   \ doc{
   \
-  \ ?pairs ( x1 x2 -- )
+  \ ?pairs ( x1 x2 -- ) "question-pairs"
   \
   \ If _x1_ not equals _x2_ throw error #-22 (control structure
   \ mismatch).
@@ -725,7 +725,7 @@ need >>name need name>name need name>>
 
   \ doc{
   \
-  \ [compile] ( "name" -- )
+  \ [compile] ( "name" -- ) "bracket-compile"
   \
   \ Parse _name_. Find _name_. If _name_ has other than default
   \ compilation semantics, append them to the current
@@ -844,7 +844,7 @@ need >>name need name>name need name>>
 
   \ doc{
   \
-  \ ]l ( x -- )
+  \ ]l ( x -- ) "right-bracket-l"
   \
   \ A short form of the idiom `] literal`.
   \
@@ -860,7 +860,7 @@ need >>name need name>name need name>>
 
   \ doc{
   \
-  \ ]2l ( xd -- )
+  \ ]2l ( xd -- ) "right-bracket-two-l"
   \
   \ A short form of the idiom `] 2literal`.
   \
@@ -876,7 +876,7 @@ need >>name need name>name need name>>
 
   \ doc{
   \
-  \ ]xl ( x -- )
+  \ ]xl ( x -- ) "right-bracket-x-l"
   \
   \ A short form of the idiom `] xliteral`.
   \
@@ -892,7 +892,7 @@ need >>name need name>name need name>>
 
   \ doc{
   \
-  \ ]cl ( x -- )
+  \ ]cl ( x -- ) "right-bracket-c-l"
   \
   \ A short form of the idiom `] cliteral`.
   \
@@ -975,7 +975,7 @@ variable here-backup
 
   \ doc{
   \
-  \ [const] ( "name" -- )
+  \ [const] ( "name" -- ) "bracket-const"
   \
   \ Evaluate _name_. Then compile the single-cell value left on
   \ the stack.
@@ -1005,7 +1005,7 @@ variable here-backup
 
   \ doc{
   \
-  \ [2const] ( "name" -- )
+  \ [2const] ( "name" -- ) "bracket-two-const"
   \
   \ Evaluate _name_. Then compile the double-cell value left on
   \ the stack.
@@ -1033,7 +1033,7 @@ variable here-backup
 
   \ doc{
   \
-  \ [xconst] ( "name" -- )
+  \ [xconst] ( "name" -- ) "bracket-x-const"
   \
   \ Evaluate _name_. Then compile the single-cell value left on
   \ the stack, using `xliteral`.
@@ -1064,7 +1064,7 @@ variable here-backup
 
   \ doc{
   \
-  \ [cconst] ( "name" -- )
+  \ [cconst] ( "name" -- ) "bracket-c-const"
   \
   \ Evaluate _name_. Then compile the char left on the stack.
   \
@@ -1105,7 +1105,7 @@ variable warnings  warnings on
 
   \ doc{
   \
-  \ no-warnings? ( -- f )
+  \ no-warnings? ( -- f ) "no-warnings-question"
   \
   \ Are the warnings deactivated?
   \
@@ -1118,7 +1118,7 @@ variable warnings  warnings on
 
   \ doc{
   \
-  \ not-redefined? ( ca len -- ca len xt false | ca len true )
+  \ not-redefined? ( ca len -- ca len xt false | ca len true ) "not-redefined-question"
   \
   \ Is the word name _ca len_ not yet defined in the
   \ compilation word list?
@@ -1134,7 +1134,7 @@ variable warnings  warnings on
 
   \ doc{
   \
-  \ ?warn ( ca len -- ca len | ca len xt )
+  \ ?warn ( ca len -- ca len | ca len xt ) "question-warn"
   \
   \ Check if a warning about the redefinition of the word name
   \ _ca len_ is needed.  If no warning is needed, unnest the
@@ -1161,7 +1161,7 @@ variable warnings  warnings on
 
   \ doc{
   \
-  \ warn.throw ( ca len -- ca len )
+  \ warn.throw ( ca len -- ca len ) "warn-dot-throw"
   \
   \ Alternative action for the deferred word `warn`.  If the
   \ contents of the user variable `warnings` is not zero and
@@ -1182,7 +1182,7 @@ variable warnings  warnings on
 
   \ doc{
   \
-  \ warn.message ( ca len -- ca len )
+  \ warn.message ( ca len -- ca len ) "warn-dot-message"
   \
   \ Alternative action for the deferred word `warn`.  If the
   \ contents of the user variable `warnings` is not zero and
@@ -1445,5 +1445,8 @@ variable warnings  warnings on
   \ 2018-01-03: Update `1literal` to `xliteral`. Rename
   \ accordingly: `[1const]` -> `[xconst]`, `]1l` -> `]xl`.
   \ Fix requirement of `>oldest-name`.
+  \
+  \ 2018-02-05: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201802051715
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -97,7 +97,7 @@
   \ Copyright (C) 2001 Julian V. Noble
 
   \ Modified for Solo Forth by Marcos Cruz (programandala.net),
-  \ 2015, 2016.
+  \ 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -126,7 +126,7 @@
 
   \ doc{
   \
-  \ 1array ( n1 n2 "name" -- )
+  \ 1array ( n1 n2 "name" -- ) "one-array"
   \
   \ Define a 1-dimension array _name_ with _n1_ items of
   \ _n2_ address units each.
@@ -141,7 +141,7 @@
 
   \ doc{
   \
-  \ array>items ( a -- n )
+  \ array>items ( a -- n ) "array-to-items"
   \
   \ Convert address of array _a_ to its number of items _n_.
   \
@@ -157,7 +157,7 @@
 
   \ doc{
   \
-  \ } ( a1 n -- a2 )
+  \ } ( a1 n -- a2 ) "right-curly-bracket"
   \
   \ If in range, return address _a2_ of the _n_ item of the
   \ 1-cell array _a1_.  Otherwise throw error #-272 (array
@@ -174,7 +174,7 @@
 
   \ doc{
   \
-  \ 2array ( n1 n2 n3 "name" -- )
+  \ 2array ( n1 n2 n3 "name" -- ) "two-array"
   \
   \ Define a 2-dimension array _name_ with _n1 x n2_ items of
   \ _n3_ address units each.
@@ -189,7 +189,7 @@
 
   \ doc{
   \
-  \ }} ( a1 n1 n2 -- a2 )
+  \ }} ( a1 n1 n2 -- a2 ) "double-right-curly-bracket"
   \
   \ Return address _a2_ of the _n1,n2_ item of the 2-dimension
   \ array _a1_.  Data  stored row-wise.
@@ -216,5 +216,8 @@
   \ compilation for `need`.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2018-02-05: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

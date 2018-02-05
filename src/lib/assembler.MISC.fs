@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802021630
+  \ Last modified: 201802051656
 
   \ ===========================================================
   \ Description
@@ -35,7 +35,7 @@ previous set-current ?)
 
   \ doc{
   \
-  \ pushhlde ( -- a )
+  \ pushhlde ( -- a ) "push-h-l-d-e"
   \
   \ _a_ is the address of a secondary entry point of the Forth
   \ inner interpreter.  The code at _a_ pushes registers DE and
@@ -70,7 +70,7 @@ need c@+ need for need 16hex. need 8hex.
 
   \ doc{
   \
-  \ << ( -- ca +n )
+  \ << ( -- ca +n ) "less-than-less-than"
   \
   \ Mark the start of a code zone to be dumped by `>>`.  _ca_
   \ is the current data-pointer and _+n_ is the current
@@ -87,7 +87,7 @@ need c@+ need for need 16hex. need 8hex.
 
   \ doc{
   \
-  \ >> ( ca +n -- )
+  \ >> ( ca +n -- ) "greater-than-greater-than"
   \
   \ Display starting address _ca_ as a 16-bit hexadecimal
   \ number. Then dump the code compiled in data space from _ca_
@@ -129,7 +129,7 @@ need c@+ need for need 16hex. need 8hex.
 
   \ doc{
   \
-  \ ;code
+  \ ;code "semicolon-code"
   \   Compilation: ( -- )
   \   Run-time:    ( -- ) ( R: nest-sys -- )
 
@@ -230,6 +230,9 @@ need c@+ need for need 16hex. need 8hex.
   \ 2018-01-25: Fix comments.
   \
   \ 2018-02-02: Update code style of `>>`.
+  \
+  \ 2018-02-05: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth
 

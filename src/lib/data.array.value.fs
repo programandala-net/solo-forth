@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201802051718
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,7 +27,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ Credit
@@ -55,7 +55,7 @@
 
   \ doc{
   \
-  \ avalue ( n "name" -- )
+  \ avalue ( n "name" -- ) "a-value"
   \
   \ Create a 1-dimension single-cell values array _name_
   \ with _n_ elements and the execution semantics defined
@@ -79,7 +79,7 @@
 
   \ doc{
   \
-  \ 2avalue ( n "name" -- )
+  \ 2avalue ( n "name" -- ) "two-a-value"
   \
   \ Create a 1-dimension double-cell values array _name_
   \ with _n_ elements and the execution semantics defined
@@ -103,7 +103,7 @@
 
   \ doc{
   \
-  \ cavalue ( n "name" -- )
+  \ cavalue ( n "name" -- ) "c-a-value"
   \
   \ Create a 1-dimension character values array _name_ with
   \ _n_ elements and the execution semantics defined below.
@@ -126,7 +126,7 @@
 
   \ doc{
   \
-  \ (ato) ( x n xt -- )
+  \ (ato) ( x n xt -- ) "paren-a-to"
   \
   \ Store _x_ into element _n_ of 1-dimension single-cell
   \ values array _xt_.
@@ -141,7 +141,7 @@
 
   \ doc{
   \
-  \ ato ( x n "name" -- )
+  \ ato ( x n "name" -- ) "a-to"
   \
   \ Store _x_ into element _n_ of 1-dimension single-cell
   \ values array _name_.
@@ -158,7 +158,7 @@
 
   \ doc{
   \
-  \ (+ato) ( n1 n2 xt -- )
+  \ (+ato) ( n1 n2 xt -- ) "paren-plus-a-to"
   \
   \ Add _n1_ to element _n2_ of 1-dimension single-cell
   \ values array _xt_.
@@ -173,7 +173,7 @@
 
   \ doc{
   \
-  \ +ato ( n1 n2 "name" -- )
+  \ +ato ( n1 n2 "name" -- ) "plus-a-to"
   \
   \ Add _n1_ to element _n2_ of 1-dimension single-cell
   \ values array _name_.
@@ -190,7 +190,7 @@
 
   \ doc{
   \
-  \ (2ato) ( xd n xt -- )
+  \ (2ato) ( xd n xt -- ) "paren-two-a-to"
   \
   \ Store _xd_ into element _n_ of 1-dimension double-cell
   \ values array _xt_.
@@ -205,7 +205,7 @@
 
   \ doc{
   \
-  \ 2ato ( xd n "name" -- )
+  \ 2ato ( xd n "name" -- ) "two-a-to"
   \
   \ Store _xd_ into element _n_ of 1-dimension double-cell
   \ values array _name_.
@@ -224,7 +224,7 @@
 
   \ doc{
   \
-  \ (cato) ( c n xt -- )
+  \ (cato) ( c n xt -- ) "paren-c-a-to"
   \
   \ Store _c_ into element _n_ of 1-dimension character
   \ values array _xt_.
@@ -239,7 +239,7 @@
 
   \ doc{
   \
-  \ cato ( c n "name" -- )
+  \ cato ( c n "name" -- ) "c-a-to"
   \
   \ Store _c_ into element _n_ of 1-dimension character
   \ values array _name_.
@@ -256,7 +256,7 @@
 
   \ doc{
   \
-  \ (+cato) ( c n xt -- )
+  \ (+cato) ( c n xt -- ) "paren-plus-c-a-to"
   \
   \ Add _c_ to element _n_ of 1-dimension character values
   \ array _xt_.
@@ -271,7 +271,7 @@
 
   \ doc{
   \
-  \ +cato ( c n "name" -- )
+  \ +cato ( c n "name" -- ) "plus-c-a-to"
   \
   \ Add _c_ to element _n_ of 1-dimension character values
   \ array _name_.
@@ -313,5 +313,8 @@
   \ 2017-02-27: Improve documentation.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2018-02-05: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

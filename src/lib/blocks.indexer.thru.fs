@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132009
+  \ Last modified: 201802051659
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -19,7 +19,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -139,7 +139,7 @@ need evaluate need catch need use-default-located
 
   \ doc{
   \
-  \ (make-thru-index) ( -- )
+  \ (make-thru-index) ( -- ) "paren-make-thru-index"
   \
   \ Create the blocks index, from `first-locatable` to
   \ `last-locatable`.
@@ -233,5 +233,8 @@ need evaluate need catch need use-default-located
   \ 2017-02-21: Need `use-default-located`, which now is optional.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2018-02-05: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not usable yet
 
-  \ Last modified: 201703130118
+  \ Last modified: 201802051659
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -21,7 +21,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -53,7 +53,7 @@ blocks/disk bit-array indexed-blocks
 
   \ doc{
   \
-  \ indexed-block? ( block -- f )
+  \ indexed-block? ( block -- f ) "indexed-block-question"
   \
   \ Is block _block_ indexed?
   \
@@ -100,7 +100,7 @@ blocks/disk bit-array indexed-blocks
 
   \ doc{
   \
-  \ ?index-block ( block -- )
+  \ ?index-block ( block -- ) "question-index-block"
   \
   \ Index block _block_, if not done before.
   \
@@ -167,5 +167,8 @@ blocks/disk bit-array indexed-blocks
   \
   \ 2017-03-13: Update names including "rec" to "sector(s)";
   \ update names including "blk" to "block(s)".
+  \
+  \ 2018-02-05: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

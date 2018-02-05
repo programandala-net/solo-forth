@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703071238
+  \ Last modified: 201802051654
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================--
   \ License
@@ -51,7 +51,7 @@ previous
 
   \ doc{
   \
-  \ endm ( -- )
+  \ endm ( -- ) "end-m"
   \
   \ Finish the definition of an assembler macro, started by
   \ `macro`.
@@ -78,6 +78,9 @@ previous
   \ 2017-02-27: Improve documentation.
   \
   \ 2017-03-07: Update example in documentation.
+  \
+  \ 2018-02-05: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth
 

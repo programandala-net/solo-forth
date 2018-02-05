@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712092304
+  \ Last modified: 201802051709
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ Credit
@@ -52,7 +52,7 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
 
   \ doc{
   \
-  \ bits>bytes ( n1 -- n2 )
+  \ bits>bytes ( n1 -- n2 ) "bits-to-bytes"
   \
   \ Return the number of bytes _n2_ needed to hold _n1_ bits.
   \ Used by `bit-array`.
@@ -87,7 +87,7 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
 
   \ doc{
   \
-  \ !bit ( f b ca -- )
+  \ !bit ( f b ca -- ) "store-bit"
   \
   \ Store flag _f_ in an element of a bit-array, represented by
   \ address _ca_ and bitmask _b_.
@@ -100,7 +100,7 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
 
   \ doc{
   \
-  \ @bit ( b ca -- f )
+  \ @bit ( b ca -- f ) "fetch-bit"
   \
   \ Fetch _f_ from an element of a bit-array, represented by
   \ address _ca_ and bitmask _b_.
@@ -124,5 +124,8 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
   \
   \ 2017-12-09: Improve documentation.
+  \
+  \ 2018-02-05: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

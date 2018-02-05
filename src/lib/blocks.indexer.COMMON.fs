@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702241212
+  \ Last modified: 201802051658
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -44,7 +44,7 @@ wordlist constant index-wordlist
 
   \ doc{
   \
-  \ name-indexed? ( ca len -- false | block true )
+  \ name-indexed? ( ca len -- false | block true ) "name-indexed-question"
   \
   \ Search the index for word _ca len_. If found, return
   \ its _block_ and _true_, else return _false_.
@@ -78,7 +78,7 @@ variable indexed-block
 
   \ doc{
   \
-  \ (index-block) ( u -- )
+  \ (index-block) ( u -- ) "paren-index-block"
   \
   \ Index block _u_, evaluating its header line.  The only
   \ word list in the search order must be `index-wordlist`.
@@ -152,5 +152,8 @@ need common-indexer
   \ 2017-02-17: Update cross references.
   \
   \ 2017-02-24: Improve documentation markup.
+  \
+  \ 2018-02-05: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth
