@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201711261655
+  \ Last modified: 201802071852
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -91,7 +91,7 @@ code i' ( -- n|u ) ( R: do-sys -- do-sys )
 
   \ doc{
   \
-  \ i' ( -- n|u ) ( R: loop-sys -- loop-sys )
+  \ i' ( -- n|u ) ( R: loop-sys -- loop-sys ) "i-tick"
   \
   \ Return a copy _n|u_ of the limit of the current (innermost)
   \ `loop` index.
@@ -118,7 +118,7 @@ code j' ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
 
   \ doc{
   \
-  \ j' ( -- n|u ) ( R: loop-sys1 loop-sys2 -- loop-sys1 loop-sys2 )
+  \ j' ( -- n|u ) ( R: loop-sys1 loop-sys2 -- loop-sys1 loop-sys2 ) "j-tick"
   \
   \ Return a copy _n|u_ of the limit of the next-outer `loop`
   \ index.
@@ -145,7 +145,7 @@ code k' ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
 
   \ doc{
   \
-  \ k' ( -- n|u ) ( R: loop-sys1 .. loop-sys3 -- loop-sys1 .. loop-sys3 )
+  \ k' ( -- n|u ) ( R: loop-sys1 .. loop-sys3 -- loop-sys1 ..  loop-sys3 ) "k-tick"
   \
   \ Return a copy _n|u_ of the limit of the second outer `loop`
   \ index.
@@ -174,5 +174,8 @@ code k' ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
   \ 2017-02-24: Improve documentation.
   \
   \ 2017-11-26: Add `i'`, `j'` and `k'`.
+  \
+  \ 2018-02-07: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

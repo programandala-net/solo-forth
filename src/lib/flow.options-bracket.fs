@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702272352
+  \ Last modified: 201802071853
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -16,7 +16,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ Credit:
@@ -78,7 +78,7 @@ variable #options
 
   \ doc{
   \
-  \ (options) ( i*x x -- j*x )
+  \ (options) ( i*x x -- j*x ) "paren-options"
   \
   \ Run-time procedure compiled by `options[`.
   \
@@ -105,7 +105,7 @@ variable #options
 
   \ doc{
   \
-  \ options[
+  \ options[ "options-left-bracket"
   \
   \ Compilation: ( -- a1 a2 a3 )
   \
@@ -166,7 +166,7 @@ variable #options
 
   \ doc{
   \
-  \ ]options ( a1 a2 a3 -- )
+  \ ]options ( a1 a2 a3 -- ) "right-bracket-options"
   \
   \ End a `options[ ]options` structure. Resolve the addresses
   \ left by `options[`:
@@ -193,5 +193,8 @@ variable #options
   \ 2016-11-26: Improve `(options)`.
   \
   \ 2017-02-27: Improve documentation.
+  \
+  \ 2018-02-07: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

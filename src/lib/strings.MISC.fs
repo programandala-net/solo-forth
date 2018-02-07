@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712041921
+  \ Last modified: 201802071843
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -30,7 +30,7 @@
 
   \ doc{
   \
-  \ str< ( ca1 len1 ca2 len2 -- f )
+  \ str< ( ca1 len1 ca2 len2 -- f ) "s-t-r-lees-than"
   \
   \ Is string _ca1 len1_ lexicographically smaller than string
   \ _ca2 len2_?
@@ -44,7 +44,7 @@
 
   \ doc{
   \
-  \ str> ( ca1 len1 ca2 len2 -- f )
+  \ str> ( ca1 len1 ca2 len2 -- f ) "s-t-r-greater-than"
   \
   \ Is string _ca1 len1_ lexicographically larger than string
   \ _ca2 len2_?
@@ -73,7 +73,7 @@
 
   \ doc{
   \
-  \ +place ( ca1 len1 ca2 -- )
+  \ +place ( ca1 len1 ca2 -- ) "plus-place"
   \
   \ Add the string _ca1 len1_ to the end of the counted string
   \ _ca2_.
@@ -118,7 +118,7 @@
 
   \ doc{
   \
-  \ ud>str ( ud -- ca len )
+  \ ud>str ( ud -- ca len ) "u-d-to-s-t-r"
   \
   \ Convert _ud_ to string _ca len_.
   \
@@ -131,7 +131,7 @@
 
   \ doc{
   \
-  \ u>str ( u -- ca len )
+  \ u>str ( u -- ca len ) "u-to-s-t-r"
   \
   \ Convert _u_ to string _ca len_.
   \
@@ -148,7 +148,7 @@
 
   \ doc{
   \
-  \ d>str ( d -- ca len )
+  \ d>str ( d -- ca len ) "d-to-s-t-r"
   \
   \ Convert _d_ to string _ca len_.
   \
@@ -161,7 +161,7 @@
 
   \ doc{
   \
-  \ n>str ( n -- ca len )
+  \ n>str ( n -- ca len ) "n-to-s-t-r"
   \
   \ Convert _n_ to string _ca len_.
   \
@@ -180,7 +180,7 @@
 
   \ doc{
   \
-  \ char>string ( c -- ca len )
+  \ char>string ( c -- ca len ) "char-to-string"
   \
   \ Convert the char _c_ to a string _ca len_ in the
   \ `stringer`.
@@ -198,7 +198,7 @@
 
   \ doc{
   \
-  \ chars>string ( c1..cn n -- ca len )
+  \ chars>string ( c1..cn n -- ca len ) "chars-to-string"
   \
   \ Convert _n_ chars to a string _ca len_ in the `stringer`.
   \
@@ -214,7 +214,7 @@
 
   \ doc{
   \
-  \ >bstring ( x -- ca len )
+  \ >bstring ( x -- ca len ) "to-b-string"
   \
   \ Convert _x_ to a 1-cell binary string _ca len_ in `pad`.
   \ _ca len_ contains _x_ "as is", as stored in memory.
@@ -228,7 +228,7 @@
 
   \ doc{
   \
-  \ c>bstring ( c -- ca len )
+  \ c>bstring ( c -- ca len ) "c-to-b-string"
   \
   \ Convert _c_ to a 1-char binary string _ca len_ in `pad`,
   \ _ca len_ contains _c_ "as is", as stored in memory.
@@ -243,7 +243,7 @@
 
   \ doc{
   \
-  \ >2bstring ( xd -- ca len )
+  \ >2bstring ( xd -- ca len ) "to-two-b-string"
   \
   \ Convert _xd_ to a 2-cell binary string in `pad`.
   \ _ca len_ contains _xd_ "as is", as stored in memory.
@@ -291,8 +291,9 @@ code lengths
 
   \ doc{
   \
-  \ lengths ( ca1 len1 ca2 len2 -- ca1 len1 ca2 len2 len1 len2
-  \ )
+  \ lengths ( ca1 len1 ca2 len2 -- ca1 len1 ca2 len2 len1 len2)
+  \
+
   \
   \ Duplicate lengths _len1_ and _len2_ of strings _ca1 len1_
   \ and _ca2 len2_. ``lengths`` is a factor of `s+`.
@@ -323,7 +324,7 @@ code lengths
 
   \ doc{
   \
-  \ s+ ( ca1 len1 ca2 len2 -- ca3 len3 )
+  \ s+ ( ca1 len1 ca2 len2 -- ca3 len3 ) "s-plus"
   \
   \ Append the string _ca2 len2_ to the end of string _ca1
   \ len1_ returning the string _ca3 len3_ in the `stringer`.
@@ -373,7 +374,7 @@ set-current ?)
 
   \ doc{
   \
-  \ upper_ ( -- a )
+  \ upper_ ( -- a ) "upper-underscore"
   \
   \ Return address _a_ of a routine that converts the ASCII
   \ character in the A register to uppercase.
@@ -415,7 +416,7 @@ code uppers ( ca len -- )
 
   \ doc{
   \
-  \ uppers1 ( ca len -- )
+  \ uppers1 ( ca len -- ) "uppers-one"
   \
   \ Change the first char of string _ca len_ to uppercase.
   \
@@ -470,7 +471,7 @@ code lowers ( ca len -- )
 
   \ doc{
   \
-  \ #spaces ( ca len -- +n )
+  \ #spaces ( ca len -- +n ) "dash-spaces"
   \
   \ Count number _+n_ of spaces in a string _ca len_.
   \
@@ -485,7 +486,7 @@ code lowers ( ca len -- )
 
   \ doc{
   \
-  \ #chars ( ca len c -- +n )
+  \ #chars ( ca len c -- +n ) "dash-chars"
   \
   \ Return the count _+n_ of chars _c_ in a string _ca len_.
   \
@@ -527,7 +528,7 @@ code lowers ( ca len -- )
 
   \ doc{
   \
-  \ /name ( ca1 len1 -- ca2 len2 ca3 len3 )
+  \ /name ( ca1 len1 -- ca2 len2 ca3 len3 ) "slash-name"
   \
   \ Split string _ca1 len1_ into _ca2 len2_ (from the start of
   \ the first name in _ca1 len1_) and _ca3 len3_ (from the char
@@ -566,7 +567,7 @@ code lowers ( ca len -- )
 
   \ doc{
   \
-  \ /first-name ( ca1 len1 -- ca2 len2 ca3 len3 )
+  \ /first-name ( ca1 len1 -- ca2 len2 ca3 len3 ) "slash-first-name"
   \
   \ Get the first name _ca3 len3_ from string _ca2 len2_,
   \ returning also the remaining string _ca3 len3_.
@@ -588,7 +589,7 @@ code lowers ( ca len -- )
 
   \ doc{
   \
-  \ prefix? ( ca1 len1 ca2 len2 -- f )
+  \ prefix? ( ca1 len1 ca2 len2 -- f ) "prefix-question"
   \
   \ Is string _ca2 len2_ the prefix of string _ca1 len1_?
   \
@@ -607,7 +608,7 @@ code lowers ( ca len -- )
 
   \ doc{
   \
-  \ suffix? ( ca1 len1 ca2 len2 -- f )
+  \ suffix? ( ca1 len1 ca2 len2 -- f ) "suffix-question"
   \
   \ Is string _ca2 len2_ the suffix of string _ca1 len1_?
   \
@@ -627,7 +628,7 @@ code lowers ( ca len -- )
 
   \ doc{
   \
-  \ -prefix ( ca1 len1 ca2 len2 -- ca1 len1 | ca3 len3 )
+  \ -prefix ( ca1 len1 ca2 len2 -- ca1 len1 | ca3 len3 ) "minus-prefix"
   \
   \ Remove prefix _ca2 len2_ from string _ca1 len1_.
   \
@@ -646,7 +647,7 @@ code lowers ( ca len -- )
 
   \ doc{
   \
-  \ -suffix ( ca1 len1 ca2 len2 -- ca1 len1 | ca3 len3 )
+  \ -suffix ( ca1 len1 ca2 len2 -- ca1 len1 | ca3 len3 ) "minus-suffix"
   \
   \ Remove suffix _ca2 len2_ from string _ca1 len1_.
   \
@@ -696,7 +697,7 @@ code lowers ( ca len -- )
 
   \ doc{
   \
-  \ s"" ( -- ca len )
+  \ s"" ( -- ca len ) "s-quote-quote"
   \
   \ Return an empty string in the `stringer`.
   \
@@ -714,7 +715,7 @@ code lowers ( ca len -- )
 
   \ doc{
   \
-  \ s'
+  \ s' "s-tick"
   \   Compilation: ( "ccc<char>" -- )
   \   Run-time:    ( -- ca len )
   \
@@ -735,7 +736,7 @@ code lowers ( ca len -- )
 
   \ doc{
   \
-  \ counted>stringer ( ca1 len1 -- ca2 )
+  \ counted>stringer ( ca1 len1 -- ca2 ) "counted-to-stringer"
   \
   \ Copy string _ca1 len1_ to the `stringer` as a counted
   \ string and return it as _ca2_.
@@ -769,7 +770,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
 
   \ doc{
   \
-  \ string/ ( ca1 len1 len2 -- ca2 len2 )
+  \ string/ ( ca1 len1 len2 -- ca2 len2 ) "string-slash"
   \
   \ Return the _len2_ ending characters of string _ca1 len1_.
   \
@@ -785,7 +786,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
 
   \ doc{
   \
-  \ char-in-string? ( ca len c -- f )
+  \ char-in-string? ( ca len c -- f ) "char-in-string-question"
   \
   \ Is char _c_ in string _ca len_?
   \
@@ -802,7 +803,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
 
   \ doc{
   \
-  \ char-position? ( ca len c -- +n true | false )
+  \ char-position? ( ca len c -- +n true | false ) "char-position-question"
   \
   \ If char _c_ is in string _ca len_, return its first
   \ position _+n_ and _true_; else return _false_.
@@ -836,7 +837,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
 
   \ doc{
   \
-  \ sconstant ( ca len "name" -- )
+  \ sconstant ( ca len "name" -- ) "s-constant"
   \
   \ Create a character string constant _name_ with value _ca
   \ len_.  The character string is stored into data space. When
@@ -856,7 +857,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
 
   \ doc{
   \
-  \ sconstants ( 0 ca[n]..ca[1] "name" -- n )
+  \ sconstants ( 0 ca[n]..ca[1] "name" -- n ) "s-constants"
   \
   \ Create a table of string constants _name_, using counted
   \ strings _ca[n]..ca[1]_, being _0_ a mark for the last
@@ -886,7 +887,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \ 3 digitname cr type cr
   \ ----
 
-  \ See: `sconstant`.
+  \ See: `sconstant`, `begin-stringtable`.
   \
   \ }doc
 
@@ -1038,5 +1039,8 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \ 2017-12-02: Update source style (spacing).
   \
   \ 2017-12-04: Add `n>str`. Update documentation.
+  \
+  \ 2018-02-07: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

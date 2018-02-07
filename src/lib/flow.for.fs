@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201711271837
+  \ Last modified: 201802071851
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ Credit
@@ -38,7 +38,7 @@ code (step) ( R: u -- u' )
 
   \ doc{
   \
-  \ (step) ( R: u -- u' )
+  \ (step) ( R: u -- u' ) "paren-step"
   \
   \ The run-time procedure compiled by `step`.
   \
@@ -166,5 +166,8 @@ need alias
   \ `_jp_next` in Z80 comments.
   \
   \ 2017-11-27: Improve documentation.
+  \
+  \ 2018-02-07: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

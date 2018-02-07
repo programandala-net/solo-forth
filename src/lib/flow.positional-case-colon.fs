@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201802071854
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -18,7 +18,7 @@
   \ Michael Perry.
 
   \ Adapted by Marcos Cruz (programandala.net), 2015, 2016,
-  \ 2017.
+  \ 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -39,7 +39,7 @@ need create:
 
   \ doc{
   \
-  \ positional-case: ( "name" -- )
+  \ positional-case: ( "name" -- ) "positional-case-colon"
   \
   \ Create a positional case word _name_. At runtime, _name_
   \ will execute the n-th word compiled in its definition,
@@ -71,5 +71,8 @@ need create:
   \ 2016-04-09: Fixed the file header. Documented.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2018-02-07: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

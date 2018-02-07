@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201711061857
+  \ Last modified: 201802060932
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ Credit
@@ -50,7 +50,7 @@ need search-wordlist
 
   \ doc{
   \
-  \ item? ( ca len wid -- false | xt true )
+  \ item? ( ca len wid -- false | xt true ) "item-question"
   \
   \ Is _ca len_ an item of the `associative-list` _wid_?  If so
   \ return its _xt_ and _true_, else return _false_.
@@ -101,7 +101,7 @@ need create-entry  [unneeded] entry: ?(
 
   \ doc{
   \
-  \ entry: ( x wid "name" -- )
+  \ entry: ( x wid "name" -- ) "entry-colon"
   \
   \ Create a cell entry "name" in the `associative-list`
   \ _wid_, with value _x_.
@@ -116,7 +116,7 @@ need create-entry  [unneeded] entry: ?(
 
   \ doc{
   \
-  \ centry: ( c wid "name" -- )
+  \ centry: ( c wid "name" -- ) "c-entry-colon"
   \
   \ Create a character entry "name" in the `associative-list`
   \ _wid_, with value _c_.
@@ -131,7 +131,7 @@ need create-entry  [unneeded] entry: ?(
 
   \ doc{
   \
-  \ 2entry: ( dx wid "name" -- )
+  \ 2entry: ( dx wid "name" -- ) "two-entry-colon"
   \
   \ Create a double-cell entry "name" in the `associative-list`
   \ _wid_, with value _dx_.
@@ -146,7 +146,7 @@ need create-entry  [unneeded] entry: ?(
 
   \ doc{
   \
-  \ sentry: ( ca len wid "name" -- )
+  \ sentry: ( ca len wid "name" -- ) "s-entry-colon"
   \
   \ Create a string entry "name" in the `associative-list`
   \ _wid_, with value _ca len_.
@@ -196,5 +196,8 @@ need create-entry  [unneeded] entry: ?(
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
   \
   \ 2017-11-06: Improve documentation with cross-references.
+  \
+  \ 2018-02-06: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth
