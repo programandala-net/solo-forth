@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-02-04
+:revdate: 2018-02-07
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -2427,6 +2427,11 @@ Options to make it easier to share code with other systems:
 // Stacks {{{1
 == Stacks
 
+=== 2018-02-07
+
+Write `get-xstack` to return the latest address used by `xstack`,
+which should be renamed `set-xstack`.
+
 === 2017-05-12
  
 From LaForth:
@@ -2529,6 +2534,10 @@ Finish the conversion of 128K sound explosions. More details in the source.
 
 // Strings {{{1
 == Strings
+
+=== 2018-02-05
+
+`edit-line`, after Gforth.
 
 === 2017-12-27
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132010
+  \ Last modified: 201802072046
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
   \
   \ Code adapted from Galope (xstack module).
 
@@ -30,9 +30,7 @@
 [unneeded] xsize  [unneeded] xp and  [unneeded] xp0 and
 [unneeded] xstack and ?(
 
-need value
-
-0 value xsize  0 value xp  0 value xp0
+0 constant xsize  0 constant xp  0 constant xp0
 
   \ doc{
   \
@@ -60,7 +58,7 @@ need value
   \ }doc
 
 : xstack ( a -- )
-  dup @ to xp0  cell+ dup to xp  cell+ @ to xsize ; ?)
+  dup @ !> xp0  cell+ dup !> xp  cell+ @ !> xsize ; ?)
 
   \ doc{
   \
@@ -403,5 +401,8 @@ need xp0 need xlen need xdepth need .depth
   \ 2017-02-17: Update cross references.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2018-02-07: Use `constant` and `!>` instead of `value` and
+  \ `to`. It's faster.
 
   \ vim: filetype=soloforth
