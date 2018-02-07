@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802072046
+  \ Last modified: 201802072302
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -82,6 +82,8 @@
   \ `xp0`, `xp` and `xsize` are used to access the contents of
   \ the table.
 
+  \ See: `astack`.
+  \
   \ }doc
 
 [unneeded] xfree ?\ : xfree ( -- ) xp0 cell+ free throw ;
@@ -403,6 +405,6 @@ need xp0 need xlen need xdepth need .depth
   \ 2017-03-13: Improve documentation.
   \
   \ 2018-02-07: Use `constant` and `!>` instead of `value` and
-  \ `to`. It's faster.
+  \ `to`. It's faster. Update documentation.
 
   \ vim: filetype=soloforth

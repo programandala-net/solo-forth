@@ -1935,6 +1935,10 @@ Floating-point words `flit`, `fliteral`. From PFE: `fround>s`,
 // Memory {{{1
 == Memory
 
+=== 2018-02-07
+
+Write `@@`, in Z80. This is what `a@` does, from `astack`.
+
 === 2018-01-20
 
 Idea:
@@ -2333,6 +2337,12 @@ for the end user.
 // Names {{{1
 == Names
 
+=== 2018-02-07
+
+NOTE: Milestone: 0.14.0
+
+Fix name clash: `a@` (address register) and `a@` (`astack`).
+
 === 2018-02-04
 
 Rename `case>` `thiscase`?
@@ -2475,30 +2485,6 @@ data stack.  This way both stacks can share a common free space.  This
 is an advantage because you can have programs which need quite some
 return stack depth, but few data elements - or the inverse.  "Stack
 overflow" means both pointers cross.  The idea was taken from 4tH:
-
-....
-Message-ID: <57f3f915bash75@news.xs4all.nl>
-From: Hans Bezemer
-Subject: Re: Stack Sizes
-Newsgroups: comp.lang.forth
-Date: Tue, 04 Oct 2016 20:46:33 +0200
-....
-
-=== 2017-01-20
-
-Implement this, as a simpler alternative to `xstack`:
-
------
-: stack dup ! ;                        ( stack --)
-: a@ @ @ ;                             ( stack -- n)
-: >a 1 cells over +! @ ! ;             ( n stack --)
-: a> dup a@ -1 cells rot +! ;          ( stack -- n)
-: adepth dup @ swap - ;                ( stack -- n)
------
-
-Credit:
-
-Code from 4tH:
 
 ....
 Message-ID: <57f3f915bash75@news.xs4all.nl>
