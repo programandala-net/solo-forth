@@ -639,6 +639,10 @@ Options:
 // Display {{{1
 == Display
 
+=== 2018-02-10
+
+Rename `papery` `ink>paper` or `>paper`?
+
 === 2018-01-25
 
 Factor or rename `gigatype-title`.
