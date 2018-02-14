@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201712051617
+; Last modified: 201802141733
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -170,6 +170,25 @@ push_dos_ior:
   _jp_next
 
 ; ------------------------------
+; Save and restore the Forth IP
+
+; These routines are used when a ROM call needs many parameters
+; and not all of them can be taken from the stack in order to
+; push BC before the call.  `dos.ix.preserve_ip` is not useful
+; in those cases.
+
+save_ip:
+  ld h,b
+  ld l,c
+  ld (saved_ip),hl
+  ret
+
+restore_ip:
+saved_ip: equ $+1
+  ld bc,0 ; patched by save_ip
+  ret
+
+; ------------------------------
 
 if 0
 
@@ -194,6 +213,42 @@ endif
 
 ; ==============================================================
 ; Dictionary
+
+; ----------------------------------------------
+  _constant_header save_ip_underscore_,'save-ip_'
+
+; doc{
+;
+; save-ip_ ( -- a )
+;
+; Address of a routine that saves the Forth IP (Z80 register
+; BC), which must be restored later by the routine pointed by
+; `restore-ip_`.
+;
+; This routine used when a ROM call needs many parameters and
+; not all of them can be taken from the stack in order to push
+; BC before the call. `dos-ix-preserve-ip_` is not useful in
+; those cases.
+
+; }doc
+
+  dw save_ip
+
+; ----------------------------------------------
+  _constant_header restore_ip_underscore_,'restore-ip_'
+
+; doc{
+;
+; restore-ip_ ( -- a )
+;
+; Address of a routine that restores the Forth IP (Z80 register
+; BC), previously saved by the routine pointed by `save-ip_`.
+
+; See: `dos-ix-preserve-ip_`, `dos-tos_`.
+;
+; }doc
+
+  dw restore_ip
 
 ; ----------------------------------------------
   _constant_header dos_ix_underscore_,'dos-ix_'
@@ -1287,5 +1342,8 @@ endif ; defined plus3dos
 ; 2017-09-09: Update notation "pfa" to the standard "dfa".
 ;
 ; 2017-12-05: Fix documentation.
+;
+; 2018-02-14: Add routines `save_ip` and `restore_ip`, and the
+; corresponding Forth constants `save-ip_` and `restore-ip_`.
 
 ; vim: filetype=z80:textwidth=64
