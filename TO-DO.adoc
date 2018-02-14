@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-02-07
+:revdate: 2018-02-14
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1512,6 +1512,15 @@ Name for graphic fill: `flood`.
 // Keyboard {{{1
 == Keyboard
 
+== 2018-02-14
+
+- Rename `kk-ports` `kk-data`?
+- Factor `kk#>` from `#>kk`?
+
+=== 2018-02-13
+
+Rewrite the 3-byte  version of `kk@` in Z80.
+
 === 2017-12-13
 
 From CHForth:
@@ -2161,6 +2170,22 @@ Study the way v.Forth manages the interrupts and adapt it.
 
 // Library {{{1
 == Library
+
+== 2018-02-14
+
+One 640-KiB TR-DOS disk is barely enough to contain the library.
+
+Some ways to compact the code:
+
+- Implement the parsing version of `(` for block headers. This will
+  allow headers longer than one line, thus fitting more short but
+  long-name words into one block.
+- Move the stack comments to a meta comment below the code. This will
+  make many one-liners fit one line.
+
+Another, definitive solution is to split the library into two disks,
+for TR-DOS.  But then the usage instructions of TR-DOS will be
+different than G+DOS and +3DOS.
 
 === 2018-01-21
 

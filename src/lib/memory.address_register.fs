@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712092315
+  \ Last modified: 201802141340
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -24,7 +24,7 @@
   \ 2001.
   \
   \ Marcos Cruz (programandala.net) adapted the code for Solo
-  \ Forth, 2015, 2016, 2017.
+  \ Forth, 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -33,9 +33,9 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( a a! a@ )
+( a a! a@ !a @a c!a c@a )
 
-variable a
+[unneeded] a ?( variable a
 
   \ doc{
   \
@@ -64,7 +64,7 @@ code a! ( a -- ) E1 c, 22 c, a , jpnext, end-code
   \
   \ }doc
 
-code a@ ( -- a ) 2A c, a , E5 c, jpnext, end-code
+code a@ ( -- a ) 2A c, a , E5 c, jpnext, end-code ?)
     \ ld hl,(address_register)
     \ push hl
     \ _jp_next
@@ -79,11 +79,8 @@ code a@ ( -- a ) 2A c, a , E5 c, jpnext, end-code
   \
   \ }doc
 
-( !a @a c!a c@a )
+[unneeded] !a ?( need a
 
-need a
-
-[unneeded] !a ?(
 code !a ( x -- ) D1 c, 2A c, a , 70 03 + c, 23 c, 70 02 + c,
                  jpnext, end-code ?)
     \ pop de
@@ -103,7 +100,8 @@ code !a ( x -- ) D1 c, 2A c, a , 70 03 + c, 23 c, 70 02 + c,
   \
   \ }doc
 
-[unneeded] @a ?(
+[unneeded] @a ?( need a
+
 code @a ( -- x ) 2A c, a , 5E c, 23 c, 66 c, 68 03 + c, E5 c,
                  jpnext, end-code ?)
     \ ld hl,(address_register)
@@ -124,7 +122,8 @@ code @a ( -- x ) 2A c, a , 5E c, 23 c, 66 c, 68 03 + c, E5 c,
   \
   \ }doc
 
-[unneeded] c!a ?(
+[unneeded] c!a ?( need a
+
 code c!a ( c -- ) D1 c, 2A c, a , 70 03 + c, jpnext,
                   end-code ?)
     \ pop de
@@ -143,6 +142,7 @@ code c!a ( c -- ) D1 c, 2A c, a , 70 03 + c, jpnext,
   \ }doc
 
 [unneeded] c@a ?(
+
 code c@a ( -- c ) 2A c, a , 6E c, 26 c, 00 c, E5 c, jpnext,
                   end-code ?)
     \ ld hl,(address_register)
@@ -163,12 +163,10 @@ code c@a ( -- c ) 2A c, a , 6E c, 26 c, 00 c, E5 c, jpnext,
 
 ( !a+ @a+ c!a+ c@a+ )
 
-need a
+[unneeded] !a+ ?( need a
 
-[unneeded] !a+ ?(
-code !a+ ( x -- )
-  D1 c, 2A c, a , 70 03 + c, 23 c, 70 02 + c, 23 c, 22 c, a ,
-  jpnext, end-code ?)
+code !a+ ( x -- ) D1 c, 2A c, a , 70 03 + c, 23 c, 70 02 + c,
+                  23 c, 22 c, a , jpnext, end-code ?)
     \ pop de
     \ ld hl,(address_register)
     \ ld (hl),e
@@ -189,10 +187,10 @@ code !a+ ( x -- )
   \
   \ }doc
 
-[unneeded] @a+ ?(
-code @a+ ( -- x )
-  2A c, a , 5E c, 23 c, 56 c, 23 c, 22 c, a , D5 c, jpnext,
-  end-code ?)
+[unneeded] @a+ ?( need a
+
+code @a+ ( -- x ) 2A c, a , 5E c, 23 c, 56 c, 23 c, 22 c, a ,
+                  D5 c, jpnext, end-code ?)
     \ ld hl,(address_register)
     \ ld e,(hl)
     \ inc hl
@@ -214,7 +212,8 @@ code @a+ ( -- x )
   \ }doc
 
 
-[unneeded] c!a+ ?(
+[unneeded] c!a+ ?( need a
+
 code c!a+ ( c -- ) D1 c, 2A c, a , 70 03 + c, 23 c,
                    22 c, a , jpnext, end-code ?)
     \ pop de
@@ -235,7 +234,8 @@ code c!a+ ( c -- ) D1 c, 2A c, a , 70 03 + c, 23 c,
   \
   \ }doc
 
-[unneeded] c@a+ ?(
+[unneeded] c@a+ ?( need a
+
 code c@a+ ( -- c ) 2A c, a , 5E c, 23 c, 16 c, 00 c,
                    22 c, a , D5 c, jpnext, end-code ?)
     \ ld hl,(address_register)
@@ -287,5 +287,7 @@ code c@a+ ( -- c ) 2A c, a , 5E c, 23 c, 16 c, 00 c,
   \ `_jp_next` in Z80 comments.
   \
   \ 2017-12-09: Improve documentation.
+  \
+  \ 2018-02-14: Compact the code, saving one block.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801241527
+  \ Last modified: 201802141335
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -228,7 +228,7 @@ defer reneeded ( ca len -- )
   \
   \ }doc
 
-defer reneed ( "name" -- ) defer needed ( ca len -- )
+defer reneed ( "name" -- )  defer needed ( ca len -- )
 
   \ doc{
   \
@@ -428,9 +428,8 @@ blk @ 1+ dup default-first-locatable !  first-locatable !
 
 [unneeded] use-default-located ?(
 
-: use-default-located ( -- )
-  ['] (located) ['] located defer!
-  ['] drop ['] unlocated defer! ; ?)
+: use-default-located ( -- ) ['] (located) ['] located defer!
+                             ['] drop ['] unlocated defer! ; ?)
 
   \ doc{
   \
@@ -534,7 +533,7 @@ need use-default-need need  use-default-located
 : need-here ( "name" -- )
   parse-name needed-word 2@ 2>r
   new-needed-word  2dup needed-word 2! undefined?
-  if  blk @ load  else  2drop  then  2r> needed-word 2! ; ?)
+  if blk @ load else 2drop then 2r> needed-word 2! ; ?)
 
   \ doc{
   \
@@ -549,20 +548,20 @@ need use-default-need need  use-default-located
   \
   \ }doc
 
-( (.info checkpoint )
+  \ ( (.info checkpoint )
 
-  \ XXX TMP -- 2017-02-12, for debugging
+  \   \ XXX TMP -- 2017-02-12, for debugging
 
-need get-drive
+  \ need get-drive
 
-: (.info ( -- ) get-drive dup ." Drive " .
-                1 = if  ." CHANGED!" quit  then ;
+  \ : (.info ( -- ) get-drive dup ." Drive " .
+  \                 1 = if  ." CHANGED!" quit  then ;
 
-' (.info ' .info defer!
+  \ ' (.info ' .info defer!
 
-: checkpoint ( n -- )
-  2 border cr ." Check point " . (.info key drop
-  0 border ;
+  \ : checkpoint ( n -- )
+  \   2 border cr ." Check point " . (.info key drop
+  \   0 border ;
 
   \ ===========================================================
   \ Change log
@@ -697,5 +696,8 @@ need get-drive
   \ 2018-01-21: Fix layout of one-liner.
   \
   \ 2018-01-24: Improve error checking in `(locate)`.
+  \
+  \ 2018-02-14: Comment out `(.info` and `checkpoint`, saving
+  \ one block.
 
   \ vim: filetype=soloforth

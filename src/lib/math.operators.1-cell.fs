@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801042343
+  \ Last modified: 201802141356
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -111,6 +111,7 @@ code +under ( n1|u1 n2|u2 x -- n3|u3 x )
   \ }doc
 
 [unneeded] u%
+
 ?\ : u% ( u1 u2 -- u3 ) >r 100 um* r> um/mod nip ;
 
   \ doc{
@@ -210,13 +211,12 @@ code +under ( n1|u1 n2|u2 x -- n3|u3 x )
 
 [unneeded] odd? ?(
 
-code odd? ( n -- f )
-  E1 c, CB c, 40 05 + c, CA c, ' false , C3 c, ' true ,
+code odd? ( n -- f ) E1 c, CB c, 40 05 + c, CA c, ' false ,
+                     C3 c, ' true , end-code ?)
   \ pop hl
   \ bit 0,l
   \ jp z,false_
   \ jp true_
-  end-code ?)
 
   \ doc{
   \
@@ -237,13 +237,12 @@ code odd? ( n -- f )
 
 [unneeded] even? ?(
 
-code even? ( n -- f )
-  E1 c, CB c, 40 05 + c, CA c, ' true , C3 c, ' false ,
+code even? ( n -- f ) E1 c, CB c, 40 05 + c, CA c, ' true ,
+                      C3 c, ' false , end-code ?)
   \ pop hl
   \ bit 0,l
   \ jp z,true_
   \ jp false_
-  end-code ?)
 
   \ doc{
   \
@@ -264,10 +263,8 @@ code even? ( n -- f )
 
 ( 8* 8+ 8- 3* )
 
-[unneeded] 8* ?(
-
-code 8* ( x1 -- x2 )
-  e1 c, 29 c, 29 c, 29 c, E5 c, jpnext, end-code ?)
+[unneeded] 8* ?( code 8* ( x1 -- x2 ) e1 c, 29 c, 29 c, 29 c,
+                                      E5 c, jpnext, end-code ?)
   \ pop hl
   \ add hl,hl
   \ add hl,hl
@@ -290,10 +287,8 @@ code 8* ( x1 -- x2 )
   \
   \ }doc
 
-[unneeded] 8+ ?(
-
-code 8+ ( n1 -- n2 )
-  e1 c, 11 c, 0008 , 19 c,  E5 c, jpnext, end-code ?)
+[unneeded] 8+ ?( code 8+ ( n1 -- n2 ) E1 c, 11 c, 0008 , 19 c,
+                                      E5 c, jpnext, end-code ?)
   \ pop hl
   \ ld de,8
   \ add hl,de
@@ -313,10 +308,9 @@ code 8+ ( n1 -- n2 )
   \
   \ }doc
 
-[unneeded] 8- ?(
-
-code 8- ( n1 -- n2 ) e1 c, 11 c, 0008 , A7 c, ED c, 52 c, E5 c,
-                     jpnext, end-code ?)
+[unneeded] 8- ?( code 8- ( n1 -- n2 )
+                   e1 c, 11 c, 0008 , A7 c, ED c, 52 c, E5 c,
+                   jpnext, end-code ?)
   \ pop hl
   \ ld de,8
   \ and a
@@ -533,7 +527,7 @@ code 0max ( n -- n | 0 )
   \
   \ }doc
 
-( lshift rshift )
+( lshift rshift ?shift )
 
 [unneeded] lshift ?( need assembler need unresolved
 
@@ -570,10 +564,9 @@ code lshift ( x1 u -- x2 )
 
 code rshift ( x1 u -- x2 )
 
-  exx, b pop, c b ld, h pop,
+  exx, b pop, c b ld, h pop,  b inc, rahead 0 unresolved !
   \ B = loop counter (high 8 bits of _u_ are ignored)
   \ HL = _x1_
-  b inc, rahead 0 unresolved !
   rbegin  h srl, l rr, 0 unresolved @ >rresolve  rstep
   h push, exx, jpnext, end-code ?)
 
@@ -596,8 +589,6 @@ code rshift ( x1 u -- x2 )
   \ See: `lshift`, `?shift`.
   \
   \ }doc
-
-( ?shift )
 
 need 0exit need rshift need lshift
 
@@ -623,12 +614,11 @@ need 0exit need rshift need lshift
 
 code clshift ( b1 u -- b2 )
 
-  D1 c,  E1 c,  78 05 + c,  1C c,
+  D1 c,  E1 c,  78 05 + c,  1C c, here
     \ pop de ; E = u (8 high bits are ignored)
     \ pop hl ; L = b1
     \ ld a,l ; A = b1
     \ inc e
-  here
     \ begin:
   1D c,  CA c, pusha ,  80 07 + c,  C3 c, , end-code ?)
     \ dec e
@@ -654,12 +644,11 @@ code clshift ( b1 u -- b2 )
 
 code crshift ( b1 u -- b2 )
 
-  D1 c,  E1 c,  78 05 + c,  1C c,
+  D1 c,  E1 c,  78 05 + c,  1C c, here
     \ pop de
     \ pop hl
     \ ld a,l
     \ inc e
-  here
     \ begin:
   1D c,  CA c, pusha ,
     \ dec e
@@ -669,9 +658,9 @@ code crshift ( b1 u -- b2 )
   C3 c, , end-code ?)
     \ jp begin
 
-( bits )
+( bits 2/ cell/ )
 
-need assembler
+[unneeded] bits ?( need assembler
 
 code bits ( ca len -- u )
 
@@ -687,7 +676,7 @@ code bits ( ca len -- u )
     \ Note: `2swap` is needed because `rbegin ragain` and `rif
     \ rthen` are not nested.
 
-  exx, h push, jpnext, end-code
+  exx, h push, jpnext, end-code ?)
 
   \ Credit:
   \
@@ -709,11 +698,7 @@ code bits ( ca len -- u )
   \
   \ }doc
 
-( 2/ cell/ )
-
-[unneeded] 2/ ?(
-
-code 2/ ( x1 -- x2 )
+[unneeded] 2/ ?( code 2/ ( x1 -- x2 )
   E1 c, CB c, 2C c, CB c, 1D c, E5 c, jpnext, end-code ?)
   \ pop hl
   \ sra h
@@ -771,8 +756,7 @@ need sqrt need d2* need cell-bits
     2dup 2* u> if               \ check for next bit of root
       >r r@ 2* - 1- r>          \ reduce remainder
       1+                        \ add a bit to root
-    then
-  loop rot drop ;
+    then loop rot drop ;
 
   \ Credit:
   \
@@ -804,43 +788,6 @@ need sqrt need d2* need cell-bits
   \ Loading ``baden-sqrt`` makes it the action of `sqrt`.
   \
   \ See: `(baden-sqrt`.
-  \
-  \ }doc
-
-( sqrt newton-sqrt )
-
-[unneeded] sqrt ?\ defer sqrt ( n1 -- n2 )
-
-  \ doc{
-  \
-  \ sqrt ( n1 -- n2 )
-  \
-  \ Calculate integer square root _n2_ of radicand _n1_.
-  \ ``sqrt`` is a deferred word which can execute `baden-sqrt`
-  \ or `newton-sqrt`.
-  \
-  \ }doc
-
-[unneeded] newton-sqrt ?( need sqrt need 2/
-
-: newton-sqrt ( n1 -- n2 )
-  dup if dup 2/ 20 0 ?do 2dup / + 2/ loop swap drop then ;
-
-' newton-sqrt ' sqrt defer! ?)
-
-  \ Credit:
-  \
-  \ Adapted from Sinclair QL's Computer One Forth.
-
-  \ doc{
-  \
-  \ newton-sqrt ( n1 -- n2 )
-  \
-  \ Integer square root _n2_ of radicand _n1_ by Newton's
-  \ method. ``newton-sqrt`` is 7..8 times slower than
-  \ `baden-sqrt`.
-  \
-  \ Loading ``newton-sqrt`` makes it the action of `sqrt`.
   \
   \ }doc
 
@@ -929,17 +876,50 @@ need sqrt need d2* need cell-bits
   \
   \ }doc
 
-( fm/mod */ )
+( sqrt newton-sqrt fm/mod */ )
+
+[unneeded] sqrt ?\ defer sqrt ( n1 -- n2 )
+
+  \ doc{
+  \
+  \ sqrt ( n1 -- n2 )
+  \
+  \ Calculate integer square root _n2_ of radicand _n1_.
+  \ ``sqrt`` is a deferred word which can execute `baden-sqrt`
+  \ or `newton-sqrt`.
+  \
+  \ }doc
+
+[unneeded] newton-sqrt ?( need sqrt need 2/
+
+: newton-sqrt ( n1 -- n2 )
+  dup if dup 2/ 20 0 ?do 2dup / + 2/ loop swap drop then ;
+
+' newton-sqrt ' sqrt defer! ?)
+
+  \ Credit:
+  \
+  \ Adapted from Sinclair QL's Computer One Forth.
+
+  \ doc{
+  \
+  \ newton-sqrt ( n1 -- n2 )
+  \
+  \ Integer square root _n2_ of radicand _n1_ by Newton's
+  \ method. ``newton-sqrt`` is 7..8 times slower than
+  \ `baden-sqrt`.
+  \
+  \ Loading ``newton-sqrt`` makes it the action of `sqrt`.
+  \
+  \ }doc
 
 [unneeded] fm/mod ?(
 
 : fm/mod ( d1 n1 -- n2 n3 )
-  dup >r                \ save divisor
-  sm/rem
-  over 0<> over 0< and  \ quotient<0 and remainder<>0?
-  if
-    swap r> +           \ add divisor to remainder
-    swap 1-             \ decrement quotient
+  dup >r sm/rem
+  over 0<> over 0< and   \ quotient<0 and remainder<>0?
+  if swap r> +           \ add divisor to remainder
+     swap 1-             \ decrement quotient
   else r> drop then ; ?)
 
   \ Credit:
@@ -1005,6 +985,7 @@ need sqrt need d2* need cell-bits
   \ Forth-94 documentation.
 
 [unneeded] /_mod ?( need fm/mod
+
 : /_mod ( n1 n2 -- n3 n4 ) >r s>d r> fm/mod ; ?)
 
   \ doc{
@@ -1032,6 +1013,7 @@ need sqrt need d2* need cell-bits
   \ }doc
 
 [unneeded] _mod ?( need /_mod
+
 : _mod ( n1 n2 -- n3 ) /_mod drop ; ?)
 
   \ doc{
@@ -1046,6 +1028,7 @@ need sqrt need d2* need cell-bits
   \ }doc
 
 [unneeded] */_mod ?( need fm/mod
+
 : */_mod ( n1 n2 n3 -- n4 n5 ) >r m* r> fm/mod ; ?)
 
   \ doc{
@@ -1061,6 +1044,7 @@ need sqrt need d2* need cell-bits
   \ }doc
 
 [unneeded] */_ ?( need */_mod
+
 : */_ ( n1 n2 n3 -- n4 ) */_mod nip ; ?)
 
   \ doc{
@@ -1354,6 +1338,7 @@ code join ( b1 b2 -- x )
   \ 2017-12-13: Improve documentation.
   \
   \ 2018-01-04: Add `3*`. Improve documentation.
-
+  \
+  \ 2018-02-14: Compact the code, saving three blocks.
 
   \ vim: filetype=soloforth
