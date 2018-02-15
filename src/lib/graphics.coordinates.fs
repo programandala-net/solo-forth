@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704201257
+  \ Last modified: 201802151538
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -31,7 +31,7 @@
 
   \ doc{
   \
-  \ g-xy ( -- gx gy )
+  \ g-xy ( -- gx gy ) "g-x-y"
   \
   \ Return the current graphic coordinates _gx gy_.
   \
@@ -70,7 +70,7 @@
 
   \ doc{
   \
-  \ g-at-xy ( gx gy -- )
+  \ g-at-xy ( gx gy -- ) "g-at-x-y"
   \
   \ Set the current graphic coordinates _gx gy_.
   \
@@ -130,6 +130,9 @@
   \ 2017-02-17: Update cross references.
   \
   \ 2017-04-20: Improve needing of `g-xy`.
+  \
+  \ 2018-02-15: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth
 

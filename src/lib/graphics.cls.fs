@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201802151537
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -15,7 +15,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -57,7 +57,7 @@ code cls-chars0 ( -- )
 
   \ doc{
   \
-  \ cls-chars0 ( -- )
+  \ cls-chars0 ( -- ) "c-l-s-chars-zero"
   \
   \ Clear the screen by rotating all bytes of the bitmap.
   \
@@ -96,7 +96,7 @@ code cls-chars1 ( -- )
 
   \ doc{
   \
-  \ cls-chars1 ( -- )
+  \ cls-chars1 ( -- ) "c-l-s-chars-one"
   \
   \ Clear the screen by rotating all bytes of the bitmap.
   \
@@ -191,5 +191,8 @@ code vertical-curtain ( b -- )
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2018-02-15: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

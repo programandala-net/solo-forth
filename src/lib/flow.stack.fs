@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712111901
+  \ Last modified: 201802151523
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -32,9 +32,9 @@
 
   \ doc{
   \
-  \ cs-pick
-  \   \ ( S: u -- )
-  \   \ ( C: x#u .. x#1 x#0 -- x#u .. x#1 x#0 x#u )
+  \ cs-pick "c-s-pick"
+  \   ( S: u -- )
+  \   ( C: x#u .. x#1 x#0 -- x#u .. x#1 x#0 x#u )
 
   \
   \ Remove _u_. Copy _x#u_ to the top of the control-flow
@@ -59,9 +59,9 @@
 
   \ doc{
   \
-  \ cs-roll
-  \   \ ( S: u -- )
-  \   \ ( C: x#u x#u-1 .. x#0 -- x#u-1 .. x#0 x#u )
+  \ cs-roll "c-s-roll"
+  \   ( S: u -- )
+  \   ( C: x#u x#u-1 .. x#0 -- x#u-1 .. x#0 x#u )
 
   \
   \ Remove _u_.  Rotate _u+1_ items on top of the control-flow
@@ -84,7 +84,7 @@
 
   \ doc{
   \
-  \ cs-drop ( C: x -- )
+  \ cs-drop ( C: x -- ) "c-s-drop"
 
   \
   \ Remove _x_ from the control-flow stack.
@@ -105,7 +105,7 @@
 
   \ doc{
   \
-  \ cs-dup ( C: x -- x x )
+  \ cs-dup ( C: x -- x x ) "c-s-dup"
 
   \
   \ Duplicate _x_ on the control-flow stack.
@@ -128,7 +128,7 @@
 
   \ doc{
   \
-  \ cs-mark ( C: -- cs-mark )
+  \ cs-mark ( C: -- cs-mark ) "c-s-mark"
   \
   \ Place a marker _cs-mark_ on the control-flow stack.  The
   \ marker ocuppies the same width as an _orig|dest_ but is
@@ -148,7 +148,7 @@
 
   \ doc{
   \
-  \ cs-test
+  \ cs-test "c-s-test"
   \   Compilation: ( -- f ) ( C: x -- x )
 
   \ Return a true flag if _x_ is an _orig|dest_, and false if a
@@ -174,5 +174,8 @@
   \
   \ 2017-12-11: Unalias `cs-pick`, `cs-roll` and `cs-drop`.
   \ Improve documentation. Add `cs-mark`, `cs-test`, `cs-dup`.
+  \
+  \ 2018-02-15: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

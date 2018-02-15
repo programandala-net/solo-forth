@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801022006
+  \ Last modified: 201802151540
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -31,7 +31,7 @@ variable ocr-font  $3D00 ocr-font !
 
   \ doc{
   \
-  \ ocr-font ( -- a )
+  \ ocr-font ( -- a ) "o-c-r-font"
   \
   \ A variable. _a_ is the address of a cell containing the
   \ address of the first printable character in the character
@@ -49,7 +49,7 @@ create ocr-first bl c,
 
   \ doc{
   \
-  \ ocr-first ( -- ca )
+  \ ocr-first ( -- ca ) "o-c-r-first"
   \
   \ A character variable. _ca_ is the address of a byte
   \ containing the code of the first printable character in the
@@ -67,7 +67,7 @@ create ocr-chars 127 bl - c,
 
   \ doc{
   \
-  \ ocr-chars ( -- ca )
+  \ ocr-chars ( -- ca ) "o-c-r-chars"
   \
   \ A character variable. _ca_ is the address of a byte
   \ containing the number of characters used by `ocr`, from the
@@ -154,7 +154,7 @@ code ocr ( col line -- n )
 
   \ doc{
   \
-  \ ocr ( col row -- c | 0 )
+  \ ocr ( col row -- c | 0 ) "o-c-r"
   \
   \ Try to recognize the character printed at the given cursor
   \ coordinates, using the character set whose first printable
@@ -183,7 +183,7 @@ code ocr ( col line -- n )
 
   \ doc{
   \
-  \ ascii-ocr ( -- )
+  \ ascii-ocr ( -- ) "ascii-o-c-r"
   \
   \ Set `ocr` to work with the current ASCII charset, pointed
   \ by `os-chars`.
@@ -200,7 +200,7 @@ code ocr ( col line -- n )
 
   \ doc{
   \
-  \ udg-ocr ( n -- )
+  \ udg-ocr ( n -- ) "u-d-g-o-c-r"
   \
   \ Set `ocr` to work with the first _n_ chars of the current
   \ UDG set, pointed by `os-udg`.
@@ -248,5 +248,8 @@ code ocr ( col line -- n )
   \ `create` is a bit faster at run-time.
   \
   \ 2018-01-02: Rename `ocr-charset` `ocr-font`.
+  \
+  \ 2018-02-15: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704262010
+  \ Last modified: 201802151535
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -15,7 +15,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ Credit
@@ -35,16 +35,25 @@
 
 need alias
 
-: ifcase ( x f -- )
-  postpone if  postpone drop ; immediate compile-only
+: ifcase
+  \ Compilation: ( -- orig )
+  \ Run-time:    ( x f -- x| )
+  postpone if postpone drop ; immediate compile-only
 
   \ doc{
   \
-  \ ifcase ( x f -- )
+  \ ifcase
+  \   Compilation: ( -- orig )
+  \   Run-time:    ( x f -- x| )
   \
-  \ Part of a `thiscase` structure that checks _x_. If _f_ is
-  \ true, discard _x_ and continue execution; else skip the
-  \ code compiled until the next `exitcase`.
+  \ Part of a `thiscase` structure that checks _x_.
+  \
+  \ Compilation: Leave the forward reference _orig_, to be
+  \ consumed by `exitcase`.
+  \
+  \ Runtime: If _f_ is true, discard _x_ and continue
+  \ execution; else skip the code compiled until the next
+  \ `exitcase`.
   \
   \ ``ifcase`` is an `immediate` and `compile-only` word.
   \
@@ -52,15 +61,23 @@ need alias
   \
   \ }doc
 
-: exitcase ( -- )
-  postpone exit  postpone then ; immediate compile-only
+: exitcase
+  \ Compilation: ( C: orig -- )
+  \ Run-time:    ( -- )
+  postpone exit postpone then ; immediate compile-only
 
   \ doc{
   \
-  \ exitcase ( -- )
+  \ exitcase
+  \   Compilation: ( C: orig -- )
+  \   Run-time:    ( -- )
+
+  \ Part of a `thiscase` structure.
   \
-  \ End part of a `thiscase` structure: exit the current
-  \ definition.
+  \ Compilation: Resolve the forward reference _orig_, which
+  \ was left by `ifcase`.
+  \
+  \ Run-time: exit the current definition.
   \
   \ ``exitcase`` is an `immediate` and `compile-only` word.
   \
@@ -74,7 +91,7 @@ need alias
   \
   \ thiscase ( x -- x x )
   \
-  \ Mark the start of an alternative `case` structure.
+  \ Part of a ``thiscase` structure.
   \
   \ Usage example:
 
@@ -91,7 +108,7 @@ need alias
   \   othercase say-other ;
   \ ----
   \
-  \ See: `ifcase`, `exitcase`, `othercase`.
+  \ See: `ifcase`, `exitcase`, `othercase`, `case`.
   \
   \ }doc
 
@@ -101,10 +118,10 @@ need alias
   \
   \ othercase ( x -- )
   \
-  \ Mark the start of the default option of a `thiscase`
-  \ structure that checked _x_.
+  \ Mark the default option of a `thiscase` structure that
+  \ checked _x_.
   \
-  \ See: `thiscase`, `ifcase`, `exitcase`.
+  \ See: `ifcase`, `exitcase`.
   \
   \ }doc
 
@@ -126,5 +143,7 @@ need alias
   \ 2017-02-27: Improve documentation.
   \
   \ 2017-04-26: Fix typo.
+  \
+  \ 2018-02-15: Improve documentation.
 
   \ vim: filetype=soloforth

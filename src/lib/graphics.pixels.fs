@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201707271623
+  \ Last modified: 201802151543
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -40,7 +40,7 @@ defer gxy>scra_ ( -- a )
 
   \ doc{
   \
-  \ gxy>scra_ ( -- a )
+  \ gxy>scra_ ( -- a ) "g-x-y-to-s-c-r-a"
   \
   \ A deferred word that executes `fast-gxy>scra_` or, by
   \ default, `slow-gxy>scra_`:  Return address _a_ of an
@@ -61,7 +61,7 @@ create slow-gxy>scra_ ( -- a ) asm
 
   \ doc{
   \
-  \ slow-gxy>scra_ ( -- a )
+  \ slow-gxy>scra_ ( -- a ) "slow-g-x-y-to-s-c-r-a"
   \
   \ Return address _a_ of an alternative entry point to the
   \ PIXEL-ADD ROM routine ($22AA), to let the range of the y
@@ -127,7 +127,7 @@ create fast-gxy>scra_ ( -- a ) asm
 
   \ doc{
   \
-  \ fast-gxy>scra_ ( -- a )
+  \ fast-gxy>scra_ ( -- a ) "fast-g-x-y-to-s-c-r-a"
   \
   \ Return address _a_ of a a modified copy of the PIXEL-ADD
   \ ROM routine ($22AA), to let the range of the y coordinate
@@ -171,7 +171,7 @@ create gxy176>scra_ ( -- a ) asm
 
   \ doc{
   \
-  \ gxy176>scra_ ( -- a )
+  \ gxy176>scra_ ( -- a ) "g-x-y-176-to-s-c-r-a"
   \
   \ Return address _a_ of a routine that uses an alternative
   \ entry point to the PIXEL-ADD ROM routine ($22AA), to bypass
@@ -213,7 +213,7 @@ code gxy176>scra ( gx gy -- n a )
 
   \ doc{
   \
-  \ gxy176>scra ( gx gy -- n a )
+  \ gxy176>scra ( gx gy -- n a ) "g-x-y-176-to-s-c-r-a"
   \
   \ Return screen address _a_ and pixel position _n_ (0..7) of
   \ pixel coordinates _gx_ (0..255) and _gy_ (0..175).
@@ -242,7 +242,7 @@ code gxy>scra ( gx gy -- n a )
 
   \ doc{
   \
-  \ gxy>scra ( gx gy -- n a )
+  \ gxy>scra ( gx gy -- n a ) "g-x-y-to-s-c-r-a"
   \
   \ Return screen address _a_ and pixel position _n_ (0..7) of
   \ pixel coordinates _gx_ (0..255) and _gy_ (0..191).
@@ -301,7 +301,7 @@ code plot176 ( gx gy -- )
 
   \ doc{
   \
-  \ plot176 ( gx gy -- )
+  \ plot176 ( gx gy -- ) "plot-176"
   \
   \ Set a pixel, changing its attribute on the screen and the
   \ current graphic coordinates, using only the top 176 pixel
@@ -369,7 +369,7 @@ code set-pixel176 ( gx gy -- )
 
   \ doc{
   \
-  \ set-pixel176 ( gx gy -- )
+  \ set-pixel176 ( gx gy -- ) "set-pixel-176"
   \
   \ Set a pixel without changing its attribute on the screen or
   \ the current graphic coordinates, and using only the top 176
@@ -404,7 +404,7 @@ code set-save-pixel176 ( gx gy -- )
 
   \ doc{
   \
-  \ set-save-pixel176 ( gx gy -- )
+  \ set-save-pixel176 ( gx gy -- ) "set-save-pixel-176"
   \
   \ Set a pixel without changing its attribute on the screen,
   \ and using only the top 176 pixel rows of the screen (the
@@ -465,7 +465,7 @@ code reset-pixel176 ( gx gy -- )
 
   \ doc{
   \
-  \ reset-pixel176 ( gx gy -- )
+  \ reset-pixel176 ( gx gy -- ) "reset-pixel-176"
   \
   \ Reset a pixel without its attribute on the screen or the
   \ current graphic coordinates, and using only the top 176
@@ -526,7 +526,7 @@ code toggle-pixel176 ( gx gy -- )
 
   \ doc{
   \
-  \ toggle-pixel176 ( gx gy -- )
+  \ toggle-pixel176 ( gx gy -- ) "toggle-pixel-176"
   \
   \ Toggle a pixel without changing its attribute on the screen
   \ or the current graphic coordinates, and using only the top
@@ -677,7 +677,7 @@ code scra>attra ( a1 -- a2 )
 
   \ doc{
   \
-  \ scra>attra ( a1 -- a2 )
+  \ scra>attra ( a1 -- a2 ) "s-c-r-a-to-a-t-t-r-a"
   \
   \ Convert screen bitmap address _a1_ to its correspondent
   \ attribute address _a2_.
@@ -692,7 +692,7 @@ code scra>attra ( a1 -- a2 )
 
   \ doc{
   \
-  \ gxy>attra ( gx gy -- a )
+  \ gxy>attra ( gx gy -- a ) "g-x-y-to-a-t-t-r-a"
   \
   \ Convert pixel coordinates _gx gy_ to their correspondent
   \ attribute address _a_.
@@ -705,7 +705,7 @@ code scra>attra ( a1 -- a2 )
 
   \ doc{
   \
-  \ x>gx ( x -- gx )
+  \ x>gx ( x -- gx ) "x-to-g-x"
   \
   \ Convert column _x_ to graphic x coordinate _gx_.
   \
@@ -719,7 +719,7 @@ code scra>attra ( a1 -- a2 )
 
   \ doc{
   \
-  \ y>gy ( y -- gy )
+  \ y>gy ( y -- gy ) "y-to-g-y"
   \
   \ Convert row _y_ to graphic y coordinate _gy_.
   \
@@ -731,7 +731,7 @@ code scra>attra ( a1 -- a2 )
 
   \ doc{
   \
-  \ gx>x ( gx -- x )
+  \ gx>x ( gx -- x ) "g-x-to-x"
   \
   \ Convert graphic x coordinate _gx_ to column _x_.
   \
@@ -743,7 +743,7 @@ code scra>attra ( a1 -- a2 )
 
   \ doc{
   \
-  \ gy>y ( gy -- y )
+  \ gy>y ( gy -- y ) "g-y-to-y"
   \
   \ Convert graphic y coordinate _gy_ to row _y_.
   \
@@ -878,5 +878,8 @@ need gxy>attra
   \
   \ 2017-07-27: Replace `jp next` with the actual macro
   \ `_jp_next` in Z80 comments.
+  \
+  \ 2018-02-15: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

@@ -5,7 +5,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201711271908
+  \ Last modified: 201802151535
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -17,7 +17,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ Credit
@@ -81,7 +81,7 @@ variable dtimes-xt  \ the _xt_ executed by `dtimes`
 
   \ doc{
   \
-  \ dtimes ( d -- )
+  \ dtimes ( d -- ) "d-times"
   \
   \ Repeat the next compiled instruction _d_ times.  If _d_ is
   \ zero, continue executing the following instruction.
@@ -122,5 +122,8 @@ variable dtimes-xt  \ the _xt_ executed by `dtimes`
   \ 2017-03-13: Improve documentation.
   \
   \ 2017-11-27: Improve documentation.
+  \
+  \ 2018-02-15: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

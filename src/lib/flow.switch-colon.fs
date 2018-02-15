@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201802151524
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -32,7 +32,7 @@
 
   \ doc{
   \
-  \ switch: ( "name" -- )
+  \ switch: ( "name" -- ) "switch-colon"
   \
   \ Create a new switch control structure _name_, which is a
   \ word list the clauses of the structure will be added to.
@@ -104,7 +104,7 @@ need search-wordlist need nextname need >bstring
 
   \ doc{
   \
-  \ :clause ( x switch -- )
+  \ :clause ( x switch -- ) "colon-clause"
   \
   \ Start the definition of a switch clause _x_ for switch
   \ _switch_.
@@ -124,7 +124,7 @@ need search-wordlist need nextname need >bstring
 
   \ doc{
   \
-  \ cswitch ( c switch -- )
+  \ cswitch ( c switch -- ) "c-switch"
   \
   \ Execute the switch _switch_ for the key _c_.
   \
@@ -138,7 +138,7 @@ need search-wordlist need nextname need >bstring
 
   \ doc{
   \
-  \ :cclause (  switch -- )
+  \ :cclause (  switch -- ) "colon-c-clause"
   \
   \ Start the definition of a switch clause _c_ for switch
   \ _switch_.
@@ -156,7 +156,7 @@ need search-wordlist need nextname need 2>bstring
 
   \ doc{
   \
-  \ 2switch ( xd switch -- )
+  \ 2switch ( xd switch -- ) "two-switch"
   \
   \ Execute the switch _switch_ for the key _xd_.
   \
@@ -170,7 +170,7 @@ need search-wordlist need nextname need 2>bstring
 
   \ doc{
   \
-  \ :2clause ( xd switch -- )
+  \ :2clause ( xd switch -- ) "colon-two-clause"
   \
   \ Start the definition of a switch clause _xd_ for switch
   \ _switch_.
@@ -200,5 +200,8 @@ need search-wordlist need nextname need 2>bstring
   \ interpretation.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2018-02-15: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth
