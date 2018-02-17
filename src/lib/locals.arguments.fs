@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201802171724
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -19,7 +19,7 @@
   \ (volume 3, number 6, page 185, 1982-03).
   \
   \ Adapted to Solo Forth and improved by Marcos Cruz
-  \ (programandala.net), 2015, 2016, 2017.
+  \ (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -36,7 +36,7 @@
 
   \ doc{
   \
-  \ toarg ( -- )
+  \ toarg ( -- ) "to-arg"
   \
   \ Set the store action for the next local variable created by
   \ `arguments`.
@@ -54,7 +54,7 @@
 
   \ doc{
   \
-  \ +toarg ( -- )
+  \ +toarg ( -- ) "plus-to-arg"
   \
   \ Set the add action for the next local variable. Used with
   \ locals created by `arguments`.
@@ -110,7 +110,7 @@ variable arg-action  arg-default-action @ arg-action !
   \ }doc
 
 : init-arg-action ( -- ) arg-default-action @ arg-action ! ;
-  
+
   \ doc{
   \
   \ init-arg-action  ( -- )
@@ -262,5 +262,8 @@ $0A arg: l5 $0C arg: l6 $0E arg: l7 $10 arg: l8 $12 arg: l9 -->
   \ 2017-03-19: Complete documentation.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2018-02-17: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

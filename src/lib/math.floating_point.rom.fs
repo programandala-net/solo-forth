@@ -62,7 +62,7 @@
 
   \ doc{
   \
-  \ float+ ( fa1 -- fa2 )
+  \ float+ ( fa1 -- fa2 ) "float-plus"
   \
   \ Add the size in address units of a floating-point number to
   \ _fa1_, giving _fa2_.
@@ -75,7 +75,7 @@
 
   \ doc{
   \
-  \ float- ( fa1 -- fa2 )
+  \ float- ( fa1 -- fa2 ) "float-minus"
   \
   \ Subtract the size in address units of a floating-point
   \ number from _fa1_, giving _fa2_.
@@ -101,11 +101,11 @@
 
 need float need float-
 
-23651 constant fp0  \ STKBOT system variable
+23651 constant fp0 \ STKBOT system variable
 
   \ doc{
   \
-  \ fp0  ( -- a )
+  \ fp0  ( -- a ) "f-p-zero"
   \
   \ _a_ is the address of a cell containing the bottom address
   \ of the floating-point stack. _a_ is the STKBOT variable of
@@ -118,11 +118,11 @@ need float need float-
   \
   \ }doc
 
-23653 constant fp   \ STKEND system variable
+23653 constant fp \ STKEND system variable
 
   \ doc{
   \
-  \ fp  ( -- a )
+  \ fp  ( -- a ) "f-p"
   \
   \ _a_ is the address of a cell containing the floating-point
   \ stack pointer. _a_ is the STKEND variable of the OS.
@@ -139,7 +139,7 @@ need float need float-
 
   \ doc{
   \
-  \ (fp@ ( -- fa )
+  \ (fp@ ( -- fa ) "paren-f-p-fetch"
   \
   \ _fa_ is the address above the top of the floating-point
   \ stack. ``(fp@``  is a factor of `fp@`.
@@ -152,7 +152,7 @@ need float need float-
 
   \ doc{
   \
-  \ fp@ ( -- fa )
+  \ fp@ ( -- fa ) "f-p-fetch"
   \
   \ _fa_ is the address of the top of the floating-point stack.
   \
@@ -164,7 +164,7 @@ need float need float-
 
   \ doc{
   \
-  \ empty-fs ( -- )
+  \ empty-fs ( -- ) "empty-f-s"
   \
   \ Empty the floating-point stack, by storing the content of
   \ `fp0` into `fp`.
@@ -175,7 +175,7 @@ need float need float-
 
   \ doc{
   \
-  \ fdepth ( -- +n )
+  \ fdepth ( -- +n ) "f-depth"
   \
   \ _+n_ is the number of values contained on the
   \ floating-point stack.
@@ -194,7 +194,7 @@ need (f>s
 
   \ doc{
   \
-  \ f>flag ( -- f ) ( F: rf -- )
+  \ f>flag ( -- f ) ( F: rf -- ) "f-to-flag"
   \
   \ Convert a floating-poing flag _rf_ (1|0) to an actual flag
   \ _f_ in the data stack.
@@ -260,7 +260,7 @@ need calculator-command need f>flag need call-xt
 
   \ doc{
   \
-  \ calculator-command>flag ( b -- )
+  \ calculator-command>flag ( b -- ) "calculator-command-to-flag"
   \
   \ Compile the assembly instructions needed to execute the
   \ _b_ command of the ROM calculator and to return the
@@ -297,7 +297,7 @@ need fsgn
 
   \ doc{
   \
-  \ f~abs ( -- f ) ( F: r1 r2 r3 -- )
+  \ f~abs ( -- f ) ( F: r1 r2 r3 -- ) "f-tilde-abs"
   \
   \ Approximate equality with absolute error: `|r1-r2|<r3`.
   \
@@ -314,7 +314,7 @@ need fsgn
 
   \ doc{
   \
-  \ f~rel ( -- f ) ( F: r1 r2 r3 -- )
+  \ f~rel ( -- f ) ( F: r1 r2 r3 -- ) "f-tilde-rel"
   \
   \ Approximate equality with relative error:
   \ `|r1-r2|<r3*|r1+r2|`.
@@ -331,7 +331,7 @@ need fsgn
 
   \ doc{
   \
-  \ f~relabs ( -- f ) ( F: r1 r2 r3 -- )
+  \ f~relabs ( -- f ) ( F: r1 r2 r3 -- ) "f-tilde-rel-abs"
   \
   \ Approximate equality with relative error:
   \ `|r1-r2|<|r3|*|r1+r2|`.
@@ -347,7 +347,7 @@ need fsgn
 
   \ doc{
   \
-  \ f== ( -- f ) ( F: r1 r2 -- )
+  \ f== ( -- f ) ( F: r1 r2 -- ) "f-equals-equals"
   \
   \ Exact bitwise equality.
   \
@@ -371,7 +371,7 @@ here ' f== ,
 
   \ doc{
   \
-  \ f~ ( -- f ) ( F: r1 r2 r3 -- )
+  \ f~ ( -- f ) ( F: r1 r2 r3 -- ) "f-tilde"
   \
   \ Medley for comparing _r1_ and _r2_ for equality:
   \
@@ -506,8 +506,8 @@ code fmax ( F: r1 r2 -- r1|r2 )
   0C calculator-command ( F: r1 r2 rf -- )
     \ `no-grtr` ROM calculator command
   calculator
-    |if    |drop ( F: r1 )
-    |else  |swap |drop ( F: r2 )
+    |if   |drop ( F: r1 )
+    |else |swap |drop ( F: r2 )
     |then
   end-calculator  jpnext, end-code
 
@@ -518,8 +518,8 @@ code fmax ( F: r1 r2 -- r1|r2 )
   \ code fmax ( F: r1 r2 -- r1|r2 )
   \   calculator
   \     |2dup |> ( F: r1 r2 rf -- )
-  \     |if    |drop ( F: r1 )
-  \     |else  |swap |drop ( F: r2 )
+  \     |if   |drop ( F: r1 )
+  \     |else |swap |drop ( F: r2 )
   \     |then
   \   end-calculator  jpnext, end-code
 
@@ -532,8 +532,8 @@ code fmin ( F: r1 r2 -- r1|r2 )
   0D calculator-command ( F: r1 r2 rf -- )
     \ `no-less` ROM calculator command
   calculator
-    |if    |drop ( F: r1 )
-    |else  |swap |drop ( F: r2 )
+    |if   |drop ( F: r1 )
+    |else |swap |drop ( F: r2 )
     |then
   end-calculator  jpnext, end-code
 
@@ -544,8 +544,8 @@ code fmin ( F: r1 r2 -- r1|r2 )
   \ code fmin ( F: r1 r2 -- r1|r2 )
   \   calculator
   \     |2dup |< ( F: r1 r2 rf -- )
-  \     |if    |drop ( F: r1 )
-  \     |else  |swap |drop ( F: r2 )
+  \     |if   |drop ( F: r1 )
+  \     |else |swap |drop ( F: r2 )
   \     |then
   \   end-calculator  jpnext, end-code
 
@@ -661,7 +661,7 @@ code u>f ( u -- ) ( F: -- r )
     \ exx
 
 : s>f ( n -- ) ( F: -- r )
-  dup 0< if  abs u>f fnegate  else  u>f  then ;
+ dup 0< if abs u>f fnegate else u>f then ;
   \ XXX TODO -- test
 
 : f>s ( -- n ) ( F: r -- ) fdup (f>s f0< ?negate ;
@@ -687,7 +687,7 @@ code u>f ( u -- ) ( F: -- r )
 need assembler
 
 code f! ( fa -- ) ( F: r -- )
-  exx, 2BF1 call,  \ STK_FETCH ROM routine
+  exx, 2BF1 call, \ STK_FETCH ROM routine
        h pop, a m ld, h incp,
               e m ld, h incp, d m ld, h incp,
               c m ld, h incp, b m ld,
@@ -695,7 +695,7 @@ code f! ( fa -- ) ( F: r -- )
 
   \ doc{
   \
-  \ f! ( fa -- ) ( F: r -- )
+  \ f! ( fa -- ) ( F: r -- ) "f-store"
   \
   \ Store _r_ at _fa_.
   \
@@ -710,7 +710,7 @@ code f@ ( fa -- ) ( F: -- r )
               2AB6 call, \ STK_STORE ROM routine
   exx, jpnext, end-code
 
-  \ doc{
+  \ doc
   \
   \ f@ ( fa -- ) ( F: -- r )
   \
@@ -728,7 +728,7 @@ need float need f! need f@
 
   \ doc{
   \
-  \ f, ( -- ) ( F: r -- )
+  \ f, ( -- ) ( F: r -- ) "f-comma"
   \
   \ Reserve data space for one floating-point number and store
   \ _r_ in that space.
@@ -737,12 +737,11 @@ need float need f! need f@
   \
   \ }doc
 
-: fconstant ( "name" -- ) ( F: r -- )
-  create  f,  does>  f@ ;
+: fconstant ( "name" -- ) ( F: r -- ) create  f,  does>  f@ ;
 
   \ doc{
   \
-  \ fconstant ( "name" -- ) ( F: r -- )
+  \ fconstant ( "name" -- ) ( F: r -- ) "f-constant"
   \
   \ Create a floating-point constant called "name" with value
   \ _r_.
@@ -760,38 +759,86 @@ need calculator
 code facos ( F: r1 -- r2 )
   calculator |acos end-calculator  jpnext, end-code
 
+  \ doc{
+  \
+  \ facos ( F: r1 -- r2 )
+  \
+  \ }doc
+  \
+  \ XXX TODO -- Document.
+
 code fasin ( F: r1 -- r2 )
   calculator |asin end-calculator  jpnext, end-code
+
+  \ doc{
+  \
+  \ fasin ( F: r1 -- r2 )
+  \
+  \ }doc
+  \
+  \ XXX TODO -- Document.
 
 code fatan ( F: r1 -- r2 )
   calculator |atan end-calculator  jpnext, end-code
 
+  \ doc{
+  \
+  \ fatan ( F: r1 -- r2 )
+  \
+  \ }doc
+  \
+  \ XXX TODO -- Document.
+
 code fcos ( F: r1 -- r2 )
   calculator |cos end-calculator  jpnext, end-code
+
+  \ doc{
+  \
+  \ fcos ( F: r1 -- r2 )
+  \
+  \ }doc
+  \
+  \ XXX TODO -- Document.
 
 code fsin ( F: r1 -- r2 )
   calculator |sin end-calculator  jpnext, end-code
 
+  \ doc{
+  \
+  \ fsin ( F: r1 -- r2 )
+  \
+  \ }doc
+  \
+  \ XXX TODO -- Document.
+
 code ftan ( F: r1 -- r2 )
   calculator |tan end-calculator  jpnext, end-code
+
+  \ doc{
+  \
+  \ ftan ( F: r1 -- r2 )
+  \
+  \ }doc
+  \
+  \ XXX TODO -- Document.
 
 ( (f. f. )
 
 need fdepth need fdrop
 
-code (f. ( F: r -- )
-  C5 c,  CD c, 2DE3 ,  C1 c,
+code (f. ( F: r -- ) C5 c, CD c, 2DE3 , C1 c, jpnext, end-code
     \ push bc
     \ call $2DE3 ; PRINT_FP ROM routine
     \ pop bc
-  jpnext, end-code
+    \ _jp_next
   \ Note: `exx` can no be used to preserve `bc`, the Forth IP,
   \ because the routine uses the alternative registers.  `bc`
   \ is saved on the stack instead.
 
 : f. ( F: r -- )
-  fdepth >r  (f. space
-  fdepth r> = if  fdrop  then ;
+  fdepth >r (f. space fdepth r> = if fdrop then ;
+
+  \ XXX TODO -- Document.
 
   \ Note: the depth of the stack must be checked because
   \ there's a bug in the PRINT-FP ROM routine called "unbalaced
@@ -809,25 +856,25 @@ code (f. ( F: r -- )
 need (fp@ need fp0 need f@ need f.
 need fdepth need float need float+ need .depth
 
-: (.fs ( -- ) (fp@ fp0 @ ?do  i f@ f.  float +loop ;
+: (.fs ( -- ) (fp@ fp0 @ ?do i f@ f. float +loop ;
 
-: .fs ( -- ) fdepth dup .depth 0> if  (.fs  then ;
+: .fs ( -- ) fdepth dup .depth 0> if (.fs then ;
 
 : (dump-fs ( -- )
   cr ." Bottom"
   (fp@ fp0 @ ?do
-    i dup cr u. float bounds ?do  i c@ 4 .r  loop
+    i dup cr u. float bounds ?do i c@ 4 .r loop
   float +loop  cr ." Top" cr ;
   \ XXX TODO -- improve: display the top at the top
 
-: dump-fs ( -- ) fdepth dup .depth 0> if  (dump-fs  then ;
+: dump-fs ( -- ) fdepth dup .depth 0> if (dump-fs then ;
 
 ( floor ftrunc fround )
 
 need calculator need fdup need fsgn need f* need f+
 
 code floor ( F: r1 -- r2 )
-  calculator |int end-calculator  jpnext, end-code
+  calculator |int end-calculator jpnext, end-code
 
   \ doc{
   \
@@ -844,11 +891,11 @@ code floor ( F: r1 -- r2 )
 
 
 code ftrunc ( F: r1 -- r2 )
-  calculator |truncate end-calculator  jpnext, end-code
+  calculator |truncate end-calculator jpnext, end-code
 
   \ doc{
   \
-  \ ftrunc ( F: r1 -- r2 )
+  \ ftrunc ( F: r1 -- r2 ) "f-trunc"
   \
   \ Round _r1_ to an integral value using the "round toward
   \ zero" rule, giving _r2_.
@@ -863,7 +910,7 @@ code ftrunc ( F: r1 -- r2 )
 
   \ : ftrunc ( F: r1 -- r2 )
   \   fdup f0= 0= if
-  \     fdup f0< if  fnegate floor fnegate  else  floor  then
+  \     fdup f0< if fnegate floor fnegate else floor then
   \   then ;
 
   \ From Gforth:
@@ -874,7 +921,7 @@ code ftrunc ( F: r1 -- r2 )
 
   \ doc{
   \
-  \ fround ( r1 -- r2 )
+  \ fround ( r1 -- r2 ) "f-round"
   \
   \ Round _r1_ to an integral value using the "round to
   \ nearest" rule, giving _r2_.
@@ -888,11 +935,11 @@ code ftrunc ( F: r1 -- r2 )
 ( falign faligned sfalign sfaligned dfalign dfaligned )
 
 [unneeded] falign
-?\ need alias ' noop alias falign    ( -- )       immediate
+?\ need alias ' noop alias falign ( -- ) immediate
 
   \ doc{
   \
-  \ falign ( -- )
+  \ falign ( -- ) "f-align"
   \
   \ If the data space is not float aligned, reserve enough
   \ space to make it so.
@@ -907,11 +954,11 @@ code ftrunc ( F: r1 -- r2 )
   \ }doc
 
 [unneeded] faligned
-?\ need alias ' noop alias faligned  ( a -- fa )  immediate
+?\ need alias ' noop alias faligned ( a -- fa ) immediate
 
   \ doc{
   \
-  \ faligned ( a -- fa )
+  \ faligned ( a -- fa ) "f-aligned"
   \
   \ _fa_ is the first float-aligned address greater than or
   \ equal to _a_
@@ -926,11 +973,11 @@ code ftrunc ( F: r1 -- r2 )
   \ }doc
 
 [unneeded] sfalign
-?\ need alias ' noop alias sfalign   ( -- )       immediate
+?\ need alias ' noop alias sfalign ( -- ) immediate
 
   \ doc{
   \
-  \ sfalign ( -- )
+  \ sfalign ( -- ) "s-f-align"
   \
   \ If the data space is not single-float aligned, reserve
   \ enough space to make it so.
@@ -949,7 +996,7 @@ code ftrunc ( F: r1 -- r2 )
 
   \ doc{
   \
-  \ sfaligned ( a -- fa )
+  \ sfaligned ( a -- fa ) "s-f-aligned"
   \
   \ _fa_ is the first single-float-aligned address greater than
   \ or equal to _a_
@@ -964,11 +1011,11 @@ code ftrunc ( F: r1 -- r2 )
   \ }doc
 
 [unneeded] dfalign
-?\ need alias ' noop alias dfalign   ( -- )       immediate
+?\ need alias ' noop alias dfalign ( -- ) immediate
 
   \ doc{
   \
-  \ dfalign ( -- )
+  \ dfalign ( -- ) "d-f-align"
   \
   \ If the data space is not double-float aligned, reserve
   \ enough space to make it so.
@@ -987,7 +1034,7 @@ code ftrunc ( F: r1 -- r2 )
 
   \ doc{
   \
-  \ dfaligned ( a -- fa )
+  \ dfaligned ( a -- fa ) "d-f-aligned"
   \
   \ _fa_ is the first double-float-aligned address greater than
   \ or equal to _a_
@@ -1048,5 +1095,9 @@ code ftrunc ( F: r1 -- r2 )
   \ 2017-05-07: Improve documentation.
   \
   \ 2017-05-09: Remove `jppushhl,`. Improve documentation.
+  \
+  \ 2018-02-17: Improve documentation: add pronunciation to
+  \ words that need it. Update source layout (remove double
+  \ spaces).
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201802171407
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -48,7 +48,7 @@ code get-key? ( -- f )
 
   \ doc{
   \
-  \ get-key? ( -- f )
+  \ get-key? ( -- f ) "get-key-question"
   \
   \ An alternative to `key?`. It works also when the system
   \ interrupts are off. Variant with relative jumps.
@@ -79,7 +79,7 @@ code fast-get-key? ( -- f )
 
   \ doc{
   \
-  \ fast-get-key? ( -- f )
+  \ fast-get-key? ( -- f ) "fast-get-key-question"
   \
   \ An alternative to `key?`. It works also when the system
   \ interrupts are off. Faster variant with absolute jumps.
@@ -102,5 +102,8 @@ code fast-get-key? ( -- f )
   \
   \ 2017-02-21: Need `unresolved`, which now is optional, not
   \ part of the assembler.
+  \
+  \ 2018-02-17: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

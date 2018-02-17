@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132009
+  \ Last modified: 201802171403
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -47,7 +47,7 @@ create (pixel-pan-right ( -- a ) asm
 
   \ doc{
   \
-  \ (pixel-pan-right ( -- a )
+  \ (pixel-pan-right ( -- a ) "paren-pixel-pan-right"
   \
   \ Return the address _a_ of a Z80 routine that pans the whole
   \ screen one pixel to the right.
@@ -116,7 +116,7 @@ create (pixel-scroll-up ( -- a ) asm
 
   \ doc{
   \
-  \ (pixel-scroll-up ( -- a )
+  \ (pixel-scroll-up ( -- a ) "paren-pixel-scroll-up"
   \
   \ Return the address _a_ of a Z80 routine that scrolls the
   \ whole screen one pixel up.
@@ -189,5 +189,8 @@ code pixel-scroll-up ( -- )
   \ 2017-02-17: Update cross references.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2018-02-17: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

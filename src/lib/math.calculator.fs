@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201705062352
+  \ Last modified: 201802171732
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -16,7 +16,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -123,7 +123,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |+ ( -- )
+  \ |+ ( -- ) "bar-plus"
   \
   \ Compile the ``addition`` ROM `calculator` command.
   \
@@ -135,7 +135,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |- ( -- )
+  \ |- ( -- ) "bar-minus"
   \
   \ Compile the ``subtract`` ROM `calculator` command.
   \
@@ -147,7 +147,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |* ( -- )
+  \ |* ( -- ) "bar-star"
   \
   \ Compile the ``multiply`` ROM `calculator` command.
   \
@@ -159,7 +159,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |/ ( -- )
+  \ |/ ( -- ) "bar-slash"
   \
   \ Compile the ``division`` ROM `calculator` command.
   \
@@ -171,7 +171,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |mod ( -- )
+  \ |mod ( -- ) "bar-mod"
   \
   \ Compile the ``n-mod-m`` ROM `calculator` command.
   \
@@ -183,7 +183,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |** ( -- )
+  \ |** ( -- ) "bar-star-star"
   \
   \ Compile the ``to-power`` ROM `calculator` command.
   \
@@ -195,7 +195,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |sqrt ( -- )
+  \ |sqrt ( -- ) "bar-s-q-r-t"
   \
   \ Compile the ``sqr`` ROM `calculator` command.
   \
@@ -211,7 +211,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |negate ( -- )
+  \ |negate ( -- ) "bar-negate"
   \
   \ Compile the ``negate`` ROM `calculator` command.
   \
@@ -223,7 +223,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |sgn ( -- )
+  \ |sgn ( -- ) "bar-s-g-n"
   \
   \ Compile the ``sgn`` ROM `calculator` command.
   \
@@ -235,7 +235,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |abs ( -- )
+  \ |abs ( -- ) "bar-abs"
   \
   \ Compile the ``abs`` ROM `calculator` command.
   \
@@ -247,7 +247,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |int ( -- )
+  \ |int ( -- ) "bar-int"
   \
   \ Compile the ``int`` ROM `calculator` command.
   \
@@ -259,7 +259,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |truncate ( -- )
+  \ |truncate ( -- ) "bar-truncate"
   \
   \ Compile the ``truncate`` ROM `calculator` command.
   \
@@ -271,7 +271,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |re-stack ( r -- r' )
+  \ |re-stack ( r -- r' ) "bar-re-stack"
   \
   \ Compile the ``re-stack`` ROM `calculator` command.
   \
@@ -281,7 +281,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |0 ( -- )
+  \ |0 ( -- ) "bar-zero"
   \
   \ Compile the ROM calculator command that stacks 0.
   \
@@ -293,7 +293,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |1 ( -- )
+  \ |1 ( -- ) "bar-one"
   \
   \ Compile the ROM calculator command that stacks 1.
   \
@@ -305,7 +305,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |half ( -- )
+  \ |half ( -- ) "bar-half"
   \
   \ Compile the ROM calculator command that stacks 1/2.
   \
@@ -317,7 +317,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |pi2/ ( -- )
+  \ |pi2/ ( -- ) "bar-pi-two-slash"
   \
   \ Compile the ROM calculator command that stacks pi/2.
   \
@@ -330,7 +330,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |10 ( -- )
+  \ |10 ( -- ) "bar-ten"
   \
   \ Compile the ROM calculator command that stacks 10.
   \
@@ -346,7 +346,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |ln ( -- )
+  \ |ln ( -- ) "bar-l-n"
   \
   \ Compile the ``ln`` ROM `calculator` command.
   \
@@ -358,7 +358,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |exp ( -- )
+  \ |exp ( -- ) "bar-exp"
   \
   \ Compile the ``exp`` ROM `calculator` command.
   \
@@ -370,7 +370,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |acos ( -- )
+  \ |acos ( -- ) "bar-a-cos"
   \
   \ Compile the ``acos`` ROM `calculator` command.
   \
@@ -383,7 +383,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |asin ( -- )
+  \ |asin ( -- ) "bar-a-sin"
   \
   \ Compile the ``asin`` ROM `calculator` command.
   \
@@ -396,7 +396,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |atan ( -- )
+  \ |atan ( -- ) "bar-a-tan"
   \
   \ Compile the ``atan`` ROM `calculator` command.
   \
@@ -409,7 +409,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |cos ( -- )
+  \ |cos ( -- ) "bar-cos"
   \
   \ Compile the ``cos`` ROM `calculator` command.
   \
@@ -422,7 +422,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |sin ( -- )
+  \ |sin ( -- ) "bar-sin"
   \
   \ Compile the ``sin`` ROM `calculator` command.
   \
@@ -435,7 +435,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |tan ( -- )
+  \ |tan ( -- ) "bar-tan"
   \
   \ Compile the ``tan`` ROM `calculator` command.
   \
@@ -453,7 +453,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |drop ( -- )
+  \ |drop ( -- ) "bar-drop"
   \
   \ Compile the ``delete`` ROM `calculator` command.
   \
@@ -465,7 +465,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |dup ( -- )
+  \ |dup ( -- ) "bar-dup"
   \
   \ Compile the ``duplicate`` ROM `calculator` command.
   \
@@ -477,7 +477,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |swap ( -- )
+  \ |swap ( -- ) "bar-swap"
   \
   \ Compile the ``exchange`` ROM `calculator` command.
   \
@@ -489,7 +489,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |>mem ( n -- )
+  \ |>mem ( n -- ) "bar-to-mem"
   \
   \ Compile the ``st-mem`` ROM `calculator` command for memory
   \ number _n_ (0..5).
@@ -504,7 +504,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |mem> ( n -- )
+  \ |mem> ( n -- ) "bar-mem-to"
   \
   \ Compile the ``get-mem`` ROM `calculator` command for memory
   \ number _n_ (0..5).
@@ -515,7 +515,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |over ( -- )
+  \ |over ( -- ) "bar-over"
   \
   \ Compile the ROM calculator commands to do `over`, using
   \ `|>mem` and `|mem>` (calculator memory positions 1 and 2
@@ -530,7 +530,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |2dup ( -- )
+  \ |2dup ( -- ) "bar-two-dup"
   \
   \ Compile the ROM `calculator` commands to do `2dup`, using
   \ `|>mem` and `|mem>` (calculator memory positions 1 and 2
@@ -549,7 +549,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |0= ( -- )
+  \ |0= ( -- ) "bar-zero-equals"
   \
   \ Compile the ``not`` ROM `calculator` command.
   \
@@ -562,7 +562,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |0< ( -- )
+  \ |0< ( -- ) "bar-zero-less"
   \
   \ Compile the ``less-0`` ROM `calculator` command.
   \
@@ -575,7 +575,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |0> ( -- )
+  \ |0> ( -- ) "bar-zero-greater"
   \
   \ Compile the ``greater-0`` ROM `calculator` command.
   \
@@ -637,7 +637,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |= ( -- )
+  \ |= ( -- ) "bar-equals"
   \
   \ Compile the ``nos-eql`` ROM `calculator` command.
   \
@@ -653,7 +653,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |<> ( -- )
+  \ |<> ( -- ) "bar-not-equals"
   \
   \ Compile the ``nos-neql`` ROM `calculator` command.
   \
@@ -669,7 +669,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |> ( -- )
+  \ |> ( -- ) "bar-greater"
   \
   \ Compile the ``no-grtr`` ROM `calculator` command.
   \
@@ -685,7 +685,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |< ( -- )
+  \ |< ( -- ) "bar-less"
   \
   \ Compile the ``no-less`` ROM `calculator` command.
   \
@@ -701,7 +701,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |<= ( -- )
+  \ |<= ( -- ) "bar-less-equals"
   \
   \ Compile the ``no-l-eql`` ROM `calculator` command.
   \
@@ -717,7 +717,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |>= ( -- )
+  \ |>= ( -- ) "bar-greater-equals"
   \
   \ Compile the ``no-gr-eql`` ROM `calculator` command.
   \
@@ -737,7 +737,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |?branch ( -- )
+  \ |?branch ( -- ) "bar-question-branch"
   \
   \ Compile the ``jump-true`` ROM `calculator` command.
   \
@@ -749,7 +749,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |0branch ( -- )
+  \ |0branch ( -- ) "bar-zero-branch"
   \
   \ Compile ROM `calculator` commands `|0=` and `|?branch` to
   \ do a jump when the TOS of the calculator stack is zero.
@@ -762,7 +762,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |branch ( -- )
+  \ |branch ( -- ) "bar-branch"
   \
   \ Compile the ``jump`` ROM `calculator` command.
   \
@@ -778,7 +778,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |>mark ( -- a )
+  \ |>mark ( -- a ) "bar-greater-mark"
   \
   \ Compile space for the displacement of a ROM `calculator`
   \ forward branch which will later be resolved by `|>resolve`.
@@ -792,7 +792,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |from-here ( a -- n )
+  \ |from-here ( a -- n ) "bar-from-here"
   \
   \ Calculate the displacement _n_ from the current data-space
   \ pointer to address _a_. Used by `|>resolve` and
@@ -804,7 +804,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |>resolve ( orig -- )
+  \ |>resolve ( orig -- ) "bar-to-resolve"
   \
   \ Resolve a ROM `calculator` forward branch by storing the
   \ displacement from _orig_ to the current position into
@@ -816,7 +816,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |<mark ( -- dest )
+  \ |<mark ( -- dest ) "bar-from-mark"
   \
   \ Leave the address _dest_ of the current data-space pointer
   \ as the destination of a ROM `calculator` backward branch
@@ -831,7 +831,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |<resolve ( dest -- )
+  \ |<resolve ( dest -- ) "bar-from-resolve"
   \
   \ Resolve a ROM `calculator` backward branch by compiling the
   \ displacement from the current position to address _dest_,
@@ -843,7 +843,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |if ( -- orig )
+  \ |if ( -- orig ) "bar-if"
   \
   \ Compile a ROM `calculator` conditional `|0branch` and put
   \ the address _orig_ of its destination address on the stack,
@@ -855,7 +855,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |else ( orig1 -- orig2 )
+  \ |else ( orig1 -- orig2 ) "bar-else"
   \
   \ Put the location of a new unresolved forward reference
   \ _orig2_ onto the stack, to be resolved by `|then`.  Resolve
@@ -867,7 +867,7 @@ get-current  calculator-wordlist set-current
 
   \ doc{
   \
-  \ |then ( orig -- )
+  \ |then ( orig -- ) "bar-then"
   \
   \ Resolve the forward reference _orig_, left by `|else` or
   \ `|if`.
@@ -902,5 +902,8 @@ set-current  previous
   \ This makes the code clearer, makes search order changes
   \ unnecessary and makes a single glossary possible.  Update,
   \ improve and complete the documentation.
+  \
+  \ 2018-02-17: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802141649
+  \ Last modified: 201802171418
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -202,7 +202,7 @@ noop noop noop noop noop noop noop noop noop noop noop noop [
 
   \ doc{
   \
-  \ nuf? ( -- f )
+  \ nuf? ( -- f ) "nuf-question"
   \
   \ If no key is pressed return _false_.  If a key is pressed,
   \ discard it and wait for a second key. Then return _true_ if
@@ -226,7 +226,7 @@ noop noop noop noop noop noop noop noop noop noop noop noop [
 
   \ doc{
   \
-  \ aborted? ( c -- f )
+  \ aborted? ( c -- f ) "aborted-question"
   \
   \ If no key is pressed return _false_.  If a key is pressed,
   \ discard it and wait for a second key. Then return _true_ if
@@ -262,7 +262,7 @@ code -keys ( -- )
 
   \ doc{
   \
-  \ -keys ( -- )
+  \ -keys ( -- ) "minus-keys"
   \
   \ Remove all keys from the keyboard buffer.
   \
@@ -290,7 +290,7 @@ code -keys ( -- )
 
   \ doc{
   \
-  \ new-key- ( -- )
+  \ new-key- ( -- ) "new-key-minus"
   \
   \ Remove all keys from the keyboard buffer, then wait for a
   \ key press and discard it. Finally remove all keys from the
@@ -324,7 +324,7 @@ need [defined]  [defined] /kk ?\ 4 cconstant /kk
 
   \ doc{
   \
-  \ /kk ( -- n )
+  \ /kk ( -- n ) "slash-k-k"
   \
   \ A constant that holds the bytes ocuppied by every key
   \ stored in `kk-ports`: 3 (smaller and slower table) or 4
@@ -360,7 +360,7 @@ need [defined]  [defined] /kk ?\ 4 cconstant /kk
 
   \ doc{
   \
-  \ kk, ( b a -- )
+  \ kk, ( b a -- ) "k-k-comma"
   \
   \ Compile key definition _b a_ (bitmask and port) into table
   \ `kk-ports`. The actual definition of ``kk,`` depends on the
@@ -372,7 +372,7 @@ need [defined]  [defined] /kk ?\ 4 cconstant /kk
 
   \ doc{
   \
-  \ kk@ ( a1 -- b a2 )
+  \ kk@ ( a1 -- b a2 ) "k-k-fetch"
   \
   \ Fetch a key definition _b a2_ (bitmask and port) from item
   \ _a1_ of table `kk-ports`.  The actual definition of ``kk@``
@@ -390,7 +390,7 @@ $10 $F7FE 2constant kk-5
 
   \ doc{
   \
-  \ kk-1 ( -- b a )
+  \ kk-1 ( -- b a ) "k-k-1"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "1" with `pressed?`.
@@ -401,7 +401,7 @@ $10 $F7FE 2constant kk-5
 
   \ doc{
   \
-  \ kk-2 ( -- b a )
+  \ kk-2 ( -- b a ) "k-k-2"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "2" with `pressed?`.
@@ -412,7 +412,7 @@ $10 $F7FE 2constant kk-5
 
   \ doc{
   \
-  \ kk-3 ( -- b a )
+  \ kk-3 ( -- b a ) "k-k-3"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "3" with `pressed?`.
@@ -423,7 +423,7 @@ $10 $F7FE 2constant kk-5
 
   \ doc{
   \
-  \ kk-4 ( -- b a )
+  \ kk-4 ( -- b a ) "k-k-4"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "4" with `pressed?`.
@@ -434,7 +434,7 @@ $10 $F7FE 2constant kk-5
 
   \ doc{
   \
-  \ kk-5 ( -- b a )
+  \ kk-5 ( -- b a ) "k-k-5"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "5" with `pressed?`.
@@ -449,7 +449,7 @@ $10 $FBFE 2constant kk-t
 
   \ doc{
   \
-  \ kk-q ( -- b a )
+  \ kk-q ( -- b a ) "k-k-Q"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "Q" with `pressed?`.
@@ -460,7 +460,7 @@ $10 $FBFE 2constant kk-t
 
   \ doc{
   \
-  \ kk-w ( -- b a )
+  \ kk-w ( -- b a ) "k-k-W"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "W" with `pressed?`.
@@ -471,7 +471,7 @@ $10 $FBFE 2constant kk-t
 
   \ doc{
   \
-  \ kk-e ( -- b a )
+  \ kk-e ( -- b a ) "k-k-E"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "E" with `pressed?`.
@@ -482,7 +482,7 @@ $10 $FBFE 2constant kk-t
 
   \ doc{
   \
-  \ kk-r ( -- b a )
+  \ kk-r ( -- b a ) "k-k-R"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "R" with `pressed?`.
@@ -493,7 +493,7 @@ $10 $FBFE 2constant kk-t
 
   \ doc{
   \
-  \ kk-t ( -- b a )
+  \ kk-t ( -- b a ) "k-k-T"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "T" with `pressed?`.
@@ -508,7 +508,7 @@ $10 $FDFE 2constant kk-g  -->
 
   \ doc{
   \
-  \ kk-a ( -- b a )
+  \ kk-a ( -- b a ) "k-k-A"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "A" with `pressed?`.
@@ -519,7 +519,7 @@ $10 $FDFE 2constant kk-g  -->
 
   \ doc{
   \
-  \ kk-s ( -- b a )
+  \ kk-s ( -- b a ) "k-k-S"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "S" with `pressed?`.
@@ -530,7 +530,7 @@ $10 $FDFE 2constant kk-g  -->
 
   \ doc{
   \
-  \ kk-d ( -- b a )
+  \ kk-d ( -- b a ) "k-k-D"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "D" with `pressed?`.
@@ -541,7 +541,7 @@ $10 $FDFE 2constant kk-g  -->
 
   \ doc{
   \
-  \ kk-f ( -- b a )
+  \ kk-f ( -- b a ) "k-k-F"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "F" with `pressed?`.
@@ -552,7 +552,7 @@ $10 $FDFE 2constant kk-g  -->
 
   \ doc{
   \
-  \ kk-g ( -- b a )
+  \ kk-g ( -- b a ) "k-k-G"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "G" with `pressed?`.
@@ -569,7 +569,7 @@ $10 $FEFE 2constant kk-v
 
   \ doc{
   \
-  \ kk-cs ( -- b a )
+  \ kk-cs ( -- b a ) "k-k-caps-shift"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "Caps Shift" with `pressed?`.
@@ -580,7 +580,7 @@ $10 $FEFE 2constant kk-v
 
   \ doc{
   \
-  \ kk-z ( -- b a )
+  \ kk-z ( -- b a ) "k-k-Z"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "Z" with `pressed?`.
@@ -591,7 +591,7 @@ $10 $FEFE 2constant kk-v
 
   \ doc{
   \
-  \ kk-x ( -- b a )
+  \ kk-x ( -- b a ) "k-k-X"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "X" with `pressed?`.
@@ -602,7 +602,7 @@ $10 $FEFE 2constant kk-v
 
   \ doc{
   \
-  \ kk-c ( -- b a )
+  \ kk-c ( -- b a ) "k-k-C"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "C" with `pressed?`.
@@ -613,7 +613,7 @@ $10 $FEFE 2constant kk-v
 
   \ doc{
   \
-  \ kk-v ( -- b a )
+  \ kk-v ( -- b a ) "k-k-V"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "V" with `pressed?`.
@@ -628,7 +628,7 @@ $10 $EFFE 2constant kk-6
 
   \ doc{
   \
-  \ kk-0 ( -- b a )
+  \ kk-0 ( -- b a ) "k-k-0"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "0" with `pressed?`.
@@ -639,7 +639,7 @@ $10 $EFFE 2constant kk-6
 
   \ doc{
   \
-  \ kk-9 ( -- b a )
+  \ kk-9 ( -- b a ) "k-k-9"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "9" with `pressed?`.
@@ -650,7 +650,7 @@ $10 $EFFE 2constant kk-6
 
   \ doc{
   \
-  \ kk-8 ( -- b a )
+  \ kk-8 ( -- b a ) "k-k-8"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "8" with `pressed?`.
@@ -661,7 +661,7 @@ $10 $EFFE 2constant kk-6
 
   \ doc{
   \
-  \ kk-7 ( -- b a )
+  \ kk-7 ( -- b a ) "k-k-7"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "7" with `pressed?`.
@@ -672,7 +672,7 @@ $10 $EFFE 2constant kk-6
 
   \ doc{
   \
-  \ kk-6 ( -- b a )
+  \ kk-6 ( -- b a ) "k-k-6"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "6" with `pressed?`.
@@ -687,7 +687,7 @@ $10 $DFFE 2constant kk-y
 
   \ doc{
   \
-  \ kk-p ( -- b a )
+  \ kk-p ( -- b a ) "k-k-P"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "P" with `pressed?`.
@@ -698,7 +698,7 @@ $10 $DFFE 2constant kk-y
 
   \ doc{
   \
-  \ kk-o ( -- b a )
+  \ kk-o ( -- b a ) "k-k-O"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "O" with `pressed?`.
@@ -709,7 +709,7 @@ $10 $DFFE 2constant kk-y
 
   \ doc{
   \
-  \ kk-i ( -- b a )
+  \ kk-i ( -- b a ) "k-k-I"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "I" with `pressed?`.
@@ -720,7 +720,7 @@ $10 $DFFE 2constant kk-y
 
   \ doc{
   \
-  \ kk-u ( -- b a )
+  \ kk-u ( -- b a ) "k-k-U"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "U" with `pressed?`.
@@ -731,7 +731,7 @@ $10 $DFFE 2constant kk-y
 
   \ doc{
   \
-  \ kk-y ( -- b a )
+  \ kk-y ( -- b a ) "k-k-Y"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "Y" with `pressed?`.
@@ -746,7 +746,7 @@ $10 $BFFE 2constant kk-h
 
   \ doc{
   \
-  \ kk-en ( -- b a )
+  \ kk-en ( -- b a ) "k-k-enter"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "Enter" with `pressed?`.
@@ -757,7 +757,7 @@ $10 $BFFE 2constant kk-h
 
   \ doc{
   \
-  \ kk-l ( -- b a )
+  \ kk-l ( -- b a ) "k-k-L"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "L" with `pressed?`.
@@ -768,7 +768,7 @@ $10 $BFFE 2constant kk-h
 
   \ doc{
   \
-  \ kk-k ( -- b a )
+  \ kk-k ( -- b a ) "k-k-K"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "K" with `pressed?`.
@@ -779,7 +779,7 @@ $10 $BFFE 2constant kk-h
 
   \ doc{
   \
-  \ kk-j ( -- b a )
+  \ kk-j ( -- b a ) "k-k-J"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "J" with `pressed?`.
@@ -790,7 +790,7 @@ $10 $BFFE 2constant kk-h
 
   \ doc{
   \
-  \ kk-h ( -- b a )
+  \ kk-h ( -- b a ) "k-k-H"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "H" with `pressed?`.
@@ -805,7 +805,7 @@ $10 $7FFE 2constant kk-b  -->
 
   \ doc{
   \
-  \ kk-sp ( -- b a )
+  \ kk-sp ( -- b a ) "k-k-space"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "Space" with `pressed?`.
@@ -816,7 +816,7 @@ $10 $7FFE 2constant kk-b  -->
 
   \ doc{
   \
-  \ kk-ss ( -- b a )
+  \ kk-ss ( -- b a ) "k-k-symbol-shift"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "Symbol Shift" with `pressed?`.
@@ -827,7 +827,7 @@ $10 $7FFE 2constant kk-b  -->
 
   \ doc{
   \
-  \ kk-m ( -- b a )
+  \ kk-m ( -- b a ) "k-k-M"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "M" with `pressed?`.
@@ -838,7 +838,7 @@ $10 $7FFE 2constant kk-b  -->
 
   \ doc{
   \
-  \ kk-n ( -- b a )
+  \ kk-n ( -- b a ) "k-k-N"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "N" with `pressed?`.
@@ -849,7 +849,7 @@ $10 $7FFE 2constant kk-b  -->
 
   \ doc{
   \
-  \ kk-b ( -- b a )
+  \ kk-b ( -- b a ) "k-k-B"
   \
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "B" with `pressed?`.
@@ -864,7 +864,7 @@ $10 $7FFE 2constant kk-b  -->
 
   \ doc{
   \
-  \ #kk ( -- n )
+  \ #kk ( -- n ) "dash-k-k"
   \
   \ A constant that holds the number _n_ of keyboard keys. This
   \ is the number of physical rubber keys on the keyboard of
@@ -899,7 +899,7 @@ kk-sp kk,  kk-ss kk,  kk-m kk,  kk-n kk,  kk-b kk,
 
   \ doc{
   \
-  \ kk-ports ( -- a )
+  \ kk-ports ( -- a ) "k-k-ports"
   \
   \ A table that contains the key definitions (bitmak and port)
   \ of all keys.
@@ -947,7 +947,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-1# ( -- n )
+  \ kk-1# ( -- n ) "k-k-1-dash"
   \
   \ Return index _n_ of the physical key "1" in tables
   \ `kk-chars` and `kk-ports`.
@@ -958,7 +958,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-2# ( -- n )
+  \ kk-2# ( -- n ) "k-k-2-dash"
   \
   \ Return index _n_ of the physical key "2" in tables
   \ `kk-chars` and `kk-ports`.
@@ -969,7 +969,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-3# ( -- n )
+  \ kk-3# ( -- n ) "k-k-3-dash"
   \
   \ Return index _n_ of the physical key "3" in tables
   \ `kk-chars` and `kk-ports`.
@@ -980,7 +980,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-4# ( -- n )
+  \ kk-4# ( -- n ) "k-k-4-dash"
   \
   \ Return index _n_ of the physical key "4" in tables
   \ `kk-chars` and `kk-ports`.
@@ -991,7 +991,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-5# ( -- n )
+  \ kk-5# ( -- n ) "k-k-5-dash"
   \
   \ Return index _n_ of the physical key "5" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1002,7 +1002,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-q# ( -- n )
+  \ kk-q# ( -- n ) "k-k-Q-dash"
   \
   \ Return index _n_ of the physical key "Q" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1013,7 +1013,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-w# ( -- n )
+  \ kk-w# ( -- n ) "k-k-W-dash"
   \
   \ Return index _n_ of the physical key "W" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1024,7 +1024,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-e# ( -- n )
+  \ kk-e# ( -- n ) "k-k-E-dash"
   \
   \ Return index _n_ of the physical key "E" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1035,7 +1035,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-r# ( -- n )
+  \ kk-r# ( -- n ) "k-k-R-dash"
   \
   \ Return index _n_ of the physical key "R" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1046,7 +1046,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-t# ( -- n )
+  \ kk-t# ( -- n ) "k-k-T-dash"
   \
   \ Return index _n_ of the physical key "T" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1057,7 +1057,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-a# ( -- n )
+  \ kk-a# ( -- n ) "k-k-A-dash"
   \
   \ Return index _n_ of the physical key "A" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1068,7 +1068,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-s# ( -- n )
+  \ kk-s# ( -- n ) "k-k-S-dash"
   \
   \ Return index _n_ of the physical key "S" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1079,7 +1079,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-d# ( -- n )
+  \ kk-d# ( -- n ) "k-k-D-dash"
   \
   \ Return index _n_ of the physical key "D" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1090,7 +1090,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-f# ( -- n )
+  \ kk-f# ( -- n ) "k-k-F-dash"
   \
   \ Return index _n_ of the physical key "F" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1101,7 +1101,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-g# ( -- n )
+  \ kk-g# ( -- n ) "k-k-G-dash"
   \
   \ Return index _n_ of the physical key "G" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1112,7 +1112,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-cs# ( -- n )
+  \ kk-cs# ( -- n ) "k-k-caps-shift-dash"
   \
   \ Return index _n_ of the physical key "Caps Shift" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1123,7 +1123,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-z# ( -- n )
+  \ kk-z# ( -- n ) "k-k-Z-dash"
   \
   \ Return index _n_ of the physical key "Z" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1134,7 +1134,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-x# ( -- n )
+  \ kk-x# ( -- n ) "k-k-X-dash"
   \
   \ Return index _n_ of the physical key "X" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1145,7 +1145,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-c# ( -- n )
+  \ kk-c# ( -- n ) "k-k-C-dash"
   \
   \ Return index _n_ of the physical key "C" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1156,7 +1156,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-v# ( -- n )
+  \ kk-v# ( -- n ) "k-k-V-dash"
   \
   \ Return index _n_ of the physical key "V" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1167,7 +1167,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-0# ( -- n )
+  \ kk-0# ( -- n ) "k-k-0-dash"
   \
   \ Return index _n_ of the physical key "0" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1178,7 +1178,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-9# ( -- n )
+  \ kk-9# ( -- n ) "k-k-9-dash"
   \
   \ Return index _n_ of the physical key "9" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1189,7 +1189,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-8# ( -- n )
+  \ kk-8# ( -- n ) "k-k-8-dash"
   \
   \ Return index _n_ of the physical key "8" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1200,7 +1200,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-7# ( -- n )
+  \ kk-7# ( -- n ) "k-k-7-dash"
   \
   \ Return index _n_ of the physical key "7" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1211,7 +1211,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-6# ( -- n )
+  \ kk-6# ( -- n ) "k-k-6-dash"
   \
   \ Return index _n_ of the physical key "6" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1222,7 +1222,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-p# ( -- n )
+  \ kk-p# ( -- n ) "k-k-P-dash"
   \
   \ Return index _n_ of the physical key "P" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1233,7 +1233,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-o# ( -- n )
+  \ kk-o# ( -- n ) "k-k-O-dash"
   \
   \ Return index _n_ of the physical key "O" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1244,7 +1244,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-i# ( -- n )
+  \ kk-i# ( -- n ) "k-k-I-dash"
   \
   \ Return index _n_ of the physical key "I" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1255,7 +1255,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-u# ( -- n )
+  \ kk-u# ( -- n ) "k-k-U-dash"
   \
   \ Return index _n_ of the physical key "U" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1266,7 +1266,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-y# ( -- n )
+  \ kk-y# ( -- n ) "k-k-Y-dash"
   \
   \ Return index _n_ of the physical key "Y" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1277,7 +1277,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-en# ( -- n )
+  \ kk-en# ( -- n ) "k-k-enter-dash"
   \
   \ Return index _n_ of the physical key "Enter" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1288,7 +1288,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-l# ( -- n )
+  \ kk-l# ( -- n ) "k-k-L-dash"
   \
   \ Return index _n_ of the physical key "L" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1299,7 +1299,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-k# ( -- n )
+  \ kk-k# ( -- n ) "k-k-K-dash"
   \
   \ Return index _n_ of the physical key "K" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1310,7 +1310,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-j# ( -- n )
+  \ kk-j# ( -- n ) "k-k-J-dash"
   \
   \ Return index _n_ of the physical key "J" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1321,7 +1321,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-h# ( -- n )
+  \ kk-h# ( -- n ) "k-k-H-dash"
   \
   \ Return index _n_ of the physical key "H" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1332,7 +1332,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-sp# ( -- n )
+  \ kk-sp# ( -- n ) "k-k-space-dash"
   \
   \ Return index _n_ of the physical key "Space" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1343,7 +1343,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-ss# ( -- n )
+  \ kk-ss# ( -- n ) "k-k-symbol-shift-dash"
   \
   \ Return index _n_ of the physical key "Symbol Shift" in
   \ tables `kk-chars` and `kk-ports`.
@@ -1354,7 +1354,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-m# ( -- n )
+  \ kk-m# ( -- n ) "k-k-M-dash"
   \
   \ Return index _n_ of the physical key "M" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1365,7 +1365,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-n# ( -- n )
+  \ kk-n# ( -- n ) "k-k-N-dash"
   \
   \ Return index _n_ of the physical key "N" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1376,7 +1376,7 @@ need kk-1#
 
   \ doc{
   \
-  \ kk-b# ( -- n )
+  \ kk-b# ( -- n ) "k-k-B-dash"
   \
   \ Return index _n_ of the physical key "B" in tables
   \ `kk-chars` and `kk-ports`.
@@ -1398,7 +1398,7 @@ create kk-chars '1' c,  '2' c,  '3' c,  '4' c,  '5' c,
 
   \ doc{
   \
-  \ kk-chars ( -- ca )
+  \ kk-chars ( -- ca ) "k-k-chars"
   \
   \ _ca_ is the address of a 40-byte table that contains the
   \ characters used as names of the physical keys (one
@@ -1444,7 +1444,7 @@ create kk-chars '1' c,  '2' c,  '3' c,  '4' c,  '5' c,
 
   \ doc{
   \
-  \ kk#>kk ( n -- b a )
+  \ kk#>kk ( n -- b a ) "k-k-dash-to-k-k"
   \
   \ Convert keyboard key number _n_ to its data: key bitmask
   \ _b_ and keyboard row port _a_.
@@ -1459,7 +1459,7 @@ create kk-chars '1' c,  '2' c,  '3' c,  '4' c,  '5' c,
 
   \ doc{
   \
-  \ pressed? ( b a -- f )
+  \ pressed? ( b a -- f ) "pressed-question"
   \
   \ Is a keyboard key _b a_ pressed?  _b_ is the key bitmask
   \ and _a_ is the keyboard row port.
@@ -1748,5 +1748,8 @@ need kk-ports  0. 2variable kk-pressed
   \ `key-delete`. Add `key-graphics`, `key-true-video`,
   \ `key-inverse-video`, key-caps-lock`.  Rename `#>kk`
   \ `kk#>kk`. Rename `keys` `#kk`.  Improve documentation.
+  \
+  \ 2018-02-17: Improve documentation: add pronunciation to
+  \ words that need it.
 
   \ vim: filetype=soloforth
