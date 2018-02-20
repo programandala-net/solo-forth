@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801241946
+  \ Last modified: 201802201258
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,6 +27,31 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( cells-+-bench )
+
+need ticks need timer need array> need array<
+
+: run ( n -- )
+  >r
+  cr ." cells +     "
+  ticks r@ 0 ?do 0 1 cells +     drop loop timer
+  cr ." swap array> "
+  ticks r@ 0 ?do 0 1 swap array> drop loop timer
+  cr ." swap array< "
+  ticks r> 0 ?do 0 1      array< drop loop timer ;
+
+  \ 2018-02-20:
+
+  \        Ticks
+  \        ---------------------------
+  \ Times  cells +  swap array> array<
+  \ -----  -------  ----------- ------
+  \   100        1            1      0
+  \  1000        9            9      7
+  \ 10000       90           91     75
+  \ 20000      180          182    150
+  \ 65535      589          597    491
 
 ( 0>-bench )
 
@@ -3168,5 +3193,7 @@ need bench{ need }bench.
   \ results more coherent and useful.  Update the results of
   \ `fetch-bench`, `2fetch-bench`, `constants-bench`, and
   \ `store-bench`.
+  \
+  \ 2018-02-20: Add `cells-+-bench`.
 
   \ vim: filetype=soloforth
