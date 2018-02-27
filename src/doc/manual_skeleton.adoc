@@ -1,12 +1,12 @@
 = Solo Forth %VERSION% %DOS%
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-12-07
+:revdate: 2018-02-27
 :toc:
 :toclevels: 1
 :toc-placement!:
 :linkattrs:
 
-// Last modified 201709071912
+// Last modified 201802141757
 
 toc::[]
 
@@ -127,7 +127,8 @@ on each DOS.
 | `w/o`             |       |        | YES   | Standard Forth
 | `wacat`           | YES   |        | YES   | Abbreviated disk catalogue with wildcards
 | `wcat`            | YES   |        | YES   | Detailed disk catalogue with wildcards
-| `write-file`      |       |        |       | Standard Forth
+| `bank-write-file` |       |        | YES   |
+| `write-file`      |       |        | YES   | Standard Forth
 | `write-line`      |       |        |       | Standard Forth
 
 |===
@@ -286,13 +287,13 @@ When the needed source is in a different disk than the library,
 `set-block-drives` must be used first in order to configure the drives
 used as block drives, and their order. For example, this is the case
 when you want to try the simple sample games from
-<disks/\*/disk_2_games.\*> or the benchmarks and tests from
-<disks/\*/disk_3_workbench.\*>.
+<disks/\*/disk_2_games_and_editors.\*> or the benchmarks and tests
+from <disks/\*/disk_3_workbench.\*>.
 
 The following example is for G+DOS.  First, "Insert" the file
 <disks/gplusdos/disk_1_library.mgt> as disk 1.  Then, "Insert" the
-file <disks/gplusdos/disk_2_games.mgt> as disk 2. Then enter the
-following commands to load the Pong game:
+file <disks/gplusdos/disk_2_games_and_editors.mgt> as disk 2. Then
+enter the following commands to load the Pong game:
 
 ----
 cold \ just to start from scratch, if needed

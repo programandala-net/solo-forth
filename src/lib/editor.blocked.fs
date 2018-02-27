@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201702220020
+  \ Last modified: 201802271728
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,16 +14,16 @@
   \ Bernd Paysan, 1995.
   \
   \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
-  \ 2016.
+  \ 2016, 2017, 2018.
 
   \ ===========================================================
   \ Description
 
-  \ This is the simple block editor included with Gforth
-  \ (in blocks file <blocked.fb>), adapted to Solo Forth.
+  \ This is the simple block editor included with Gforth (in
+  \ blocks file <blocked.fb>), adapted to Solo Forth.
   \
-  \ Word descriptions and stack comments have been added after
-  \ the original source.
+  \ Word descriptions and stack comments have been added
+  \ following the original source.
 
   \ ===========================================================
   \ Usage
@@ -48,18 +48,20 @@
 ( blocked )
 
 only forth definitions
+
 need inverse need list need update
 need list-lines need vocabulary need catch
 
 : delete ( ca1 len1 len2 -- )
-  over min >r  r@ - ( left over ) dup 0>
-  if  2dup swap dup r@ + -rot swap move  then  + r> blank ;
+  over min >r r@ - ( left over ) dup 0>
+  if   2dup swap dup r@ + -rot swap move
+  then + r> blank ;
   \ Delete _len2_ characters at _ca1 len1_, moving the rest
   \ to the left and filling the end with blanks.
   \ XXX TODO -- move to <strings.misc.fsb>
 
 : insert ( ca1 len1 ca2 len2 -- )
-  rot over min >r  r@ -  over dup r@ +  rot move  r> move ;
+  rot over min >r r@ - over dup r@ + rot move r> move ;
   \ Insert string _ca len_ at zone _ca2 len2_.
   \ XXX TODO -- move to <strings.misc.fsb>
 
@@ -75,6 +77,7 @@ variable len len off
   \ Length of the text found.
   \ XXX TODO -- rename to `/r#`
   \ XXX TODO -- move to <editor.common.fsb>
+
 2variable mark 0. mark 2!
   \ Backup of the editing position (cursor and block).
 
@@ -86,10 +89,12 @@ create rbuf $100 allot
   \ Replace buffer.
   \ XXX TODO -- rename
   \ XXX TODO -- use the `stringer` instead?
+
 create ibuf $100 allot
   \ Insert buffer.
   \ XXX TODO -- rename
   \ XXX TODO -- use the `stringer` instead?
+
 create fbuf $100 allot
   \ Search buffer.
   \ XXX TODO -- rename
@@ -127,13 +132,13 @@ create fbuf $100 allot
   \ current position.
   \ XXX TODO -- rename
 
-: 'line ( -- ca len ) 'rest  1- c/l 1- and 1+ ;
+: 'line ( -- ca len ) 'rest 1- c/l 1- and 1+ ;
   \ Return the rest of the current line, from the
   \ current position.
   \ XXX TODO -- rename
 
 : 'par ( buf "ccc<eol>" -- ca len ) >r 0 parse dup
-  0= if  2drop r> count  else  2dup  r> place  then ;
+  0= if 2drop r> count else 2dup  r> place then ;
   \ Parse _ccc_. If the result string is empty,
   \ discard it and return the counted string at _buf_;
   \ else return the parsed string and also store it
@@ -141,7 +146,7 @@ create fbuf $100 allot
   \ XXX TODO -- rename to `buffer-parse`
 
 : t ( u "ccc<eol>" -- ) c/l * r# ! c/l len !
-  0 parse tuck 'line insert if  update  then  l ;
+  0 parse tuck 'line insert if update then l ;
   \ Go to line _u_ and insert _ccc_.
   \ XXX TODO -- make `len` the length of the inserted text
 
@@ -180,8 +185,10 @@ create fbuf $100 allot
   \ Go to previous screen.
 
 : s ( u "ccc<eol>" | u -- ) >r
-  begin  ['] f catch  while  scr @ r@ =  if  rdrop  exit  then
-         scr @ r@ u<  if  n  else  p  then  repeat  r> ;
+  begin ['] f catch
+  while scr @ r@ = if rdrop exit then
+        scr @ r@ u< if n else p then
+  repeat r> ;
   \ Search for _ccc_ until screen _u_. If _ccc_ is empty, use
   \ the string of the previous search.
   \
@@ -212,5 +219,7 @@ forth definitions
   \ library.
   \
   \ 2017-03-12: Update mentions to the `stringer`.
+  \
+  \ 2018-02-27: Update header and source layout.
 
   \ vim: filetype=soloforth

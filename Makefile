@@ -3,13 +3,13 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201712071517
+# Last modified: 201802271719
 # See change loge at the end of the file.
 
 # ==============================================================
 # Author
 
-# Marcos Cruz (programandala.net), 2015, 2016, 2017.
+# Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
 # ==============================================================
 # License
@@ -106,7 +106,7 @@ gplusdos: gplusdosdisks
 gplusdosdisks: \
 	disks/gplusdos/disk_0_boot.mgt \
 	disks/gplusdos/disk_1_library.mgt \
-	disks/gplusdos/disk_2_games.mgt \
+	disks/gplusdos/disk_2_games_and_editors.mgt \
 	disks/gplusdos/disk_3_workbench.mgt
 
 .PHONY: p
@@ -119,7 +119,7 @@ plus3dos: plus3dosdisks
 plus3dosdisks: \
 	disks/plus3dos/disk_0_boot.dsk \
 	disks/plus3dos/disk_1_library.dsk \
-	disks/plus3dos/disk_2_games.dsk \
+	disks/plus3dos/disk_2_games_and_editors.dsk \
 	disks/plus3dos/disk_3_workbench.dsk
 
 .PHONY: t
@@ -137,7 +137,7 @@ trdosdisks: \
 .PHONY: trdosblockdisks
 trdosblockdisks: \
 	disks/trdos/disk_1_library.trd \
-	disks/trdos/disk_2_games.trd \
+	disks/trdos/disk_2_games_and_editors.trd \
 	disks/trdos/disk_3_workbench.trd
 
 .PHONY: t128
@@ -456,6 +456,7 @@ disks/trdos/disk_0_boot.pentagon_1024.trd: tmp/disk_0_boot.trdos.pentagon_1024.t
 
 lib_files = $(sort $(wildcard src/lib/*.fs))
 dos_lib_files = $(sort $(wildcard src/lib/dos.*.fs))
+editor_lib_files = $(sort $(wildcard src/lib/editor.*.fs))
 game_lib_files = $(sort $(wildcard src/lib/game.*.fs))
 meta_lib_files = $(sort $(wildcard src/lib/meta.*.fs))
 meta_benchmark_lib_files = $(sort $(wildcard src/lib/meta.benchmark.*.fs))
@@ -464,7 +465,7 @@ meta_benchmark_rng_lib_files = src/lib/meta.benchmark.rng.fs
 meta_benchmark_flow_lib_files = src/lib/meta.benchmark.flow.fs
 meta_test_lib_files = $(sort $(wildcard src/lib/meta.test*.fs))
 core_lib_files = \
-	$(filter-out $(game_lib_files) $(meta_lib_files), \
+	$(filter-out $(editor_lib_files) $(game_lib_files) $(meta_lib_files), \
 			$(lib_files))
 no_dos_core_lib_files = \
 	$(filter-out $(dos_lib_files), $(core_lib_files))
@@ -531,6 +532,12 @@ tmp/games.fs: $(game_lib_files)
 tmp/workbench.fs: $(meta_lib_files)
 	cat $^ > $@
 
+tmp/editors.fs: $(editor_lib_files)
+	cat $(editor_lib_files) > $@
+
+tmp/games_and_editors.fs: tmp/games.fs tmp/editors.fs
+	cat $^ > $@
+
 # ----------------------------------------------
 # G+DOS block disks
 
@@ -547,13 +554,17 @@ disks/gplusdos/disk_1_library.mgt: tmp/library.gplusdos.fs
 # ------------------------------
 # Additional disks
 
-disks/gplusdos/disk_2_games.mgt: tmp/games.fs
+disks/gplusdos/disk_2_games_and_editors.mgt: tmp/games_and_editors.fs
 	fsb2-mgt $< ;\
 	mv $(basename $<).mgt $@
 
 disks/gplusdos/disk_3_workbench.mgt: tmp/workbench.fs
 	fsb2-mgt $< ;\
 	mv $(basename $<).mgt $@
+
+# disks/gplusdos/disk_4_editors.mgt: tmp/editors.fs
+# 	fsb2-mgt $< ;\
+# 	mv $(basename $<).mgt $@
 
 # ------------------------------
 # Old additional disks, with the library included
@@ -613,13 +624,17 @@ disks/plus3dos/disk_1_library.dsk: tmp/library.plus3dos.fs
 # ------------------------------
 # Additional disks
 
-disks/plus3dos/disk_2_games.dsk: tmp/games.fs
+disks/plus3dos/disk_2_games_and_editors.dsk: tmp/games_and_editors.fs
 	fsb2-dsk $< ;\
 	mv $(basename $<).dsk $@
 
 disks/plus3dos/disk_3_workbench.dsk: tmp/workbench.fs
 	fsb2-dsk $< ;\
 	mv $(basename $<).dsk $@
+
+# disks/plus3dos/disk_4_editors.dsk: tmp/editors.fs
+# 	fsb2-dsk $< ;\
+# 	mv $(basename $<).dsk $@
 
 # ------------------------------
 # Old additional disks, with the library included
@@ -679,13 +694,17 @@ disks/trdos/disk_1_library.trd: tmp/library.trdos.fs
 # ------------------------------
 # Additional disks
 
-disks/trdos/disk_2_games.trd: tmp/games.fs
+disks/trdos/disk_2_games_and_editors.trd: tmp/games_and_editors.fs
 	fsb2-trd $< SoloFth2 ; \
 	mv $(basename $<).trd $@
 
 disks/trdos/disk_3_workbench.trd: tmp/workbench.fs
 	fsb2-trd $< SoloFth3 ; \
 	mv $(basename $<).trd $@
+
+# disks/trdos/disk_4_editors.trd: tmp/editors.fs
+# 	fsb2-trd $< SoloFth4 ; \
+# 	mv $(basename $<).trd $@
 
 # ------------------------------
 # Old additional disks, with the library included
@@ -1151,3 +1170,7 @@ oldbackup:
 # 2017-12-05: Don't make a +3DOS 180 KiB boot disk anymore.
 #
 # 2017-12-07: Fix rule of +3DOS boot disk.
+#
+# 2018-02-27: Move editors from the library disk to the games
+# disk and rename it, because the library didn't fit a TR-DOS
+# disk image.

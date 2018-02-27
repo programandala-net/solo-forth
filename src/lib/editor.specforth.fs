@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802041940
+  \ Last modified: 201802271733
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -39,8 +39,9 @@
 
 ( editor )
 
-only forth definitions need list need update need flush
-                        need parse-all need vocabulary
+only forth definitions
+
+need list need update need flush need parse-all need vocabulary
 
 vocabulary editor  also editor definitions
 
@@ -55,8 +56,7 @@ need r# need top
   \ into `pad`, blank-filling the remainder of `pad` to `c/l`
   \ characters.
 
-: text ( "ccc<eol>" -- )
-  pad c/l 1+ blank  parse-all  pad place ;
+: text ( "ccc<eol>" -- ) pad c/l 1+ blank parse-all pad place ;
 
   \ doc{
   \
@@ -135,8 +135,8 @@ need r# need top
   \ Erase line _n_ with blanks.
   \
   \ See: `b`, `c`, `d`, `f`, `<<,h>>`,
-  \ `<<src/lib/editor.specforth.fsb,i>>`, `l`, `m`, `n`, `p`, `r`, `s`,
-  \ `t`, `x`.
+  \ `<<src/lib/editor.specforth.fsb,i>>`, `l`, `m`, `n`, `p`,
+  \ `r`, `s`, `t`, `x`.
   \
   \ }doc
   \
@@ -158,7 +158,7 @@ need r# need top
   \
   \ }doc
 
-: h ( n -- ) line pad 1+ c/l dup pad c! cmove ;  -->
+: h ( n -- ) line pad 1+ c/l dup pad c! cmove ; -->
 
   \ doc{
   \
@@ -241,11 +241,11 @@ need r# need top
   \
   \ }doc
 
-: p ( n "ccc<eol>"  -- ) text r ;
+: p ( n "ccc<eol>" -- ) text r ;
 
   \ doc{
   \
-  \ p ( n "ccc<eol>"  -- )
+  \ p ( n "ccc<eol>" -- )
   \
   \ Put "ccc" on line _n_.
   \
@@ -269,8 +269,8 @@ need r# need top
   \ }doc
 
 : clear ( n -- )
-  scr !  l/scr 0 ?do  [ also forth ] i [ previous ] e  loop ;
-  \ XXX TODO -- simpler
+  scr ! l/scr 0 ?do [ also forth ] i [ previous ] e loop ;
+  \ XXX TODO -- Simplify.
 
   \ doc{
   \
@@ -285,10 +285,10 @@ need r# need top
 ( editor )
 
 : -text ( ca1 len1 ca2 -- f )
-  swap ?dup if  over + swap ?do
+  swap ?dup if over + swap ?do
                   dup c@ [ also forth ] i [ previous ] c@ -
-                  if  0= leave  else 1+  then
-                loop  else  drop 0=  then ;
+                  if 0= leave else 1+ then
+                loop else drop 0= then ;
   \ XXX TODO -- rewrite with `search`
 
   \ doc{
@@ -300,12 +300,11 @@ need r# need top
   \
   \ }doc
 
-
 : match ( ca1 len1 ca2 len2 -- true n3 | false n4 )
   >r >r 2dup r> r> 2swap over + swap [ also forth ]
   ?do 2dup i -text
-     if  >r 2drop r> - i swap - 0 swap 0 0 leave  then
-  loop  [ previous ]  2drop swap 0= swap ;
+    if >r 2drop r> - i swap - 0 swap 0 0 leave then
+  loop [ previous ] 2drop swap 0= swap ;
 
   \ doc{
   \
@@ -331,10 +330,10 @@ need r# need top
   \ }doc
 
 : find ( -- )
-  begin  $03FF r# @ <
+  begin $03FF r# @ <
     \ XXX FIXME -- `00 error` ?
-    if  top pad here c/l 1+ cmove #-270 throw  then  1line
-  until ;  -->
+    if top pad here c/l 1+ cmove #-270 throw then 1line
+  until ; -->
 
   \ doc{
   \
@@ -351,7 +350,7 @@ need r# need top
 ( editor )
 
 : delete ( n -- ) >r #lag + r@ - #lag r@ negate r# +! #lead +
-                    swap cmove  r> blank ;
+                  swap cmove r> blank ;
 
   \ doc{
   \
@@ -382,13 +381,13 @@ need r# need top
   \ f ( "ccc<eol>" -- )
   \
   \ Search forward from the current cursor position until
-  \ string "ccc" is found. The cursor is left at the end of
-  \ the string and the cursor line is printed. If the string is
-  \ not found and error message is given and the cursor
+  \ string "ccc" is found. The cursor is left at the end of the
+  \ string and the cursor line is printed. If the string is not
+  \ found and error message is given and the cursor
   \ repositioned to the top of the block.
   \
-  \ See: `b`, `c`, `d`, `e`, `h`, `i`, `l`, `m`, `n`,
-  \ `p`, `r`, `s`, `t`, `x`.
+  \ See: `b`, `c`, `d`, `e`, `h`, `i`, `l`, `m`, `n`, `p`, `r`,
+  \ `s`, `t`, `x`.
   \
   \ }doc
 
@@ -432,7 +431,7 @@ need r# need top
 
 : (c) ( ca len -- )
   #lag rot over min >r r@ r# +! r@ - >r dup here r@ cmove
-  here #lead + r> cmove r> cmove 0 m  update ;
+  here #lead + r> cmove r> cmove 0 m update ;
 
   \ doc{
   \
@@ -444,7 +443,7 @@ need r# need top
   \ }doc
 
 : c ( "ccc<eol>" -- )
-  text pad count dup if  (c)  else  2drop  then ;
+  text pad count dup if (c) else 2drop then ;
 
   \ doc{
   \
@@ -499,5 +498,7 @@ only forth definitions
   \
   \ 2018-02-04: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-02-27: Update source style (remove double spaces).
 
   \ vim: filetype=soloforth

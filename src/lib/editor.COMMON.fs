@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802041939
+  \ Last modified: 201802271734
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -39,7 +39,7 @@ variable r#
   \
   \ }doc
 
-: top ( -- ) r# off ;  top
+: top ( -- ) r# off ; top
 
   \ doc{
   \
@@ -62,5 +62,7 @@ variable r#
   \
   \ 2018-02-04: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-02-27. Update source style (remove double spaces).
 
   \ vim: filetype=soloforth
