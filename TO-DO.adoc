@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-02-14
+:revdate: 2018-02-28
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -407,6 +407,11 @@ Implement Gforth's `]]`  and `[[`.
 // Control structures {{{1
 == Control structures
 
+=== 2018-02-19
+
+Add `endit` to `for step` loops.
+`endit` is borrowed from FlashForth.
+
 === 2018-01-03
 
 Add a no-return version of `execute`.
@@ -615,7 +620,6 @@ Rename `name>str` `name>string` (after Gforth)?
 
 Rename `line>string` `line>str`?
 
-
 === 2017-12-12, 2017-12-18
 
 Improve `>oldest-name` and friends?
@@ -634,7 +638,6 @@ Options:
 . Combine both: create a deferred word but set a bit of its header.
   The execution token of an alias will be different from its original.
   Con: delay of the additional jump.
-
 
 // Display {{{1
 == Display
@@ -1236,6 +1239,10 @@ Move the Z80-symbol constants to the assembler word list.
 
 // +3DOS {{{2
 === +3DOS ===
+
+=== 2018-02-14
+
+Fix `cat`.
 
 === 2017-03-05
 
@@ -1977,7 +1984,6 @@ Idea:
 `n!` and `n@` already exist in the library, but the order of the values is
 reversed. They could be renamed `-n!` and `-n@`.
 
-
 === 2017-12-14
 
 Idea from Walter Elehew's L.O.V.E. Forth, 1991:
@@ -2171,17 +2177,23 @@ Study the way v.Forth manages the interrupts and adapt it.
 // Library {{{1
 == Library
 
-== 2018-02-14
+== 2018-02-14, 2018-02-28
 
 One 640-KiB TR-DOS disk is barely enough to contain the library.
 
-Some ways to compact the code:
+To compact the code:
 
 - Implement the parsing version of `(` for block headers. This will
   allow headers longer than one line, thus fitting more short but
   long-name words into one block.
 - Move the stack comments to a meta comment below the code. This will
   make many one-liners fit one line.
+- Use `needing X 0(` instead of `[unneeded] X ?(`, i.e. with
+  zero-version of the conditional comments.
+
+To save some blocks:
+
+- Move the sound editor to the games and editors disk.
 
 Another, definitive solution is to split the library into two disks,
 for TR-DOS.  But then the usage instructions of TR-DOS will be
@@ -2189,7 +2201,7 @@ different than G+DOS and +3DOS.
 
 === 2018-01-21
 
-Idea:
+NOTE: Milestone: 0.14.0
 
 Rename `[needed]` `needing` and make it non-immediate.
 Write an immediate optional version `[needing]`.
@@ -2199,10 +2211,6 @@ immediate optional version `[unneeding]`.
 
 The new names seem better, since `needed` already exists as the
 non-parsing version of `need`.
-
-Some space would be saved in the library sources by using `needing X
-0(` instead of `[unneeded] X ?(`, i.e. with zero-version of the
-conditional comments.
 
 === 2017-03-28, 2017-09-09
 
@@ -2486,7 +2494,6 @@ From LaForth:
 : get ( x n -- ) cell+ cells sp@ + @ ; \ = pick
 ----
 
-
 === 2017-03-29, 2017-05-10
 
 Use the code of `rp@` as storage of the pointer. This save one cell
@@ -2533,6 +2540,10 @@ calls.
 
 // Sound {{{1
 == Sound
+
+== 2018-02-19
+
+Write `sound-write-port` and `sound-register-port` in Z80.
 
 === 2017-05-05
 
@@ -2589,7 +2600,6 @@ From CHForth's <MAKEHELP.FRT>:
         THEN
     ;
 ----
-
 
 === 2017-12-02
 
@@ -2826,7 +2836,6 @@ NOTE: Milestone: 0.15.0
 === 2015-06-30
 
 Change: compare the user variables with those of Spectrum Forth-83.
-
 
 // Vim support {{{1
 == Vim support
