@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802141335
+  \ Last modified: 201803012336
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -177,7 +177,7 @@ defer located ( ca len -- block | false ) -->
   \
   \ }doc
 
-( ?located reneeded reneed needed-word [needed] [unneeded] )
+( ?located reneeded reneed needed-word [unneeded] )
 
 2variable needed-word  0. needed-word 2!
 
@@ -278,24 +278,9 @@ defer reneed ( "name" -- )  defer needed ( ca len -- )
   \
   \ }doc
 
-: [needed] ( "name" -- f )
+: [unneeded] ( "name" -- f )
   parse-name needed-word 2@ 2dup or
-  if  compare 0= exit  then  2drop 2drop true ; immediate
-
-  \ doc{
-  \
-  \ [needed] ( "name" -- f )
-  \
-  \ Parse _name_.  If there's no unresolved `need`, `needed`,
-  \ `reneed` or `reneeded`, return _true_.  Otherwise, if _name_
-  \ is the needed word specified by the last execution of
-  \ `need` or `needed`, return _true_, else return _false_.
-  \
-  \ ``[needed]`` is an `immediate` word.
-  \
-  \ }doc
-
-: [unneeded] ( "name" -- f ) postpone [needed] 0= ; immediate
+  if compare 0<> exit then 2drop 2drop false ; immediate
 
   \ doc{
   \
@@ -307,6 +292,8 @@ defer reneed ( "name" -- )  defer needed ( ca len -- )
   \ `need` or `needed`, return _false_, else return _true_.
   \
   \ ``[unneeded]`` is an `immediate` word.
+  \
+  \ See: `[needed]`.
   \
   \ }doc
 
@@ -465,7 +452,24 @@ need use-default-need need  use-default-located
   \
   \ }doc
 
-( locate need-from need-here )
+( [needed] locate need-from need-here )
+
+: [needed] ( "name" -- f ) postpone [unneeded] 0= ; immediate
+
+  \ doc{
+  \
+  \ [needed] ( "name" -- f )
+  \
+  \ Parse _name_.  If there's no unresolved `need`, `needed`,
+  \ `reneed` or `reneeded`, return _true_.  Otherwise, if _name_
+  \ is the needed word specified by the last execution of
+  \ `need` or `needed`, return _true_, else return _false_.
+  \
+  \ ``[needed]`` is an `immediate` word.
+  \
+  \ See: `[unneeded]`.
+  \
+  \ }doc
 
 [unneeded] locate ?(
 : locate ( "name" -- block | false )
@@ -699,5 +703,8 @@ need use-default-need need  use-default-located
   \
   \ 2018-02-14: Comment out `(.info` and `checkpoint`, saving
   \ one block.
+  \
+  \ 2018-03-01: Make `[needed]` optional. Improve
+  \ documentation.
 
   \ vim: filetype=soloforth

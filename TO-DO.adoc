@@ -2213,9 +2213,6 @@ an immediate optional version `[unneeding]`.
 The new names seem better, since `needed` already exists as the
 non-parsing version of `need`.
 
-Rewrite `unneeding` after `[needed]` (`needing`) and remove this one, which is
-almost useless.
-
 === 2017-03-28, 2017-09-09
 
 Move words from <chars.fs> to <strings.MISC.fs>?
