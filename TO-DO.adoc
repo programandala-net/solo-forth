@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-02-28
+:revdate: 2018-03-01
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1600,10 +1600,11 @@ way.
 
 Use `_jump` macros at the end of `umax`, `umin`, `dabs`, `abs`, etc.
 
-=== 2016-04-24, 2017-05-06, 2017-12-09, 2018-01-03
+=== 2016-04-24, 2017-05-06, 2017-12-09, 2018-01-03, 2018-03-01
 
-Words that can be moved to the library: `[defined]`, `[undefined]`,
-`umin`, `umax`, `char+`, `char-`...
+Words that can be moved to the library: 
+`umin`, `umax`, `char+`, `char-`, `break-key?`,
+`default-break-key?`...
 
 Study how to move `line>string` and `undefined?` to the library.  They
 are not used in the kernel, but they are needed by the `need` utility.
@@ -2199,18 +2200,21 @@ Another, definitive solution is to split the library into two disks,
 for TR-DOS.  But then the usage instructions of TR-DOS will be
 different than G+DOS and +3DOS.
 
-=== 2018-01-21
+=== 2018-01-21, 2018-03-01
 
 NOTE: Milestone: 0.14.0
 
 Rename `[needed]` `needing` and make it non-immediate.
 Write an immediate optional version `[needing]`.
 
-Rename `[unneeded]` `unneeding` and make it non-immediate.  Write an
-immediate optional version `[unneeding]`.
+Rename `[unneeded]` `unneeding` (`ignoring`?) and make it non-immediate.  Write
+an immediate optional version `[unneeding]`.
 
 The new names seem better, since `needed` already exists as the
 non-parsing version of `need`.
+
+Rewrite `unneeding` after `[needed]` (`needing`) and remove this one, which is
+almost useless.
 
 === 2017-03-28, 2017-09-09
 
