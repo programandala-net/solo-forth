@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802041830
+  \ Last modified: 201803030038
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -26,6 +26,7 @@
 ( dos-in dos-out dos-in, dos-out, )
 
 [unneeded] dos-in
+
 ?\ code dos-in ( -- ) DB c, #231 c, jpnext, end-code
   \ in a,(231)
   \ _jp_next
@@ -41,6 +42,7 @@
   \ }doc
 
 [unneeded] dos-out
+
 ?\ code dos-out ( -- ) D3 c, #231 c, jpnext, end-code
   \ out (231),a
   \ _jp_next
@@ -56,6 +58,7 @@
   \ }doc
 
 [unneeded] dos-in,
+
 ?\ need macro  macro dos-in, ( -- ) DB c, #231 c, endm
   \ in a,(231)
 
@@ -71,6 +74,7 @@
   \ }doc
 
 [unneeded] dos-out,
+
 ?\ need macro  macro dos-out, ( -- ) D3 c, #231 c, endm
   \ out (231),a
 
@@ -131,6 +135,7 @@
   \ }doc
 
 [unneeded] >ufiax ?( need /ufia need dos-in need dos-out
+
 : >ufiax ( a a -- ) /ufia dos-in cmove dos-out ; ?)
 
   \ doc{
@@ -147,6 +152,7 @@
   \ }doc
 
 [unneeded] >ufia1
+
 ?\ need ufia1 need >ufiax : >ufia1 ( a -- ) ufia1 >ufiax ;
 
   \ XXX TODO --
@@ -165,6 +171,7 @@
   \ }doc
 
 [unneeded] >ufia2
+
 ?\ need ufia2 need >ufiax : >ufia2 ( a -- ) ufia2 >ufiax ;
 
   \ doc{
@@ -325,17 +332,14 @@ ufia 22 + constant hd11    \ BASIC autorun line
 
 ( get-drive )
 
-[unneeded] get-drive ?(
+[unneeded] get-drive ?( need dos-in, need dos-out,
 
-need assembler need dos-in, need dos-out,
-
-code get-drive ( -- n )
-  b push,  \ save the Forth IP
-  dos-in, 3ACE fta, dos-out,
-  b pop, next ix ldp#,  \ restore the Forth registers
-  pusha jp, end-code ?)
-
-  \ XXX TODO -- Rewrite in Z80 opcodes.
+code get-drive ( -- n ) dos-in, 3A c, 3ACE , dos-out, pusha jp,
+    \ in a,(231)
+    \ ld a,($3ACE)
+    \ out (231),a
+    \ jp push_a
+  end-code ?)
 
   \ XXX TODO -- Check this method:
   \ bit 0 of 3DD1
@@ -345,6 +349,13 @@ code get-drive ( -- n )
   \ get-drive ( -- n )
   \
   \ Get the current drive _n_ (1 or 2).
+  \
+  \ ``get-drive`` is written in Z80.  Its equivalent definition
+  \ in Forth is the following:
+  \
+  \ ----
+  \ : get-drive ( -- n ) dos-in $3ACE c@ dos-out ;
+  \ ----
   \
   \ See: `set-drive`.
   \
@@ -563,7 +574,7 @@ code (file>) ( ca len -- ior )
   \ Therefore, its original address is 16384 and its original
   \ size is 6912 bytes.
   \
-  \ Now there are four ways to load the file from disk:
+  \ Now there are several ways to load the file from disk:
 
   \ |===
   \ | Example                        | Result
@@ -635,6 +646,7 @@ code (file-status) ( -- a ior )
 ( file-exists? file-start file-length file-type find-file )
 
 [unneeded] file-exists?  ?( need file-status
+
 : file-exists? ( ca len -- f ) file-status nip 0= ; ?)
 
   \ doc{
@@ -704,6 +716,7 @@ code (file-status) ( -- a ior )
   \ }doc
 
 [unneeded] find-file  ?( need file-status
+
 : find-file ( ca len -- a | 0 ) file-status 0= and ; ?)
 
   \ doc{
@@ -940,14 +953,14 @@ code cd0 ( -- ior )
 
 code ((cat ( -- ior )
   C5 c, CF c, pcat c, C1 c, DD c, 21 c, next , F5 c,
-  \ push bc
-  \ rst $08
-  \ defb pcat
-  \ pop bc
-  \ ld ix,next
-  \ push af
+    \ push bc
+    \ rst $08
+    \ defb pcat
+    \ pop bc
+    \ ld ix,next
+    \ push af
   ' dosior>ior jp, end-code
-  \ jp dos_ior_to_ior_
+    \ jp dos_ior_to_ior_
 
   \ doc{
   \
@@ -983,6 +996,7 @@ code ((cat ( -- ior )
   \ }doc
 
 [unneeded] wcat ?( need set-filename need (cat
+
 : wcat ( ca len -- ) set-filename $14 (cat ; ?)
 
   \ doc{
@@ -998,6 +1012,7 @@ code ((cat ( -- ior )
   \ }doc
 
 [unneeded] wacat ?( need set-filename need (cat
+
 : wacat ( ca len -- ) set-filename $12 (cat ; ?)
 
   \ doc{
@@ -1455,5 +1470,8 @@ code (rename-file ( -- ior )
   \
   \ 2018-02-04: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-03: Update source layout details. Improve
+  \ `get-drive`.
 
   \ vim: filetype=soloforth
