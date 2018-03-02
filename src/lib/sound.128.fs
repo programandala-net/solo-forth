@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801232122
+  \ Last modified: 201803022250
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -337,7 +337,7 @@ set-current previous
   \
   \ Play a 14-byte sound definition stored at _ca_.
   \
-  \ See: `sound,`, `sound`, `!sound`.
+  \ See: `sound,`, `sound`, `!sound`, `edit-sound`.
   \
   \ }doc
 
@@ -368,7 +368,7 @@ set-current previous
   \ Create a word _name_ that will play the 14-byte sound
   \ defined by _b[0]..b[13]_.
   \
-  \ See: `sound,`, `play`.
+  \ See: `sound,`, `play`, `edit-sound`.
   \
   \ }doc
 
@@ -678,9 +678,9 @@ decimal
 
   \ Credit:
   \
-  \ `explosion1` and `explosion2` are adapted from the SE BASIC
-  \ manual, page 10, where they were taken from the Timex
-  \ Sinclair TS2068 User Manual.
+  \ `explosion1-sound` and `explosion2-sound` are adapted from
+  \ the SE BASIC manual, page 10, where they were taken from
+  \ the Timex Sinclair TS2068 User Manual.
   \
   \ XXX FIXME -- 2016-10-10: Finish the conversion: Registers
   \ not specified in the examples are set to zero, but they
@@ -747,5 +747,9 @@ decimal
   \
   \ 2018-01-23: Update source style.  Rename all sounds defined
   \ with `sound`: add suffix "-sound".
+  \
+  \ 2018-03-01: Improve documentation.
+  \
+  \ 2018-03-02: Fix word names in credit note.
 
   \ vim: filetype=soloforth
