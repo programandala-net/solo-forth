@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802041824
+  \ Last modified: 201803011813
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -167,11 +167,11 @@ code call ( a -- )
   \ : test ( -- )
   \     begin
   \       ...
-  \     flag ?repeat  \ Go back to `begin` if flag is non-zero
+  \     flag ?repeat  \ Go back to ``begin`` if flag is non-zero
   \       ...
-  \     flag 0repeat  \ Go back to `begin` if flag is zero
+  \     flag 0repeat  \ Go back to ``begin` if flag is zero
   \       ...
-  \     flag until    \ Go back to `begin` if flag is false
+  \     flag until    \ Go back to ``begin`` if flag is false
   \     ...
   \   ;
   \ ----
@@ -654,5 +654,8 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \
   \ 2018-02-04: Fix documentation layout. Improve
   \ documentation: add pronunciation to words that need it.
+  \
+  \ 2018-03-01: Fix undesired links in documentation of
+  \ `0repeat`.
 
   \ vim: filetype=soloforth

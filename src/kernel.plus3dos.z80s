@@ -1257,7 +1257,6 @@ set_drive.end
 
 endif
 
-
 ; ----------------------------------------------
   _code_header ref_xdbp_,'ref-xdpb'
 

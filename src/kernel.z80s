@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201802021611
+; Last modified: 201803021858
 
 include version.z80s
 
@@ -1837,7 +1837,7 @@ far.hl.mod:
 
 ; NOTE: ``perform`` is called ``@execute`` in other Forth systems.
 ;
-; See: `execute`.
+; See: `execute`, `+perform`.
 ;
 ; }doc
 
@@ -4171,7 +4171,7 @@ skip.end:
 ; interpreting characters 128 .. 255 its own way,
 ; `mode-32iso-emit` can be used instead.
 ;
-; See: `set-font`, `set-udg`.
+; See: `current-mode`, `mode-32`, `set-font`, `set-udg`.
 ;
 ; }doc
 
@@ -4272,7 +4272,9 @@ emit_udg.address:
 ;
 ; emit ( x -- )
 ;
-; Display character _x_.
+; If _x_ is a graphic character in the character set used by the
+; current display mode, display it.  If _x_ is a control
+; character used by the current display mode, manage it.
 ;
 ; ``emit`` is a deferred word whose default action is
 ; `mode-32-emit`.
@@ -4280,7 +4282,7 @@ emit_udg.address:
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See: `emit-udg`, `g-emit-udg`, `defer`.
+; See: `current-mode`, `emit-udg`, `g-emit-udg`, `defer`.
 ;
 ; }doc
 
@@ -10680,12 +10682,14 @@ compare.end:
 
                               ; Exchange DE and BC:
 if size_optimization
+
   push de
   push bc
   pop de                      ; DE = Forth IP
   pop bc                      ; HL/BC=substring
                               ; 42 T 04 B
 else
+
   ld a,e
   ld e,c
   ld c,a
@@ -12053,6 +12057,7 @@ if 1 ; developing
   dw exit_
 
 endif
+
 ; ----------------------------------------------
   _defer_header boot_,'boot',,noop_
 
