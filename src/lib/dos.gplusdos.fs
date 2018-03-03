@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803030038
+  \ Last modified: 201803030106
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1061,19 +1061,19 @@ code ((cat ( -- ior )
 
 ( back-from-dos-error_ )
 
-need assembler need dos-out,
+need dos-out,
 
 create back-from-dos-error_ ( -- a ) asm
-  168E call, dos-out, b pop, next ix ldp#,
-    \ $168E=BORD_REST (restore the border).
-    \ Page out the Plus D memory.
-    \ Restore the Forth registers.
-  0000 h ldp#, 2066 h stp,
-    \ Clear G+DOS D_ERR_SP.
-  a push, ' dosior>ior jp, end-asm
-    \ Return the ior.
-
-  \ XXX TODO -- Rewrite with Z80 opcodes.
+  168E call, dos-out, C1 c, DD c, 21 c, next ,
+    \ call $168E          ; BORD_REST (restore the border)
+    \ out (231),a         ; page out the Plus D memory
+    \ pop bc              ; restore Forth IP
+    \ ld ix,next          ; restore IX
+  21 c, 0000 , 22 c, 2066 , F5 c, ' dosior>ior jp, end-asm
+    \ ld hl,0
+    \ ld ($2066),hl       ; clear G+DOS D_ERR_SP
+    \ push af
+    \ jp dos_ior_to_ior_  ; return the ior.
 
   \ XXX TODO -- Use G+DOS routine HOOK_RET at $22C8 to do all
   \ at once.
@@ -1472,6 +1472,7 @@ code (rename-file ( -- ior )
   \ words that need it.
   \
   \ 2018-03-03: Update source layout details. Improve
-  \ `get-drive`.
+  \ `get-drive`.  Rewrite `back-from-dos-error_` with Z80
+  \ opcodes.
 
   \ vim: filetype=soloforth
