@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802041938
+  \ Last modified: 201803022344
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1035,7 +1035,7 @@ need fda-basic? need fda-empty? need fda-deleted?
   6 fda-basic? if spaces else fda-filestart @ swap u.r then
   fda-filelength @ 6 u.r cr ;
 
-  \ XXX TODO -- Add the BASIC autorun line. The problem is that
+  \ XXX TODO -- Add the BASIC autorun line. The problem is the
   \ information is not in File Descriptor Area, but at the
   \ start of the file contents, on its first sector. See TR-DOS
   \ routine at $131B.
@@ -1072,7 +1072,7 @@ need fda-basic? need fda-empty? need fda-deleted?
 : cat ( -- )
   read-system-track throw  cr
   files/disk 0 ?do i read-file-descriptor throw
-                   fda-empty? if unloop exit then i ?cat-fda
+                   fda-empty? if leave then i ?cat-fda
                loop ;
 
   \ XXX TODO -- Improve: `read-file-descriptor` reads the
@@ -1225,5 +1225,7 @@ need read-file-descriptor need write-file-descriptor
   \
   \ 2018-02-04: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-02: Improve `cat`.
 
   \ vim: filetype=soloforth
