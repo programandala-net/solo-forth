@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201803021858
+; Last modified: 201803041707
 
 include version.z80s
 
@@ -10302,9 +10302,9 @@ far_place.copy_char:
 ; : error ( n -- )
 ;   dup error-number !
 ;   >in @ blk @ error-pos 2!
-;   dup -1 = if  (abort)  then
-;   dup -2 = if  space abort-message 2@ type (abort)  then
-;   .error-word .throw  (abort) ;
+;   dup -1 = if (abort) then
+;   dup -2 = if space abort-message 2@ type (abort) then
+;   .error-word .throw (abort) ;
 ; ----
 
 ; See: `abort-message`.
@@ -11784,7 +11784,7 @@ question_paren.exit:
 
 ; ----
 ; : quit ( -- )
-;   rp0 @ rp!  postpone [
+;   rp0 @ rp! postpone [
 ;   begin
 ;     cr query interpret
 ;     interpreting? if ok then
@@ -12218,50 +12218,6 @@ warm_start:
   ; The first part of `cold` contains the initialization actions
   ; that need less bytes in Z80 than in Forth.
 
-if plus3dos
-
-  ; Set memory banks for +3DOS
-
-  ; XXX TODO -- Move the following explanation into the +3DOS
-  ; version of the manual:
-
-  ; +3DOS uses RAM banks 1, 3, 4 and 6 as an array of 128 sector
-  ; buffers (numbered 0 .. 127), each of 512 bytes, thus 32
-  ; buffers per RAM bank. The cache and RAM disk occupy two
-  ; separate (contiguous) areas of this array.
-  ;
-  ; The default configuration of +3DOS is the following:
-
-  ; |===
-  ; | Usage     | First buffer | Number of buffers | KiB
-  ;
-  ; | Cache    >|          32 >|                8 >|  4
-  ; | RAM disk >|          40 >|               88 >| 44
-  ;
-  ; | Total     |             >|              176 >| 48
-  ; |===
-
-  ;
-  ; In order to free 3 RAM banks for the Forth name space, and
-  ; still keep a small RAM disk, the default configuration is
-  ; modified the following way:
-
-  ; |===
-  ; | Usage     | First buffer | Number of buffers | KiB
-  ;
-  ; | Cache    >|          96 >|                8 >|  4
-  ; | RAM disk >|         104 >|               24 >| 12
-  ;
-  ; | Total     |             >|               32 >| 16
-  ; |===
-
-  ld de,$6008 ; $08 sectors for the cache, from sector $60
-  ld hl,$6818 ; $18 sectors for the RAM disk, from sector $68
-  ld ix,dos_set_1346 ; set RAM pages 1, 3, 4 and 6
-  call dos.ix
-
-endif
-
   ; Init `farlimit`:
   if !plus3dos
     ld hl,$0000 ; use 64 KiB
@@ -12307,6 +12263,11 @@ cold.hash_words: equ $+1
 
   ; The Second part of `cold` contains the initialization actions
   ; that need less bytes in Forth than in Z80.
+
+if plus3dos
+  ; Set the default configuration of memory banks for +3DOS:
+  dw default_1346_
+endif
 
   ; Init the memory configuration:
   dw limit_,off_
@@ -15476,7 +15437,7 @@ execute_hl:
 ; : throw ( k*x n -- k*x | i*x n )
 ;   ?dup if
 ;     catcher @ ?dup 0=   \ no catcher?
-;     if  error  then     \ `error` does not return
+;     if error then       \ `error` does not return
 ;     rp!                 \ restore previous return stack
 ;     r> catcher !        ( n ) \ restore previous catcher
 ;     r> swap >r          ( saved-SP ) ( R: n )

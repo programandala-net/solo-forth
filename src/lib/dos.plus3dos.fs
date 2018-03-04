@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802142053
+  \ Last modified: 201803041709
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -172,7 +172,7 @@ code get-1346 ( -- n1 n2 n3 n4 )
   \ _n4_ :: number of RAM disk sector buffers
 
   \
-  \ See: `set-1346`.
+  \ See: `set-1346`, `default-1346`, `bank`.
   \
   \ }doc
 
@@ -211,7 +211,7 @@ code set-1346 ( n1 n2 n3 n4 -- )
   \ _n4_ :: number of RAM disk sector buffers
 
   \
-  \ See: `get-1346`.
+  \ See: `get-1346`, `default-1346`, `bank`.
   \
   \ }doc
 
@@ -1226,5 +1226,8 @@ code read-file  ( ca len1 fid -- len2 ior )
   \
   \ 2018-02-14: Add `bank-write-file` and `write-file`. Prepare
   \ `bank-read-file` and `read-file`.
+  \
+  \ 2018-03-04: Update documentation of `set-1346` and
+  \ `get-1346`.
 
   \ vim: filetype=soloforth

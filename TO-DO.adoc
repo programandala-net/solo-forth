@@ -875,6 +875,13 @@ Improve tab control.
 // Documentation {{{1
 == Documentation
 
+== 2018-03-04
+
+How a link to `default-1346` (a +3DOS-only word) can be included in
+the documentation of `far-banks` (a DOS-independent word)? The link
+would be broken in G+DOS and TR-DOS. Fake glossary entries could be
+created it them, with a note: "not available".
+
 === 2017-12-14
 
 Remove "implementation-dependent". See `:`.
@@ -1275,12 +1282,6 @@ Move the Z80-symbol constants to the assembler word list.
 
 // +3DOS {{{2
 === +3DOS ===
-
-=== 2018-03-04
-
-NOTE: Milestone: 0.14.0
-
-Factor `default-1346` from `cold`.
 
 === 2018-02-14
 
