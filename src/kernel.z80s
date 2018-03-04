@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201803041707
+; Last modified: 201803041739
 
 include version.z80s
 
@@ -6113,6 +6113,30 @@ two_store.into_hl_pointer:
   endif
 
 ; ----------------------------------------------
+  _colon_header default_display_,'default-display'
+
+  dw default_mode_,default_font_,default_colors_
+  dw exit_
+
+; doc{
+;
+; default-display ( -- )
+;
+; Set the default values of the display: mode, font and colors.
+; ``default-display`` is executed by `cold`.
+;
+; Definition:
+
+; ----
+; : default-display ( -- )
+;   default-mode default-font default-colors ;
+; ----
+
+; See: `default-mode`, `default-font`, `default-colors`.
+;
+; }doc
+
+; ----------------------------------------------
   _code_header default_font_,'default-font'
 
 ; doc{
@@ -6122,7 +6146,8 @@ two_store.into_hl_pointer:
 ; Set the default font, which is the ROM font, by setting the
 ; system variable `os-chars` to 15360 ($3C00).
 ;
-; See: `set-font`, `rom-font`.
+; See: `set-font`, `rom-font`, `default-display`,
+; `default-mode`, `default-colors`.
 ;
 ; }doc
 
@@ -12302,9 +12327,7 @@ endif
   dw decimal_
 
   ; Set the screen to its default status:
-  dw terminal_
-  dw default_mode_,reset_default_mode_
-  dw default_font_,default_colors_
+  dw terminal_,default_display_,reset_default_mode_
 
   ; Display the greeting message:
 cold.home:
@@ -14670,7 +14693,8 @@ system_stack_pointer:
 ; set to `noop` until the first mode change is done. Then it's
 ; vectored to `mode-32`.  It's used by `bye` and `cold`.
 ;
-; See: `reset-default-mode`, `defer`.
+; See: `reset-default-mode`, `defer`, `default-display`,
+; `default-font`, `default-colors`.
 ;
 ; }doc
 
@@ -14681,8 +14705,8 @@ system_stack_pointer:
 ;
 ; reset-default-mode ( -- )
 ;
-; Set `default-mode` to its default action `noop`.  It's used by
-; `cold`.
+; Set `default-mode` to its default action `noop`.
+; ``reset-default-mode`` is executed by `cold`.
 ;
 ; }doc
 
@@ -15110,6 +15134,8 @@ mode_32_xy.end:
 ; default-colors ( -- )
 ;
 ; Set the screen colors to the default values.
+;
+; See: `default-display`, `default-mode`, `default-font`.
 ;
 ; }doc
 
