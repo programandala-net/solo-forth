@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-03-03
+:revdate: 2018-03-04
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -642,6 +642,17 @@ Options:
 // Display {{{1
 == Display
 
+=== 2018-03-04
+
+NOTE: Milestone: 0.14.0
+
+Factor `default-display` from `cold`:
+
+----
+: default-display ( -- )
+  default-mode reset-default-mode default-font default-colors ;
+----
+
 === 2018-02-10
 
 Rename `papery` `ink>paper` or `>paper`?
@@ -1264,6 +1275,12 @@ Move the Z80-symbol constants to the assembler word list.
 
 // +3DOS {{{2
 === +3DOS ===
+
+=== 2018-03-04
+
+NOTE: Milestone: 0.14.0
+
+Factor `default-1346` from `cold`.
 
 === 2018-02-14
 
