@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801081732
+  \ Last modified: 201802141916
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -22,6 +22,25 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( write-file-test )
+
+  \ XXX UNDER DEVELOPMENT
+
+need create-file need r/w need open-file need write-file
+need read-file need delete-file
+
+: text$ ( -- ca len ) s" En un lugar de La Mancha" ;
+
+: file$ ( -- ca len ) s" test.txt" ;
+
+file$ r/w create-file throw constant file-id
+
+text$ file-id write-file throw
+
+file-id close-file throw
+
+file-id open-file throw !> file-id
 
 ( ,udg-block-test )
 
@@ -1623,5 +1642,7 @@ blk @ 1+ blk @ 2+ thru
   \ `>name-test1`.
   \
   \ 2018-01-08: Add `udg-block-test`, `,udg-block-test`.
+  \
+  \ 2018-02-14: Start `file-write-test`.
 
   \ vim: filetype=soloforth

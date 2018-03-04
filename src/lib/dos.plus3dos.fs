@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802041934
+  \ Last modified: 201802142053
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -979,6 +979,205 @@ need (cat need tab need 3dup need 3drop
   \
   \ }doc
 
+( bank-write-file write-file )
+
+[unneeded] bank-write-file ?(
+
+code bank-write-file ( ca len fid +n -- ior )
+
+  E1 c, 78 05 + c, save-ip_ call,
+    \ pop hl ; l = bank
+    \ ld a,l
+    \ bank_write_file_.a:
+    \ call save_ip
+  48 07 + c, E1 c, 40 05 + c, D1 c, E1 c, DD c, 21 c, 0115 ,
+    \ ld c,a
+    \ pop hl
+    \ ld b,l ; fid
+    \ pop de ; len
+    \ pop hl ; ca
+    \ ld ix,dos_write ; $0115
+  dos-ix_ call, restore-ip_ call, pushdosior jp, end-code ?)
+    \ call dos.ix
+    \ call restore_ip
+    \ jp push_dos_ior
+
+  \ Credit:
+  \ Adapted from DZX-Forth.
+
+  \ doc{
+  \
+  \ bank-write-file ( ca len fid +n -- ior )
+  \
+  \ Write _len_ characters from address _ca_ to the file
+  \ identified by _fid_ starting at its current position, while
+  \ memory bank _+n_ is paged in addresses $C000..$FFFF.
+  \ Return input/output result _ior_.
+  \
+  \ See: `write-file`, `bank`, `create-file`, `open-file`.
+  \
+  \ }doc
+
+[unneeded] write-file ?( need bank-write-file
+
+code write-file ( ca len fid -- ior )
+  3A c, 5B5C , E6 c, %111 c, ' bank-write-file 2+ jp,
+  end-code ?)
+  \ ld a,(sys_bankm) ; $5B5C
+  \ and %111 ; current page for 0xC000..0xFFFF
+  \ jp bank_write_file_.a
+
+  \ Credit:
+  \ Adapted from DZX-Forth.
+
+  \ doc{
+  \
+  \ write-file ( ca len fid -- ior )
+  \
+  \ Write _len_ characters from address _ca_ to the file
+  \ identified by _fid_ starting at its current position.
+  \ Return input/output result _ior_.
+  \
+  \ See: `bank-write-file`, `create-file`, `open-file`.
+  \
+  \ }doc
+
+( bank-read-file read-file )
+
+  \ XXX UNDER DEVELOPMENT
+
+[unneeded] bank-read-file ?(
+
+code bank-read-file  ( ca len fid +n -- ior )
+  \ XXX TODO --
+
+  \ XXX FIXME
+  \
+  \ +3DOS causes EOF error when the desired length is beyond
+  \ the end of file (not counting the padding 0x1A at the end).
+  \ This makes it impossible to behave according to Forth-94.
+  \
+  \ Solution: check the file position at the start.
+
+  \   pop hl ; l = bank
+  \   ld a,l
+  \ page_read_file_.a:
+  \   call save_ip
+  \   ld c,a
+  \   pop hl
+  \   ld b,l  ; fid
+  \   pop de  ; len
+  \   pop hl  ; ca
+  \   push de ; len
+  \   ld ix,dos_read
+  \   call dos
+  \   pop hl ; len
+  \   call restore_ip
+  \   jr c,page_read_file_.no_error
+
+  \   ; error
+  \   ; hl = len
+  \   ; a = error code
+  \   ; de = number of bytes remaining unread
+
+  \   push af
+  \   call hl_minus_de_to_hl
+  \   ; hl = bytes actually read
+  \   pop af
+  \   cp 21 ; is it "bad parameter"? XXX TODO label
+  \   jr z, page_read_file_.no_error
+  \   push hl
+  \   jp back_from_dos.error
+
+  \ page_read_file_.no_error:
+  \   ; no error
+  \   ; hl = len
+  \   push hl
+  \   jp false_
+
+  end-code ?)
+
+  \
+  \ bank-read-file ( ca len fid +n -- ior )
+  \
+  \ Read _len_ consecutive  characters to  _ca_ from the
+  \ current position  of the  file identified by _fid_ with
+  \ bank _+n_ paged in address range $C000..$FFFF.
+  \
+  \ If _len1_ characters are read without an exception, _ior_
+  \ is zero and _len2_ is equal to _len1_.
+  \
+  \ If the end of the file is reached before _len1_ characters
+  \ are read, _ior_ is zero and _len2_ is the number of
+  \ characters actually read.
+  \
+  \ If the operation is initiated when the value returned by
+  \ `file-position` is equal to the value returned by
+  \ `file-size` for the file identified by fileid, _ior_ is
+  \ zero and _len2_ is zero.
+  \
+  \ If an exception occurs, _ior_ is the implementation-defined
+  \ I/O result code, and _len2_ is the number of characters
+  \ transferred to _ca_ without an exception.
+  \
+  \ An ambiguous condition exists if the operation is initiated
+  \ when the value returned by `file-position` is greater than
+  \ the value returned by `file-size` for the file identified
+  \ by fileid, or if the requested operation attempts to read
+  \ portions of the file not written.
+  \
+  \ At the conclusion of the operation, `file-position` returns
+  \ the next file position after the last character read.
+  \
+  \ See: `bank-read-file`, `open-file`, `write-file`.
+  \
+  \ XXX TODO -- Finish adapting the documentation.
+
+code read-file  ( ca len1 fid -- len2 ior )
+  3A c, 5B5C , E6 c, %111 c, ' bank-read-file 2+ jp,
+  end-code ?)
+  \ ld a,(sys_bankm) ; $5B5C
+  \ and %111 ; current page for 0xC000..0xFFFF
+  \ jp bank_write_file_.a
+
+  \ Credit:
+  \ Adapted from DZX-Forth.
+
+  \
+  \ read-file ( ca len1 fid -- len2 ior )
+  \
+  \ Read _len1_ consecutive  characters to  _ca_ from the
+  \ current position  of the  file identified by _fid_.
+  \
+  \ If _len1_ characters are read without an exception, _ior_
+  \ is zero and _len2_ is equal to _len1_.
+  \
+  \ If the end of the file is reached before _len1_ characters
+  \ are read, _ior_ is zero and _len2_ is the number of
+  \ characters actually read.
+  \
+  \ If the operation is initiated when the value returned by
+  \ `file-position` is equal to the value returned by
+  \ `file-size` for the file identified by fileid, _ior_ is
+  \ zero and _len2_ is zero.
+  \
+  \ If an exception occurs, _ior_ is the implementation-defined
+  \ I/O result code, and _len2_ is the number of characters
+  \ transferred to _ca_ without an exception.
+  \
+  \ An ambiguous condition exists if the operation is initiated
+  \ when the value returned by `file-position` is greater than
+  \ the value returned by `file-size` for the file identified
+  \ by fileid, or if the requested operation attempts to read
+  \ portions of the file not written.
+  \
+  \ At the conclusion of the operation, `file-position` returns
+  \ the next file position after the last character read.
+  \
+  \ See: `bank-read-file`, `open-file`, `write-file`.
+  \
+  \ XXX TODO -- Finish adapting the documentation.
+
   \ ===========================================================
   \ Change log
 
@@ -1024,5 +1223,8 @@ need (cat need tab need 3dup need 3drop
   \
   \ 2018-02-04: Fix documentation. Improve documentation: add
   \ pronunciation to words that need it.
+  \
+  \ 2018-02-14: Add `bank-write-file` and `write-file`. Prepare
+  \ `bank-read-file` and `read-file`.
 
   \ vim: filetype=soloforth
