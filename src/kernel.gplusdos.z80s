@@ -76,6 +76,13 @@ _colon_header dosior_to_ior_,'dosior>ior'
   dw and_               ; get upper 8 bits
   _literal 1000
   dw plus_,negate_,and_
+
+if 0 ; XXX TMP -- For debugging:
+  dw rp_fetch_,cr_,u_dot_ ; RP = 24660
+  _literal 5
+  dw border_,key_,drop_
+endif
+
   dw exit_
 
 ; ----------------------------------------------
@@ -316,6 +323,44 @@ transfer_mode:
   ; loading A with zero. If the drive number is correct, A is
   ; not loaded with an explicit value, but it's never zero at
   ; the end of the routine.
+
+; ----------------------------------------------
+  _code_header paren_paren_cat_,'((cat'
+
+  ; 2018-03-04 XXX TMP -- Copy of the library code, for debugging,
+
+if 1
+
+  ; Command code.
+
+  push bc
+  rst 8
+  defb $43 ; pcat command code
+  ; _z80_border_wait 2 ; this point is reached
+  pop bc
+  ld ix,next
+  push af ; $0D28 = no error
+  jp dosior_to_ior_
+
+  ; but exception #-5 (return stack overflow) is thrown
+
+else
+
+  ; Direct call.
+
+  push bc
+  in a,(231)
+  call $3154 ; pcat routine
+  out (231),a
+  ; _z80_border_wait 2 ; this point is reached
+  pop bc
+  ld ix,next
+  push af
+  jp dosior_to_ior_
+
+  ; but exception #-5 (return stack overflow) is thrown
+
+endif
 
 ; ==============================================================
 
