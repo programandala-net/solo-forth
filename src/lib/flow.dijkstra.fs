@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802021645
+  \ Last modified: 201803052055
 
   \ ===========================================================
   \ Description
@@ -30,17 +30,15 @@
 
 ( {if if} if> |if| )
 
-need cs-swap
+need cs-swap need cs-mark need thens
 
-: {if \ Compilation: ( -- 0 )
-  0 ; immediate compile-only
-
-  \ XXX TODO -- use `cs-mark`
+: {if \ Compilation: ( C: -- cs-mark )
+  cs-mark ; immediate compile-only
 
   \ doc{
   \
-  \ {if
-  \   Compilation: ( -- 0 )
+  \ {if "curly-bracket-if"
+  \   Compilation: ( -- cs-mark )
   \
   \ Start a ``{if`` control structure.
   \
@@ -48,29 +46,29 @@ need cs-swap
   \
   \ }doc
 
-: if> \ Compilation: ( count -- count+1 ) ( C: -- orig1 )
-  1+ >r postpone if r> ; immediate compile-only
+: if> \ Compilation: ( -- ) ( C: -- orig )
+  postpone if ; immediate compile-only
 
   \ doc{
   \
-  \ if>
-  \   Compilation: ( count -- count+1 )
-  \                ( C: -- orig1 )
+  \ if> "if-from"
+  \   Compilation: ( -- )
+  \                ( C: -- orig )
   \
   \ Part of the `{if` control structure.
   \
   \ }doc
 
 : |if|
-  \ ( count -- count )
+  \ ( -- )
   \ ( C: orig ... orig1 -- orig ... orig2 )
-  >r postpone ahead       \ new _orig_
-  cs-swap postpone then \ resolve old _orig_
-  r> ; immediate compile-only
+  postpone ahead        \ new _orig2_
+  cs-swap postpone then \ resolve old _orig1_
+  ; immediate compile-only
 
   \ doc{
   \
-  \ |if|
+  \ |if| "bar-if-bar"
   \   Compilation: ( count -- count )
   \                ( C: orig .. orig1 -- orig .. orig2 )
   \
@@ -79,18 +77,16 @@ need cs-swap
   \ }doc
 
 : if}
-  \ Compilation: ( count -- ) ( C: orig#1 .. orig#n -- )
-  >r postpone ahead
+  \ Compilation: ( -- ) ( C: cs-mark orig#1 .. orig#n -- )
+  postpone ahead
   cs-swap postpone then \ resolve old _orig_
-  -22 postpone literal postpone throw
+  #-22 postpone literal postpone throw
     \ -22 = "control structure mismatch"
-  r> 0 ?do postpone then loop ; immediate compile-only
-
-  \ XXX TODO -- use `thens`
+  postpone thens ; immediate compile-only
 
   \ doc{
   \
-  \ if}
+  \ if} "if-curly-bracket"
   \   Compilation: ( count -- )
   \                ( C: orig#1 .. orig#n -- )
   \
@@ -109,7 +105,7 @@ need cs-swap need cs-dup
 
   \ doc{
   \
-  \ {do
+  \ {do "curly-bracket-do"
   \   Compilation: ( C: -- dest )
   \   Run-time:    ( -- )
   \
@@ -125,7 +121,7 @@ need cs-swap need cs-dup
 
   \ doc{
   \
-  \ do>
+  \ do> "do-from"
   \   Compilation: ( C: dest -- orig dest )
   \
   \ Part of the `{do` control structure.
@@ -140,7 +136,7 @@ need cs-swap need cs-dup
 
   \ doc{
   \
-  \ |do|
+  \ |do| "bar-do-bar"
   \   Compilation: ( C: orig dest -- dest )
   \
   \ Part of the `{do` control structure.
@@ -156,7 +152,7 @@ need cs-swap need cs-dup
 
   \ doc{
   \
-  \ do}
+  \ do} "do-curly-bracket"
   \   Compilation: ( C: orig dest -- )
   \   Run-time:    ( -- )
   \
@@ -172,5 +168,11 @@ need cs-swap need cs-dup
   \ `cs-dup`.
   \
   \ 2018-02-02: Update notes.
+  \
+  \ 2018-02-04: Improve documentation: add pronunciation to
+  \ words that need it.
+  \
+  \ 2018-03-05: Finish the improved version of `{if`, which
+  \ uses `cs-mark` and `thens` instead of a counter.
 
   \ vim: filetype=soloforth

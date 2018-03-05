@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802141916
+  \ Last modified: 201803052134
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -113,21 +113,22 @@ cr .( Tank: ) .tank cr
 need {if
 
 : test1 ( x1 x2 --  )
-  ." {if --- test1" cr
+  cr ." {if --- test1: "
   {if  2dup = if> cr over . ." = " dup .
   |if| 2dup > if> cr over . ." > " dup .
   |if| 2dup < if> cr over . ." < " dup .
   if}  2drop ;
 
+5 0 test1 0 5 test1 5 5 test1
+
 : test2 ( x1 x2 --  )
-  ." {if --- test2" cr
+  cr ." {if --- test2: "
   {if  2dup > if> cr over . ." > " dup .
   |if| 2dup < if> cr over . ." < " dup .
   if}  2drop ;
 
-5 0 test1 0 5 test1 5 5 test1
-
-5 0 test2 0 5 test2 5 5 test2
+5 0 test2 0 5 test2
+5 5 test2 \ must throw exception #-22
 
 ( {do-test )
 
@@ -1644,5 +1645,7 @@ blk @ 1+ blk @ 2+ thru
   \ 2018-01-08: Add `udg-block-test`, `,udg-block-test`.
   \
   \ 2018-02-14: Start `file-write-test`.
+  \
+  \ 2018-03-05: Improve `{if-test`.
 
   \ vim: filetype=soloforth

@@ -416,13 +416,6 @@ Add `endit` to `for step` loops.
 
 Add a no-return version of `execute`.
 
-=== 2017-12-11
-
-NOTE: Milestone: 0.14.0
-
-Change `{if` and `if}` to use `cs-mark` and `thens` instead of a
-count.
-
 === 2017-12-07
 
 Rewrite `+perform` in Z80.
