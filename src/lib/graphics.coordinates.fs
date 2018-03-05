@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802151538
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -26,7 +26,7 @@
 ( g-xy g-x g-y g-at-xy g-at-x g-at-y g-home )
 
 
-[unneeded] g-xy ?( need os-coordx need os-coordy
+unneeding g-xy ?( need os-coordx need os-coordy
 : g-xy ( -- gx gy ) os-coordx c@ os-coordy c@ ; ?)
 
   \ doc{
@@ -39,7 +39,7 @@
   \
   \ }doc
 
-[unneeded] g-x
+unneeding g-x
 ?\ need os-coordx : g-x ( -- gx ) os-coordx c@ ;
 
   \ doc{
@@ -52,7 +52,7 @@
   \
   \ }doc
 
-[unneeded] g-y
+unneeding g-y
 ?\ need os-coordy : g-y ( -- gy ) os-coordy c@ ;
 
   \ doc{
@@ -65,7 +65,7 @@
   \
   \ }doc
 
-[unneeded] g-at-xy dup ?\ need os-coordx need os-coordy
+unneeding g-at-xy dup ?\ need os-coordx need os-coordy
 ?\ : g-at-xy ( gx gy -- ) os-coordy c! os-coordx c! ;
 
   \ doc{
@@ -78,7 +78,7 @@
   \
   \ }doc
 
-[unneeded] g-at-x
+unneeding g-at-x
 ?\ need os-coordx : g-at-x ( gx -- ) os-coordx c! ;
 
   \ doc{
@@ -92,7 +92,7 @@
   \
   \ }doc
 
-[unneeded] g-at-y
+unneeding g-at-y
 ?\ need os-coordy : g-at-y ( gy -- ) os-coordy c! ;
 
   \ doc{
@@ -106,7 +106,7 @@
   \
   \ }doc
 
-[unneeded] g-home
+unneeding g-home
 ?\ need os-coords  : g-home ( -- ) os-coords off ;
 
   \ doc{
@@ -133,6 +133,8 @@
   \
   \ 2018-02-15: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth
 

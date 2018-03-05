@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802041816
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( ud.r u.r ud. holds .00 .0000 )
 
-[unneeded] ud.r
+unneeding ud.r
 ?\ : ud.r ( ud n -- ) >r <# #s #> r> over - 0 max spaces type ;
 
   \ Credit:
@@ -45,7 +45,7 @@
   \
   \ }doc
 
-[unneeded] u.r ?( need u>ud need ud.r
+unneeding u.r ?( need u>ud need ud.r
 : u.r ( u n -- ) >r u>ud r> ud.r ; ?)
 
   \ Credit:
@@ -73,7 +73,7 @@
   \
   \ }doc
 
-[unneeded] ud. ?( need ud.r
+unneeding ud. ?( need ud.r
 : ud. ( ud -- ) 0 ud.r space ; ?)
 
   \ Credit:
@@ -90,7 +90,7 @@
   \
   \ }doc
 
-[unneeded] holds ?(
+unneeding holds ?(
 
 : holds ( ca len -- )
   begin  dup  while  1- 2dup + c@ hold  repeat 2drop ; ?)
@@ -111,7 +111,7 @@
   \
   \ }doc
 
-[unneeded] .00 ?\ : .00 ( +n -- ) s>d <# # # #> type ;
+unneeding .00 ?\ : .00 ( +n -- ) s>d <# # # #> type ;
 
   \ doc{
   \
@@ -123,7 +123,7 @@
   \
   \ }doc
 
-[unneeded] .0000 ?\ : .0000 ( +n -- ) s>d <# # # # # #> type ;
+unneeding .0000 ?\ : .0000 ( +n -- ) s>d <# # # # # #> type ;
 
   \ doc{
   \
@@ -141,10 +141,10 @@
   \
   \ Code modified from eForth.
 
-[unneeded] base.
+unneeding base.
 ?\ : base. ( -- ) does> c@ base @ >r base ! u. r> base ! ;
 
-[unneeded] bin.
+unneeding bin.
 ?\ need base.  create bin. ( n -- ) #2 c, base.
 
   \ doc{
@@ -158,7 +158,7 @@
   \
   \ }doc
 
-[unneeded] hex.
+unneeding hex.
 ?\ need base.  create hex. ( n -- ) #16 c, base.
 
   \ doc{
@@ -172,7 +172,7 @@
   \
   \ }doc
 
-  \ [unneeded] dec.
+  \ unneeding dec.
   \ ?\ need base.  create dec. ( n -- ) #10 c, base.
   \ XXX OLD -- `dec.` is in the kernel
 
@@ -182,7 +182,7 @@
   \
   \ Code partly adapted from lina.
 
-[unneeded] base' [unneeded] base> and ?(
+unneeding base' unneeding base> and ?(
 
 variable base'  : base> ( -- ) base' @ base ! ; ?)
 
@@ -206,7 +206,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
   \
   \ }doc
 
-[unneeded] (d.
+unneeding (d.
 ?\ : (d. ( d n -- ca len ) <# 0 ?do  #  loop  #> ;
 
   \ doc{
@@ -220,7 +220,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
   \
   \ }doc
 
-[unneeded] <hex [unneeded] hex> and ?( need base' need base>
+unneeding <hex unneeding hex> and ?( need base' need base>
 : <hex ( -- ) base @ base' ! hex ; : hex> ( -- ) base> ; ?)
 
   \ doc{
@@ -247,7 +247,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
   \
   \ }doc
 
-[unneeded] (dhex. dup ?\ need <hex need (d.
+unneeding (dhex. dup ?\ need <hex need (d.
 ?\ : (dhex. ( d n -- ) <hex (d. hex> type space ;
 
   \ doc{
@@ -260,7 +260,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
   \
   \ }doc
 
-[unneeded] 32hex.
+unneeding 32hex.
 ?\ need (dhex.  : 32hex. ( d -- ) 8 (dhex. ;
 
   \ doc{
@@ -273,7 +273,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
   \
   \ }doc
 
-[unneeded] 16hex.
+unneeding 16hex.
 ?\ need (dhex.  : 16hex. ( n -- ) s>d 4 (dhex. ;
 
   \ doc{
@@ -286,7 +286,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
   \
   \ }doc
 
-[unneeded] 8hex.
+unneeding 8hex.
 ?\ need (dhex.  : 8hex. ( b -- ) s>d 2 (dhex. ;
 
   \ doc{
@@ -305,7 +305,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
   \
   \ Code inspired by lina.
 
-[unneeded] binary ?\ : binary ( -- ) 2 base ! ;
+unneeding binary ?\ : binary ( -- ) 2 base ! ;
 
   \ doc{
   \
@@ -317,7 +317,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
   \
   \ }doc
 
-[unneeded] <bin [unneeded] bin> and ?(
+unneeding <bin unneeding bin> and ?(
 need base' need base> need binary
 : <bin ( -- ) base @ base' ! binary ; : bin> ( -- ) base> ; ?)
 
@@ -343,7 +343,7 @@ need base' need base> need binary
   \
   \ }doc
 
-[unneeded] (dbin. dup
+unneeding (dbin. dup
 ?\ need <bin need (d.
 ?\ : (dbin. ( d n -- ) <bin (d. bin> type space ;
 
@@ -357,7 +357,7 @@ need base' need base> need binary
   \
   \ }doc
 
-[unneeded] 32bin.
+unneeding 32bin.
 ?\ need (dbin.  : 32bin. ( d -- ) #32 (dbin. ;
 
   \ doc{
@@ -370,7 +370,7 @@ need base' need base> need binary
   \
   \ }doc
 
-[unneeded] 16bin.
+unneeding 16bin.
 ?\ need (dbin.  : 16bin. ( n -- ) s>d #16 (dbin. ;
 
   \ doc{
@@ -383,7 +383,7 @@ need base' need base> need binary
   \
   \ }doc
 
-[unneeded] 8bin.
+unneeding 8bin.
 ?\ need (dbin.  : 8bin. ( b -- ) s>d  #8 (dbin. ;
 
   \ doc{
@@ -433,5 +433,7 @@ need base' need base> need binary
   \
   \ 2018-02-04: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

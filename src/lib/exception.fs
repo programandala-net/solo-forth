@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802041945
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( ?compiling ?executing abort" warning" )
 
-[unneeded] ?compiling
+unneeding ?compiling
 ?\ : ?compiling ( -- ) compiling? 0= #-14 ?throw ;
 
   \ doc{
@@ -39,7 +39,7 @@
   \
   \ }doc
 
-[unneeded] ?executing
+unneeding ?executing
 ?\ : ?executing ( -- ) compiling? #-263 ?throw ;
 
   \ doc{
@@ -57,7 +57,7 @@
   \
   \ The code of `warning"` was adapted from pForth and modified.
 
-[unneeded] abort" ?(
+unneeding abort" ?(
 
   \ Credit:
   \
@@ -104,7 +104,7 @@
   \
   \ }doc
 
-[unneeded] warning?( ?( need string-parameter
+unneeding warning?( ?( need string-parameter
 
 : (warning") ( f -- ) string-parameter rot if   type
                                            else 2drop then ;
@@ -323,6 +323,8 @@ s" Standard error codes" located errors-block !
   \
   \ 2018-02-04: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth
 

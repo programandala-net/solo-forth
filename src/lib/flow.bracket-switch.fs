@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802041948
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,7 +33,7 @@
 
   \ Raw version, without syntactic sugar
 
-[unneeded] switcher [unneeded] :switch and ?( need link@
+unneeding switcher unneeding :switch and ?( need link@
 
 : switcher ( i*x n a -- j*x )
   dup cell+ @ >r \ save default xt
@@ -59,7 +59,7 @@
   \
   \ }doc
 
-[unneeded] <switch [unneeded] :switch and ?(
+unneeding <switch unneeding :switch and ?(
 
 need pick need link,
 
@@ -82,7 +82,7 @@ need pick need link,
   \
   \ }doc
 
-[unneeded] :switch ?( need switcher need <switch
+unneeding :switch ?( need switcher need <switch
 
 : :switch ( xt "name" -- a )
   create >mark swap , does> ( n -- ) ( n dfa ) switcher ; ?)
@@ -140,7 +140,7 @@ need pick need link,
 
   \ Complete version, with syntactic sugar
 
-[unneeded] [+switch
+unneeding [+switch
 
 ?\ need >body : [+switch ( "name" -- a ) ' >body ;
 
@@ -160,7 +160,7 @@ need pick need link,
   \
   \ }doc
 
-[unneeded] [switch ?( need switcher
+unneeding [switch ?( need switcher
 
 : [switch ( "name1" "name2" -- a )
   create >mark ' , does> ( n -- ) ( n dfa ) switcher ;
@@ -230,7 +230,7 @@ need pick need link,
   \
   \ }doc
 
-[unneeded] runs ?( need <switch
+unneeding runs ?( need <switch
 
 : runs ( a n "name" -- a ) ' swap <switch ; ?)
 
@@ -248,7 +248,7 @@ need pick need link,
   \
   \ }doc
 
-[unneeded] run: ?( need evaluate need <switch need :noname
+unneeding run: ?( need evaluate need <switch need :noname
 
 : run: ( a n "ccc<semicolon>" -- a )
   :noname ';' parse evaluate postpone ; ( xt )
@@ -308,5 +308,7 @@ need pick need link,
   \
   \ 2018-02-04: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

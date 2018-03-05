@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201707271631
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -25,7 +25,7 @@
 
 ( @p !p )
 
-[unneeded] @p ?(
+unneeding @p ?(
 
 code @p ( a -- b )
   D9 c, C1 c, ED c, 68 c, 26 c, 00 c, E5 c, D9 c,
@@ -68,7 +68,7 @@ code @p ( a -- b )
   \
   \ }doc
 
-[unneeded] !p ?(
+unneeding !p ?(
 
 code !p ( b a -- ) D9 c, C1 c, E1 c, ED c, 69 c, D9 c,
     \           ; T  B
@@ -121,5 +121,7 @@ code !p ( b a -- ) D9 c, C1 c, E1 c, ED c, 69 c, D9 c,
   \
   \ 2017-07-27: Replace `jp next` with the actual macro
   \ `_jp_next` in Z80 comments.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

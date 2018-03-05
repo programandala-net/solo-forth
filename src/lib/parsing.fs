@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704271706
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -25,17 +25,17 @@
 
 ( defined? parse-char parse-all parse-name-thru )
 
-[unneeded] defined?
+unneeding defined?
 
 ?\ : defined? ( ca len -- f ) undefined? 0= ;
 
-[unneeded] parse-char
+unneeding parse-char
 
 ?\ : parse-char ( "c"  -- c ) stream drop c@ 1 parsed ;
   \ Parse the next char in the input stream and return its
   \ code.
 
-[unneeded] parse-all ?(
+unneeding parse-all ?(
 
 : parse-all ( "ccc" -- ca len )
   stream dup parsed >stringer ; ?)
@@ -71,7 +71,7 @@
 
 ( execute-parsing string>source evaluate )
 
-[unneeded] string>source ?(
+unneeding string>source ?(
 : string>source ( ca len -- )
   blk off  (source-id) on  set-source ; ?)
 
@@ -85,7 +85,7 @@
   \
   \ }doc
 
-[unneeded] execute-parsing ?( need need-here
+unneeding execute-parsing ?( need need-here
 need-here string>source
 : execute-parsing ( ca len xt -- )
   nest-source >r string>source r> execute unnest-source ; ?)
@@ -104,7 +104,7 @@ need-here string>source
   \
   \ }doc
 
-[unneeded] evaluate ?( need need-here
+unneeding evaluate ?( need need-here
 need-here execute-parsing
 : evaluate ( i*x ca len -- j*x )
   ['] interpret execute-parsing ; ?)
@@ -127,7 +127,7 @@ need-here execute-parsing
 
 ( char [char] word )
 
-[unneeded] char
+unneeding char
 ?\ : char ( "name" -- c ) parse-name drop c@ ;
 
   \ doc{
@@ -150,7 +150,7 @@ need-here execute-parsing
   \
   \ }doc
 
-[unneeded] [char]  ?(
+unneeding [char]  ?(
 
 : [char] ( "name" -- c )
   char postpone cliteral ; immediate compile-only ?)
@@ -188,7 +188,7 @@ need-here execute-parsing
   \
   \ Code from Z88 CamelForth.
 
-[unneeded] word ?(
+unneeding word ?(
 
 : word ( c "<chars>ccc<char>" -- ca )
   dup  stream                 ( c c ca len )
@@ -289,5 +289,7 @@ need-here execute-parsing
   \ 2017-03-19: Add `parse-name-thru`. Improve documentation.
   \
   \ 2017-04-27: Fix needing of `[char]`.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

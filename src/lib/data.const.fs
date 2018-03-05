@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703302301
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -17,7 +17,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ Credit
@@ -33,7 +33,7 @@
 
 ( const cconst 2const )
 
-[unneeded] const ?(
+unneeding const ?(
 
 : const ( x "name" -- )
   create immediate ,
@@ -54,7 +54,7 @@
   \
   \ }doc
 
-[unneeded] cconst ?(
+unneeding cconst ?(
 
 : cconst ( c "name" -- )
   create immediate c,
@@ -75,7 +75,7 @@
   \
   \ }doc
 
-[unneeded] 2const ?(
+unneeding 2const ?(
 
 : 2const ( xd "name" -- )
   create immediate 2,
@@ -110,5 +110,7 @@
   \ 2017-02-27: Improve documentation.
   \
   \ 2017-03-30: Improve documentation.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

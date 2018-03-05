@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803041352
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( dos-in dos-out dos-in, dos-out, )
 
-[unneeded] dos-in
+unneeding dos-in
 
 ?\ code dos-in ( -- ) DB c, #231 c, jpnext, end-code
   \ in a,(231)
@@ -41,7 +41,7 @@
   \
   \ }doc
 
-[unneeded] dos-out
+unneeding dos-out
 
 ?\ code dos-out ( -- ) D3 c, #231 c, jpnext, end-code
   \ out (231),a
@@ -57,7 +57,7 @@
   \
   \ }doc
 
-[unneeded] dos-in,
+unneeding dos-in,
 
 ?\ need macro  macro dos-in, ( -- ) DB c, #231 c, endm
   \ in a,(231)
@@ -73,7 +73,7 @@
   \
   \ }doc
 
-[unneeded] dos-out,
+unneeding dos-out,
 
 ?\ need macro  macro dos-out, ( -- ) D3 c, #231 c, endm
   \ out (231),a
@@ -91,7 +91,7 @@
 
 ( /ufia ufia1 ufia2 >ufiax >ufia1 >ufia2 )
 
-[unneeded] /ufia ?\ 24 cconstant /ufia
+unneeding /ufia ?\ 24 cconstant /ufia
 
   \ doc{
   \
@@ -104,7 +104,7 @@
   \
   \ }doc
 
-[unneeded] ufia1 ?\ $3E01 constant ufia1
+unneeding ufia1 ?\ $3E01 constant ufia1
 
   \ doc{
   \
@@ -119,7 +119,7 @@
   \
   \ }doc
 
-[unneeded] ufia2 ?\ $3E1A constant ufia2
+unneeding ufia2 ?\ $3E1A constant ufia2
 
   \ doc{
   \
@@ -134,7 +134,7 @@
   \
   \ }doc
 
-[unneeded] >ufiax ?( need /ufia need dos-in need dos-out
+unneeding >ufiax ?( need /ufia need dos-in need dos-out
 
 : >ufiax ( a a -- ) /ufia dos-in cmove dos-out ; ?)
 
@@ -151,7 +151,7 @@
   \
   \ }doc
 
-[unneeded] >ufia1
+unneeding >ufia1
 
 ?\ need ufia1 need >ufiax : >ufia1 ( a -- ) ufia1 >ufiax ;
 
@@ -170,7 +170,7 @@
   \
   \ }doc
 
-[unneeded] >ufia2
+unneeding >ufia2
 
 ?\ need ufia2 need >ufiax : >ufia2 ( a -- ) ufia2 >ufiax ;
 
@@ -273,41 +273,41 @@ ufia 22 + constant hd11    \ BASIC autorun line
 
   \ Hook codes
 
-[unneeded] hxfer  ?\ $33 cconstant hxfer
-[unneeded] ofsm   ?\ $34 cconstant ofsm
-[unneeded] hofile ?\ $35 cconstant hofile
-[unneeded] sbyte  ?\ $36 cconstant sbyte
-[unneeded] hsvbk  ?\ $37 cconstant hsvbk
-[unneeded] cfsm   ?\ $38 cconstant cfsm
-[unneeded] pntp   ?\ $39 cconstant pntp
-[unneeded] cops   ?\ $3A cconstant cops
-[unneeded] hgfile ?\ $3B cconstant hgfile
-[unneeded] lbyte  ?\ $3C cconstant lbyte
+unneeding hxfer  ?\ $33 cconstant hxfer
+unneeding ofsm   ?\ $34 cconstant ofsm
+unneeding hofile ?\ $35 cconstant hofile
+unneeding sbyte  ?\ $36 cconstant sbyte
+unneeding hsvbk  ?\ $37 cconstant hsvbk
+unneeding cfsm   ?\ $38 cconstant cfsm
+unneeding pntp   ?\ $39 cconstant pntp
+unneeding cops   ?\ $3A cconstant cops
+unneeding hgfile ?\ $3B cconstant hgfile
+unneeding lbyte  ?\ $3C cconstant lbyte
 
 ( hldbk wsad sad rest heraz cops2 pcat hrsad hwsad otfoc )
 
   \ Hook codes (continued)
 
-[unneeded] hldbk ?\ $3D cconstant hldbk
-[unneeded] wsad  ?\ $3E cconstant wsad
-[unneeded] sad   ?\ $3F cconstant sad
-[unneeded] rest  ?\ $40 cconstant rest
-[unneeded] heraz ?\ $41 cconstant heraz
-[unneeded] cops2 ?\ $42 cconstant cops2
-[unneeded] pcat  ?\ $43 cconstant pcat
-[unneeded] hrsad ?\ $44 cconstant hrsad
-[unneeded] hwsad ?\ $45 cconstant hwsad
-[unneeded] otfoc ?\ $46 cconstant otfoc
+unneeding hldbk ?\ $3D cconstant hldbk
+unneeding wsad  ?\ $3E cconstant wsad
+unneeding sad   ?\ $3F cconstant sad
+unneeding rest  ?\ $40 cconstant rest
+unneeding heraz ?\ $41 cconstant heraz
+unneeding cops2 ?\ $42 cconstant cops2
+unneeding pcat  ?\ $43 cconstant pcat
+unneeding hrsad ?\ $44 cconstant hrsad
+unneeding hwsad ?\ $45 cconstant hwsad
+unneeding otfoc ?\ $46 cconstant otfoc
 
 ( patch --directory-descriptions-- dos-vars )
 
   \ Hook codes (continued)
 
-[unneeded] patch ?\ $47 cconstant patch
+unneeding patch ?\ $47 cconstant patch
 
   \ Directory descriptions
 
-[unneeded] --directory-descriptions ?(
+unneeding --directory-descriptions ?(
 
 01 cconstant basic-file-dir    02 cconstant data-array-dir
 03 cconstant string-array-dir  04 cconstant code-file-dir
@@ -318,7 +318,7 @@ ufia 22 + constant hd11    \ BASIC autorun line
 
 : --directory-descriptions-- ; ?)
 
-[unneeded] dos-vars ?\ 8192 constant dos-vars
+unneeding dos-vars ?\ 8192 constant dos-vars
 
   \ doc{
   \
@@ -332,7 +332,7 @@ ufia 22 + constant hd11    \ BASIC autorun line
 
 ( get-drive )
 
-[unneeded] get-drive ?( need dos-in, need dos-out,
+unneeding get-drive ?( need dos-in, need dos-out,
 
 code get-drive ( -- n ) dos-in, 3A c, 3ACE , dos-out, pusha jp,
     \ in a,(231)
@@ -645,7 +645,7 @@ code (file-status) ( -- a ior )
 
 ( file-exists? file-start file-length file-type find-file )
 
-[unneeded] file-exists?  ?( need file-status
+unneeding file-exists?  ?( need file-status
 
 : file-exists? ( ca len -- f ) file-status nip 0= ; ?)
 
@@ -660,7 +660,7 @@ code (file-status) ( -- a ior )
   \
   \ }doc
 
-[unneeded] file-start  ?( need file-status need ufia
+unneeding file-start  ?( need file-status need ufia
 
 : file-start ( ca1 len1 -- ca2 ior )
   file-status nip hd0d @ swap ; ?)
@@ -679,7 +679,7 @@ code (file-status) ( -- a ior )
   \
   \ }doc
 
-[unneeded] file-length  ?( need file-status need ufia
+unneeding file-length  ?( need file-status need ufia
 
 : file-length ( ca1 len1 -- len2 ior )
   file-status nip hd0b @ swap ; ?)
@@ -697,7 +697,7 @@ code (file-status) ( -- a ior )
   \
   \ }doc
 
-[unneeded] file-type  ?( need file-status need ufia
+unneeding file-type  ?( need file-status need ufia
 
 : file-type ( ca len -- n ior )
   file-status nip hd00 c@ swap ; ?)
@@ -715,7 +715,7 @@ code (file-status) ( -- a ior )
   \
   \ }doc
 
-[unneeded] find-file  ?( need file-status
+unneeding find-file  ?( need file-status
 
 : find-file ( ca len -- a | 0 ) file-status 0= and ; ?)
 
@@ -733,7 +733,7 @@ code (file-status) ( -- a ior )
 
 ( file-dir# file-dirdesc )
 
-[unneeded] file-dir#  ?( need file-status need ufia
+unneeding file-dir#  ?( need file-status need ufia
 
 : file-dir# ( ca len -- n ior )
   file-status nip fstr1 c@ swap ; ?)
@@ -754,7 +754,7 @@ code (file-status) ( -- a ior )
   \
   \ }doc
 
-[unneeded] file-dirdesc  ?( need file-status need ufia
+unneeding file-dirdesc  ?( need file-status need ufia
 
 : file-dirdesc ( ca len -- n ior )
   file-status nip nstr1 c@ swap ; ?)
@@ -949,7 +949,7 @@ code cd0 ( -- ior )
 
 ( (cat wcat wacat cat acat )
 
-[unneeded] (cat ?( need pcat need ufia need hd00 need >ufia1
+unneeding (cat ?( need pcat need ufia need hd00 need >ufia1
 
   \ XXX TMP -- 2018-03-04 Moved to the kernel, for debugging.
 
@@ -1024,7 +1024,7 @@ cr rp@ u. \ RP = 24662
   \
   \ }doc
 
-[unneeded] wcat ?( need set-filename need (cat
+unneeding wcat ?( need set-filename need (cat
 
 : wcat ( ca len -- ) set-filename $14 (cat ; ?)
 
@@ -1040,7 +1040,7 @@ cr rp@ u. \ RP = 24662
   \
   \ }doc
 
-[unneeded] wacat ?( need set-filename need (cat
+unneeding wacat ?( need set-filename need (cat
 
 : wacat ( ca len -- ) set-filename $12 (cat ; ?)
 
@@ -1056,9 +1056,9 @@ cr rp@ u. \ RP = 24662
   \
   \ }doc
 
-[unneeded] cat ?\ need wcat : cat ( -- ) s" *" wcat ; ?)
+unneeding cat ?\ need wcat : cat ( -- ) s" *" wcat ; ?)
 
-  \ [unneeded] cat ?( need wcat
+  \ unneeding cat ?( need wcat
   \ : cat ( -- ) s" *" wcat rp@ @ cr u. 3 border key drop ; ?)
   \ XXX TMP -- For debugging.  `rp@ @ u.` displays 30911, which
   \ is the address of `dw branch_,interpret.begin` in the
@@ -1074,7 +1074,7 @@ cr rp@ u. \ RP = 24662
   \
   \ }doc
 
-[unneeded] acat ?( need wacat : acat ( -- ) s" *" wacat ;
+unneeding acat ?( need wacat : acat ( -- ) s" *" wacat ;
 
   \ doc{
   \
@@ -1159,7 +1159,7 @@ create back-from-dos-error_ ( -- a ) asm
 
 ( @dos c@dos  )
 
-[unneeded] @dos ?(
+unneeding @dos ?(
 
 need assembler need dos-in, need dos-out,
 
@@ -1176,7 +1176,7 @@ code @dos ( a -- x )
   \
   \ }doc
 
-[unneeded] c@dos ?(
+unneeding c@dos ?(
 
 need assembler need dos-in, need dos-out,
 
@@ -1196,7 +1196,7 @@ code c@dos ( ca -- b )
 
 ( !dos c!dos )
 
-[unneeded] !dos ?(
+unneeding !dos ?(
 
 need assembler need dos-in, need dos-out,
 
@@ -1213,7 +1213,7 @@ code !dos ( x a -- )
   \
   \ }doc
 
-[unneeded] c!dos ?(
+unneeding c!dos ?(
 
 need assembler need dos-in, need dos-out,
 
@@ -1234,7 +1234,7 @@ code c!dos ( b ca -- )
 
 ( @dosvar c@dosvar )
 
-[unneeded] @dosvar ?(
+unneeding @dosvar ?(
 
 need assembler need dos-vars need dos-in, need dos-out,
 
@@ -1253,7 +1253,7 @@ code @dosvar ( n -- x )
   \
   \ }doc
 
-[unneeded] c@dosvar ?(
+unneeding c@dosvar ?(
 
 need assembler need dos-vars need dos-in, need dos-out,
 
@@ -1273,7 +1273,7 @@ code c@dosvar ( n -- b )
 
 ( !dosvar c!dosvar )
 
-[unneeded] !dosvar ?(
+unneeding !dosvar ?(
 
 need assembler need dos-vars need dos-in, need dos-out,
 
@@ -1292,7 +1292,7 @@ code !dosvar ( x n -- )
   \
   \ }doc
 
-[unneeded] c!dosvar ?(
+unneeding c!dosvar ?(
 
 need assembler need dos-vars need dos-in, need dos-out,
 
@@ -1509,5 +1509,7 @@ code (rename-file ( -- ior )
   \ 2018-03-03: Update source layout details. Improve
   \ `get-drive`.  Rewrite `back-from-dos-error_` with Z80
   \ opcodes.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -25,9 +25,9 @@
 
 ( .depth .s u.s )
 
-[unneeded] .depth ?\ : .depth ( n -- ) ." <" 0 .r ." > " ;
+unneeding .depth ?\ : .depth ( n -- ) ." <" 0 .r ." > " ;
 
-[unneeded] .s ?( need .depth
+unneeding .s ?( need .depth
 
 defer (.s) ( x -- ) ' . ' (.s) defer!
 
@@ -39,7 +39,7 @@ defer (.s) ( x -- ) ' . ' (.s) defer!
   \ Credit:
   \ Code from Afera. Original algorithm from v.Forth.
 
-[unneeded] u.s ?( need .s
+unneeding u.s ?( need .s
 
 : u.s   ( -- )
   ['] u. ['] (.s) defer!  .s  ['] . ['] (.s) defer! ; ?)
@@ -68,5 +68,7 @@ defer (.s) ( x -- ) ' . ' (.s) defer!
   \
   \ 2017-02-20: Replace `do`, which has been moved to the
   \ library, with `?do`.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

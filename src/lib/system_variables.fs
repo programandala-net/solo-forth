@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201711281158
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -25,7 +25,7 @@
 
 ( os-chars os-chans os-flags2 os-seed os-frames os-udg )
 
-[unneeded] os-chars ?\ #23606 constant os-chars
+unneeding os-chars ?\ #23606 constant os-chars
 
   \ doc{
   \
@@ -40,7 +40,7 @@
   \
   \ }doc
 
-[unneeded] os-chans ?\ #23631 constant os-chans
+unneeding os-chans ?\ #23631 constant os-chans
 
   \ doc{
   \
@@ -51,7 +51,7 @@
   \
   \ }doc
 
-[unneeded] os-flags2 ?\ #23658 constant os-flags2
+unneeding os-flags2 ?\ #23658 constant os-flags2
 
   \ doc{
   \
@@ -64,7 +64,7 @@
   \
   \ }doc
 
-[unneeded] os-seed ?\ #23670 constant os-seed
+unneeding os-seed ?\ #23670 constant os-seed
 
   \ doc{
   \
@@ -76,7 +76,7 @@
   \
   \ }doc
 
-[unneeded] os-frames ?\ #23672 constant os-frames
+unneeding os-frames ?\ #23672 constant os-frames
 
   \ doc{
   \
@@ -94,7 +94,7 @@
   \
   \ }doc
 
-[unneeded] os-udg ?\ #23675 constant os-udg
+unneeding os-udg ?\ #23675 constant os-udg
 
   \ doc{
   \
@@ -112,7 +112,7 @@
 
 ( os-coords os-coordx os-coordy )
 
-[unneeded] os-coords ?\ #23677 constant os-coords
+unneeding os-coords ?\ #23677 constant os-coords
 
   \ doc{
   \
@@ -126,7 +126,7 @@
   \
   \ }doc
 
-[unneeded] os-coordx ?\ #23677 constant os-coordx
+unneeding os-coordx ?\ #23677 constant os-coordx
 
   \ doc{
   \
@@ -140,7 +140,7 @@
   \
   \ }doc
 
-[unneeded] os-coordy ?\ #23678 constant os-coordy
+unneeding os-coordy ?\ #23678 constant os-coordy
 
   \ doc{
   \
@@ -156,7 +156,7 @@
 
 ( os-attr-p os-mask-p os-attr-t os-mask-t os-p-flag )
 
-[unneeded] os-attr-p ?\ #23693 constant os-attr-p
+unneeding os-attr-p ?\ #23693 constant os-attr-p
 
   \ doc{
   \
@@ -170,7 +170,7 @@
   \
   \ }doc
 
-[unneeded] os-mask-p ?\ #23694 constant os-mask-p
+unneeding os-mask-p ?\ #23694 constant os-mask-p
 
   \ doc{
   \
@@ -186,7 +186,7 @@
   \
   \ }doc
 
-[unneeded] os-attr-t ?\ #23695 constant os-attr-t
+unneeding os-attr-t ?\ #23695 constant os-attr-t
 
   \ doc{
   \
@@ -200,7 +200,7 @@
   \
   \ }doc
 
-[unneeded] os-mask-t ?\ #23696 constant os-mask-t
+unneeding os-mask-t ?\ #23696 constant os-mask-t
 
   \ doc{
   \
@@ -217,7 +217,7 @@
   \ }doc
 
 
-[unneeded] os-p-flag ?\ #23697 constant os-mask-t
+unneeding os-p-flag ?\ #23697 constant os-mask-t
 
   \ doc{
   \
@@ -249,5 +249,7 @@
   \
   \ 2017-11-28: Update: replace "frames" words with "ticks".
   \ Improve documentation.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

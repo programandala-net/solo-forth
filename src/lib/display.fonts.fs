@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712092306
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -25,7 +25,7 @@
 
 ( get-font rom-font )
 
-[unneeded] get-font ?( need os-chars
+unneeding get-font ?( need os-chars
 
 code get-font ( -- a )
   2A c, os-chars , E5 c, jpnext, end-code ?)
@@ -45,7 +45,7 @@ code get-font ( -- a )
   \
   \ }doc
 
-[unneeded] rom-font ?\ 15360 constant rom-font
+unneeding rom-font ?\ 15360 constant rom-font
 
   \ doc{
   \
@@ -243,5 +243,7 @@ code outlet-autochars ( a -- )
   \ 2017-05-09: Remove `jppushl,`.
   \
   \ 2017-12-09: Improve documentation.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

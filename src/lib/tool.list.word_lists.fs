@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712151558
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -25,7 +25,7 @@
 
 ( .current .context .wordlist )
 
-[unneeded] .current
+unneeding .current
 ?\ : .current ( -- ) get-current .wordlist ;
 
   \ doc{
@@ -38,7 +38,7 @@
   \
   \ }doc
 
-[unneeded] .context ?( need .wordlist
+unneeding .context ?( need .wordlist
 
 : .context ( -- )
   get-order begin  ?dup  while  swap .wordlist 1-  repeat ; ?)
@@ -54,7 +54,7 @@
   \
   \ }doc
 
-[unneeded] .wordlist ?( need wordlist>name
+unneeding .wordlist ?( need wordlist>name
 
 : .wordlist ( wid -- )
   dup wordlist>name @ ?dup if  .name drop exit  then  u. ; ?)
@@ -72,7 +72,7 @@
 
 ( wordlists order )
 
-[unneeded] wordlists ?( need .wordlist need wordlist>link
+unneeding wordlists ?( need .wordlist need wordlist>link
 
 : wordlists ( -- )
   latest-wordlist
@@ -94,7 +94,7 @@
   \
   \ }doc
 
-[unneeded] order ?( need .context need .current
+unneeding order ?( need .context need .current
 
 : order ( -- )
   cr ." Search: " .context cr ." Compile: " .current ; ?)
@@ -152,5 +152,7 @@
   \ 2017-02-17: Update cross references.
   \
   \ 2017-12-15: Improve documentation.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

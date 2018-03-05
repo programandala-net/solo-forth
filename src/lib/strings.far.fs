@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -25,7 +25,7 @@
 
 ( far," fars, farsconstant far>sconstant far>stringer )
 
-[unneeded] far,"
+unneeding far,"
 
 ?\ need fars,  : far," ( -- ) '"' parse fars, ;
 
@@ -38,7 +38,7 @@
   \
   \ }doc
 
-[unneeded] fars, ?( need farplace need farallot
+unneeding fars, ?( need farplace need farallot
 
 : fars, ( ca len -- ) tuck np@ farplace 1+ farallot ; ?)
 
@@ -51,7 +51,7 @@
   \
   \ }doc
 
-[unneeded] farsconstant ?( need fars,
+unneeding farsconstant ?( need fars,
 
 : farsconstant ( ca len "name" -- )
   np@ >r fars, r> farcount 2constant ; ?)
@@ -70,7 +70,7 @@
   \
   \ }doc
 
-[unneeded] far>stringer ?( need cmove<far
+unneeding far>stringer ?( need cmove<far
 
 : far>stringer ( ca1 len1 -- ca2 len1 )
   dup allocate-stringer swap 2dup 2>r cmove<far 2r> ; ?)
@@ -86,7 +86,7 @@
   \
   \ }doc
 
-[unneeded] far>sconstant ?(
+unneeding far>sconstant ?(
 
 need farsconstant need far>stringer
 
@@ -109,7 +109,7 @@ need farsconstant need far>stringer
 
 ( farsconstants, farsconstants> farsconstants far>sconstants )
 
-[unneeded] farsconstants, ?( need far,
+unneeding farsconstants, ?( need far,
 
 : farsconstants, ( 0 ca[n]..ca[1] "name" -- n )
   create np@ , 0 begin  swap ?dup while  far, 1+  repeat ; ?)
@@ -131,7 +131,7 @@ need farsconstant need far>stringer
   \
   \ }doc
 
-[unneeded] farsconstants>
+unneeding farsconstants>
 ?\ : farsconstants> ( n a -- ca len ) @ array> far@ farcount ;
 
   \ doc{
@@ -146,7 +146,7 @@ need farsconstant need far>stringer
   \
   \ }doc
 
-[unneeded] farsconstants ?(
+unneeding farsconstants ?(
 
 need farsconstants, need array> need farsconstants>
 
@@ -190,7 +190,7 @@ need farsconstants, need array> need farsconstants>
   \
   \ }doc
 
-[unneeded] far>sconstants ?( need farsconstants,
+unneeding far>sconstants ?( need farsconstants,
 need array> need farsconstants> need far>stringer
 
 : far>sconstants ( 0 ca[n]..ca[1] "name" -- n )
@@ -235,7 +235,7 @@ need array> need farsconstants> need far>stringer
 
 ( faruppers )
 
-[unneeded] faruppers ?(
+unneeding faruppers ?(
 
 need assembler
 need far-hl_ need upper_ need ?next-bank_
@@ -321,6 +321,8 @@ code faruppers ( ca len -- )
   \ 2017-03-13: Improve documentation.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth
 

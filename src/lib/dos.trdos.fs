@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803022344
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -58,7 +58,7 @@ $18 cconstant dos-read-system-track
 
 ( fda /fda )
 
-[unneeded] fda ?(
+unneeding fda ?(
 
 $5CDD     constant fda
 fda       constant fda-filename
@@ -191,7 +191,7 @@ fda $0F + constant fda-filetrack ?)
   \
   \ }doc
 
-[unneeded] /fda ?\ $10 cconstant /fda
+unneeding /fda ?\ $10 cconstant /fda
 
   \ doc{
   \
@@ -203,7 +203,7 @@ fda $0F + constant fda-filetrack ?)
 
 ( files/disk /filename -filename -fda-filename )
 
-[unneeded] files/disk ?\ 128 cconstant files/disk
+unneeding files/disk ?\ 128 cconstant files/disk
 
   \ doc{
   \
@@ -214,7 +214,7 @@ fda $0F + constant fda-filetrack ?)
   \
   \ }doc
 
-[unneeded] /filename ?\ 9 cconstant /filename
+unneeding /filename ?\ 9 cconstant /filename
 
   \ doc{
   \
@@ -241,7 +241,7 @@ fda $0F + constant fda-filetrack ?)
   \
   \ }doc
 
-[unneeded] -filename ?( need /filename
+unneeding -filename ?( need /filename
 
 : -filename ( ca -- )
   /filename 2dup blank + 1- 'C' swap c! ; ?)
@@ -256,7 +256,7 @@ fda $0F + constant fda-filetrack ?)
   \
   \ }doc
 
-[unneeded] -fda-filename ?( need fda need -filename
+unneeding -fda-filename ?( need fda need -filename
 
 : -fda-filename ( -- ) fda-filename -filename ; ?)
 
@@ -273,7 +273,7 @@ fda $0F + constant fda-filetrack ?)
 
 ( set-filename get-filename filename>filetype )
 
-[unneeded] set-filename ?(
+unneeding set-filename ?(
 
 need -fda-filename need /filename need fda
 
@@ -294,7 +294,7 @@ need -fda-filename need /filename need fda
   \
   \ }doc
 
-[unneeded] get-filename ?( need /filename need fda
+unneeding get-filename ?( need /filename need fda
 
 : get-filename ( -- ca len ) fda-filename /filename ; ?)
 
@@ -310,7 +310,7 @@ need -fda-filename need /filename need fda
   \
   \ }doc
 
-[unneeded] filename>filetype
+unneeding filename>filetype
 
 ?\ : filename>filetype ( ca len -- c ) + 1- c@ ;
 
@@ -328,7 +328,7 @@ need -fda-filename need /filename need fda
 
 ( get-drive (acat acat )
 
-[unneeded] get-drive
+unneeding get-drive
 
 ?\ code get-drive ( -- b ) 3A c, 5CF6 , pusha jp, end-code
 
@@ -352,7 +352,7 @@ need -fda-filename need /filename need fda
   \
   \ }doc
 
-[unneeded] (acat ?(
+unneeding (acat ?(
 
 code (acat ( -- ior )
   3E c, 07 c, 08 c, 3E c, 02 c, dos-alt-a-preserve-ip_ call,
@@ -375,7 +375,7 @@ code (acat ( -- ior )
   \
   \ }doc
 
-[unneeded] acat ?\ need (acat : acat ( -- ) (acat throw ;
+unneeding acat ?\ need (acat : acat ( -- ) (acat throw ;
 
   \ doc{
   \
@@ -551,7 +551,7 @@ code (>file) ( -- ior )
 
 ( fda-filestatus file-status )
 
-[unneeded] fda-filestatus ?(
+unneeding fda-filestatus ?(
 
 need assembler need --dos-commands-- need fda
 
@@ -578,7 +578,7 @@ code fda-filestatus ( -- a ior )
   \
   \ }doc
 
-[unneeded] file-status ?( need fda-filestatus need set-filename
+unneeding file-status ?( need fda-filestatus need set-filename
 
 : file-status ( ca len -- a ior )
   set-filename fda-filestatus) ; ?)
@@ -602,7 +602,7 @@ code fda-filestatus ( -- a ior )
 
 ( file-exists? file-start file-length file-type find-file )
 
-[unneeded] file-exists? ?( need file-status
+unneeding file-exists? ?( need file-status
 
 : file-exists? ( ca len -- f ) file-status nip 0= ; ?)
 
@@ -617,7 +617,7 @@ code fda-filestatus ( -- a ior )
   \
   \ }doc
 
-[unneeded] file-start  ?( need file-status need fda
+unneeding file-start  ?( need file-status need fda
 
 : file-start ( ca1 len1 -- ca2 ior )
   file-status nip fda-filestart @ swap ; ?)
@@ -636,7 +636,7 @@ code fda-filestatus ( -- a ior )
   \
   \ }doc
 
-[unneeded] file-len  ?( need file-status need fda
+unneeding file-len  ?( need file-status need fda
 
 : file-length ( ca1 len1 -- len2 ior )
   file-status nip fda-filelength @ swap ; ?)
@@ -654,7 +654,7 @@ code fda-filestatus ( -- a ior )
   \
   \ }doc
 
-[unneeded] file-type  ?( need file-status need fda
+unneeding file-type  ?( need file-status need fda
 
 : file-type ( ca len -- n ior )
   file-status nip fda-filetype c@ swap ; ?)
@@ -679,7 +679,7 @@ code fda-filestatus ( -- a ior )
   \
   \ }doc
 
-[unneeded] find-file ?( need file-status
+unneeding find-file ?( need file-status
 : find-file ( ca len -- f ) file-status 0= and ; ?)
 
   \ doc{
@@ -696,7 +696,7 @@ code fda-filestatus ( -- a ior )
 
 ( fda-filedir# file-dir# )
 
-[unneeded] fda-filedir# ?(
+unneeding fda-filedir# ?(
 
 need assembler need --dos-commands-- need set-filename
 
@@ -723,7 +723,7 @@ code fda-filedir# ( -- n ior )
   \
   \ }doc
 
-[unneeded] file-dir# ?( need fda-filedir# need set-filename
+unneeding file-dir# ?( need fda-filedir# need set-filename
 
 : file-dir# ( ca len -- n ior ) set-filename fda-filedir# ; ?)
 
@@ -742,7 +742,7 @@ code fda-filedir# ( -- n ior )
 
 ( file-sectors file-sector file-track )
 
-[unneeded] file-sectors  ?( need file-status need fda
+unneeding file-sectors  ?( need file-status need fda
 
 : file-sectors ( ca len -- n ior )
   file-status nip fda-filesectors c@ swap ; ?)
@@ -760,7 +760,7 @@ code fda-filedir# ( -- n ior )
   \
   \ }doc
 
-[unneeded] file-sector  ?( need file-status need fda
+unneeding file-sector  ?( need file-status need fda
 
 : file-sector ( ca len -- n ior )
   file-status nip fda-filesector c@ swap ; ?)
@@ -778,7 +778,7 @@ code fda-filedir# ( -- n ior )
   \
   \ }doc
 
-[unneeded] file-track  ?( need file-status need fda
+unneeding file-track  ?( need file-status need fda
 
 : file-track ( ca len -- n ior )
   file-status nip fda-filetrack c@ swap ; ?)
@@ -949,7 +949,7 @@ create tmp-filename /filename allot
 
 ( .filename .fda-filename fda-basic? fda-deleted? fda-empty? )
 
-[unneeded] .filename ?( need /filename
+unneeding .filename ?( need /filename
 
 : .filename ( ca -- )
   /filename 1- 2dup type '<' emit + c@ emit '>' emit ; ?)
@@ -966,7 +966,7 @@ create tmp-filename /filename allot
   \
   \ }doc
 
-[unneeded] .fda-filename ?( need fda need .filename
+unneeding .fda-filename ?( need fda need .filename
 
 : .fda-filename ( -- ) fda-filename .filename ; ?)
 
@@ -981,7 +981,7 @@ create tmp-filename /filename allot
   \
   \ }doc
 
-[unneeded] fda-basic?
+unneeding fda-basic?
 
 ?\ need fda : fda-basic? ( -- f ) fda-filetype c@ 'B' = ;
 
@@ -995,7 +995,7 @@ create tmp-filename /filename allot
   \
   \ }doc
 
-[unneeded] fda-deleted?
+unneeding fda-deleted?
 
 ?\ need fda : fda-deleted? ( -- ) fda-filename c@ 1 = ;
 
@@ -1009,7 +1009,7 @@ create tmp-filename /filename allot
   \
   \ }doc
 
-[unneeded] fda-empty?
+unneeding fda-empty?
 
 ?\ need fda : fda-empty? ( -- f ) fda c@ 0= ;
 
@@ -1227,5 +1227,7 @@ need read-file-descriptor need write-file-descriptor
   \ words that need it.
   \
   \ 2018-03-02: Improve `cat`.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

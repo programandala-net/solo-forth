@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703142257
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -26,7 +26,7 @@
   \ number 5, page 132, 1981-01).
 
   \ Marcos Cruz (programandala.net), adapted it to Solo Forth,
-  \ 2015, 2016, 2017.
+  \ 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -37,7 +37,7 @@
 
 ( internal end-internal unlink-internal hide-internal )
 
-[unneeded] internal [unneeded] end-internal and ?( need alias
+unneeding internal unneeding end-internal and ?( need alias
 
 ' current-latest alias internal ( -- nt )
 
@@ -73,7 +73,7 @@
   \
   \ }doc
 
-[unneeded] unlink-internal ?( need internal need >>link
+unneeding unlink-internal ?( need internal need >>link
 
 : unlink-internal ( nt xtp -- ) >>link far! ; ?)
 
@@ -120,7 +120,7 @@
   \
   \ searchable, e.g. accessible for `traverse-wordlist`.
 
-[unneeded] hide-internal ?(
+unneeding hide-internal ?(
 
 need internal need name<name need >>name
 
@@ -200,5 +200,7 @@ need internal need name<name need >>name
   \ in the kernel.
   \
   \ 2017-03-14: Improve documentation.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071830
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -25,7 +25,7 @@
 
 ( printer tabulate )
 
-[unneeded] printer
+unneeding printer
 ?\ : printer ( -- ) 3 channel printing on ;
 
   \ doc{
@@ -38,7 +38,7 @@
   \
   \ }doc
 
-[unneeded] tabulate ?(
+unneeding tabulate ?(
 
 need column
 
@@ -78,7 +78,7 @@ variable /tabulate  8 /tabulate !
 
 ( 'cr' 'tab' 'bs' crs tab tabs backspace backspaces )
 
-[unneeded] 'tab' ?\ 6 cconstant 'tab'  exit
+unneeding 'tab' ?\ 6 cconstant 'tab'  exit
 
   \ doc{
   \
@@ -91,7 +91,7 @@ variable /tabulate  8 /tabulate !
   \
   \ }doc
 
-[unneeded] 'bs' ?\ 8 cconstant 'bs'  exit
+unneeding 'bs' ?\ 8 cconstant 'bs'  exit
 
   \ doc{
   \
@@ -104,7 +104,7 @@ variable /tabulate  8 /tabulate !
   \
   \ }doc
 
-[unneeded] 'cr' ?\ 13 cconstant 'cr'  exit
+unneeding 'cr' ?\ 13 cconstant 'cr'  exit
 
   \ doc{
   \
@@ -117,7 +117,7 @@ variable /tabulate  8 /tabulate !
   \
   \ }doc
 
-[unneeded] tab
+unneeding tab
 ?\ need 'tab'  : tab ( -- ) 'tab' emit ;
 
   \ doc{
@@ -132,7 +132,7 @@ variable /tabulate  8 /tabulate !
   \
   \ }doc
 
-[unneeded] backspace
+unneeding backspace
 ?\ need 'bs'  : backspace ( -- ) 'bs'  emit ;
 
   \ doc{
@@ -145,7 +145,7 @@ variable /tabulate  8 /tabulate !
   \
   \ }doc
 
-[unneeded] crs
+unneeding crs
 ?\ need 'cr'  : crs   ( n -- ) 'cr'  emits ;
 
   \ doc{
@@ -158,7 +158,7 @@ variable /tabulate  8 /tabulate !
   \
   \ }doc
 
-[unneeded] tabs
+unneeding tabs
 ?\ need 'tab'  : tabs ( n -- ) 'tab' emits ;
 
   \ doc{
@@ -171,7 +171,7 @@ variable /tabulate  8 /tabulate !
   \
   \ }doc
 
-[unneeded] backspaces
+unneeding backspaces
 ?\ need 'bs'  : backspaces    ( n -- ) 'bs'  emits ;
 
   \ doc{
@@ -216,5 +216,7 @@ variable /tabulate  8 /tabulate !
   \ 2017-05-07: Improve documentation.
   \
   \ 2017-05-07: Improve documentation of variables.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

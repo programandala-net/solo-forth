@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132342
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -20,7 +20,7 @@
   \ <http://worldofspectrum.org/forums/discussion/22058/bresenhams-circle-algorithm/>.
   \
   \ Marcos Cruz (programandala.net) adapted the code to Solo
-  \ Forth, 2015, 2016, 2017.
+  \ Forth, 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -31,7 +31,7 @@
 
 ( uncolored-circle-pixel colored-circle-pixel )
 
-[unneeded] uncolored-circle-pixel ?(
+unneeding uncolored-circle-pixel ?(
 
 need assembler need gxy>scra_
 
@@ -57,7 +57,7 @@ create uncolored-circle-pixel ( -- a ) asm
   \
   \ }doc
 
-[unneeded] colored-circle-pixel ?(
+unneeding colored-circle-pixel ?(
 
 need assembler need gxy>scra_
 
@@ -85,7 +85,7 @@ create colored-circle-pixel ( -- a ) asm
 
 ( circle-pixel set-circle-pixel )
 
-[unneeded] circle-pixel
+unneeding circle-pixel
 
 ?\ create circle-pixel ( -- a ) asm noop_ jp, end-asm
 
@@ -107,7 +107,7 @@ create colored-circle-pixel ( -- a ) asm
 
   \ }doc
 
-[unneeded] set-circle-pixel ?( need circle-pixel
+unneeding set-circle-pixel ?( need circle-pixel
 
 : set-circle-pixel ( a -- )
   [ circle-pixel 1+ ] literal ! ; ?)
@@ -345,6 +345,8 @@ code circle ( gx gy b -- )
   \
   \ 2017-03-13: Improve documentation.  Update name:
   \ `(pixel-addr)` to `gxy>scra_`.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth
 

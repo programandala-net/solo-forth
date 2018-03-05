@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802151524
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,7 +27,7 @@
 
   \ XXX TODO -- add default xt
 
-[unneeded] switch:
+unneeding switch:
 ?\ : switch: ( "name" -- ) wordlist constant ;
 
   \ doc{
@@ -81,7 +81,7 @@
   \
   \ }doc
 
-[unneeded] switch [unneeded] :clause and ?(
+unneeding switch unneeding :clause and ?(
 
 need search-wordlist need nextname need >bstring
 
@@ -115,7 +115,7 @@ need search-wordlist need nextname need >bstring
 
 ( cswitch :cclause 2switch :2clause )
 
-[unneeded] cswitch [unneeded] :cclause and ?(
+unneeding cswitch unneeding :cclause and ?(
 
 need search-wordlist need nextname need >bstring
 
@@ -147,7 +147,7 @@ need search-wordlist need nextname need >bstring
   \
   \ }doc
 
-[unneeded] 2switch [unneeded] :2clause and ?(
+unneeding 2switch unneeding :2clause and ?(
 
 need search-wordlist need nextname need 2>bstring
 
@@ -203,5 +203,7 @@ need search-wordlist need nextname need 2>bstring
   \
   \ 2018-02-15: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

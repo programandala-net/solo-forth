@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703152016
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -57,7 +57,7 @@ code fade-display ( -- )
 
 ( invert-display wave-display blackout )
 
-[unneeded] invert-display ?( need assembler
+unneeding invert-display ?( need assembler
 
 code invert-display ( -- )
 
@@ -82,7 +82,7 @@ code invert-display ( -- )
   \
   \ }doc
 
-[unneeded] wave-display ?( need assembler
+unneeding wave-display ?( need assembler
 
 code wave-display ( -- )
 
@@ -109,7 +109,7 @@ code wave-display ( -- )
   \
   \ }doc
 
-[unneeded] blackout ?(
+unneeding blackout ?(
 
 code blackout ( -- )
   D9 c, 21 c, 4000 , 11 c, 4001 , 01 c, 1B00 , 75 c,
@@ -161,5 +161,7 @@ code blackout ( -- )
   \ 2017-03-15: Rename the module file. Rename `inverted` to
   \ `invert-display`, `fade` to `fade-display` and `water` to
   \ `wave-display`. The previous names were too generic.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703150013
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -28,7 +28,7 @@
 
 ( seclusion isolate )
 
-[unneeded] seclusion ?(
+unneeding seclusion ?(
 
 : seclusion ( -- wid1 wid2 )
   get-current wordlist dup >order dup set-current ;
@@ -110,7 +110,7 @@
   \
   \ }doc
 
-[unneeded] isolate
+unneeding isolate
 
 ?\ : isolate ( -- ) wordlist >order definitions ;
 
@@ -141,6 +141,8 @@
   \ Change log
 
   \ 2017-03-14: Start. Write `seclusion` and `isolate`.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth
 

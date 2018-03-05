@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712092318
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -203,7 +203,7 @@ variable case-sensitive-esc-chars  case-sensitive-esc-chars on
 
 ( s\" .\" )
 
-[unneeded] s\" ?(
+unneeding s\" ?(
 
 need parse-esc-string need esc-standard-chars-wordlist
 
@@ -240,7 +240,7 @@ need set-esc-order  esc-standard-chars-wordlist 1 set-esc-order
   \
   \ }doc
 
-[unneeded] .\" ?(
+unneeding .\" ?(
 
 need parse-esc-string need esc-standard-chars-wordlist
 
@@ -274,7 +274,7 @@ need set-esc-order  esc-standard-chars-wordlist 1 set-esc-order
 
 ( max-esc-order #esc-order esc-context ?esc-order )
 
-[unneeded] max-esc-order
+unneeding max-esc-order
 ?\ 4 constant max-esc-order
 
   \ doc{
@@ -293,7 +293,7 @@ need set-esc-order  esc-standard-chars-wordlist 1 set-esc-order
   \
   \ }doc
 
-[unneeded] #esc-order [unneeded] esc-context and ?(
+unneeding #esc-order unneeding esc-context and ?(
 
 need max-esc-order
 
@@ -328,7 +328,7 @@ create esc-context here max-esc-order cells dup allot erase ?)
   \
   \ }doc
 
-[unneeded] ?esc-order ?(
+unneeding ?esc-order ?(
 
 need max-esc-order
 
@@ -349,7 +349,7 @@ need max-esc-order
 
 ( set-esc-order get-esc-order )
 
-[unneeded] set-esc-order ?(
+unneeding set-esc-order ?(
 
 need ?esc-order need #esc-order need esc-context
 
@@ -372,7 +372,7 @@ need ?esc-order need #esc-order need esc-context
   \
   \ }doc
 
-[unneeded] get-esc-order ?(
+unneeding get-esc-order ?(
 
 need #esc-order need esc-context
 
@@ -397,7 +397,7 @@ need #esc-order need esc-context
 
 ( >esc-order parse-esc-char>chars )
 
-[unneeded] >esc-order ?(
+unneeding >esc-order ?(
 
 need get-esc-order need set-esc-order
 
@@ -417,7 +417,7 @@ need get-esc-order need set-esc-order
   \
   \ }doc
 
-[unneeded] esc-previous ?(
+unneeding esc-previous ?(
 : esc-previous ( -- )
   get-esc-order nip 1- set-esc-order ; ?)
 
@@ -430,7 +430,7 @@ need get-esc-order need set-esc-order
   \
   \ }doc
 
-[unneeded] parse-esc-char>chars ?(
+unneeding parse-esc-char>chars ?(
 
 need parse-char need char>string
 
@@ -523,5 +523,7 @@ need parse-char need char>string
   \ to the library.
   \
   \ 2017-12-09: Improve documentation.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

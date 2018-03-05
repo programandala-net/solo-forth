@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802072302
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,8 +27,8 @@
 
 ( xsize xp xp0 xstack xfree allocate-xstack allot-xstack )
 
-[unneeded] xsize  [unneeded] xp and  [unneeded] xp0 and
-[unneeded] xstack and ?(
+unneeding xsize  unneeding xp and  unneeding xp0 and
+unneeding xstack and ?(
 
 0 constant xsize  0 constant xp  0 constant xp0
 
@@ -86,7 +86,7 @@
   \
   \ }doc
 
-[unneeded] xfree ?\ : xfree ( -- ) xp0 cell+ free throw ;
+unneeding xfree ?\ : xfree ( -- ) xp0 cell+ free throw ;
 
   \ doc{
   \
@@ -97,7 +97,7 @@
   \
   \ }doc
 
-[unneeded] allocate-xstack ?( need allocate
+unneeding allocate-xstack ?( need allocate
 
 : allocate-xstack ( n -- a )
   cells here >r allocate throw cell- dup , , , r> ; ?)
@@ -113,7 +113,7 @@
   \
   \ }doc
 
-[unneeded] allot-xstack ?(
+unneeding allot-xstack ?(
 
 : allot-xstack ( n -- a )
   cells dup here dup >r cell+ cell+ dup , , , allot r> ; ?)
@@ -131,7 +131,7 @@
 
 ( >x x@ xdrop x> xdup xpick )
 
-[unneeded] >x ?( need xp
+unneeding >x ?( need xp
 
 : >x ( x -- ) ( X: -- x ) cell xp +!  xp @ ! ; ?)
 
@@ -145,7 +145,7 @@
   \
   \ }doc
 
-[unneeded] x> ?( need x@ need xdrop
+unneeding x> ?( need x@ need xdrop
 
 : x> ( -- x ) ( X: x -- ) x@ xdrop ; ?)
 
@@ -159,7 +159,7 @@
   \
   \ }doc
 
-[unneeded] x@ ?( need xp
+unneeding x@ ?( need xp
 
 : x@ ( -- x ) ( X: x -- x ) xp @ @ ; ?)
 
@@ -173,7 +173,7 @@
   \
   \ }doc
 
-[unneeded] xdrop ?( need xp
+unneeding xdrop ?( need xp
 
 : xdrop ( X: x -- ) [ cell negate ] literal xp +! ; ?)
 
@@ -187,7 +187,7 @@
   \
   \ }doc
 
-[unneeded] xdup ?( need x@ need >x
+unneeding xdup ?( need x@ need >x
 
 : xdup ( X: x -- x x ) x@ >x ; ?)
 
@@ -201,7 +201,7 @@
   \
   \ }doc
 
-[unneeded] xpick ?( need xp
+unneeding xpick ?( need xp
 
 : xpick ( u -- x'u ) ( X: x'u ... x'0 -- x'u ... x'0 )
   xp @ swap cells - @ ; ?)
@@ -215,7 +215,7 @@
   \
   \ }doc
 
-[unneeded] xover ?( need xpick need >x
+unneeding xover ?( need xpick need >x
 
 : xover ( X: x1 x2 -- x1 x2 x1 ) 1 xpick >x ; ?)
 
@@ -230,7 +230,7 @@
 
 ( 2x@ 2>x 2x> 2xdrop 2xdup )
 
-[unneeded] 2x@ ?( need x@ need xpick
+unneeding 2x@ ?( need x@ need xpick
 
 : 2x@ ( -- x1 x2 ) ( X: x1 x2 -- x1 x2 )
   x@ 1 xpick swap ; ?)
@@ -244,7 +244,7 @@
   \
   \ }doc
 
-[unneeded] 2>x ?( need >x
+unneeding 2>x ?( need >x
 
 : 2>x ( x1 x2 -- ) ( X: -- x1 x2 ) swap >x >x ; ?)
 
@@ -259,7 +259,7 @@
   \
   \ }doc
 
-[unneeded] 2x> ?( need x>
+unneeding 2x> ?( need x>
 
 : 2x> ( -- x1 x2 ) ( X: x1 x2 -- ) x> x> swap ; ?)
 
@@ -274,7 +274,7 @@
   \
   \ }doc
 
-[unneeded] 2xdrop ?( need xp
+unneeding 2xdrop ?( need xp
 
 : 2xdrop ( X: x1 x2 -- ) [ -2 cells ] literal xp +! ; ?)
 
@@ -288,7 +288,7 @@
   \
   \ }doc
 
-[unneeded] 2xdup ?( need xover
+unneeding 2xdup ?( need xover
 
 : 2xdup ( X: x1 x2 -- x1 x2 x1 x2 ) xover xover ; ?)
 
@@ -304,7 +304,7 @@
 
 ( xclear xdepth .xs )
 
-[unneeded] xclear ?( need xp0 need xp
+unneeding xclear ?( need xp0 need xp
 
 : xclear ( -- ) xp0 xp ! ; ?)
 
@@ -318,7 +318,7 @@
   \
   \ }doc
 
-[unneeded] xlen [unneeded] xdepth and ?( need xp need xp0
+unneeding xlen unneeding xdepth and ?( need xp need xp0
 
 : xlen ( -- n ) xp @ xp0 - ;
 
@@ -345,7 +345,7 @@
   \
   \ }doc
 
-[unneeded] .xs ?(
+unneeding .xs ?(
 
 need xp0 need xlen need xdepth need .depth
 
@@ -406,5 +406,7 @@ need xp0 need xlen need xdepth need .depth
   \
   \ 2018-02-07: Use `constant` and `!>` instead of `value` and
   \ `to`. It's faster. Update documentation.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

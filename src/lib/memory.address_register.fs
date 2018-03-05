@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802141340
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -35,7 +35,7 @@
 
 ( a a! a@ !a @a c!a c@a )
 
-[unneeded] a ?( variable a
+unneeding a ?( variable a
 
   \ doc{
   \
@@ -79,7 +79,7 @@ code a@ ( -- a ) 2A c, a , E5 c, jpnext, end-code ?)
   \
   \ }doc
 
-[unneeded] !a ?( need a
+unneeding !a ?( need a
 
 code !a ( x -- ) D1 c, 2A c, a , 70 03 + c, 23 c, 70 02 + c,
                  jpnext, end-code ?)
@@ -100,7 +100,7 @@ code !a ( x -- ) D1 c, 2A c, a , 70 03 + c, 23 c, 70 02 + c,
   \
   \ }doc
 
-[unneeded] @a ?( need a
+unneeding @a ?( need a
 
 code @a ( -- x ) 2A c, a , 5E c, 23 c, 66 c, 68 03 + c, E5 c,
                  jpnext, end-code ?)
@@ -122,7 +122,7 @@ code @a ( -- x ) 2A c, a , 5E c, 23 c, 66 c, 68 03 + c, E5 c,
   \
   \ }doc
 
-[unneeded] c!a ?( need a
+unneeding c!a ?( need a
 
 code c!a ( c -- ) D1 c, 2A c, a , 70 03 + c, jpnext,
                   end-code ?)
@@ -141,7 +141,7 @@ code c!a ( c -- ) D1 c, 2A c, a , 70 03 + c, jpnext,
   \
   \ }doc
 
-[unneeded] c@a ?(
+unneeding c@a ?(
 
 code c@a ( -- c ) 2A c, a , 6E c, 26 c, 00 c, E5 c, jpnext,
                   end-code ?)
@@ -163,7 +163,7 @@ code c@a ( -- c ) 2A c, a , 6E c, 26 c, 00 c, E5 c, jpnext,
 
 ( !a+ @a+ c!a+ c@a+ )
 
-[unneeded] !a+ ?( need a
+unneeding !a+ ?( need a
 
 code !a+ ( x -- ) D1 c, 2A c, a , 70 03 + c, 23 c, 70 02 + c,
                   23 c, 22 c, a , jpnext, end-code ?)
@@ -187,7 +187,7 @@ code !a+ ( x -- ) D1 c, 2A c, a , 70 03 + c, 23 c, 70 02 + c,
   \
   \ }doc
 
-[unneeded] @a+ ?( need a
+unneeding @a+ ?( need a
 
 code @a+ ( -- x ) 2A c, a , 5E c, 23 c, 56 c, 23 c, 22 c, a ,
                   D5 c, jpnext, end-code ?)
@@ -212,7 +212,7 @@ code @a+ ( -- x ) 2A c, a , 5E c, 23 c, 56 c, 23 c, 22 c, a ,
   \ }doc
 
 
-[unneeded] c!a+ ?( need a
+unneeding c!a+ ?( need a
 
 code c!a+ ( c -- ) D1 c, 2A c, a , 70 03 + c, 23 c,
                    22 c, a , jpnext, end-code ?)
@@ -234,7 +234,7 @@ code c!a+ ( c -- ) D1 c, 2A c, a , 70 03 + c, 23 c,
   \
   \ }doc
 
-[unneeded] c@a+ ?( need a
+unneeding c@a+ ?( need a
 
 code c@a+ ( -- c ) 2A c, a , 5E c, 23 c, 16 c, 00 c,
                    22 c, a , D5 c, jpnext, end-code ?)
@@ -289,5 +289,7 @@ code c@a+ ( -- c ) 2A c, a , 5E c, 23 c, 16 c, 00 c,
   \ 2017-12-09: Improve documentation.
   \
   \ 2018-02-14: Compact the code, saving one block.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

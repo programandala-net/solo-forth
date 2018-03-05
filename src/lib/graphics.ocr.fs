@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802151540
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -175,7 +175,7 @@ code ocr ( col line -- n )
 
 ( ascii-ocr udg-ocr )
 
-[unneeded] ascii-ocr ?( need ocr need os-chars
+unneeding ascii-ocr ?( need ocr need os-chars
 
 : ascii-ocr ( -- )
   os-chars @ 256 + ocr-font !
@@ -193,7 +193,7 @@ code ocr ( col line -- n )
   \
   \ }doc
 
-[unneeded] udg-ocr ?( need ocr need os-udg
+unneeding udg-ocr ?( need ocr need os-udg
 
 : udg-ocr ( n -- )
   os-udg @ ocr-font !  0 ocr-first c!  ocr-chars c! ; ?)
@@ -251,5 +251,7 @@ code ocr ( col line -- n )
   \
   \ 2018-02-15: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

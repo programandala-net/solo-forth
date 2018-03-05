@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802051658
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -121,11 +121,11 @@ previous set-current
 
 need common-indexer
 
-[unneeded] index-words ?( need wordlist-words need .wordname
+unneeding index-words ?( need wordlist-words need .wordname
 
 : index-words ( -- ) index-wordlist wordlist-words ; ?)
 
-[unneeded] indexer-words ?( need wordlist-words need .wordname
+unneeding indexer-words ?( need wordlist-words need .wordname
 
 : indexer-words ( -- ) indexer-wordlist wordlist-words ; ?)
 
@@ -155,5 +155,7 @@ need common-indexer
   \
   \ 2018-02-05: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

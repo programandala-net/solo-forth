@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801231614
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,7 +27,7 @@
 
 ( rnd random fast-rnd fast-random )
 
-[unneeded] rnd ?(
+unneeding rnd ?(
 
 2variable rnd-seed  $0111 rnd-seed !
 
@@ -44,7 +44,7 @@
   \
   \ }doc
 
-[unneeded] random ?( need rnd
+unneeding random ?( need rnd
 
 : random ( n1 -- n2 ) rnd um* nip ; ?)
 
@@ -67,7 +67,7 @@
   \ http://web.archive.org/web/20060707001752/http://www.tinyboot.com/index.html
   \ http://web.archive.org/web/20060714230130/http://tinyboot.com:80/rng.txt
 
-[unneeded] fast-rnd ?( need os-seed
+unneeding fast-rnd ?( need os-seed
 
 code fast-rnd ( -- u )
   2A c, os-seed , 54 c, 5D c, 29 c, 19 c, 29 c, 19 c,
@@ -107,7 +107,7 @@ code fast-rnd ( -- u )
   \
   \ }doc
 
-[unneeded] fast-random ?( need fast-rnd
+unneeding fast-random ?( need fast-rnd
 
 : fast-random ( n1 -- n2 ) fast-rnd um* nip ; ?)
 
@@ -168,7 +168,7 @@ code fast-rnd ( -- u )
 
 ( random-within random-between )
 
-[unneeded] random-within ?( need random
+unneeding random-within ?( need random
 
 : random-within ( n1 n2 -- n3 ) over - random + ; ?)
 
@@ -182,7 +182,7 @@ code fast-rnd ( -- u )
   \
   \ }doc
 
-[unneeded] random-between ?( need random-within
+unneeding random-between ?( need random-within
 
 : random-between ( n1 n2 -- n3 ) 1+ random-within ; ?)
 
@@ -199,7 +199,7 @@ code fast-rnd ( -- u )
 
 ( crnd -1|1 -1..1 randomize randomize0 )
 
-[unneeded] crnd ?( need os-seed
+unneeding crnd ?( need os-seed
 
 code crnd ( -- b )
   2A c, os-seed , ED c, 5F c, 57 c, 5E c, 19 c,
@@ -250,7 +250,7 @@ code crnd ( -- b )
   \
   \ }doc
 
-[unneeded] -1|1
+unneeding -1|1
 ?\ need random : -1|1 ( -- -1|1 ) 2 random 2* 1- ;
 
   \ doc{
@@ -263,7 +263,7 @@ code crnd ( -- b )
   \
   \ }doc
 
-[unneeded] -1..1
+unneeding -1..1
 ?\ need random : -1..1 ( -- -1|0|1 ) 3 random 1- ;
 
   \ doc{
@@ -276,7 +276,7 @@ code crnd ( -- b )
   \
   \ }doc
 
-[unneeded] randomize
+unneeding randomize
 ?\ need os-seed : randomize ( n -- ) os-seed ! ;
 
   \ doc{
@@ -289,7 +289,7 @@ code crnd ( -- b )
   \
   \ }doc
 
-[unneeded] randomize0 ?( need os-frames need randomize
+unneeding randomize0 ?( need os-frames need randomize
 
 : randomize0 ( n -- )
   ?dup 0= if os-frames @ then randomize ; ?)
@@ -358,5 +358,7 @@ code crnd ( -- b )
   \
   \ 2018-01-23: Fix, benchmark and remove `crandom`, which is
   \ slower than `random`.  Fix cross reference.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

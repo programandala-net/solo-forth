@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052134
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -950,17 +950,17 @@ cr using  \ works fine
 
 ( nest-need-test nnt1 nnt2 nnt3 nnt4 nnt5 nnt6 nnt7 nnt8 nnt9 )
 
-[unneeded] nest-need-test ?\ need nnt1  defer nest-need-test
+unneeding nest-need-test ?\ need nnt1  defer nest-need-test
 
-[unneeded] nnt1 ?\ need nnt2  defer nnt1  exit
-[unneeded] nnt2 ?\ need nnt3  defer nnt2  exit
-[unneeded] nnt3 ?\ need nnt4  defer nnt3  exit
-[unneeded] nnt4 ?\ need nnt5  defer nnt4  exit
-[unneeded] nnt5 ?\ need nnt6  defer nnt5  exit
-[unneeded] nnt6 ?\ need nnt7  defer nnt6  exit
-[unneeded] nnt7 ?\ need nnt8  defer nnt7  exit
-[unneeded] nnt8 ?\ need nnt9  defer nnt8  exit
-[unneeded] nnt9 ?\ defer nnt9
+unneeding nnt1 ?\ need nnt2  defer nnt1  exit
+unneeding nnt2 ?\ need nnt3  defer nnt2  exit
+unneeding nnt3 ?\ need nnt4  defer nnt3  exit
+unneeding nnt4 ?\ need nnt5  defer nnt4  exit
+unneeding nnt5 ?\ need nnt6  defer nnt5  exit
+unneeding nnt6 ?\ need nnt7  defer nnt6  exit
+unneeding nnt7 ?\ need nnt8  defer nnt7  exit
+unneeding nnt8 ?\ need nnt9  defer nnt8  exit
+unneeding nnt9 ?\ defer nnt9
 
 ( doer-test )
 
@@ -1647,5 +1647,7 @@ blk @ 1+ blk @ 2+ thru
   \ 2018-02-14: Start `file-write-test`.
   \
   \ 2018-03-05: Improve `{if-test`.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

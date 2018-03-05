@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712092330
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -25,10 +25,10 @@
 
 ( assert assert= assert( )
 
-[unneeded] assert
+unneeding assert
 ?\ : assert ( n -- ) 0= if  abort  then ;
 
-[unneeded] assert=
+unneeding assert=
 ?\ need assert  : assert= ( a b -- ) = assert ;
 
   \ Credit:
@@ -37,7 +37,7 @@
   \
   \ http://bradn123.github.io/literateforth/out/events.fs
 
-[unneeded] assert( ?exit
+unneeding assert( ?exit
 
   \ Credit:
   \
@@ -237,5 +237,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \ 2017-03-13: Improve documentation.
   \
   \ 2017-12-09: Improve documentation.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

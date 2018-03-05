@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2017.
+  \ Marcos Cruz (programandala.net), 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -26,7 +26,7 @@
 ( xt-substitution xt-replaces )
 
 
-[unneeded] xt-substitution ?(
+unneeding xt-substitution ?(
 
 need (substitution
 
@@ -45,7 +45,7 @@ need (substitution
   \
   \ }doc
 
-[unneeded] xt-replaces ?(
+unneeding xt-replaces ?(
 
 need find-substitution need reuse-substitution
 need xt-substitution
@@ -80,6 +80,8 @@ need xt-substitution
   \ 2017-02-17: Update cross references.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth
 

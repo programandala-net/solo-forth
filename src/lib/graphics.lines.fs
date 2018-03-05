@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802151539
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( rdraw176 x1 incx y1 incy y )
 
-[unneeded] rdraw176 ?( need assembler
+unneeding rdraw176 ?( need assembler
 
 code rdraw176 ( gx gy -- )
 
@@ -72,8 +72,8 @@ code rdraw176 ( gx gy -- )
   \
   \ }doc
 
-[unneeded] x1 [unneeded] incx
-[unneeded] y1 [unneeded] incy and and and
+unneeding x1 unneeding incx
+unneeding y1 unneeding incy and and and
 
 ?\ 2variable x1  2variable incx  2variable y1  2variable incy
 
@@ -569,5 +569,7 @@ code ortholine ( gx gy gxinc gyinc len -- )
   \
   \ 2018-02-15: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

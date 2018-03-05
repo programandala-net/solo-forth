@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802051721
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -38,7 +38,7 @@
 
 ( faravariable far2avariable farcavariable )
 
-[unneeded] faravariable ?( need farallot need array>
+unneeding faravariable ?( need farallot need array>
 
 : faravariable ( n "name" -- )
   create  np@ , cells farallot
@@ -62,7 +62,7 @@
   \
   \ }doc
 
-[unneeded] far2avariable ?( need farallot need 2array>
+unneeding far2avariable ?( need farallot need 2array>
 
 : far2avariable ( n "name" -- )
   create  np@ , [ 2 cells ] cliteral * farallot
@@ -86,7 +86,7 @@
   \
   \ }doc
 
-[unneeded] cavariable ?( need farallot
+unneeding cavariable ?( need farallot
 
 : farcavariable ( n "name" -- )
   create  np@ , farallot
@@ -128,5 +128,7 @@
   \
   \ 2018-02-05: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802071843
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( str< str> trim +place hunt )
 
-[unneeded] str<
+unneeding str<
 ?\ : str< ( ca1 len1 ca2 len2 -- f ) compare 0< ;
 
   \ doc{
@@ -39,7 +39,7 @@
   \
   \ }doc
 
-[unneeded] str>
+unneeding str>
 ?\ : str> ( ca1 len1 ca2 len2 -- f ) compare 0> ;
 
   \ doc{
@@ -53,7 +53,7 @@
   \
   \ }doc
 
-[unneeded] trim
+unneeding trim
 ?\ : trim ( ca1 len1 -- ca2 len2 ) -leading -trailing ;
 
   \ doc{
@@ -67,7 +67,7 @@
   \
   \ }doc
 
-[unneeded] +place ?( need c+!
+unneeding +place ?( need c+!
 : +place ( ca1 len1 ca2 -- )
   2dup 2>r count + smove 2r> c+! ; ?)
 
@@ -82,7 +82,7 @@
   \
   \ }doc
 
-[unneeded] hunt ?(
+unneeding hunt ?(
 : hunt ( ca1 len1 ca2 len2 -- ca3 len3 )
   search 0= if chars + 0 then ; ?)
 
@@ -109,7 +109,7 @@
 
 ( ud>str u>str d>str n>str )
 
-[unneeded] ud>str
+unneeding ud>str
 ?\ : ud>str ( ud -- ca len ) <# #s #> ;
 
   \ Credit:
@@ -126,7 +126,7 @@
   \
   \ }doc
 
-[unneeded] u>str
+unneeding u>str
 ?\ need ud>str : u>str ( u -- ca len ) s>d ud>str ;
 
   \ doc{
@@ -139,7 +139,7 @@
   \
   \ }doc
 
-[unneeded] d>str ?(
+unneeding d>str ?(
 : d>str ( d -- ca len ) tuck dabs <# #s rot sign #> ; ?)
 
   \ Credit:
@@ -156,7 +156,7 @@
   \
   \ }doc
 
-[unneeded] n>str
+unneeding n>str
 ?\ need d>str : n>str ( n -- ca len ) s>d d>str ;
 
   \ doc{
@@ -171,7 +171,7 @@
 
 ( char>string chars>string >bstring c>bstring 2>bstring )
 
-[unneeded] char>string ?(
+unneeding char>string ?(
 : char>string ( c -- ca len )
   1 allocate-stringer tuck c! 1 ; ?)
 
@@ -190,7 +190,7 @@
   \
   \ }doc
 
-[unneeded] chars>string ?(
+unneeding chars>string ?(
 : chars>string ( c1..cn n -- ca len )
   dup if   dup allocate-stringer swap 2dup 2>r ( c1..cn ca n )
            bounds ?do i c! loop 2r>
@@ -209,7 +209,7 @@
   \
   \ }doc
 
-[unneeded] >bstring
+unneeding >bstring
 ?\ : >bstring ( u -- ca len ) pad ! pad cell ;
 
   \ doc{
@@ -223,7 +223,7 @@
   \
   \ }doc
 
-[unneeded] c>bstring
+unneeding c>bstring
 ?\ : c>bstring ( c -- ca len ) pad c! pad 1 ;
 
   \ doc{
@@ -237,7 +237,7 @@
   \
   \ }doc
 
-[unneeded] 2>bstring ?(
+unneeding 2>bstring ?(
 : 2>bstring ( xd -- ca len )
   pad 2! pad [ 2 cells ] literal ; ?)
 
@@ -254,7 +254,7 @@
 
 ( lengths s+ )
 
-[unneeded] lengths ?(
+unneeding lengths ?(
 
 code lengths
   \ ( ca1 len1 ca2 len2 -- ca1 len1 ca2 len2 len1 len2 )
@@ -308,7 +308,7 @@ code lengths
 
   \ }doc
 
-[unneeded] s+ ?( need lengths need pick
+unneeding s+ ?( need lengths need pick
 
 : s+ ( ca1 len1 ca2 len2 -- ca3 len3 )
   lengths + >r            ( ca1 len2 ca2 len2 ) ( r: len3 )
@@ -335,7 +335,7 @@ code lengths
 
 ( upper upper_ uppers uppers1 )
 
-[unneeded] upper [unneeded] upper_ and ?( 0
+unneeding upper unneeding upper_ and ?( 0
 
 code upper ( c -- c' ) E1 c, 7D c, 21 c, pusha , E5 c,
   \   pop hl
@@ -383,7 +383,7 @@ set-current ?)
   \
   \ }doc
 
-[unneeded] uppers ?( need upper_
+unneeding uppers ?( need upper_
 
 code uppers ( ca len -- )
   D1 c, E1 c, here 7A c, B3 c, CA c, next , 7E c,
@@ -411,7 +411,7 @@ code uppers ( ca len -- )
   \
   \ }doc
 
-[unneeded] uppers1
+unneeding uppers1
 ?\ need uppers : uppers1 ( ca len -- ) drop 1 uppers ;
 
   \ doc{
@@ -426,7 +426,7 @@ code uppers ( ca len -- )
 
 ( lowers #spaces #chars )
 
-[unneeded] lowers ?(
+unneeding lowers ?(
 
 code lowers ( ca len -- )
   D1 c, E1 c, here 7A c, B3 c, CA c, next , 7E c,
@@ -454,7 +454,7 @@ code lowers ( ca len -- )
   \
   \ }doc
 
-[unneeded] #spaces ?( need under+
+unneeding #spaces ?( need under+
 
   \ XXX TODO -- finish and benchmark. rewrite `#spaces` after
   \ `#chars`? add `#nulls`
@@ -479,7 +479,7 @@ code lowers ( ca len -- )
   \
   \ }doc
 
-[unneeded] #chars ?( need under+
+unneeding #chars ?( need under+
 : #chars ( ca len c -- +n )
   0 2swap 0 ?do
     ( c count ca ) count over = under+ loop 2drop abs ; ?)
@@ -496,7 +496,7 @@ code lowers ( ca len -- )
 
 ( last-name /name first-name /first-name )
 
-[unneeded] last-name ?( need trim
+unneeding last-name ?( need trim
 
 : last-name ( ca1 len1 -- ca2 len2 )
   trim begin 2dup bl scan bl skip dup
@@ -517,7 +517,7 @@ code lowers ( ca len -- )
   \
   \ }doc
 
-[unneeded] /name ?(
+unneeding /name ?(
 
 : /name ( ca1 len1 -- ca2 len2 ca3 len3 )
   bl skip 2dup bl scan ; ?)
@@ -540,7 +540,7 @@ code lowers ( ca len -- )
   \
   \ }doc
 
-[unneeded] first-name ?( need /name
+unneeding first-name ?( need /name
 
 : first-name ( ca1 len1 -- ca2 len2 ) /name nip - ; ?)
 
@@ -560,7 +560,7 @@ code lowers ( ca len -- )
   \
   \ }doc
 
-[unneeded] /first-name ?( need /name
+unneeding /first-name ?( need /name
 
 : /first-name ( ca1 len1 -- ca2 len2 ca3 len3 )
   /name tuck 2>r - 2r> 2swap ; ?)
@@ -578,7 +578,7 @@ code lowers ( ca len -- )
 
 ( prefix? suffix? -prefix -suffix )
 
-[unneeded] prefix?
+unneeding prefix?
 
 ?\ : prefix? ( ca1 len1 ca2 len2 -- f ) tuck 2>r min 2r> str= ;
 
@@ -597,7 +597,7 @@ code lowers ( ca len -- )
   \
   \ }doc
 
-[unneeded] suffix? (? need pick
+unneeding suffix? (? need pick
 
 : suffix? ( ca1 len1 ca2 len2 -- f )
   2swap dup 3 pick - /string str= ; ?)
@@ -616,7 +616,7 @@ code lowers ( ca len -- )
   \
   \ }doc
 
-[unneeded] -prefix ?( need prefix?
+unneeding -prefix ?( need prefix?
 
 : -prefix ( ca1 len1 ca2 len2 -- ca1 len1 | ca3 len3 )
   dup >r 2over 2swap prefix?
@@ -636,7 +636,7 @@ code lowers ( ca len -- )
   \
   \ }doc
 
-[unneeded] -suffix ?( need suffix?
+unneeding -suffix ?( need suffix?
 
 : -suffix ( ca1 len1 ca2 len2 -- ca1 len1 | ca3 len3 )
   dup >r 2over 2swap suffix? if r> - else rdrop then ; ?)
@@ -657,7 +657,7 @@ code lowers ( ca len -- )
 
 ( contains chop s"" sconstant counted>stringer s' )
 
-[unneeded] contains ?\ : contains search nip nip ;
+unneeding contains ?\ : contains search nip nip ;
                          \ ( ca1 len1 ca2 len2 -- f )
 
   \ doc{
@@ -673,9 +673,9 @@ code lowers ( ca len -- )
 
   \ `contains` is defined also in <002.need.fsb>, where it is
   \ needed, but evidently it's not accessible there, because
-  \ `[unneeded]` is not defined yet at that point.
+  \ `unneeding` is not defined yet at that point.
 
-[unneeded] chop
+unneeding chop
 
 ?\ : chop ( ca len -- ca' len' ) 1- swap char+ swap ;
 
@@ -693,7 +693,7 @@ code lowers ( ca len -- )
   \
   \ }doc
 
-[unneeded] s"" ?\ : s"" ( -- ca len ) 0 allocate-stringer 0 ;
+unneeding s"" ?\ : s"" ( -- ca len ) 0 allocate-stringer 0 ;
 
   \ doc{
   \
@@ -705,7 +705,7 @@ code lowers ( ca len -- )
   \
   \ }doc
 
-[unneeded] s' ?\ : s' ''' parse-string ; immediate
+unneeding s' ?\ : s' ''' parse-string ; immediate
   \ Compilation: ( "ccc<char>" -- )
   \ Run-time:    ( -- ca len )
 
@@ -729,7 +729,7 @@ code lowers ( ca len -- )
 
 ( counted>stringer resize-stringer )
 
-[unneeded] counted>stringer ?(
+unneeding counted>stringer ?(
 
 : counted>stringer ( ca1 len1 -- ca2 )
   dup 1+ allocate-stringer dup >r place r> ; ?)
@@ -747,7 +747,7 @@ code lowers ( ca len -- )
 
 ( string/ char-in-string? char-position? ruler )
 
-[unneeded] string/ ?(
+unneeding string/ ?(
 
 code string/ ( ca1 len1 len2 -- ca2 len2 )
   D9 c, C1 c, D1 c, E1 c, 19 c, A7 c, ED c, 42 c,
@@ -778,7 +778,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \
   \ }doc
 
-[unneeded] char-in-string? ?( need -rot
+unneeding char-in-string? ?( need -rot
 
 : char-in-string? ( ca len c -- f )
   -rot bounds ?do  dup i c@ = if drop true unloop exit then
@@ -795,7 +795,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \
   \ }doc
 
-[unneeded] char-position? ?( need -rot
+unneeding char-position? ?( need -rot
 
 : char-position? ( ca len c -- +n true | false )
   -rot 0 ?do  2dup i + c@ = if 2drop i true unloop exit then
@@ -812,7 +812,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \
   \ }doc
 
-[unneeded] ruler ?(
+unneeding ruler ?(
 
 : ruler ( c len -- ca len )
   dup allocate-stringer swap 2dup 2>r rot fill 2r> ; ?)
@@ -830,7 +830,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
 
 ( sconstant sconstants unescape )
 
-[unneeded] sconstant ?(
+unneeding sconstant ?(
 
 : sconstant ( ca len "name" -- )
   here >r s, r> count 2constant ; ?)
@@ -849,7 +849,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \
   \ }doc
 
-[unneeded] sconstants ?( need array>
+unneeding sconstants ?( need array>
 
 : sconstants ( 0 ca[n]..ca[1] "name" -- n )
   create 0 begin swap ?dup while , 1+ repeat
@@ -891,7 +891,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \
   \ }doc
 
-[unneeded] unescape ?(
+unneeding unescape ?(
 
 : unescape ( ca1 len1 ca2 -- ca2 len2 )
   dup 2swap over + swap ?do
@@ -1042,5 +1042,7 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \
   \ 2018-02-07: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802141503
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( ud* d* dxor dor dand d10* )
 
-[unneeded] ud*
+unneeding ud*
 
 ?\ : ud* ( ud1 u2 -- ud3 ) dup >r um* drop  swap r> um* rot + ;
 
@@ -43,7 +43,7 @@
   \
   \ }doc
 
-[unneeded] d* ?(
+unneeding d* ?(
 
 : d* ( d|ud1 d|ud2 -- d|ud3 )
   >r swap >r 2dup um* rot r> * + rot r> * + ; ?)
@@ -96,7 +96,7 @@
   \   2dup um* 2swap        ( d1lo*d2lo d1lo d2lo )
   \   r> * swap r> * + + ; ( d1*d2 ) ( R: )
 
-[unneeded] dxor
+unneeding dxor
 
 ?\ : dxor ( xd1 xd2 -- xd3 ) rot xor -rot xor swap ;
 
@@ -110,7 +110,7 @@
   \
   \ }doc
 
-[unneeded] dor
+unneeding dor
 
 ?\ : dor ( xd1 xd2 -- xd3 ) rot or -rot or swap ;
 
@@ -124,7 +124,7 @@
   \
   \ }doc
 
-[unneeded] dand
+unneeding dand
 
 ?\ : dand ( xd1 xd2 -- xd3 ) rot and -rot and swap ;
 
@@ -144,7 +144,7 @@
   \ Carter, published on Forth Dimensions (volume 16, number 2,
   \ page 17, 1994-08).
 
-[unneeded] d10*
+unneeding d10*
 
 ?\ : d10* ( ud1 -- ud2 ) d2* 2dup d2* d2* d+ ;
 
@@ -223,7 +223,7 @@ need tum* need t+ need t- need tum/ need d2* need lshift
   \
   \ Code from DZX-Forth.
 
-[unneeded] d0= ?(
+unneeding d0= ?(
 
 code d0= ( d -- f )
   E1 c, D1 c, 19 c, 78 04 + c, B0 05 + c,
@@ -255,7 +255,7 @@ code d0= ( d -- f )
   \
   \ }doc
 
-[unneeded] d0< ?\ : d0< ( d -- f ) nip 0< ;
+unneeding d0< ?\ : d0< ( d -- f ) nip 0< ;
 
   \ doc{
   \
@@ -267,7 +267,7 @@ code d0= ( d -- f )
   \
   \ }doc
 
-[unneeded] d< ?( need 2nip
+unneeding d< ?( need 2nip
 
 : d< ( d1 d2 -- f )
   rot 2dup = if 2drop u< exit then 2nip > ; ?)
@@ -286,7 +286,7 @@ code d0= ( d -- f )
   \
   \ }doc
 
-[unneeded] du< ?(
+unneeding du< ?(
 
   \ XXX TODO rewrite in Z80
 
@@ -310,7 +310,7 @@ code d0= ( d -- f )
 
 ( d= d<> dmin dmax )
 
-[unneeded] d= ?\ need d<> : d= ( xd1 xd2 -- f ) d<> 0= ;
+unneeding d= ?\ need d<> : d= ( xd1 xd2 -- f ) d<> 0= ;
   \ XXX TODO -- rewrite in Z80
 
   \ doc{
@@ -323,7 +323,7 @@ code d0= ( d -- f )
   \
   \ }doc
 
-[unneeded] d<>
+unneeding d<>
 
 ?\ : d<> ( xd1 xd2 -- f ) rot <> if 2drop true exit then <> ;
   \ XXX TODO -- rewrite in Z80
@@ -339,7 +339,7 @@ code d0= ( d -- f )
   \
   \ }doc
 
-[unneeded] dmin ?(
+unneeding dmin ?(
 
 : dmin ( d1 d2 -- d3 )
   2over 2over d< 0= if 2swap then 2drop ; ?)
@@ -363,7 +363,7 @@ code d0= ( d -- f )
   \
   \ }doc
 
-[unneeded] dmax ?(
+unneeding dmax ?(
 
 : dmax ( d1 d2 -- d1 | d2 )
   2over 2over d< if 2swap then 2drop ; ?)
@@ -388,7 +388,7 @@ code d0= ( d -- f )
 
 ( d- d2* d2/ )
 
-[unneeded] d- ?( code d- ( d1|ud1 d2|ud2 -- d3|ud3 )
+unneeding d- ?( code d- ( d1|ud1 d2|ud2 -- d3|ud3 )
 
   D1 c, D9 c, D1 c, D9 c, E1 c, D9 c, E1 c,
   \ de pop            \ DE=d2hi
@@ -421,7 +421,7 @@ code d0= ( d -- f )
   \
   \ }doc
 
-[unneeded] d2* ?( code d2* ( xd1 -- xd2 )
+unneeding d2* ?( code d2* ( xd1 -- xd2 )
 
   D1 c, E1 c, 29 c, CB c, 13 c, CB c, 12 c, EB c, D5 c, E5 c,
     \ pop de
@@ -452,7 +452,7 @@ code d0= ( d -- f )
   \
   \ }doc
 
-[unneeded] d2/ ?( code d2/ ( xd1 -- xd2 )
+unneeding d2/ ?( code d2/ ( xd1 -- xd2 )
 
   E1 c, D1 c, CB c, 2C c, CB c, 1C c, CB c, 1D c,
     \ pop hl
@@ -487,7 +487,7 @@ code d0= ( d -- f )
 
 ( m+ m*/ )
 
-[unneeded] m+ ?( need assembler
+unneeding m+ ?( need assembler
 
   \ Credit:
   \
@@ -526,7 +526,7 @@ code m+ ( d1|ud1 n -- d2|ud2 )
   \
   \ }doc
 
-[unneeded] m*/ ?(
+unneeding m*/ ?(
 
 : m*/ ( d1 n1 +n2 -- d2 )
   >r s>d >r abs -rot s>d r> xor r> swap >r >r dabs
@@ -640,5 +640,7 @@ need 2nip need cell-bits
   \
   \ 2018-02-14: Compact the code, saving two blocks. Update
   \ source style (remove double spaces).
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

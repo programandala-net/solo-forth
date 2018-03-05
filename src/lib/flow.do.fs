@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201708202129
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2017.
+  \ Marcos Cruz (programandala.net), 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -25,7 +25,7 @@
 
 ( do -do #do )
 
-[unneeded] do ?(
+unneeding do ?(
 
 : do ( -- do-sys )
   postpone (do) >mark ; immediate compile-only ?)
@@ -50,7 +50,7 @@
   \
   \ }doc
 
-[unneeded] -do ?(
+unneeding -do ?(
 
 code (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
   D1 c, E1 c, A7 c, ED c, 52 c, D2 c, ' branch , 19 c, EB c,
@@ -134,7 +134,7 @@ code (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
   \
   \ }doc
 
-[unneeded] #do ?(
+unneeding #do ?(
 
 : #do ( -- do-sys )
   postpone 0 postpone ?do ; immediate compile-only ?)
@@ -175,5 +175,7 @@ code (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
   \ 2017-03-13: Improve documentation.
   \
   \ 2017-08-20: Add `#do`. Improve documentation.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

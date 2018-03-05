@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -30,7 +30,7 @@
 
 ( substitute-wordlist (substitution slit-substitution )
 
-[unneeded] substitute-wordlist
+unneeding substitute-wordlist
 ?\  wordlist constant substitute-wordlist
 
   \ doc{
@@ -43,7 +43,7 @@
   \
   \ }doc
 
-[unneeded] (substitution ?(
+unneeding (substitution ?(
 
 need substitute-wordlist need nextname
 
@@ -67,7 +67,7 @@ need substitute-wordlist need nextname
   \
   \ }doc
 
-[unneeded] slit-substitution ?(
+unneeding slit-substitution ?(
 
 need (substitution need /counted-string
 
@@ -89,7 +89,7 @@ need (substitution need /counted-string
 
 ( find-substitution reuse-substitution replaces )
 
-[unneeded] find-substitution ?(
+unneeding find-substitution ?(
 
 need substitute-wordlist need search-wordlist
 
@@ -107,13 +107,13 @@ need substitute-wordlist need search-wordlist
   \
   \ }doc
 
-[unneeded] reuse-substitution ?(
+unneeding reuse-substitution ?(
 
 need >body
 
 : reuse-substitution ( ca len xt -- dfa ) nip nip >body ; ?)
 
-[unneeded] replaces ?(
+unneeding replaces ?(
 
 need find-substitution need reuse-substitution
 need slit-substitution
@@ -168,5 +168,7 @@ need slit-substitution
   \ 2017-03-13: Improve documentation.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

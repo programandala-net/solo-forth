@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705070114
+  \ Last modified: 201803052149
 
   \ ===========================================================
   \ Description
@@ -13,7 +13,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -33,7 +33,7 @@
   \
   \ XXX TODO link to the WoS archive ftp, when available
 
-[unneeded] -jiffy ?( need !dosvar
+unneeding -jiffy ?( need !dosvar
 
 : jiffy! ( a -- ) 16 !dosvar ; ?)
 
@@ -49,7 +49,7 @@
   \
   \ }doc
 
-[unneeded] -jiffy ?( need @dosvar
+unneeding -jiffy ?( need @dosvar
 
 : jiffy@ ( -- a ) 16 @dosvar ; ?)
 
@@ -65,7 +65,7 @@
   \
   \ }doc
 
-[unneeded] -jiffy ?( need jiffy!
+unneeding -jiffy ?( need jiffy!
 
 : -jiffy ( -- ) 8335 jiffy! ; ?)
 
@@ -86,5 +86,7 @@
   \ Change log
 
   \ 2017-05-07: Document the words.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

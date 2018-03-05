@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -24,7 +24,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -35,7 +35,7 @@
 
 ( val 2val cval )
 
-[unneeded] val ?(  variable (val)
+unneeding val ?(  variable (val)
 
 : init-val ( -- ) ['] @ (val) ! ; init-val
 
@@ -84,7 +84,7 @@
   \
   \ }doc
 
-[unneeded] 2val ?(  variable (2val)
+unneeding 2val ?(  variable (2val)
 
 : init-2val ( -- ) ['] 2@ (2val) ! ; init-2val
 
@@ -133,7 +133,7 @@
   \
   \ }doc
 
-[unneeded] cval ?(  variable (cval)
+unneeding cval ?(  variable (cval)
 
 : init-cval ( -- ) ['] c@ (cval) ! ; init-cval
 
@@ -194,5 +194,7 @@
   \ 2017-03-30: Add `cval` and `ctoval`. Document all words.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

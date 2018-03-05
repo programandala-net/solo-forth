@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201707262116
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -30,7 +30,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -251,7 +251,7 @@ tape-header 13 + constant tape-start ( -- a )
 
 ( tape-file> >tape-file )
 
-[unneeded] tape-file> ?( need tape-header
+unneeding tape-file> ?( need tape-header
 
 code (tape-file>) ( -- )
   C5 c,  DD c, 21 c, tape-header ,  2A c, tape-start ,
@@ -301,7 +301,7 @@ code (tape-file>) ( -- )
   \
   \ }doc
 
-[unneeded] >tape-file ?( need tape-header
+unneeding >tape-file ?( need tape-header
 
 code (>tape-file) ( -- )
   C5 c,  DD c, 21 c, tape-header , A8 07 + c,  32 c, 5C74 ,
@@ -351,7 +351,7 @@ code (>tape-file) ( -- )
 
 ( last-tape-header display>tape-file tape-file>display )
 
-[unneeded] last-tape-header ?(
+unneeding last-tape-header ?(
 
 need tape-header
 
@@ -421,7 +421,7 @@ last-tape-header 13 + constant last-tape-start ( -- a ) ?)
   \
   \ }doc
 
-[unneeded] display>tape-file ?( need >tape-file
+unneeding display>tape-file ?( need >tape-file
 
 : display>tape-file ( ca len -- )
   16384 6912 2swap >tape-file ; ?)
@@ -437,7 +437,7 @@ last-tape-header 13 + constant last-tape-start ( -- a ) ?)
   \
   \ }doc
 
-[unneeded] tape-file>display ?( need tape-file>
+unneeding tape-file>display ?( need tape-file>
 
 : tape-file>display ( ca len -- ) 16384 0 tape-file> ; ?)
 
@@ -486,5 +486,7 @@ last-tape-header 13 + constant last-tape-start ( -- a ) ?)
   \
   \ 2017-07-26: Add `display>tape-file` and
   \ `tape-file>display`.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

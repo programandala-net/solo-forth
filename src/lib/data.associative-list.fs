@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802060932
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -95,7 +95,7 @@ need search-wordlist
 
 ( entry: centry: 2entry: sentry: items )
 
-need create-entry  [unneeded] entry: ?(
+need create-entry  unneeding entry: ?(
 : entry: ( x wid "name" -- )
   ['] , create-entry does> ( -- x ) ( dfa ) @ ; ?)
 
@@ -110,7 +110,7 @@ need create-entry  [unneeded] entry: ?(
   \
   \ }doc
 
-[unneeded] centry: ?(
+unneeding centry: ?(
 : centry: ( c wid "name" -- )
   ['] c, create-entry does> ( -- c ) ( dfa ) c@ ; ?)
 
@@ -125,7 +125,7 @@ need create-entry  [unneeded] entry: ?(
   \
   \ }doc
 
-[unneeded] 2entry: ?(
+unneeding 2entry: ?(
 : 2entry: ( dx wid "name" -- )
   ['] 2, create-entry does> ( -- dx ) ( dfa ) 2@ ; ?)
 
@@ -140,7 +140,7 @@ need create-entry  [unneeded] entry: ?(
   \
   \ }doc
 
-[unneeded] sentry: ?(
+unneeding sentry: ?(
 : sentry: ( ca len wid "name" -- )
   ['] s, create-entry does> ( -- ca len ) ( dfa ) count ; ?)
 
@@ -155,7 +155,7 @@ need create-entry  [unneeded] entry: ?(
   \
   \ }doc
 
-[unneeded] items ?exit need alias need wordlist-words
+unneeding items ?exit need alias need wordlist-words
 
 ' wordlist-words alias items ( wid -- )
 
@@ -199,5 +199,7 @@ need create-entry  [unneeded] entry: ?(
   \
   \ 2018-02-06: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

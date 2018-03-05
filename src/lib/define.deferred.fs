@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801110045
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -25,7 +25,7 @@
 
 ( deferred defers defer@ action-of )
 
-[unneeded] deferred
+unneeding deferred
 
 ?\ : deferred ( xt "name" -- ) defer latest name> defer! ;
 
@@ -41,7 +41,7 @@
   \
   \ }doc
 
-[unneeded] defers ?( need defer@
+unneeding defers ?( need defer@
 
 : defers ' defer@ compile, ; immediate ?)
   \ Interpretation: ( "name" -- )
@@ -71,7 +71,7 @@
   \
   \ Code adapted from Afera.
 
-[unneeded] defer@ ?\ : defer@ ( xt1 -- xt2 ) >action @ ;
+unneeding defer@ ?\ : defer@ ( xt1 -- xt2 ) >action @ ;
 
   \ doc{
   \
@@ -86,7 +86,7 @@
   \
   \ }doc
 
-[unneeded] deferred? ?\ : deferred? ( xt -- f ) c@ $C3 = ;
+unneeding deferred? ?\ : deferred? ( xt -- f ) c@ $C3 = ;
 
   \ doc{
   \
@@ -102,7 +102,7 @@
   \
   \ }doc
 
-[unneeded] action-of ?( need defer@
+unneeding action-of ?( need defer@
 
 : action-of
   \ Interpretation: ( "name" -- xt )
@@ -150,18 +150,18 @@
   \
   \ Code adapted from Afera.
 
-[unneeded] <is> ?\ : <is> ( xt "name" -- ) ' defer! ;
+unneeding <is> ?\ : <is> ( xt "name" -- ) ' defer! ;
 
   \ XXX TODO -- Documentation.
 
-[unneeded] [is] ?(
+unneeding [is] ?(
 
 : [is] ( xt "name" -- )
   postpone ['] postpone defer! ; immediate compile-only ?)
 
   \ XXX TODO -- Documentation.
 
-[unneeded] is ?( need [is] need <is>
+unneeding is ?( need [is] need <is>
 
 : is ( xt "name" -- )
   compiling? if postpone [is] else <is> then ; immediate ?)
@@ -189,5 +189,7 @@
   \ 2017-12-20: Fix needing of `defer@`. Improve documentation.
   \
   \ 2018-01-11: Update layout. Improve documentation.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802051656
+  \ Last modified: 201803052149
 
   \ ===========================================================
   \ Description
@@ -25,7 +25,7 @@
 
 ( pushhlde << >> ;code )
 
-[unneeded] pushhlde ?(
+unneeding pushhlde ?(
 
 get-current assembler-wordlist dup >order set-current
 
@@ -54,7 +54,7 @@ previous set-current ?)
   \
   \ }doc
 
-[unneeded] << [unneeded] >> and ?(
+unneeding << unneeding >> and ?(
 
   \ Credit:
   \
@@ -118,7 +118,7 @@ need c@+ need for need 16hex. need 8hex.
   \
   \ }doc
 
-[unneeded] ;code ?(
+unneeding ;code ?(
 
 : ;code
   \ Compilation: ( -- )
@@ -233,6 +233,7 @@ need c@+ need for need 16hex. need 8hex.
   \
   \ 2018-02-05: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth
-

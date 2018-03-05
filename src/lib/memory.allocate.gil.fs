@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201712092316
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -17,7 +17,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ Credit
@@ -230,7 +230,7 @@ set-current set-order
 
 ( .gil-heap )
 
-[unneeded] .gil-heap ?(
+unneeding .gil-heap ?(
 
 need gil-heap-wordlist gil-heap-wordlist >order
 
@@ -281,6 +281,8 @@ previous ?)
   \ Compact the code, saving one block.
   \
   \ 2017-12-09: Improve documentation.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth
 

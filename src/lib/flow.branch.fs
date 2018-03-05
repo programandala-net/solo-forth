@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802041948
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,7 +27,7 @@
 
 ( -branch +branch )
 
-[unneeded] -branch ?(
+unneeding -branch ?(
 code -branch ( n -- )
   E1 c,  CB c, 7C c,  C2 c, ' branch ,  03 c, 03 c,
     \ pop hl
@@ -51,7 +51,7 @@ code -branch ( n -- )
   \
   \ }doc
 
-[unneeded] +branch ?(
+unneeding +branch ?(
 code +branch ( n -- )
   E1 c,  CB c, 7C c,  CA c, ' branch ,  03 c, 03 c,
     \ pop hl
@@ -96,6 +96,8 @@ code +branch ( n -- )
   \
   \ 2018-02-04: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth
 

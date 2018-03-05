@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801250929
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( (g-emit g-emit g-type )
 
-[unneeded] (g-emit ?( need assembler need g-emit_
+unneeding (g-emit ?( need assembler need g-emit_
                       need os-chars need os-coords
 
 code (g-emit ( c -- )
@@ -47,7 +47,7 @@ code (g-emit ( c -- )
   \
   \ }doc
 
-[unneeded] g-emit ?(
+unneeding g-emit ?(
 
 need g-emit-udg need (g-emit need g-emitted
 
@@ -70,7 +70,7 @@ need g-emit-udg need (g-emit need g-emitted
   \
   \ }doc
 
-[unneeded] g-type  ?( need g-emit
+unneeding g-type  ?( need g-emit
 
 : g-type ( ca len -- )
   bounds ?do  i c@ g-emit  loop ; ?)
@@ -88,7 +88,7 @@ need g-emit-udg need (g-emit need g-emitted
 
 ( g-cr g-emitted g-emit-udg )
 
-[unneeded] g-cr ?( need g-y need g-at-xy need pixels-scroll-up
+unneeding g-cr ?( need g-y need g-at-xy need pixels-scroll-up
 
 : g-cr ( -- )
   0 g-y 8 - dup 7 < if    7 swap - pixels-scroll-up 7
@@ -104,7 +104,7 @@ need g-emit-udg need (g-emit need g-emitted
   \
   \ }doc
 
-[unneeded] g-emitted ?( need g-x need g-at-x need g-cr
+unneeding g-emitted ?( need g-x need g-at-x need g-cr
 
 : g-emitted ( -- ) g-x 8 + dup [ 255 6 - ] cliteral <
                      if  g-at-x exit  then  drop g-cr ; ?)
@@ -120,7 +120,7 @@ need g-emit-udg need (g-emit need g-emitted
   \
   \ }doc
 
-[unneeded] g-emit-udg ?( need assembler need g-emit_
+unneeding g-emit-udg ?( need assembler need g-emit_
                            need os-udg need os-coords
 
 code g-emit-udg ( c -- )
@@ -243,5 +243,7 @@ create g-emit_ ( -- a ) asm
   \ 2017-05-07: Improve documentation.
   \
   \ 2018-01-25: Improve `g-emit` to use `last-font-char`.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

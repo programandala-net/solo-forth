@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201705091327
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -17,7 +17,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2018.
 
   \ ===========================================================
   \ License
@@ -934,7 +934,7 @@ code ftrunc ( F: r1 -- r2 )
 
 ( falign faligned sfalign sfaligned dfalign dfaligned )
 
-[unneeded] falign
+unneeding falign
 ?\ need alias ' noop alias falign ( -- ) immediate
 
   \ doc{
@@ -953,7 +953,7 @@ code ftrunc ( F: r1 -- r2 )
   \
   \ }doc
 
-[unneeded] faligned
+unneeding faligned
 ?\ need alias ' noop alias faligned ( a -- fa ) immediate
 
   \ doc{
@@ -972,7 +972,7 @@ code ftrunc ( F: r1 -- r2 )
   \
   \ }doc
 
-[unneeded] sfalign
+unneeding sfalign
 ?\ need alias ' noop alias sfalign ( -- ) immediate
 
   \ doc{
@@ -991,7 +991,7 @@ code ftrunc ( F: r1 -- r2 )
   \
   \ }doc
 
-[unneeded] sfaligned
+unneeding sfaligned
 ?\ need alias ' noop alias sfaligned ( a -- dfa ) immediate
 
   \ doc{
@@ -1010,7 +1010,7 @@ code ftrunc ( F: r1 -- r2 )
   \
   \ }doc
 
-[unneeded] dfalign
+unneeding dfalign
 ?\ need alias ' noop alias dfalign ( -- ) immediate
 
   \ doc{
@@ -1029,7 +1029,7 @@ code ftrunc ( F: r1 -- r2 )
   \
   \ }doc
 
-[unneeded] dfaligned
+unneeding dfaligned
 ?\ need alias ' noop alias dfaligned ( a -- dfa ) immediate
 
   \ doc{
@@ -1099,5 +1099,7 @@ code ftrunc ( F: r1 -- r2 )
   \ 2018-02-17: Improve documentation: add pronunciation to
   \ words that need it. Update source layout (remove double
   \ spaces).
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

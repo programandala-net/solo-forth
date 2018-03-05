@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802201256
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( array> array< 2array> 2array< )
 
-[unneeded] array> ?(
+unneeding array> ?(
 
 code array> ( n a1 -- a2 )
   D1 c, E1 c, 29 c, 19 c, E5 c, jpnext, end-code ?)
@@ -55,7 +55,7 @@ code array> ( n a1 -- a2 )
   \
   \ }doc
 
-[unneeded] array< ?(
+unneeding array< ?(
 
 code array< ( a1 n -- a2 )
   E1 c, D1 c, 29 c, 19 c, E5 c, jpnext, end-code ?)
@@ -84,7 +84,7 @@ code array< ( a1 n -- a2 )
   \
   \ }doc
 
-[unneeded] 2array> ?(
+unneeding 2array> ?(
 
 code 2array> ( n a1 -- a2 )
   D1 c, E1 c, 29 c, 29 c, 19 c, E5 c, jpnext, end-code ?)
@@ -115,7 +115,7 @@ code 2array> ( n a1 -- a2 )
   \
   \ }doc
 
-[unneeded] 2array< ?(
+unneeding 2array< ?(
 
 code 2array< ( a1 n -- a2 )
   E1 c, D1 c, 29 c, 29 c, 19 c, E5 c, jpnext, end-code ?)
@@ -174,6 +174,8 @@ code 2array< ( a1 n -- a2 )
   \
   \ 2018-02-20: Add `array<` and `2array<`.  Fix, update and
   \ improve documentation.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth
 

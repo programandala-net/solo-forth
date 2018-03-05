@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802051700
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,7 +27,7 @@
 
 ( ascii-char? control-char? )
 
-[unneeded] ascii-char? ?\ : ascii-char? ( c -- f ) 127 < ;
+unneeding ascii-char? ?\ : ascii-char? ( c -- f ) 127 < ;
 
   \ doc{
   \
@@ -40,7 +40,7 @@
   \
   \ }doc
 
-[unneeded] control-char? ?\ : control-char? ( c -- f ) bl < ;
+unneeding control-char? ?\ : control-char? ( c -- f ) bl < ;
 
   \ doc{
   \
@@ -55,7 +55,7 @@
 
 ( printable-ascii-char? >printable-ascii-char )
 
-[unneeded] printable-ascii-char? ?(  need within
+unneeding printable-ascii-char? ?(  need within
 
 : printable-ascii-char? ( c -- f ) bl 127 within ; ?)
 
@@ -70,7 +70,7 @@
   \
   \ }doc
 
-[unneeded] >printable-ascii-char ?(
+unneeding >printable-ascii-char ?(
 
 need printable-ascii-char?
 
@@ -124,5 +124,7 @@ need printable-ascii-char?
   \
   \ 2018-02-05: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

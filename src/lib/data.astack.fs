@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802072323
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -34,7 +34,7 @@
 
 ( astack adepth )
 
-[unneeded] astack ?(
+unneeding astack ?(
 
 : astack ( a -- ) dup ! ;
 
@@ -102,7 +102,7 @@
 
 ?)
 
-[unneeded] adepth ?( need cell/
+unneeding adepth ?( need cell/
 
 : adepth ( a -- n ) dup @ swap - cell/ ; ?)
 
@@ -118,5 +118,7 @@
   \ Change log
 
   \ 2018-02-07: Start.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

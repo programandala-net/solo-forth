@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712151558
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -25,7 +25,7 @@
 
 ( .word .wordname more-words? words wordlist-words )
 
-[unneeded] .word ?( need tab  defer .word ( nt -- )
+unneeding .word ?( need tab  defer .word ( nt -- )
 
 : (.word ( nt -- ) .name tab ;  ' (.word ' .word defer! ?)
 
@@ -50,7 +50,7 @@
   \
   \ }doc
 
-[unneeded] .wordname ?( need u.r
+unneeding .wordname ?( need u.r
 : .wordname ( nt -- ) cr dup 5 u.r space .name ;
 ' .wordname ' .word defer! ?)
 
@@ -65,7 +65,7 @@
   \
   \ }doc
 
-[unneeded] more-words? ?( need nuf?
+unneeding more-words? ?( need nuf?
 : more-words? ( nt|0 -- nt|0 f ) dup 0<>  nuf? 0= and ; ?)
 
   \ doc{
@@ -76,7 +76,7 @@
   \
   \ }doc
 
-[unneeded] words ?( need trail need more-words?
+unneeding words ?( need trail need more-words?
                      need .word need name<name
 
 : words ( -- ) trail begin  more-words?  while
@@ -100,7 +100,7 @@
   \
   \ }doc
 
-[unneeded] wordlist-words  ?( need words
+unneeding wordlist-words  ?( need words
 
 : wordlist-words ( wid -- ) >order words previous ; ?)
 
@@ -116,7 +116,7 @@
 
 ( words-like words# )
 
-[unneeded] words-like ?( need trail need name<name
+unneeding words-like ?( need trail need name<name
                          need lowers need more-words?
                          need contains need .word need tab
 
@@ -140,7 +140,7 @@
   \
   \ }doc
 
-[unneeded] words# ?( need trail need name<name
+unneeding words# ?( need trail need name<name
 : words# ( -- n ) 0 trail begin ( n nt ) dup 0<>  while
                              swap 1+ swap  name<name
                            repeat drop ; ?)
@@ -185,5 +185,7 @@
   \ 2017-05-07: Improve documentation.
   \
   \ 2017-12-15: Improve documentation.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

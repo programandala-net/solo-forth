@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071840
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -25,7 +25,7 @@
 
 ( /line# .line# .line list-line list-lines list )
 
-[unneeded] /line# ?\ : /line# ( -- n ) #16 base @ - 4 / 1+ ;
+unneeding /line# ?\ : /line# ( -- n ) #16 base @ - 4 / 1+ ;
 
   \ doc{
   \
@@ -36,7 +36,7 @@
   \
   \ }doc
 
-[unneeded] .line#
+unneeding .line#
 ?\ need /line#  : .line# ( n -- ) /line# .r ;
 
   \ doc{
@@ -49,7 +49,7 @@
   \
   \ }doc
 
-[unneeded] .line
+unneeding .line
 ?\ : .line ( n1 n2 -- ) line>string -trailing type ;
 
   \ doc{
@@ -62,7 +62,7 @@
   \
   \ }doc
 
-[unneeded] list-line ?( need .line# need .line
+unneeding list-line ?( need .line# need .line
 
 : list-line ( n u -- ) cr over .line# space .line ; ?)
 
@@ -76,7 +76,7 @@
   \
   \ }doc
 
-[unneeded] list-lines ?(
+unneeding list-lines ?(
 need .line need nuf? need list-line need ?leave
 : list-lines ( u n1 n2 -- )
   rot dup scr ! cr ." Block " u.  1+ swap
@@ -92,7 +92,7 @@ need .line need nuf? need list-line need ?leave
   \
   \ }doc
 
-[unneeded] list ?( need list-lines
+unneeding list ?( need list-lines
 : list ( u -- ) dup max-blocks 1- u> #-35 ?throw
                     0 [ l/scr 1- ] literal list-lines ; ?)
 
@@ -112,9 +112,9 @@ need .line need nuf? need list-line need ?leave
 
 ( /block# view .block# .index index )
 
-[unneeded] /block# ?\ 3 constant /block#  exit
+unneeding /block# ?\ 3 constant /block#  exit
 
-[unneeded] view ?( need locate need list
+unneeding view ?( need locate need list
 
 : view ( "name" -- ) locate dup 0= #-286 ?throw list ; ?)
 
@@ -131,10 +131,10 @@ need .line need nuf? need list-line need ?leave
   \
   \ }doc
 
-[unneeded] .block# ?( need /block#
+unneeding .block# ?( need /block#
 : .block# ( n -- ) /block# .r ; ?)
 
-[unneeded] .index ?( need .line
+unneeding .index ?( need .line
 : .index ( u -- )
   cr dup .block# space 0 swap .line ; ?)
 
@@ -147,7 +147,7 @@ need .line need nuf? need list-line need ?leave
   \
   \ }doc
 
-[unneeded] index ?( need .line need nuf? need ?leave
+unneeding index ?( need .line need nuf? need ?leave
 : index ( u1 u2 -- )
   1+ swap ?do  cr i .block# space 0 i .line  nuf? ?leave
   loop ; ?)
@@ -169,7 +169,7 @@ need .line need nuf? need list-line need ?leave
 
 need .index need contains need nuf? need ?leave
 
-[unneeded] index-like ?(
+unneeding index-like ?(
 
 : index-like ( u1 u2 "name" -- )
   parse-name 2swap
@@ -190,7 +190,7 @@ need .index need contains need nuf? need ?leave
   \
   \ }doc
 
-[unneeded] index-ilike ?( need uppers
+unneeding index-ilike ?( need uppers
 
 : index-ilike ( u1 u2 "name" -- )
   parse-name >stringer 2dup uppers
@@ -476,5 +476,7 @@ need list-lines
   \ update names including "blk" to "block(s)".
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

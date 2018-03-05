@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802012249
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -26,7 +26,7 @@
   \
   \ Marcos Cruz (programandala.net) adapted, modified and
   \ improved the Spectrum Forth-83 version for Solo Forth,
-  \ 2015, 2016, 2017.
+  \ 2015, 2016, 2017, 2018, 2018.
 
   \ ===========================================================
   \ License
@@ -494,7 +494,7 @@ set-current set-order
 
 ( inverse-cond >amark >aresolve ?rel unresolved )
 
-[unneeded] inverse-cond ?\ : inverse-cond ( op1 -- op2) 8 xor ;
+unneeding inverse-cond ?\ : inverse-cond ( op1 -- op2) 8 xor ;
 
   \ doc{
   \
@@ -508,7 +508,7 @@ set-current set-order
   \
   \ }doc
 
-[unneeded] >amark ?\ : >amark ( -- a ) here 2- ;
+unneeding >amark ?\ : >amark ( -- a ) here 2- ;
 
   \ doc{
   \
@@ -519,7 +519,7 @@ set-current set-order
   \
   \ }doc
 
-[unneeded] >aresolve ?( need >amark
+unneeding >aresolve ?( need >amark
 
 : >aresolve ( a -- ) >amark swap ! ; ?)
 
@@ -533,7 +533,7 @@ set-current set-order
   \
   \ }doc
 
-[unneeded] ?rel
+unneeding ?rel
 
 ?\ : ?rel ( n -- ) $80 + $FF swap u< #-269 ?throw ;
 
@@ -546,7 +546,7 @@ set-current set-order
   \
   \ }doc
 
-[unneeded] unresolved ?( need array>
+unneeding unresolved ?( need array>
 
 create unresolved0> ( -- a ) 8 cells allot
 
@@ -646,10 +646,10 @@ need assembler
 
 get-current assembler-wordlist dup >order set-current
 
-[unneeded] hook, ?\ $CF m4 hook,
+unneeding hook, ?\ $CF m4 hook,
   \ Equivalent to ``$08 rst,`` (``rst $08``).
 
-[unneeded] prt, ?\ $D7 m1 prt,
+unneeding prt, ?\ $D7 m1 prt,
   \ Equivalent to ``$16 rst,`` (``rst $16``).
 
 set-current
@@ -765,5 +765,7 @@ set-current
   \ 2017-12-11: Improve documentation.
   \
   \ 2018-02-01: Make `hook,` and `prt,` optional.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

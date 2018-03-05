@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802171403
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( (pixel-pan-right pixel-pan-right pixels-pan-right )
 
-[unneeded] (pixel-pan-right ?( need assembler
+unneeding (pixel-pan-right ?( need assembler
 
 create (pixel-pan-right ( -- a ) asm
   4000 h ldp#, C0 c ld#,
@@ -61,7 +61,7 @@ create (pixel-pan-right ( -- a ) asm
   \
   \ }doc
 
-[unneeded] pixel-pan-right ?(
+unneeding pixel-pan-right ?(
 
 need (pixel-pan-right need assembler
 
@@ -81,7 +81,7 @@ code pixel-pan-right ( -- )
   \
   \ }doc
 
-[unneeded] pixels-pan-right ?( need pixel-pan-right
+unneeding pixels-pan-right ?( need pixel-pan-right
 
 : pixels-pan-right ( n -- ) 0 ?do  pixel-pan-right  loop ; ?)
 
@@ -97,7 +97,7 @@ code pixel-pan-right ( -- )
 
 ( (pixel-scroll-up pixel-scroll-up pixels-scroll-up )
 
-[unneeded] (pixel-scroll-up ?( need assembler
+unneeding (pixel-scroll-up ?( need assembler
 
 create (pixel-scroll-up ( -- a ) asm
   4000 h ldp#, BF b ld#, rbegin
@@ -130,7 +130,7 @@ create (pixel-scroll-up ( -- a ) asm
   \
   \ }doc
 
-[unneeded] pixel-scroll-up ?(
+unneeding pixel-scroll-up ?(
 
 need assembler need (pixel-scroll-up
 
@@ -149,7 +149,7 @@ code pixel-scroll-up ( -- )
   \
   \ }doc
 
-[unneeded] pixels-scroll-up ?( need pixel-scroll-up
+unneeding pixels-scroll-up ?( need pixel-scroll-up
 
 : pixels-scroll-up ( n -- )
   0 ?do  pixel-scroll-up  loop ; ?)
@@ -192,5 +192,7 @@ code pixel-scroll-up ( -- )
   \
   \ 2018-02-17: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802041819
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -182,7 +182,7 @@ variable current-window
 
 ( wspace wemit wfreecolumns (wat-xy wat-xy at-wxy whome )
 
-[unneeded] wspace ?\ need wemit : wspace ( -- ) bl wemit ;
+unneeding wspace ?\ need wemit : wspace ( -- ) bl wemit ;
 
   \ doc{
   \
@@ -194,7 +194,7 @@ variable current-window
   \
   \ }doc
 
-[unneeded] wemit ?( need char>string need wtype
+unneeding wemit ?( need char>string need wtype
 
 : wemit ( c -- ) char>string wtype ; ?)
 
@@ -208,7 +208,7 @@ variable current-window
   \
   \ }doc
 
-[unneeded] wspace ?\ need wemit : wspace ( -- ) bl wemit ;
+unneeding wspace ?\ need wemit : wspace ( -- ) bl wemit ;
 
   \ doc{
   \
@@ -220,7 +220,7 @@ variable current-window
   \
   \ }doc
 
-[unneeded] wfreecolumns ?( need window
+unneeding wfreecolumns ?( need window
 
 : wfreecolumns ( -- n ) wcolumns c@ wx c@ - ; ?)
 
@@ -235,7 +235,7 @@ variable current-window
   \
   \ }doc
 
-[unneeded] (wat-xy ?( need window need under+
+unneeding (wat-xy ?( need window need under+
 
 : (wat-xy ( col row -- ) wx0 c@ under+ wy0 c@ + at-xy ; ?)
 
@@ -251,7 +251,7 @@ variable current-window
   \
   \ }doc
 
-[unneeded] wat-xy ?( need window need (wat-xy
+unneeding wat-xy ?( need window need (wat-xy
 
 : wat-xy ( col row -- ) 2dup wy c! wx c! (wat-xy ; ?)
 
@@ -267,7 +267,7 @@ variable current-window
   \
   \ }doc
 
-[unneeded] at-wxy ?( need window need (wat-xy
+unneeding at-wxy ?( need window need (wat-xy
 
 : at-wxy ( -- ) wx c@ wy c@ (wat-xy ; ?)
 
@@ -282,7 +282,7 @@ variable current-window
   \
   \ }doc
 
-[unneeded] whome ?\ need wat-xy  : whome ( -- ) 0 0 wat-xy ;
+unneeding whome ?\ need wat-xy  : whome ( -- ) 0 0 wat-xy ;
 
   \ doc{
   \
@@ -298,7 +298,7 @@ variable current-window
 ( wcr ?wcr wstamp wblank )
 
 
-[unneeded] wcr ?( need window need whome
+unneeding wcr ?( need window need whome
 
 : wcr ( -- ) wy c@ dup wrows c@ 1- =
              if drop whome exit then 1+ wy c! 0 wx c! ; ?)
@@ -320,7 +320,7 @@ variable current-window
   \
   \ }doc
 
-[unneeded] ?wcr ?( need window need wcr
+unneeding ?wcr ?( need window need wcr
 
 : ?wcr ( -- ) wx c@ 0= ?exit wcr ; ?)
 
@@ -340,7 +340,7 @@ variable current-window
   \
   \ }doc
 
-[unneeded] wstamp ?( need window need ruler
+unneeding wstamp ?( need window need ruler
 
 : wstamp ( c -- ) wcolumns c@ ruler ( ca len )
   wy0 c@ wrows c@ bounds ?do  2dup wx0 c@ i at-xy type
@@ -358,7 +358,7 @@ variable current-window
   \
   \ }doc
 
-[unneeded] wblank
+unneeding wblank
 
 ?\ need wstamp need whome : wblank ( -- ) bl wstamp whome ;
 
@@ -379,7 +379,7 @@ variable current-window
 
 ( wcls attr-wcls wcolor )
 
-[unneeded] wcls ?( need attr@ need attr-wcls
+unneeding wcls ?( need attr@ need attr-wcls
 
 : wcls ( -- ) attr@ attr-wcls ; ?)
 
@@ -396,7 +396,7 @@ variable current-window
   \
   \ }doc
 
-[unneeded] attr-wcls ?(
+unneeding attr-wcls ?(
 
 need window need clear-rectangle need whome
 
@@ -418,7 +418,7 @@ need window need clear-rectangle need whome
   \
   \ }doc
 
-[unneeded] wcolor ?( need window need color-rectangle
+unneeding wcolor ?( need window need color-rectangle
 
 : wcolor ( c -- ) >r wx0 c@ wy0 c@ wcolumns c@ wrows c@
                     r> color-rectangle ; ?)
@@ -437,7 +437,7 @@ need window need clear-rectangle need whome
 
 ( wx+! wtyped wtype+ /wtype free/wtype )
 
-[unneeded] wx+! ?( need window need wcr
+unneeding wx+! ?( need window need wcr
 
 : wx+! ( n -- )
   wx c@ + dup wx c! wcolumns c@ = if wcr then ; ?)
@@ -451,7 +451,7 @@ need window need clear-rectangle need whome
   \
   \ }doc
 
-[unneeded] wtyped ?\ variable wtyped
+unneeding wtyped ?\ variable wtyped
 
   \ doc{
   \
@@ -467,7 +467,7 @@ need window need clear-rectangle need whome
   \
   \ }doc
 
-[unneeded] wtype+ ?( need wx+! need wtyped
+unneeding wtype+ ?( need wx+! need wtyped
 
 : wtype+ ( ca len -- ) tuck type wx+! wtyped on ; ?)
 
@@ -480,7 +480,7 @@ need window need clear-rectangle need whome
   \
   \ }doc
 
-[unneeded] /wtype ?( need at-wxy need wtype+
+unneeding /wtype ?( need at-wxy need wtype+
 
 : /wtype ( ca len len1 n -- ca' len' )
   >r >r over r> at-wxy wtype+ r> /string ; ?)
@@ -499,7 +499,7 @@ need window need clear-rectangle need whome
   \
   \ }doc
 
-[unneeded] free/wtype ?( need wfreecolumns need at-wxy
+unneeding free/wtype ?( need wfreecolumns need at-wxy
                          need wtype+
 
 : free/wtype ( ca len -- ca' len' )
@@ -522,7 +522,7 @@ need window need clear-rectangle need whome
 
 ( wtype wltype )
 
-[unneeded] wtype ?( need free/wtype
+unneeding wtype ?( need free/wtype
 
 : wtype ( ca len -- )
   begin dup while free/wtype repeat 2drop ; ?)
@@ -537,7 +537,7 @@ need window need clear-rectangle need whome
   \
   \ }doc
 
-[unneeded] wltype ?( need wtyped need wfreecolumns
+unneeding wltype ?( need wtyped need wfreecolumns
                      need ?wcr need at-wxy need wtype+
                      need /wtype need free/wtype
 
@@ -603,5 +603,7 @@ need window need clear-rectangle need whome
   \
   \ 2018-02-04: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

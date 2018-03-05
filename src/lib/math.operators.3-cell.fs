@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -27,11 +27,11 @@
 
   \ XXX TODO -- test
 
-[unneeded] tum*
+unneeding tum*
 ?\ : tum* ( d n -- t ) 2>r  r@ um*  0 2r>  um* d+ ;
   \ Triple unsigned mixed multiply.
 
-[unneeded] t+ ?(
+unneeding t+ ?(
 
 : +carry ( n1 n2 -- n1+n2 carry ) 0 tuck d+ ;
 
@@ -41,12 +41,12 @@
 ?)
   \ Triple add.
 
-[unneeded] tum/ ?(
+unneeding tum/ ?(
 : tum/ ( t n -- d ) dup >r um/mod r> swap >r um/mod nip r> ;
 ?)
   \ Triple unsigned mixed division.
 
-[unneeded] t- ?( need d-
+unneeding t- ?( need d-
 
 : -borrow ( n1 n2 -- n1-n2 borrow ) 0 tuck d- ;
 
@@ -61,7 +61,7 @@
 
 ( mt* ut/ ut* tnegate )
 
-[unneeded] ut*
+unneeding ut*
 
 ?\ : ut* ( ud u -- t ) swap >r dup >r  um* 0 r> r> um* d+ ;
 
@@ -79,7 +79,7 @@
   \
   \ }doc
 
-[unneeded] mt* ?( need ut* need tnegate
+unneeding mt* ?( need ut* need tnegate
 
 : mt*   ( d n -- t ) dup 0<
   if    abs over 0< if  >r dabs r> ut*  else  ut* tnegate  then
@@ -100,7 +100,7 @@
   \
   \ }doc
 
-[unneeded] ut/
+unneeding ut/
 
 ?\ : ut/ ( ut n -- d ) dup >r um/mod -rot r> um/mod nip swap ;
 
@@ -119,7 +119,7 @@
   \
   \ }doc
 
-[unneeded] tnegate ?(
+unneeding tnegate ?(
 
 : tnegate ( t1 -- t2 ) invert >r invert >r
                        invert 0 -1 -1 d+ s>d r> 0 d+ r> + ; ?)
@@ -150,5 +150,7 @@
   \
   \ 2017-01-19: Remove remaining `exit` at the end of
   \ conditional interpretation.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

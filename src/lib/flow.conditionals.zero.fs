@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802042003
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( 0if 0while 0until 0exit )
 
-[unneeded] 0if ?(
+unneeding 0if ?(
 : 0if
   \ Compilation: ( C: -- orig )
   \ Run-time:    ( f -- )
@@ -46,7 +46,7 @@
   \
   \ }doc
 
-[unneeded] 0while ?( need 0if need cs-swap
+unneeding 0while ?( need 0if need cs-swap
 : 0while
   \ Compilation: ( C: dest -- orig dest )
   \ Run-time:    ( f -- )
@@ -67,7 +67,7 @@
   \
   \ }doc
 
-[unneeded] 0until ?(
+unneeding 0until ?(
 : 0until
   \ Compilation: ( C: dest -- )
   \ Run-time:    ( f -- )
@@ -88,7 +88,7 @@
   \
   \ }doc
 
-[unneeded] 0exit ?(
+unneeding 0exit ?(
 code 0exit ( f -- ) ( R: nest-sys | -- nest-sys | )
   E1 c,  78 04 + c,  B0 05 + c,  CA c, ' exit ,
   jpnext, end-code ?)
@@ -150,5 +150,7 @@ code 0exit ( f -- ) ( R: nest-sys | -- nest-sys | )
   \
   \ 2018-02-04: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

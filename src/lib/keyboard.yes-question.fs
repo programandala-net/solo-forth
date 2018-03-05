@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802171710
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -29,7 +29,7 @@
   \
   \ Code adapted from Afera.
 
-[unneeded] "y" [unneeded] "n" and ?(
+unneeding "y" unneeding "n" and ?(
 
 'y' cconstant "y"
 
@@ -61,7 +61,7 @@
   \
   \ }doc
 
-[unneeded] y/n? ?( need "y" need "n"
+unneeding y/n? ?( need "y" need "n"
 
 : y/n? ( c -- f ) lower dup "y" = swap "n" = or ; ?)
 
@@ -77,7 +77,7 @@
   \
   \ }doc
 
-[unneeded] y/n ?( need y/n?
+unneeding y/n ?( need y/n?
 
 : y/n ( -- c ) begin key dup y/n? 0= while drop repeat ; ?)
 
@@ -92,7 +92,7 @@
   \
   \ }doc
 
-[unneeded] no? ?\ need y/n need "n" : no? ( -- f ) y/n "n" = ;
+unneeding no? ?\ need y/n need "n" : no? ( -- f ) y/n "n" = ;
 
   \ doc{
   \
@@ -106,7 +106,7 @@
   \
   \ }doc
 
-[unneeded] yes?
+unneeding yes?
 
 ?\ need y/n need "y" : yes? ( -- f ) y/n "y" = ;
 
@@ -134,5 +134,7 @@
   \ 2018-02-17: Replace `value` with `cconstant`. Fully
   \ document, including pronunciation. Make all words
   \ individually accessible to `need`.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

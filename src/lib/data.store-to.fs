@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703302006
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -31,7 +31,7 @@
 
 need >body
 
-[unneeded] !> ?(
+unneeding !> ?(
 
 : !>
   \   Interpretation: ( x "name" -- )
@@ -75,7 +75,7 @@ need >body
   \
   \ }doc
 
-[unneeded] 2!> ?(
+unneeding 2!> ?(
 
 : 2!>
   \   Interpretation: ( xd "name" -- )
@@ -119,7 +119,7 @@ need >body
   \
   \ }doc
 
-[unneeded] c!> ?(
+unneeding c!> ?(
 
 : c!>
   \   Interpretation: ( c "name" -- )
@@ -184,5 +184,7 @@ need >body
   \ 2017-02-27: Improve documentation.
   \
   \ 2017-03-30: Improve documentation.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

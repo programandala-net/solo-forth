@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802101617
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -83,7 +83,7 @@
 
 ( black blue red magenta green cyan yellow white contrast )
 
-[unneeded] black ?\ 0 cconstant black
+unneeding black ?\ 0 cconstant black
 
   \ doc{
   \
@@ -98,7 +98,7 @@
   \
   \ }doc
 
-[unneeded] blue ?\ 1 cconstant blue
+unneeding blue ?\ 1 cconstant blue
 
   \ doc{
   \
@@ -112,7 +112,7 @@
   \
   \ }doc
 
-[unneeded] red ?\ 2 cconstant red
+unneeding red ?\ 2 cconstant red
 
   \ doc{
   \
@@ -126,7 +126,7 @@
   \
   \ }doc
 
-[unneeded] magenta ?\ 3 cconstant magenta
+unneeding magenta ?\ 3 cconstant magenta
 
   \ doc{
   \
@@ -140,7 +140,7 @@
   \
   \ }doc
 
-[unneeded] green ?\ 4 cconstant green
+unneeding green ?\ 4 cconstant green
 
   \ doc{
   \
@@ -154,7 +154,7 @@
   \
   \ }doc
 
-[unneeded] cyan ?\ 5 cconstant cyan
+unneeding cyan ?\ 5 cconstant cyan
 
   \ doc{
   \
@@ -168,7 +168,7 @@
   \
   \ }doc
 
-[unneeded] yellow ?\ 6 cconstant yellow
+unneeding yellow ?\ 6 cconstant yellow
 
   \ doc{
   \
@@ -182,7 +182,7 @@
   \
   \ }doc
 
-[unneeded] white ?\ 7 cconstant white
+unneeding white ?\ 7 cconstant white
 
   \ doc{
   \
@@ -196,7 +196,7 @@
   \
   \ }doc
 
-[unneeded] contrast ?( need white need green
+unneeding contrast ?( need white need green
 
 : contrast ( b1 -- b1 ) green < white and ; ?)
 
@@ -215,7 +215,7 @@
 
 ( papery brighty flashy attr>paper attr>ink )
 
-[unneeded] papery ?( need 8* need alias
+unneeding papery ?( need 8* need alias
 
 ' 8* alias papery ( b1 -- b2 ) ?)
 
@@ -232,7 +232,7 @@
   \
   \ }doc
 
-[unneeded] brighty ?(
+unneeding brighty ?(
 
 code brighty ( b1 -- b2 )
   E1 c, CB c, C0 6 8 * + 5 + c, E5 c, jpnext, end-code ?)
@@ -258,7 +258,7 @@ code brighty ( b1 -- b2 )
   \
   \ }doc
 
-[unneeded] flashy ?(
+unneeding flashy ?(
 
 code flashy ( b1 -- b2 )
   E1 c, CB c, C0 7 8 * + 5 + c, E5 c, jpnext, end-code ?)
@@ -284,7 +284,7 @@ code flashy ( b1 -- b2 )
   \
   \ }doc
 
-[unneeded] attr>paper ?(
+unneeding attr>paper ?(
 
 code attr>paper ( b1 -- b2 )
   E1 c, 7D c, E6 c, %00111000 c,
@@ -314,7 +314,7 @@ code attr>paper ( b1 -- b2 )
   \
   \ }doc
 
-[unneeded] attr>ink ?(
+unneeding attr>ink ?(
 
 code attr>ink ( b1 -- b2 )
   E1 c, 7D c, E6 c, %111 c, pusha jp, end-code ?)
@@ -342,7 +342,7 @@ code attr>ink ( b1 -- b2 )
 
 ( attr@ attr! attr-mask@ attr-mask! )
 
-[unneeded] attr@ ?( need os-attr-t
+unneeding attr@ ?( need os-attr-t
 
 code attr@ ( -- b ) 3A c, os-attr-t , pusha jp, end-code ?)
   \ ld a,(sys_attr_t)
@@ -358,7 +358,7 @@ code attr@ ( -- b ) 3A c, os-attr-t , pusha jp, end-code ?)
   \
   \ }doc
 
-[unneeded] attr! ?( need os-attr-t
+unneeding attr! ?( need os-attr-t
 
 code attr! ( b -- )
   D1 c, 78 03 + c, 32 c, os-attr-t , jpnext, end-code ?)
@@ -383,7 +383,7 @@ code attr! ( b -- )
   \
   \ }doc
 
-[unneeded] attr-mask@ ?( need os-mask-t
+unneeding attr-mask@ ?( need os-mask-t
 
 code attr-mask@ ( -- b )
   3A c, os-mask-t , pusha jp, end-code ?)
@@ -400,7 +400,7 @@ code attr-mask@ ( -- b )
   \
   \ }doc
 
-[unneeded] attr-mask! ?( need os-mask-t
+unneeding attr-mask! ?( need os-mask-t
 
 code attr-mask! ( b -- )
   D1 c, 78 03 + c, 32 c, os-mask-t , jpnext, end-code ?)
@@ -424,7 +424,7 @@ code attr-mask! ( b -- )
   \
   \ }doc
 
-[unneeded] mask+attr>perm
+unneeding mask+attr>perm
 
 ?\ code mask+attr>perm ( -- ) $1CAD call, jpnext, end-code
   \ call rom_set_permanent_colors_0x1CAD
@@ -444,7 +444,7 @@ code attr-mask! ( b -- )
 
 ( mask+attr! mask+attr@ attr-setter mask+attr-setter )
 
-[unneeded] mask+attr! ?( need os-attr-t
+unneeding mask+attr! ?( need os-attr-t
 
 code mask+attr! ( b1 b2 -- )
   E1 c, D1 c, 60 03 + c, 22 c, os-attr-t , jpnext, end-code ?)
@@ -470,7 +470,7 @@ code mask+attr! ( b1 b2 -- )
   \
   \ }doc
 
-[unneeded] mask+attr@ ?( need os-attr-t
+unneeding mask+attr@ ?( need os-attr-t
 
 code mask+attr@ ( -- b1 b2 )
   26 c, 00 c, ED c, 5B c, os-attr-t , 68 02 + c, E5 c,
@@ -493,7 +493,7 @@ code mask+attr@ ( -- b1 b2 )
   \
   \ }doc
 
-[unneeded] attr-setter ?( need attr!
+unneeding attr-setter ?( need attr!
 
 : attr-setter ( b "name" -- )
   create c,  does> ( -- ) ( dfa ) c@ attr! ; ?)
@@ -509,7 +509,7 @@ code mask+attr@ ( -- b1 b2 )
   \
   \ }doc
 
-[unneeded] mask+attr-setter ?( need mask+attr!
+unneeding mask+attr-setter ?( need mask+attr!
 
 : mask+attr-setter ( b1 b2 "name" -- )
   create 2,  does> ( -- ) ( dfa ) 2@ mask+attr! ; ?)
@@ -528,7 +528,7 @@ code mask+attr@ ( -- b1 b2 )
 
 ( perm-attr@ perm-attr! perm-attr-mask@ perm-attr-mask! )
 
-[unneeded] perm-attr@ ?( need os-attr-p
+unneeding perm-attr@ ?( need os-attr-p
 
 code perm-attr@ ( -- b )
   3A c, os-attr-p , pusha jp, end-code ?)
@@ -549,7 +549,7 @@ code perm-attr@ ( -- b )
   \
   \ }doc
 
-[unneeded] perm-attr! ?( need os-attr-p
+unneeding perm-attr! ?( need os-attr-p
 
 code perm-attr! ( b -- )
   D1 c, 78 03 + c, 32 c, os-attr-p , jpnext, end-code ?)
@@ -577,7 +577,7 @@ code perm-attr! ( b -- )
   \
   \ }doc
 
-[unneeded] perm-attr-mask@ ?( need os-mask-p
+unneeding perm-attr-mask@ ?( need os-mask-p
 
 code perm-attr-mask@ ( -- b )
   3A c, os-mask-p , pusha jp, end-code ?)
@@ -598,7 +598,7 @@ code perm-attr-mask@ ( -- b )
   \
   \ }doc
 
-[unneeded] perm-attr-mask! ?( need os-mask-p
+unneeding perm-attr-mask! ?( need os-mask-p
 
 code perm-attr-mask! ( b -- )
   D1 c, 78 03 + c, 32 c, os-mask-p , jpnext, end-code ?)
@@ -628,7 +628,7 @@ code perm-attr-mask! ( b -- )
 
 ( get-paper set-paper get-ink set-ink )
 
-[unneeded] get-paper ?( need attr@ need attr>paper
+unneeding get-paper ?( need attr@ need attr>paper
 
 : get-paper ( -- b ) attr@ attr>paper ; ?)
 
@@ -643,7 +643,7 @@ code perm-attr-mask! ( b -- )
   \
   \ }doc
 
-[unneeded] set-paper ?( need os-attr-t
+unneeding set-paper ?( need os-attr-t
 
 code set-paper ( b -- )
   E1 c, 7D c, E6 c, %111 c,
@@ -683,7 +683,7 @@ code set-paper ( b -- )
   \
   \ }doc
 
-[unneeded] get-ink ?( need attr@ need attr>ink
+unneeding get-ink ?( need attr@ need attr>ink
 
 : get-ink ( -- b ) attr@ attr>ink ; ?)
 
@@ -698,7 +698,7 @@ code set-paper ( b -- )
   \
   \ }doc
 
-[unneeded] set-ink ?( need os-attr-t
+unneeding set-ink ?( need os-attr-t
 
 code set-ink ( b -- )
   D1 c, 21 c, os-attr-t ,
@@ -732,7 +732,7 @@ code set-ink ( b -- )
 
 ( ink-mask unink-mask paper-mask unpaper-mask )
 
-[unneeded] ink-mask       ?\ %00000111 cconstant ink-mask
+unneeding ink-mask       ?\ %00000111 cconstant ink-mask
 
   \ doc{
   \
@@ -746,7 +746,7 @@ code set-ink ( b -- )
   \
   \ }doc
 
-[unneeded] unink-mask     ?\ %11111000 cconstant unink-mask
+unneeding unink-mask     ?\ %11111000 cconstant unink-mask
 
   \ doc{
   \
@@ -760,7 +760,7 @@ code set-ink ( b -- )
   \
   \ }doc
 
-[unneeded] paper-mask     ?\ %00111000 cconstant paper-mask
+unneeding paper-mask     ?\ %00111000 cconstant paper-mask
 
   \ doc{
   \
@@ -774,7 +774,7 @@ code set-ink ( b -- )
   \
   \ }doc
 
-[unneeded] unpaper-mask   ?\ %11000111 cconstant unpaper-mask
+unneeding unpaper-mask   ?\ %11000111 cconstant unpaper-mask
 
   \ doc{
   \
@@ -790,7 +790,7 @@ code set-ink ( b -- )
 
 ( bright-mask unbright-mask get-bright set-bright )
 
-[unneeded] bright-mask    ?\ %01000000 cconstant bright-mask
+unneeding bright-mask    ?\ %01000000 cconstant bright-mask
 
   \ doc{
   \
@@ -804,7 +804,7 @@ code set-ink ( b -- )
   \
   \ }doc
 
-[unneeded] unbright-mask  ?\ %10111111 cconstant unbright-mask
+unneeding unbright-mask  ?\ %10111111 cconstant unbright-mask
 
   \ doc{
   \
@@ -818,7 +818,7 @@ code set-ink ( b -- )
   \
   \ }doc
 
-[unneeded] get-bright ?( need attr@ need bright-mask
+unneeding get-bright ?( need attr@ need bright-mask
 
 : get-bright ( -- f ) attr@ bright-mask and 0= ; ?)
 
@@ -834,7 +834,7 @@ code set-ink ( b -- )
   \
   \ }doc
 
-[unneeded] set-bright ?(
+unneeding set-bright ?(
 
 need bright-mask need attr@ need unbright-mask need attr!
 
@@ -858,7 +858,7 @@ need bright-mask need attr@ need unbright-mask need attr!
 
 ( flash-mask unflash-mask get-flash set-flash )
 
-[unneeded] flash-mask   ?\ %10000000 cconstant flash-mask
+unneeding flash-mask   ?\ %10000000 cconstant flash-mask
 
   \ doc{
   \
@@ -872,7 +872,7 @@ need bright-mask need attr@ need unbright-mask need attr!
   \
   \ }doc
 
-[unneeded] unflash-mask ?\ %01111111 cconstant unflash-mask
+unneeding unflash-mask ?\ %01111111 cconstant unflash-mask
 
   \ doc{
   \
@@ -886,7 +886,7 @@ need bright-mask need attr@ need unbright-mask need attr!
   \
   \ }doc
 
-[unneeded] get-flash ?( need attr@ need flash-mask
+unneeding get-flash ?( need attr@ need flash-mask
 
 : get-flash ( -- f ) attr@ flash-mask and 0= ; ?)
 
@@ -902,7 +902,7 @@ need bright-mask need attr@ need unbright-mask need attr!
   \
   \ }doc
 
-[unneeded] set-flash ?(
+unneeding set-flash ?(
 
 need flash-mask need attr@ need unflash-mask need attr!
 
@@ -926,7 +926,7 @@ need flash-mask need attr@ need unflash-mask need attr!
 
 ( inverse-on inverse-off inverse inversely )
 
-[unneeded] inverse-on ?(
+unneeding inverse-on ?(
 
 code inverse-on ( -- )
   FD c, CB c, 57 c, C6 08 02 * + c,  jpnext, end-code ?)
@@ -943,7 +943,7 @@ code inverse-on ( -- )
   \
   \ }doc
 
-[unneeded] inverse-off ?(
+unneeding inverse-off ?(
 
 code inverse-off ( -- )
   FD c, CB c, 57 c, 86 08 02 * + c,  jpnext, end-code ?)
@@ -960,7 +960,7 @@ code inverse-off ( -- )
   \
   \ }doc
 
-[unneeded] inverse ?( need inverse-off need inverse-on
+unneeding inverse ?( need inverse-off need inverse-on
 
 code inverse ( f -- )
   E1 c, 78 04 + c, B0 05 + c,
@@ -982,7 +982,7 @@ code inverse ( f -- )
   \
   \ }doc
 
-[unneeded] inversely ?( need flash-mask need bright-mask
+unneeding inversely ?( need flash-mask need bright-mask
 need attr>paper need attr>ink need papery
 
   : inversely ( b1 -- b2 )
@@ -1008,7 +1008,7 @@ need attr>paper need attr>ink need papery
 
 ( overprint-on overprint-off overprint )
 
-[unneeded] overprint-on ?(
+unneeding overprint-on ?(
 
 code overprint-on ( -- )
   FD c, CB c, 57 c, C6 08 00 * + c,  jpnext, end-code ?)
@@ -1024,7 +1024,7 @@ code overprint-on ( -- )
   \
   \ }doc
 
-[unneeded] overprint-off ?(
+unneeding overprint-off ?(
 
 code overprint-off ( -- )
   FD c, CB c, 57 c, 86 08 00 * + c,  jpnext, end-code ?)
@@ -1041,7 +1041,7 @@ code overprint-off ( -- )
   \
   \ }doc
 
-[unneeded] overprint ?( need overprint-on need overprint-off
+unneeding overprint ?( need overprint-on need overprint-off
 
 code overprint ( f -- )
   E1 c, 78 04 + c, B0 05 + c,
@@ -1065,7 +1065,7 @@ code overprint ( f -- )
 
 ( paper. ink. (0-9-color. flash. bright. (0-1-8-color. )
 
-[unneeded] paper. ?( need (0-9-color.
+unneeding paper. ?( need (0-9-color.
 
 code paper. ( b -- ) 3E c, 11 c, (0-9-color. jp, end-code ?)
   \ ld a,paper_control_char
@@ -1088,7 +1088,7 @@ code paper. ( b -- ) 3E c, 11 c, (0-9-color. jp, end-code ?)
   \
   \ }doc
 
-[unneeded] ink. ?( need (0-9-color.
+unneeding ink. ?( need (0-9-color.
 
 code ink. ( b -- ) 3E c, 10 c, (0-9-color. jp, end-code ?)
   \ ld a,ink_control_char
@@ -1110,7 +1110,7 @@ code ink. ( b -- ) 3E c, 10 c, (0-9-color. jp, end-code ?)
   \
   \ }doc
 
-[unneeded] (0-9-color. ?( need assembler need prt,
+unneeding (0-9-color. ?( need assembler need prt,
 
 create (0-9-color. ( -- a ) asm
 
@@ -1144,7 +1144,7 @@ create (0-9-color. ( -- a ) asm
 
   \ }doc
 
-[unneeded] flash.
+unneeding flash.
 
 ?\ need (0-1-8-color.  : flash. ( n -- ) 18 (0-1-8-color. ;
 
@@ -1170,7 +1170,7 @@ create (0-9-color. ( -- a ) asm
   \
   \ }doc
 
-[unneeded] bright.
+unneeding bright.
 
 ?\ need (0-1-8-color.  : bright. ( n -- ) 19 (0-1-8-color. ;
 
@@ -1195,7 +1195,7 @@ create (0-9-color. ( -- a ) asm
   \
   \ }doc
 
-[unneeded] (0-1-8-color.
+unneeding (0-1-8-color.
 
 ?\ : (0-1-8-color. ( n c -- ) emit %1001 and 8 min emit ;
 
@@ -1320,5 +1320,7 @@ create (0-9-color. ( -- a ) asm
   \ 2018-02-01: Need `prt,`, which has been made optional.
   \
   \ 2018-02-10: Improve documentation. Add `inversely`.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

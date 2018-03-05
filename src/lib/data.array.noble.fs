@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802051715
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -119,7 +119,7 @@
 
 ( 1array } 2array }} )
 
-[unneeded] 1array ?( need } need align
+unneeding 1array ?( need } need align
 
 : 1array ( n1 n2 "name" -- )
   create 2dup , , * allot align ; ?)
@@ -135,7 +135,7 @@
   \
   \ }doc
 
-[unneeded] } ?( need <=
+unneeding } ?( need <=
 
 : array>items ( a -- n ) cell+ @ ;
 
@@ -167,7 +167,7 @@
   \
   \ }doc
 
-[unneeded] 2array ?( need } need align
+unneeding 2array ?( need } need align
 
 : 2array ( n1 n2 n3 "name" -- )
   create >r tuck , ( n2 n1 ) r@ , * dup , r> * allot align ;
@@ -219,5 +219,7 @@
   \
   \ 2018-02-05: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

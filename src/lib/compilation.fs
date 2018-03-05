@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802051708
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( [false] [true] [if] )
 
-[unneeded] [true] ?\ 0 constant [false] immediate
+unneeding [true] ?\ 0 constant [false] immediate
 
   \ doc{
   \
@@ -37,7 +37,7 @@
   \
   \ }doc
 
-[unneeded] [false] ?\ -1 constant [true] immediate
+unneeding [false] ?\ -1 constant [true] immediate
 
   \ doc{
   \
@@ -49,7 +49,7 @@
   \
   \ }doc
 
-[unneeded] [if] ?(
+unneeding [if] ?(
 
   \ Note: `[if]` uses 120 bytes of data space.
 
@@ -117,7 +117,7 @@
 
 ( body>name name>body link>name name>link name<name name>name )
 
-[unneeded] body>name ?( need body> need >name
+unneeding body>name ?( need body> need >name
 
 : body>name ( dfa -- nt ) body> >name ; ?)
 
@@ -131,7 +131,7 @@
   \
   \ }doc
 
-[unneeded] name>body
+unneeding name>body
 
 ?\ need >body : name>body ( nt -- dfa ) name> >body ;
 
@@ -145,7 +145,7 @@
   \
   \ }doc
 
-[unneeded] link>name
+unneeding link>name
 
 ?\ need alias ' cell+ alias link>name ( nt -- dfa )
 
@@ -159,7 +159,7 @@
   \
   \ }doc
 
-[unneeded] name>link
+unneeding name>link
 
 ?\ need alias ' cell- alias name>link ( nt -- lfa )
 
@@ -174,7 +174,7 @@
   \
   \ }doc
 
-[unneeded] name<name
+unneeding name<name
 
 ?\ need name>link : name<name ( nt1 -- nt2 ) name>link far@ ;
 
@@ -189,7 +189,7 @@
   \
   \ }doc
 
-[unneeded] name>name
+unneeding name>name
 
 ?\ need >>name : name>name ( nt1 -- nt2 ) name>str + >>name ;
 
@@ -213,7 +213,7 @@
 
 ( >>link name>> >>name >body body> '' [''] )
 
-[unneeded] >>link
+unneeding >>link
 
 ?\ need alias ' cell+ alias >>link ( xtp -- lfa )
 
@@ -227,7 +227,7 @@
   \
   \ }doc
 
-[unneeded] name>>
+unneeding name>>
 
 ?\ : name>> ( nt -- xtp ) cell- cell- ;
 
@@ -241,7 +241,7 @@
   \
   \ }doc
 
-[unneeded] >>name
+unneeding >>name
 
 ?\ : >>name ( xtp -- nt ) cell+ cell+ ;
 
@@ -255,7 +255,7 @@
   \
   \ }doc
 
-[unneeded] >body
+unneeding >body
 
 ?\ code >body  E1 c, 23 c, 23 c, 23 c, E5 c, jpnext, end-code
   \ ( xt -- dfa )
@@ -296,7 +296,7 @@
   \
   \ }doc
 
-[unneeded] body>
+unneeding body>
 
 ?\ code body> E1 c, 2B c, 2B c, 2B c, E5 c, jpnext, end-code
   \ ( dfa -- xt )
@@ -317,7 +317,7 @@
   \
   \ }doc
 
-[unneeded] '' ?( need need-here need-here name>>
+unneeding '' ?( need need-here need-here name>>
 
 : '' ( "name" -- xtp ) defined dup ?defined name>> ; ?)
 
@@ -343,7 +343,7 @@
   \
   \ }doc
 
-[unneeded] [''] ?( need need-here need-here ''
+unneeding [''] ?( need need-here need-here ''
 
 : ['']  '' postpone literal ; immediate compile-only ?)
   \ Compilation: ( "name" -- )
@@ -366,7 +366,7 @@
 
 ( >name )
 
-[unneeded] >name ?(
+unneeding >name ?(
 
 need array> need name>> need name<name need wordlist>link
 
@@ -405,7 +405,7 @@ need array> need name>> need name<name need wordlist>link
 
 ( >name/order [defined] [undefined] )
 
-[unneeded] >name/order ?(
+unneeding >name/order ?(
 
 need array> need name>> need name<name
 
@@ -440,7 +440,7 @@ need array> need name>> need name<name
   \
   \ }doc
 
-[unneeded] [defined]
+unneeding [defined]
 
 ?\ : [defined] ( "name" -- f ) defined 0<> ; immediate
 
@@ -460,7 +460,7 @@ need array> need name>> need name<name
   \
   \ }doc
 
-[unneeded] [undefined] ?( need [defined]
+unneeding [undefined] ?( need [defined]
 
 : [undefined] ( "name" -- f )
   postpone [defined] 0= ; immediate ?)
@@ -483,7 +483,7 @@ need array> need name>> need name<name
 
 ( >oldest-name )
 
-[unneeded] >oldest-name ?(
+unneeding >oldest-name ?(
 
 need array> need name>> need name<name need wordlist>link
 
@@ -523,7 +523,7 @@ need array> need name>> need name<name need wordlist>link
 
 ( >oldest-name/order )
 
-[unneeded] >oldest-name/order ?(
+unneeding >oldest-name/order ?(
 
 need array> need name>> need name<name
 
@@ -560,7 +560,7 @@ need array> need name>> need name<name
 
 ( >oldest-name/fast )
 
-[unneeded] >oldest-name/fast ?(
+unneeding >oldest-name/fast ?(
 
 need >>name need name>name need name>>
 
@@ -601,7 +601,7 @@ need >>name need name>name need name>>
 
 ( name>interpret name>compile comp' [comp'] )
 
-[unneeded] name>interpret ?(
+unneeding name>interpret ?(
 
 : name>interpret ( nt -- xt | 0 )
   dup name> swap compile-only? 0= and ; ?)
@@ -620,7 +620,7 @@ need >>name need name>name need name>>
   \
   \ }doc
 
-[unneeded] name>compile ?(
+unneeding name>compile ?(
 
 : (comp') ( nt -- xt )
   immediate? if ['] execute else ['] compile, then ;
@@ -655,7 +655,7 @@ need >>name need name>name need name>>
   \
   \ }doc
 
-[unneeded] comp' ?( need need-here need-here name>compile
+unneeding comp' ?( need need-here need-here name>compile
 
 : comp' ( "name" -- x xt )
   defined dup ?defined name>compile ; ?)
@@ -673,7 +673,7 @@ need >>name need name>name need name>>
   \
   \ }doc
 
-[unneeded] [comp'] ?( need need-here need-here comp'
+unneeding [comp'] ?( need need-here need-here comp'
 
 : [comp'] \ Compilation: ( "name" -- ) Run-time: ( -- x xt )
   comp' postpone 2literal ; immediate compile-only ?)
@@ -697,7 +697,7 @@ need >>name need name>name need name>>
 
 ( there ?pairs [compile] smudge smudged no-exit )
 
-[unneeded] there ?\ : there ( a -- ) dp ! ;
+unneeding there ?\ : there ( a -- ) dp ! ;
 
   \ doc{
   \
@@ -708,7 +708,7 @@ need >>name need name>name need name>>
   \
   \ }doc
 
-[unneeded] ?pairs ?\ : ?pairs ( x1 x2 -- ) <> #-22 ?throw ;
+unneeding ?pairs ?\ : ?pairs ( x1 x2 -- ) <> #-22 ?throw ;
 
   \ doc{
   \
@@ -719,7 +719,7 @@ need >>name need name>name need name>>
   \
   \ }doc
 
-[unneeded] [compile]
+unneeding [compile]
 
 ?\ : [compile] ( "name" -- ) ' compile, ; immediate
 
@@ -748,7 +748,7 @@ need >>name need name>name need name>>
   \
   \ }doc
 
-[unneeded] smudged
+unneeding smudged
 
 ?\ : smudged ( nt -- ) dup farc@ smudge-mask xor swap farc! ;
 
@@ -765,7 +765,7 @@ need >>name need name>name need name>>
   \
   \ }doc
 
-[unneeded] smudge
+unneeding smudge
 
 ?\ need smudged  : smudge ( -- ) latest smudged ;
 
@@ -787,7 +787,7 @@ need >>name need name>name need name>>
   \
   \ }doc
 
-[unneeded] no-exit ?\ : no-exit ( -- ) cell negate allot ;
+unneeding no-exit ?\ : no-exit ( -- ) cell negate allot ;
 
   \ Credit:
   \
@@ -838,7 +838,7 @@ need >>name need name>name need name>>
 
 ( ]l ]2l ]xl ]cl save-here restore-here )
 
-[unneeded] ]l
+unneeding ]l
 
 ?\ : ]l ( x -- ) ] postpone literal ; immediate compile-only
 
@@ -854,7 +854,7 @@ need >>name need name>name need name>>
   \
   \ }doc
 
-[unneeded] ]2l
+unneeding ]2l
 
 ?\ : ]2l ( xd -- ) ] postpone 2literal ; immediate compile-only
 
@@ -870,7 +870,7 @@ need >>name need name>name need name>>
   \
   \ }doc
 
-[unneeded] ]xl
+unneeding ]xl
 
 ?\ : ]xl ( x -- ) ] postpone xliteral ; immediate compile-only
 
@@ -886,7 +886,7 @@ need >>name need name>name need name>>
   \
   \ }doc
 
-[unneeded] ]cl
+unneeding ]cl
 
 ?\ : ]cl ( x -- ) ] postpone cliteral ; immediate compile-only
 
@@ -902,7 +902,7 @@ need >>name need name>name need name>>
   \
   \ }doc
 
-[unneeded] save-here [unneeded] restore-here and ?( need there
+unneeding save-here unneeding restore-here and ?( need there
 
 variable here-backup
 
@@ -918,7 +918,7 @@ variable here-backup
   \
   \ Code of `possibly` adapted from Wil Baden.
 
-[unneeded] possibly ?(
+unneeding possibly ?(
 
 : possibly ( "name" -- )
   defined ?dup if name> execute then ; ?)
@@ -932,7 +932,7 @@ variable here-backup
   \
   \ }doc
 
-[unneeded] exec ?(
+unneeding exec ?(
 
 : exec ( "name" -- i*x )
   defined ?dup 0= #-13 ?throw name> execute ; ?)
@@ -949,7 +949,7 @@ variable here-backup
   \
   \ }doc
 
-[unneeded] eval ?( need evaluate
+unneeding eval ?( need evaluate
 
 : eval ( i*x "name" -- j*x ) parse-name evaluate ; ?)
 
@@ -968,7 +968,7 @@ variable here-backup
 
 ( [const] [2const] [xconst] [cconst] )
 
-[unneeded] [const] ?( need eval
+unneeding [const] ?( need eval
 
 : [const] ( "name" -- )
   eval postpone literal ; immediate compile-only ?)
@@ -998,7 +998,7 @@ variable here-backup
   \
   \ }doc
 
-[unneeded] [2const] ?( need eval
+unneeding [2const] ?( need eval
 
 : [2const] ( "name" -- )
   eval postpone 2literal ; immediate compile-only ?)
@@ -1026,7 +1026,7 @@ variable here-backup
   \
   \ }doc
 
-[unneeded] [xconst] ?( need eval
+unneeding [xconst] ?( need eval
 
 : [xconst] ( "name" -- )
   eval postpone xliteral ; immediate compile-only ?)
@@ -1057,7 +1057,7 @@ variable here-backup
   \
   \ }doc
 
-[unneeded] [cconst] ?( need eval
+unneeding [cconst] ?( need eval
 
 : [cconst] ( "name" -- )
   eval postpone cliteral ; immediate compile-only ?)
@@ -1152,7 +1152,7 @@ variable warnings  warnings on
 
 ( warn.throw warn.message warn-throw )
 
-[unneeded] warn.throw ?( need ?warn
+unneeding warn.throw ?( need ?warn
 
 : warn.throw ( ca len -- ca len )
   ?warn ( ca len xt ) drop .error-word  #-257 .throw ;
@@ -1173,7 +1173,7 @@ variable warnings  warnings on
   \
   \ }doc
 
-[unneeded] warn.message ?( need ?warn need >name
+unneeding warn.message ?( need ?warn need >name
 
 : warn.message ( ca len -- ca len )
   ?warn ( ca len xt ) ." redefined " >name .name ;
@@ -1193,7 +1193,7 @@ variable warnings  warnings on
   \
   \ }doc
 
-[unneeded] warn-throw ?( need ?warn
+unneeding warn-throw ?( need ?warn
 
 : warn-throw ( ca len -- ca len )
   ?warn ( ca len xt ) #-257 throw ;
@@ -1448,5 +1448,7 @@ variable warnings  warnings on
   \
   \ 2018-02-05: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

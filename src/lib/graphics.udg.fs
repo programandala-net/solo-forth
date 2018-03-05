@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802171406
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( /udg /udg* /udg+ udg-width udg> udg! udg: )
 
-[unneeded] /udg ?\ 8 cconstant /udg
+unneeding /udg ?\ 8 cconstant /udg
 
   \ doc{
   \
@@ -37,7 +37,7 @@
   \
   \ }doc
 
-[unneeded] /udg* ?\ need 8* need alias ' 8* alias /udg*
+unneeding /udg* ?\ need 8* need alias ' 8* alias /udg*
 
   \ doc{
   \
@@ -52,7 +52,7 @@
   \
   \ }doc
 
-[unneeded] /udg+ ?\ need 8+ need alias ' 8+ alias /udg+
+unneeding /udg+ ?\ need 8+ need alias ' 8+ alias /udg+
 
   \ doc{
   \
@@ -70,7 +70,7 @@
   \
   \ }doc
 
-[unneeded] udg-width ?\ 8 cconstant udg-width
+unneeding udg-width ?\ 8 cconstant udg-width
 
   \ doc{
   \
@@ -83,7 +83,7 @@
   \
   \ }doc
 
-[unneeded] udg> ?( need /udg* need get-udg
+unneeding udg> ?( need /udg* need get-udg
 
 : udg> ( c -- a ) /udg* get-udg + ; ?)
 
@@ -98,7 +98,7 @@
   \
   \ }doc
 
-[unneeded] udg! ?( need udg>
+unneeding udg! ?( need udg>
 
 : udg! ( b0..b7 c -- ) udg> dup 7 + ?do i c! -1 +loop ; ?)
 
@@ -114,7 +114,7 @@
   \
   \ }doc
 
-[unneeded] udg: ?( need udg!
+unneeding udg: ?( need udg!
 
 : udg: ( b0..b7 c "name" -- ) dup cconstant udg! ; ?)
 
@@ -300,7 +300,7 @@ need parse-name-thru
 
 ( (udg-block udg-block )
 
-[unneeded] (udg-block ?(
+unneeding (udg-block ?(
 
 need udg-scan>number need /udg need /udg*
 need udg-width need parse-name-thru need j need anon
@@ -341,7 +341,7 @@ here anon> ! 2 cells allot
   \
   \ }doc
 
-[unneeded] udg-block ?( need udg> need (udg-block
+unneeding udg-block ?( need udg> need (udg-block
 
 : udg-block ( width height c "name..." -- )
   udg> (udg-block ; ?)
@@ -404,7 +404,7 @@ here anon> ! 2 cells allot
 
 ( ,udg-block csprite )
 
-[unneeded] ,udg-block ?( need /udg* need (udg-block
+unneeding ,udg-block ?( need /udg* need (udg-block
 
 : ,udg-block ( width height "name..." -- )
   here >r 2dup * /udg* allot r> (udg-block ; ?)
@@ -447,7 +447,7 @@ here anon> ! 2 cells allot
   \
   \ }doc
 
-[unneeded] csprite ?(
+unneeding csprite ?(
 
 need udg-scan>number need /udg*
 need udg-width need parse-name-thru need j need anon
@@ -514,7 +514,7 @@ here anon> ! 3 cells allot
 
 ( make-block-chars default-udg-chars )
 
-[unneeded] make-block-chars ?( need assembler
+unneeding make-block-chars ?( need assembler
 
 code make-block-chars ( a -- )
   h pop, b push,
@@ -551,7 +551,7 @@ code make-block-chars ( a -- )
   \
   \ }doc
 
-[unneeded] default-udg-chars ?( need rom-font need get-udg
+unneeding default-udg-chars ?( need rom-font need get-udg
 
 rom-font 'A' 8 * +    \ from
 get-udg @ 144 8 * +   \ to
@@ -616,7 +616,7 @@ $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! #128 udg> 8 erase
 ( set-udg get-udg type-udg )
 
 
-[unneeded] set-udg ?( need os-udg
+unneeding set-udg ?( need os-udg
 
 code set-udg ( a -- ) E1 c, 22 c, os-udg , jpnext, end-code ?)
   \ pop hl
@@ -635,7 +635,7 @@ code set-udg ( a -- ) E1 c, 22 c, os-udg , jpnext, end-code ?)
   \
   \ }doc
 
-[unneeded] get-udg ?( need os-udg
+unneeding get-udg ?( need os-udg
 
 code get-udg ( -- a ) 2A c, os-udg , E5 c, jpnext, end-code ?)
   \ ld hl, (sys_udg)
@@ -654,7 +654,7 @@ code get-udg ( -- a ) 2A c, os-udg , E5 c, jpnext, end-code ?)
   \
   \ }doc
 
-[unneeded] type-udg
+unneeding type-udg
 
 ?\ : type-udg ( ca len -- ) bounds ?do i c@ emit-udg loop  ;
 
@@ -672,7 +672,7 @@ code get-udg ( -- a ) 2A c, os-udg , E5 c, jpnext, end-code ?)
 
 ( display-char-bitmap_ )
 
-[unneeded] display-char-bitmap_ ?(
+unneeding display-char-bitmap_ ?(
 
 need assembler need xy>scra_
 
@@ -720,7 +720,7 @@ create display-char-bitmap_ ( -- a ) asm
   \ Alternative version that uses the version of
   \ `xy>scra_` that does not use the BC register.
 
-[unneeded] display-char-bitmap_ ?(
+unneeding display-char-bitmap_ ?(
 
 need assembler need xy>scra_
 
@@ -766,7 +766,7 @@ create display-char-bitmap_ ( -- a ) asm
 
   \ XXX UNDER DEVELOPMENT
 
-[unneeded] at-xy-display-udg ?(
+unneeding at-xy-display-udg ?(
 
 need assembler need display-char-bitmap_ need os-udg
 
@@ -815,7 +815,7 @@ unused code at-xy-display-udg ( c x y -- )
   \
   \ }doc
 
-[unneeded] udg-at-xy-display ?(
+unneeding udg-at-xy-display ?(
 
 need assembler need display-char-bitmap_ need os-udg
 
@@ -1204,5 +1204,7 @@ exx, jpnext, end-code
   \
   \ 2018-02-17: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802041943
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -143,7 +143,7 @@ set-current previous
 
 ( address-unit-bits max-char /counted-string /pad floored )
 
-[unneeded] address-unit-bits
+unneeding address-unit-bits
 
 ?\ 8 cconstant address-unit-bits ( -- n )
 
@@ -157,7 +157,7 @@ set-current previous
   \
   \ }doc
 
-[unneeded] max-char
+unneeding max-char
 
 ?\ 255 cconstant max-char ( -- u )
 
@@ -173,7 +173,7 @@ set-current previous
   \
   \ }doc
 
-[unneeded] /counted-string
+unneeding /counted-string
 
 ?\ 255 cconstant /counted-string ( -- n )
 
@@ -187,7 +187,7 @@ set-current previous
   \
   \ }doc
 
-[unneeded] /pad
+unneeding /pad
 
 ?\ 84 cconstant /pad ( -- n )
 
@@ -202,7 +202,7 @@ set-current previous
   \
   \ }doc
 
-[unneeded] floored
+unneeding floored
 
 ?\ false cconstant floored ( -- f )
 
@@ -218,7 +218,7 @@ set-current previous
 
 ( max-n max-u max-d max-ud return-stack-cells stack-cells )
 
-[unneeded] max-n
+unneeding max-n
 
 ?\ 32767 constant max-n ( -- n )
 
@@ -235,7 +235,7 @@ set-current previous
   \ XXX REMARK -- Equivalent calculation:
   \   0 1 2 um/mod nip 1-
 
-[unneeded] max-u
+unneeding max-u
 
 ?\ -1 constant max-u ( -- u )
 
@@ -249,7 +249,7 @@ set-current previous
   \
   \ }doc
 
-[unneeded] max-d
+unneeding max-d
 
 ?\ need max-n -1 max-n 2constant max-d ( -- d )
 
@@ -263,7 +263,7 @@ set-current previous
   \
   \ }doc
 
-[unneeded] max-ud
+unneeding max-ud
 
 ?\ -1. 2constant max-ud ( -- ud )
 
@@ -277,7 +277,7 @@ set-current previous
   \
   \ }doc
 
-[unneeded] return-stack-cells
+unneeding return-stack-cells
 
 ?\ $2C +origin @ constant return-stack-cells ( -- n )
 
@@ -291,7 +291,7 @@ set-current previous
   \
   \ }doc
 
-[unneeded] stack-cells
+unneeding stack-cells
 
 ?\ $2A +origin @ constant stack-cells ( -- n )
 
@@ -344,5 +344,7 @@ set-current previous
   \
   \ 2018-02-04: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

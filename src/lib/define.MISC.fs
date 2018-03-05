@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712150207
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -15,7 +15,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -26,7 +26,7 @@
 
 ( create: :noname nextname )
 
-[unneeded] create:
+unneeding create:
 
 ?\ : create: ( "name" -- ) create hide ] ;
 
@@ -45,7 +45,7 @@
   \
   \ }doc
 
-[unneeded] :noname ?(
+unneeding :noname ?(
 
 : :noname ( -- xt )
   here  dup lastxt !  last off  !csp
@@ -66,7 +66,7 @@
   \
   \ }doc
 
-[unneeded] nextname ?( 2variable nextname-string
+unneeding nextname ?( 2variable nextname-string
 
   \ doc{
   \
@@ -170,5 +170,7 @@
   \ 2017-12-14: Improve documentation.
   \
   \ 2017-12-15: Move `;code` to <assembler.MISC.fs>.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

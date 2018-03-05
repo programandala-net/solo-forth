@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802041950
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -211,7 +211,7 @@ need between
   \
   \ Code from Galope.
 
-[unneeded] less-of ?( need nup
+unneeding less-of ?( need nup
 
 : (less-of) ( n1 n2 -- n1 n1 | n1 n3 )
   nup nup >= if invert then ;
@@ -258,7 +258,7 @@ need between
   \
   \ }doc
 
-[unneeded] greater-of ?( need nup
+unneeding greater-of ?( need nup
 
 : (greater-of) ( n1 n2 -- n1 n1 | n1 n3 )
   nup nup <= if invert then ;
@@ -307,7 +307,7 @@ need between
 
 ( any-of default-of )
 
-[unneeded] any-of ?( need any? need pick
+unneeding any-of ?( need any? need pick
 
 : (any-of) ( x#0 x#1 .. x#n n -- x#0 x#0 | x#0 0 )
   dup 1+ pick >r any? r> tuck and ;
@@ -419,7 +419,7 @@ need between
   \
   \ Code from Galope.
 
-[unneeded] within-of ?( need within
+unneeding within-of ?( need within
 
 : (within-of) ( x1 x2 x3 -- x1 x1 | x1 x4 )
   2>r dup dup 2r> within 0= if invert then ;
@@ -578,5 +578,7 @@ need between
   \
   \ 2018-02-04: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

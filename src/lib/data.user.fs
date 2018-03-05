@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705111617
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -25,7 +25,7 @@
 
 ( ucreate ?user uallot user 2user )
 
-[unneeded] ucreate ?\ : ucreate ( "name" -- ) udp @ (user) ;
+unneeding ucreate ?\ : ucreate ( "name" -- ) udp @ (user) ;
 
   \ doc{
   \
@@ -40,7 +40,7 @@
   \
   \ }doc
 
-[unneeded] ?user ?(
+unneeding ?user ?(
 
 : ?user ( -- )
   udp @ dup /user > #-279 ?throw  0< #-280 ?throw ; ?)
@@ -58,7 +58,7 @@
   \
   \ }doc
 
-[unneeded] uallot ?( need ?user
+unneeding uallot ?( need ?user
 
 : uallot ( n -- ) udp +! ?user ; ?)
 
@@ -77,7 +77,7 @@
   \
   \ }doc
 
-[unneeded] user ?( need ucreate need uallot
+unneeding user ?( need ucreate need uallot
 
 : user ( "name" -- ) ucreate cell uallot ; ?)
 
@@ -95,7 +95,7 @@
   \
   \ }doc
 
-[unneeded] 2user ?( need ucreate need uallot
+unneeding 2user ?( need ucreate need uallot
 
 : 2user ( "name" -- )
   ucreate [ 2 cells ] literal uallot ; ?)
@@ -132,5 +132,7 @@
   \ 2017-02-17: Update cross references.
   \
   \ 2017-05-11: Improve documentation.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

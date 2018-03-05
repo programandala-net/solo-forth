@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703292226
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -25,7 +25,7 @@
 
 ( number cell-bits )
 
-[unneeded] number
+unneeding number
 
 ?\ : number ( ca len -- n | d ) number? 0= #-275 ?throw ;
 
@@ -42,7 +42,7 @@
   \
   \ }doc
 
-[unneeded] cell-bits ?\ 16 cconstant cell-bits
+unneeding cell-bits ?\ 16 cconstant cell-bits
 
   \ doc{
   \
@@ -62,6 +62,8 @@
   \
   \ 2017-03-29: Move `cell-bits` from the 1-cell and 2-cell
   \ operators modules. Improve documentation.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth
 

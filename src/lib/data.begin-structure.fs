@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -25,7 +25,7 @@
 
 ( +field field: 2field: cfield: begin-structure end-structure )
 
-[unneeded] +field ?\ defer +field ( n1 n2 "name" -- n3 ) exit
+unneeding +field ?\ defer +field ( n1 n2 "name" -- n3 ) exit
 
   \ doc{
   \
@@ -58,7 +58,7 @@
   \
   \ }doc
 
-[unneeded] field: ?( need +field
+unneeding field: ?( need +field
 : field:   ( n1 "name" -- n2 ) cell +field ; ?)
 
   \ doc{
@@ -83,7 +83,7 @@
   \
   \ }doc
 
-[unneeded] 2field: ?( need +field
+unneeding 2field: ?( need +field
 : 2field: ( n1 "name" -- n2 ) [ 2 cells ] cliteral +field ; ?)
 
   \ doc{
@@ -106,7 +106,7 @@
   \
   \ }doc
 
-[unneeded] cfield: ?( need +field
+unneeding cfield: ?( need +field
 : cfield: ( n1 "name" -- n2 ) [ 1 chars ] cliteral +field ; ?)
 
   \ doc{
@@ -131,7 +131,7 @@
   \
   \ }doc
 
-[unneeded] begin-structure [unneeded] end-structure and ?(
+unneeding begin-structure unneeding end-structure and ?(
 
 : begin-structure ( "name" -- struct-sys 0 )
   create  >mark 0 does> ( -- n ) ( dfa ) @ ;
@@ -204,7 +204,7 @@
 
 ( +field-unopt +field-opt-0 )
 
-[unneeded] +field-unopt ?( need +field
+unneeding +field-unopt ?( need +field
 
 : +field-unopt ( n1 n2 "name" -- n3 )
   create over , + does> ( a -- a' ) ( a dfa ) @ + ;
@@ -229,7 +229,7 @@
   \
   \ }doc
 
-[unneeded] +field-opt-0 ?( need +field
+unneeding +field-opt-0 ?( need +field
 
   \ This implementation optimizes field 0 of the structure.  It
   \ uses 31 bytes of data space.
@@ -274,7 +274,7 @@
 
 ( +field-opt-0124 )
 
-[unneeded] +field-opt-0124 ?( need case need +field
+unneeding +field-opt-0124 ?( need case need +field
 
 : +field-opt-0124 ( n1 n2 "name" -- n3 )
   :
@@ -325,5 +325,7 @@
   \ `+field-opt-0124` (one byte less).
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

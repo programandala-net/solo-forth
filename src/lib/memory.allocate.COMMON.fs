@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704091928
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2017.
+  \ Marcos Cruz (programandala.net), 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -210,7 +210,7 @@ defer empty-heap ( -- )
 
 ( allot-heap limit-heap farlimit-heap bank-heap )
 
-[unneeded] allot-heap ?( need /heap need heap
+unneeding allot-heap ?( need /heap need heap
 
 : allot-heap ( n -- a )
   dup to /heap here to heap allot heap ; ?)
@@ -227,7 +227,7 @@ defer empty-heap ( -- )
   \
   \ }doc
 
-[unneeded] limit-heap ?( need /heap need heap
+unneeding limit-heap ?( need /heap need heap
 
 : limit-heap ( n -- a )
   dup to /heap negate limit +! limit @ dup to heap ; ?)
@@ -245,7 +245,7 @@ defer empty-heap ( -- )
   \
   \ }doc
 
-[unneeded] farlimit-heap ?( need /heap need heap
+unneeding farlimit-heap ?( need /heap need heap
 
 : farlimit-heap ( n -- a )
   dup to /heap negate farlimit +!  farlimit @ dup to heap
@@ -273,7 +273,7 @@ defer empty-heap ( -- )
   \
   \ }doc
 
-[unneeded] bank-heap ?( need 0exit need alias
+unneeding bank-heap ?( need 0exit need alias
 
 : bank-heap ( a n b -- a ) heap-bank c! to /heap to heap ;
 
@@ -310,7 +310,7 @@ defer empty-heap ( -- )
 
 ( get-heap set-heap )
 
-[unneeded] get-heap
+unneeding get-heap
 ?\ : get-heap ( -- a u b ) heap /heap heap-bank c@ ;
 
   \ doc{
@@ -326,7 +326,7 @@ defer empty-heap ( -- )
   \
   \ }doc
 
-[unneeded] set-heap
+unneeding set-heap
 ?\ : set-heap ( a u b -- ) heap-bank c! to /heap to heap ;
 
   \ doc{
@@ -351,3 +351,7 @@ defer empty-heap ( -- )
   \
   \ 2017-04-09: Add `farlimit-heap`. Improve documentation.
   \ Add `get-heap` and `set-heap`.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+
+  \ vim: filetype=soloforth

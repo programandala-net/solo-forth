@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801031719
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -25,7 +25,7 @@
 
 ( seconds ?seconds ms )
 
-[unneeded] seconds ?\ need ms : seconds ( u -- ) 1000 * ms ;
+unneeding seconds ?\ need ms : seconds ( u -- ) 1000 * ms ;
 
   \ doc{
   \
@@ -37,7 +37,7 @@
   \
   \ }doc
 
-[unneeded] ?seconds ?( need ?ticks-pause need ticks/second
+unneeding ?seconds ?( need ?ticks-pause need ticks/second
 
 : ?seconds ( u -- ) ticks/second * ?ticks-pause ; ?)
 
@@ -51,7 +51,7 @@
   \
   \ }doc
 
-[unneeded] ms ?( need assembler
+unneeding ms ?( need assembler
 
 code ms ( u -- )
   d pop, d tstp, nz? rif
@@ -81,7 +81,7 @@ code ms ( u -- )
 
 ( ticks dticks set-ticks set-dticks reset-ticks reset-dticks )
 
-[unneeded] ticks ?( need os-frames
+unneeding ticks ?( need os-frames
 
 : ticks ( -- u ) os-frames @ ; ?)
 
@@ -104,7 +104,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] dticks ?( need os-frames
+unneeding dticks ?( need os-frames
 
 : dticks ( -- ud )
   os-frames @ [ os-frames cell+ ] literal c@ ; ?)
@@ -125,7 +125,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] set-ticks ?( need os-frames
+unneeding set-ticks ?( need os-frames
 
 : set-ticks ( n -- ) os-frames ! ; ?)
 
@@ -140,7 +140,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] set-dticks ?( need os-frames
+unneeding set-dticks ?( need os-frames
 
 : set-dticks ( d -- )
   [ os-frames cell+ ] literal c! os-frames ! ; ?)
@@ -156,7 +156,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] reset-ticks
+unneeding reset-ticks
 
 ?\ need set-ticks : reset-ticks ( -- ) 0 set-ticks ;
 
@@ -170,7 +170,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] reset-dticks
+unneeding reset-dticks
 
 ?\ need set-dticks : reset-dticks ( -- ) 0. set-dticks ;
 
@@ -187,7 +187,7 @@ code ms ( u -- )
 
 ( ms/tick ticks/second dticks>cs dticks>ms dticks>seconds )
 
-[unneeded] ms/tick ?\ 20 cconstant ms/tick
+unneeding ms/tick ?\ 20 cconstant ms/tick
   \ XXX TODO -- Calculate after the lina Forth system.
 
   \ doc{
@@ -200,7 +200,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] ticks/second ?( need ms/tick
+unneeding ticks/second ?( need ms/tick
 
 1000 ms/tick / cconstant ticks/second ?)
 
@@ -215,7 +215,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] dticks>cs ?( need ms/tick need d*
+unneeding dticks>cs ?( need ms/tick need d*
 
 : dticks>cs ( d1 -- d2 ) [ ms/tick 10 / s>d ] 2literal d* ; ?)
 
@@ -230,7 +230,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] dticks>ms ?( need ms/tick need d*
+unneeding dticks>ms ?( need ms/tick need d*
 
 : dticks>ms ( d1 -- d2 ) [ ms/tick s>d ] 2literal d* ; ?)
 
@@ -245,7 +245,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] dticks>seconds ?( need ticks/second need m/
+unneeding dticks>seconds ?( need ticks/second need m/
 
 : dticks>seconds ( d -- n ) ticks/second m/ nip ; ?)
 
@@ -262,7 +262,7 @@ code ms ( u -- )
 
 ( ms>ticks elapsed delapsed timer dtimer past? dpast? )
 
-[unneeded] ms>ticks ?( need ms/tick
+unneeding ms>ticks ?( need ms/tick
 
 : ms>ticks ( n1 -- n2 ) ms/tick / ; ?)
 
@@ -277,7 +277,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] elapsed ?( need ticks
+unneeding elapsed ?( need ticks
 
 : elapsed ( u1 -- u2 ) ticks swap - ; ?)
 
@@ -293,7 +293,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] delapsed ?( need dticks
+unneeding delapsed ?( need dticks
 
 : delapsed ( d1 -- d2 ) dnegate dticks d+ ; ?)
 
@@ -309,7 +309,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] timer ?\ need elapsed : timer ( n -- ) elapsed u. ;
+unneeding timer ?\ need elapsed : timer ( n -- ) elapsed u. ;
 
   \ doc{
   \
@@ -324,7 +324,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] dtimer
+unneeding dtimer
 
 ?\ need delapsed need ud. : dtimer ( d -- ) delapsed ud. ;
 
@@ -339,7 +339,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] past? ?\ need ticks : past? ( u -- f ) ticks u< ;
+unneeding past? ?\ need ticks : past? ( u -- f ) ticks u< ;
 
   \ doc{
   \
@@ -360,7 +360,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] dpast? ?( need dticks need d0<
+unneeding dpast? ?( need dticks need d0<
 
 : dpast? ( d -- f ) dnegate dticks d+ d0< 0= ; ?)
 
@@ -391,7 +391,7 @@ code ms ( u -- )
 
 ( ticks>cs ticks>ms ticks>seconds )
 
-[unneeded] ticks>cs ?( need ms/tick
+unneeding ticks>cs ?( need ms/tick
 
 : ticks>cs ( n1 -- n2 ) [ ms/tick 10 / ] xliteral * ; ?)
 
@@ -406,7 +406,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] ticks>ms ?( need ms/tick
+unneeding ticks>ms ?( need ms/tick
 
 : ticks>ms ( n1 -- n2 ) ms/tick / ; ?)
 
@@ -421,7 +421,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] ticks>seconds ?( need ticks/second
+unneeding ticks>seconds ?( need ticks/second
 
 : ticks>seconds ( n1 -- n2 ) ticks/second / ; ?)
 
@@ -438,7 +438,7 @@ code ms ( u -- )
 
 ( ?ticks-pause ticks-pause basic-pause )
 
-[unneeded] ?ticks-pause ?( need ticks
+unneeding ?ticks-pause ?( need ticks
 
 : ?ticks-pause ( u -- )
   ticks + begin dup ticks u< key? dup if key drop then
@@ -458,7 +458,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] ticks-pause ?( need ticks
+unneeding ticks-pause ?( need ticks
 
 : ticks-pause ( u -- )
   ticks + begin dup ticks u< until drop ; ?)
@@ -494,7 +494,7 @@ code ms ( u -- )
 
   \ XXX TODO -- multitasking
 
-[unneeded] basic-pause ?( need ?ticks-pause need new-key
+unneeding basic-pause ?( need ?ticks-pause need new-key
 
 : basic-pause ( u -- )
   ?dup if ?ticks-pause else new-key drop then ; ?)
@@ -517,7 +517,7 @@ code ms ( u -- )
 
 ( leapy-year? date set-date get-date )
 
-[unneeded] leapy-year? ?(
+unneeding leapy-year? ?(
 
 : leapy-year? ( n -- f )
   dup 400 mod 0= if  drop true   exit  then
@@ -549,7 +549,7 @@ code ms ( u -- )
   \   thiscase   4 mod 0= ifcase  true   exitcase
   \   othercase false ;
 
-[unneeded] date ?\ create date  1 c,  1 c,  2016 ,
+unneeding date ?\ create date  1 c,  1 c,  2016 ,
 
   \ doc{
   \
@@ -569,7 +569,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] get-date ?(
+unneeding get-date ?(
 
 : get-date ( -- day month year )
   date c@ [ date 1+ ] literal c@ [ date 2+ ] literal @ ; ?)
@@ -586,7 +586,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] set-date ?(
+unneeding set-date ?(
 
 : set-date ( day month year -- )
   [ date 2+ ] literal ! [ date 1+ ] literal c! date c! ; ?)
@@ -605,7 +605,7 @@ code ms ( u -- )
 
 ( set-time get-time reset-time )
 
-[unneeded] get-time ?( need ticks need ticks/second
+unneeding get-time ?( need ticks need ticks/second
 
 : get-time ( -- second minute hour )
   ticks ticks/second um/mod nip s>d   ( sec . )
@@ -629,7 +629,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] set-time ?( need ud* need set-ticks
+unneeding set-time ?( need ud* need set-ticks
 
 : set-time ( second minute hour -- )
   3600 um* rot 60 * m+ rot m+ ( seconds )
@@ -645,7 +645,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] reset-time ?( need reset-ticks need alias
+unneeding reset-time ?( need reset-ticks need alias
 
 ' reset-ticks alias reset-time ( -- ) ?)
 
@@ -661,7 +661,7 @@ code ms ( u -- )
 
 ( .time .date .time&date time&date )
 
-[unneeded] .time ?( need .00
+unneeding .time ?( need .00
 
 : .time ( second minute hour -- ) .00 ." :" .00 ." :" .00 ; ?)
 
@@ -675,7 +675,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] .date ?( need .0000 need .00
+unneeding .date ?( need .0000 need .00
 
 : .date ( day month year -- ) .0000 ." -" .00 ." -" .00 ;
 
@@ -689,7 +689,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] .time&date ?( need .date need .time
+unneeding .time&date ?( need .date need .time
 
 : .time&date ( second minute hour day month year -- )
   .date ." T" .time ; ?)
@@ -705,7 +705,7 @@ code ms ( u -- )
   \
   \ }doc
 
-[unneeded] time&date ?( need get-time need get-date
+unneeding time&date ?( need get-time need get-date
 
 : time&date ( -- second minute hour day month year )
   get-time get-date ; ?)
@@ -896,5 +896,7 @@ need reset-dticks need dticks need dticks>cs
   \ `dpast?`. Add `ms>ticks`.
   \
   \ 2018-01-03: Update `1literal` to `xliteral`.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

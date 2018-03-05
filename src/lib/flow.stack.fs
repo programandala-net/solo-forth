@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802151523
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( cs-pick cs-roll cs-drop cs-dup cs-mark cs-test )
 
-[unneeded] cs-pick ?( need pick
+unneeding cs-pick ?( need pick
 
 : cs-pick ( u -- ) ( C: x#u .. x#1 x#0 -- x#u .. x#1 x#0 x#u )
   pick ; compile-only ?)
@@ -52,7 +52,7 @@
   \
   \ }doc
 
-[unneeded] cs-roll ?( need roll
+unneeding cs-roll ?( need roll
 
 : cs-roll ( u -- ) ( C: x#u x#n .. x#0 -- x#n .. x#0 x#u )
   roll ; compile-only ?)
@@ -80,7 +80,7 @@
   \
   \ }doc
 
-[unneeded] cs-drop ?\ : cs-drop ( C: x -- ) drop ; compile-only
+unneeding cs-drop ?\ : cs-drop ( C: x -- ) drop ; compile-only
 
   \ doc{
   \
@@ -99,7 +99,7 @@
   \
   \ }doc
 
-[unneeded] cs-dup
+unneeding cs-dup
 
 ?\ : cs-dup ( C: x -- x x ) dup ; compile-only
 
@@ -120,7 +120,7 @@
   \
   \ }doc
 
-[unneeded] cs-mark ?\ 0 cconstant cs-mark ( C: -- cs-mark )
+unneeding cs-mark ?\ 0 cconstant cs-mark ( C: -- cs-mark )
 
   \ Credit:
   \ Control-Flow Stack Extensions
@@ -138,7 +138,7 @@
   \
   \ }doc
 
-[unneeded] cs-test ?( need cs-mark
+unneeding cs-test ?( need cs-mark
 
 : cs-test ( -- f ) ( C: x -- x ) dup cs-mark <> ; ?)
 
@@ -177,5 +177,7 @@
   \
   \ 2018-02-15: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

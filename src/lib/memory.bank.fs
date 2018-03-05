@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705111910
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( /bank bank-start )
 
-[unneeded] /bank ?\ $4000 constant /bank
+unneeding /bank ?\ $4000 constant /bank
 
   \ doc{
   \
@@ -37,7 +37,7 @@
   \
   \ }doc
 
-[unneeded] bank-start ?\ $C000 constant bank-start
+unneeding bank-start ?\ $C000 constant bank-start
 
   \ doc{
   \
@@ -77,5 +77,7 @@
   \
   \ 2018-01-23: Remove `get-default-bank` and
   \ `set-default-bank`.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705102138
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -18,7 +18,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -44,7 +44,7 @@
 
 get-current assembler-wordlist dup >order set-current
 
-[unneeded] far-hl_ ?\ ' far 2+ @ constant far-hl_
+unneeding far-hl_ ?\ ' far 2+ @ constant far-hl_
 
   \ doc{
   \
@@ -70,7 +70,7 @@ get-current assembler-wordlist dup >order set-current
 
   \ }doc
 
-[unneeded] ?next-bank_
+unneeding ?next-bank_
 
 ?\ ' ?next-bank 2+ @ constant ?next-bank_
 
@@ -110,7 +110,7 @@ get-current assembler-wordlist dup >order set-current
 
   \ }doc
 
-[unneeded] ?previous-bank_ ?(
+unneeding ?previous-bank_ ?(
 
 ' ?previous-bank 2+ @ constant ?previous-bank_
 
@@ -158,7 +158,7 @@ previous set-current
 
 get-current assembler-wordlist dup >order set-current
 
-[unneeded] default-bank_
+unneeding default-bank_
 
 ?\ ' default-bank 2+ constant default-bank_
 
@@ -177,7 +177,7 @@ get-current assembler-wordlist dup >order set-current
   \
   \ }doc
 
-[unneeded] e-bank_
+unneeding e-bank_
 
 ?\ ' default-bank 4 + constant e-bank_
 
@@ -200,7 +200,7 @@ previous set-current
 
 ( farallot far, )
 
-[unneeded] farallot
+unneeding farallot
 
 ?\ : farallot ( n -- ) np +! ;
 
@@ -215,7 +215,7 @@ previous set-current
   \
   \ }doc
 
-[unneeded] far, ?( need farallot
+unneeding far, ?( need farallot
 
 : far, ( x -- ) np@ far! cell farallot ; ?)
 
@@ -229,13 +229,13 @@ previous set-current
 
 ( far2@ far2! far@+ farc@+ far+! farc+! far2@+ )
 
-[unneeded] far2@
+unneeding far2@
 ?\ : far2@ ( a -- d ) dup cell+ far@ swap far@ ;
 
-[unneeded] far2!
+unneeding far2!
 ?\ : far2! ( d a -- ) swap over far! cell+ far! ;
 
-[unneeded] far@+
+unneeding far@+
 ?\ : far@+ ( a -- a' x ) dup cell+ swap far@ ;
 
   \ doc{
@@ -248,7 +248,7 @@ previous set-current
   \
   \ }doc
 
-[unneeded] farc@+
+unneeding farc@+
 ?\ : farc@+ ( ca -- ca' c ) dup char+ swap farc@ ;
 
   \ doc{
@@ -261,7 +261,7 @@ previous set-current
   \
   \ }doc
 
-[unneeded] far+!
+unneeding far+!
 ?\ : far+! ( n a -- ) dup far@ rot + swap far! ;
 
   \ doc{
@@ -273,7 +273,7 @@ previous set-current
   \
   \ }doc
 
-[unneeded] farc+!
+unneeding farc+!
 ?\ : farc+! ( c a -- ) dup farc@ rot + swap farc! ;
 
   \ doc{
@@ -284,7 +284,7 @@ previous set-current
   \
   \ }doc
 
-[unneeded] 2@+ ?exit need far2@
+unneeding 2@+ ?exit need far2@
 : far2@+ ( a -- a' xd ) dup cell+ cell+ swap far2@ ;
 
   \ doc{
@@ -299,7 +299,7 @@ previous set-current
 
 ( move>far move<far cmove>far cmove<far )
 
-[unneeded] move>far ?(
+unneeding move>far ?(
 
 : move>far ( a1 a2 len -- )
   cells bounds ?do  dup @ i far! cell+ cell +loop  drop ; ?)
@@ -314,7 +314,7 @@ previous set-current
   \
   \ }doc
 
-[unneeded] move<far ?(
+unneeding move<far ?(
 
 : move<far ( a1 a2 len -- )
   cells bounds ?do  dup far@ i ! cell+ cell +loop  drop ; ?)
@@ -329,7 +329,7 @@ previous set-current
   \
   \ }doc
 
-[unneeded] cmove>far ?(
+unneeding cmove>far ?(
 
 : cmove>far ( ca1 ca2 len -- )
   bounds ?do  dup c@ i farc! char+  loop  drop ; ?)
@@ -344,7 +344,7 @@ previous set-current
   \
   \ }doc
 
-[unneeded] cmove<far ?(
+unneeding cmove<far ?(
 
 : cmove<far ( ca1 ca2 len -- )
   bounds ?do  dup farc@ i c! char+  loop  drop ; ?)
@@ -361,7 +361,7 @@ previous set-current
 
 ( !bank c!bank @bank c@bank )
 
-[unneeded] !bank ?( need e-bank_
+unneeding !bank ?( need e-bank_
 
 code !bank ( x a n -- )
   D1 c, e-bank_ call, E1 c, D1 c, 73 c, 23 c, 72 c,
@@ -393,7 +393,7 @@ code !bank ( x a n -- )
   \
   \ }doc
 
-[unneeded] !bank ?( need e-bank_
+unneeding !bank ?( need e-bank_
 
 code c!bank ( c ca n -- ) D1 c, e-bank_ call,
   E1 c, D1 c, 73 c, ' default-bank jp, end-code ?)
@@ -421,7 +421,7 @@ code c!bank ( c ca n -- ) D1 c, e-bank_ call,
   \
   \ }doc
 
-[unneeded] @bank ?( need e-bank_
+unneeding @bank ?( need e-bank_
 
 code @bank ( a n -- x )
   D1 c, e-bank_ call, E1 c, 7E c, 23 c, 66 c, 6F c,
@@ -453,7 +453,7 @@ code @bank ( a n -- x )
   \
   \ }doc
 
-[unneeded] c@bank ?( need e-bank_
+unneeding c@bank ?( need e-bank_
 
 code c@bank ( ca n -- c ) D1 c, e-bank_ call,
   E1 c, 6E c, 26 c, 00 c, E5 c, ' default-bank jp, end-code ?)
@@ -534,5 +534,7 @@ code c@bank ( ca n -- c ) D1 c, e-bank_ call,
   \ 2017-03-13: Improve documentation.
   \
   \ 2017-05-10: Improve documentation.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

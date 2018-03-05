@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802201258
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1606,7 +1606,7 @@ need bench{ need }bench.
 
   \ --------------------------------------------
 
-[unneeded] um*-bench ?(
+unneeding um*-bench ?(
 
   \ 2017-02-01: Update.
 
@@ -1641,7 +1641,7 @@ need bench{ need }bench.
 
   \ --------------------------------------------
 
-[unneeded] um/mod-bench ?(
+unneeding um/mod-bench ?(
 
   \ 2015-11-24.
   \ 2017-02-01: Update.
@@ -3195,5 +3195,7 @@ need bench{ need }bench.
   \ `store-bench`.
   \
   \ 2018-02-20: Add `cells-+-bench`.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

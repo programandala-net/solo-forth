@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703171822
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -17,7 +17,7 @@
   \ Wil Baden, published on Forth Dimensions (volume 20, number
   \ 3 page 26, 1998-10).
 
-  \ Adapted by Marcos Cruz (programandala.net), 2016, 2017.
+  \ Adapted by Marcos Cruz (programandala.net), 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -28,7 +28,7 @@
 
 ( classic-number-point? extended-number-point? )
 
-[unneeded] classic-number-point? ?(
+unneeding classic-number-point? ?(
 
 : classic-number-point? ( c -- f )
   dup ':' = swap ',' - 4 u< or ; ?)
@@ -48,7 +48,7 @@
   \
   \ }doc
 
-[unneeded] extended-number-point? ?(
+unneeding extended-number-point? ?(
 
 : extended-number-point? ( c -- f )
   dup ':' = swap '+' - 5 u< or ; ?)
@@ -84,6 +84,8 @@
   \ 2017-03-13: Improve documentation.
   \
   \ 2017-03-17: Fix index line. Improve documentation.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth
 

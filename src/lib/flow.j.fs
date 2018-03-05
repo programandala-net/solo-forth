@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802071852
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( j k )
 
-[unneeded] j ?(
+unneeding j ?(
 
 code j ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
   2A c, rp ,  11 c, 3 cells ,  19 c,  C3 c, ' i 3 + , end-code
@@ -49,7 +49,7 @@ code j ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
   \
   \ }doc
 
-[unneeded] k ?(
+unneeding k ?(
 
 code k ( -- n|u )
   ( R: loop-sys1 .. loop-sys3 -- loop-sys1 .. loop-sys3 )
@@ -75,7 +75,7 @@ code k ( -- n|u )
 
 ( i' j' k' )
 
-[unneeded] i' ?(
+unneeding i' ?(
 
 code i' ( -- n|u ) ( R: do-sys -- do-sys )
   2A c, rp , 11 c, 2 cells , 19 c, 5E c, 23 c, 56 c, D5 c,
@@ -102,7 +102,7 @@ code i' ( -- n|u ) ( R: do-sys -- do-sys )
   \
   \ }doc
 
-[unneeded] j' ?(
+unneeding j' ?(
 
 code j' ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
   2A c, rp , 11 c, 5 cells , 19 c, 5E c, 23 c, 56 c, D5 c,
@@ -129,7 +129,7 @@ code j' ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
   \
   \ }doc
 
-[unneeded] k' ?(
+unneeding k' ?(
 
 code k' ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
   2A c, rp , 11 c, 8 cells , 19 c, 5E c, 23 c, 56 c, D5 c,
@@ -177,5 +177,7 @@ code k' ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
   \
   \ 2018-02-07: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

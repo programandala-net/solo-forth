@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802051651
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( wordlist>link wordlist>name wordlist-name@ wordlist-name! )
 
-[unneeded] wordlist>link
+unneeding wordlist>link
 
 ?\ need alias  ' cell+ alias wordlist>link ( wid -- a )
 
@@ -41,7 +41,7 @@
   \
   \ }doc
 
-[unneeded] wordlist>name
+unneeding wordlist>name
 
 ?\ : wordlist>name ( wid -- a ) cell+ cell+ ;
 
@@ -57,7 +57,7 @@
   \
   \ }doc
 
-[unneeded] wordlist-name@ ?( need wordlist>name
+unneeding wordlist-name@ ?( need wordlist>name
 
 : wordlist-name@ ( wid -- nt|0 ) wordlist>name @ ; ?)
 
@@ -72,7 +72,7 @@
   \
   \ }doc
 
-[unneeded] wordlist-name! ?( need wordlist>name
+unneeding wordlist-name! ?( need wordlist>name
 
 : wordlist-name! ( nt wid -- ) wordlist>name ! ; ?)
 
@@ -90,7 +90,7 @@
 
 ( +order -order )
 
-[unneeded] +order
+unneeding +order
 
 ?\ need -order  : +order ( wid -- ) dup -order >order ;
 
@@ -111,7 +111,7 @@
   \
   \ }doc
 
-[unneeded] -order ?( need n>r need under+
+unneeding -order ?( need n>r need under+
 
 variable -order-wid
   \ XXX TMP -- used as a local
@@ -142,7 +142,7 @@ variable -order-wid
 
 ( wordlist-of latest>wordlist wordlist>vocabulary vocabulary )
 
-[unneeded] wordlist-of
+unneeding wordlist-of
 
 ?\ need >body  : wordlist-of ( "name" -- wid ) ' >body @ ;
 
@@ -159,7 +159,7 @@ variable -order-wid
   \
   \ }doc
 
-[unneeded] latest>wordlist  ?( need wordlist-name!
+unneeding latest>wordlist  ?( need wordlist-name!
 
 : latest>wordlist ( wid -- ) latest swap wordlist-name! ; ?)
 
@@ -175,7 +175,7 @@ variable -order-wid
   \
   \ }doc
 
-[unneeded] wordlist>vocabulary ?( need latest>wordlist
+unneeding wordlist>vocabulary ?( need latest>wordlist
 
 : wordlist>vocabulary ( wid "name" -- )
   create dup , latest>wordlist dovocabulary ; ?)
@@ -192,7 +192,7 @@ variable -order-wid
   \
   \ }doc
 
-[unneeded] vocabulary ?( need wordlist>vocabulary
+unneeding vocabulary ?( need wordlist>vocabulary
 
 : vocabulary ( "name" -- ) wordlist wordlist>vocabulary ; ?)
 
@@ -215,7 +215,7 @@ variable -order-wid
 
 ( seal trail find-name-in find swap-current search-wordlist )
 
-[unneeded] seal ?\ : seal ( -- ) 1 #order ! ;
+unneeding seal ?\ : seal ( -- ) 1 #order ! ;
 
   \ doc{
   \
@@ -232,7 +232,7 @@ variable -order-wid
   \
   \ }doc
 
-[unneeded] trail ?\ : trail ( -- nt ) context @ @ ;
+unneeding trail ?\ : trail ( -- nt ) context @ @ ;
 
   \ doc{
   \
@@ -245,7 +245,7 @@ variable -order-wid
   \
   \ }doc
 
-[unneeded] find-name-in
+unneeding find-name-in
 
 ?\ : find-name-in ( ca len wid -- nt | 0 ) @ find-name-from ;
 
@@ -262,7 +262,7 @@ variable -order-wid
   \
   \ }doc
 
-[unneeded] find ?(
+unneeding find ?(
 
 : find ( ca -- ca 0 | xt 1 | xt -1 )
   dup count find-name dup
@@ -285,7 +285,7 @@ variable -order-wid
   \
   \ }doc
 
-[unneeded] swap-current ?(
+unneeding swap-current ?(
 
 : swap-current ( wid1 -- wid2 )
   get-current swap set-current ; ?)
@@ -306,7 +306,7 @@ variable -order-wid
   \
   \ }doc
 
-[unneeded] search-wordlist ?(
+unneeding search-wordlist ?(
 
 : search-wordlist ( ca len wid -- 0 | xt 1 | xt -1 )
   @ find-name-from dup 0= ?exit  name>immediate? 0= 1 or ; ?)
@@ -380,5 +380,7 @@ variable -order-wid
   \
   \ 2018-02-05: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

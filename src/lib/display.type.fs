@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071833
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -25,7 +25,7 @@
 
 ( fartype type-ascii fartype-ascii )
 
-[unneeded] fartype
+unneeding fartype
 
 ?\ : fartype ( ca len -- ) bounds ?do  i farc@ emit  loop ;
 
@@ -40,7 +40,7 @@
   \
   \ }doc
 
-[unneeded] type-ascii ?( need >printable-ascii-char
+unneeding type-ascii ?( need >printable-ascii-char
 
 : type-ascii ( ca len -- )
   bounds ?do  i c@ >printable-ascii-char emit  loop ; ?)
@@ -54,7 +54,7 @@
   \
   \ }doc
 
-[unneeded] fartype-ascii ?( need >printable-ascii-char
+unneeding fartype-ascii ?( need >printable-ascii-char
 
 : fartype-ascii ( ca len -- )
   bounds ?do  i farc@ >printable-ascii-char emit  loop ; ?)
@@ -73,7 +73,7 @@
 
 ( drop-type padding-spaces type-left-field )
 
-[unneeded] drop-type ?\ : drop-type ( ca len x -- ) drop type ;
+unneeding drop-type ?\ : drop-type ( ca len x -- ) drop type ;
 
   \ doc{
   \
@@ -86,7 +86,7 @@
   \
   \ }doc
 
-[unneeded] padding-spaces
+unneeding padding-spaces
 ?\ : padding-spaces ( len1 len2 -- ) swap - 0 max spaces ;
 
   \ doc{
@@ -100,7 +100,7 @@
   \
   \ }doc
 
-[unneeded] type-left-field ?( need padding-spaces
+unneeding type-left-field ?( need padding-spaces
 
 : type-left-field ( ca1 len1 len2 -- )
   2dup 2>r min type 2r> padding-spaces ; ?)
@@ -271,5 +271,7 @@ constant type-center-field-cases
   \ of `gigatype-title`.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

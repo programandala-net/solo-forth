@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802171418
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -187,7 +187,7 @@ noop noop noop noop noop noop noop noop noop noop noop noop [
 
 ( nuf? aborted? break? -keys new-key new-key- )
 
-[unneeded] nuf? ?( need aborted? need 'cr'
+unneeding nuf? ?( need aborted? need 'cr'
 
 : nuf? ( -- f ) 'cr' aborted? ; ?)
 
@@ -219,7 +219,7 @@ noop noop noop noop noop noop noop noop noop noop noop noop [
   \
   \ }doc
 
-[unneeded] aborted? ?(
+unneeding aborted? ?(
 
 : aborted? ( c -- f )
   key? dup if key 2drop key = else nip then ; ?)
@@ -243,14 +243,14 @@ noop noop noop noop noop noop noop noop noop noop noop noop [
 
   \ }doc
 
-[unneeded] break? ?(
+unneeding break? ?(
 
   \ XXX UNDER DEVELOPMENT
   \ XXX TODO try
 
 : break? ( -- f ) key? dup if key 2drop break-key? then ; ?)
 
-[unneeded] -keys ?(
+unneeding -keys ?(
 
 code -keys ( -- )
   FD c, CB c, 01 c, 86 08 05 * + c, jpnext, end-code ?)
@@ -270,7 +270,7 @@ code -keys ( -- )
   \
   \ }doc
 
-[unneeded] new-key need -keys ?\ : new-key ( -- c ) -keys key ;
+unneeding new-key need -keys ?\ : new-key ( -- c ) -keys key ;
 
   \ doc{
   \
@@ -284,7 +284,7 @@ code -keys ( -- )
   \
   \ }doc
 
-[unneeded] new-key- ?( need new-key need -keys
+unneeding new-key- ?( need new-key need -keys
 
 : new-key- ( -- ) new-key drop -keys ; ?)
 
@@ -1438,7 +1438,7 @@ create kk-chars '1' c,  '2' c,  '3' c,  '4' c,  '5' c,
 
 ( kk#>kk pressed pressed? )
 
-[unneeded] kk#>kk ?( need kk-ports
+unneeding kk#>kk ?( need kk-ports
 
 : kk#>kk ( n -- b a ) /kk * kk-ports + kk@ ; ?)
 
@@ -1453,7 +1453,7 @@ create kk-chars '1' c,  '2' c,  '3' c,  '4' c,  '5' c,
   \
   \ }doc
 
-[unneeded] pressed? ?( need @p
+unneeding pressed? ?( need @p
 
 : pressed? ( b a -- f ) @p and 0= ; ?)
 
@@ -1468,7 +1468,7 @@ create kk-chars '1' c,  '2' c,  '3' c,  '4' c,  '5' c,
   \
   \ }doc
 
-[unneeded] pressed ?( need pressed? need kk-ports
+unneeding pressed ?( need pressed? need kk-ports
 
 : pressed ( -- false | b a true )
   false \ by default
@@ -1524,7 +1524,7 @@ need kk-ports  0. 2variable kk-pressed
 
 ( key-edit key-left key-right key-down key-up key-delete )
 
-[unneeded] key-edit ?\ 7 cconstant key-edit
+unneeding key-edit ?\ 7 cconstant key-edit
 
   \ doc{
   \
@@ -1539,7 +1539,7 @@ need kk-ports  0. 2variable kk-pressed
   \
   \ }doc
 
-[unneeded] key-left ?\ 8 cconstant key-left
+unneeding key-left ?\ 8 cconstant key-left
 
   \ doc{
   \
@@ -1554,7 +1554,7 @@ need kk-ports  0. 2variable kk-pressed
   \
   \ }doc
 
-[unneeded] key-right ?\ 9 cconstant key-right
+unneeding key-right ?\ 9 cconstant key-right
 
   \ doc{
   \
@@ -1570,7 +1570,7 @@ need kk-ports  0. 2variable kk-pressed
   \
   \ }doc
 
-[unneeded] key-down ?\ 10 cconstant key-down
+unneeding key-down ?\ 10 cconstant key-down
 
   \ doc{
   \
@@ -1585,7 +1585,7 @@ need kk-ports  0. 2variable kk-pressed
   \
   \ }doc
 
-[unneeded] key-up ?\ 11 cconstant key-up
+unneeding key-up ?\ 11 cconstant key-up
 
   \ doc{
   \
@@ -1600,7 +1600,7 @@ need kk-ports  0. 2variable kk-pressed
   \
   \ }doc
 
-[unneeded] key-delete ?\ 12 cconstant key-delete
+unneeding key-delete ?\ 12 cconstant key-delete
 
   \ doc{
   \
@@ -1617,7 +1617,7 @@ need kk-ports  0. 2variable kk-pressed
 
 ( key-enter key-graphics key-true-video key-inverse-video )
 
-[unneeded] key-enter ?\ 13 cconstant key-enter
+unneeding key-enter ?\ 13 cconstant key-enter
 
   \ doc{
   \
@@ -1632,7 +1632,7 @@ need kk-ports  0. 2variable kk-pressed
   \
   \ }doc
 
-[unneeded] key-graphics ?\ 15 cconstant key-graphics
+unneeding key-graphics ?\ 15 cconstant key-graphics
 
   \ doc{
   \
@@ -1647,7 +1647,7 @@ need kk-ports  0. 2variable kk-pressed
   \
   \ }doc
 
-[unneeded] key-true-video ?\ 4 cconstant key-true-video
+unneeding key-true-video ?\ 4 cconstant key-true-video
 
   \ doc{
   \
@@ -1662,7 +1662,7 @@ need kk-ports  0. 2variable kk-pressed
   \
   \ }doc
 
-[unneeded] key-inverse-video ?\ 5 cconstant key-inverse-video
+unneeding key-inverse-video ?\ 5 cconstant key-inverse-video
 
   \ doc{
   \
@@ -1678,7 +1678,7 @@ need kk-ports  0. 2variable kk-pressed
   \
   \ }doc
 
-[unneeded] key-caps-lock ?\ 6 cconstant key-caps-lock
+unneeding key-caps-lock ?\ 6 cconstant key-caps-lock
 
   \ doc{
   \
@@ -1751,5 +1751,7 @@ need kk-ports  0. 2variable kk-pressed
   \
   \ 2018-02-17: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

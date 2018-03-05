@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802171724
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -30,7 +30,7 @@
 
 ( toarg +toarg arguments results )
 
-[unneeded] toarg ?( need arguments ' @ arg-default-action !
+unneeding toarg ?( need arguments ' @ arg-default-action !
 
 : toarg ( -- ) ['] ! arg-action ! ; exit ?)
 
@@ -48,7 +48,7 @@
   \
   \ }doc
 
-[unneeded] +toarg ?( need arguments ' @ arg-default-action !
+unneeding +toarg ?( need arguments ' @ arg-default-action !
 
 : +toarg ( -- ) ['] +! arg-action ! ; exit ?)
 
@@ -265,5 +265,7 @@ $0A arg: l5 $0C arg: l6 $0E arg: l7 $10 arg: l8 $12 arg: l9 -->
   \
   \ 2018-02-17: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

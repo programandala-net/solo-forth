@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802041812
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( form>xy >form form (at-xy columns rows set-mode-output )
 
-[unneeded] form>xy ?( need columns need rows need */
+unneeding form>xy ?( need columns need rows need */
 
 : form>xy ( cols rows -- x y )
   xy swap >r rows */ r> swap >r columns */ r> ; ?)
@@ -43,7 +43,7 @@
   \
   \ }doc
 
-[unneeded] >form ?( need form>xy need columns need rows need to
+unneeding >form ?( need form>xy need columns need rows need to
 
 : >form ( cols rows -- )
   2dup form>xy at-xy to rows to columns ; ?)
@@ -65,7 +65,7 @@
   \
   \ }doc
 
-[unneeded] form ?( need columns need rows
+unneeding form ?( need columns need rows
 
 : form ( -- cols rows ) columns rows ; ?)
 
@@ -80,7 +80,7 @@
   \
   \ }doc
 
-[unneeded] (at-xy
+unneeding (at-xy
 ?\ : (at-xy ( col row -- ) 22 emit swap emit emit ;
 
   \ doc{
@@ -102,7 +102,7 @@
   \
   \ }doc
 
-[unneeded] columns ?\ need cvalue 32 cvalue columns
+unneeding columns ?\ need cvalue 32 cvalue columns
 
   \ doc{
   \
@@ -115,7 +115,7 @@
   \
   \ }doc
 
-[unneeded] rows ?\ need cvalue 24 cvalue rows
+unneeding rows ?\ need cvalue 24 cvalue rows
 
   \ doc{
   \
@@ -128,7 +128,7 @@
   \
   \ }doc
 
-[unneeded] set-mode-output ?( need os-chans
+unneeding set-mode-output ?( need os-chans
 
 : set-mode-output ( a -- )
   \ os-chans @ 2dup ! 2dup 5 + ! 15 + ! ; ?) \ XXX OLD
@@ -218,5 +218,7 @@ code (banked-mode-output) ( -- )
   \
   \ 2018-02-04: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

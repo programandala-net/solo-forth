@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802051657
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( ?--> update flush thru )
 
-[unneeded] ?-->
+unneeding ?-->
 ?\ : ?--> ( f -- ) if  postpone -->  then ; immediate
 
   \ doc{
@@ -42,7 +42,7 @@
   \
   \ }doc
 
-[unneeded] update
+unneeding update
 ?\ : update ( -- ) disk-buffer @ $8000 or disk-buffer ! ;
 
   \ doc{
@@ -59,7 +59,7 @@
   \
   \ }doc
 
-[unneeded] flush
+unneeding flush
 ?\ : flush ( -- ) save-buffers empty-buffers ;
 
   \ doc{
@@ -76,7 +76,7 @@
   \
   \ }doc
 
-[unneeded] thru
+unneeding thru
 ?\ : thru ( block1 block2 -- ) 1+ swap ?do  i load  loop ;
   \ XXX FIXME -- when block1>block2
 
@@ -97,7 +97,7 @@
 
 ( continued ?load reload loads +load +thru loader )
 
-[unneeded] continued ?\ : continued ( u -- ) ?loading (load) ;
+unneeding continued ?\ : continued ( u -- ) ?loading (load) ;
 
   \ doc{
   \
@@ -112,7 +112,7 @@
   \
   \ }doc
 
-[unneeded] ?load
+unneeding ?load
 ?\ : ?load ( block f -- ) if  dup load  then  drop ;
 
   \ Credit:
@@ -131,7 +131,7 @@
   \
   \ }doc
 
-[unneeded] reload
+unneeding reload
 ?\ : reload ( -- ) empty-buffers  lastblk @ load ;
 
   \ doc{
@@ -144,7 +144,7 @@
   \
   \ }doc
 
-[unneeded] loads ?\ : loads ( u n -- ) bounds ?do i load loop ;
+unneeding loads ?\ : loads ( u n -- ) bounds ?do i load loop ;
 
   \ Credit:
   \
@@ -160,7 +160,7 @@
   \
   \ }doc
 
-[unneeded] +load  [unneeded] +thru  and
+unneeding +load  unneeding +thru  and
 ?\ : +load ( n -- ) blk @ + load ;
 
   \ doc{
@@ -173,7 +173,7 @@
   \
   \ }doc
 
-[unneeded] +thru
+unneeding +thru
 ?\ : +thru ( u1 u2 -- ) 1+ swap ?do  i +load  loop ;
 
   \ doc{
@@ -187,7 +187,7 @@
   \
   \ }doc
 
-[unneeded] loader
+unneeding loader
 ?\ : loader ( u "name" -- ) create , does> ( dfa ) @ load ;
 
   \ doc{
@@ -205,7 +205,7 @@
 
 ( lineblock>source lineload load-program )
 
-[unneeded] lineblock>source [unneeded] lineload and
+unneeding lineblock>source unneeding lineload and
 ?\ : lineblock>source ( n u -- ) blk !  c/l * >in ! ;
 
   \ doc{
@@ -219,7 +219,7 @@
   \
   \ }doc
 
-[unneeded] lineload ?(
+unneeding lineload ?(
 
 : lineload ( n u -- )
   dup 0= #-259 ?throw
@@ -237,7 +237,7 @@
   \
   \ }doc
 
-[unneeded] load-program ?( need locate
+unneeding load-program ?( need locate
 
 variable loading-program
 
@@ -376,5 +376,7 @@ variable loading-program
   \
   \ 2018-02-05: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

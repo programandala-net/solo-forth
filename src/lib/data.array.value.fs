@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802051718
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -47,7 +47,7 @@
 
 ( avalue 2avalue cavalue )
 
-[unneeded] avalue ?( need array>
+unneeding avalue ?( need array>
 
 : avalue ( n "name" -- )
   create  cells allot
@@ -71,7 +71,7 @@
   \
   \ }doc
 
-[unneeded] 2avalue ?( need 2array>
+unneeding 2avalue ?( need 2array>
 
 : 2avalue ( n "name" -- )
   create  [ 2 cells ] literal * allot
@@ -95,7 +95,7 @@
   \
   \ }doc
 
-[unneeded] cavalue ?( need align
+unneeding cavalue ?( need align
 
 : cavalue ( n "name" -- )
   create  allot align
@@ -120,7 +120,7 @@
 
 ( ato +ato 2ato )
 
-[unneeded] ato ?( need >body
+unneeding ato ?( need >body
 
 : (ato) ( x n xt -- ) >body array> ! ;
 
@@ -152,7 +152,7 @@
   \
   \ }doc
 
-[unneeded] +ato ?( need >body
+unneeding +ato ?( need >body
 
 : (+ato) ( n1 n2 xt -- ) >body array> +! ;
 
@@ -184,7 +184,7 @@
   \
   \ }doc
 
-[unneeded] 2ato ?( need >body
+unneeding 2ato ?( need >body
 
 : (2ato) ( xd n xt -- ) >body 2array> 2! ;
 
@@ -218,7 +218,7 @@
 
 ( cato +cato )
 
-[unneeded] cato ?( need >body
+unneeding cato ?( need >body
 
 : (cato) ( c n xt -- ) >body + c! ;
 
@@ -250,7 +250,7 @@
   \
   \ }doc
 
-[unneeded] +cato ?(
+unneeding +cato ?(
 
 : (+cato) ( c n xt -- ) >body + c+! ;
 
@@ -316,5 +316,7 @@
   \
   \ 2018-02-05: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

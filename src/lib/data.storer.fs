@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -25,7 +25,7 @@
 
 ( storer cstorer 2storer )
 
-[unneeded] storer ?(
+unneeding storer ?(
 
 : storer ( x a "name" -- )
   create  2,  does>   ( -- ) ( dfa ) 2@ ! ; ?)
@@ -42,7 +42,7 @@
   \
   \ }doc
 
-[unneeded] cstorer ?(
+unneeding cstorer ?(
 
 : cstorer ( c ca "name" -- )
   create  2,  does>   ( -- ) ( dfa ) 2@ c! ; ?)
@@ -60,7 +60,7 @@
   \
   \ }doc
 
-[unneeded] 2storer ?(
+unneeding 2storer ?(
 
 : 2storer ( xd a "name" -- )
   create  , 2,
@@ -89,6 +89,8 @@
   \ interpretation.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth
 

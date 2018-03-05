@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802141356
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( under+ +under )
 
-[unneeded] under+ ?(
+unneeding under+ ?(
 
 code under+ ( n1|u1 x n2|u2 -- n3|u3 x )
   D9 c, D1 c, C1 c, E1 c, 19 c, E5 c, C5 c, D9 c,
@@ -59,7 +59,7 @@ code under+ ( n1|u1 x n2|u2 -- n3|u3 x )
   \
   \ }doc
 
-[unneeded] +under ?(
+unneeding +under ?(
 
 code +under ( n1|u1 n2|u2 x -- n3|u3 x )
   D9 c, C1 c, D1 c, E1 c, 19 c, E5 c, C5 c, D9 c,
@@ -98,7 +98,7 @@ code +under ( n1|u1 n2|u2 x -- n3|u3 x )
 
 ( % u% u>ud within between gcd )
 
-[unneeded] % ?\ need */ : % ( n1 n2 -- n3 ) 100 swap */ ;
+unneeding % ?\ need */ : % ( n1 n2 -- n3 ) 100 swap */ ;
 
   \ doc{
   \
@@ -110,7 +110,7 @@ code +under ( n1|u1 n2|u2 x -- n3|u3 x )
   \
   \ }doc
 
-[unneeded] u%
+unneeding u%
 
 ?\ : u% ( u1 u2 -- u3 ) >r 100 um* r> um/mod nip ;
 
@@ -124,7 +124,7 @@ code +under ( n1|u1 n2|u2 x -- n3|u3 x )
   \
   \ }doc
 
-[unneeded] u>ud ?\ need alias  ' 0 alias u>ud ( u -- ud )
+unneeding u>ud ?\ need alias  ' 0 alias u>ud ( u -- ud )
 
   \ doc{
   \
@@ -137,7 +137,7 @@ code +under ( n1|u1 n2|u2 x -- n3|u3 x )
   \
   \ }doc
 
-[unneeded] within
+unneeding within
 
 ?\ : within ( n1|u1 n2|u2 n3|u3 -- f ) over - >r - r> u< ;
 
@@ -162,7 +162,7 @@ code +under ( n1|u1 n2|u2 x -- n3|u3 x )
   \
   \ }doc
 
-[unneeded] between
+unneeding between
 
 ?\ : between ( n1|u1 n2|u2 n3|u3 -- f ) over - -rot - u< 0= ;
 
@@ -185,7 +185,7 @@ code +under ( n1|u1 n2|u2 x -- n3|u3 x )
   \
   \ }doc
 
-[unneeded] gcd
+unneeding gcd
 
 ?\ : gcd ( n1 n2 -- n3 ) begin ?dup while tuck mod repeat ;
 
@@ -209,7 +209,7 @@ code +under ( n1|u1 n2|u2 x -- n3|u3 x )
 
 ( odd? even? )
 
-[unneeded] odd? ?(
+unneeding odd? ?(
 
 code odd? ( n -- f ) E1 c, CB c, 40 05 + c, CA c, ' false ,
                      C3 c, ' true , end-code ?)
@@ -235,7 +235,7 @@ code odd? ( n -- f ) E1 c, CB c, 40 05 + c, CA c, ' false ,
   \
   \ }doc
 
-[unneeded] even? ?(
+unneeding even? ?(
 
 code even? ( n -- f ) E1 c, CB c, 40 05 + c, CA c, ' true ,
                       C3 c, ' false , end-code ?)
@@ -263,7 +263,7 @@ code even? ( n -- f ) E1 c, CB c, 40 05 + c, CA c, ' true ,
 
 ( 8* 8+ 8- 3* )
 
-[unneeded] 8* ?( code 8* ( x1 -- x2 ) e1 c, 29 c, 29 c, 29 c,
+unneeding 8* ?( code 8* ( x1 -- x2 ) e1 c, 29 c, 29 c, 29 c,
                                       E5 c, jpnext, end-code ?)
   \ pop hl
   \ add hl,hl
@@ -287,7 +287,7 @@ code even? ( n -- f ) E1 c, CB c, 40 05 + c, CA c, ' true ,
   \
   \ }doc
 
-[unneeded] 8+ ?( code 8+ ( n1 -- n2 ) E1 c, 11 c, 0008 , 19 c,
+unneeding 8+ ?( code 8+ ( n1 -- n2 ) E1 c, 11 c, 0008 , 19 c,
                                       E5 c, jpnext, end-code ?)
   \ pop hl
   \ ld de,8
@@ -308,7 +308,7 @@ code even? ( n -- f ) E1 c, CB c, 40 05 + c, CA c, ' true ,
   \
   \ }doc
 
-[unneeded] 8- ?( code 8- ( n1 -- n2 )
+unneeding 8- ?( code 8- ( n1 -- n2 )
                    e1 c, 11 c, 0008 , A7 c, ED c, 52 c, E5 c,
                    jpnext, end-code ?)
   \ pop hl
@@ -331,7 +331,7 @@ code even? ( n -- f ) E1 c, CB c, 40 05 + c, CA c, ' true ,
   \
   \ }doc
 
-[unneeded] 3* ?(
+unneeding 3* ?(
 
 code 3* ( x1 -- x2 )
   E1 c, 54 c, 5D c, 29 c, 19 c, E5 c, jpnext, end-code ?)
@@ -358,7 +358,7 @@ code 3* ( x1 -- x2 )
 
 ( polarity <=> )
 
-[unneeded] polarity ?(
+unneeding polarity ?(
 
 code polarity ( n -- -1 | 0 | 1 )
   D1 c, 78 02 + c, B0 03 + c, CA c, ' false ,
@@ -404,7 +404,7 @@ code polarity ( n -- -1 | 0 | 1 )
   \
   \ }doc
 
-[unneeded] <=>
+unneeding <=>
 
 ?\ need polarity  : <=> ( n1 n2 -- -1|0|1 ) - polarity ;
 
@@ -422,7 +422,7 @@ code polarity ( n -- -1 | 0 | 1 )
 
 ( u<= u>= <= >= 0>= 0<= 0max )
 
-[unneeded] u<= ?\ : u<= ( u1 u2 -- f ) u> 0= ;
+unneeding u<= ?\ : u<= ( u1 u2 -- f ) u> 0= ;
 
   \ doc{
   \
@@ -435,7 +435,7 @@ code polarity ( n -- -1 | 0 | 1 )
   \
   \ }doc
 
-[unneeded] u>= ?\ : u>= ( u1 u2 -- f ) u< 0= ;
+unneeding u>= ?\ : u>= ( u1 u2 -- f ) u< 0= ;
 
   \ doc{
   \
@@ -448,7 +448,7 @@ code polarity ( n -- -1 | 0 | 1 )
   \
   \ }doc
 
-[unneeded] <= ?\ : <= ( n1 n2 -- f ) > 0= ;
+unneeding <= ?\ : <= ( n1 n2 -- f ) > 0= ;
 
   \ doc{
   \
@@ -461,7 +461,7 @@ code polarity ( n -- -1 | 0 | 1 )
   \
   \ }doc
 
-[unneeded] >= ?\ : >= ( n1 n2 -- f ) < 0= ;
+unneeding >= ?\ : >= ( n1 n2 -- f ) < 0= ;
 
   \ doc{
   \
@@ -474,7 +474,7 @@ code polarity ( n -- -1 | 0 | 1 )
   \
   \ }doc
 
-[unneeded] 0>= ?\ : 0>= ( n0 -- f ) 0< 0= ;
+unneeding 0>= ?\ : 0>= ( n0 -- f ) 0< 0= ;
 
   \ doc{
   \
@@ -487,7 +487,7 @@ code polarity ( n -- -1 | 0 | 1 )
   \
   \ }doc
 
-[unneeded] 0<= ?\ : 0<= ( n -- f ) 0> 0= ;
+unneeding 0<= ?\ : 0<= ( n -- f ) 0> 0= ;
 
   \ doc{
   \
@@ -500,7 +500,7 @@ code polarity ( n -- -1 | 0 | 1 )
   \
   \ }doc
 
-[unneeded] 0max ?(
+unneeding 0max ?(
 
 code 0max ( n -- n | 0 )
   E1 c, CB c, 10 05 + c, DA c, ' false , CB c, 18 05 + c,
@@ -529,7 +529,7 @@ code 0max ( n -- n | 0 )
 
 ( lshift rshift ?shift )
 
-[unneeded] lshift ?( need assembler need unresolved
+unneeding lshift ?( need assembler need unresolved
 
 code lshift ( x1 u -- x2 )
 
@@ -560,7 +560,7 @@ code lshift ( x1 u -- x2 )
   \
   \ }doc
 
-[unneeded] rshift ?( need assembler need unresolved
+unneeding rshift ?( need assembler need unresolved
 
 code rshift ( x1 u -- x2 )
 
@@ -610,7 +610,7 @@ need 0exit need rshift need lshift
 
 ( clshift crshift )
 
-[unneeded] clshift ?(
+unneeding clshift ?(
 
 code clshift ( b1 u -- b2 )
 
@@ -638,7 +638,7 @@ code clshift ( b1 u -- b2 )
   \
   \ }doc
 
-[unneeded] crshift ?(
+unneeding crshift ?(
 
   \ XXX UNDER DEVELOPMENT -- 2016-05-01
 
@@ -660,7 +660,7 @@ code crshift ( b1 u -- b2 )
 
 ( bits 2/ cell/ )
 
-[unneeded] bits ?( need assembler
+unneeding bits ?( need assembler
 
 code bits ( ca len -- u )
 
@@ -698,7 +698,7 @@ code bits ( ca len -- u )
   \
   \ }doc
 
-[unneeded] 2/ ?( code 2/ ( x1 -- x2 )
+unneeding 2/ ?( code 2/ ( x1 -- x2 )
   E1 c, CB c, 2C c, CB c, 1D c, E5 c, jpnext, end-code ?)
   \ pop hl
   \ sra h
@@ -727,7 +727,7 @@ code bits ( ca len -- u )
   \
   \ }doc
 
-[unneeded] cell/ ?\ need alias need 2/  ' 2/ alias cell/
+unneeding cell/ ?\ need alias need 2/  ' 2/ alias cell/
 
   \ Credit:
   \
@@ -799,7 +799,7 @@ need sqrt need d2* need cell-bits
   \
   \ Forth-94 documentation.
 
-[unneeded] /-rem ?( need sm/rem
+unneeding /-rem ?( need sm/rem
 
 : /-rem ( n1 n2 -- n3 n4 ) >r  s>d  r> sm/rem ; ?)
 
@@ -814,7 +814,7 @@ need sqrt need d2* need cell-bits
   \
   \ }doc
 
-[unneeded] /- ?( need /-rem
+unneeding /- ?( need /-rem
 
 : /- (  n1 n2 -- n3 ) /-rem nip ; ?)
 
@@ -829,7 +829,7 @@ need sqrt need d2* need cell-bits
   \
   \ }doc
 
-[unneeded] -rem ?( need /-rem
+unneeding -rem ?( need /-rem
 
 : -rem ( n1 n2 -- n3 ) /-rem drop ; ?)
 
@@ -844,7 +844,7 @@ need sqrt need d2* need cell-bits
   \
   \ }doc
 
-[unneeded] */-rem ?( need sm/rem
+unneeding */-rem ?( need sm/rem
 
 : */-rem (  n1 n2 n3 -- n4 n5 ) >r  m*  r> sm/rem ; ?)
 
@@ -860,7 +860,7 @@ need sqrt need d2* need cell-bits
   \
   \ }doc
 
-[unneeded] ?( need */-rem
+unneeding ?( need */-rem
 
 : */- ( n1 n2 n3 -- n4 ) */-rem nip ; ?)
 
@@ -878,7 +878,7 @@ need sqrt need d2* need cell-bits
 
 ( sqrt newton-sqrt fm/mod */ )
 
-[unneeded] sqrt ?\ defer sqrt ( n1 -- n2 )
+unneeding sqrt ?\ defer sqrt ( n1 -- n2 )
 
   \ doc{
   \
@@ -890,7 +890,7 @@ need sqrt need d2* need cell-bits
   \
   \ }doc
 
-[unneeded] newton-sqrt ?( need sqrt need 2/
+unneeding newton-sqrt ?( need sqrt need 2/
 
 : newton-sqrt ( n1 -- n2 )
   dup if dup 2/ 20 0 ?do 2dup / + 2/ loop swap drop then ;
@@ -913,7 +913,7 @@ need sqrt need d2* need cell-bits
   \
   \ }doc
 
-[unneeded] fm/mod ?(
+unneeding fm/mod ?(
 
 : fm/mod ( d1 n1 -- n2 n3 )
   dup >r sm/rem
@@ -957,7 +957,7 @@ need sqrt need d2* need cell-bits
   \
   \ }doc
 
-[unneeded] */ ?\ : */ ( n1 n2 n3 -- n4 ) */mod nip ;
+unneeding */ ?\ : */ ( n1 n2 n3 -- n4 ) */mod nip ;
 
   \ Credit:
   \ Code from Abersoft Forth.
@@ -984,7 +984,7 @@ need sqrt need d2* need cell-bits
   \
   \ Forth-94 documentation.
 
-[unneeded] /_mod ?( need fm/mod
+unneeding /_mod ?( need fm/mod
 
 : /_mod ( n1 n2 -- n3 n4 ) >r s>d r> fm/mod ; ?)
 
@@ -999,7 +999,7 @@ need sqrt need d2* need cell-bits
   \
   \ }doc
 
-[unneeded] /_ ?\ need /_mod : /_ ( n1 n2 -- n3 ) /_mod nip ;
+unneeding /_ ?\ need /_mod : /_ ( n1 n2 -- n3 ) /_mod nip ;
 
   \ doc{
   \
@@ -1012,7 +1012,7 @@ need sqrt need d2* need cell-bits
   \
   \ }doc
 
-[unneeded] _mod ?( need /_mod
+unneeding _mod ?( need /_mod
 
 : _mod ( n1 n2 -- n3 ) /_mod drop ; ?)
 
@@ -1027,7 +1027,7 @@ need sqrt need d2* need cell-bits
   \
   \ }doc
 
-[unneeded] */_mod ?( need fm/mod
+unneeding */_mod ?( need fm/mod
 
 : */_mod ( n1 n2 n3 -- n4 n5 ) >r m* r> fm/mod ; ?)
 
@@ -1043,7 +1043,7 @@ need sqrt need d2* need cell-bits
   \
   \ }doc
 
-[unneeded] */_ ?( need */_mod
+unneeding */_ ?( need */_mod
 
 : */_ ( n1 n2 n3 -- n4 ) */_mod nip ; ?)
 
@@ -1061,7 +1061,7 @@ need sqrt need d2* need cell-bits
 
 ( any? either neither ifelse )
 
-[unneeded] any? ?( need roll  variable (any?)
+unneeding any? ?( need roll  variable (any?)
 
 : any? ( x[0] x[1]..x[n] n -- f )
   dup 1+ roll (any?) !
@@ -1085,7 +1085,7 @@ need sqrt need d2* need cell-bits
   \
   \ }doc
 
-[unneeded] either
+unneeding either
 
 ?\ : either ( x1 x2 x3 -- f ) -rot over = -rot = or ;
 
@@ -1106,7 +1106,7 @@ need sqrt need d2* need cell-bits
   \
   \ }doc
 
-[unneeded] neither
+unneeding neither
 
 ?\ : neither ( x1 x2 x3 -- f ) -rot over <> -rot <> and ;
 
@@ -1127,7 +1127,7 @@ need sqrt need d2* need cell-bits
   \
   \ }doc
 
-[unneeded] ifelse
+unneeding ifelse
 
 ?\ : ifelse ( x1 x2 f -- x1 | x2 ) if drop else nip then ;
 
@@ -1145,7 +1145,7 @@ need sqrt need d2* need cell-bits
 
 ( split join )
 
-[unneeded] split ?(
+unneeding split ?(
 
 code split ( x -- b1 b2 )
   E1 c, 16 c, 00 c, 58 05 + c, 68 04 + c, 26 c, 00 c,
@@ -1176,7 +1176,7 @@ code split ( x -- b1 b2 )
   \
   \ }doc
 
-[unneeded] join ?(
+unneeding join ?(
 
 code join ( b1 b2 -- x )
   D1 c, 60 03 + c, D1 c, 68 03 + c, E5 c, jpnext, end-code ?)
@@ -1340,5 +1340,7 @@ code join ( b1 b2 -- x )
   \ 2018-01-04: Add `3*`. Improve documentation.
   \
   \ 2018-02-14: Compact the code, saving three blocks.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

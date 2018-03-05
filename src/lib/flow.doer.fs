@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802051646
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -18,7 +18,7 @@
   \ 1984. Public domain.
 
   \ Marcos Cruz (programandala.net) adapted this version from
-  \ PFE, 2015, 2016, 2017.
+  \ PFE, 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -42,7 +42,7 @@ need >body
   \
   \ }doc
 
-[unneeded] doer ?(
+unneeding doer ?(
 
 : doer ( "name" -- ) create [ ' doer-noop >body ] literal ,
                      does>  ( -- ) ( dfa ) @ >r ;
@@ -124,7 +124,7 @@ variable >;and ( -- a )
 
 ( ;and undo )
 
-[unneeded] ;and ?( need doer
+unneeding ;and ?( need doer
 
 : ;and ( -- ) postpone exit here >;and @ ! ; immediate ?)
 
@@ -148,7 +148,7 @@ variable >;and ( -- a )
   \
   \ }doc
 
-[unneeded] undo ?( need doer
+unneeding undo ?( need doer
 
 : undo ( "name" -- )
   [ ' doer-noop >body ] literal ' >body ! ; ?)
@@ -182,5 +182,7 @@ variable >;and ( -- a )
   \
   \ 2018-02-05: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803022250
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( /sound sound-register-port sound-write-port !sound @sound )
 
-[unneeded] /sound ?\ 14 cconstant /sound
+unneeding /sound ?\ 14 cconstant /sound
 
   \ doc{
   \
@@ -38,8 +38,8 @@
   \
   \ }doc
 
-[unneeded] sound-register-port
-[unneeded] sound-write-port and ?( need const
+unneeding sound-register-port
+unneeding sound-write-port and ?( need const
 
 $FFFD const sound-register-port $BFFD const sound-write-port ?)
 
@@ -73,7 +73,7 @@ $FFFD const sound-register-port $BFFD const sound-write-port ?)
   \
   \ }doc
 
-[unneeded] !sound ?(
+unneeding !sound ?(
 
 need !p need sound-register-port need sound-write-port
 
@@ -91,7 +91,7 @@ need !p need sound-register-port need sound-write-port
   \
   \ }doc
 
-[unneeded] @sound ?( need !p need @p need sound-register-port
+unneeding @sound ?( need !p need @p need sound-register-port
 
 : @sound ( b1 -- b2 )
   sound-register-port !p sound-register-port @p ; ?)
@@ -114,7 +114,7 @@ need !p need sound-register-port need sound-write-port
 
   \ XXX TODO -- Finish, document and test.
 
-[unneeded] !volume
+unneeding !volume
 
 ?\ need !sound  : !volume ( b1 b2 -- ) 8 + !sound ;
 
@@ -139,7 +139,7 @@ need !p need sound-register-port need sound-write-port
   \
   \ }doc
 
-[unneeded] @volume
+unneeding @volume
 
 ?\ need @sound  : @volume ( b -- ) 8 + @sound ;
 
@@ -164,7 +164,7 @@ need !p need sound-register-port need sound-write-port
   \
   \ }doc
 
-[unneeded] set-mixer
+unneeding set-mixer
 
 ?\ need !sound : set-mixer ( b -- ) 7 !sound ;
 
@@ -199,7 +199,7 @@ need !p need sound-register-port need sound-write-port
   \
   \ }doc
 
-[unneeded] get-mixer
+unneeding get-mixer
 
 ?\ need @sound : get-mixer ( -- b ) 7 @sound ;
 
@@ -234,7 +234,7 @@ need !p need sound-register-port need sound-write-port
   \
   \ }doc
 
-[unneeded] -mixer
+unneeding -mixer
 
 ?\ need set-mixer : -mixer ( -- ) %111111 set-mixer ;
 
@@ -249,7 +249,7 @@ need !p need sound-register-port need sound-write-port
   \
   \ }doc
 
-[unneeded] silence ?( need -mixer need !volume
+unneeding silence ?( need -mixer need !volume
 
 : silence ( -- )
   -mixer 0 0 !volume 0 1 !volume 0 2 !volume ; ?)
@@ -266,7 +266,7 @@ need !p need sound-register-port need sound-write-port
   \
   \ }doc
 
-[unneeded] noise ?\ need !sound  : noise ( -- ) 7 7 !sound ;
+unneeding noise ?\ need !sound  : noise ( -- ) 7 7 !sound ;
 
 ( music )
 
@@ -327,7 +327,7 @@ set-current previous
   \ http://microhobby.org/numero147.htm
   \ http://microhobby.speccy.cz/mhf/147/MH147_24.jpg
 
-[unneeded] play ?( need /sound need !sound
+unneeding play ?( need /sound need !sound
 
 : play ( ca -- ) /sound 0 ?do dup c@ i !sound 1+ loop drop ; ?)
 
@@ -341,7 +341,7 @@ set-current previous
   \
   \ }doc
 
-[unneeded] sound, ?( need /sound
+unneeding sound, ?( need /sound
 
 : sound, ( b[0]..b[13] -- )
   here /sound allot here 1- ?do i c! -1 +loop ; ?)
@@ -356,7 +356,7 @@ set-current previous
   \
   \ }doc
 
-[unneeded] sound ?( need sound, need play
+unneeding sound ?( need sound, need play
 
 : sound ( b[0]..b[13] "name" -- )
   create  sound,  does> ( -- ) ( dfa ) play ; ?)
@@ -437,11 +437,11 @@ need sound  hex
   \ http://microhobby.org/numero139.htm
   \ http://microhobby.speccy.cz/mhf/139/MH139_07.jpg
 
-[unneeded] waves-sound
+unneeding waves-sound
 
 ?\ 00 00 00 00 00 00 07 47 14 14 14 00 26 0E sound waves-sound
 
-[unneeded] shoot-sound
+unneeding shoot-sound
 
 ?\ 0A 00 B1 00 BF 00 1F 47 14 14 14 5C 1C 03 sound shoot-sound
 
@@ -454,12 +454,12 @@ need sound  hex
   \ http://microhobby.org/numero172.htm
   \ http://microhobby.speccy.cz/mhf/172/MH172_22.jpg
 
-[unneeded] helicopter1-sound ?(
+unneeding helicopter1-sound ?(
 
 C8 0F C8 0F C8 0F 00 07 17 17 17 FF 01 0C
 sound helicopter1-sound ?)
 
-[unneeded] train-sound
+unneeding train-sound
 
 ?\ 64 78 30 61 0C C8 37 0F 09 0B 37 B4 04 08 sound train-sound
 
@@ -478,12 +478,12 @@ decimal
 
 need sound  hex
 
-[unneeded] airplane-sound ?(
+unneeding airplane-sound ?(
 
 0C 1F 00 00 00 1F 07 E8 0F 10 0F 9A 00 18
 sound airplane-sound ?)
 
-[unneeded] helicopter2-sound ?(
+unneeding helicopter2-sound ?(
 
 09 00 00 06 0C 00 0B C0 10 0E 10 3A 02 1C
 sound helicopter2-sound ?)
@@ -503,15 +503,15 @@ decimal
 
 need sound  hex
 
-[unneeded] bomber-sound
+unneeding bomber-sound
 
 ?\ 49 52 3E A5 5A 8A 9F 8C 66 4D 64 A2 57 C9 sound bomber-sound
 
-[unneeded] whip-sound
+unneeding whip-sound
 
 ?\ 05 12 08 06 13 0B 05 0B 00 13 03 18 15 01 sound whip-sound
 
-[unneeded] metalic-sound ?(
+unneeding metalic-sound ?(
 
 95 40 68 EC D2 B4 00 20 00 C2 92 49 51 B1
 sound metalic-sound ?)
@@ -531,12 +531,12 @@ decimal
 
 need sound  hex
 
-[unneeded] lightning1-sound ?(
+unneeding lightning1-sound ?(
 
 01 04 00 10 24 43 08 04 1F F5 01 06 1E 02
 sound lightning1-sound ?)
 
-[unneeded] lightning2-sound ?(
+unneeding lightning2-sound ?(
 
 00 00 00 00 00 FF 07 04 FF 19 00 3C 3C 03
 sound lightning2-sound ?)
@@ -561,15 +561,15 @@ decimal
 
 need sound  hex
 
-[unneeded] bell1-sound
+unneeding bell1-sound
 
 ?\ AB 03 2A 02 0C 01 00 F8 10 10 10 00 71 10 sound bell1-sound
 
-[unneeded] bell2-sound
+unneeding bell2-sound
 
 ?\ 66 00 4B 00 45 00 00 F8 10 10 10 00 22 10 sound bell2-sound
 
-[unneeded] bell3-sound
+unneeding bell3-sound
 
 ?\ FC 06 DE 03 C3 04 00 F8 10 10 10 00 FF 10 sound bell3-sound
 
@@ -588,15 +588,15 @@ decimal
 
 need sound  hex
 
-[unneeded] rap-sound
+unneeding rap-sound
 
 ?\ 00 00 00 00 00 00 06 C0 10 10 10 00 05 18 sound rap-sound
 
-[unneeded] drum-sound
+unneeding drum-sound
 
 ?\ 00 06 00 00 00 05 11 E8 10 10 10 00 0A 10 sound drum-sound
 
-[unneeded] cymbal-sound
+unneeding cymbal-sound
 
 ?\ 09 00 00 00 00 00 00 C0 10 10 10 03 09 10 sound cymbal-sound
 
@@ -616,16 +616,16 @@ decimal
 
 need sound  hex
 
-[unneeded] applause-sound ?(
+unneeding applause-sound ?(
 
 00 00 00 00 00 00 1E 40 0F 10 0F 00 07 18
 sound applause-sound ?)
 
-[unneeded] hammer-sound
+unneeding hammer-sound
 
 ?\ 1B 00 09 00 00 00 1F C8 10 10 10 00 6B 10 sound hammer-sound
 
-[unneeded] background-sound ?(
+unneeding background-sound ?(
 
 03 05 FC 04 0C 05 00 F8 10 10 10 FF FF 0E
 sound background-sound ?)
@@ -645,11 +645,11 @@ decimal
 
 need sound  hex
 
-[unneeded] beach-sound
+unneeding beach-sound
 
 ?\ 00 00 00 00 00 00 0F C0 0B 10 10 FF 50 0E sound beach-sound
 
-[unneeded] waterdrop2-sound ?(
+unneeding waterdrop2-sound ?(
 
 ?\ 24 00 12 00 16 00 00 F8 10 10 10 00 10 18
 sound waterdrop2-sound ?)
@@ -663,11 +663,11 @@ sound waterdrop2-sound ?)
   \ http://microhobby.org/numero198.htm
   \ http://microhobby.speccy.cz/mhf/198/MH198_16.jpg
 
-[unneeded] rain1-sound
+unneeding rain1-sound
 
 ?\ 2C 18 06 06 07 03 03 05 2C 06 03 05 03 03 sound rain1-sound
 
-[unneeded] waterdrop1-sound ?(
+unneeding waterdrop1-sound ?(
 
 14 53 5E 27 00 08 1F 47 17 17 16 5A 00 00
 sound waterdrop1-sound ?)
@@ -689,12 +689,12 @@ decimal
 
 need sound  hex
 
-[unneeded] explosion1-sound ?(
+unneeding explosion1-sound ?(
 
 00 00 00 00 00 06 07 10 10 10 38 08 00 00
 sound explosion1-sound ?)
 
-[unneeded] explosion2-sound ?(
+unneeding explosion2-sound ?(
 
 00 00 00 00 00 06 07 10 10 10 38 08 00 00
 sound explosion2-sound ?)
@@ -751,5 +751,7 @@ decimal
   \ 2018-03-01: Improve documentation.
   \
   \ 2018-03-02: Fix word names in credit note.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

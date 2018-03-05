@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801030035
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( column last-column row last-row at-x at-y xy>r r>xy home? )
 
-[unneeded] column ?\ : column ( -- col ) xy drop ;
+unneeding column ?\ : column ( -- col ) xy drop ;
 
   \ doc{
   \
@@ -37,7 +37,7 @@
   \
   \ }doc
 
-[unneeded] last-column
+unneeding last-column
 ?\ need columns : last-column ( -- col ) columns 1- ;
 
   \ doc{
@@ -50,7 +50,7 @@
   \
   \ }doc
 
-[unneeded] row ?\ : row ( -- row ) xy nip ;
+unneeding row ?\ : row ( -- row ) xy nip ;
 
   \ doc{
   \
@@ -62,7 +62,7 @@
   \
   \ }doc
 
-[unneeded] last-row
+unneeding last-row
 ?\ need rows  : last-row ( -- row  ) rows 1- ;
 
   \ doc{
@@ -75,7 +75,7 @@
   \
   \ }doc
 
-[unneeded] at-x ?\ need row  : at-x ( col -- ) row at-xy ;
+unneeding at-x ?\ need row  : at-x ( col -- ) row at-xy ;
 
   \ doc{
   \
@@ -88,7 +88,7 @@
   \
   \ }doc
 
-[unneeded] at-y
+unneeding at-y
 ?\ need column  : at-y ( row -- ) column swap at-xy ;
 
   \ doc{
@@ -103,7 +103,7 @@
   \ }doc
 
 
-[unneeded] xy>r ?\ : xy>r ( R: -- col row ) r> xy 2>r >r ;
+unneeding xy>r ?\ : xy>r ( R: -- col row ) r> xy 2>r >r ;
 
   \ doc{
   \
@@ -115,7 +115,7 @@
   \
   \ }doc
 
-[unneeded] r>xy ?\ : r>xy ( R: col row -- ) r> 2r> at-xy >r ;
+unneeding r>xy ?\ : r>xy ( R: col row -- ) r> 2r> at-xy >r ;
 
   \ doc{
   \
@@ -128,7 +128,7 @@
   \
   \ }doc
 
-[unneeded] home? ?\ need xy : home? ( -- f ) xy + 0= ;
+unneeding home? ?\ need xy : home? ( -- f ) xy + 0= ;
 
   \ doc{
   \
@@ -142,7 +142,7 @@
 
 ( xy>scra_ xy>scra )
 
-[unneeded] xy>scra_ ?( need assembler
+unneeding xy>scra_ ?( need assembler
 
   \ XXX TODO -- Rewrite in Z80 opcodes.
 
@@ -192,7 +192,7 @@ create xy>scra_ ( -- a ) asm
   \
   \ }doc
 
-[unneeded] xy>scra ?( need assembler need xy>scra_
+unneeding xy>scra ?( need assembler need xy>scra_
 
   \ XXX TODO -- Rewrite in Z80 opcodes.
 
@@ -226,7 +226,7 @@ code xy>scra ( x y -- a )
 
 ( xy>scra_ xy>scra )
 
-[unneeded] xy>scra_ ?( need assembler
+unneeding xy>scra_ ?( need assembler
 
 create xy>scra_ ( -- a ) asm
 
@@ -275,7 +275,7 @@ create xy>scra_ ( -- a ) asm
   \
   \ See: `xy>scra`, `gxy>scra_`.
 
-[unneeded] xy>scra ?( need assembler need xy>scra_
+unneeding xy>scra ?( need assembler need xy>scra_
 
 code xy>scra ( x y -- a )
 
@@ -298,7 +298,7 @@ code xy>scra ( x y -- a )
 
 ( xy>gxy x>gx y>gy xy>gxy176 )
 
-[unneeded] xy>gxy ?(
+unneeding xy>gxy ?(
 
 code xy>gxy ( x y -- gx gy )
   D1 c, E1 c, 29 c, 29 c, 29 c, E5 c, EB c, 29 c, 29 c, 29 c,
@@ -335,7 +335,7 @@ code xy>gxy ( x y -- gx gy )
   \ XXX TODO --  Adapt to 64-cpl and 42-cpl-modes. Or rename
   \ with prefix "mode-32-".
 
-[unneeded] x>gx ?( need alias need 8*
+unneeding x>gx ?( need alias need 8*
 
 ' 8* alias x>gx ( x -- gx ) ?)
 
@@ -354,7 +354,7 @@ code xy>gxy ( x y -- gx gy )
   \
   \ XXX TODO --  Adapt to 64-cpl and 42-cpl-modes.
 
-[unneeded] y>gy ?(
+unneeding y>gy ?(
 
 code y>gy ( y -- gx )
   D1 c, E1 c, 29 c, 29 c, 29 c, E5 c, EB c, 29 c, 29 c, 29 c,
@@ -383,7 +383,7 @@ code y>gy ( y -- gx )
   \ XXX TODO --  Adapt to 64-cpl and 42-cpl-modes. Or rename
   \ with prefix "mode-32-".
 
-[unneeded] xy>gxy176 ?(
+unneeding xy>gxy176 ?(
 
 code xy>gxy176 ( x y -- gx gy )
   D1 c, E1 c, 29 c, 29 c, 29 c, E5 c, EB c, 29 c, 29 c, 29 c,
@@ -422,7 +422,7 @@ code xy>gxy176 ( x y -- gx gy )
 
 ( xy>attra_ xy>attr xy>attra )
 
-[unneeded] xy>attra_ ?(
+unneeding xy>attra_ ?(
 
 create xy>attra_ ( -- a ) asm
 
@@ -462,7 +462,7 @@ create xy>attra_ ( -- a ) asm
   \
   \ }doc
 
-[unneeded] xy>attr ?( need xy>attra_
+unneeding xy>attr ?( need xy>attra_
 
 code xy>attr ( col row -- b )
   D1 c, E1 c, 55 c, xy>attra_ call, 6E c, 26 c, 00 c, E5 c,
@@ -487,7 +487,7 @@ code xy>attr ( col row -- b )
   \
   \ }doc
 
-[unneeded] xy>attra ?( need xy>attra_
+unneeding xy>attra ?( need xy>attra_
 
 code xy>attra ( col row -- a )
   D1 c, E1 c, 55 c, xy>attra_ call, E5 c, jpnext, end-code ?)
@@ -566,5 +566,7 @@ code xy>attra ( col row -- a )
   \ 2017-09-08: Add `home?`.
   \
   \ 2018-01-03: Add `x>gx`, `y>gy`.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

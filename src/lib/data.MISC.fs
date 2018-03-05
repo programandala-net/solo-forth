@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705052335
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -25,7 +25,7 @@
 
 ( buffer: cvariable enum cenum enumcell link@ link, )
 
-[unneeded] buffer:
+unneeding buffer:
 ?\ : buffer: ( u "name" -- ) create allot ;
 
   \ doc{
@@ -44,7 +44,7 @@
   \
   \ }doc
 
-[unneeded] cvariable
+unneeding cvariable
 ?\ : cvariable ( "name"  -- ) create 1 allot ;
 
   \ doc{
@@ -59,7 +59,7 @@
   \
   \ }doc
 
-[unneeded] enum
+unneeding enum
 ?\ : enum (  n "name" -- n+1 ) dup constant 1+ ;
 
   \ doc{
@@ -82,7 +82,7 @@
   \
   \ }doc
 
-[unneeded] cenum
+unneeding cenum
 ?\ : cenum (  n "name" -- n+1 ) dup cconstant 1+ ;
 
   \ doc{
@@ -105,7 +105,7 @@
   \
   \ }doc
 
-[unneeded] enumcell
+unneeding enumcell
 ?\ : enumcell (  n "name" -- n+cell ) dup constant cell+ ;
 
   \ Credit:
@@ -133,7 +133,7 @@
   \
   \ }doc
 
-[unneeded] link@  [unneeded] link, and ?exit
+unneeding link@  unneeding link, and ?exit
 
   \ Credit:
   \
@@ -209,5 +209,7 @@ need alias ' @ alias link@ ( node1 -- node2 )
   \ 2017-03-13: Improve documentation.
   \
   \ 2017-05-05: Improve documentation.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

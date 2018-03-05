@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-03-04
+:revdate: 2018-03-05
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -2224,19 +2224,6 @@ To save some blocks:
 Another, definitive solution is to split the library into two disks,
 for TR-DOS.  But then the usage instructions of TR-DOS will be
 different than G+DOS and +3DOS.
-
-=== 2018-01-21, 2018-03-01
-
-NOTE: Milestone: 0.14.0
-
-Rename `[needed]` `needing` and make it non-immediate.
-Write an immediate optional version `[needing]`.
-
-Rename `[unneeded]` `unneeding` (`ignoring`?) and make it non-immediate.  Write
-an immediate optional version `[unneeding]`.
-
-The new names seem better, since `needed` already exists as the
-non-parsing version of `need`.
 
 === 2017-03-28, 2017-09-09
 

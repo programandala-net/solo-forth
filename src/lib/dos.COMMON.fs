@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802041821
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( drive ?drive# ?block-drive block-drives )
 
-[unneeded] drive ?\ : drive ( c1 -- c2 ) first-drive + ;
+unneeding drive ?\ : drive ( c1 -- c2 ) first-drive + ;
 
   \ doc{
   \
@@ -53,7 +53,7 @@
   \
   \ }doc
 
-[unneeded] ?drive# ?(
+unneeding ?drive# ?(
 
 : ?drive# ( u -- )
   [ max-drives 1- ] xliteral u> #-35 ?throw ; ?)
@@ -70,7 +70,7 @@
   \
   \ }doc
 
-[unneeded] ?block-drive
+unneeding ?block-drive
 
 ?\ : ?block-drive ( u -- ) not-block-drive = #-35 ?throw ;
 
@@ -86,7 +86,7 @@
   \
   \ }doc
 
-[unneeded] block-drives ?( need not-block-drive
+unneeding block-drives ?( need not-block-drive
 
 create block-drives ( -- ca ) max-drives allot
   block-drives max-drives not-block-drive fill
@@ -147,7 +147,7 @@ need ?drive# need block-drive@ need ?block-drive
 
 ( not-block-drive -block-drives block-drive@ block-drive! )
 
-[unneeded] not-block-drive ?\ $FF cconstant not-block-drive
+unneeding not-block-drive ?\ $FF cconstant not-block-drive
 
   \ doc{
   \
@@ -159,7 +159,7 @@ need ?drive# need block-drive@ need ?block-drive
   \
   \ }doc
 
-[unneeded] -block-drives ?( need block-drives
+unneeding -block-drives ?( need block-drives
                             need not-block-drive
 
 : -block-drives ( -- )
@@ -176,7 +176,7 @@ need ?drive# need block-drive@ need ?block-drive
   \
   \ }doc
 
-[unneeded] block-drive@ ?( need block-drives
+unneeding block-drive@ ?( need block-drives
 
 : block-drive@ ( n -- c ) block-drives + c@ ; ?)
 
@@ -191,7 +191,7 @@ need ?drive# need block-drive@ need ?block-drive
   \
   \ }doc
 
-[unneeded] block-drive@ ?( need block-drives
+unneeding block-drive@ ?( need block-drives
 
 : block-drive! ( c n -- ) block-drives + c! ; ?)
 
@@ -208,7 +208,7 @@ need ?drive# need block-drive@ need ?block-drive
 
 ( ?drives set-block-drives get-block-drives )
 
-[unneeded] ?drives
+unneeding ?drives
 
 ?\ : ?drives ( n -- ) max-drives > #-287 ?throw ;
 
@@ -223,7 +223,7 @@ need ?drive# need block-drive@ need ?block-drive
   \
   \ }doc
 
-[unneeded] set-block-drives ?(
+unneeding set-block-drives ?(
 
 need ?drives need -block-drives need block-drive!
 
@@ -254,7 +254,7 @@ need ?drives need -block-drives need block-drive!
   \
   \ }doc
 
-[unneeded] get-block-drives ?(
+unneeding get-block-drives ?(
 
 need block-drive@
 
@@ -319,5 +319,7 @@ need block-drive@
   \
   \ 2018-02-04: Fix documentation. Improve documentation: add
   \ pronunciation to words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

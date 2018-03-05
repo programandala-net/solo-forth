@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802051722
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -38,7 +38,7 @@
 
 ( avariable 2avariable cavariable )
 
-[unneeded] avariable ?( need array>
+unneeding avariable ?( need array>
 
 : avariable ( n "name" -- )
   create  cells allot
@@ -62,7 +62,7 @@
   \
   \ }doc
 
-[unneeded] 2avariable ?( need 2array>
+unneeding 2avariable ?( need 2array>
 
 : 2avariable ( n "name" -- )
   create  [ 2 cells ] cliteral * allot
@@ -86,7 +86,7 @@
   \
   \ }doc
 
-[unneeded] cavariable ?( need align
+unneeding cavariable ?( need align
 
 : cavariable ( n "name" -- )
   create  allot align
@@ -133,5 +133,7 @@
   \
   \ 2018-02-05: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

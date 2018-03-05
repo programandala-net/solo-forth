@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803041709
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( /filename /base-filename /filename-ext >filename )
 
-[unneeded] /filename ?\ 16 cconstant /filename
+unneeding /filename ?\ 16 cconstant /filename
 
   \ doc{
   \
@@ -38,7 +38,7 @@
   \
   \ }doc
 
-[unneeded] /base-filename ?\ 8 cconstant /base-filename
+unneeding /base-filename ?\ 8 cconstant /base-filename
 
   \ doc{
   \
@@ -51,7 +51,7 @@
   \
   \ }doc
 
-[unneeded] /filename-ext ?\ 3 cconstant /filename-ext
+unneeding /filename-ext ?\ 3 cconstant /filename-ext
 
   \ doc{
   \
@@ -64,7 +64,7 @@
   \
   \ }doc
 
-[unneeded] >filename ?( need /filename
+unneeding >filename ?( need /filename
 
 : >filename ( ca1 len1 -- ca2 )
   /filename min char+ >stringer
@@ -83,7 +83,7 @@
 
 ( (rename-file rename-file )
 
-[unneeded] (rename-file ?(
+unneeding (rename-file ?(
 
 code (rename-file ( ca1 ca2 -- ior )
   D1 c, E1 c, DD c, 21 c, 0127 , dos-ix-preserve-ip_ call,
@@ -110,7 +110,7 @@ code (rename-file ( ca1 ca2 -- ior )
   \
   \ }doc
 
-[unneeded] rename-file ?( need >filename need (rename-file
+unneeding rename-file ?( need >filename need (rename-file
 
 : rename-file ( ca1 len1 ca2 len2 -- ior )
   >filename >r >filename r> (rename-file ; ?)
@@ -135,7 +135,7 @@ code (rename-file ( ca1 ca2 -- ior )
 
 ( get-1346 set-1346 )
 
-[unneeded] get-1346 ?(
+unneeding get-1346 ?(
 
 code get-1346 ( -- n1 n2 n3 n4 )
   D9 c, DD c, 21 c, 013C , dos-ix_ call, 06 c, 00 c,
@@ -178,7 +178,7 @@ code get-1346 ( -- n1 n2 n3 n4 )
 
   \ XXX TODO -- Finish the documentation.
 
-[unneeded] set-1346 ?(
+unneeding set-1346 ?(
 
 code set-1346 ( n1 n2 n3 n4 -- )
   D9 c, E1 c, C1 c, 61 c, D1 c, C1 c, 51 c, DD c, 21 c, 013F ,
@@ -219,7 +219,7 @@ code set-1346 ( n1 n2 n3 n4 -- )
 
 ( (delete-file delete-file )
 
-[unneeded] (delete-file ?(
+unneeding (delete-file ?(
 
 code (delete-file ( ca -- ior )
   E1 c, DD c, 21 c, 0124 , dos-ix-preserve-ip_ call,
@@ -244,7 +244,7 @@ code (delete-file ( ca -- ior )
   \
   \ }doc
 
-[unneeded] delete-file ?( need >filename need (delete-file
+unneeding delete-file ?( need >filename need (delete-file
 
 : delete-file ( ca len -- ior ) >filename (delete-file ; ?)
 
@@ -286,7 +286,7 @@ file-id-table max-file-id 1+ erase
   \
   \ Adapted from DZX-Forth.
 
-[unneeded] r/o ?\ %001 cconstant r/o
+unneeding r/o ?\ %001 cconstant r/o
 
   \ doc{
   \
@@ -301,7 +301,7 @@ file-id-table max-file-id 1+ erase
   \
   \ }doc
 
-[unneeded] w/o ?\ %010 cconstant w/o
+unneeding w/o ?\ %010 cconstant w/o
 
   \ doc{
   \
@@ -316,7 +316,7 @@ file-id-table max-file-id 1+ erase
   \
   \ }doc
 
-[unneeded] r/w ?\ %011 cconstant r/w
+unneeding r/w ?\ %011 cconstant r/w
 
   \ doc{
   \
@@ -331,7 +331,7 @@ file-id-table max-file-id 1+ erase
   \
   \ }doc
 
-[unneeded] s/r ?\ %101 cconstant s/r
+unneeding s/r ?\ %101 cconstant s/r
 
   \ doc{
   \
@@ -344,7 +344,7 @@ file-id-table max-file-id 1+ erase
   \
   \ }doc
 
-[unneeded] bin ?\ need alias ' noop alias bin immediate
+unneeding bin ?\ need alias ' noop alias bin immediate
 
   \ doc{
   \
@@ -384,7 +384,7 @@ code headed ( fam1 -- fam2 )
   \
   \ }doc
 
-[unneeded] do-dos-open_ ?( need assembler
+unneeding do-dos-open_ ?( need assembler
 
 create do-dos-open_ ( -- a ) asm
 
@@ -597,7 +597,7 @@ code (close-file ( fid -- ior )
 
 ( file-position reposition-file )
 
-[unneeded] file-position ?(
+unneeding file-position ?(
 
 code file-position ( fid -- ud ior )
   E1 c, C5 c, 45 c, DD c, 21 c, 0139 , dos-ix_ call,
@@ -626,7 +626,7 @@ code file-position ( fid -- ud ior )
   \
   \ }doc
 
-[unneeded] reposition-file ?(
+unneeding reposition-file ?(
 
 code reposition-file ( ud fid -- ior )
   E1 c, 7D c, D1 c, E1 c, C5 c, 47 c, DD c, 21 c, 0136 ,
@@ -981,7 +981,7 @@ need (cat need tab need 3dup need 3drop
 
 ( bank-write-file write-file )
 
-[unneeded] bank-write-file ?(
+unneeding bank-write-file ?(
 
 code bank-write-file ( ca len fid +n -- ior )
 
@@ -1018,7 +1018,7 @@ code bank-write-file ( ca len fid +n -- ior )
   \
   \ }doc
 
-[unneeded] write-file ?( need bank-write-file
+unneeding write-file ?( need bank-write-file
 
 code write-file ( ca len fid -- ior )
   3A c, 5B5C , E6 c, %111 c, ' bank-write-file 2+ jp,
@@ -1046,7 +1046,7 @@ code write-file ( ca len fid -- ior )
 
   \ XXX UNDER DEVELOPMENT
 
-[unneeded] bank-read-file ?(
+unneeding bank-read-file ?(
 
 code bank-read-file  ( ca len fid +n -- ior )
   \ XXX TODO --
@@ -1229,5 +1229,7 @@ code read-file  ( ca len1 fid -- len2 ior )
   \
   \ 2018-03-04: Update documentation of `set-1346` and
   \ `get-1346`.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

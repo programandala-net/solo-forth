@@ -5,7 +5,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802151535
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,7 +33,7 @@
 
 ( times dtimes )
 
-[unneeded] times ?(
+unneeding times ?(
 
 variable times-xt
   \ Storage of the _xt_ executed by `times`.
@@ -69,7 +69,7 @@ variable times-xt
   \
   \ }doc
 
-[unneeded] dtimes ?( need dfor need d-
+unneeding dtimes ?( need dfor need d-
 
 variable dtimes-xt  \ the _xt_ executed by `dtimes`
 
@@ -125,5 +125,7 @@ variable dtimes-xt  \ the _xt_ executed by `dtimes`
   \
   \ 2018-02-15: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

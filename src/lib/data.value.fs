@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801241742
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( cvalue value 2value to )
 
-[unneeded] cvalue ?( need to need ;code
+unneeding cvalue ?( need to need ;code
 
 : cvalue ( c "name"  -- )
   create 0 c, c, ;code 23 c, ' c@ 1+ jp, end-code ?)
@@ -44,7 +44,7 @@
   \
   \ }doc
 
-[unneeded] value ?( need to need ;code
+unneeding value ?( need to need ;code
 
 : value ( n "name"  -- )
   create 1 c, , ;code 23 c, ' @ 1+ jp, end-code ?)
@@ -65,7 +65,7 @@
   \
   \ }doc
 
-[unneeded] 2value ?( need to
+unneeding 2value ?( need to
 
 : 2value ( x1 x2 "name"  -- )
   create 2 c, 2, ;code 23 c, ' 2@ 1+ jp, end-code ?)
@@ -86,7 +86,7 @@
   \
   \ }doc
 
-[unneeded] to ?( need >body need array>
+unneeding to ?( need >body need array>
 
 create to> ' c! , ' ! , ' 2! ,
 
@@ -160,5 +160,7 @@ create to> ' c! , ' ! , ' 2! ,
   \
   \ 2018-01-24: Rewrite the run-time part of `cvalue`, `value`
   \ and `2value` in Z80.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

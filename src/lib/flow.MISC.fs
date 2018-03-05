@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803011813
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -26,7 +26,7 @@
 
 ( +perform base-execute call don't executions )
 
-[unneeded] +perform
+unneeding +perform
 
 ?\ : +perform ( a n -- ) cells + perform ;
 
@@ -44,7 +44,7 @@
   \
   \ }doc
 
-[unneeded] base-execute
+unneeding base-execute
 
 ?\ : base-execute ( xt n -- ) base @ >r execute r> base ! ;
 
@@ -61,7 +61,7 @@
   \
   \ }doc
 
-[unneeded] call ?(
+unneeding call ?(
 
 code call ( a -- )
   E1 c, C5 c, CD c, >mark C1 c, DD c, 21 c, next , jpnext,
@@ -86,7 +86,7 @@ code call ( a -- )
   \
   \ }doc
 
-[unneeded] don't ?(
+unneeding don't ?(
 
 : don't ( n1 n2 -- | n1 n2 )
   2dup = if 2drop unnest unnest then ; compile-only ?)
@@ -115,7 +115,7 @@ code call ( a -- )
   \
   \ }doc
 
-[unneeded] executions ?( need 2rdrop
+unneeding executions ?( need 2rdrop
 
   \ Credit:
   \
@@ -137,7 +137,7 @@ code call ( a -- )
 
 ( ?repeat 0repeat recurse ?? )
 
-[unneeded] ?repeat ?( need cs-dup need 0until
+unneeding ?repeat ?( need cs-dup need 0until
 
 : ?repeat
   \ Compilation: ( dest -- dest )
@@ -180,7 +180,7 @@ code call ( a -- )
   \
   \ }doc
 
-[unneeded] 0repeat ?( need cs-dup
+unneeding 0repeat ?( need cs-dup
 
 : 0repeat
   \ Compilation: ( dest -- dest )
@@ -222,7 +222,7 @@ code call ( a -- )
   \
   \ }doc
 
-[unneeded] recurse
+unneeding recurse
 
 ?\ : recurse ( -- ) latestxt compile, ; immediate compile-only
 
@@ -240,7 +240,7 @@ code call ( a -- )
   \
   \ }doc
 
-[unneeded] ?? ?(
+unneeding ?? ?(
 
 : ?? \ Compilation: ( "name" -- ) Runtime: ( f -- )
   postpone if
@@ -331,7 +331,7 @@ code call ( a -- )
   \ Factoring", by Richard Astle, published on Forth Dimensions
   \ (volume 17, number 4, page 19, 1995-11).
 
-[unneeded] retry ?( need name>body
+unneeding retry ?( need name>body
 
 : retry ( -- )
   latest name>body postpone again ; immediate compile-only ?)
@@ -348,7 +348,7 @@ code call ( a -- )
   \
   \ }doc
 
-[unneeded] ?retry ?( need retry
+unneeding ?retry ?( need retry
 
 : ?retry
   \ Compilation: ( -- )
@@ -370,7 +370,7 @@ code call ( a -- )
   \
   \ }doc
 
-[unneeded] ?leave ?(
+unneeding ?leave ?(
 
 code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   E1 c, 78 04 + c, B0 05 + c, C2 c, ' leave , jpnext,
@@ -409,7 +409,7 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ Control-Flow Stack Extensions
   \ http://dxforth.netbay.com.au/cfsext.html
 
-[unneeded] cond ?( need cs-mark need thens
+unneeding cond ?( need cs-mark need thens
 
 : cond
   \ Compilation: ( C: -- cs-mark )
@@ -461,7 +461,7 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \
   \ }doc
 
-[unneeded] thens ?( need cs-test
+unneeding thens ?( need cs-test
 
 : thens
   \ Compilation: ( C: cs-mark orig#1 .. orig#n -- )
@@ -491,7 +491,7 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \
   \ }doc
 
-[unneeded] andif ?(
+unneeding andif ?(
 
 : andif
   \ Compilation: ( C: -- orig )
@@ -531,7 +531,7 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \
   \ }doc
 
-[unneeded] orif ?(
+unneeding orif ?(
 
 : orif
   \ Compilation: ( C: -- orig )
@@ -657,5 +657,7 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \
   \ 2018-03-01: Fix undesired links in documentation of
   \ `0repeat`.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth

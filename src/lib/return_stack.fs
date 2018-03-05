@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201707271623
+  \ Last modified: 201803052149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -94,7 +94,7 @@ code nr> ( -- x1..xn n ) ( R: x1..xn n -- )
 
 ( rdepth r'@ 2rdrop dup>r )
 
-[unneeded] rdepth
+unneeding rdepth
 
 ?\ : rdepth ( -- n ) rp@ rp0 @ - [ cell negate ] literal / ;
 
@@ -117,7 +117,7 @@ code nr> ( -- x1..xn n ) ( R: x1..xn n -- )
   \
   \ `r'@` by Wil Baden.
 
-[unneeded] r'@ ?(
+unneeding r'@ ?(
 
 : r'@ ( -- x1 ) ( R: x1 x2 -- x1 x2 ) r> 2r@ drop swap >r ; ?)
 
@@ -133,7 +133,7 @@ code nr> ( -- x1..xn n ) ( R: x1..xn n -- )
   \
   \ }doc
 
-[unneeded] 2rdrop ?(
+unneeding 2rdrop ?(
 
 code 2rdrop ( R: x1 x2 -- )
   2A c, rp , 11 c, 02 cells , 19 c, 22 c, rp ,
@@ -154,7 +154,7 @@ code 2rdrop ( R: x1 x2 -- )
   \
   \ }doc
 
-[unneeded] dup>r ?(
+unneeding dup>r ?(
 
 code dup>r ( x -- x ) ( R: -- x )
   D1 c, D5 c, ' >r 1+ jp, end-code ?)
@@ -220,5 +220,7 @@ code dup>r ( x -- x ) ( R: -- x )
   \
   \ 2017-07-27: Replace `jp next` with the actual macro
   \ `_jp_next` in Z80 comments.
+  \
+  \ 2018-03-05: Update `[unneeded]` to `unneeding`.
 
   \ vim: filetype=soloforth
