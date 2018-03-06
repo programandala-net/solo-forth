@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201803062142
+; Last modified: 201803062244
 
 include version.z80s
 
@@ -14192,7 +14192,7 @@ to_digit.end:
 ;
 ; Rotate the top three stack entries in reverse order.
 ;
-; See: `rot`, `over`, `tuck`, `swap`, `roll`, `pick`.
+; See: `rot`, `over`, `tuck`, `swap`, `roll`, `pick`, `unpick`.
 ;
 ; }doc
 

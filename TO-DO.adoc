@@ -2495,29 +2495,6 @@ Options to make it easier to share code with other systems:
 Write `get-xstack` to return the latest address used by `xstack`,
 which should be renamed `set-xstack`.
 
-=== 2017-05-12, 2018-03-06
- 
-NOTE: Milestone: 0.14.0
-
-From LaForth:
-
-----
-: put ( x n -- ) 2+ 2* sp@  + ! ;
-  \ Store _x_ at the _n_ item of the stack.
-  \ Example `-1 0 put` will replace TOS with -1
-----
-
-----
-: put ( x n -- ) 2+ cells sp@ + ! ;
-: get ( x n -- ) 2+ cells sp@ + @ ; \ = pick
-----
-
-Clearer name:
-
-----
-: unpick ( x n -- ) 2+ cells sp@ + ! ;
-----
-
 === 2017-03-29, 2017-05-10
 
 Use the code of `rp@` as storage of the pointer. This save one cell

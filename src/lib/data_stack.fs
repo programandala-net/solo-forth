@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803062252
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,7 +23,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( 2nip pick roll )
+( 2nip pick unpick roll )
 
 unneeding 2nip ?( code 2nip ( x1 x2 x3 x4 -- x3 x4 )
   E1 c, D1 c, F1 c, F1 c, D5 c, E5 c, jpnext, end-code ?)
@@ -59,7 +59,29 @@ code pick ( x#u .. x#1 x#0 u -- x#u .. x#1 x#0 x#u )
   \
   \ pick ( x#u .. x#1 x#0 u -- x#u .. x#1 x#0 x#u )
   \
-  \ See: `roll`, `rot`.
+  \ Remove _u_ copy the _x#u_ to the top of the stack.  ``0
+  \ pick`` is equivalent to `dup` and ``1 pick`` is equivalent
+  \ to `over`.
+  \
+  \ Origin: Forth-83 (Required Word Set), Forth-94 (CORE EXT),
+  \ Forth-2012 (CORE EXT).
+  \
+  \ See: `unpick`, `roll`, `rot`.
+  \
+  \ }doc
+
+unneeding unpick ?\ : unpick ( x u -- ) 2+ cells sp@ + ! ;
+
+  \ doc{
+  \
+  \ unpick ( x#u .. x#1 x#0 x u -- x .. x#1 x#0 )
+  \
+  \ Remove _x_ and _u_. Replace _x#u_ with _x_.  ``0 unpick``
+  \ is equivalent to `nip` (but much slower).
+  \
+  \ See: `pick`.
+  \
+  \ Origin: LaForth's ``put``.
   \
   \ }doc
 
@@ -523,5 +545,7 @@ code >false ( x -- false ) E1 c, ' false jp, end-code ?)
   \ 2017-12-11: Improve stack comments of `roll` and `pick`.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-06: Add `unpick`. Improve documentation.
 
   \ vim: filetype=soloforth
