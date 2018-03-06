@@ -907,7 +907,7 @@ Pandoc.
 
 === 2017-05-11
 
-NOTE: Milestone: 0.15.0
+NOTE: Milestone: 0.14.0
 
 Uso "bytes" instead of "address units", which is needed only in the
 standard.
@@ -2429,13 +2429,6 @@ Find better names for `0.r` and `0d.r`.
 Rename `c!exchange` to `c!@`?
 
 Rename `!exchange` to `!@`?
-
-=== 2017-02-24
-
-NOTE: Milestone: 0.14.0
-
-Rename `(0-1-8-color.` and `(0-9-color.` after the current convention
-for machine code routines.
 
 === 2016-12-31, 2017-01-05, 2017-03-15
 
