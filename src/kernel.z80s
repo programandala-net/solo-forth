@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201803062244
+; Last modified: 201803062257
 
 include version.z80s
 
@@ -5902,7 +5902,7 @@ endif
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ;
-; See: `dup`, `2over`, `2drop`, `3dup`.
+; See: `dup`, `2over`, `2drop`, `3dup`, `4dup`.
 ;
 ; }doc
 

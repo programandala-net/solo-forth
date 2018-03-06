@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803062252
+  \ Last modified: 201803062301
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -135,11 +135,12 @@ code roll ( x#u x#u-1 .. x#0 u -- x#u-1 .. x#0 x#u )
   \
   \ }doc
 
-( 3drop 4drop 3dup )
+( 3drop 4drop 3dup 4dup )
 
 unneeding 3drop ?(
+
 code 3drop ( x1 x2 x3 -- )
-  E1 c,  E1 c,  E1 c,  jpnext, end-code ?)
+ E1 c, E1 c, E1 c, jpnext, end-code ?)
     \ pop hl
     \ pop hl
     \ pop hl
@@ -149,11 +150,12 @@ code 3drop ( x1 x2 x3 -- )
   \
   \ 3drop ( x1 x2 x3 -- )
   \
-  \ See: `drop`, `2drop`, `4drop`.
+  \ See: `3dup`, `drop`, `2drop`, `4drop`.
   \
   \ }doc
 
 unneeding 4drop ?(
+
 code 4drop ( x1 x2 x3 x4 -- )
   E1 c,  E1 c,  E1 c,  E1 c,  jpnext, end-code ?)
     \ pop hl
@@ -166,15 +168,15 @@ code 4drop ( x1 x2 x3 x4 -- )
   \
   \ 4drop ( x1 x2 x3 x4 -- )
   \
-  \ See: `drop`, `2drop`, `3drop`.
+  \ See: `4dup`, `drop`, `2drop`, `3drop`.
   \
   \ }doc
 
 unneeding 3dup ?(
+
 code 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
-  D9 c,
+  D9 c, C1 c, D1 c, E1 c, E5 c, D5 c, C5 c, E5 c, D5 c, C5 c,
     \ exx
-  C1 c,  D1 c,  E1 c,  E5 c,  D5 c,  C5 c,  E5 c,  D5 c,  C5 c,
     \ pop bc
     \ pop de
     \ pop hl
@@ -184,7 +186,7 @@ code 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
     \ push hl
     \ push de
     \ push bc
-  D9 c,  jpnext, end-code ?)
+  D9 c, jpnext, end-code ?)
     \ exx
     \ _jp_next
 
@@ -199,7 +201,37 @@ code 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
   \ : 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 ) dup 2over rot ;
   \ ----
 
-  \ See: `dup`, `2dup`.
+  \ See: `3drop`, `dup`, `2dup`, `4dup`.
+  \
+  \ }doc
+
+unneeding 4dup ?(
+
+code 4dup ( x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2 x3 x4 )
+  D9 c, F1 c, C1 c, D1 c, E1 c,
+    \ exx
+    \ pop af
+    \ pop bc
+    \ pop de
+    \ pop hl
+  E5 c, D5 c, C5 c, F5 c, E5 c, D5 c, C5 c, F5 c,
+    \ push hl
+    \ push de
+    \ push bc
+    \ push af
+    \ push hl
+    \ push de
+    \ push bc
+    \ push af
+  D9 c, jpnext, end-code ?)
+    \ exx
+    \ _jp_next
+
+  \ doc{
+  \
+  \ 4dup ( x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2 x3 x4 )
+  \
+  \ See: `4drop`, `dup`, `2dup`, `3dup`.
   \
   \ }doc
 
@@ -546,6 +578,7 @@ code >false ( x -- false ) E1 c, ' false jp, end-code ?)
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
-  \ 2018-03-06: Add `unpick`. Improve documentation.
+  \ 2018-03-06: Add `unpick`. Improve documentation. Add
+  \ `4dup`.
 
   \ vim: filetype=soloforth

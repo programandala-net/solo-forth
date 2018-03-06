@@ -2509,12 +2509,6 @@ But this change would be incompatible with multitasking.
 
 NOTE: Milestone: 0.14.0
 
-Add `4dup`.
-
-=== 2017-03-21
-
-NOTE: Milestone: 0.14.0
-
 Add `+dup` and other missing members of the alternative sets.
 
 === 2017-01-20
