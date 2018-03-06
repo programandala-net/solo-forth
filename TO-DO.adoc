@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-03-05
+:revdate: 2018-03-06
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -420,7 +420,7 @@ Add a no-return version of `execute`.
 
 Rewrite `+perform` in Z80.
 
-.2017-03-28
+=== 2017-03-28
 
 From 8080 F83 2.0:
 
@@ -429,7 +429,7 @@ From 8080 F83 2.0:
   \ Re-execute the input stream until the user presses a key.
 ----
 
-.2017-03-28
+=== 2017-03-28
 
 From 8080 F83 2.0:
 
@@ -2402,10 +2402,29 @@ Rename `othercase>` `othercase`?
 
 Write `?name-too-long` and use it in `header,`?
 
-=== 2017-05-12
+=== 2017-05-12, 2018-03-06
 
 Rename `flip` to `swab`? `swab` was the name used by LaForth, c. 1980.
-Its origin seems to be a PDP-11 mnemonic for "swap byte".
+
+Its origin seems to be a PDP-11 mnemonic for "swap byte":
+
+....
+
+From The Jargon File (version 4.4.7, 29 Dec 2003) [jargon]:
+
+  swab
+   /swob/
+
+          [From the mnemonic for the {PDP-11} `SWAp Byte' instruction, as
+          immortalized in the dd(1) option conv=swab (see {dd})]
+
+          1. vt. To solve the {NUXI problem} by swapping bytes in a file
+
+          2. n. The program in V7 Unix used to perform this action, or
+          anything functionally equivalent to it. See also {big-endian},
+          {little-endian}, {middle-endian}, {bytesexual}.
+....
+
 
 === 2017-05-10
 
@@ -2419,13 +2438,10 @@ Rename `!exchange` to `!@`?
 
 === 2017-02-24
 
+NOTE: Milestone: 0.14.0
+
 Rename `(0-1-8-color.` and `(0-9-color.` after the current convention
 for machine code routines.
-
-=== 2017-01-02
-
-Improve definition names in the `ocr` module: Use "font" instead of
-"charset".
 
 === 2016-12-31, 2017-01-05, 2017-03-15
 
@@ -2492,8 +2508,10 @@ Options to make it easier to share code with other systems:
 Write `get-xstack` to return the latest address used by `xstack`,
 which should be renamed `set-xstack`.
 
-=== 2017-05-12
+=== 2017-05-12, 2018-03-06
  
+NOTE: Milestone: 0.14.0
+
 From LaForth:
 
 ----
@@ -2503,8 +2521,14 @@ From LaForth:
 ----
 
 ----
-: put ( x n -- ) cell+ cells sp@ + ! ;
-: get ( x n -- ) cell+ cells sp@ + @ ; \ = pick
+: put ( x n -- ) 2+ cells sp@ + ! ;
+: get ( x n -- ) 2+ cells sp@ + @ ; \ = pick
+----
+
+Clearer name:
+
+----
+: unpick ( x n -- ) 2+ cells sp@ + ! ;
 ----
 
 === 2017-03-29, 2017-05-10
@@ -2519,9 +2543,13 @@ But this change would be incompatible with multitasking.
 
 === 2017-03-21
 
+NOTE: Milestone: 0.14.0
+
 Add `4dup`.
 
 === 2017-03-21
+
+NOTE: Milestone: 0.14.0
 
 Add `+dup` and other missing members of the alternative sets.
 

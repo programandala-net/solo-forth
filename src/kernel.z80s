@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201803041739
+; Last modified: 201803062142
 
 include version.z80s
 
@@ -11727,9 +11727,12 @@ do_vocabulary:
 ; doc{
 ;
 ; ?( ( f "ccc<space><question><paren><space>" -- ) "question-paren"
+
 ;
 ; If _f_ is not zero, parse and discard until "?)" is found or
-; until the end of the parse area is reached.
+; until the end of the parse area is reached. ``?(`` can not be
+; used across blocks.
+;
 ; ``?(`` is used for conditional compilation, as a simpler but
 ; more compact alternative to the standard `[if]`.
 ;

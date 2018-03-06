@@ -1,6 +1,6 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-02-27
+:revdate: 2018-03-06
 :toc:
 :linkattrs:
 
@@ -79,10 +79,9 @@ http://programandala.net/en.program.black_flag.html[Black Flag].
 [id=_computers]
 == Supported computers and disk operating systems
 
-Solo Forth needs a ZX Spectrum or compatible computer with a disk
-drive and at least 128 KiB of RAM.  Therefore it can not run on the
-original ZX Spectrum 48, but in theory it could be used to develop
-Forth programs for it.
+Solo Forth needs a ZX Spectrum 128 or compatible computer with at
+least one disk drive.  It can not run on the original ZX Spectrum 48,
+but it could be used to develop Forth programs for it.
 
 .Supported computers and disk operating systems
 |===
@@ -323,10 +322,10 @@ DOS commands.
    linefootnoteref:[trdoscli,The TR-DOS command line uses keyboard
    tokens, like the ZX Spectrum 48, but commands typed in 'L' cursor
    mode will be recognized as well, as on the ZX Spectrum 128 editor.
-   Unfortunately, the only way to get 'L' cursor mode is typing a
-   token first, e.g. `REM` (pressing the 'E' key). Then the DOS
-   command can be typed in full after `REM`, which must be removed
-   from the start of the line before pressing the Enter key.].
+   In order to get the 'L' cursor mode you can type a quote (Symbol
+   Shift + 'P') or press 'E' to get keyword `REM`. When the DOS
+   command is typed in full, the quote or the `REM` must be removed
+   from the start of the line before pressing 'Enter'.].
 5. Press the `R` key to get the `RUN` command and press the Enter key.
    Solo Forth will be loaded from disk.
 

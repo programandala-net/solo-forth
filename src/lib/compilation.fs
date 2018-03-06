@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803062140
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -123,9 +123,18 @@ unneeding body>name ?( need body> need >name
 
   \ doc{
   \
-  \ body>name ( dfa -- nt ) "body-to-name"
+  \ body>name ( dfa -- nt|0 ) "body-to-name"
   \
-  \ Get _nt_ from its _dfa_.
+  \ Try to find the name token _nt_ of the word represented by
+  \ data field address _dfa_. Return 0 if it fails.
+  \
+  \ NOTE: ``body>name`` searches all word lists, from newest to
+  \ oldest; and the searching of every word list is done also
+  \ from the newest to the oldest definition.  The first header
+  \ whose execution token pointer contains the _xt_ associated
+  \ to _dfa_ is a match.  Therefore, when a word has additional
+  \ headers created by `alias` or `synonym`, the _nt_ of its
+  \ latest alias or synonym is found first.
   \
   \ See: `name>body`, `link>name`, `>name`.
   \
@@ -1450,5 +1459,7 @@ unneeding warn-throw ?( need ?warn
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-06: Improve documentation of `body>name`.
 
   \ vim: filetype=soloforth
