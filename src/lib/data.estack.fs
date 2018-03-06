@@ -1,15 +1,15 @@
-  \ data.astack.fs
+  \ data.estack.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803062223
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ `astack`, an implementation of an extra stack.
+  \ `estack`, an implementation of an extra stack.
 
   \ ===========================================================
   \ Authors
@@ -32,85 +32,85 @@
   \ You can redistribute this file and/or modify it under
   \ the terms of the GNU General Public License.
 
-( astack adepth )
+( estack edepth )
 
-unneeding astack ?(
+unneeding estack ?(
 
-: astack ( a -- ) dup ! ;
+: estack ( a -- ) dup ! ;
 
   \ doc{
   \
-  \ astack ( a -- )
+  \ estack ( a -- ) "e-stack"
   \
   \ Init extra stack _a_. The extra stack will grow towards
   \ high memory and the required memory must be already
-  \ reserved.  No check is done by ``astack`` or the other
+  \ reserved.  No check is done by ``estack`` or the other
   \ words used to manipulate the extra stack.
   \
   \ Usage example:
 
   \ ----
   \ create my-stack 10 cells allot
-  \ my-stack astack
-  \ 100 my-stack >a
-  \ my-stack adepth .
-  \ my-stack a@ .
-  \ my-stack a> .
-  \ my-stack adepth .
+  \ my-stack estack
+  \ 100 my-stack >e
+  \ my-stack edepth .
+  \ my-stack e@ .
+  \ my-stack e> .
+  \ my-stack edepth .
   \ ----
 
-  \ See: `>a`, `a@`, `a>`, `adepth`, `xstack`.
+  \ See: `>e`, `e@`, `e>`, `edepth`, `xstack`.
   \
   \ }doc
 
-: a@ ( a -- x ) @ @ ;
+: e@ ( a -- x ) @ @ ;
 
   \ doc{
   \
-  \ a@ ( a -- x )
+  \ e@ ( a -- x ) "e-fetch"
   \
-  \ Copy _x_ from the `astack` _a_ to the data stack.
+  \ Copy _x_ from the `estack` _a_ to the data stack.
   \
-  \ See: `a>`, `>a`.
+  \ See: `e>`, `>e`.
   \
   \ }doc
 
-: >a ( x a -- ) cell over +! @ ! ;
+: >e ( x a -- ) cell over +! @ ! ;
 
   \ doc{
   \
-  \ >a ( x a -- )
+  \ >e ( x a -- ) "to-e"
   \
-  \ Move _x_ to the extra stack _a_ defined with `astack`.
+  \ Move _x_ to the extra stack _a_ defined with `estack`.
   \
-  \ See: `a>`, `a@`.
+  \ See: `e>`, `e@`.
   \
   \ }doc
 
-: a> ( a -- x ) dup a@ [ cell negate ] literal rot +! ;
+: e> ( a -- x ) dup e@ [ cell negate ] literal rot +! ;
 
   \ doc{
   \
-  \ a> ( a -- x )
+  \ e> ( a -- x ) "e-from"
   \
-  \ Move _x_ from the extra stack _a_ defined with `astack` to
+  \ Move _x_ from the extra stack _a_ defined with `estack` to
   \ the data stack.
   \
-  \ See: `>a`, `a@`.
+  \ See: `>e`, `e@`.
   \
   \ }doc
 
 ?)
 
-unneeding adepth ?( need cell/
+unneeding edepth ?( need cell/
 
-: adepth ( a -- n ) dup @ swap - cell/ ; ?)
+: edepth ( a -- n ) dup @ swap - cell/ ; ?)
 
   \ doc{
   \
-  \ adepth ( a -- n )
+  \ edepth ( a -- n ) "e-depth"
   \
-  \ Return size _n_ in cells of an `astack` _a_.
+  \ Return size _n_ in cells of an `estack` _a_.
   \
   \ }doc
 
@@ -120,5 +120,9 @@ unneeding adepth ?( need cell/
   \ 2018-02-07: Start.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-06: Rename `astack` `estack`; rename "a" "e". This
+  \ fixes name clashing with address register's `a@`. Add
+  \ pronunciation.
 
   \ vim: filetype=soloforth

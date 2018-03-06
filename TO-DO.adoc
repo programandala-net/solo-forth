@@ -2387,12 +2387,6 @@ for the end user.
 // Names {{{1
 == Names
 
-=== 2018-02-07
-
-NOTE: Milestone: 0.14.0
-
-Fix name clash: `a@` (address register) and `a@` (`astack`).
-
 === 2018-02-04
 
 Rename `case>` `thiscase`?
