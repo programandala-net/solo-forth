@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-03-06
+:revdate: 2018-03-07
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -551,6 +551,10 @@ ____
 // Data structures {{{1
 == Data structures
 
+=== 2018-03-07
+
+Review implementation of `val`. Make it faster with a deferred action.
+
 === 2017-01-18
 
 Write far-memory versions of `avalue`, `2avalue` and `cavalue`.
@@ -634,6 +638,12 @@ Options:
 
 // Display {{{1
 == Display
+
+=== 2018-03-07
+
+NOTE: Milestone: 0.14.0
+
+Hide internal words of `menu` in a module.
 
 === 2018-02-10
 
@@ -857,7 +867,15 @@ Improve tab control.
 // Documentation {{{1
 == Documentation
 
-== 2018-03-04
+=== 2018-03-07
+
+NOTE: Milestone: 0.14.0
+
+- Finish documentation of `menu`.
+- Document `defined?`.
+- Document `parse-char`.
+
+=== 2018-03-04
 
 How a link to `default-1346` (a +3DOS-only word) can be included in
 the documentation of `far-banks` (a DOS-independent word)? The link
@@ -1123,16 +1141,16 @@ their behaviour and names identical. Write the +3DOS version too.
 // G+DOS {{{2
 === G+DOS ===
 
-== 2018-03-03
+==== 2018-03-03
 
 Improve `back-from-dos-error_`: Use G+DOS routine HOOK_RET at $22C8 to
 do all at once.
 
-== 2018-03-03
+==== 2018-03-03
 
 Compact the G+DOS library module.
 
-== 2018-03-03
+==== 2018-03-03
 
 Integrate printing out of `cat` and friends with the `printing` flag:
 
@@ -1146,13 +1164,13 @@ Integrate printing out of `cat` and friends with the `printing` flag:
   \   3 sstr1 c! s" forth?.*" wcat 2 sstr1 c!
 ....
 
-=== 2017-12-05, 2018-03-03
+==== 2017-12-05, 2018-03-03
 
 Fix: `cat` crashes the system. The problem seems to be the return from
 `((acat`, but everything looks right. All this worked some time ago
 and nothing was touched.
 
-=== 2017-02-13
+==== 2017-02-13
 
 Factor this common code to a routine to jump to:
 
@@ -1163,7 +1181,7 @@ Factor this common code to a routine to jump to:
 
 It could be in the kernel, right before `dosior>ior`, and run into it.
 
-=== 2017-02-13, 2017-03-08
+==== 2017-02-13, 2017-03-08
 
 Fix: When the current disk is removed before doing `cat`, the
 corresponding exception is thrown. But the system does not recognize
@@ -1175,7 +1193,7 @@ Update: Same problem in BASIC. It seems an issue of G+DOS or the Fuse
 emulator. The disk is recognized after doing a `cat` of the other
 drive. Same problem in BASIC with DISCiPLE and GDOS.
 
-=== 2017-02-12
+==== 2017-02-12
 
 Factor the following code, which reads a file header; it's used by two
 words:
@@ -1185,11 +1203,11 @@ words:
     rbegin  lbyte hook, d stap, d incp,  rstep
 ----
 
-=== 2017-02-12
+==== 2017-02-12
 
 Rename the UFIA fields. See TR-DOS File Description Area.
 
-=== 2017-02-08
+==== 2017-02-08
 
 Make `cat` and family check and use `printing`.
 
@@ -1203,77 +1221,77 @@ Make `cat` and family check and use `printing`.
   \   3 sstr1 c! s" forth?.*" wcat 2 sstr1 c!
 ----
 
-=== 2017-02-08
+==== 2017-02-08
 
 Improve `set-drive`: check if there's a disk in the drive.
 
-=== 2017-01-05
+==== 2017-01-05
 
 Simplify `!dos,`, `c!dos` and family.
 
-=== 2016-03-16, 2017-02-16
+==== 2016-03-16, 2017-02-16
 
 Study what the unused RAM of the Plus D can be useful for.
 
 // TR-DOS {{{2
 === TR-DOS ===
 
-=== 2017-03-13
+==== 2017-03-13
 
 Use the 8 free sectors of the system track for 2 additional blocks.
 This requires changes in the fsb2-trd converter.
 
-=== 2017-03-12
+==== 2017-03-12
 
 Rename `read-file-descriptor` to `read-fda`.
 Rename `write-file-descriptor` to `write-fda`.
 
-=== 2017-03-11
+==== 2017-03-11
 
 Improve `cat`: `read-file-descriptor` reads the system track every
 time. Explore the sector buffer instead.
 
-=== 2017-03-11
+==== 2017-03-11
 
 Improve `undelete-file`: `read-file-descriptor` reads the system track every
 time. Explore the sector buffer instead.
 
-=== 2017-03-10
+==== 2017-03-10
 
 TR-DOS disk operations can be interrupted with the Break key...  and
 the system returns to BASIC with error "BREAK into program"! There
 must be a way to deactivate this. Study the disassembly.
 
-=== 2017-03-08
+==== 2017-03-08
 
 Make `(acat` aware of `printing` to use channel 2 or 3.
 A DOS-indepedent routine will be useful to set the A register.
 
-=== 2017-02-12
+==== 2017-02-12
 
 Make the DOS commands independent to `need`.
 
-=== 2017-02-12
+==== 2017-02-12
 
 Rewrite `dosior>ior` after G+DOS: Convert the AF register. Make the
 low-level words return it unchanged.
 
-=== 2017-02-05, 2017-03-11
+==== 2017-02-05, 2017-03-11
 
 Move the Z80-symbol constants to the assembler word list.
 
 // +3DOS {{{2
 === +3DOS ===
 
-=== 2018-02-14
+==== 2018-02-14
 
 Fix `cat`.
 
-=== 2017-03-05
+==== 2017-03-05
 
 Implement a `map-b` word with a custom _disk change_ routine.
 
-=== 2016-08-14
+==== 2016-08-14
 
 `set-drive`, `open-disk` and `close-file` work on drive "a".  But when drive
 "b" is used, `close-file` returns ior -1006 (unrecognised disk format). This
@@ -1282,7 +1300,7 @@ is a problem of fsb2's fb2dsk.
 // Uni-DOS {{{2
 === Uni-DOS ===
 
-=== 2017-03-13
+==== 2017-03-13
 
 The G+DOS version runs on Uni-DOS.
 
@@ -1544,7 +1562,7 @@ Name for graphic fill: `flood`.
 // Keyboard {{{1
 == Keyboard
 
-== 2018-02-14
+=== 2018-02-14
 
 - Rename `kk-ports` `kk-data`?
 - Factor `kk#>` from `#>kk`?
@@ -1959,11 +1977,11 @@ A new variable `#dpl` would hold the number of points.
 // Floating point {{{2
 === Floating point ===
 
-=== 2016-04-22
+==== 2016-04-22
 
 Document floating point.
 
-=== 2016-04-22
+==== 2016-04-22
 
 Idea: Use the ROM calculator memories (0 .. 5) as floating-point non-recursive
 locals. Problem: some calculator's words use them (eg. `|over`).  They could be
@@ -1973,7 +1991,7 @@ they could be pointed to a frame in the return stack.
 Simpler idea: use the calculator memories them as is, as temporary storage.
 The ROM allocates 6*5 bytes, but 32*5 can be used.
 
-=== 2016-04-19
+==== 2016-04-19
 
 Floating-point words `flit`, `fliteral`. From PFE: `fround>s`,
 `ftrunc>s` (being `f>s` a synonym), `1/f`, `f^2`, `f^n`, `f2/`, `f2*`.
@@ -2105,6 +2123,12 @@ Write far-memory versions of some of the following words from the
 // Misc {{{1
 == Misc
 
+=== 2018-03-07
+
+NOTE: Milestone: 0.14.0
+
+Rewrite `defined?` after `find-name`, like `undefined?`.
+
 === 2016-05-18
 
 Factor `new-needed-word  2dup undefined?`.
@@ -2203,7 +2227,7 @@ Study the way v.Forth manages the interrupts and adapt it.
 // Library {{{1
 == Library
 
-== 2018-02-14, 2018-02-28
+=== 2018-02-14, 2018-02-28
 
 One 640-KiB TR-DOS disk is barely enough to contain the library.
 
@@ -2387,6 +2411,13 @@ for the end user.
 // Names {{{1
 == Names
 
+=== 2018-03-07
+
+NOTE: Milestone: 0.14.0
+
+Look for better names for `private{` and `}private`. `private` and
+`end-private` are fine, except `private` is taken.
+
 === 2018-02-04
 
 Rename `case>` `thiscase`?
@@ -2540,7 +2571,7 @@ calls.
 // Sound {{{1
 == Sound
 
-== 2018-02-19
+=== 2018-02-19
 
 Write `sound-write-port` and `sound-register-port` in Z80.
 
