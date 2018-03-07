@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803072223
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -56,7 +56,7 @@ code a! ( a -- ) E1 c, 22 c, a , jpnext, end-code
 
   \ doc{
   \
-  \ a! ( a -- )
+  \ a! ( a -- ) "a-store"
   \
   \ Set the address register.
   \
@@ -71,7 +71,7 @@ code a@ ( -- a ) 2A c, a , E5 c, jpnext, end-code ?)
 
   \ doc{
   \
-  \ a@ ( -- a )
+  \ a@ ( -- a ) "a-fetch"
   \
   \ Get the address register.
   \
@@ -92,7 +92,7 @@ code !a ( x -- ) D1 c, 2A c, a , 70 03 + c, 23 c, 70 02 + c,
 
   \ doc{
   \
-  \ !a ( x -- )
+  \ !a ( x -- ) "store-a"
   \
   \ Store _x_ at the address register.
   \
@@ -114,7 +114,7 @@ code @a ( -- x ) 2A c, a , 5E c, 23 c, 66 c, 68 03 + c, E5 c,
 
   \ doc{
   \
-  \ @a ( -- x )
+  \ @a ( -- x ) "fetch-a"
   \
   \ Fetch _x_ at the address register.
   \
@@ -133,7 +133,7 @@ code c!a ( c -- ) D1 c, 2A c, a , 70 03 + c, jpnext,
 
   \ doc{
   \
-  \ c!a ( c -- )
+  \ c!a ( c -- ) "c-fetch-a"
   \
   \ Store _c_ at the address register.
   \
@@ -153,7 +153,7 @@ code c@a ( -- c ) 2A c, a , 6E c, 26 c, 00 c, E5 c, jpnext,
 
   \ doc{
   \
-  \ c@a ( -- c )
+  \ c@a ( -- c ) "c-fetch-a"
   \
   \ Fetch _c_ at the address register.
   \
@@ -178,7 +178,7 @@ code !a+ ( x -- ) D1 c, 2A c, a , 70 03 + c, 23 c, 70 02 + c,
 
   \ doc{
   \
-  \ !a+ ( x -- )
+  \ !a+ ( x -- ) "store-a-plus"
   \
   \ Store _x_ at the address register and increment the address
   \ register by one cell.
@@ -202,7 +202,7 @@ code @a+ ( -- x ) 2A c, a , 5E c, 23 c, 56 c, 23 c, 22 c, a ,
 
   \ doc{
   \
-  \ @a+ ( -- x )
+  \ @a+ ( -- x ) "fetch-a-plus"
   \
   \ Fetch cell at the address register and increment the
   \ address register by one cell.
@@ -225,7 +225,7 @@ code c!a+ ( c -- ) D1 c, 2A c, a , 70 03 + c, 23 c,
 
   \ doc{
   \
-  \ c!a+ ( c -- )
+  \ c!a+ ( c -- ) "c-store-a-plus"
   \
   \ Store _c_ at the address register and increment the address
   \ register by one address unit.
@@ -248,7 +248,7 @@ code c@a+ ( -- c ) 2A c, a , 5E c, 23 c, 16 c, 00 c,
 
   \ doc{
   \
-  \ c@a+ ( -- c )
+  \ c@a+ ( -- c ) "c-fetch-a-plus"
   \
   \ Fetch _c_ at the address register and increment the address
   \ register by one address unit.
@@ -291,5 +291,7 @@ code c@a+ ( -- c ) 2A c, a , 5E c, 23 c, 16 c, 00 c,
   \ 2018-02-14: Compact the code, saving one block.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803072306
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -35,10 +35,8 @@ unneeding parse-char
   \ Parse the next char in the input stream and return its
   \ code.
 
-unneeding parse-all ?(
-
-: parse-all ( "ccc" -- ca len )
-  stream dup parsed >stringer ; ?)
+unneeding parse-all ?( : parse-all ( "ccc" -- ca len )
+                         stream dup parsed >stringer ; ?)
 
   \ doc{
   \
@@ -77,7 +75,7 @@ unneeding string>source ?(
 
   \ doc{
   \
-  \ string>source ( ca len -- )
+  \ string>source ( ca len -- ) "string-to-source"
   \
   \ Set the string _ca len_ as the current source.
   \
@@ -158,6 +156,9 @@ unneeding [char]  ?(
   \ doc{
   \
   \ [char]
+  \   Compilation: ( "name" -- )
+  \   Run-time: ( -- c )
+  \ "bracket-char"
   \
   \ Compilation: ( "name" -- )
   \
@@ -291,5 +292,7 @@ unneeding word ?(
   \ 2017-04-27: Fix needing of `[char]`.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

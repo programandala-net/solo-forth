@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803072230
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -48,7 +48,7 @@ unneeding far-hl_ ?\ ' far 2+ @ constant far-hl_
 
   \ doc{
   \
-  \ far-hl_ ( -- a )
+  \ far-hl_ ( -- a ) "far-h-l-underscore"
   \
   \ Address of the `far.hl` routine of the kernel, which
   \ converts the far-memory address ($0000..$FFFF) hold in the
@@ -76,7 +76,7 @@ unneeding ?next-bank_
 
   \ doc{
   \
-  \ ?next-bank_ ( -- a )
+  \ ?next-bank_ ( -- a ) "question-next-bank-underscore"
   \
   \ Address of the ``question_next_bank`` routine of the
   \ kernel, which does the following:
@@ -118,7 +118,7 @@ unneeding ?previous-bank_ ?(
 
   \ doc{
   \
-  \ ?previous-bank_ ( -- a )
+  \ ?previous-bank_ ( -- a ) "question-previous-bank-underscore"
   \
   \ Address of the ``question_previous_bank`` routine of the
   \ kernel, which does the followig:
@@ -164,7 +164,7 @@ unneeding default-bank_
 
   \ doc{
   \
-  \ default-bank_ ( -- a )
+  \ default-bank_ ( -- a ) "default-bank-underscore"
   \
   \ Return address _a_ of a routine that pages in the default
   \ bank. This is the routine `default-bank` runs into, after
@@ -183,7 +183,7 @@ unneeding e-bank_
 
   \ doc{
   \
-  \ e-bank_ ( -- a )
+  \ e-bank_ ( -- a ) "e-bank-underscore"
   \
   \ Return address _a_ of a routine that pages in the
   \ bank hold in the E register.
@@ -206,7 +206,7 @@ unneeding farallot
 
   \ doc{
   \
-  \ farallot ( n -- )
+  \ farallot ( n -- ) "far-allot"
   \
   \ If _n_ is greater than zero, reserve _n_ address units of
   \ headers space. If _n_ is less than zero, release _n_
@@ -221,7 +221,7 @@ unneeding far, ?( need farallot
 
   \ doc{
   \
-  \ far, ( x -- )
+  \ far, ( x -- ) "far-comma"
   \
   \ Compile _x_ in far-memory headers space.
   \
@@ -240,7 +240,7 @@ unneeding far@+
 
   \ doc{
   \
-  \ far@+ ( a -- a' x )
+  \ far@+ ( a -- a' x ) "far-fetch-plus"
   \
   \ Fetch _x_ from far-memory address _a_. Return _a'_, which
   \ is _a_ incremented by one cell.  This is handy for stepping
@@ -253,7 +253,7 @@ unneeding farc@+
 
   \ doc{
   \
-  \ farc@+ ( ca -- ca' c )
+  \ farc@+ ( ca -- ca' c ) "far-c-fetch-plus"
   \
   \ Fetch the character _c_ at far-memory address _ca_. Return
   \ _ca'_, which is _ca_ incremented by one character.  This
@@ -266,7 +266,7 @@ unneeding far+!
 
   \ doc{
   \
-  \ far+! ( n|u a -- )
+  \ far+! ( n|u a -- ) "far-plus-store"
   \
   \ Add _n|u_ to the single-cell number at far-memory address
   \ _a_.
@@ -278,7 +278,7 @@ unneeding farc+!
 
   \ doc{
   \
-  \ farc+! ( c ca - )
+  \ farc+! ( c ca - ) "far-c-plus-store"
   \
   \ Add _c_ to the char at far-memory address _ca_
   \
@@ -289,7 +289,7 @@ unneeding 2@+ ?exit need far2@
 
   \ doc{
   \
-  \ far2@+ ( a -- a' xd )
+  \ far2@+ ( a -- a' xd ) "far-two-fetch-plus"
   \
   \ Fetch _xd_ from _a_. Return _a'_, which is _a_ incremented
   \ by two cells.  This is handy for stepping through
@@ -306,7 +306,7 @@ unneeding move>far ?(
 
   \ doc{
   \
-  \ move>far ( a1 a2 len -- )
+  \ move>far ( a1 a2 len -- ) "move-to-far"
   \
   \ If _len_ is greater than zero, copy _len_ consecutive
   \ cells from main-memory address _a1_ to far-memory
@@ -321,7 +321,7 @@ unneeding move<far ?(
 
   \ doc{
   \
-  \ move<far ( a1 a2 len -- )
+  \ move<far ( a1 a2 len -- ) "move-from-far"
   \
   \ If _len_ is greater than zero, copy _len_ consecutive
   \ cells from far-memory address _a1_ to main-memory
@@ -336,7 +336,7 @@ unneeding cmove>far ?(
 
   \ doc{
   \
-  \ cmove>far ( ca1 ca2 len -- )
+  \ cmove>far ( ca1 ca2 len -- ) "c-move-to-far"
   \
   \ If _len_ is greater than zero, copy _len_ consecutive
   \ characters from main-memory address _ca1_ to far-memory
@@ -351,7 +351,7 @@ unneeding cmove<far ?(
 
   \ doc{
   \
-  \ cmove<far ( ca1 ca2 len -- )
+  \ cmove<far ( ca1 ca2 len -- ) "c-move-from-far"
   \
   \ If _len_ is greater than zero, copy _len_ consecutive
   \ characters from far-memory address _ca1_ to main-memory
@@ -377,7 +377,7 @@ code !bank ( x a n -- )
 
   \ doc{
   \
-  \ !bank ( x a n -- )
+  \ !bank ( x a n -- ) "store-bank"
   \
   \ Store cell _x_ into address _a_ ($C000..$FFFF) of `bank`
   \ _n_.
@@ -406,7 +406,7 @@ code c!bank ( c ca n -- ) D1 c, e-bank_ call,
 
   \ doc{
   \
-  \ c!bank ( c ca n -- )
+  \ c!bank ( c ca n -- ) "c-store-bank"
   \
   \ Store _c_ into address _ca_ ($C000..$FFFF) of `bank` _n_.
   \
@@ -438,7 +438,7 @@ code @bank ( a n -- x )
 
   \ doc{
   \
-  \ @bank ( a n -- x )
+  \ @bank ( a n -- x ) "fetch-bank"
   \
   \ Fetch _x_ from address _a_ ($C000..$FFFF) of `bank` _n_.
   \
@@ -467,7 +467,7 @@ code c@bank ( ca n -- c ) D1 c, e-bank_ call,
 
   \ doc{
   \
-  \ c@bank ( ca n -- c )
+  \ c@bank ( ca n -- c ) "c-fetch-bank"
   \
   \ Fetch _c_ from address _ca_ ($C000..$FFFF) of `bank` _n_.
 
@@ -536,5 +536,7 @@ code c@bank ( ca n -- c ) D1 c, e-bank_ call,
   \ 2017-05-10: Improve documentation.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

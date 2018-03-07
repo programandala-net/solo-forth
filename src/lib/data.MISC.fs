@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803072312
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -30,7 +30,7 @@ unneeding buffer:
 
   \ doc{
   \
-  \ buffer: ( u "name" -- )
+  \ buffer: ( u "name" -- ) "buffer-colon"
   \
   \ Define a named uninitialized buffer as follows: Reserve _u_
   \ address units of data space at an aligned address.  Create
@@ -49,7 +49,7 @@ unneeding cvariable
 
   \ doc{
   \
-  \ cvariable ( "name" -- )
+  \ cvariable ( "name" -- ) "c-variable"
   \
   \ Create a character variable _name_ and reserve one
   \ character of data space. When _name_ is executed, it
@@ -87,7 +87,7 @@ unneeding cenum
 
   \ doc{
   \
-  \ cenum ( n "name" -- n+1 )
+  \ cenum ( n "name" -- n+1 ) "c-enum"
   \
   \ Create a cconstant _name_ with value _n_ and return _n+1_.
   \
@@ -114,7 +114,7 @@ unneeding enumcell
 
   \ doc{
   \
-  \ enumcell ( n "name" -- n+cell )
+  \ enumcell ( n "name" -- n+cell ) "enum-cell"
   \
   \ Create a constant _name_ with value _n_ and return
   \ _n+cell_.
@@ -145,7 +145,7 @@ need alias ' @ alias link@ ( node1 -- node2 )
 
   \ doc{
   \
-  \ link@ ( node1 -- node2 )
+  \ link@ ( node1 -- node2 ) "link-fetch"
   \
   \ Fetch the node _node2_ from the linked list node _node1_.
   \ ``link@`` is an alias of `@`.
@@ -158,7 +158,7 @@ need alias ' @ alias link@ ( node1 -- node2 )
 
   \ doc{
   \
-  \ link, ( head -- )
+  \ link, ( head -- ) "link-comma"
   \
   \ Create a new node in data space for the linked list _head_:
   \
@@ -211,5 +211,7 @@ need alias ' @ alias link@ ( node1 -- node2 )
   \ 2017-05-05: Improve documentation.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

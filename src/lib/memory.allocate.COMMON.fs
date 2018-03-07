@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803072226
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -48,7 +48,7 @@ need value
 
   \ doc{
   \
-  \ /heap  ( -- n )
+  \ /heap  ( -- n ) "slash-heap"
   \
   \ Size of the current `heap`, in address units.
   \
@@ -297,7 +297,7 @@ unneeding bank-heap ?( need 0exit need alias
 
   \ doc{
   \
-  \ (heap-in  ( -- )
+  \ (heap-in  ( -- ) "paren-heap-in"
   \
   \ If the current `heap` was created by `bank-heap`, page in
   \ its bank, which is stored at `heap-bank`; else do nothing.
@@ -353,5 +353,7 @@ unneeding set-heap
   \ Add `get-heap` and `set-heap`.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

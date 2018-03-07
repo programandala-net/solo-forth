@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803072320
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -29,7 +29,7 @@ unneeding ucreate ?\ : ucreate ( "name" -- ) udp @ (user) ;
 
   \ doc{
   \
-  \ ucreate ( "name" -- )
+  \ ucreate ( "name" -- ) "u-create"
   \
   \ Parse _name. Create a header _name_ which points to the
   \ first available offset within the user area.  When _name_
@@ -49,7 +49,7 @@ unneeding ?user ?(
 
   \ doc{
   \
-  \ ?user ( -- )
+  \ ?user ( -- ) "question-user"
   \
   \ `throw` an exception if the user area pointer is out of
   \ bounds.
@@ -64,7 +64,7 @@ unneeding uallot ?( need ?user
 
   \ doc{
   \
-  \ uallot ( n -- )
+  \ uallot ( n -- ) "u-allot"
   \
   \ If _n_ is greater than zero, reserve _n_ address units of
   \ user data space. If _n_ is less than zero, release _n_
@@ -102,7 +102,7 @@ unneeding 2user ?( need ucreate need uallot
 
   \ doc{
   \
-  \ 2user ( "name" -- )
+  \ 2user ( "name" -- ) "two-user"
   \
   \ Parse _name_. Create a user double variable _name_ in the
   \ first available offset within the user area.  When _name_
@@ -134,5 +134,7 @@ unneeding 2user ?( need ucreate need uallot
   \ 2017-05-11: Improve documentation.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

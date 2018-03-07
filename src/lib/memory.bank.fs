@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803072228
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -29,7 +29,7 @@ unneeding /bank ?\ $4000 constant /bank
 
   \ doc{
   \
-  \ /bank ( -- n )
+  \ /bank ( -- n ) "slash-bank"
   \
   \ _n_ is the size in bytes of a memory bank: $4000.
   \
@@ -79,5 +79,7 @@ unneeding bank-start ?\ $C000 constant bank-start
   \ `set-default-bank`.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

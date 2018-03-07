@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803072222
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -73,7 +73,7 @@ unneeding ut*
 
   \ doc{
   \
-  \ ut*   ( ud u -- t )
+  \ ut*   ( ud u -- t ) "u-t-star"
   \
   \ _t_ is the signed product of _ud_ times _u_.
   \
@@ -94,7 +94,7 @@ unneeding mt* ?( need ut* need tnegate
 
   \ doc{
   \
-  \ mt*   ( d n -- t )
+  \ mt*   ( d n -- t ) "m-t-star"
   \
   \ _t_ is the signed product of _d_ times _n_.
   \
@@ -112,7 +112,7 @@ unneeding ut/
 
   \ doc{
   \
-  \ ut/   ( ut n -- d )
+  \ ut/   ( ut n -- d ) "u-t-slash"
   \
   \ Divide a triple unsigned number _ut_ by a single number _n_
   \ giving the double number result _d_.
@@ -133,7 +133,7 @@ unneeding tnegate ?(
 
   \ doc{
   \
-  \ tnegate ( t1 -- t2 )
+  \ tnegate ( t1 -- t2 ) "t-negate"
   \
   \ _t2_ is the negation of _t1_.
   \
@@ -152,5 +152,7 @@ unneeding tnegate ?(
   \ conditional interpretation.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

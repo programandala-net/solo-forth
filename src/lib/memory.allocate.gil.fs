@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803072227
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -240,7 +240,7 @@ need gil-heap-wordlist gil-heap-wordlist >order
 
   \ doc{
   \
-  \ .gil-heap ( -- )
+  \ .gil-heap ( -- ) "dot-gil-heap"
   \
   \ Print the map of the current memory `heap`, in the
   \ implementation based on code written by Javier Gil, whose
@@ -283,6 +283,8 @@ previous ?)
   \ 2017-12-09: Improve documentation.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth
 

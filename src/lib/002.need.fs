@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052146
+  \ Last modified: 201803072307
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -141,7 +141,7 @@ defer unlocated ( block -- )
 
   \ doc{
   \
-  \ (located) ( ca len -- block | 0 )
+  \ (located) ( ca len -- block | 0 ) "paren-located"
   \
   \ Locate the first block whose header contains the string _ca
   \ len_ (surrounded by spaces), and return its number. If not
@@ -187,7 +187,7 @@ defer located ( ca len -- block | false ) -->
 
   \ doc{
   \
-  \ ?located ( n -- )
+  \ ?located ( n -- ) "question-located"
   \
   \ If _n_ is zero, throw an exception #-268 ("needed, but
   \ not located").
@@ -705,5 +705,7 @@ unneeding need-here ?(
   \
   \ 2018-03-05: Rename `[unneeded]` `unneeding`; rename
   \ `[needed]` `needing`; make both words non-immediate.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803072324
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -71,7 +71,7 @@ unneeding val ?(  variable (val)
 
   \ doc{
   \
-  \ toval ( -- )
+  \ toval ( -- ) "to-val"
   \
   \ Change the default behaviour of words created by `val`:
   \ make them store a new value instead of returning its actual
@@ -90,7 +90,7 @@ unneeding 2val ?(  variable (2val)
 
   \ doc{
   \
-  \ init-2val  ( -- )
+  \ init-2val  ( -- ) "init-two-val"
   \
   \ Init the default behaviour of words created by `2val`: Make
   \ them return their content.
@@ -104,7 +104,7 @@ unneeding 2val ?(  variable (2val)
 
   \ doc{
   \
-  \ 2val ( x1 x2 "name" -- )
+  \ 2val ( x1 x2 "name" -- ) "two-val"
   \
   \ Create a definition for _name_ that will place _x1 x2_ on
   \ the stack (unless `2toval` is used first) and then will
@@ -120,7 +120,7 @@ unneeding 2val ?(  variable (2val)
 
   \ doc{
   \
-  \ 2toval ( -- )
+  \ 2toval ( -- ) "two-to-val"
   \
   \ Change the default behaviour of words created by `2val`:
   \ make them store a new value instead of returning its actual
@@ -139,7 +139,7 @@ unneeding cval ?(  variable (cval)
 
   \ doc{
   \
-  \ init-cval  ( -- )
+  \ init-cval  ( -- ) "init-c-val"
   \
   \ Init the default behaviour of words created by `cval`: Make
   \ them return their content.
@@ -153,7 +153,7 @@ unneeding cval ?(  variable (cval)
 
   \ doc{
   \
-  \ cval ( c "name" -- )
+  \ cval ( c "name" -- ) "c-val"
   \
   \ Create a definition for _name_ that will place _c_ on
   \ the stack (unless `ctoval` is used first) and then will
@@ -167,7 +167,7 @@ unneeding cval ?(  variable (cval)
 
   \ doc{
   \
-  \ ctoval ( -- )
+  \ ctoval ( -- ) "c-to-val"
   \
   \ Change the default behaviour of words created by `cval`:
   \ make them store a new value instead of returning its actual
@@ -196,5 +196,7 @@ unneeding cval ?(  variable (cval)
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

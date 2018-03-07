@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803072311
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -62,7 +62,7 @@ unneeding cconst ?(
 
   \ doc{
   \
-  \ cconst ( c "name" -- )
+  \ cconst ( c "name" -- ) "c-const"
   \
   \ Create a character fast constant _name_, with value _c_.
   \
@@ -83,7 +83,7 @@ unneeding 2const ?(
 
   \ doc{
   \
-  \ 2const ( x1 x2 "name" -- )
+  \ 2const ( x1 x2 "name" -- ) "two-const"
   \
   \ Create a double fast constant _name_, with value _x1 x2_.
   \
@@ -112,5 +112,7 @@ unneeding 2const ?(
   \ 2017-03-30: Improve documentation.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

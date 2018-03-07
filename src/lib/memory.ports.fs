@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803072234
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -60,7 +60,7 @@ code @p ( a -- b )
 
   \ doc{
   \
-  \ @p ( a -- b )
+  \ @p ( a -- b ) "fetch-p"
   \
   \ Input byte _b_ from port _a_.
   \
@@ -100,7 +100,7 @@ code !p ( b a -- ) D9 c, C1 c, E1 c, ED c, 69 c, D9 c,
 
   \ doc{
   \
-  \ !p ( b a -- )
+  \ !p ( b a -- ) "store-p"
   \
   \ Output byte _b_ to port _a_.
   \
@@ -123,5 +123,7 @@ code !p ( b a -- ) D9 c, C1 c, E1 c, ED c, 69 c, D9 c,
   \ `_jp_next` in Z80 comments.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

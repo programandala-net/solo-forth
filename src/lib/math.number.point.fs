@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803072206
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -35,7 +35,7 @@ unneeding classic-number-point? ?(
 
   \ doc{
   \
-  \ classic-number-point? ( c -- f )
+  \ classic-number-point? ( c -- f ) "classic-number-point-question"
   \
   \ Is character _c_ a classic number point?  Allowed points
   \ are: comma, hyphen, period, slash and colon.
@@ -55,7 +55,7 @@ unneeding extended-number-point? ?(
 
   \ doc{
   \
-  \ extended-number-point? ( c -- f )
+  \ extended-number-point? ( c -- f ) "extended-number-point-question"
   \
   \ Is character _c_ an extended number point?  Allowed points
   \ are: plus sign, comma, hyphen, period, slash and colon,
@@ -86,6 +86,8 @@ unneeding extended-number-point? ?(
   \ 2017-03-17: Fix index line. Improve documentation.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-07: Add words' pronunciation.
 
   \ vim: filetype=soloforth
 

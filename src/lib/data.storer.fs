@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803072315
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -49,7 +49,7 @@ unneeding cstorer ?(
 
   \ doc{
   \
-  \ cstorer ( c ca "name" -- )
+  \ cstorer ( c ca "name" -- ) "c-storer"
   \
   \ Define a word _name_ which, when executed, will cause that
   \ _c_ be stored at _ca_.
@@ -68,7 +68,7 @@ unneeding 2storer ?(
 
   \ doc{
   \
-  \ 2storer ( xd a "name" -- )
+  \ 2storer ( xd a "name" -- ) `two-storer"
   \
   \ Define a word _name_ which, when executed, will cause that
   \ _xd_ be stored at _a_.
@@ -91,6 +91,8 @@ unneeding 2storer ?(
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth
 

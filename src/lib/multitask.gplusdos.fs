@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803072255
 
   \ ===========================================================
   \ Description
@@ -39,7 +39,7 @@ unneeding -jiffy ?( need !dosvar
 
   \ doc{
   \
-  \ jiffy! ( a -- )
+  \ jiffy! ( a -- ) "jiffy-store"
   \
   \ Set the address _a_ of the so called "jiffy call", a Z80
   \ routine to be called by G+DOS after the OS interrupts
@@ -55,7 +55,7 @@ unneeding -jiffy ?( need @dosvar
 
   \ doc{
   \
-  \ jiffy@ ( -- a )
+  \ jiffy@ ( -- a ) "jiffy-fetch"
   \
   \ Get the address _a_ of the so called "jiffy call", a Z80
   \ routine that is called by G+DOS after the OS interrupts
@@ -71,7 +71,7 @@ unneeding -jiffy ?( need jiffy!
 
   \ doc{
   \
-  \ -jiffy ( -- )
+  \ -jiffy ( -- ) "minus-jiffy"
   \
   \ Deactivate the so called "jiffy call", the Z80 routine that
   \ is called by G+DOS after the OS interrupts routine (every
@@ -88,5 +88,7 @@ unneeding -jiffy ?( need jiffy!
   \ 2017-05-07: Document the words.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

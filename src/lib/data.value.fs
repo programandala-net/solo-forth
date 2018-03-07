@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803072325
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -34,13 +34,13 @@ unneeding cvalue ?( need to need ;code
 
   \ doc{
   \
-  \ cvalue ( c "name" -- )
+  \ cvalue ( c "name" -- ) "c-value"
   \
   \ Create a definition _name_ with initial value _c_. When
   \ _name_ is later executed, _c_ will be placed on the stack.
   \ `to` can be used to assign a new value to _name_.
   \
-  \ See: `value`, `2value`, `cconstant`, `cvariable`.
+  \ See: `value`, `2value`, `cconstant`, `cvariable`, `cval`.
   \
   \ }doc
 
@@ -61,7 +61,7 @@ unneeding value ?( need to need ;code
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See: `cvalue`, `2value`, `constant`, `variable`.
+  \ See: `cvalue`, `2value`, `constant`, `variable`, `val`.
   \
   \ }doc
 
@@ -74,7 +74,7 @@ unneeding 2value ?( need to
 
   \ doc{
   \
-  \ 2value ( x1 x2 "name" -- )
+  \ 2value ( x1 x2 "name" -- ) "two-value"
   \
   \ Create a definition _name_ with initial value _x1 x2_. When
   \ _name_ is later executed, _x1 x2_ will be placed on the
@@ -82,7 +82,7 @@ unneeding 2value ?( need to
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See: `cvalue`, `value`, `2constant`, `2variable`.
+  \ See: `cvalue`, `value`, `2constant`, `2variable`, `2val`.
   \
   \ }doc
 
@@ -124,7 +124,7 @@ create to> ' c! , ' ! , ' 2! ,
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See: `!>`, `c!>`, `2!>`.
+  \ See: `!>`, `c!>`, `2!>`, `toval`, `ctoval`, `2toval`.
   \
   \ }doc
 
@@ -162,5 +162,7 @@ create to> ' c! , ' ! , ' 2! ,
   \ and `2value` in Z80.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-07: Add words' pronunciaton. Improve documentation.
 
   \ vim: filetype=soloforth

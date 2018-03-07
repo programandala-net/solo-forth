@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803062301
+  \ Last modified: 201803072314
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -41,7 +41,7 @@ unneeding 2nip ?( code 2nip ( x1 x2 x3 x4 -- x3 x4 )
 
   \ doc{
   \
-  \ 2nip ( x1 x2 x3 x4 -- x3 x4 )
+  \ 2nip ( x1 x2 x3 x4 -- x3 x4 ) "two-nip"
   \
   \ See: `nip`.
   \
@@ -148,7 +148,7 @@ code 3drop ( x1 x2 x3 -- )
 
   \ doc{
   \
-  \ 3drop ( x1 x2 x3 -- )
+  \ 3drop ( x1 x2 x3 -- ) "three-drop"
   \
   \ See: `3dup`, `drop`, `2drop`, `4drop`.
   \
@@ -166,7 +166,7 @@ code 4drop ( x1 x2 x3 x4 -- )
 
   \ doc{
   \
-  \ 4drop ( x1 x2 x3 x4 -- )
+  \ 4drop ( x1 x2 x3 x4 -- ) "four-drop"
   \
   \ See: `4dup`, `drop`, `2drop`, `3drop`.
   \
@@ -192,7 +192,7 @@ code 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
 
   \ doc{
   \
-  \ 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
+  \ 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 ) "three-dup"
   \
   \ ``3dup`` is written is Z80. An equivalent definition in
   \ Forth is the following:
@@ -229,7 +229,7 @@ code 4dup ( x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2 x3 x4 )
 
   \ doc{
   \
-  \ 4dup ( x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2 x3 x4 )
+  \ 4dup ( x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2 x3 x4 ) "four-dup"
   \
   \ See: `4drop`, `dup`, `2dup`, `3dup`.
   \
@@ -244,7 +244,7 @@ unneeding 2rot ?( need roll
 
   \ doc{
   \
-  \ 2rot ( x1 x2 x3 x4 x5 x6 -- x3 x4 x5 x6 x1 x2 )
+  \ 2rot ( x1 x2 x3 x4 x5 x6 -- x3 x4 x5 x6 x1 x2 ) "two-rot"
   \
   \ }doc
 
@@ -374,7 +374,7 @@ unneeding 0dup ?( code 0dup ( x -- x | 0 0 )
 
   \ doc{
   \
-  \ 0dup ( x -- x | 0 0 )
+  \ 0dup ( x -- x | 0 0 ) "zero-dup"
   \
   \ Duplicate _x_ if it's zero.
   \
@@ -394,7 +394,7 @@ unneeding -dup ?( code -dup ( x -- x | x x )
 
   \ doc{
   \
-  \ -dup ( x -- x x | x )
+  \ -dup ( x -- x x | x ) "minus-dup"
   \
   \ Duplicate _x_ if it's negative.
   \
@@ -419,7 +419,7 @@ code ndrop ( x1..xn n -- )
 
   \ doc{
   \
-  \ ndrop ( x1..xn n -- )
+  \ ndrop ( x1..xn n -- ) "n-drop"
   \
   \ Drop _n_ cell items from the stack.
   \
@@ -444,7 +444,7 @@ code 2ndrop ( dx1..dxn n -- )
 
   \ doc{
   \
-  \ 2ndrop ( dx1..dxn n -- )
+  \ 2ndrop ( dx1..dxn n -- ) "two-n-drop"
   \
   \ Drop _n_ double cell items from the stack.
   \
@@ -460,7 +460,7 @@ code 2>true ( x1 x2 -- true ) E1 c, end-code
 
   \ doc{
   \
-  \ 2>true ( x1 x2 -- true )
+  \ 2>true ( x1 x2 -- true ) "two-to-true"
   \
   \ Replace _x1 x2_ with _true_.
   \
@@ -474,7 +474,7 @@ code >true ( x -- true ) E1 c, ' true jp, end-code ?)
 
   \ doc{
   \
-  \ >true ( x -- true )
+  \ >true ( x -- true ) "to-true"
   \
   \ Replace _x_ with _true_.
   \
@@ -490,7 +490,7 @@ code 2>false ( x1 x2 -- false ) E1 c, end-code
 
   \ doc{
   \
-  \ 2>false ( x1 x2 -- false )
+  \ 2>false ( x1 x2 -- false ) "two-to-false"
   \
   \ Replace _x1 x2_ with _false_.
   \
@@ -504,7 +504,7 @@ code >false ( x -- false ) E1 c, ' false jp, end-code ?)
 
   \ doc{
   \
-  \ >false ( x -- false )
+  \ >false ( x -- false ) "to-false"
   \
   \ Replace _x_ with _false_.
   \
@@ -580,5 +580,7 @@ code >false ( x -- false ) E1 c, ' false jp, end-code ?)
   \
   \ 2018-03-06: Add `unpick`. Improve documentation. Add
   \ `4dup`.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

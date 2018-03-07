@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803072311
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -29,7 +29,7 @@ unneeding +field ?\ defer +field ( n1 n2 "name" -- n3 ) exit
 
   \ doc{
   \
-  \ +field ( n1 n2 "name -- n3 )
+  \ +field ( n1 n2 "name -- n3 ) "plus-field"
   \
   \ Create a definition for _name_ with the execution semantics
   \ defined below. Return _n3_ = _n1_ + _n2_ where _n1_ is the
@@ -63,7 +63,7 @@ unneeding field: ?( need +field
 
   \ doc{
   \
-  \ field: ( n1 "name" -- n2 )
+  \ field: ( n1 "name" -- n2 ) "fiel-colon"
   \
   \ Parse _name_.  _offset_  is the first cell aligned
   \ value greater than or equal to _n1_. _n2_ = _offset_ + 1
@@ -88,7 +88,7 @@ unneeding 2field: ?( need +field
 
   \ doc{
   \
-  \ 2field: ( n1 "name" -- n2 )
+  \ 2field: ( n1 "name" -- n2 ) "two-field-colon"
   \
   \ Parse _name_.  _offset_  is the first double-cell aligned
   \ value greater than or equal to _n1_. _n2_ = _offset_ + 2
@@ -111,7 +111,7 @@ unneeding cfield: ?( need +field
 
   \ doc{
   \
-  \ cfield: ( n1 "name" -- n2 )
+  \ cfield: ( n1 "name" -- n2 ) "c-field-colon"
   \
   \ Parse _name_.  _offset_  is the first character aligned
   \ value greater than or equal to _n1_. _n2_ = _offset_ + 1
@@ -217,7 +217,7 @@ unneeding +field-unopt ?( need +field
 
   \ doc{
   \
-  \ +field-unopt ( n1 n2 "name" -- n3 )
+  \ +field-unopt ( n1 n2 "name" -- n3 ) "plus-field-unopt"
   \
   \ Unoptimized implementation of `+field`.  This
   \ implementation is less efficient than `+field-opt-0` and
@@ -261,7 +261,7 @@ unneeding +field-opt-0 ?( need +field
 
   \ doc{
   \
-  \ +field-opt-0 ( n1 n2 "name" -- n3 )
+  \ +field-opt-0 ( n1 n2 "name" -- n3 ) "plus-field-opt-zero"
   \
   \ Optimized implementation of `+field`.  This implementation
   \ is more efficient than `+field-unopt` (but less than
@@ -290,7 +290,7 @@ unneeding +field-opt-0124 ?( need case need +field
 
   \ doc{
   \
-  \ +field-opt-0124 ( n1 n2 "name" -- n3 )
+  \ +field-opt-0124 ( n1 n2 "name" -- n3 ) "plus-field-opt-zero-one-two-four"
   \
   \ Optimized implementation of `+field` that optimizes the
   \ calculation of field offsets 0, 1, 2 and 4. Therefore it is
@@ -327,5 +327,7 @@ unneeding +field-opt-0124 ?( need case need +field
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803072250
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -17,7 +17,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2017
+  \ Marcos Cruz (programandala.net), 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -78,7 +78,7 @@ unneeding seclusion ?(
 
   \ doc{
   \
-  \ -seclusion ( wid1 wid2 -- wid1 wid2 )
+  \ -seclusion ( wid1 wid2 -- wid1 wid2 ) "minus-seclusion"
   \
   \ Start the public definitions of a `seclusion` module.
   \
@@ -90,7 +90,7 @@ unneeding seclusion ?(
 
   \ doc{
   \
-  \ +seclusion ( wid1 wid2 -- wid1 wid2 )
+  \ +seclusion ( wid1 wid2 -- wid1 wid2 ) "plus-seclusion"
   \
   \ Start more private definitions of a `seclusion` module.
   \
@@ -143,6 +143,8 @@ unneeding isolate
   \ 2017-03-14: Start. Write `seclusion` and `isolate`.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth
 

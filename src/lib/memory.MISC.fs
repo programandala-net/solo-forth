@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803072234
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -43,7 +43,7 @@ code -! ( n|u a -- )
 
   \ doc{
   \
-  \ -! ( n|u a -- )
+  \ -! ( n|u a -- ) "minus-store"
   \
   \ Subtract _n|u_ from the single-cell number stored at _a_.
   \
@@ -64,7 +64,7 @@ code c+! ( c ca -- )
 
   \ doc{
   \
-  \ c+! ( c ca - )
+  \ c+! ( c ca - ) "c-plus-store"
   \
   \ Add _c_ to the character stored at _ca_
   \
@@ -85,7 +85,7 @@ code c-! ( c ca -- )
 
   \ doc{
   \
-  \ c-! ( c ca - )
+  \ c-! ( c ca - ) "c-minus-store"
   \
   \ Subtract _c_ from the character stored at _ca_
   \
@@ -104,7 +104,7 @@ unneeding c1+!
 
   \ doc{
   \
-  \ c1+! ( ca - )
+  \ c1+! ( ca - ) "c-one-plus-store"
   \
   \ Increment the character stored at _ca_.
   \
@@ -121,7 +121,7 @@ unneeding c1-!
 
   \ doc{
   \
-  \ c1-! ( ca - )
+  \ c1-! ( ca - ) "c-one-minus-store"
   \
   \ Decrement the character stored at _ca_.
   \
@@ -142,7 +142,7 @@ code ?c1-! ( ca -- )
 
   \ doc{
   \
-  \ ?c1-! ( ca - )
+  \ ?c1-! ( ca - ) "question-c-one-minus-store"
   \
   \ If the character stored at _ca_ is not zero, decrement it.
   \
@@ -167,7 +167,7 @@ code 1+! ( a -- )
 
   \ doc{
   \
-  \ 1+! ( a - )
+  \ 1+! ( a - ) "one-plus-store"
   \
   \ Increment the single-cell number stored at _a_.
   \
@@ -192,7 +192,7 @@ code 1-! ( a -- )
 
   \ doc{
   \
-  \ 1-! ( a - )
+  \ 1-! ( a - ) "one-minus-store"
   \
   \ Decrement the single-cell number stored at _a_.
   \
@@ -208,7 +208,7 @@ unneeding @+
 
   \ doc{
   \
-  \ @+ ( a -- a' x )
+  \ @+ ( a -- a' x ) "fetch-plus"
   \
   \ Fetch _x_ from _a_. Return _a'_, which is _a_
   \ incremented by one cell.
@@ -224,7 +224,7 @@ unneeding 2@+
 
   \ doc{
   \
-  \ 2@+ ( a -- a' xd )
+  \ 2@+ ( a -- a' xd ) "two-fetch-plus"
   \
   \ Fetch _xd_ from _a_. Return _a'_, which is _a_
   \ incremented by two cells.
@@ -238,7 +238,7 @@ unneeding c@+ ?\ need alias ' count alias c@+ ( ca -- ca' c )
 
   \ doc{
   \
-  \ c@+ ( ca -- ca' c )
+  \ c@+ ( ca -- ca' c ) "c-fetch-plus"
   \
   \ Fetch the character _c_ at _ca_. Return _ca'_, which is
   \ _ca_ incremented by one character.  This is handy for
@@ -265,7 +265,7 @@ code c@1+ ( ca -- c )
 
   \ doc{
   \
-  \ c@1+ ( ca -- c )
+  \ c@1+ ( ca -- c ) "c-fetch-one-plus"
   \
   \ Fetch the character stored at _ca_, add 1 to it, according
   \ to the operation of `+`, giving _c_.
@@ -289,7 +289,7 @@ code c@1- ( ca -- c )
 
   \ doc{
   \
-  \ c@1- ( ca -- c )
+  \ c@1- ( ca -- c ) "c-fetch-one-minus"
   \
   \ Fetch the character stored at _ca_, subtract 1 from it,
   \ according to the operation of `-`, giving _c_.
@@ -314,7 +314,7 @@ code c@2+ ( ca -- c )
 
   \ doc{
   \
-  \ c@2+ ( ca -- c )
+  \ c@2+ ( ca -- c ) "c-fetch-two-plus"
   \
   \ Fetch the character stored at _ca_, add 2 to it, according
   \ to the operation of `+`, and return the result _c_.
@@ -339,7 +339,7 @@ code c@2- ( ca -- c )
 
   \ doc{
   \
-  \ c@2- ( ca -- c )
+  \ c@2- ( ca -- c ) "c-fetch-two-minus"
   \
   \ Fetch the character stored at _ca_, subtract 2 from it,
   \ according to the operation of `-`, and giving _c_.
@@ -356,7 +356,7 @@ unneeding n, ?\ : n, ( x[u]..x[1] u -- ) 0 ?do , loop ;
 
   \ doc{
   \
-  \ n, ( x[u]..x[1] u -- )
+  \ n, ( x[u]..x[1] u -- ) "n-comma"
   \
   \ If _u_ is not zero, store _u_ cells _x[u]..x[1]_ into data
   \ space, being _x[1]_ the first one stored and _x[u]_ the
@@ -372,7 +372,7 @@ unneeding nn, ?( need need-here need-here n,
 
   \ doc{
   \
-  \ nn, ( x[u]..x[1] u -- )
+  \ nn, ( x[u]..x[1] u -- ) "n-n-comma"
   \
   \ Store the count _u_ into data space.  If _u_ is not zero,
   \ store also _u_ cells _x[u]..x[1]_ into data space, being
@@ -390,7 +390,7 @@ unneeding n@ ?(
 
   \ doc{
   \
-  \ n@ ( a u -- x[u]..x[1] )
+  \ n@ ( a u -- x[u]..x[1] ) "n-fetch"
   \
   \ If _u_ is not zero, read _u_ cells _x[u]..x[1]_ from _a_,
   \ being _x[1]_ the first one stored and _x[u]_ the last one.
@@ -405,7 +405,7 @@ unneeding nn@ ?( need need-here need-here n@
 
   \ doc{
   \
-  \ nn@ ( a -- x[1]..x[u] u | 0 )
+  \ nn@ ( a -- x[1]..x[u] u | 0 ) "n-n-fetch"
   \
   \ Read the count _u_ from _a_.  If it's zero, return it.  If
   \ _u_ is not zero, read _u_ cells _x[u]..x[1]_ from the next
@@ -423,7 +423,7 @@ unneeding n! ?(
 
   \ doc{
   \
-  \ n! ( x[u]..x[1] u a -- )
+  \ n! ( x[u]..x[1] u a -- ) "n-store"
   \
   \ If _u_ is not zero, store _u_ cells at address _a_, being
   \ _x[1]_ the first cell stored there and _x[u]_ the last one.
@@ -438,7 +438,7 @@ unneeding nn! ?( need need-here need-here n!
 
   \ doc{
   \
-  \ nn! ( x[u]..x[1] u a -- )
+  \ nn! ( x[u]..x[1] u a -- ) "n-n-store"
   \
   \ Store the count _u_ at _a_.  If _u_ is not zero, store also
   \ _u_ cells _x[u]..x[1]_ at the next cell address, being
@@ -456,7 +456,7 @@ unneeding bit>mask
 
   \ doc{
   \
-  \ bit>mask ( n -- b )
+  \ bit>mask ( n -- b ) "bit-to-mask"
   \
   \ Convert bit number _n_ to a bitmask _b_ with bit _n_ set.
   \
@@ -470,7 +470,7 @@ unneeding bit?
 
   \ doc{
   \
-  \ bit? ( b n -- f )
+  \ bit? ( b n -- f ) "bit-question"
   \
   \ Is bit _n_ of _b_ set?
   \
@@ -537,7 +537,7 @@ code c@and ( b1 ca -- b2 )
 
   \ doc{
   \
-  \ c@and ( b1 ca -- b2 )
+  \ c@and ( b1 ca -- b2 ) "c-fetch-and"
   \
   \ Fetch the caracter at _ca_ and do a bit-by-bit logical
   \ `and` of it with _b1_, returning the result _b2_.
@@ -573,7 +573,7 @@ code ctoggle ( b ca -- )
 
   \ doc{
   \
-  \ ctoggle ( b ca -- )
+  \ ctoggle ( b ca -- ) "c-toggle"
   \
   \ Invert the bits at _ca_ specified by the bitmask _b_.
   \
@@ -590,7 +590,7 @@ unneeding coff
 
   \ doc{
   \
-  \ coff ( ca -- )
+  \ coff ( ca -- ) "c-off"
   \
   \ Store `false` at _ca_.
   \
@@ -614,7 +614,7 @@ unneeding con
 
   \ doc{
   \
-  \ con ( ca -- )
+  \ con ( ca -- ) "c-on"
   \
   \ Store `true` at _ca_.
   \
@@ -636,7 +636,7 @@ unneeding c? ?\ : c? ( ca -- ) c@ . ;
 
   \ doc{
   \
-  \ c? ( ca -- )
+  \ c? ( ca -- ) "c-question"
   \
   \ Display the 1-byte unsigned integer stored at _ca_, using
   \ the format of `.`.
@@ -653,7 +653,7 @@ unneeding !exchange
 
   \ doc{
   \
-  \ !exchange ( x1 a -- x2 )
+  \ !exchange ( x1 a -- x2 ) "store-exchange"
   \
   \ Store _x1_ into _a_ and return its previous contents _x2_.
   \
@@ -679,7 +679,7 @@ code c!exchange ( c1 ca -- c2 )
 
   \ doc{
   \
-  \ c!exchange ( c1 ca -- c2 )
+  \ c!exchange ( c1 ca -- c2 ) "c-store-exchange"
   \
   \ Store _c1_ into _ca_ and return its previous contents _c2_.
   \
@@ -766,7 +766,7 @@ unneeding /! ?\ : /! ( n a -- ) tuck @ swap / swap ! ;
 
   \ doc{
   \
-  \ /! ( n a -- )
+  \ /! ( n a -- ) "slash-store"
   \
   \ Divide _n_ by the single-cell number stored at _a_ and store
   \ the quotient in _a_
@@ -779,7 +779,7 @@ unneeding *! ?\ : *! ( n a -- ) tuck @ swap * swap ! ;
 
   \ doc{
   \
-  \ *! ( n|u a -- )
+  \ *! ( n|u a -- ) "star-store"
   \
   \ Multiply _n|u_ by the single-cell number stored at _a_ and store
   \ the product in _a_
@@ -792,7 +792,7 @@ unneeding 2*! ?\ : 2*! ( a -- ) dup @ 2* swap ! ;
 
   \ doc{
   \
-  \ 2*! ( a -- )
+  \ 2*! ( a -- ) "two-star-store"
   \
   \ Do a `2*` shift to the single-cell number stored at _a_.
   \
@@ -804,7 +804,7 @@ unneeding 2/! ?\ need 2/ : 2/! ( a -- ) dup @ 2/ swap ! ;
 
   \ doc{
   \
-  \ 2/! ( a -- )
+  \ 2/! ( a -- ) "two-slash-store"
   \
   \ Do a `2/` shift to the single-cell number stored at _a_.
   \
@@ -845,7 +845,7 @@ code cexchange ( ca1 ca2 -- )
 
   \ doc{
   \
-  \ cexchange ( ca1 ca2 -- )
+  \ cexchange ( ca1 ca2 -- ) "c-exchange"
   \
   \ Exchange the characters stored in _ca1_ and _ca2_.
   \
@@ -940,5 +940,7 @@ code cexchange ( ca1 ca2 -- )
   \ 2018-02-01: Improve documentation.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

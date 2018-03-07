@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803072219
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -42,7 +42,7 @@ code under+ ( n1|u1 x n2|u2 -- n3|u3 x )
 
   \ doc{
   \
-  \ under+ ( n1|u1 x n2|u2 -- n3|u3 x )
+  \ under+ ( n1|u1 x n2|u2 -- n3|u3 x ) "under-plus"
   \
   \ Add _n2|u2_ to _n1|u2_, giving the sum _n3|u3_.
   \
@@ -76,7 +76,7 @@ code +under ( n1|u1 n2|u2 x -- n3|u3 x )
 
   \ doc{
   \
-  \ +under ( n1|u1 n2|u2 x -- n3|u3 x )
+  \ +under ( n1|u1 n2|u2 x -- n3|u3 x ) "plus-under"
   \
   \ Add _n2|u2_ to _n1|u2_, giving the sum _n3|u3_.
   \
@@ -102,7 +102,7 @@ unneeding % ?\ need */ : % ( n1 n2 -- n3 ) 100 swap */ ;
 
   \ doc{
   \
-  \ % ( n1 n2 -- n3 )
+  \ % ( n1 n2 -- n3 ) "per-cent"
   \
   \ _n1_ is percentage _n3_ of _n2_.
   \
@@ -116,7 +116,7 @@ unneeding u%
 
   \ doc{
   \
-  \ u% ( u1 u2 -- u3 )
+  \ u% ( u1 u2 -- u3 ) "u-per-cent"
   \
   \ _u1_ is percentage _u3_ of _u2_.
   \
@@ -196,7 +196,7 @@ unneeding gcd
 
   \ doc{
   \
-  \ gcd ( n1 n2 -- n3 )
+  \ gcd ( n1 n2 -- n3 ) "g-c-d"
   \
   \ _n3_ is the greatest common divisor of _n1_ and _n2_.
   \
@@ -220,7 +220,7 @@ code odd? ( n -- f ) E1 c, CB c, 40 05 + c, CA c, ' false ,
 
   \ doc{
   \
-  \ odd? ( n -- f )
+  \ odd? ( n -- f ) "odd-question"
   \
   \ Is _n_ an odd number?
   \
@@ -246,7 +246,7 @@ code even? ( n -- f ) E1 c, CB c, 40 05 + c, CA c, ' true ,
 
   \ doc{
   \
-  \ even? ( n -- f )
+  \ even? ( n -- f ) "even-question"
   \
   \ Is _n_ an even number?
   \
@@ -274,7 +274,7 @@ unneeding 8* ?( code 8* ( x1 -- x2 ) e1 c, 29 c, 29 c, 29 c,
 
   \ doc{
   \
-  \ 8* ( x1 -- x2 )
+  \ 8* ( x1 -- x2 ) "eight-star"
   \
   \ _x2_ is the result of shifting _x1_ three bits toward the
   \ most-significant bit, filling the vacated least-significant
@@ -297,7 +297,7 @@ unneeding 8+ ?( code 8+ ( n1 -- n2 ) E1 c, 11 c, 0008 , 19 c,
 
   \ doc{
   \
-  \ 8+ ( n1 -- n2 )
+  \ 8+ ( n1 -- n2 ) "eight-plus"
   \
   \ Add 8 to _n1_, according to the operation of `+`, giving
   \ _n2_.
@@ -320,7 +320,7 @@ unneeding 8- ?( code 8- ( n1 -- n2 )
 
   \ doc{
   \
-  \ 8- ( n1 -- n2 )
+  \ 8- ( n1 -- n2 ) "eight-minus"
   \
   \ Subtract 8 from _n1_, according to the operation of `-`,
   \ giving _n2_.
@@ -345,7 +345,7 @@ code 3* ( x1 -- x2 )
 
   \ doc{
   \
-  \ 3* ( n1 -- n2 )
+  \ 3* ( n1 -- n2 ) "three-plus"
   \
   \ Multiply _n1_ by 3 giving _n2_.
   \
@@ -410,7 +410,7 @@ unneeding <=>
 
   \ doc{
   \
-  \ <=> ( n1 n2 -- -1|0|1 )
+  \ <=> ( n1 n2 -- -1|0|1 ) "less-or-equal-or-greater"
   \
   \ If _n1_ equals _n2_, return zero.
   \ If _n1_ is less than _n2_, return negative one.
@@ -426,7 +426,7 @@ unneeding u<= ?\ : u<= ( u1 u2 -- f ) u> 0= ;
 
   \ doc{
   \
-  \ u<= ( u1 u2 -- f )
+  \ u<= ( u1 u2 -- f ) "u-less-or-equal"
   \
   \ _f_ is _true_ if and only if _u1_ is less than or equal
   \ to _u2_.
@@ -439,7 +439,7 @@ unneeding u>= ?\ : u>= ( u1 u2 -- f ) u< 0= ;
 
   \ doc{
   \
-  \ u>= ( u1 u2 -- f )
+  \ u>= ( u1 u2 -- f ) "u-greater-or-equal"
   \
   \ _f_ is _true_ if and only if _u1_ is greater than or
   \ equal to _u2_.
@@ -452,7 +452,7 @@ unneeding <= ?\ : <= ( n1 n2 -- f ) > 0= ;
 
   \ doc{
   \
-  \ <= ( n1 n2 -- f )
+  \ <= ( n1 n2 -- f ) "less-or-equal"
   \
   \ _f_ is _true_ if and only if _n1_ is less than or
   \ equal to _n2_.
@@ -465,7 +465,7 @@ unneeding >= ?\ : >= ( n1 n2 -- f ) < 0= ;
 
   \ doc{
   \
-  \ >= ( n1 n2 -- f )
+  \ >= ( n1 n2 -- f ) "greater-or-equal"
   \
   \ _f_ is _true_ if and only if _n1_ is greater than or
   \ equal to _n2_.
@@ -478,7 +478,7 @@ unneeding 0>= ?\ : 0>= ( n0 -- f ) 0< 0= ;
 
   \ doc{
   \
-  \ 0>= ( n -- f )
+  \ 0>= ( n -- f ) "zero-greater-or_equal"
   \
   \ _f_ is _true_ if and only if _n_ is greater than or equal
   \ to zero.
@@ -491,7 +491,7 @@ unneeding 0<= ?\ : 0<= ( n -- f ) 0> 0= ;
 
   \ doc{
   \
-  \ 0<= ( n -- f )
+  \ 0<= ( n -- f ) "zero-less-or-equal"
   \
   \ _f_ is _true_ if and only if _n_ is less than or equal to
   \ zero.
@@ -518,7 +518,7 @@ code 0max ( n -- n | 0 )
 
   \ doc{
   \
-  \ 0max ( n -- n | 0 )
+  \ 0max ( n -- n | 0 ) "zero-max"
   \
   \ If _n_ is negative, return 0; else return _n_.  This is a
   \ faster alternative to the idiom ``0 max``.
@@ -548,7 +548,7 @@ code lshift ( x1 u -- x2 )
 
   \ doc{
   \
-  \ lshift ( x1 u -- x2 )
+  \ lshift ( x1 u -- x2 ) "l-shift"
   \
   \ Perform a logical left shift of _u_ bit-places on _x1_,
   \ giving _x2_. Put zeroes into the least significant  bits
@@ -578,7 +578,7 @@ code rshift ( x1 u -- x2 )
 
   \ doc{
   \
-  \ rshift ( x1 u -- x2 )
+  \ rshift ( x1 u -- x2 ) "r-shift"
   \
   \ Perform a logical right shift of _u_ bit-places on _x1_,
   \ giving _x2_. Put zeroes into the most significant  bits
@@ -599,7 +599,7 @@ need 0exit need rshift need lshift
 
   \ doc{
   \
-  \ ?shift ( x1 n -- x1 | x2 )
+  \ ?shift ( x1 n -- x1 | x2 ) "question-shift"
   \
   \ If _n_ is zero, drop it and return _x1_.  If _n_ is
   \ negative, convert it to its absolute value and execute
@@ -628,7 +628,7 @@ code clshift ( b1 u -- b2 )
 
   \ doc{
   \
-  \ clshift ( b1 u -- b2 )
+  \ clshift ( b1 u -- b2 ) "c-l-shift"
   \
   \ Perform a logical left shift of _u_ bit-places on _b1_,
   \ giving _b2_. Put zeroes into the least significant  bits
@@ -713,7 +713,7 @@ unneeding 2/ ?( code 2/ ( x1 -- x2 )
 
   \ doc{
   \
-  \ 2/ ( x1 -- x2 )
+  \ 2/ ( x1 -- x2 ) "two-slash"
   \
   \ _x2_ is the result of shifting _x1_ one bit toward the
   \ least-significant bit, leaving the most-significant bit
@@ -735,7 +735,7 @@ unneeding cell/ ?\ need alias need 2/  ' 2/ alias cell/
 
   \ doc{
   \
-  \ cell/ ( n1 -- n2 )
+  \ cell/ ( n1 -- n2 ) "cell-slash"
   \
   \ Divide _n1_ by the size of a cell, returning the result
   \ _n2_.
@@ -765,7 +765,7 @@ need sqrt need d2* need cell-bits
 
   \ doc{
   \
-  \ (baden-sqrt ( n1 -- n2 n3 )
+  \ (baden-sqrt ( n1 -- n2 n3 ) "paren-baden-square-root"
   \
   \ Integer square root _n3_ of radicand _n1_ with remainder
   \ _n2_. ``(baden-sqrt`` is a factor of `baden-sqrt`.
@@ -778,7 +778,7 @@ need sqrt need d2* need cell-bits
 
   \ doc{
   \
-  \ baden-sqrt ( n1 -- n2 )
+  \ baden-sqrt ( n1 -- n2 ) "baden-square-root"
   \
   \ Integer square root _n2_ of radicand _n1_.  Original code
   \ by Wil Baden, published on Forth Dimensions (volume 18,
@@ -805,7 +805,7 @@ unneeding /-rem ?( need sm/rem
 
   \ doc{
   \
-  \ /-rem ( n1 n2 -- n3 n4 )
+  \ /-rem ( n1 n2 -- n3 n4 ) "slash-dash-rem"
   \
   \ Divide _n1_ by _n2_ (doing a symmetric division), giving the
   \ remainder _n3_ and the symmetric quotient _n4_.
@@ -820,7 +820,7 @@ unneeding /- ?( need /-rem
 
   \ doc{
   \
-  \ /- ( n1 n2 -- n3 )
+  \ /- ( n1 n2 -- n3 ) "slash-dash"
   \
   \ Divide _n1_ by _n2_ (doing a symmetric division), giving the
   \ symmetric quotient _n4_.
@@ -835,7 +835,7 @@ unneeding -rem ?( need /-rem
 
   \ doc{
   \
-  \ -rem ( n1 n2 -- n3 )
+  \ -rem ( n1 n2 -- n3 ) "dash-rem"
   \
   \ Divide _n1_ by _n2_ (doing a symmetric division), giving the
   \ remainder _n3_.
@@ -850,7 +850,7 @@ unneeding */-rem ?( need sm/rem
 
   \ doc{
   \
-  \ */-rem ( n1 n2 n3 -- n4 n5 )
+  \ */-rem ( n1 n2 n3 -- n4 n5 ) "star-slash-dash-rem"
   \
   \ Multiply _n1_ by _n2_ producing the intermediate result
   \ _d_.  Divide _d_ by _n3_ (doing a symmetric division), giving
@@ -866,7 +866,7 @@ unneeding ?( need */-rem
 
   \ doc{
   \
-  \ */- ( n1 n2 n3 -- n4 )
+  \ */- ( n1 n2 n3 -- n4 ) "star-slash-dash"
   \
   \ Multiply _n1_ by _n2_ producing the intermediate result
   \ _d_.  Divide _d_ by _n3_ (doing a symmetric division),
@@ -882,7 +882,7 @@ unneeding sqrt ?\ defer sqrt ( n1 -- n2 )
 
   \ doc{
   \
-  \ sqrt ( n1 -- n2 )
+  \ sqrt ( n1 -- n2 ) "square-root"
   \
   \ Calculate integer square root _n2_ of radicand _n1_.
   \ ``sqrt`` is a deferred word which can execute `baden-sqrt`
@@ -903,7 +903,7 @@ unneeding newton-sqrt ?( need sqrt need 2/
 
   \ doc{
   \
-  \ newton-sqrt ( n1 -- n2 )
+  \ newton-sqrt ( n1 -- n2 ) "newton-square-root"
   \
   \ Integer square root _n2_ of radicand _n1_ by Newton's
   \ method. ``newton-sqrt`` is 7..8 times slower than
@@ -928,7 +928,7 @@ unneeding fm/mod ?(
 
   \ doc{
   \
-  \ fm/mod ( d1 n1 -- n2 n3 )
+  \ fm/mod ( d1 n1 -- n2 n3 ) "f-m-slash-mod"
   \
   \ Floored division:
 
@@ -964,7 +964,7 @@ unneeding */ ?\ : */ ( n1 n2 n3 -- n4 ) */mod nip ;
 
   \ doc{
   \
-  \ */ ( n1 n2 n3 -- n4 )
+  \ */ ( n1 n2 n3 -- n4 ) "star-slash"
   \
   \ Multiply _n1_ by _n2_ producing the intermediate
   \ _d_. Divide _d_ by _n3_ giving the quotient _n4_.
@@ -990,7 +990,7 @@ unneeding /_mod ?( need fm/mod
 
   \ doc{
   \
-  \ /_mod ( n1 n2 -- n3 n4 )
+  \ /_mod ( n1 n2 -- n3 n4 ) "slash-underscore-mode"
   \
   \ Divide _n1_ by _n2_ (doing a floored division), giving the
   \ remainder _n3_ and the floored quotient _n4_.
@@ -1003,7 +1003,7 @@ unneeding /_ ?\ need /_mod : /_ ( n1 n2 -- n3 ) /_mod nip ;
 
   \ doc{
   \
-  \ /_ ( n1 n2 -- n3 )
+  \ /_ ( n1 n2 -- n3 ) "slash-underscore"
   \
   \ Divide _n1_ by _n2_ (doing a floored division), giving the
   \ floored quotient _n4_.
@@ -1018,7 +1018,7 @@ unneeding _mod ?( need /_mod
 
   \ doc{
   \
-  \ _mod ( n1 n2 -- n3 )
+  \ _mod ( n1 n2 -- n3 ) "underscore-mod"
   \
   \ Divide _n1_ by _n2_ (doing a floored division), giving the
   \ remainder _n3_.
@@ -1033,7 +1033,7 @@ unneeding */_mod ?( need fm/mod
 
   \ doc{
   \
-  \ */_mod ( n1 n2 n3 -- n4 n5 )
+  \ */_mod ( n1 n2 n3 -- n4 n5 ) "star-slash-underscore-mod"
   \
   \ Multiply _n1_ by _n2_ producing the intermediate result
   \ _d_.  Divide _d_ by _n3_ (doing a floored division), giving
@@ -1049,7 +1049,7 @@ unneeding */_ ?( need */_mod
 
   \ doc{
   \
-  \ */_ ( n1 n2 n3 -- n4 )
+  \ */_ ( n1 n2 n3 -- n4 ) "star-slash-underscore"
   \
   \ Multiply _n1_ by _n2_ producing the intermediate result
   \ _d_.  Divide _d_ by _n3_ (doing a floored division), giving
@@ -1075,7 +1075,7 @@ unneeding any? ?( need roll  variable (any?)
 
   \ doc{
   \
-  \ any? ( x[0] x[1]..x[n] n -- f )
+  \ any? ( x[0] x[1]..x[n] n -- f ) "any-question"
   \
   \ Is any _x[1]..x[n]_ equal to _x[0]_?
   \
@@ -1137,7 +1137,7 @@ unneeding ifelse
 
   \ doc{
   \
-  \ ifelse ( x1 x2 f -- x1 | x2 )
+  \ ifelse ( x1 x2 f -- x1 | x2 ) "if-else"
   \
   \ If _f_ is true return _x1_, otherwise return _x2_.
   \
@@ -1342,5 +1342,7 @@ code join ( b1 b2 -- x )
   \ 2018-02-14: Compact the code, saving three blocks.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

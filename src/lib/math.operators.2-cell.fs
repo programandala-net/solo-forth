@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803072221
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -35,7 +35,7 @@ unneeding ud*
 
   \ doc{
   \
-  \ ud* ( ud1 ud2 -- ud3 )
+  \ ud* ( ud1 ud2 -- ud3 ) "u-d-star" "u-d-star"
   \
   \ Multiply _ud1_ by _ud2_ giving the product _ud3_.
   \
@@ -57,7 +57,7 @@ unneeding d* ?(
 
   \ doc{
   \
-  \ d* ( d|ud1 d|ud2 -- d|ud3 )
+  \ d* ( d|ud1 d|ud2 -- d|ud3 ) "d-star"
   \
   \ Multiply _d1|ud1_ by _d2|ud2_ giving the product _d3|ud3_.
   \
@@ -102,7 +102,7 @@ unneeding dxor
 
   \ doc{
   \
-  \ dxor ( xd1 xd2 -- xd3 )
+  \ dxor ( xd1 xd2 -- xd3 ) "d-x-or"
   \
   \ _xd3_ is the bit-by-bit exclusive-or of _xd1_ and _xd2_.
   \
@@ -116,7 +116,7 @@ unneeding dor
 
   \ doc{
   \
-  \ dor ( xd1 xd2 -- xd3 )
+  \ dor ( xd1 xd2 -- xd3 ) "d-or"
   \
   \ _xd3_ is the bit-by-bit inclusive-or of _xd1_ and _xd2_.
   \
@@ -130,7 +130,7 @@ unneeding dand
 
   \ doc{
   \
-  \ dand ( xd1 xd2 -- xd3 )
+  \ dand ( xd1 xd2 -- xd3 ) "d-and"
   \
   \ _xd3_ is the bit-by-bit logical "and" of _xd1_ and _xd2_.
   \
@@ -154,7 +154,7 @@ unneeding d10*
 
   \ doc{
   \
-  \ d10* ( ud1 -- ud2 )
+  \ d10* ( ud1 -- ud2 ) "d-ten-star"
   \
   \ Multiply _ud1_ per 10, resulting _ud2_.
   \
@@ -208,7 +208,7 @@ need tum* need t+ need t- need tum/ need d2* need lshift
 
   \ doc{
   \
-  \ du/mod ( ud1 ud2 -- ud3 ud4 )
+  \ du/mod ( ud1 ud2 -- ud3 ud4 ) "d-u-slash-mod"
   \
   \ Divide _ud1_ by _ud2_, giving the remainder _ud3_ and
   \ the quotient _ud4_.
@@ -240,7 +240,7 @@ code d0= ( d -- f )
 
   \ doc{
   \
-  \ d0= ( d -- f )
+  \ d0= ( d -- f ) "d-zero-equals"
   \
   \ _f_ is true if and only if _d_ is equal to zero.
   \
@@ -259,7 +259,7 @@ unneeding d0< ?\ : d0< ( d -- f ) nip 0< ;
 
   \ doc{
   \
-  \ d0< ( d -- f )
+  \ d0< ( d -- f ) "d-zero-less"
   \
   \ _f_ is true if and only if _d_ is less than zero.
   \
@@ -274,7 +274,7 @@ unneeding d< ?( need 2nip
 
   \ doc{
   \
-  \ d< ( d1 d2 -- f )
+  \ d< ( d1 d2 -- f ) "d-less"
   \
   \ _f_ is true only if and only if _d1_ is less than _d2_.
   \
@@ -296,7 +296,7 @@ unneeding du< ?(
 
   \ doc{
   \
-  \ du< ( ud1 ud2 -- f )
+  \ du< ( ud1 ud2 -- f ) "d-u-less"
   \
   \ _f_ is true only if and only if _du1_ is less than _du2_.
   \
@@ -315,7 +315,7 @@ unneeding d= ?\ need d<> : d= ( xd1 xd2 -- f ) d<> 0= ;
 
   \ doc{
   \
-  \ d= ( xd1 xd2 -- f )
+  \ d= ( xd1 xd2 -- f ) "d-equals"
   \
   \ _f_ is true if and only if _xd1_ is equal to _xd2_.
   \
@@ -330,7 +330,7 @@ unneeding d<>
 
   \ doc{
   \
-  \ d<> ( xd1 xd2 -- f )
+  \ d<> ( xd1 xd2 -- f ) "d-not-equals"
   \
   \ _f_ is true if and only if _xd1_ is not bit-for-bit the
   \ same as _xd2_.
@@ -351,7 +351,7 @@ unneeding dmin ?(
 
   \ doc{
   \
-  \ dmin ( d1 d2 -- d3 )
+  \ dmin ( d1 d2 -- d3 ) "d-min"
   \
   \ _d3_ is the greater of _d1_ and _d2_.
   \
@@ -374,7 +374,7 @@ unneeding dmax ?(
 
   \ doc{
   \
-  \ dmax ( d1 d2 -- d3 )
+  \ dmax ( d1 d2 -- d3 ) "d-max"
   \
   \ _d3_ is the lesser of _d1_ and _d2_.
   \
@@ -408,7 +408,7 @@ unneeding d- ?( code d- ( d1|ud1 d2|ud2 -- d3|ud3 )
 
   \ doc{
   \
-  \ d- ( d1|ud1 d2|ud2 -- d3|ud3 )
+  \ d- ( d1|ud1 d2|ud2 -- d3|ud3 ) "d-minus"
   \
   \ Subtract _d2|ud2_ from _d1|ud1_, giving the difference
   \ _d3|ud3_.
@@ -441,7 +441,7 @@ unneeding d2* ?( code d2* ( xd1 -- xd2 )
 
   \ doc{
   \
-  \ d2* ( xd1 -- xd2 )
+  \ d2* ( xd1 -- xd2 ) "d-two-star"
   \
   \ _xd2_ is the result of shifting _xd1_ one bit toward the
   \ most-significant bit, filling the vacated bit with zero.
@@ -473,7 +473,7 @@ unneeding d2/ ?( code d2/ ( xd1 -- xd2 )
 
   \ doc{
   \
-  \ d2/ ( xd1 -- xd2 )
+  \ d2/ ( xd1 -- xd2 ) "d-two-slash"
   \
   \ _xd2_ is the result of shifting _xd1_ one bit toward the
   \ least-significant bit, leaving the most-significant bit
@@ -509,7 +509,7 @@ code m+ ( d1|ud1 n -- d2|ud2 )
 
   \ doc{
   \
-  \ m+ ( d1|ud1 n -- d2|ud2 )
+  \ m+ ( d1|ud1 n -- d2|ud2 ) "m-plus"
   \
   \ Add _n_ to _d1|ud1_, giving the sum _d2|ud2_.
   \
@@ -541,7 +541,7 @@ unneeding m*/ ?(
 
   \ doc{
   \
-  \ m*/ ( d1 n1 +n2 -- d2 )
+  \ m*/ ( d1 n1 +n2 -- d2 ) "m-star-slash"
   \
   \ Multiply _d1_ by _n1_ producing the triple-cell
   \ intermediate result _t_.  Divide _t_ by _+n2_ giving the
@@ -642,5 +642,7 @@ need 2nip need cell-bits
   \ source style (remove double spaces).
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not finished
 
-  \ Last modified: 201705070110
+  \ Last modified: 201803072256
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,7 +23,7 @@
   \ Wonyong Koh adapted it to hForth, 1995, 1997.
   \
   \ Marcos Cruz (programandala.net) wrote a version for Solo
-  \ Forth, based on eForth and hForth, 2016...
+  \ Forth, based on eForth and hForth, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -61,7 +61,6 @@ user follower  \ address of next task's `status`
 : pause ( -- )
   rp@ sp@ tos !  follower @ >r ; compile-only
 
-  \ XXX TODO -- doc{
   \
   \ pause ( -- )
   \
@@ -70,62 +69,50 @@ user follower  \ address of next task's `status`
   \ `status` user variable is stored in `follower` user variable
   \ of current task.
   \
-  \ }doc
-
 
 : wake ( -- )
   r> userp !  \ `userp` points `follower` of current task
   tos @ sp! rp! ; compile-only
 
-  \ XXX TODO -- doc{
   \
   \ wake ( -- )
   \
   \ Wake current task.
   \
-  \ }doc
 
 : stop ( -- ) ['] branch status ! pause ;
 
-  \ XXX TODO -- doc{
   \
   \ stop ( -- )
   \
   \ Sleep current task.
   \
-  \ }doc
 
 : 's ( tid a -- a' )
   \ follower  cell+ - swap @ + ;  \ XXX TMP -- eForth
   userP @ - swap ( offset tid ) @ + ;
 
-  \ XXX TODO -- doc{
   \
   \ 's ( tid a -- a' )
   \
   \ Index another task's user variable.
   \
-  \ }doc
 
 : sleep ( tid -- ) status 's  ['] branch  swap ! ;
 
-  \ XXX TODO -- doc{
   \
   \ Sleep another task.
   \
-  \ }doc
 
 
 : awake ( tid -- ) status 's  ['] wake  swap ! ;
 
-  \ XXX TODO -- doc{
   \
   \
   \ awake ( tid -- )
   \
   \ Wake another task.
   \
-  \ }doc
 
 -->
 
@@ -151,13 +138,11 @@ user follower  \ address of next task's `status`
   lastname r> taskname 's ! ;
   \ store task name in new task's 'taskname'
 
-  \ XXX TODO -- doc{
   \
   \ task ( user_size ds_size rs_size "name" -- )
   \
   \ Create a new task.
   \
-  \ }doc
 
 -->
 
@@ -169,11 +154,9 @@ user follower  \ address of next task's `status`
   follower @ over follower 's !   \ link new task
   status 's follower ! ;         \ link old task
 
-  \ XXX TODO -- doc{
   \
   \ Initialize and link new task into `pause` chain.
   \
-  \ }doc
 
 : activate ( tid -- )
 
@@ -189,7 +172,6 @@ user follower  \ address of next task's `status`
   over tos 's !  \ save sp in tos
   awake ; compile-only
 
-  \ XXX TODO -- doc{
   \
   \ activate ( tid -- )
   \
@@ -198,7 +180,6 @@ user follower  \ address of next task's `status`
   \ not `exit`. In other words it must be an infinite loop like
   \ `quit`.
   \
-  \ }doc
 
 -->
 
@@ -215,13 +196,11 @@ user follower  \ address of next task's `status`
       dup follower =
   until drop cr ;
 
-  \ XXX TODO -- doc{
   \
   \ tasks ( -- )
   \
   \ Display tasks list in status-follower chain.
   \
-  \ }doc
 
 set-current
 
@@ -232,5 +211,7 @@ set-current
   \
   \ 2017-05-07: Prevent the documentation from being included
   \ in the glossary, until the code is ready.
+  \
+  \ 2018-03-07: Remove doc markup.
 
   \ vim: filetype=soloforth

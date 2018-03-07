@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803072310
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -226,7 +226,7 @@ F2 cconstant p?   FA cconstant m?
 
   \ doc{
   \
-  \ z? ( -- op )
+  \ z? ( -- op ) "z-question"
   \
   \ Return the opcode _op_ of the Z80 instruction ``jp z``,
   \ to be used as condition and consumed by
@@ -239,7 +239,7 @@ F2 cconstant p?   FA cconstant m?
 
   \ doc{
   \
-  \ nz? ( -- op )
+  \ nz? ( -- op ) "n-z-question"
   \
   \ Return the opcode _op_ of the Z80 instruction ``jp nz``,
   \ to be used as condition and consumed by
@@ -254,7 +254,7 @@ F2 cconstant p?   FA cconstant m?
 
   \ doc{
   \
-  \ c? ( -- op )
+  \ c? ( -- op ) "c-question"
   \
   \ Return the opcode _op_ of the Z80 instruction ``jp c``,
   \ to be used as condition and consumed by
@@ -267,7 +267,7 @@ F2 cconstant p?   FA cconstant m?
 
   \ doc{
   \
-  \ nc? ( -- op )
+  \ nc? ( -- op ) "n-c-question"
   \
   \ Return the opcode _op_ of the Z80 instruction ``jp nc``,
   \ to be used as condition and consumed by
@@ -280,7 +280,7 @@ F2 cconstant p?   FA cconstant m?
 
   \ doc{
   \
-  \ po? ( -- op )
+  \ po? ( -- op ) "p-o-question"
   \
   \ Return the opcode _op_ of the Z80 instruction ``jp op``,
   \ to be used as condition and consumed by
@@ -292,7 +292,7 @@ F2 cconstant p?   FA cconstant m?
 
   \ doc{
   \
-  \ pe? ( -- op )
+  \ pe? ( -- op ) "p-e-question"
   \
   \ Return the opcode _op_ of the Z80 instruction ``jp pe``,
   \ to be used as condition and consumed by
@@ -304,7 +304,7 @@ F2 cconstant p?   FA cconstant m?
 
   \ doc{
   \
-  \ p? ( -- op )
+  \ p? ( -- op ) "p-question"
   \
   \ Return the opcode _op_ of the Z80 instruction ``jp p``,
   \ to be used as condition and consumed by
@@ -316,7 +316,7 @@ F2 cconstant p?   FA cconstant m?
 
   \ doc{
   \
-  \ m? ( -- op )
+  \ m? ( -- op ) "m-question"
   \
   \ Return the opcode _op_ of the Z80 instruction ``jp m``,
   \ to be used as condition and consumed by
@@ -338,7 +338,7 @@ F2 cconstant p?   FA cconstant m?
 
   \ doc{
   \
-  \ ?ret, ( op -- )
+  \ ?ret, ( op -- ) "question-ret-comma"
   \
   \ Compile a Z80 conditional return instruction, being _op_
   \ the identifier of the condition, which has been put on the
@@ -352,7 +352,7 @@ F2 cconstant p?   FA cconstant m?
 
   \ doc{
   \
-  \ ?jp, ( a op -- )
+  \ ?jp, ( a op -- ) "question-j-p-comma"
   \
   \ Compile a Z80 conditional absolute jump instruction to
   \ address _a_, being _op_ the identifier of the condition,
@@ -367,7 +367,7 @@ F2 cconstant p?   FA cconstant m?
 
   \ doc{
   \
-  \ ?call, ( a op -- )
+  \ ?call, ( a op -- ) "question-call-comma"
   \
   \ Compile a Z80 conditional absolute call instruction to
   \ address _a_, being _op_ the identifier of the condition,
@@ -382,7 +382,7 @@ F2 cconstant p?   FA cconstant m?
 
   \ doc{
   \
-  \ ?jp, ( a op -- )
+  \ ?jr, ( a op -- ) "question-j-r-comma"
   \
   \ Compile a Z80 conditional relative jump instruction to
   \ address _a_, being _op_ the identifier of the condition,
@@ -512,7 +512,7 @@ unneeding >amark ?\ : >amark ( -- a ) here 2- ;
 
   \ doc{
   \
-  \ >amark ( -- a )
+  \ >amark ( -- a ) "forward-a-mark"
   \
   \ Leave the address of an assembler absolute forward
   \ reference.
@@ -525,7 +525,7 @@ unneeding >aresolve ?( need >amark
 
   \ doc{
   \
-  \ >aresolve ( a -- )
+  \ >aresolve ( a -- ) "forward-a-resolve"
   \
   \ Resolve an assembler absolute forward reference.
   \
@@ -539,7 +539,7 @@ unneeding ?rel
 
   \ doc{
   \
-  \ ?rel ( n -- )
+  \ ?rel ( n -- ) "question-rel"
   \
   \ If assembler relative branch _n_ is too long, throw
   \ exception #-269 (relative jump too long).
@@ -552,7 +552,7 @@ create unresolved0> ( -- a ) 8 cells allot
 
   \ doc{
   \
-  \ unresolved0> ( -- a )
+  \ unresolved0> ( -- a ) "unresolved-zero-forward"
   \
   \ Address _a_ is the default value of `unresolved>`: an
   \ 8-cell array.
@@ -563,7 +563,7 @@ variable unresolved> ( -- a ) unresolved0> unresolved> !
 
   \ doc{
   \
-  \ unresolved> ( -- a )
+  \ unresolved> ( -- a ) "unresolved-forward"
   \
   \ A variable. Address _a_ contains the address of a cell
   \ array accessed by `unresolved`. Its default value is
@@ -611,7 +611,7 @@ macro execute-hl, ( -- )
 
   \ doc{
   \
-  \ execute-hl, ( -- )
+  \ execute-hl, ( -- ) "execute-h-l-comma"
   \
   \ Compile an `execute` with the _xt_ hold in the HL register.
   \ ``execute-hl,`` is used to call Forth words from Z80.
@@ -624,7 +624,7 @@ macro call-xt, ( xt -- ) 21 c, , execute-hl, endm
 
   \ doc{
   \
-  \ call-xt, ( xt -- )
+  \ call-xt, ( xt -- ) "call-x-t-comma"
   \
   \ Compile a Z80 call to _xt_, by compiling the Z80
   \ instruction that loads the HL register with _xt_, and then
@@ -767,5 +767,7 @@ set-current
   \ 2018-02-01: Make `hook,` and `prt,` optional.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703142257
+  \ Last modified: 201803072253
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -20,7 +20,7 @@
   \ Copyright 1996 Phil Burk.
 
   \ Adapted from pForth to Solo Forth by Marcos Cruz
-  \ (programandala.net), 2015, 2016.
+  \ (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -40,7 +40,7 @@ variable private-start  variable private-stop
 
   \ doc{
   \
-  \ private{ ( -- )
+  \ private{ ( -- ) "private-curly-bracket"
   \
   \ Start private definitions.  See `privatize` for a usage
   \ example.
@@ -53,7 +53,7 @@ variable private-start  variable private-stop
 
   \ doc{
   \
-  \ }private ( -- )
+  \ }private ( -- ) "curly-bracket-private"
   \
   \ End private definitions. See `privatize` for a usage
   \ example.
@@ -113,5 +113,7 @@ variable private-start  variable private-stop
   \ `hide-internal`.
   \
   \ 2017-03-14: Improve documentation.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

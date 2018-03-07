@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803072328
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -34,7 +34,7 @@ unneeding xstack and ?(
 
   \ doc{
   \
-  \ xsize ( -- n )
+  \ xsize ( -- n ) "x-size"
   \
   \ Size of the current `xstack` in address units.
   \
@@ -42,7 +42,7 @@ unneeding xstack and ?(
 
   \ doc{
   \
-  \ xp ( -- a )
+  \ xp ( -- a ) "x-p"
   \
   \ A variable. Address _a_ holds the address of the current
   \ `xstack` pointer.
@@ -51,7 +51,7 @@ unneeding xstack and ?(
 
   \ doc{
   \
-  \ xp0 ( -- a )
+  \ xp0 ( -- a ) "x-p-zero"
   \
   \ Initial address of the current `xstack` pointer.
   \
@@ -62,7 +62,7 @@ unneeding xstack and ?(
 
   \ doc{
   \
-  \ xstack ( a -- )
+  \ xstack ( a -- ) "x-stack"
   \
   \ Make the extra stack _a_ the current one. _a_ is the
   \ address returned by `allot-xstack` or `allocate-xstack`
@@ -90,7 +90,7 @@ unneeding xfree ?\ : xfree ( -- ) xp0 cell+ free throw ;
 
   \ doc{
   \
-  \ xfree ( -- )
+  \ xfree ( -- ) "x-free"
   \
   \ Free the space used by the current `xstack`, which was
   \ created by `allocate-xstack`.
@@ -104,7 +104,7 @@ unneeding allocate-xstack ?( need allocate
 
   \ doc{
   \
-  \ allocate-xstack ( n -- a )
+  \ allocate-xstack ( n -- a ) "allocate-x-stack"
   \
   \ Create an `xstack` in the heap. _n_ is the size in
   \ cells.  Return its address _a_.
@@ -120,7 +120,7 @@ unneeding allot-xstack ?(
 
   \ doc{
   \
-  \ allot-xstack ( n -- a )
+  \ allot-xstack ( n -- a ) "allot-x-stack"
   \
   \ Create an `xstack` in data space. _n_ is the size in
   \ cells.  Return its address _a_.
@@ -137,7 +137,7 @@ unneeding >x ?( need xp
 
   \ doc{
   \
-  \ >x ( x -- ) ( X: -- x )
+  \ >x ( x -- ) ( X: -- x ) "to-x"
   \
   \ Move _x_ from the data stack to the `xstack`.
   \
@@ -151,7 +151,7 @@ unneeding x> ?( need x@ need xdrop
 
   \ doc{
   \
-  \ x> ( -- x ) ( X: x -- )
+  \ x> ( -- x ) ( X: x -- ) "x-from"
   \
   \ Move _x_ from the current `xstack` to the data stack.
   \
@@ -165,7 +165,7 @@ unneeding x@ ?( need xp
 
   \ doc{
   \
-  \ x@ ( -- x ) ( X: x -- x )
+  \ x@ ( -- x ) ( X: x -- x ) "x-fetch"
   \
   \ Copy _x_ from the current `xstack` to the data stack.
   \
@@ -179,7 +179,7 @@ unneeding xdrop ?( need xp
 
   \ doc{
   \
-  \ xdrop ( X: x -- )
+  \ xdrop ( X: x -- ) "x-drop"
   \
   \ Remove _x_ from the `xstack`.
   \
@@ -193,7 +193,7 @@ unneeding xdup ?( need x@ need >x
 
   \ doc{
   \
-  \ xdup ( X: x -- x x )
+  \ xdup ( X: x -- x x ) "x-dup"
   \
   \ Duplicate _x_ in the current `xstack`.
   \
@@ -208,7 +208,7 @@ unneeding xpick ?( need xp
 
   \ doc{
   \
-  \ xpick ( u -- x'u ) ( X: x'u ... x'0 -- x'u ... x'0 )
+  \ xpick ( u -- x'u ) ( X: x'u ... x'0 -- x'u ... x'0 ) "x-pick"
   \
   \ Remove _u_. Copy _x'u_ from the current `xstack` to the
   \ data stack.
@@ -221,7 +221,7 @@ unneeding xover ?( need xpick need >x
 
   \ doc{
   \
-  \ xover ( X: x1 x2 -- x1 x2 x1 )
+  \ xover ( X: x1 x2 -- x1 x2 x1 ) "x-over"
   \
   \ Place a copy of _x1_ on top of the `xstack`.
   \
@@ -237,7 +237,7 @@ unneeding 2x@ ?( need x@ need xpick
 
   \ doc{
   \
-  \ 2x@ ( -- x1 x2 ) ( X: x1 x2 -- x1 x2 )
+  \ 2x@ ( -- x1 x2 ) ( X: x1 x2 -- x1 x2 ) "two-x-fetch"
   \
   \ Copy the cell pair _x1 x2_ from the current `xstack` to the
   \ data stack.
@@ -250,7 +250,7 @@ unneeding 2>x ?( need >x
 
   \ doc{
   \
-  \ 2>x ( x1 x2 -- ) ( X: -- x1 x2 )
+  \ 2>x ( x1 x2 -- ) ( X: -- x1 x2 ) "two-to-x"
   \
   \ Move the cell pair _x1 x2_ from the data stack to the
   \ current `xstack`.
@@ -265,7 +265,7 @@ unneeding 2x> ?( need x>
 
   \ doc{
   \
-  \ 2x> ( -- x1 x2 ) ( X: x1 x2 -- )
+  \ 2x> ( -- x1 x2 ) ( X: x1 x2 -- ) "two-x-from"
   \
   \ Move the cell pair _x1 x2_ from the current `xstack` to
   \ the data stack.
@@ -280,7 +280,7 @@ unneeding 2xdrop ?( need xp
 
   \ doc{
   \
-  \ 2xdrop ( X: x1 x2 -- )
+  \ 2xdrop ( X: x1 x2 -- ) "two-x-drop"
   \
   \ Remove the cell pair _x1 x2_ from the current `xstack`.
   \
@@ -294,7 +294,7 @@ unneeding 2xdup ?( need xover
 
   \ doc{
   \
-  \ 2xdup ( X: x1 x2 -- x1 x2 x1 x2 ) xover xover ; ?)
+  \ 2xdup ( X: x1 x2 -- x1 x2 x1 x2 ) "two-x-dup"
   \
   \ Duplicate the cell pair _x1 x2_ in the current `xstack`.
   \
@@ -310,7 +310,7 @@ unneeding xclear ?( need xp0 need xp
 
   \ doc{
   \
-  \ xclear ( -- )
+  \ xclear ( -- ) "x-clear"
   \
   \ Clear the current `xstack`.
   \
@@ -324,7 +324,7 @@ unneeding xlen unneeding xdepth and ?( need xp need xp0
 
   \ doc{
   \
-  \ xlen ( -- n )
+  \ xlen ( -- n ) "x-len"
   \
   \ _n_ is the length of the current `xstack`, in address units.
   \
@@ -336,7 +336,7 @@ unneeding xlen unneeding xdepth and ?( need xp need xp0
 
   \ doc{
   \
-  \ xdepth ( -- n )
+  \ xdepth ( -- n ) "x-depth"
   \
   \ _n_ is the number of single-cells values contained in the
   \ current `xstack`.
@@ -353,7 +353,7 @@ need xp0 need xlen need xdepth need .depth
 
   \ doc{
   \
-  \ (.xs) ( -- )
+  \ (.xs) ( -- ) "paren-dot-x-s"
   \
   \ Display a list of the items in the current `xstack`; TOS is
   \ the right-most item.
@@ -366,7 +366,7 @@ need xp0 need xlen need xdepth need .depth
 
   \ doc{
   \
-  \ .xs ( -- )
+  \ .xs ( -- ) "dot-x-s"
   \
   \ Display the number of items on the current `xstack`, followed
   \ by a list of the items, if any; TOS is the right-most item.
@@ -408,5 +408,7 @@ need xp0 need xlen need xdepth need .depth
   \ `to`. It's faster. Update documentation.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

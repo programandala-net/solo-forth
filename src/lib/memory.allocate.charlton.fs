@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201704161540
+  \ Last modified: 201803072224
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -64,7 +64,7 @@
   \ Copyright Gordon Charlton, 1994-09-12.
 
   \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
-  \ 2015, 2016, 2017.
+  \ 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -437,7 +437,7 @@ variable nextnode
 : charlton-free ( a -- ior )
   heap-in headsize - dup togglesize dup ?mergenext ?mergeprev 0
   heap-out ;
-  
+
   \ doc{
   \
   \ charlton-free ( a -- ior )

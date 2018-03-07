@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201803072257
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -20,7 +20,7 @@
   \ Bernd Paysan, 1998.
   \
   \ Integrated into Solo Forth by Marcos Cruz
-  \ (programandala.net), 2016, 2017.
+  \ (programandala.net), 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -102,7 +102,7 @@ need alias
 
   \ doc{
   \
-  \ :: ( class "name" -- )
+  \ :: ( class "name" -- ) "colon-colon"
   \
   \ Compile the method for the selector _name_ of the class
   \ _class_ (not immediate!).
@@ -129,5 +129,7 @@ create object  1 cells , 2 cells ,
   \ 2016-11-23: Document the words after the Gforth's manual.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2018-03-07: Add words' pronunciaton.
 
   \ vim: filetype=soloforth
