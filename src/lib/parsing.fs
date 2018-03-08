@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072306
+  \ Last modified: 201803081227
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,13 +27,34 @@
 
 unneeding defined?
 
-?\ : defined? ( ca len -- f ) undefined? 0= ;
+?\ : defined? ( ca len -- f ) find-name 0<> ;
+
+  \ doc{
+  \
+  \ defined? ( ca len -- f ) "defined-question"
+  \
+  \ Find name _ca len_.  If the definition is
+  \ found after searching the active search
+  \ order, return true, else return false.
+  \
+  \ See: `undefined?`, `defined`, `find-name`.
+  \
+  \ }doc
 
 unneeding parse-char
 
-?\ : parse-char ( "c"  -- c ) stream drop c@ 1 parsed ;
-  \ Parse the next char in the input stream and return its
-  \ code.
+?\ : parse-char ( "c" -- c ) stream drop c@ 1 parsed ;
+
+  \ doc{
+  \
+  \ parse-char ( "c" -- c )
+  \
+  \ Parse the next character in the input stream and return its
+  \ code _c_.
+  \
+  \ See: `parse-name`, `parse`, `parsed`, `stream`.
+  \
+  \ }doc
 
 unneeding parse-all ?( : parse-all ( "ccc" -- ca len )
                          stream dup parsed >stringer ; ?)
@@ -294,5 +315,7 @@ unneeding word ?(
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-07: Add words' pronunciaton.
+  \
+  \ 2018-03-08: Documente `defined?` and `parse-char`.
 
   \ vim: filetype=soloforth

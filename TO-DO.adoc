@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-03-07
+:revdate: 2018-03-08
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -872,8 +872,6 @@ Improve tab control.
 NOTE: Milestone: 0.14.0
 
 - Finish documentation of `menu`.
-- Document `defined?`.
-- Document `parse-char`.
 
 === 2018-03-04
 
@@ -2122,12 +2120,6 @@ Write far-memory versions of some of the following words from the
 
 // Misc {{{1
 == Misc
-
-=== 2018-03-07
-
-NOTE: Milestone: 0.14.0
-
-Rewrite `defined?` after `find-name`, like `undefined?`.
 
 === 2016-05-18
 

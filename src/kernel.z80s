@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201803062257
+; Last modified: 201803081227
 
 include version.z80s
 
@@ -2397,7 +2397,8 @@ endif
 ;   parse compiling? if postpone sliteral exit then >stringer ;
 ; ----
 
-; See: `compiling?`, `sliteral`, `>stringer`.
+; See: `parse-name`, `compiling?`, `sliteral`, `>stringer`,
+; `parse-char`, `parse`.
 ;
 ; }doc
 
@@ -9899,7 +9900,8 @@ fill.done:
 
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See: `stream`, `scan`, `parsed`, `parse-name`.
+; See: `stream`, `scan`, `parsed`, `parse-name`, `parse-char`,
+; `parse-string`.
 ;
 ; }doc
 
@@ -10028,8 +10030,8 @@ endif
 
 ; Origin: Forth-2012 (CORE EXT).
 ;
-; See: `parse`, `parse-name-thru`, `word`, `stream`,
-; `scan`, `parsed`, `parsed-name`.
+; See: `parse`, `parse-name-thru`, `parse-char`, `word`,
+; `parse-string`, `stream`, `scan`, `parsed`, `parsed-name`.
 ;
 ; }doc
 
@@ -10135,7 +10137,7 @@ far_lowers.end:
 ;
 ; Find name _ca len_.  If the definition is
 ; not found after searching the active search
-; order, return false, else return true.
+; order, return true, else return false.
 ;
 ; Definition:
 
@@ -10143,7 +10145,7 @@ far_lowers.end:
 ; : undefined? ( ca len -- f ) find-name 0= ;
 ; ----
 
-; See: `defined`, `find-name`.
+; See: `defined?`, `defined`, `find-name`.
 ;
 ; }doc
 
