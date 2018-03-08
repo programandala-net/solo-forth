@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705152339
+  \ Last modified: 201803082302
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -15,7 +15,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2017.
+  \ Marcos Cruz (programandala.net), 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -80,7 +80,7 @@ h pop, os-chars h stp, b pop, ret, end-asm
 
   \ doc{
   \
-  \ mode-32iso-output_  ( -- a )
+  \ mode-32iso-output_  ( -- a ) "mode-32-iso-output-underscore"
   \
   \ _a_ is the address of a Z80 routine, the `mode-32iso`
   \ driver, which displays the character in the A register.
@@ -199,6 +199,8 @@ variable mode-32iso-font  rom-font bl 8 * + mode-32iso-font !
   \ `mode-32iso-font`. Improve documentation. Factor
   \ `mode-32iso-output_` from `mode-32iso-emit` to reuse it
   \ with `set-mode-output`.
+  \
+  \ 2018-03-08: Add words' pronunciaton.
 
   \ vim: filetype=soloforth
 

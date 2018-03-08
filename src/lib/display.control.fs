@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803082249
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -45,7 +45,7 @@ need column
 variable /tabulate  8 /tabulate !
   \ doc{
   \
-  \ /tabulate ( -- a )
+  \ /tabulate ( -- a ) "slash-tabulate"
   \
   \ A variable. _a_ is the address of a cell containing the
   \ number of spaces that `tabulate` counts for. Its default
@@ -82,7 +82,7 @@ unneeding 'tab' ?\ 6 cconstant 'tab'  exit
 
   \ doc{
   \
-  \ 'tab' ( -- c )
+  \ 'tab' ( -- c ) "tick-tab"
   \
   \ A character constant that returns the caracter code used as
   \ tabulator (6).
@@ -95,7 +95,7 @@ unneeding 'bs' ?\ 8 cconstant 'bs'  exit
 
   \ doc{
   \
-  \ 'bs' ( -- c )
+  \ 'bs' ( -- c ) "tick-b-s"
   \
   \ A character constant that returns the caracter code used as
   \ backspace (8).
@@ -108,7 +108,7 @@ unneeding 'cr' ?\ 13 cconstant 'cr'  exit
 
   \ doc{
   \
-  \ 'cr' ( -- c )
+  \ 'cr' ( -- c ) "tick-c-r"
   \
   \ A character constant that returns the caracter code used as
   \ carriage return (13).
@@ -150,7 +150,7 @@ unneeding crs
 
   \ doc{
   \
-  \ crs ( n -- )
+  \ crs ( n -- ) "c-r-s"
   \
   \ Emit _n_ number of cr characters (character code 13).
   \
@@ -218,5 +218,7 @@ unneeding backspaces
   \ 2017-05-07: Improve documentation of variables.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-08: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

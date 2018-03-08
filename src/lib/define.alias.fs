@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803082243
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -38,7 +38,7 @@ unneeding alias!
 
   \ doc{
   \
-  \ alias! ( xt nt -- )
+  \ alias! ( xt nt -- ) "alias-store"
   \
   \ Set the alias _nt_ to execute _xt_.
   \
@@ -125,5 +125,7 @@ need alias!
   \ 2017-02-27: Improve documentation.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-08: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

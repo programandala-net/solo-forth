@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803082255
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -107,7 +107,7 @@ unneeding xy>r ?\ : xy>r ( R: -- col row ) r> xy 2>r >r ;
 
   \ doc{
   \
-  \ xy>r ( -- ) ( R: -- col row )
+  \ xy>r ( -- ) ( R: -- col row ) "x-y-to-r"
   \
   \ Save the current cursor coordinates to the return stack.
   \
@@ -119,7 +119,7 @@ unneeding r>xy ?\ : r>xy ( R: col row -- ) r> 2r> at-xy >r ;
 
   \ doc{
   \
-  \ r>xy ( -- ) ( R: col row -- )
+  \ r>xy ( -- ) ( R: col row -- ) "r-to-x-y"
   \
   \ Restore the current cursor coordinates from the return
   \ stack.
@@ -132,7 +132,7 @@ unneeding home? ?\ need xy : home? ( -- f ) xy + 0= ;
 
   \ doc{
   \
-  \ home? ( -- f )
+  \ home? ( -- f ) "home-question"
   \
   \ Is the cursor at home position (column 0, row 0)?
   \
@@ -174,7 +174,7 @@ create xy>scra_ ( -- a ) asm
 
   \ doc{
   \
-  \ xy>scra_ ( -- a )
+  \ xy>scra_ ( -- a ) "x-y-to-s-c-r-a-underscore"
   \
   \ Return address _a_ of a Z80 routine that calculates the
   \ screen address correspondent to given cursor coordinates.
@@ -196,7 +196,7 @@ unneeding xy>scra ?( need assembler need xy>scra_
 
   \ XXX TODO -- Rewrite in Z80 opcodes.
 
-code xy>scra ( x y -- a )
+code xy>scra ( col row -- a )
 
   h pop, l a ld, h pop, b push, a b ld, l c ld,
   xy>scra_ call, exde, b pop, h push, jpnext, end-code ?)
@@ -215,9 +215,9 @@ code xy>scra ( x y -- a )
 
   \ doc{
   \
-  \ xy>scra ( x y -- a )
+  \ xy>scra ( col row -- a ) "x-y-to-s-c-r-a"
   \
-  \ Convert cursor coordinates _x y_ to their correspondent
+  \ Convert cursor coordinates _col row_ to their correspondent
   \ screen address _a_.
   \
   \ See: `xy>scra_` , `gxy>scra`.
@@ -277,7 +277,7 @@ create xy>scra_ ( -- a ) asm
 
 unneeding xy>scra ?( need assembler need xy>scra_
 
-code xy>scra ( x y -- a )
+code xy>scra ( col row -- a )
 
   h pop, d pop, l d ld, xy>scra_ call, h push,
 
@@ -289,9 +289,9 @@ code xy>scra ( x y -- a )
   jpnext, end-code ?)
   \ _jp_next
 
-  \ xy>scra ( x y -- a )
+  \ xy>scra ( col row -- a )
   \
-  \ Convert cursor coordinates _x y_ to their correspondent
+  \ Convert cursor coordinates _col row_ to their correspondent
   \ screen address _a_.
   \
   \ See: `xy>scra_` , `gxy>scra`.
@@ -300,7 +300,7 @@ code xy>scra ( x y -- a )
 
 unneeding xy>gxy ?(
 
-code xy>gxy ( x y -- gx gy )
+code xy>gxy ( col row -- gx gy )
   D1 c, E1 c, 29 c, 29 c, 29 c, E5 c, EB c, 29 c, 29 c, 29 c,
   \ pop de
   \ pop hl
@@ -321,11 +321,11 @@ code xy>gxy ( x y -- gx gy )
 
   \ doc{
   \
-  \ xy>gxy ( x y -- gx gy )
+  \ xy>gxy ( col row -- gx gy ) "x-y-to-g-x-y"
   \
-  \ Convert cursor coordinates _x y_ to graphic coordinates _gx
-  \ gy_.  _x_ is 0..31, _y_ is 0..23, _gx_ is 0..255 and _gy_
-  \ is 0..191.
+  \ Convert cursor coordinates _col row_ to graphic coordinates
+  \ _gx gy_.  _col_ is 0..31, _row_ is 0..23, _gx_ is 0..255
+  \ and _gy_ is 0..191.
   \
   \ See: `xy>attra`, `xy>attr`, `xy>gxy176`, `plot`,
   \ `set-pixel`.
@@ -337,14 +337,14 @@ code xy>gxy ( x y -- gx gy )
 
 unneeding x>gx ?( need alias need 8*
 
-' 8* alias x>gx ( x -- gx ) ?)
+' 8* alias x>gx ( col -- gx ) ?)
 
   \ doc{
   \
-  \ x>gx ( x -- gx )
+  \ x>gx ( col -- gx ) "x-to-g-x"
   \
-  \ Convert cursor coordinate _x_ (0..31) to graphic coordinate
-  \ _gxa_ (0..255).
+  \ Convert cursor coordinate _col_ (0..31) to graphic
+  \ coordinate _gx_ (0..255).
   \
   \ ``x>gx`` is an `alias` of `8*`.
   \
@@ -356,7 +356,7 @@ unneeding x>gx ?( need alias need 8*
 
 unneeding y>gy ?(
 
-code y>gy ( y -- gx )
+code y>gy ( row -- gx )
   D1 c, E1 c, 29 c, 29 c, 29 c, E5 c, EB c, 29 c, 29 c, 29 c,
   \ pop hl
   \ add hl,hl
@@ -371,9 +371,9 @@ code y>gy ( y -- gx )
 
   \ doc{
   \
-  \ y>gy ( y -- gy )
+  \ y>gy ( row -- gy ) "y-to-g-y"
   \
-  \ Convert cursor coordinate _y_ (0..23) to graphic
+  \ Convert cursor coordinate _row_ (0..23) to graphic
   \ coordinate _gy_ (0..191).
   \
   \ See: `xy>gxy`, `x>gx`.
@@ -385,7 +385,7 @@ code y>gy ( y -- gx )
 
 unneeding xy>gxy176 ?(
 
-code xy>gxy176 ( x y -- gx gy )
+code xy>gxy176 ( col row -- gx gy )
   D1 c, E1 c, 29 c, 29 c, 29 c, E5 c, EB c, 29 c, 29 c, 29 c,
   \ pop de
   \ pop hl
@@ -406,12 +406,12 @@ code xy>gxy176 ( x y -- gx gy )
 
   \ doc{
   \
-  \ xy>gxy176 ( x y -- gx gy )
+  \ xy>gxy176 ( col row -- gx gy ) "x-y-to-g-x-y-176"
   \
-  \ Convert cursor coordinates _x y_ to graphic coordinates _gx
-  \ gy_ (as used by Sinclair BASIC, i.e. the lower 16 pixel
-  \ rows are not used).  _x_ is 0..31, _y_ is 0..23, _gx_ is
-  \ 0..255 and _gy_ is 0..175.
+  \ Convert cursor coordinates _col row_ to graphic coordinates
+  \ _gx gy_ (as used by Sinclair BASIC, i.e. the lower 16 pixel
+  \ rows are not used).  _col_ is 0..31, _row_ is 0..23, _gx_
+  \ is 0..255 and _gy_ is 0..175.
   \
   \ ``xy>gxy176`` is provided to make it easier to adapt
   \ Sinclair BASIC programs.
@@ -444,7 +444,7 @@ create xy>attra_ ( -- a ) asm
 
   \ doc{
   \
-  \ xy>attra_ ( -- a )
+  \ xy>attra_ ( -- a ) "x-y-to-attribute-a-underscore"
   \
   \ Return the address _a_ of a Z80 routine that calculates the
   \ attribute address of a cursor position.  This is a modified
@@ -478,7 +478,7 @@ code xy>attr ( col row -- b )
 
   \ doc{
   \
-  \ xy>attr ( col row -- b )
+  \ xy>attr ( col row -- b ) "x-y-to-attribute-a"
   \
   \ Return the color attribute _b_ of the given cursor
   \ coordinates _col row_.
@@ -500,7 +500,7 @@ code xy>attra ( col row -- a )
 
   \ doc{
   \
-  \ xy>attra ( col row -- a )
+  \ xy>attra ( col row -- a ) "x-y-to-attribute-a"
   \
   \ Return the color attribute address _a_ of the given cursor
   \ coordinates _col row_.
@@ -568,5 +568,8 @@ code xy>attra ( col row -- a )
   \ 2018-01-03: Add `x>gx`, `y>gy`.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-08: Add words' pronunciaton. Update stack notation
+  \ for cursor coordinates.
 
   \ vim: filetype=soloforth

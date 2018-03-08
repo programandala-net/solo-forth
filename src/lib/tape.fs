@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803082317
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -57,7 +57,7 @@
 
   \ doc{
   \
-  \ /tape-header ( -- n )
+  \ /tape-header ( -- n ) "slash-tape-header"
   \
   \ _n_ is the length of a `tape-header`: 17 bytes.
   \
@@ -130,7 +130,7 @@ create tape-header  /tape-header 2 * allot
 
   \ doc{
   \
-  \ /tape-filename ( -- n )
+  \ /tape-filename ( -- n ) "slash-tape-filename"
   \
   \ _n_ is the maximum length of a tape filename, which is 10
   \ characters.
@@ -193,7 +193,7 @@ tape-header 13 + constant tape-start ( -- a )
 
   \ doc{
   \
-  \ -tape-filename ( -- )
+  \ -tape-filename ( -- ) "minus-tape-filename"
   \
   \ Blank `tape-filename` in `tape-header`.
   \
@@ -229,7 +229,7 @@ tape-header 13 + constant tape-start ( -- a )
 
   \ doc{
   \
-  \ ?set-tape-filename ( ca len -- )
+  \ ?set-tape-filename ( ca len -- ) "question-set-tape-filename"
   \
   \ If filename _ca len_ is not empty, store it into the tape
   \ header by executing `set-tape-filename`; else use a
@@ -268,7 +268,7 @@ code (tape-file>) ( -- )
 
   \ doc{
   \
-  \ (tape-file>) ( -- )
+  \ (tape-file>) ( -- ) "paren-tape-file-from"
   \
   \ Read a tape file using the data stored at `tape-header`.
   \
@@ -281,7 +281,7 @@ code (tape-file>) ( -- )
 
   \ doc{
   \
-  \ tape-file> ( ca1 len1 ca2 len2 -- )
+  \ tape-file> ( ca1 len1 ca2 len2 -- ) "tape-file-from"
   \
   \ Read a tape file _ca1 len1_ (_len1_ is zero if filename is
   \ unspecified) into a memory region _ca2 len2_.
@@ -327,7 +327,7 @@ code (>tape-file) ( -- )
 
   \ doc{
   \
-  \ (>tape-file) ( -- )
+  \ (>tape-file) ( -- ) "paren-to-tape-file"
   \
   \ Write a tape file using the data stored at `tape-header`.
   \
@@ -340,7 +340,7 @@ code (>tape-file) ( -- )
 
   \ doc{
   \
-  \ >tape-file ( ca1 len1 ca2 len2 -- )
+  \ >tape-file ( ca1 len1 ca2 len2 -- ) "to-tape-file"
   \
   \ Write a memory region _ca1 len1_ into a tape file _ca2
   \ len2_.
@@ -428,12 +428,11 @@ unneeding display>tape-file ?( need >tape-file
 
   \ doc{
   \
-  \ display>tape-file ( ca len -- )
+  \ display>tape-file ( ca len -- ) "display-to-tape-file"
   \
-  \ Write the display memory into a tape file _ca
-  \ len_.
+  \ Write the display memory into a tape file _ca len_.
   \
-  \ See: `>tape-file`.
+  \ See: `tape-file>display`, `>tape-file`.
   \
   \ }doc
 
@@ -443,12 +442,11 @@ unneeding tape-file>display ?( need tape-file>
 
   \ doc{
   \
-  \ display>tape-file ( ca len -- )
+  \ tape-file>display ( ca len -- ) "tape-file-to-display"
   \
-  \ Write the display memory into a tape file _ca
-  \ len_.
+  \ Read tape file _ca len_ into the display memory.
   \
-  \ See: `>tape-file`.
+  \ See: `display>tape-file`, `>tape-file`.
   \
   \ }doc
 
@@ -488,5 +486,8 @@ unneeding tape-file>display ?( need tape-file>
   \ `tape-file>display`.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-08: Add words' pronunciaton. Fix and improve
+  \ documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803082255
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -35,7 +35,7 @@ code (g-emit ( c -- )
 
   \ doc{
   \
-  \ (g-emit ( c -- )
+  \ (g-emit ( c -- ) "paren-g-emit"
   \
   \ Display character _c_ (32..127) at the current graphic
   \ coordinates.
@@ -96,7 +96,7 @@ unneeding g-cr ?( need g-y need g-at-xy need pixels-scroll-up
 
   \ doc{
   \
-  \ g-cr ( -- )
+  \ g-cr ( -- ) "g-c-r"
   \
   \ Move the graphic coordinates to the next character row.
   \
@@ -130,7 +130,7 @@ code g-emit-udg ( c -- )
 
   \ doc{
   \
-  \ g-emit-udg ( c -- )
+  \ g-emit-udg ( c -- ) "g-emit-u-d-g"
   \
   \ Display UDG _c_ (0..255) at the current graphic
   \ coordinates, from the font pointed by system variable
@@ -182,7 +182,7 @@ create g-emit_ ( -- a ) asm
 
   \ doc{
   \
-  \ g-emit_ ( -- a )
+  \ g-emit_ ( -- a ) "g-emit-underscore"
   \
   \ Address of a machine code routine that prints an 8x8 bits
   \ character at graphic coordinates. Used by `g-emit-udg`.
@@ -245,5 +245,7 @@ create g-emit_ ( -- a ) asm
   \ 2018-01-25: Improve `g-emit` to use `last-font-char`.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-08: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703252038
+  \ Last modified: 201803082243
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,7 +23,8 @@
   \
   \ ZX7 decompressor "Mega" by Einar Saukas, 2012, 2013.
   \
-  \ Solo Forth ports by Marcos Cruz (programandala.net), 2017.
+  \ Solo Forth ports by Marcos Cruz (programandala.net), 2017,
+  \ 2018.
 
   \ ===========================================================
   \ License
@@ -117,7 +118,7 @@ rthen e rr, exsp, h push, d sbcp, d pop, ldir,
 
   \ doc{
   \
-  \ dzx7s ( a1 a2 -- )
+  \ dzx7s ( a1 a2 -- ) "d-z-x-seven-s"
   \
   \ Decompress data, which has been compressed by ZX7, from
   \ _a1_ and copy the result to _a2_.
@@ -126,10 +127,17 @@ rthen e rr, exsp, h push, d sbcp, d pop, ldir,
   \ version, written by Einar Saukas, Antonio Villena &
   \ Metalbrain.
   \
-  \ ``dzx7s`` is the smallest (87 bytes) but slowest version of
-  \ the decompressor. `dzx7t` and `dzx7m` are bigger but
-  \ faster.
+  \ ``dzx7s`` is the smallest but slowest version of the
+  \ decompressor. `dzx7t` and `dzx7m` are bigger but faster:
+
+  \ |===
+  \ | Decompressor >| Size in bytes >| Relative speed
   \
+  \ | dzx7s        >| 87            >| 100
+  \ | dzx7t        >| 97            >| 125
+  \ | dzx7m        >| 251           >| 130
+  \ |===
+
   \ For more information, see
   \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027996
   \ ZX7 in World of Spectrum].
@@ -233,7 +241,7 @@ rthen e rr, exsp, h push, d sbcp, d pop, ldir,
 
   \ doc{
   \
-  \ dzx7t ( a1 a2 -- )
+  \ dzx7t ( a1 a2 -- ) "d-z-x-seven-t"
   \
   \ Decompress data, which has been compressed by ZX7, from
   \ _a1_ and copy the result to _a2_.
@@ -243,7 +251,7 @@ rthen e rr, exsp, h push, d sbcp, d pop, ldir,
   \
   \ ``dzx7t`` is 25% faster than `dzx7s`, and needs only 10
   \ more bytes (97 bytes in total). `dzx7m` is bigger but
-  \ faster.
+  \ faster. See a comparation table in `dzx7s`.
   \
   \ For more information, see
   \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027996
@@ -520,7 +528,7 @@ also assembler max-labels c! previous
 
   \ doc{
   \
-  \ dzx7m ( a1 a2 -- )
+  \ dzx7m ( a1 a2 -- ) "d-z-x-seven-m"
   \
   \ Decompress data, which has been compressed by ZX7, from
   \ _a1_ and copy the result to _a2_.
@@ -530,7 +538,8 @@ also assembler max-labels c! previous
   \
   \ ``dzx7m`` is the fastest (30% faster than `dzx7s`) but
   \ biggest (251 bytes) version of the decompressor. `dzx7s`
-  \ and `dzx7t` are smaller but slower.
+  \ and `dzx7t` are smaller but slower.  See a comparation
+  \ table in `dzx7s`.
   \
   \ For more information, see
   \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027996
@@ -565,5 +574,7 @@ also assembler max-labels c! previous
   \ configurable.
   \
   \ 2017-03-26: Fix description of ZX7 links in documentation.
+  \
+  \ 2018-03-08: Add words' pronunciaton. Improve documentation.
 
   \ vim: filetype=soloforth

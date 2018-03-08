@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803082308
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -154,7 +154,7 @@ unneeding hz>bleep ?(
 
   \ doc{
   \
-  \ hz>bleep ( frequency duration1 -- duration2 pitch )
+  \ hz>bleep ( frequency duration1 -- duration2 pitch ) "hertz-to-bleep;
   \
   \ Convert _frequency_ (in Hz) and _duration1_ (in ms) to
   \ the parameters _duration2 pitch_ needed by `bleep`.
@@ -177,7 +177,7 @@ unneeding dhz>bleep ?(
 
   \ doc{
   \
-  \ dhz>bleep ( frequency duration1 -- duration2 pitch )
+  \ dhz>bleep ( frequency duration1 -- duration2 pitch ) "decihertz-to-bleep"
   \
   \ Convert _frequency_ (in dHz, i.e. tenths of hertzs) and
   \ _duration1_ (in ms) to the parameters _duration2 pitch_
@@ -267,7 +267,7 @@ unneeding /octave ?\ 12 cconstant /octave
 
   \ doc{
   \
-  \ /octave ( -- c )
+  \ /octave ( -- c ) "slash-octave"
   \
   \ A constant that returns the number of notes in one octave:
   \ 12.
@@ -324,7 +324,7 @@ unneeding -beep>note ?( need /octave
 
   \ doc{
   \
-  \ -beep>note ( -n1 -- -n2 +n3 )
+  \ -beep>note ( -n1 -- -n2 +n3 ) "minus-beep-to-note"
   \
   \ Convert a negative pitch _-n1_ of Sinclair BASIC's ``BEEP``
   \ to its corresponding note _+n3_ (0..11) in octave _-n2_,
@@ -340,7 +340,7 @@ unneeding +beep>note ?( need /octave
 
   \ doc{
   \
-  \ +beep>note ( +n1 -- +n2 +n3 )
+  \ +beep>note ( +n1 -- +n2 +n3 ) "plus-beet-to-note"
   \
   \ Convert a positive pitch _+n1_ of Sinclair BASIC's
   \ ``BEEP`` to its corresponding note _+n3_ (0..11) in octave
@@ -357,7 +357,7 @@ unneeding beep>note ?( need -beep>note need +beep>note
 
   \ doc{
   \
-  \ beep>note ( n1 -- n2 +n3 )
+  \ beep>note ( n1 -- n2 +n3 ) "beep-to-note"
   \
   \ Convert a pitch _n1_ of Sinclair BASIC's ``BEEP`` to its
   \ corresponding note _+n3_ (0..11) in octave _n2_, being zero
@@ -383,7 +383,7 @@ need beep>note need note>dhz need change-octave
 
   \ doc{
   \
-  \ beep>dhz ( n -- u )
+  \ beep>dhz ( n -- u ) "beep-to-decihertz"
   \
   \ Convert a pitch _n_ of Sinclair BASIC's ``BEEP`` to its
   \ corresponding frequency in dHz (tenths of hertzs) _u_.
@@ -401,7 +401,7 @@ need beep>dhz need dhz>bleep
 
   \ doc{
   \
-  \ beep>bleep ( duration1 pitch1 -- pitch2 duration2 )
+  \ beep>bleep ( duration1 pitch1 -- pitch2 duration2 ) "beep-to-bleep"
   \
   \ Convert _duration1_ and _pitch1_, which are equivalent to
   \ the parameters used by Sinclar BASIC's ``BEEP`` command, to
@@ -642,5 +642,7 @@ code white-noise ( u -- )
   \ 2018-01-23: Rename all sounds: add suffix "-sound".
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-08: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

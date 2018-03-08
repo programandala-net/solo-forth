@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803082249
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -299,7 +299,7 @@ code attr>paper ( b1 -- b2 )
 
   \ doc{
   \
-  \ attr>paper ( b1 -- b2 )
+  \ attr>paper ( b1 -- b2 ) "attribute-to-paper"
   \
   \ Convert attribute _b1_ to its paper color number _b2_.
   \
@@ -325,7 +325,7 @@ code attr>ink ( b1 -- b2 )
 
   \ doc{
   \
-  \ attr>ink ( b1 -- b2 )
+  \ attr>ink ( b1 -- b2 ) "attribute-to-ink"
   \
   \ Convert attribute _b1_ to its ink color number _b2_.
   \
@@ -350,7 +350,7 @@ code attr@ ( -- b ) 3A c, os-attr-t , pusha jp, end-code ?)
 
   \ doc{
   \
-  \ attr@ ( -- b )
+  \ attr@ ( -- b ) "attribute-fetch"
   \
   \ Get the current attribute _b_.
   \
@@ -374,7 +374,7 @@ code attr! ( b -- )
 
   \ doc{
   \
-  \ attr! ( b -- )
+  \ attr! ( b -- ) "attribute-store"
   \
   \ Set _b_ as the current attribute.
   \
@@ -392,7 +392,7 @@ code attr-mask@ ( -- b )
 
   \ doc{
   \
-  \ attr-mask@ ( -- b )
+  \ attr-mask@ ( -- b ) "attribute-mask-fetch"
   \
   \ Get the current attribute mask _b_.
   \
@@ -416,7 +416,7 @@ code attr-mask! ( b -- )
 
   \ doc{
   \
-  \ attr-mask! ( b -- )
+  \ attr-mask! ( b -- ) "attribute-mask-store"
   \
   \ Set _b_ as the current attribute mask.
   \
@@ -432,7 +432,7 @@ unneeding mask+attr>perm
 
   \ doc{
   \
-  \ mask+attr>perm ( -- )
+  \ mask+attr>perm ( -- ) "mask-plus-attribute-to-perm"
   \
   \ Make the current attribute and mask permanent.
   \
@@ -461,7 +461,7 @@ code mask+attr! ( b1 b2 -- )
 
   \ doc{
   \
-  \ mask+attr! ( b1 b2 -- )
+  \ mask+attr! ( b1 b2 -- ) "mask-plus-attribute-store"
   \
   \ Set _b1_ as the current attribute mask
   \ and _b2_ as the current attribute.
@@ -485,7 +485,7 @@ code mask+attr@ ( -- b1 b2 )
 
   \ doc{
   \
-  \ mask+attr@ ( -- b1 b2 )
+  \ mask+attr@ ( -- b1 b2 ) "mask-plus-attribute-fetch"
   \
   \ Set _b_ as the current attribute mask.
   \
@@ -500,7 +500,7 @@ unneeding attr-setter ?( need attr!
 
   \ doc{
   \
-  \ attr-setter ( b "name" -- )
+  \ attr-setter ( b "name" -- ) "attribute-setter"
   \
   \ Create a definition _name_ that, when executed, will
   \ set _b_ as the current attribute.
@@ -516,7 +516,7 @@ unneeding mask+attr-setter ?( need mask+attr!
 
   \ doc{
   \
-  \ mask+attr-setter ( b1 b2 "name" -- )
+  \ mask+attr-setter ( b1 b2 "name" -- ) "mask-plus-attribute-setter"
   \
   \ Create a definition _name_ that, when executed, will set
   \ _b1_ as the current attribute mask and _b2_ as the
@@ -537,7 +537,7 @@ code perm-attr@ ( -- b )
 
   \ doc{
   \
-  \ perm-attr@ ( -- b )
+  \ perm-attr@ ( -- b ) "perm-attribute-fetch"
   \
   \ Get the permanent attribute _b_.
   \
@@ -565,7 +565,7 @@ code perm-attr! ( b -- )
 
   \ doc{
   \
-  \ perm-attr! ( b -- )
+  \ perm-attr! ( b -- ) "perm-attribute-store"
   \
   \ Set _b_ as the permanent attribute.
   \
@@ -586,7 +586,7 @@ code perm-attr-mask@ ( -- b )
 
   \ doc{
   \
-  \ perm-attr-mask@ ( -- b )
+  \ perm-attr-mask@ ( -- b ) "perm-attribute-mask-fetch"
   \
   \ Get the permanent attribute mask _b_.
   \
@@ -614,7 +614,7 @@ code perm-attr-mask! ( b -- )
 
   \ doc{
   \
-  \ perm-attr-mask! ( b -- )
+  \ perm-attr-mask! ( b -- ) "perm-attribute-mask-store"
   \
   \ Set _b_ as the permanent attribute mask.
   \
@@ -1073,7 +1073,7 @@ code paper. ( b -- ) 3E c, 11 c, (0-9-color. jp, end-code ?)
 
   \ doc{
   \
-  \ paper. ( b -- )
+  \ paper. ( b -- ) "paper-dot"
   \
   \ Set paper color to _b_ (0..9), by printing the
   \ corresponding control characters.  If _b_ is greater than
@@ -1096,7 +1096,7 @@ code ink. ( b -- ) 3E c, 10 c, (0-9-color. jp, end-code ?)
 
   \ doc{
   \
-  \ ink. ( b -- )
+  \ ink. ( b -- ) "ink-dot"
   \
   \ Set ink color to _b_ (0..9), by printing the corresponding
   \ control characters.  If _b_ is greater than 9, 9 is used
@@ -1130,7 +1130,7 @@ create (0-9-color. ( -- a ) asm
 
   \ doc{
   \
-  \ (0-9-color. ( -- a )
+  \ (0-9-color. ( -- a ) "paren-zero-nine-color-dot"
   \
   \ Return the address _a_ of a routine used by `paper.` and
   \ `ink.`.  This routine prints a color attribute in the range
@@ -1150,7 +1150,7 @@ unneeding flash.
 
   \ doc{
   \
-  \ flash. ( n -- )
+  \ flash. ( n -- ) "flash-dot"
   \
   \ Set flash _n_ by printing the corresponding control
   \ characters.  If _n_ is zero, turn flash off; if _n_ is one,
@@ -1176,7 +1176,7 @@ unneeding bright.
 
   \ doc{
   \
-  \ bright. ( n -- )
+  \ bright. ( n -- ) "bright-dot"
   \
   \ Set bright _n_ by printing the corresponding control
   \ characters.  If _n_ is zero, turn bright off; if _n_ is one,
@@ -1201,7 +1201,7 @@ unneeding (0-1-8-color.
 
   \ doc{
   \
-  \ (0-1-8-color. ( n c -- )
+  \ (0-1-8-color. ( n c -- ) "paren-zero-one-eight-color-dot"
   \
   \ `emit` control character _c_. Then convert _n_ to the set
   \ 0, 1 and 8 and `emit` it. The conversion of _n_ is done as
@@ -1322,5 +1322,7 @@ unneeding (0-1-8-color.
   \ 2018-02-10: Improve documentation. Add `inversely`.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-08: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

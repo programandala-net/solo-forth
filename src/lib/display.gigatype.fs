@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712101210
+  \ Last modified: 201803082256
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -19,7 +19,7 @@
   \ issue 132 (1998-08).
   \
   \ Marcos Cruz (programandala.net) disassembled and adapted it
-  \ to Solo Forth, 2017.
+  \ to Solo Forth, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -338,7 +338,7 @@ h push, #4 call, al# h pop, h pop, d pop, b pop, 02 a ld#,
 
   \ doc{
   \
-  \ (gigatype ( ca len a1 a2 -- )
+  \ (gigatype ( ca len a1 a2 -- ) "paren-gigatype"
   \
   \ If _len_ is greater than zero, display text string _ca len_
   \ at screen address _a1_ using the current fonts, doubled
@@ -854,6 +854,8 @@ need gigatype need 2/
   \
   \ 2017-12-10: Update to `a push,` and `a pop,`, after the
   \ change in the assembler.
+  \
+  \ 2018-03-08: Add words' pronunciaton.
 
   \ vim: filetype=soloforth
 

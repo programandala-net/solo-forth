@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803082245
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -37,7 +37,7 @@ unneeding create:
 
   \ doc{
   \
-  \ create: ( "name" -- )
+  \ create: ( "name" -- ) "create-colon"
   \
   \ Create a word _name_ which is compiled as a colon word but,
   \ when executed, will return the address of its data field
@@ -54,7 +54,7 @@ unneeding :noname ?(
 
   \ doc{
   \
-  \ :noname ( -- xt )
+  \ :noname ( -- xt ) "colon-no-name"
   \
   \ Create an execution token _xt_. Enter compilation state and
   \ start the current definition, which can be executed later
@@ -172,5 +172,7 @@ unneeding nextname ?( 2variable nextname-string
   \ 2017-12-15: Move `;code` to <assembler.MISC.fs>.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-08: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

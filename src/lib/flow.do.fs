@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803082309
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -73,7 +73,7 @@ code (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
 
   \ doc{
   \
-  \ (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys | )
+  \ (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys | ) "paren-minus-do"
   \
   \ If _n1|u1_ is not less than _n2|u2_, discard both
   \ parameters and continue execution at the location given by
@@ -95,6 +95,7 @@ code (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
   \
   \ -do
   \   Compilation: ( -- do-sys )
+  \ "minus-do"
   \
 
   \ Compile `(-do)` and leave _do-sys_ to be consumed by `loop`
@@ -143,6 +144,7 @@ unneeding #do ?(
   \
   \ #do
   \   Compilation: ( -- do-sys )
+  \ "dash-do"
   \
   \ Execute `0 ?do` and leave _do-sys_ to be consumed by `loop`
   \ or `+loop`.
@@ -177,5 +179,7 @@ unneeding #do ?(
   \ 2017-08-20: Add `#do`. Improve documentation.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-08: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

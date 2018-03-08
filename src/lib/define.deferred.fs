@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803082244
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -75,7 +75,7 @@ unneeding defer@ ?\ : defer@ ( xt1 -- xt2 ) >action @ ;
 
   \ doc{
   \
-  \ defer@ ( xt1 -- xt2 )
+  \ defer@ ( xt1 -- xt2 ) "defer-fetch"
   \
   \ Return the word _xt2_ currently associated to the deferred
   \ word _xt1_.
@@ -90,7 +90,7 @@ unneeding deferred? ?\ : deferred? ( xt -- f ) c@ $C3 = ;
 
   \ doc{
   \
-  \ deferred? ( xt -- f )
+  \ deferred? ( xt -- f ) "deferred-question"
   \
   \ Is _xt_ a deferred word?
   \
@@ -191,5 +191,7 @@ unneeding is ?( need [is] need <is>
   \ 2018-01-11: Update layout. Improve documentation.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-08: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

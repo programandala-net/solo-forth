@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803082313
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -43,7 +43,7 @@ unneeding ?seconds ?( need ?ticks-pause need ticks/second
 
   \ doc{
   \
-  \ ?seconds ( u -- )
+  \ ?seconds ( u -- ) "question-seconds"
   \
   \ Wait at least _u_ seconds or until a key is pressed.
   \
@@ -111,7 +111,7 @@ unneeding dticks ?( need os-frames
 
   \ doc{
   \
-  \ dticks ( -- ud )
+  \ dticks ( -- ud ) "d-ticks"
   \
   \ Return the current count of clock ticks _ud_, which is
   \ updated by the OS.
@@ -147,7 +147,7 @@ unneeding set-dticks ?( need os-frames
 
   \ doc{
   \
-  \ set-dticks ( d -- )
+  \ set-dticks ( d -- ) "set-d-ticks"
   \
   \ Set the system clock to _d_ ticks.
   \
@@ -176,7 +176,7 @@ unneeding reset-dticks
 
   \ doc{
   \
-  \ reset-dticks ( -- )
+  \ reset-dticks ( -- ) "reset-d-ticks"
   \
   \ Reset the system clock to zero ticks.
   \
@@ -192,7 +192,7 @@ unneeding ms/tick ?\ 20 cconstant ms/tick
 
   \ doc{
   \
-  \ ms/tick ( -- n )
+  \ ms/tick ( -- n ) "ms-slash-tick"
   \
   \ Return the duration _n_ of one clock tick in miliseconds.
   \
@@ -206,7 +206,7 @@ unneeding ticks/second ?( need ms/tick
 
   \ doc{
   \
-  \ ticks/second ( -- n )
+  \ ticks/second ( -- n ) "ticks-slash-second"
   \
   \ Return the number _n_ of clock ticks per second.
   \
@@ -221,7 +221,7 @@ unneeding dticks>cs ?( need ms/tick need d*
 
   \ doc{
   \
-  \ dticks>cs ( d1 -- d2 )
+  \ dticks>cs ( d1 -- d2 ) "d-ticks-to-cs"
   \
   \ Convert clock ticks _d1_ to centiseconds _d2_.
   \
@@ -236,7 +236,7 @@ unneeding dticks>ms ?( need ms/tick need d*
 
   \ doc{
   \
-  \ dticks>ms ( d1 -- d2 )
+  \ dticks>ms ( d1 -- d2 ) "d-ticks-to-ms"
   \
   \ Convert clock ticks _d1_ to milliseconds _d2_.
   \
@@ -251,7 +251,7 @@ unneeding dticks>seconds ?( need ticks/second need m/
 
   \ doc{
   \
-  \ dticks>seconds ( d -- n )
+  \ dticks>seconds ( d -- n ) "d-ticks-to-seconds"
   \
   \ Convert clock ticks _d_ to seconds _n_.
   \
@@ -268,7 +268,7 @@ unneeding ms>ticks ?( need ms/tick
 
   \ doc{
   \
-  \ ms>ticks ( n1 -- n2 )
+  \ ms>ticks ( n1 -- n2 ) "ms-to-ticks"
   \
   \ Convert _n1_ milisecnods to the corresponding number _n2_
   \ of `ticks`.
@@ -299,7 +299,7 @@ unneeding delapsed ?( need dticks
 
   \ doc{
   \
-  \ delapsed ( d1 -- d2 )
+  \ delapsed ( d1 -- d2 ) "d-elapsed"
   \
   \ For the time _d1_ in `dticks` return the elapsed time _d2_
   \ since then, also in `dticks`.
@@ -330,7 +330,7 @@ unneeding dtimer
 
   \ doc{
   \
-  \ dtimer ( d -- )
+  \ dtimer ( d -- ) "d-timer"
   \
   \ For the time _d_ in `dticks` display the elapsed time
   \ since then, also in `dticks`.
@@ -343,7 +343,7 @@ unneeding past? ?\ need ticks : past? ( u -- f ) ticks u< ;
 
   \ doc{
   \
-  \ past? ( u -- f )
+  \ past? ( u -- f ) "past-question"
   \
   \ Return true if the `ticks` clock has passed _u_.
   \
@@ -371,7 +371,7 @@ unneeding dpast? ?( need dticks need d0<
 
   \ doc{
   \
-  \ dpast? ( ud -- f )
+  \ dpast? ( ud -- f ) "d-past-question"
   \
   \ Return true if the `dticks` clock has passed _ud_.
   \
@@ -397,7 +397,7 @@ unneeding ticks>cs ?( need ms/tick
 
   \ doc{
   \
-  \ ticks>cs ( n1 -- n2 )
+  \ ticks>cs ( n1 -- n2 ) "ticks-to-cs"
   \
   \ Convert clock `ticks` _n1_ to centiseconds _n2_.
   \
@@ -412,7 +412,7 @@ unneeding ticks>ms ?( need ms/tick
 
   \ doc{
   \
-  \ ticks>ms ( n1 -- n2 )
+  \ ticks>ms ( n1 -- n2 ) "ticks-to-ms"
   \
   \ Convert clock ticks _n1_ to milliseconds _n2_.
   \
@@ -427,7 +427,7 @@ unneeding ticks>seconds ?( need ticks/second
 
   \ doc{
   \
-  \ ticks>seconds ( n1 -- n2 )
+  \ ticks>seconds ( n1 -- n2 ) "ticks-to-seconds"
   \
   \ Convert clock ticks _n1_ to seconds _n2_.
   \
@@ -448,7 +448,7 @@ unneeding ?ticks-pause ?( need ticks
 
   \ doc{
   \
-  \ ?ticks-pause ( u -- )
+  \ ?ticks-pause ( u -- ) "question-ticks-pause"
   \
   \ Stop execution during at least _u_ clock ticks, or until a
   \ key is pressed.
@@ -531,7 +531,7 @@ unneeding leapy-year? ?(
 
   \ doc{
   \
-  \ leapy-year? ( n -- f )
+  \ leapy-year? ( n -- f ) "leapy-year-question"
   \
   \ Is _n_ a leapy year?
   \
@@ -667,7 +667,7 @@ unneeding .time ?( need .00
 
   \ doc{
   \
-  \ .time ( second minute hour -- )
+  \ .time ( second minute hour -- ) "dot-time"
   \
   \ Display the given time in ISO 8601 extended format.
   \
@@ -681,7 +681,7 @@ unneeding .date ?( need .0000 need .00
 
   \ doc{
   \
-  \ .date ( day month year -- )
+  \ .date ( day month year -- ) "dot-date"
   \
   \ Display the given time in ISO 8601 extended format.
   \
@@ -696,7 +696,7 @@ unneeding .time&date ?( need .date need .time
 
   \ doc{
   \
-  \ .time&date ( second minute hour day month year -- )
+  \ .time&date ( second minute hour day month year -- ) "dot-time-and-date"
   \
   \ Display the given time and date in ISO 8601 extended
   \ format.
@@ -712,7 +712,7 @@ unneeding time&date ?( need get-time need get-date
 
   \ doc{
   \
-  \ time&date ( -- second minute hour day month year )
+  \ time&date ( -- second minute hour day month year ) "time-and-date"
   \
   \ Return the current time and date: second, minute, hour,
   \ day, month and year.
@@ -739,7 +739,7 @@ need reset-dticks need dticks need dticks>cs
 
   \ doc{
   \
-  \ bench{ ( -- )
+  \ bench{ ( -- ) "bench-curly-bracket"
   \
   \ Start timing, setting the clock ticks to zero.
   \
@@ -751,7 +751,7 @@ need reset-dticks need dticks need dticks>cs
 
   \ doc{
   \
-  \ }bench ( -- d )
+  \ }bench ( -- d ) "curly-bracket-bench"
   \
   \ Return the current value of the clock ticks.
   \
@@ -765,7 +765,7 @@ need reset-dticks need dticks need dticks>cs
 
   \ doc{
   \
-  \ bench. ( d -- )
+  \ bench. ( d -- ) "bench-dot"
   \
   \ Display the timing result _d_, which is a number of
   \ clock ticks, in ticks and seconds.
@@ -778,7 +778,7 @@ need reset-dticks need dticks need dticks>cs
 
   \ doc{
   \
-  \ }bench. ( -- )
+  \ }bench. ( -- ) "curly-bracket-bench-dot"
   \
   \ Stop timing and display the result.
   \
@@ -805,7 +805,7 @@ need reset-dticks need dticks need dticks>cs
 
   \ doc{
   \
-  \ benched. ( xt n -- d )
+  \ benched. ( xt n -- d ) "benched-dot"
   \
   \ Execute _n_ times the benchmark _xt_ and display the
   \ result.
@@ -898,5 +898,7 @@ need reset-dticks need dticks need dticks>cs
   \ 2018-01-03: Update `1literal` to `xliteral`.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-08: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

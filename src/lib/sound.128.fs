@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803082305
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -29,7 +29,7 @@ unneeding /sound ?\ 14 cconstant /sound
 
   \ doc{
   \
-  \ /sound ( -- b )
+  \ /sound ( -- b ) "slash-sound"
   \
   \ A character constant that returns 14, the number of
   \ sound registers used by ZX Spectrum 128.
@@ -82,7 +82,7 @@ need !p need sound-register-port need sound-write-port
 
   \ doc{
   \
-  \ !sound ( b1 b2 -- )
+  \ !sound ( b1 b2 -- ) "store-sound"
   \
   \ Set sound register _b2_ (0...13) to value _b1_.
   \
@@ -98,7 +98,7 @@ unneeding @sound ?( need !p need @p need sound-register-port
 
   \ doc{
   \
-  \ @sound ( b1 -- b2 )
+  \ @sound ( b1 -- b2 ) "fetch-sound"
   \
   \ Get the contents _b2_ of sound register _b1_ (0...13).
   \
@@ -120,7 +120,7 @@ unneeding !volume
 
   \ doc{
   \
-  \ !volume ( b1 b2 -- )
+  \ !volume ( b1 b2 -- ) "store-volume"
   \
   \ Store _b1_ at volume register of channel _b2_ (0..2,
   \ equivalent to notation 'A'..'C').
@@ -145,7 +145,7 @@ unneeding @volume
 
   \ doc{
   \
-  \ @volume ( b1 -- b2 )
+  \ @volume ( b1 -- b2 ) "fetch-volume"
   \
   \ Fetch _b2_ from the volume register of channel _b1_ (0..2,
   \ equivalent to notation 'A'..'C').
@@ -240,7 +240,7 @@ unneeding -mixer
 
   \ doc{
   \
-  \ -mixer ( -- )
+  \ -mixer ( -- ) "minus-mixer"
   \
   \ Disable the noise and tone mixers for the three channels of
   \ the AY-3-8912 sound generator.
@@ -348,7 +348,7 @@ unneeding sound, ?( need /sound
 
   \ doc{
   \
-  \ sound, ( b[0]..b[13] -- )
+  \ sound, ( b[0]..b[13] -- ) "sound-comma"
   \
   \ Compile the 14-byte sound definition _b[0]..b[13]_.
   \
@@ -386,14 +386,12 @@ need sound-register-port need sound-write-port need /sound
     i sound-register-port !p c@+ sound-write-port !p
   loop  drop ;
 
-  \ doc{
   \
-  \ fplay ( ca -- )
+  \ fplay ( ca -- ) "f-play"
   \
   \ Play a sound whose 14 bytes are stored at _ca_.  ``fplay``
   \ is a faster version of `play`.
   \
-  \ }doc
 
 ( zplay )
 
@@ -753,5 +751,7 @@ decimal
   \ 2018-03-02: Fix word names in credit note.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-08: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

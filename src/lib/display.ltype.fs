@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712041903
+  \ Last modified: 201803082300
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -39,7 +39,7 @@ variable #ltyped
 
   \ doc{
   \
-  \ ltyped# ( -- a )
+  \ ltyped# ( -- a ) "l-typed-hash"
   \
   \ _a_ is the address of a cell containing the number of
   \ characters displayed by `ltype` on the current row.
@@ -52,7 +52,7 @@ variable #ltyped
 
   \ doc{
   \
-  \ ltyped ( n -- )
+  \ ltyped ( n -- ) "l-typed"
   \
   \ Update `ltyped#` with _n_ characters typed by `ltype`.
   \
@@ -66,7 +66,7 @@ variable #ltyped
 
   \ doc{
   \
-  \ lemit ( c -- )
+  \ lemit ( c -- ) "l-emit"
   \
   \ Display character _c_ as part of the left-justified displaying
   \ system.
@@ -77,7 +77,7 @@ variable #ltyped
 
   \ doc{
   \
-  \ lspace ( -- )
+  \ lspace ( -- ) "l-space"
   \
   \ Display a space as part of the left-justified printing
   \ system.
@@ -90,7 +90,7 @@ variable #ltyped
 
   \ doc{
   \
-  \ no-ltyped ( -- )
+  \ no-ltyped ( -- ) "no-l-typed"
   \
   \ Set `ltyped#` and `#indented` to zero.
   \
@@ -102,7 +102,7 @@ variable #ltyped
 
   \ doc{
   \
-  \ lhome ( -- )
+  \ lhome ( -- ) "l-home"
   \
   \ Move the cursor used by `ltype` and related words to its
   \ home position, at the top left (column 0, row 0).
@@ -113,7 +113,7 @@ variable #ltyped
 
   \ doc{
   \
-  \ lpage ( -- )
+  \ lpage ( -- ) "l-page"
   \
   \ Clear the display and init the cursor used by `ltype` and
   \ related words.
@@ -124,7 +124,7 @@ variable #ltyped
 
   \ doc{
   \
-  \ lcr? ( -- f )
+  \ lcr? ( -- f ) "l-c-r-question"
   \
   \ Is the cursor neither at the home position nor at the start of a
   \ line?  ``lcr?`` is part of the left-justified displaying system.
@@ -137,7 +137,7 @@ defer (lcr) ( -- ) ' cr ' (lcr) defer! -->
 
   \ doc{
   \
-  \ (lcr) ( -- )
+  \ (lcr) ( -- ) "paren-l-c-r"
   \
   \ A deferred word whose default action is `cr`.  This is the
   \ actual carriage return done by `lcr`, before updating the
@@ -154,7 +154,7 @@ defer (lcr) ( -- ) ' cr ' (lcr) defer! -->
 
   \ doc{
   \
-  \ lcr ( -- )
+  \ lcr ( -- ) "l-c-r"
   \
   \ If the cursor is neither at the home position nor at the
   \ start of a line, move it to the next row. ``lcr`` is part
@@ -168,7 +168,7 @@ variable lwidth columns lwidth !
 
   \ doc{
   \
-  \ lwidth ( -- a )
+  \ lwidth ( -- a ) "l-width"
   \
   \ A variable containing the text width in columns used by
   \ `ltype` and related words. Its default value is `columns`,
@@ -206,12 +206,12 @@ variable lwidth columns lwidth !
 
   \ doc{
   \
-  \ ltype ( ca len -- )
+  \ ltype ( ca len -- ) "l-type"
   \
   \ Display character string _ca len_ left-justified from the
   \ current cursor position.
   \
-  \ See: `/ltype`.
+  \ See: `lwidth`.
   \
   \ }doc
 
@@ -256,5 +256,7 @@ need n>str
   \ 2017-12-04: Compact the code, saving one block. Use
   \ `seclusion`. Update names after Galope's `ltype` module.
   \ Improve documentation.
+  \
+  \ 2018-03-08: Add words' pronunciaton.
 
   \ vim: filetype=soloforth
