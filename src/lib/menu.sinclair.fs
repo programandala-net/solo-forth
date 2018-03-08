@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072248
+  \ Last modified: 201803081250
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -34,20 +34,11 @@
   \
   \ XXX TODO -- Use a module to hide private words.
 
-( menu )
+( sinclair-stripes sinclair-stripes$ .sinclair-stripes )
 
-need attr! need xy>attra need get-udg need set-udg
-need type-left-field need case need array>
-need white need black need cyan need papery need brighty
-need overprint-off need inverse-off
-need xy>gxy need ortholine need 8*
-need under+ need within need polarity
+unneeding sinclair-stripes ?(
 
--->
-
-( menu )
-
-create sinclair-stripes-bitmaps ( -- ca )
+create sinclair-stripes ( -- ca )
 
 $01 c, $03 c, $07 c, $0F c, $1F c, $3F c, $7F c, $FF c,
 
@@ -60,7 +51,7 @@ $01 c, $03 c, $07 c, $0F c, $1F c, $3F c, $7F c, $FF c,
   \ 0 1 1 1 1 1 1 1     XXXXXXX
   \ 1 1 1 1 1 1 1 1    XXXXXXXX
 
-$FE c, $FC c, $F8 c, $F0 c, $E0 c, $C0 c, $80 c, $00 c,
+$FE c, $FC c, $F8 c, $F0 c, $E0 c, $C0 c, $80 c, $00 c, ?)
 
   \ 1 1 1 1 1 1 1 0    XXXXXXX
   \ 1 1 1 1 1 1 0 0    XXXXXX
@@ -73,7 +64,7 @@ $FE c, $FC c, $F8 c, $F0 c, $E0 c, $C0 c, $80 c, $00 c,
 
   \ doc{
   \
-  \ sinclair-stripes-bitmaps ( -- ca )
+  \ sinclair-stripes ( -- ca )
   \
   \ Return address _ca_ where the following pair of UDG
   \ definitions, used to create Sinclair stripes, are stored:
@@ -98,15 +89,16 @@ $FE c, $FC c, $F8 c, $F0 c, $E0 c, $C0 c, $80 c, $00 c,
   \ 0 0 0 0 0 0 0 0
   \ ....
 
-  \ See: `sinclair-stripes$`.
+  \ See: `.sinclair-stripes`,  `sinclair-stripes$`.
   \
   \ }doc
+
+unneeding sinclair-stripes$ ?(
 
 here dup $10 c, $02 c, $80 c, $11 c, $06 c, $81 c,
          $10 c, $04 c, $80 c, $11 c, $05 c, $81 c,
          $10 c, $00 c, $80 c,
-here - abs 2constant sinclair-stripes$ ( -- ca len )
-
+here - abs 2constant sinclair-stripes$ ( -- ca len ) ?)
 
   \ doc{
   \
@@ -130,17 +122,19 @@ here - abs 2constant sinclair-stripes$ ( -- ca len )
   \ | $80     | first stripe UDG
   \ |===
 
-  \ Definitions for UDG codes $80 and $81 are provided by
-  \ `sinclair-stripes`.
+  \ Definitions for UDG codes $80 and $81 are provided
+  \ optionally by `sinclair-stripes`.
   \
   \ See: `.sinclair-sripes`.
   \
   \ }doc
 
+unneeding .sinclair-stripes ?( need sinclair-stripes
+                               need sinclair-stripes$
+
 : .sinclair-stripes ( -- )
-  get-udg
-  [ sinclair-stripes-bitmaps 128 8 * - ] literal set-udg
-  sinclair-stripes$ type set-udg ;
+  get-udg [ sinclair-stripes 128 8 * - ] literal set-udg
+  sinclair-stripes$ type set-udg ; ?)
 
   \ doc{
   \
@@ -156,6 +150,16 @@ here - abs 2constant sinclair-stripes$ ( -- ca len )
 
 5 cconstant /stripes
   \ Size of the stripes on the display, in characters.
+
+( menu )
+
+need attr! need xy>attra need get-udg need set-udg
+need type-left-field need case need array>
+need white need black need cyan need papery need brighty
+need overprint-off need inverse-off
+need xy>gxy need ortholine need 8*
+need under+ need within need polarity
+need .sinclair-stripes
 
 -->
 
@@ -324,7 +328,7 @@ create current-option 0 c,
 
   \ doc{
   \
-  \ new-menu ( a1 a2 ca len x y n1 n2 -- )
+  \ set-menu ( a1 a2 ca len x y n1 n2 -- )
   \
   \ Set the current menu to cursor coordinates _x y_,
   \ _n2_ options, _n1_ characters width, title _ca len_,
@@ -363,5 +367,10 @@ create current-option 0 c,
   \ 2017-11-25: Update stack comments.
   \
   \ 2018-03-07: Add words' pronunciaton. Improve documentation.
+  \
+  \ 2018-03-08: Rename `sinclair-stripes-bitmaps`
+  \ `sinclair-stripes`. Make it, `sinclair-stripes$` and
+  \ `.sinclair-stripes` independent, reusable. Fix
+  \ documentation.
 
   \ vim: filetype=soloforth
