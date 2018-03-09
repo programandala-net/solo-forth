@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803091540
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -51,8 +51,7 @@
   \
   \ float ( -- n )
   \
-  \ _n_ is the size in address units of a floating-point
-  \ number.
+  \ _n_ is the size in bytes of a floating-point number.
   \
   \ See: `floats`, `float+`, `float-`.
   \
@@ -64,8 +63,8 @@
   \
   \ float+ ( fa1 -- fa2 ) "float-plus"
   \
-  \ Add the size in address units of a floating-point number to
-  \ _fa1_, giving _fa2_.
+  \ Add the size in bytes of a floating-point number to _fa1_,
+  \ giving _fa2_.
   \
   \ See: `float-`, `float`, `floats`.
   \
@@ -77,8 +76,8 @@
   \
   \ float- ( fa1 -- fa2 ) "float-minus"
   \
-  \ Subtract the size in address units of a floating-point
-  \ number from _fa1_, giving _fa2_.
+  \ Subtract the size in bytes of a floating-point number from
+  \ _fa1_, giving _fa2_.
   \
   \ See: `float+`, `float`, `floats`.
   \
@@ -90,7 +89,7 @@
   \
   \ floats ( n1 -- n2 )
   \
-  \ _n2_ is the size in address units of _n1_ floating-point
+  \ _n2_ is the size in bytes of _n1_ floating-point
   \ numbers.
   \
   \ See: `float`, `float+`, `float-`.
@@ -1101,5 +1100,7 @@ unneeding dfaligned
   \ spaces).
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-09: Update notation "address units" to "bytes".
 
   \ vim: filetype=soloforth

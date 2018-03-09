@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803091539
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -61,7 +61,7 @@ wordlist constant environment-wordlist ( -- wid )
   \ | /COUNTED-STRING    | n      | yes       |  maximum size of a counted string, in characters
   \ | /HOLD              | n      | yes       |  size of the pictured numeric output string buffer, in characters
   \ | /PAD               | n      | yes       |  size of the scratch area pointed to by PAD, in characters
-  \ | ADDRESS-UNIT-BITS  | n      | yes       |  size of one address unit, in bits
+  \ | ADDRESS-UNIT-BITS  | n      | yes       |  size of one address unit (one byte), in bits
   \ | FLOORED            | flag   | yes       |  true if floored division is the default
   \ | MAX-CHAR           | u      | yes       |  maximum value of any character in the implementation-defined character set
   \ | MAX-D              | d      | yes       |  largest usable signed double number
@@ -98,7 +98,7 @@ need max-ud need return-stack-cells need stack-cells
 get-current environment-wordlist dup >order set-current
 
 ' address-unit-bits alias address-unit-bits ( -- n )
-  \ Size of one address unit, in bits.
+  \ Size of one address unit (one byte), in bits.
 
 ' max-char alias max-char ( -- u )
   \ Maximum value of any character in the character set.
@@ -346,5 +346,7 @@ unneeding stack-cells
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-09: Update notation "address units" to "bytes".
 
   \ vim: filetype=soloforth

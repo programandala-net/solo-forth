@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201803091357
+; Last modified: 201803091548
 
 include version.z80s
 
@@ -1006,10 +1006,11 @@ move_block:
   ;   DE = destination
   ;   BC = count
 
-  ; If BC is greater than zero, copy the contents of BC consecutive address
-  ; units at HL to the BC consecutive address units at de. After the move
-  ; completes, the BC consecutive address units at DE contain exactly what the
-  ; BC consecutive address units at HL contained before the move.
+  ; If BC is greater than zero, copy the contents of BC
+  ; consecutive bytes at HL to the BC consecutive bytes at DE.
+  ; After the move completes, the BC consecutive bytes at DE
+  ; contain exactly what the BC consecutive bytes at HL
+  ; contained before the move.
 
   call compare_de_hl_unsigned
   jp c,move_block_downwards
@@ -1722,9 +1723,9 @@ question_previous_bank:
 ;
 ; bank-index ( -- ca )
 ;
-; A character variable. _ca_ is the address of an address unit
-; containing the bank index (0 .. 3) calculated by the latest
-; execution of `far`.
+; A character variable. _ca_ is the address of a byte containing
+; the bank index (0 .. 3) calculated by the latest execution of
+; `far`.
 ;
 ; See: `far-banks`, `bank`, `banks`.
 ;
@@ -2505,9 +2506,9 @@ push_hl:
 ;
 ; default-bank# ( -- ca ) "default-bank-hash"
 ;
-; A constant. _ca_ is the address of an address unit containing
-; the value of the default `bank` paged in at $C000 .. $FFFF.
-; Its default value is zero.
+; A constant. _ca_ is the address of a byte containing the value
+; of the default `bank` paged in at $C000 .. $FFFF.  Its default
+; value is zero.
 ;
 ; See: `banks`, `far-banks`.
 ;
@@ -4110,7 +4111,7 @@ skip.end:
 ;
 ; last-font-char ( -- ca )
 ;
-; A character variable. _ca_ is the address of an address unit
+; A character variable. _ca_ is the address of a byte
 ; containing the code of the last character displayed from the
 ; current font by the current action of `emit` and by `g-emit`.
 ; Higher characters are managed apart, displayed by `emit-udg`
@@ -4540,10 +4541,10 @@ endif
 ;
 ; cursor-char ( -- ca )
 ;
-; A character variable. _ca_ is the address of an address unit
-; containing the character code of the cursor used by `xkey`.
-; Note this is a character variable, thus it has to be fetched
-; with `c@` and modified with `c!`.
+; A character variable. _ca_ is the address of a byte containing
+; the character code of the cursor used by `xkey`.  Note this is
+; a character variable, thus it has to be fetched with `c@` and
+; modified with `c!`.
 ;
 ; }doc
 
@@ -4758,10 +4759,10 @@ wait_for_key:
 ; move ( a1 a2 u -- )
 ;
 ; If _u_ is greater than zero, copy the contents of _u_
-; consecutive address units at _a1_ to the _u_ consecutive
-; address units at _a2_. After ``move`` completes, the _u_
-; consecutive address units at _a2_ contain exactly what the _u_
-; consecutive address units at _a1_ contained before the move.
+; consecutive bytes at _a1_ to the _u_ consecutive bytes at
+; _a2_. After ``move`` completes, the _u_ consecutive bytes at
+; _a2_ contain exactly what the _u_ consecutive bytes at _a1_
+; contained before the move.
 ;
 ; See: `cmove`, `cmove>`.
 ;
@@ -6630,8 +6631,8 @@ do_user:
 ;
 ; cell ( -- n )
 ;
-; _n_ is the size in address units of one cell. ``cell`` returns
-; 2 in Solo Forth.
+; _n_ is the size in bytes of one cell. ``cell`` returns 2 in
+; Solo Forth.
 ;
 ; Origin: Comus.
 ;
@@ -7369,7 +7370,7 @@ source.other:
 ;
 ; cell+ ( a1 -- a2 ) "cell-plus"
 ;
-; Add the size in address units of a cell to _a1_, giving _a2_.
+; Add the size in bytes of a cell to _a1_, giving _a2_.
 ;
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
@@ -7408,7 +7409,7 @@ source.other:
 ;
 ; char- ( n1 -- n2 ) "char-minus"
 ;
-; Subtract the size in address units of a character to _n1_,
+; Subtract the size in bytes of a character to _n1_,
 ; giving _n2_.
 ;
 ; ``char-`` is an `alias` of `1-`.
@@ -7451,7 +7452,7 @@ source.other:
 ;
 ; char+ ( n1 -- n2 ) "char-plus"
 ;
-; Add the size in address units of a character to _n1_, giving
+; Add the size in bytes of a character to _n1_, giving
 ; _n2_.
 ;
 ; ``char+`` is an `alias` of `1+`.
@@ -7496,7 +7497,7 @@ source.other:
 ;
 ; cell- ( a1 -- a2 ) "cell-minus"
 ;
-; Subtract the size in address units of a cell from _a1_, giving
+; Subtract the size in bytes of a cell from _a1_, giving
 ; _a2_.
 ;
 ; Origin: Comus.
@@ -7541,7 +7542,7 @@ source.other:
 ;
 ; cells ( n1 -- n2 )
 ;
-; _n2_ is the size in address units of _n1_ cells.
+; _n2_ is the size in bytes of _n1_ cells.
 ;
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
@@ -7556,7 +7557,7 @@ source.other:
 ;
 ; chars ( n1 -- n2 )
 ;
-; _n2_ is the size in address units of _n1_ characters.  In Solo
+; _n2_ is the size in bytes of _n1_ characters.  In Solo
 ; Forth ``chars`` does nothing, therefore _n1_ equals _n2_.
 ;
 ; ``chars`` is an `immediate` word.
@@ -7572,10 +7573,9 @@ source.other:
 ;
 ; allot ( n -- )
 ;
-; If _n_ is greater than zero, reserve _n_ address units of
-; data space. If _n_ is less than zero, release _n_ address
-; units of data space. If _n_ is zero, leave the data-space
-; pointer unchanged.
+; If _n_ is greater than zero, reserve _n_ bytes of data space.
+; If _n_ is less than zero, release _n_ bytes of data space. If
+; _n_ is zero, leave the data-space pointer unchanged.
 ;
 ; Definition:
 
@@ -9536,12 +9536,12 @@ simple_accept.end:
 ;
 ; #block-drives ( -- ca ) "hash-block-drives"
 ;
-; A character variable. _ca is the address of an address unit
-; containing the number of block drives defined in
-; `block-drives`, i.e. the number of drives that are used for
-; blocks.  ``#block-drives`` could be modified manually,
-; provided also `block-drives` is configured accordingly, but
-; `set-block-drives` is provided for that.
+; A character variable. _ca is the address of a byte containing
+; the number of block drives defined in `block-drives`, i.e. the
+; number of drives that are used for blocks.  ``#block-drives``
+; could be modified manually, provided also `block-drives` is
+; configured accordingly, but `set-block-drives` is provided for
+; that.
 ;
 ; The default value of ``#block-drives`` is 1, which is restored
 ; by `cold`.
@@ -9671,7 +9671,7 @@ fill.done:
 ; erase ( ca len -- )
 ;
 ; If _len_ is greater than zero, clear all bits in each ol _len_
-; consecutive address units of memory beginning at _ca_.
+; consecutive bytes of memory beginning at _ca_.
 ;
 ; Origin: fig-Forth, Forth-83 (Controlled Reference Words), Forth-94
 ; (CORE EXT), Forth-2012 (CORE EXT).
@@ -9753,7 +9753,7 @@ fill.done:
 ;
 ; _ca_ is the address of a transient region that can be used to
 ; hold data for intermediate processing. It's a fixed offset
-; (`/hold` address units) above `here`.
+; (`/hold` bytes) above `here`.
 ;
 ;
 ; Definition:
@@ -12067,7 +12067,7 @@ if 1 ; developing
 ;
 ; Display the total RAM in the system, and the amount of space
 ; remaining in the regions addressed by `here` and `np`, in
-; address units.
+; bytes.
 ;
 ; See: `unused`, `farunused`.
 
@@ -14863,7 +14863,7 @@ system_stack_pointer:
 ; unused ( -- u )
 ;
 ; _u_ is the amount of space remaining in the region addressed
-; by `here`, in address units.  This region includes the
+; by `here`, in bytes.  This region includes the
 ; transient spaces addressed by `pad` and `hold`.
 ;
 ; Definition:
@@ -14889,7 +14889,7 @@ system_stack_pointer:
 ; farunused ( -- u )
 ;
 ; Return the amount of far-memory space remaining in the region
-; addressed by `np`, in address units.
+; addressed by `np`, in bytes.
 ;
 ; Definition:
 

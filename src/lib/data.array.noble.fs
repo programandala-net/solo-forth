@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803091536
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -129,7 +129,7 @@ unneeding 1array ?( need } need align
   \ 1array ( n1 n2 "name" -- ) "one-array"
   \
   \ Define a 1-dimension array _name_ with _n1_ items of
-  \ _n2_ address units each.
+  \ _n2_ bytes each.
   \
   \ See: `}`, `array>items`, `2array`.
   \
@@ -177,7 +177,7 @@ unneeding 2array ?( need } need align
   \ 2array ( n1 n2 n3 "name" -- ) "two-array"
   \
   \ Define a 2-dimension array _name_ with _n1 x n2_ items of
-  \ _n3_ address units each.
+  \ _n3_ bytes each.
   \
   \ See: `}}`, `1array`.
   \
@@ -221,5 +221,7 @@ unneeding 2array ?( need } need align
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-09: Update notation "address units" to "bytes".
 
   \ vim: filetype=soloforth

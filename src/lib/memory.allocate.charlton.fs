@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072224
+  \ Last modified: 201803091542
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -331,9 +331,9 @@ variable nextnode
   \
   \ charlton-allocate ( u -- a ior )
   \
-  \ Allocate _u_ address units of contiguous data space. The
-  \ data-space pointer is unaffected by this operation. The
-  \ initial content of the allocated space is undefined.
+  \ Allocate _u_ bytes of contiguous data space. The data-space
+  \ pointer is unaffected by this operation. The initial
+  \ content of the allocated space is undefined.
   \
   \ If the allocation succeeds, _a_ is the aligned starting
   \ address of the allocated space and _ior_ is zero.
@@ -352,16 +352,15 @@ variable nextnode
 
   \ Original description:
 
-  \ Make an in-use node with a data field at least _u_ address
-  \ units long.  Return the address of the data field and an
-  \ ior of 0 to indicate success.  If the space is not
-  \ available return any old number and the standard ior.  The
-  \ standard specifies that the argument to `allocate` is
-  \ unsigned. As the implementation uses the sign bit of the
-  \ size field for its own purposes any request for an amount
-  \ of space greater than `max-n` must fail. As this would be
-  \ a request for half the addressable memory or more this is
-  \ not unreasonable.
+  \ Make an in-use node with a data field at least _u_ bytes
+  \ long.  Return the address of the data field and an ior of 0
+  \ to indicate success.  If the space is not available return
+  \ any old number and the standard ior.  The standard
+  \ specifies that the argument to `allocate` is unsigned. As
+  \ the implementation uses the sign bit of the size field for
+  \ its own purposes any request for an amount of space greater
+  \ than `max-n` must fail. As this would be a request for half
+  \ the addressable memory or more this is not unreasonable.
 
 ( charlton-heap-wordlist )
 
@@ -611,21 +610,21 @@ variable stash
   \
   \ Change the allocation of the contiguous data space starting
   \ at the address _a1_, previously allocated  by
-  \ `charlton-allocate` or ``charlton-resize``, to _u_ address
-  \ units. _u_ may be either larger or smaller than the current
-  \ size of the region. The data-space pointer is unaffected by
-  \ this operation.
+  \ `charlton-allocate` or ``charlton-resize``, to _u_ bytes.
+  \ _u_ may be either larger or smaller than the current size
+  \ of the region. The data-space pointer is unaffected by this
+  \ operation.
   \
   \ If the operation succeeds, _a2_ is  the aligned starting
-  \ address of  _u_ address units of allocated  memory and
-  \ _ior_ is zero.  _a2_ may be,  but need not be,  the same as
-  \ _a1_.  If they are  not the same,  the values contained in
-  \ the region at _a1_ are copied to _a2_, up to the minimum
-  \ size of either of  the two regions. If they are the same,
-  \ the values contained in the region are preserved to the
-  \ minimum of _u_ or the original size. If _a2_ is not the
-  \ same as _a1_, the region of memory at _a1_ is returned to
-  \ the system according to the operation of `free`.
+  \ address of  _u_ bytes of allocated  memory and _ior_ is
+  \ zero.  _a2_ may be,  but need not be,  the same as _a1_.
+  \ If they are  not the same,  the values contained in the
+  \ region at _a1_ are copied to _a2_, up to the minimum size
+  \ of either of  the two regions. If they are the same, the
+  \ values contained in the region are preserved to the minimum
+  \ of _u_ or the original size. If _a2_ is not the same as
+  \ _a1_, the region of memory at _a1_ is returned to the
+  \ system according to the operation of `free`.
   \
   \ If the operation fails, _a2_ equals _a1_, the region of
   \ memory at _a1_ is unaffected, and  _ior_ is #-61.
@@ -687,5 +686,7 @@ set-current set-order
   \ words.
   \
   \ 2017-04-16: Improve documentation.
+  \
+  \ 2018-03-09: Update notation "address units" to "bytes".
 
   \ vim: filetype=soloforth

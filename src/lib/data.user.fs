@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072320
+  \ Last modified: 201803091538
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -66,12 +66,11 @@ unneeding uallot ?( need ?user
   \
   \ uallot ( n -- ) "u-allot"
   \
-  \ If _n_ is greater than zero, reserve _n_ address units of
-  \ user data space. If _n_ is less than zero, release _n_
-  \ address units of user data space. If _n_ is zero, leave the
-  \ user data-space pointer unchanged. An exception is thrown
-  \ if the user-data pointer is out of bounds after the
-  \ operation.
+  \ If _n_ is greater than zero, reserve _n_ bytes of user data
+  \ space. If _n_ is less than zero, release _n_ bytes of user
+  \ data space. If _n_ is zero, leave the user data-space
+  \ pointer unchanged. An exception is thrown if the user-data
+  \ pointer is out of bounds after the operation.
   \
   \ See: `udp`, `ucreate`, `?user`, `user`, `2user`.
   \
@@ -136,5 +135,7 @@ unneeding 2user ?( need ucreate need uallot
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-07: Add words' pronunciaton.
+  \
+  \ 2018-03-09: Update notation "address units" to "bytes".
 
   \ vim: filetype=soloforth

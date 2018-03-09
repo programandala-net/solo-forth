@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072226
+  \ Last modified: 201803091541
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -50,7 +50,7 @@ need value
   \
   \ /heap  ( -- n ) "slash-heap"
   \
-  \ Size of the current `heap`, in address units.
+  \ Size of the current `heap`, in bytes.
   \
   \ See: `get-heap`.
   \
@@ -112,9 +112,9 @@ defer allocate ( u -- a ior )
   \
   \ allocate ( u -- a ior )
   \
-  \ Allocate _u_ address units of contiguous data space. The
-  \ data-space pointer is unaffected by this operation. The
-  \ initial content of the allocated space is undefined.
+  \ Allocate _u_ bytes of contiguous data space. The data-space
+  \ pointer is unaffected by this operation. The initial
+  \ content of the allocated space is undefined.
   \
   \ If the allocation succeeds, _a_ is the aligned starting
   \ address of the allocated space and _ior_ is zero.
@@ -140,13 +140,13 @@ defer resize ( a1 -- a2 ior )
   \
   \ Change the allocation of the contiguous data space starting
   \ at the address _a1_, previously allocated  by `allocate` or
-  \ ``resize``, to _u_ address units. _u_ may be either larger
-  \ or smaller than the current size of the region. The
-  \ data-space pointer is unaffected by this operation.
+  \ ``resize``, to _u_ bytes. _u_ may be either larger or
+  \ smaller than the current size of the region. The data-space
+  \ pointer is unaffected by this operation.
   \
   \ If the operation succeeds, _a2_ is  the aligned starting
-  \ address of _u_ address units of allocated  memory and _ior_
-  \ is zero.  _a2_ may be,  but need not be,  the same as _a1_.
+  \ address of _u_ bytes of allocated  memory and _ior_ is
+  \ zero.  _a2_ may be,  but need not be,  the same as _a1_.
   \ If they are  not the same,  the values contained in the
   \ region at _a1_ are copied to _a2_, up to the minimum size
   \ of either of  the two regions. If they are the same, the
@@ -219,8 +219,8 @@ unneeding allot-heap ?( need /heap need heap
   \
   \ allot-heap ( n -- a )
   \
-  \ Create a `heap` of _n_ address units in the data space.
-  \ Return its address _a_.
+  \ Create a `heap` of _n_ bytes in the data space.  Return its
+  \ address _a_.
   \
   \ See: `limit-heap`, `bank-heap`, `farlimit-heap`,
   \ `empty-heap`.
@@ -236,9 +236,8 @@ unneeding limit-heap ?( need /heap need heap
   \
   \ limit-heap ( n -- a )
   \
-  \ Create a `heap` of _n_ address units right above `limit`
-  \ and return its address _a_. `limit` is moved down _n_
-  \ address units.
+  \ Create a `heap` of _n_ bytes right above `limit` and return
+  \ its address _a_. `limit` is moved down _n_ bytes.
   \
   \ See: `allot-heap`, `bank-heap`, `farlimit-heap`,
   \ `empty-heap`.
@@ -255,21 +254,19 @@ unneeding farlimit-heap ?( need /heap need heap
   \
   \ farlimit-heap ( n -- a )
   \
-  \ Create a `heap` of _n_ address units right above `farlimit`
-  \ and return its address _a_. `farlimit` is moved down _n_
-  \ address units, and `heap-bank` is updated with the
-  \ corresponding bank.
+  \ Create a `heap` of _n_ bytes right above `farlimit` and
+  \ return its address _a_. `farlimit` is moved down _n_ bytes,
+  \ and `heap-bank` is updated with the corresponding bank.
   \
   \ `allocate`, `resize` and `free` page in the corresponding
   \ bank at the start and restore the default bank at the end.
   \
   \ WARNING: The heap must be in one memory bank.  Therefore,
   \ before executing ``farlimit-heap``, the application must
-  \ check that the _n_ address units below `farlimit` belong to
-  \ one memory bank.
+  \ check that the _n_ bytes below `farlimit` belong to one
+  \ memory bank.
   \
-  \ See: `allot-heap`, `bank-heap`, `limit-heap`,
-  \ `empty-heap`.
+  \ See: `allot-heap`, `bank-heap`, `limit-heap`, `empty-heap`.
   \
   \ }doc
 
@@ -281,15 +278,15 @@ unneeding bank-heap ?( need 0exit need alias
   \
   \ bank-heap ( n b a -- a )
   \
-  \ Create a `heap` of _n_ address units at address _a_ of bank
-  \ _b_.  _a_ is the actual address ($C000..$FFFF) when bank
-  \ _b_ is paged in, which is stored in `heap-bank`.
+  \ Create a `heap` of _n_ bytes at address _a_ of bank _b_.
+  \ _a_ is the actual address ($C000..$FFFF) when bank _b_ is
+  \ paged in, which is stored in `heap-bank`.
   \
   \ `allocate`, `resize` and `free` page in bank _b_ at the
   \ start and restore the default bank at the end.
   \
-  \ See: `heap-in`, `heap-out`, `allot-heap`,
-  \ `limit-heap`, `farlimit-heap`, `empty-heap`.
+  \ See: `heap-in`, `heap-out`, `allot-heap`, `limit-heap`,
+  \ `farlimit-heap`, `empty-heap`.
   \
   \ }doc
 
@@ -355,5 +352,7 @@ unneeding set-heap
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-07: Add words' pronunciaton.
+  \
+  \ 2018-03-09: Update notation "address units" to "bytes".
 
   \ vim: filetype=soloforth

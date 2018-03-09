@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201803072227
+  \ Last modified: 201803091542
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -183,9 +183,9 @@ wordlist dup constant gil-heap-wordlist dup set-current >order
   \
   \ gil-allocate ( u -- a ior )
   \
-  \ Allocate _u_ address units of contiguous data space. The
-  \ data-space pointer is unaffected by this operation. The
-  \ initial content of the allocated space is undefined.
+  \ Allocate _u_ bytes of contiguous data space. The data-space
+  \ pointer is unaffected by this operation. The initial
+  \ content of the allocated space is undefined.
   \
   \ If the allocation succeeds, _a_ is the aligned starting
   \ address of the allocated space and _ior_ is zero.
@@ -285,6 +285,8 @@ previous ?)
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-07: Add words' pronunciaton.
+  \
+  \ 2018-03-09: Update notation "address units" to "bytes".
 
   \ vim: filetype=soloforth
 

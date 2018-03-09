@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072311
+  \ Last modified: 201803091537
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -35,7 +35,7 @@ unneeding +field ?\ defer +field ( n1 n2 "name" -- n3 ) exit
   \ defined below. Return _n3_ = _n1_ + _n2_ where _n1_ is the
   \ offset in the data  structure before ``+field`` executes,
   \ and _n2_ is the size of the data to be added to the data
-  \ structure. _n1_ and _n2_ are in address units.
+  \ structure. _n1_ and _n2_ are in bytes.
   \
   \ _name_ execution: ``( a1 -- a2 )``
   \
@@ -147,8 +147,8 @@ unneeding begin-structure unneeding end-structure and ?(
   \
   \ _name_ execution: ``( -- +n )``
   \
-  \ _+n_ is the size in memory expressed in address units of
-  \ the data structure.
+  \ _+n_ is the size in memory expressed in bytes of the data
+  \ structure.
   \
   \ Example usage:
 
@@ -329,5 +329,7 @@ unneeding +field-opt-0124 ?( need case need +field
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-07: Add words' pronunciaton.
+  \
+  \ 2018-03-09: Update notation "address units" to "bytes".
 
   \ vim: filetype=soloforth

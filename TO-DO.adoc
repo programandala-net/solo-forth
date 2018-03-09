@@ -928,13 +928,6 @@ Include the PNG of the 64-cpl fonts from Einar Saukas' 64#4.
 Fix the EPUB version of the manual. Create it with xsltproc instead of
 Pandoc.
 
-=== 2017-05-11
-
-NOTE: Milestone: 0.14.0
-
-Uso "bytes" instead of "address units", which is needed only in the
-standard.
-
 === 2017-05-06, 2018-02-04
 
 NOTE: Milestone: 0.14.0

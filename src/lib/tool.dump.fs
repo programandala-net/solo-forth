@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091408
+  \ Last modified: 201803091543
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -40,7 +40,7 @@ need 16hex. need type-ascii need backspace need ?leave
   \
   \ dump ( ca len -- )
   \
-  \ Show the contents of _len_ address units from _ca_.
+  \ Show the contents of _len_ bytes from _ca_.
   \
   \ }doc
 
@@ -87,6 +87,7 @@ need 16hex. need ?leave
   \ 2017-02-20: Replace `do`, which has been moved to the
   \ library, with `?do`.
   \
-  \ 2018-03-09: Add words' pronunciaton.
+  \ 2018-03-09: Add words' pronunciaton.  Update notation
+  \ "address units" to "bytes".
 
   \ vim: filetype=soloforth

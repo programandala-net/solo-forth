@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072234
+  \ Last modified: 201803091540
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -702,8 +702,8 @@ unneeding reserve
   \
   \ reserve ( n -- a )
   \
-  \ Reserve _n_ address units of data space, erase the zone and
-  \ return its address _a_.
+  \ Reserve _n_ bytes of data space, erase the zone and return
+  \ its address _a_.
   \
   \ See: `allot`, `alloted`, `here`, `erase`.
   \
@@ -715,8 +715,7 @@ unneeding alloted ?\ : allotted ( n -- a ) here swap allot ;
   \
   \ allotted ( n -- a )
   \
-  \ Reserve _n_ address units of data space and return its
-  \ address _a_.
+  \ Reserve _n_ bytes of data space and return its address _a_.
   \
   \ See: `allot`, `here`, `reserve`.
   \
@@ -942,5 +941,7 @@ code cexchange ( ca1 ca2 -- )
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-07: Add words' pronunciaton.
+  \
+  \ 2018-03-09: Update notation "address units" to "bytes".
 
   \ vim: filetype=soloforth

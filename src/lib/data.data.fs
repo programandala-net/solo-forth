@@ -3,13 +3,13 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201709091154
+  \ Last modified: 201803091537
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
 
   \ ===========================================================
   \ Credit
@@ -36,10 +36,10 @@
   \ data ( n "name" -- n orig )
   \
   \ Create a definition for _name_, in order to compile data
-  \ items of _n_ address units each, finished by `end-data`.
-  \ Leave _n_ and _orig_ to be consumeb by `end-cdata`.  When
-  \ _name_ is executed, it will leave the start address of the
-  \ data and the number of items, which depends on _n_.
+  \ items of _n_ bytes each, finished by `end-data`.  Leave _n_
+  \ and _orig_ to be consumeb by `end-cdata`.  When _name_ is
+  \ executed, it will leave the start address of the data and
+  \ the number of items, which depends on _n_.
   \
   \ Usage example:
 
@@ -63,8 +63,8 @@
   \ end-data ( n orig -- )
   \
   \ Finish the definition started by `data`, calculating the
-  \ number of data items of _n_ address units that were
-  \ compiled and store it at _orig_.
+  \ number of data items of _n_ bytes that were compiled and
+  \ store it at _orig_.
   \
   \ }doc
 
@@ -87,5 +87,7 @@
   \ 2017-02-17: Update cross references.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2018-03-09: Update notation "address units" to "bytes".
 
   \ vim: filetype=soloforth

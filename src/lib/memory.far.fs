@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072230
+  \ Last modified: 201803091542
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -208,10 +208,10 @@ unneeding farallot
   \
   \ farallot ( n -- ) "far-allot"
   \
-  \ If _n_ is greater than zero, reserve _n_ address units of
-  \ headers space. If _n_ is less than zero, release _n_
-  \ address units of headers space. If _n_ is zero, leave the
-  \ headers-space pointer unchanged.
+  \ If _n_ is greater than zero, reserve _n_ bytes of headers
+  \ space. If _n_ is less than zero, release _n_ bytes of
+  \ headers space. If _n_ is zero, leave the headers-space
+  \ pointer unchanged.
   \
   \ }doc
 
@@ -538,5 +538,7 @@ code c@bank ( ca n -- c ) D1 c, e-bank_ call,
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-07: Add words' pronunciaton.
+  \
+  \ 2018-03-09: Update notation "address units" to "bytes".
 
   \ vim: filetype=soloforth

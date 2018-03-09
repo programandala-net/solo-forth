@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072328
+  \ Last modified: 201803091538
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -36,7 +36,7 @@ unneeding xstack and ?(
   \
   \ xsize ( -- n ) "x-size"
   \
-  \ Size of the current `xstack` in address units.
+  \ Size of the current `xstack` in bytes.
   \
   \ }doc
 
@@ -76,7 +76,7 @@ unneeding xstack and ?(
   \ +0 = initial value of the stack pointer (1 cell below the
   \      stack space)
   \ +2 = stack pointer
-  \ +4 = maximum size in address units
+  \ +4 = maximum size in bytes
   \ ....
 
   \ `xp0`, `xp` and `xsize` are used to access the contents of
@@ -326,7 +326,7 @@ unneeding xlen unneeding xdepth and ?( need xp need xp0
   \
   \ xlen ( -- n ) "x-len"
   \
-  \ _n_ is the length of the current `xstack`, in address units.
+  \ _n_ is the length of the current `xstack`, in bytes.
   \
   \ See: `xdepth`.
   \
@@ -410,5 +410,7 @@ need xp0 need xlen need xdepth need .depth
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-07: Add words' pronunciaton.
+  \
+  \ 2018-03-09: Update notation "address units" to "bytes".
 
   \ vim: filetype=soloforth

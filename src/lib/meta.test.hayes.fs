@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712090124
+  \ Last modified: 201803091543
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -418,7 +418,7 @@ align allot)
 
 here 1 allot here constant 2nda constant 1sta
 { 1sta 2nda u< -> <true> } { 1sta 1+ -> 2nda }
-  \ `here` must grow with allot by one address unit
+  \ `here` must grow with allot by one byte
 
   \ missing test: negative allot
 
@@ -886,5 +886,7 @@ decimal cr .( Test passed) cr
   \
   \ 2017-12-09: Update with `need */`, since `*/` was moved to
   \ the library.
+  \
+  \ 2018-03-09: Update notation "address units" to "bytes".
 
   \ vim: filetype=soloforth
