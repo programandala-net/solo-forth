@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803062140
+  \ Last modified: 201803100023
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -49,12 +49,13 @@ unneeding [false] ?\ -1 constant [true] immediate
   \
   \ }doc
 
-unneeding [if] ?(
+unneeding [if] ?( need lowers
 
-  \ Note: `[if]` uses 120 bytes of data space.
+  \ Note: `[if]` uses 126 bytes of data space.
 
 : [else] ( "ccc" -- )
-  1 begin begin  parse-name dup while 2dup s" [if]" str=
+  1 begin begin  parse-name dup
+          while  >stringer 2dup lowers 2dup s" [if]" str=
                  if   2drop 1+
                  else 2dup s" [else]" str=
                       if   2drop 1- dup 0<> abs +
@@ -70,9 +71,9 @@ unneeding [if] ?(
   \ Parse and discard space-delimited words from the parse
   \ area, including nested occurrences of ``[if] ... [then]``,
   \ and ``[if] ... [else] ... [then]``, until either the word
-  \ ``[else]`` or the  word `[then]` has  been parsed and
-  \ discarded. If the  parse area  becomes exhausted, it is
-  \ refilled as with `refill`.
+  \ ``[else]`` the  word `[then]` (case ignored) has been
+  \ parsed and discarded. If the parse area becomes exhausted,
+  \ it is refilled as with `refill`.
   \
   \ Origin: Forth-94 (TOOLS EXT), Forth-2012 (TOOLS EXT).
   \
@@ -90,8 +91,9 @@ unneeding [if] ?(
   \ space-delimited words from the parse area, including nested
   \ occurrences of ``[if] ... [then]``, and ``[if] ... [else]
   \ ... [then]``, until either the word `[else]` or the  word
-  \ `[then]` has  been parsed and  discarded. If the  parse
-  \ area  becomes exhausted, it is refilled as with `refill`.
+  \ `[then]` (case ignored) has been parsed and  discarded. If
+  \ the  parse area  becomes exhausted, it is refilled as with
+  \ `refill`.
   \
   \ ``[if]`` is an `immediate` word.
   \
@@ -1452,8 +1454,8 @@ unneeding warn-throw ?( need ?warn
   \ Improve documentation.
   \
   \ 2018-01-03: Update `1literal` to `xliteral`. Rename
-  \ accordingly: `[1const]` -> `[xconst]`, `]1l` -> `]xl`.
-  \ Fix requirement of `>oldest-name`.
+  \ accordingly: `[1const]` -> `[xconst]`, `]1l` -> `]xl`.  Fix
+  \ requirement of `>oldest-name`.
   \
   \ 2018-02-05: Improve documentation: add pronunciation to
   \ words that need it.
@@ -1461,5 +1463,8 @@ unneeding warn-throw ?( need ?warn
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-06: Improve documentation of `body>name`.
+  \
+  \ 2018-03-10: Make the string comparisons of `[if] [else]
+  \ [then]` case-insensitive.
 
   \ vim: filetype=soloforth
