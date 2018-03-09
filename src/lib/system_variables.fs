@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803091350
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -29,7 +29,7 @@ unneeding os-chars ?\ #23606 constant os-chars
 
   \ doc{
   \
-  \ os-chars ( -- a )
+  \ os-chars ( -- a ) "o-s-chars"
   \
   \ A constant that returns the address of system variable
   \ CHARS, which holds the bitmap address of character 0 of the
@@ -44,7 +44,7 @@ unneeding os-chans ?\ #23631 constant os-chans
 
   \ doc{
   \
-  \ os-chans ( -- a )
+  \ os-chans ( -- a ) "o-s-chans"
   \
   \ A constant that returns the address _a_ of system variable
   \ CHANS, which holds the address of channels data.
@@ -55,7 +55,7 @@ unneeding os-flags2 ?\ #23658 constant os-flags2
 
   \ doc{
   \
-  \ os-flags2 ( -- ca )
+  \ os-flags2 ( -- ca ) "o-s-flags-two"
   \
   \ A constant that returns the address _ca_ of 1-byte system
   \ variable FLAGS2, which holds several flags.
@@ -68,7 +68,7 @@ unneeding os-seed ?\ #23670 constant os-seed
 
   \ doc{
   \
-  \ os-seed ( -- a )
+  \ os-seed ( -- a ) "o-s-seed"
   \
   \ A constant that returns the address _a_ of system variable
   \ SEED, which holds the seed of the BASIC random number
@@ -80,7 +80,7 @@ unneeding os-frames ?\ #23672 constant os-frames
 
   \ doc{
   \
-  \ os-frames ( -- a )
+  \ os-frames ( -- a ) "o-s-frames"
   \
   \ A constant that returns the address _a_ of the 24-bit
   \ system variable FRAMES (least significant byte first),
@@ -98,7 +98,7 @@ unneeding os-udg ?\ #23675 constant os-udg
 
   \ doc{
   \
-  \ os-udg ( -- a )
+  \ os-udg ( -- a ) "o-s-u-d-g"
   \
   \ A constant that returns the address _a_ of system variable
   \ UDG, which holds the address of the first character bitmap
@@ -116,7 +116,7 @@ unneeding os-coords ?\ #23677 constant os-coords
 
   \ doc{
   \
-  \ os-coords ( -- a )
+  \ os-coords ( -- a ) "o-s-coords"
   \
   \ A constant that returns the address _a_ of 2-byte system
   \ variable COORDS which holds the graphic coordinates of the
@@ -130,7 +130,7 @@ unneeding os-coordx ?\ #23677 constant os-coordx
 
   \ doc{
   \
-  \ os-coordx ( -- ca )
+  \ os-coordx ( -- ca ) "o-s-coord-x"
   \
   \ A constant that returns the address _a_ of 1-byte system
   \ variable COORDX which holds the graphic x coordinate of the
@@ -144,7 +144,7 @@ unneeding os-coordy ?\ #23678 constant os-coordy
 
   \ doc{
   \
-  \ os-coordy ( -- ca )
+  \ os-coordy ( -- ca ) "o-s-coord-y"
   \
   \ A constant that returns the address _a_ of 1-byte system
   \ variable COORDY which holds the graphic y coordinate of the
@@ -160,7 +160,7 @@ unneeding os-attr-p ?\ #23693 constant os-attr-p
 
   \ doc{
   \
-  \ os-attr-p ( -- ca )
+  \ os-attr-p ( -- ca ) "o-s-attribute-p"
   \
   \ A constant that returns the address _a_ of 1-byte system
   \ variable ATTR_P, which holds the current permanent color
@@ -174,7 +174,7 @@ unneeding os-mask-p ?\ #23694 constant os-mask-p
 
   \ doc{
   \
-  \ os-mask-p ( -- ca )
+  \ os-mask-p ( -- ca ) "o-s-mask-p"
   \
   \ A constant that returns the address _a_ of 1-byte system
   \ variable MASK_P, which holds the permanent color attribute
@@ -190,7 +190,7 @@ unneeding os-attr-t ?\ #23695 constant os-attr-t
 
   \ doc{
   \
-  \ os-attr-t ( -- ca )
+  \ os-attr-t ( -- ca ) "o-s-attribute-t"
   \
   \ A constant that returns the address _a_ of 1-byte system
   \ variable ATTR_T, which holds the current temporary color
@@ -204,7 +204,7 @@ unneeding os-mask-t ?\ #23696 constant os-mask-t
 
   \ doc{
   \
-  \ os-mask-t ( -- ca )
+  \ os-mask-t ( -- ca ) "o-s-mask-t"
   \
   \ A constant that returns the address _a_ of 1-byte system
   \ variable MASK_T, which holds the temporary color attribute
@@ -221,7 +221,7 @@ unneeding os-p-flag ?\ #23697 constant os-mask-t
 
   \ doc{
   \
-  \ os-p-flag ( -- ca )
+  \ os-p-flag ( -- ca ) "o-s-p-flag"
   \
   \ A constant that returns the address _a_ of 1-byte system
   \ variable P_FLAG, which holds some flags related to
@@ -251,5 +251,7 @@ unneeding os-p-flag ?\ #23697 constant os-mask-t
   \ Improve documentation.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-09: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

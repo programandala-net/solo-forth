@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071838
+  \ Last modified: 201803091353
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -15,7 +15,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -44,10 +44,14 @@ need u.r
 
   \ doc{
   \
-  \ fyi ( -- )
+  \ fyi ( -- ) "f-y-i"
   \
   \ Display information about the current status of the Forth
   \ system.
+  \
+  \ See: `#words`, `here`, `latest-wordlist`, `limit`,
+  \ `unused`. `np@`, latest`, current-latest`, `farlimit`,
+  \ `farunused`, `greeting`.
   \
   \ }doc
 
@@ -64,6 +68,8 @@ need u.r
   \ in the kernel.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2018-03-09: Add words' pronunciaton. Improve documentation.
 
   \ vim: filetype=soloforth
 

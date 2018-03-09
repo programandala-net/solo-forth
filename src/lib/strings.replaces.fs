@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803091348
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -54,7 +54,7 @@ need substitute-wordlist need nextname
 
   \ doc{
   \
-  \ (substitution ( ca1 len1 -- ca2 )
+  \ (substitution ( ca1 len1 -- ca2 ) "paren-substitution"
   \
   \ Given a string _ca1 len1_ create its definition in
   \ `substitute-wordlist` its substitution and return the
@@ -170,5 +170,7 @@ need slit-substitution
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-09: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

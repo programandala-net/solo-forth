@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-03-08
+:revdate: 2018-03-09
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -970,13 +970,6 @@ backslash, or that are included in code examples, are corrupted.
 
 Add exception codes to the manual, by including and filtering the
 corresponding library modules.
-
-=== 2017-03-13, 2017-12-13
-
-NOTE: Milestone: 0.14.0
-
-Add the corresponding English names to words that need them in the
-library (already done in the kernel).
 
 === 2017-03-04
 
@@ -2415,6 +2408,13 @@ for the end user.
 
 // Names {{{1
 == Names
+
+=== 2018-03-09
+
+NOTE: Milestone: 0.14.0
+
+Homogenize usage of prefix "far". In some words it's separated by a
+dash.
 
 === 2018-03-07
 

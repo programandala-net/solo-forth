@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801071124
+  \ Last modified: 201803091402
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ Credit
@@ -236,7 +236,7 @@ variable manual-see manual-see on
 
   \ doc{
   \
-  \ see-xt ( xt -- )
+  \ see-xt ( xt -- ) "see-x-t"
   \
   \ Decode the word's definition _xt_.
   \
@@ -286,7 +286,7 @@ need see
 
   \ doc{
   \
-  \ see-colon-body> ( a -- )
+  \ see-colon-body> ( a -- ) "see-colon-body-from"
   \
   \ Decode the colon word's definition from _a_, which is part
   \ of its body. ``see-colon-body>`` is useful to decode words
@@ -389,5 +389,7 @@ need see
   \ 2018-01-06: Start implementing `manual-see`.
   \
   \ 2018-01-07: Finish implementation of `manual-see`.
+  \
+  \ 2018-03-09: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

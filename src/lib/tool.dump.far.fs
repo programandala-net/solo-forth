@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201803091408
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -38,7 +38,7 @@ need 16hex. need fartype-ascii need backspace need ?leave
 
   \ doc{
   \
-  \ fardump ( ca len -- )
+  \ fardump ( ca len -- ) "far-dump"
   \
   \ Show the contents of _len_ address units from far-memory
   \ address _ca_.
@@ -59,7 +59,7 @@ need 16hex. need ?leave
 
   \ doc{
   \
-  \ farwdump ( a len -- )
+  \ farwdump ( a len -- ) "far-w-dump"
   \
   \ Show the contents of _len_ cells from far-memory address
   \ _a_.
@@ -77,6 +77,8 @@ need 16hex. need ?leave
   \
   \ 2017-02-20: Replace `do`, which has been moved to the
   \ library, with `?do`.
+  \
+  \ 2018-03-09: Add words' pronunciaton.
 
   \ vim: filetype=soloforth
 

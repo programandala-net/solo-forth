@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803091344
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -126,7 +126,7 @@ need get-esc-order need catch
 
   \ doc{
   \
-  \ (parse-esc-string) ( ca len "ccc<quote>"  -- ca' len' )
+  \ (parse-esc-string) ( ca len "ccc<quote>"  -- ca' len' ) "paren-parse-esc-string"
   \
   \ Parse a text string delimited by a double quote,
   \ translating some configurable characters that are escaped
@@ -224,6 +224,7 @@ need set-esc-order  esc-standard-chars-wordlist 1 set-esc-order
   \   Compilation:    ( "ccc<quote>" -- )
   \   Interpretation: ( "ccc<quote>" -- ca len )
   \   Run-time:       ( -- ca len )
+  \ "s-backslash-quote"
 
   \
   \ Note: When ``s\"`` is loaded, `esc-standard-chars-wordlist`
@@ -258,6 +259,7 @@ need set-esc-order  esc-standard-chars-wordlist 1 set-esc-order
   \ .\"
   \   Compilation: ( "ccc<quote>" -- )
   \   Run-time:    (-- ca len )
+  \ "dot-backslash-quote"
   \
 
   \ ``.\"`` is an `immediate` and `compile-only` word.
@@ -301,7 +303,7 @@ variable #esc-order  #esc-order off
 
   \ doc{
   \
-  \ #esc-order ( -- a )
+  \ #esc-order ( -- a ) "hash-esc-order"
   \
   \ A variable. _a_ is the address of a cell containing the
   \ number of word lists in the escaped strings search order.
@@ -337,7 +339,7 @@ need max-esc-order
 
   \ doc{
   \
-  \ ?esc-order ( n -- )
+  \ ?esc-order ( n -- ) "question-esc-order"
   \
   \ Check if _n_ is a valid size for the escaped strings search
   \ order, else throw an exception.
@@ -406,7 +408,7 @@ need get-esc-order need set-esc-order
 
   \ doc{
   \
-  \ >esc-order ( wid -- )
+  \ >esc-order ( wid -- ) "to-esc-order"
   \
   \ Push _wid_ on the escaped strings search order.
   \
@@ -440,7 +442,7 @@ need parse-char need char>string
 
   \ doc{
   \
-  \ parse-esc-char>chars ( "c" -- c[n-1]..c[0] n )
+  \ parse-esc-char>chars ( "c" -- c[n-1]..c[0] n ) "parse-esc-char-to-chars"
   \
   \ Parse and translate a escaped char 'c' to a number of chars
   \ _c[n-1]..c[0] and their count _n_.
@@ -525,5 +527,7 @@ need parse-char need char>string
   \ 2017-12-09: Improve documentation.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-09: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

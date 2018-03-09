@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712092331
+  \ Last modified: 201803091410
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -31,7 +31,7 @@ variable ~~?  ~~? on
 
   \ doc{
   \
-  \ ~~? ( -- a )
+  \ ~~? ( -- a ) "tilde-tilde-question"
   \
   \ A variable. _a_ is the address of a cell containing a flag.
   \ When the flag is true, the debugging code compiled by `~~`
@@ -43,7 +43,7 @@ create ~~y  0 c,
 
   \ doc{
   \
-  \ ~~y ( -- ca )
+  \ ~~y ( -- ca ) "tilde-tilde-y"
   \
   \ A character variable. _ca_ is the address of a character
   \ containing the row the debugging information compiled by
@@ -55,7 +55,7 @@ create ~~quit-key 'q' c,
 
   \ doc{
   \
-  \ ~~quit-key ( -- ca )
+  \ ~~quit-key ( -- ca ) "tilde-tilde-quit-key"
   \
   \ A character variable. _ca_ is the address of a character
   \ containing the key code used to quit at the debugging
@@ -71,7 +71,7 @@ create ~~resume-key bl c,
 
   \ doc{
   \
-  \ ~~resume-key ( -- ca )
+  \ ~~resume-key ( -- ca ) "tilde-tilde-resume-key"
   \
   \ A character variable. _ca_ is the address of a character
   \ containing the key code used to resume execution at the
@@ -92,7 +92,7 @@ create ~~resume-key bl c,
 
   \ doc{
   \
-  \ ~~info ( -- )
+  \ ~~info ( -- ) "tilde-tilde-info"
   \
   \ Show the debugging info compiled by `~~` and the current
   \ contents of the data stack. At least to lines are used,
@@ -108,7 +108,7 @@ create ~~resume-key bl c,
 
   \ doc{
   \
-  \ ~~control? ( -- f )
+  \ ~~control? ( -- f ) "tilde-tilde-control-question"
   \
   \ Is there any key to be checked by `~~control`?
   \
@@ -120,7 +120,7 @@ create ~~resume-key bl c,
 
   \ doc{
   \
-  \ ~~press? ( c ca -- f )
+  \ ~~press? ( c ca -- f ) "tilde-tilde-press-question"
   \
   \ Is the character stored at _ca_ not zero and equal to _c_?
   \ This is a factor of `~~control` used to check key presses,
@@ -136,7 +136,7 @@ create ~~resume-key bl c,
 
   \ doc{
   \
-  \ ~~control ( -- )
+  \ ~~control ( -- ) "tilde-tilde-control"
   \
   \ Keyboard control used by the debug points compiled by `~~`:
   \ If the contents of `~~quit-key` and `~~resume-key` are zero
@@ -155,7 +155,7 @@ create ~~resume-key bl c,
 
   \ doc{
   \
-  \ ~~xy-backup ( -- a )
+  \ ~~xy-backup ( -- a ) "tilde-tilde-x-y-backup"
   \
   \ A double variable that holds cursor coordinates saved and
   \ restored by the default actions of `~~save` and
@@ -169,7 +169,7 @@ defer ~~save ( -- ) defer ~~restore ( -- )
 
   \ doc{
   \
-  \ ~~save ( -- )
+  \ ~~save ( -- ) "tilde-tilde-save"
   \
   \ Save system status before executing the debugging code
   \ compiled by `~~`..  This is a deferred word. Its default
@@ -181,7 +181,7 @@ defer ~~save ( -- ) defer ~~restore ( -- )
 
   \ doc{
   \
-  \ ~~restore ( -- )
+  \ ~~restore ( -- ) "tilde-tilde-restore"
   \
   \ Restore system status after executing the debugging code
   \ compiled by `~~`.  This is a deferred word. Its default
@@ -195,7 +195,7 @@ defer ~~save ( -- ) defer ~~restore ( -- )
 
   \ doc{
   \
-  \ ~~save-xy ( -- )
+  \ ~~save-xy ( -- ) "tilde-tilde-save-x-y"
   \
   \ Save the cursor coordinates.  This is the default
   \ action of `~~save`.
@@ -210,7 +210,7 @@ defer ~~save ( -- ) defer ~~restore ( -- )
 
   \ doc{
   \
-  \ ~~restore-xy ( -- )
+  \ ~~restore-xy ( -- ) "tilde-tilde-restore-x-y"
   \
   \ Restore the cursor coordinates.  This is the default
   \ action of `~~restore`.
@@ -227,7 +227,7 @@ defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
 
   \ doc{
   \
-  \ ~~app-info ( -- )
+  \ ~~app-info ( -- ) "tilde-tilde-app-info"
   \
   \ A deferred word that can be used by the application in
   \ order to show application-specific debugging information as
@@ -245,7 +245,7 @@ defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
 
   \ doc{
   \
-  \ (~~) ( nt n u -- )
+  \ (~~) ( nt n u -- ) "paren-tilde-tilde"
   \
   \ If the content of `~~?` is not zero, execute the debugging
   \ code that was compiled by `~~` during the definition of
@@ -263,7 +263,7 @@ defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
 
   \ doc{
   \
-  \ ~~ ( -- )
+  \ ~~ ( -- ) "tilde-tilde"
   \
   \ Compile debugging code.
   \
@@ -319,5 +319,7 @@ defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
   \ Update and improve documentation.
   \
   \ 2017-12-09: Improve documentation.
+  \
+  \ 2018-03-09: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

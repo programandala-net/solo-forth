@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803091341
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -36,7 +36,7 @@ unneeding rnd ?(
 
   \ doc{
   \
-  \ rnd ( -- u )
+  \ rnd ( -- u ) "r-n-d"
   \
   \ Return a random number _u_.
   \
@@ -95,7 +95,7 @@ code fast-rnd ( -- u )
 
   \ doc{
   \
-  \ fast-rnd ( -- u )
+  \ fast-rnd ( -- u ) "fast-r-n-d"
   \
   \ Return a random number _u_.
   \
@@ -242,7 +242,7 @@ code crnd ( -- b )
 
   \ doc{
   \
-  \ crnd ( -- b )
+  \ crnd ( -- b ) "c-r-n-d"
   \
   \ Return a random 8-bit number _b_ (0..255).
   \
@@ -255,7 +255,7 @@ unneeding -1|1
 
   \ doc{
   \
-  \ -1|1 ( -- -1|1 )
+  \ -1|1 ( -- -1|1 ) "minus-one-bar-one"
   \
   \ Return a random number: -1 or 1.
   \
@@ -268,7 +268,7 @@ unneeding -1..1
 
   \ doc{
   \
-  \ -1..1 ( -- -1|0|1 )
+  \ -1..1 ( -- -1|0|1 ) "minus-one-dot-dot-one"
   \
   \ Return a random number: -1, 0 or 1.
   \
@@ -296,7 +296,7 @@ unneeding randomize0 ?( need os-frames need randomize
 
   \ doc{
   \
-  \ randomize0 ( -- )
+  \ randomize0 ( -- ) "randomize-zero"
   \
   \ Set the seed used by `fast-rnd` and `fast-random` to _n_;
   \ if _n_ is zero use the system frames counter instead.
@@ -360,5 +360,7 @@ unneeding randomize0 ?( need os-frames need randomize
   \ slower than `random`.  Fix cross reference.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-09: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803091351
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -98,7 +98,7 @@ variable assert-level ( -- a ) 1 assert-level !
 
   \ doc{
   \
-  \ assertn ( n -- )
+  \ assertn ( n -- ) "assert-n"
   \
   \ If the contents of `assert-level` is greater than _n_, then
   \ parse and discard the input stream to the next right paren
@@ -116,7 +116,7 @@ variable assert-level ( -- a ) 1 assert-level !
 
   \ doc{
   \
-  \ assert0( ( -- )
+  \ assert0( ( -- ) "assert-zero"
   \
   \ Start an important assertion.  Important assertions should
   \ always be turned on.
@@ -134,7 +134,7 @@ variable assert-level ( -- a ) 1 assert-level !
 
   \ doc{
   \
-  \ assert1( ( -- )
+  \ assert1( ( -- ) "assert-one"
   \
   \ Start a normal assertion.  Normal assertions are turned on
   \ by default.
@@ -152,7 +152,7 @@ variable assert-level ( -- a ) 1 assert-level !
 
   \ doc{
   \
-  \ assert2( ( -- )
+  \ assert2( ( -- ) "assert-two"
   \
   \ Start a debugging assertion.
   \
@@ -169,7 +169,7 @@ variable assert-level ( -- a ) 1 assert-level !
 
   \ doc{
   \
-  \ assert3( ( -- )
+  \ assert3( ( -- ) "assert-three"
   \
   \ Start a slow assertion.  Slow assertions are those you may
   \ not want to turn on in normal debugging; you would turn
@@ -188,7 +188,7 @@ variable assert-level ( -- a ) 1 assert-level !
 
   \ doc{
   \
-  \ assert( ( -- )
+  \ assert( ( -- ) "assert-paren"
   \
   \ Start a normal assertion.  Normal assertion are turned on
   \ by default. ``assert(`` is equivalent to `assert1(`.
@@ -208,7 +208,7 @@ variable assert-level ( -- a ) 1 assert-level !
 
   \ doc{
   \
-  \ ) ( f -- )
+  \ ) ( f -- ) "close-paren"
   \
   \ End an assertion.
   \
@@ -239,5 +239,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \ 2017-12-09: Improve documentation.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-09: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

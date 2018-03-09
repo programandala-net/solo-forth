@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803091404
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -30,7 +30,7 @@ unneeding .current
 
   \ doc{
   \
-  \ .current ( -- )
+  \ .current ( -- ) "dot-current"
   \
   \ Display the compilation word list.
   \
@@ -45,7 +45,7 @@ unneeding .context ?( need .wordlist
 
   \ doc{
   \
-  \ .context ( -- )
+  \ .context ( -- ) "dot-context"
   \
   \ Display the word lists in the search order in their search
   \ order sequence, from first searched to last searched.
@@ -61,7 +61,7 @@ unneeding .wordlist ?( need wordlist>name
 
   \ doc{
   \
-  \ .wordlist ( wid -- )
+  \ .wordlist ( wid -- ) "dot-wordlist"
   \
   \ If the word list identified by _wid_ has an associated
   \ name, display it; else display _wid_.
@@ -154,5 +154,7 @@ unneeding order ?( need .context need .current
   \ 2017-12-15: Improve documentation.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-09: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

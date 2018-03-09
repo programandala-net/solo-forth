@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803091342
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -45,7 +45,7 @@ code n>r ( x1..xn n -- ) ( R: -- x1..xn n )
 
   \ doc{
   \
-  \ n>r ( x#1..x#n n -- ) ( R: -- x#1..x#n n )
+  \ n>r ( x#1..x#n n -- ) ( R: -- x#1..x#n n ) "n-to-r"
   \
   \ Remove _n+1_ items from the  data stack and store them  for
   \ later retrieval by `nr>`.  The return stack may  be used to
@@ -82,7 +82,7 @@ code nr> ( -- x1..xn n ) ( R: x1..xn n -- )
 
   \ doc{
   \
-  \ nr> ( -- x#1..x#n n ) ( R: x#1..x#n n -- )
+  \ nr> ( -- x#1..x#n n ) ( R: x#1..x#n n -- ) "n-r-from"
   \
   \ Retrieve the items previously stored by an invocation of
   \ `n>r`.  _n_ is the number of items placed on the  data
@@ -104,7 +104,7 @@ unneeding rdepth
 
   \ doc{
   \
-  \ rdepth ( -- +n )
+  \ rdepth ( -- +n ) "r-depth"
   \
   \ _+n_ is the number of single-cell values contained in the
   \ return stack.
@@ -125,7 +125,7 @@ unneeding r'@ ?(
 
   \ doc{
   \
-  \ r'@ ( -- x1 ) ( R: x1 x2 -- x1 x2 )
+  \ r'@ ( -- x1 ) ( R: x1 x2 -- x1 x2 ) "r-tick-fetch"
   \
   \ Fetch _x1_ from the return stack.
   \
@@ -146,7 +146,7 @@ code 2rdrop ( R: x1 x2 -- )
 
   \ doc{
   \
-  \ 2rdrop ( R: x1 x2 -- )
+  \ 2rdrop ( R: x1 x2 -- ) "two-r-drop"
   \
   \ Remove _x1 x2_ from the return stack.
   \
@@ -168,7 +168,7 @@ code dup>r ( x -- x ) ( R: -- x )
 
   \ doc{
   \
-  \ dup>r ( x -- x ) ( R: -- x )
+  \ dup>r ( x -- x ) ( R: -- x ) "dup-to-r"
   \
   \ Move a copy of _x_ to the return stack.  ``dup>r`` is a
   \ faster alternative to the idiom `dup >r`.
@@ -222,5 +222,7 @@ code dup>r ( x -- x ) ( R: -- x )
   \ `_jp_next` in Z80 comments.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-09: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

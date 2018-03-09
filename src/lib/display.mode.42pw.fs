@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201801242001
+  \ Last modified: 201803091412
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -652,7 +652,7 @@ code mode-42pw-emit ( c -- )
 
   \ doc{
   \
-  \ mode-42pw-emit ( c -- )
+  \ mode-42pw-emit ( c -- ) "mode-42-p-w-emit"
   \
   \ Display character _c_ in `mode-42pw`, by calling
   \ `mode-64ao-output_`.
@@ -672,7 +672,7 @@ need mode-32 need (at-xy need set-mode-output need >form
 
   \ doc{
   \
-  \ mode-42pw-xy ( -- col row )
+  \ mode-42pw-xy ( -- col row ) "mode-42-p-w-x-y"
   \
   \ Return the current cursor coordinates _col row_ in
   \ `mode-42pw`. ``mode-64ao-xy`` is the action of `xy` when
@@ -685,7 +685,7 @@ variable mode-42pw-font  rom-font bl 8 * + mode-42pw-font !
 
   \ doc{
   \
-  \ mode-42pw-font ( -- a )
+  \ mode-42pw-font ( -- a ) "mode-42-p-w-font"
   \
   \ A variable. _a_ is the address of a cell containing the
   \ address of the font used by `mode-42pw`. The font is a
@@ -709,7 +709,7 @@ variable mode-42pw-font  rom-font bl 8 * + mode-42pw-font !
 
   \ doc{
   \
-  \ mode-42pw ( -- )
+  \ mode-42pw ( -- ) "mode-42-p-w"
   \
   \ Start the 42 CPL display mode based on:
 
@@ -767,5 +767,7 @@ variable mode-42pw-font  rom-font bl 8 * + mode-42pw-font !
   \
   \ 2018-01-24: Update after the renaming of all display modes
   \ files and words: "42rt" (real time) ->  "42pw" (P. Wardle).
+  \
+  \ 2018-03-09: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201709091154
+  \ Last modified: 201803091403
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -16,7 +16,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -42,7 +42,7 @@
 
   \ doc{
   \
-  \ wordlists, ( -- )
+  \ wordlists, ( -- ) "wordlists-comma"
   \
   \ Store the latest definition of every word list in the data
   \ space.
@@ -58,7 +58,7 @@
 
   \ doc{
   \
-  \ @wordlists ( a -- )
+  \ @wordlists ( a -- ) "fetch-wordlists"
   \
   \ Fetch the latest definition of every word list from _a_.
   \
@@ -106,7 +106,7 @@ need get-order need @cell+ need nn, need nn@ need there
 
   \ doc{
   \
-  \ marker, ( -- a )
+  \ marker, ( -- a ) "marker-comma"
   \
   \ Store the names pointer, the latest definition pointers,
   \ the word lists pointer, the current compilation word list,
@@ -180,5 +180,7 @@ need possibly need marker
   \ 2017-03-13: Improve documentation.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2018-03-09: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

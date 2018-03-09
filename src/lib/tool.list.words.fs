@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803091403
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -31,7 +31,7 @@ unneeding .word ?( need tab  defer .word ( nt -- )
 
   \ doc{
   \
-  \ .word ( nt -- )
+  \ .word ( nt -- ) "dot-word"
   \
   \ A deferred word whose default action is `(.word)`. This
   \ word is used by `words`, `words-like` and `wordlist-words`,
@@ -43,7 +43,7 @@ unneeding .word ?( need tab  defer .word ( nt -- )
 
   \ doc{
   \
-  \ (.word ( nt -- )
+  \ (.word ( nt -- ) "paren-dot-word"
   \
   \ Default action of `.word`: display the name of the
   \ definition _nt_ and execute `tab`.
@@ -56,7 +56,7 @@ unneeding .wordname ?( need u.r
 
   \ doc{
   \
-  \ .wordname ( nt -- )
+  \ .wordname ( nt -- ) "dot-wordname"
   \
   \ An alternative action for the deferred word `.word`,
   \ which is used by `words`, `words-like` and
@@ -70,7 +70,7 @@ unneeding more-words? ?( need nuf?
 
   \ doc{
   \
-  \ more-words? ( nt|0 -- nt|0 f )
+  \ more-words? ( nt|0 -- nt|0 f ) "more-words-question"
   \
   \ A common factor of `words` and `words-like`.
   \
@@ -147,7 +147,7 @@ unneeding words# ?( need trail need name<name
 
   \ doc{
   \
-  \ words# ( -- n )
+  \ words# ( -- n ) "words-hash"
   \
   \ Return number _n_ of words defined in the first word list
   \ of the search order.
@@ -187,5 +187,7 @@ unneeding words# ?( need trail need name<name
   \ 2017-12-15: Improve documentation.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-09: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

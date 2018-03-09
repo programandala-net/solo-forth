@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803091349
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -35,7 +35,7 @@ need (substitution
 
   \ doc{
   \
-  \ xt-substitution ( ca len -- a )
+  \ xt-substitution ( ca len -- a ) "x-t-substitution"
   \
   \ Given a string _ca len_ create its substitution and
   \ storage space.  Return the address that will hold the
@@ -57,7 +57,7 @@ need xt-substitution
 
   \ doc{
   \
-  \ xt-replaces ( xt ca len -- )
+  \ xt-replaces ( xt ca len -- ) "x-t-replaces"
   \
   \ Set _xt_ (whose execution returns the address and length of
   \ a string) as the text to substitute for the substitution
@@ -82,6 +82,8 @@ need xt-substitution
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-09: Add words' pronunciaton.
 
   \ vim: filetype=soloforth
 

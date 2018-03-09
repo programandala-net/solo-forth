@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803091407
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -29,7 +29,7 @@ unneeding /line# ?\ : /line# ( -- n ) #16 base @ - 4 / 1+ ;
 
   \ doc{
   \
-  \ /line# ( -- # )
+  \ /line# ( -- # ) "slash-line-hash"
   \
   \ Maximum length of a line number in the current radix.
   \ It works for decimal, hex and binary.
@@ -41,7 +41,7 @@ unneeding .line#
 
   \ doc{
   \
-  \ .line# ( n -- )
+  \ .line# ( n -- ) "dot-line-hash"
   \
   \ Display line number _n_ right-aligned in a field whose
   \ width depends on the current radix (decimal, hex or
@@ -54,7 +54,7 @@ unneeding .line
 
   \ doc{
   \
-  \ .line ( n1 n2 -- )
+  \ .line ( n1 n2 -- ) "dot-line"
   \
   \ Display line _n1_ from block _n2_, without trailing spaces.
   \
@@ -140,7 +140,7 @@ unneeding .index ?( need .line
 
   \ doc{
   \
-  \ .index ( u -- )
+  \ .index ( u -- ) "dot-index"
   \
   \ Display the first line of the block _u_, which
   \ conventionally contains a comment with a title.
@@ -235,7 +235,7 @@ need .line# need /line# need .block# need /block#
 
   \ doc{
   \
-  \ qx-columns ( -- n )
+  \ qx-columns ( -- n ) "q-x-columns"
   \
   \ _n_ is the number of columns (2..4) of the quick index. It
   \ depends on the columns (32, 42, 64...) of the current
@@ -249,7 +249,7 @@ need .line# need /line# need .block# need /block#
 
   \ doc{
   \
-  \ /qx-column ( -- n )
+  \ /qx-column ( -- n ) "slash-q-x-column"
   \
   \ _n_ is the width of a column of the quick index. It depends
   \ on the columns (32, 42, 64...) of the current screen mode.
@@ -262,7 +262,7 @@ need .line# need /line# need .block# need /block#
 
   \ doc{
   \
-  \ /qx ( -- n )
+  \ /qx ( -- n ) "slash-q-x"
   \
   \ _n_ is the number of header lines shown on a quick index.
   \ It depends on the rows and columns of the current screen
@@ -277,7 +277,7 @@ need .line# need /line# need .block# need /block#
 
   \ doc{
   \
-  \ qx-bounds ( -- u1 u2 )
+  \ qx-bounds ( -- u1 u2 ) "q-x-bounds"
   \
   \ Blocks to be included in the quick index, from block _u2_
   \ to block _u1-1_. They depend on `scr`.
@@ -334,7 +334,7 @@ need .line# need /line# need .block# need /block#
 
   \ doc{
   \
-  \ qx ( -- )
+  \ qx ( -- ) "q-x"
   \
   \ Give a quick index. The number and width of the columns
   \ depend on the current screen mode. The current block,
@@ -351,7 +351,7 @@ need .line# need /line# need .block# need /block#
 
   \ doc{
   \
-  \ nx ( -- )
+  \ nx ( -- ) "n-x"
   \
   \ Give next quick index, calculated from `scr`.
   \
@@ -363,7 +363,7 @@ need .line# need /line# need .block# need /block#
 
   \ doc{
   \
-  \ px ( -- )
+  \ px ( -- ) "p-x"
   \
   \ Give previous quick index, calculated from `scr`.
   \
@@ -379,7 +379,7 @@ need list-lines
 
   \ doc{
   \
-  \ lt ( -- )
+  \ lt ( -- ) "l-t"
   \
   \ List top half of screen hold in `scr`.
   \
@@ -388,11 +388,11 @@ need list-lines
   \ }doc
 
 : lm ( -- ) scr @ [ l/scr 4 / ] literal
-                    [ l/scr 4 / 3 * 1- ] literal list-lines ;
+                  [ l/scr 4 / 3 * 1- ] literal list-lines ;
 
   \ doc{
   \
-  \ lm ( -- )
+  \ lm ( -- ) "l-m"
   \
   \ List middle part of screen hold in `scr`.
   \
@@ -401,11 +401,11 @@ need list-lines
   \ }doc
 
 : lb ( -- ) scr @ [ l/scr 2 / ] literal
-                    [ l/scr 1-  ] literal list-lines ;
+                  [ l/scr 1-  ] literal list-lines ;
 
   \ doc{
   \
-  \ lb ( -- )
+  \ lb ( -- ) "l-b"
   \
   \ List bottom half of screen hold in `scr`.
   \

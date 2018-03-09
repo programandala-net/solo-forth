@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071810
+  \ Last modified: 201803091342
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -15,7 +15,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -36,7 +36,7 @@
 
   \ doc{
   \
-  \ cslit ( -- ca )
+  \ cslit ( -- ca ) "c-s-lit"
   \
   \ Return a string that is compiled after the calling word, and
   \ adjust the instruction pointer to step over the inline string.
@@ -57,6 +57,7 @@
   \ csliteral
   \   Compilation: ( ca1 len1 -- )
   \   Run-time:    ( -- ca2 )
+  \ "c-s-literal"
 
   \
   \ Compile `cslit` and string _ca1 len1_ in the current
@@ -77,6 +78,7 @@
   \ c"
   \   Compilation: ( "ccc<quote>" -- )
   \   Run-time:    ( -- ca )
+  \ "c-quote"
 
   \
   \ Parse a string _ccc_ delimited by double quotes and compile it
@@ -120,5 +122,7 @@ exit
   \ 2017-02-27: Improve documentation.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2018-03-09: Add words' pronunciaton.
 
   \ vim: filetype=soloforth

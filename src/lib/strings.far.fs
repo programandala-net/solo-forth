@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803091347
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -31,7 +31,7 @@ unneeding far,"
 
   \ doc{
   \
-  \ far," ( "ccc<quote>" -- )
+  \ far," ( "ccc<quote>" -- ) "far-comma-quote"
   \
   \ Parse "ccc" delimited by a double-quote and compile the
   \ string in far memory.
@@ -44,7 +44,7 @@ unneeding fars, ?( need farplace need farallot
 
   \ doc{
   \
-  \ fars, ( ca len -- )
+  \ fars, ( ca len -- ) "fars-comma"
   \
   \ Compile a string in far memory.
   \
@@ -58,7 +58,7 @@ unneeding farsconstant ?( need fars,
 
   \ doc{
   \
-  \ farsconstant ( ca len "name" -- )
+  \ farsconstant ( ca len "name" -- ) "far-s-constant"
   \
   \ Create a string constant _name_ in far memory with value
   \ _ca len_.
@@ -77,7 +77,7 @@ unneeding far>stringer ?( need cmove<far
 
   \ doc{
   \
-  \ far>stringer ( ca1 len1 -- ca2 len1 )
+  \ far>stringer ( ca1 len1 -- ca2 len1 ) "far-to-stringer"
   \
   \ Save the string _ca1 len1_, which is in far memory, to the
   \ `stringer` and return it as _ca2 len1_.
@@ -95,7 +95,7 @@ need farsconstant need far>stringer
 
   \ doc{
   \
-  \ far>sconstant ( ca len "name" -- )
+  \ far>sconstant ( ca len "name" -- ) "far-to-s-constant"
   \
   \ Create a string constant _name_ in far memory with value
   \ _ca len_.
@@ -116,7 +116,7 @@ unneeding farsconstants, ?( need far,
 
   \ doc{
   \
-  \ farsconstants, ( 0 ca[n]..ca[1] "name" -- n )
+  \ farsconstants, ( 0 ca[n]..ca[1] "name" -- n ) "far-s-constants-comma"
   \
   \ Create a table of string constants _name_ in far memory,
   \ using counted strings _ca[n]..ca[1]_, being _0_ a mark for
@@ -136,7 +136,7 @@ unneeding farsconstants>
 
   \ doc{
   \
-  \ farsconstants> ( n a -- ca len )
+  \ farsconstants> ( n a -- ca len ) "far-s-constants-from"
   \
   \ Return the far-memory string _ca len_ whose address is
   \ stored at the _n_ cell of the table _a_ in data space.
@@ -156,7 +156,7 @@ need farsconstants, need array> need farsconstants>
 
   \ doc{
   \
-  \ farsconstants ( 0 ca[n]..ca[1] "name" -- )
+  \ farsconstants ( 0 ca[n]..ca[1] "name" -- ) "far-s-constants"
   \
   \ Create a table of string constants _name_ in far memory,
   \ using counted strings _ca[n]..ca[1]_, being _0_ a mark for
@@ -199,7 +199,7 @@ need array> need farsconstants> need far>stringer
 
   \ doc{
   \
-  \ far>sconstants ( 0 ca[n]..ca[1] "name" -- n )
+  \ far>sconstants ( 0 ca[n]..ca[1] "name" -- n ) "far-to-s-constants"
   \
   \ Create a table of string constants _name_ in far memory,
   \ using counted strings _ca[n]..ca[1]_, being _0_ a mark for
@@ -273,7 +273,7 @@ code faruppers ( ca len -- )
 
   \ doc{
   \
-  \ faruppers ( ca len -- )
+  \ faruppers ( ca len -- ) "far-uppers"
   \
   \ Convert string _ca len_, which is stored in far memory, to
   \ uppercase.
@@ -323,6 +323,8 @@ code faruppers ( ca len -- )
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-09: Add words' pronunciaton.
 
   \ vim: filetype=soloforth
 
