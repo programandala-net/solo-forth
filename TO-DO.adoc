@@ -1038,13 +1038,6 @@ Change the format of stack notation:
 xn..x1 --> x#n .. x#1
 ----
 
-=== 2016-10-24
-
-Common notation for:
-
-- text coordinates: "col row" --> "x y"?
-- graphic coordinates: "x y" --> "gx gy"?
-
 === 2016-06-01, 2017-04-17 2017-09-09
 
 Change the stack notation back to classic Forth?:
@@ -1502,12 +1495,12 @@ Fix `g-emit-routine`.
 
 Finish `rdraw`.
 
-=== 2017-01-22, 2017-01-24, 2017-03-14
+=== 2017-01-22, 2017-01-24, 2017-03-14, 2018-03-09
 
 NOTE: Milestone: 0.15.0
 
-Write `g-xy-attr@  ( x y -- b )` and `g-xy-attr!  ( b x y -- )`.
-Write `xy-attr@  ( x y -- b )` and `xy-attr!  ( b x y -- )`.
+Write `g-xy-attr@  ( gx gy -- b )` and `g-xy-attr!  ( b gx gy -- )`.
+Write `xy-attr@  ( col row -- b )` and `xy-attr!  ( b col row -- )`.
 
 Problem: The fetch functions are provided already by `xy>attr ( x y --
 b)` and `gxy>attr ( x y -- b)`, but the name notation used can not be

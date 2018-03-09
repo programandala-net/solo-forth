@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803081250
+  \ Last modified: 201803091614
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -205,8 +205,8 @@ variable menu-rounding  menu-rounding on
   \ Display menu option _ca len_ at the current cursor
   \ coordinates.
 
-: option>xy ( n -- x y ) menu-xy 2@ rot + 1+ ;
-  \ Convert menu option _n_ to its cursor coordinates _x y_.
+: option>xy ( n -- col row ) menu-xy 2@ rot + 1+ ;
+  \ Convert menu option _n_ to its cursor coordinates _col row_.
 
 : at-option ( n -- ) option>xy at-xy ;
   \ Set the cursor at option _n_.
@@ -322,15 +322,15 @@ create current-option 0 c,
   \
   \ }doc
 
-: set-menu ( a1 a2 ca len x y n1 n2 -- )
+: set-menu ( a1 a2 ca len col row n1 n2 -- )
   menu-options c! [ /stripes 2+ ] cliteral max menu-width c!
   menu-xy 2! menu-title 2!  options-table ! actions-table ! ;
 
   \ doc{
   \
-  \ set-menu ( a1 a2 ca len x y n1 n2 -- )
+  \ set-menu ( a1 a2 ca len col row n1 n2 -- )
   \
-  \ Set the current menu to cursor coordinates _x y_,
+  \ Set the current menu to cursor coordinates _col row_,
   \ _n2_ options, _n1_ characters width, title _ca len_,
   \ actions table _a1_ (a cell array of _n2_ execution tokens)
   \ and option texts table _a2_ (a cell array of _n2_ addresses
@@ -340,14 +340,15 @@ create current-option 0 c,
   \
   \ }doc
 
-: new-menu ( a1 a2 ca len x y n1 n2 -- ) set-menu .menu menu ;
+: new-menu ( a1 a2 ca len col row n1 n2 -- )
+  set-menu .menu menu ;
 
   \ doc{
   \
-  \ new-menu ( a1 a2 ca len x y n1 n2 -- )
+  \ new-menu ( a1 a2 ca len col row n1 n2 -- )
   \
-  \ Set, display at cursor coordinates _x y_ and activate a new
-  \ menu of _n2_ options, _n1_ characters width, title _ca
+  \ Set, display at cursor coordinates _col row_ and activate a
+  \ new menu of _n2_ options, _n1_ characters width, title _ca
   \ len_, actions table _a1_ (a cell array of _n2_ execution
   \ tokens) and option texts table _a2_ (a cell array of _n2_
   \ addresses of counted strings).
@@ -372,5 +373,7 @@ create current-option 0 c,
   \ `sinclair-stripes`. Make it, `sinclair-stripes$` and
   \ `.sinclair-stripes` independent, reusable. Fix
   \ documentation.
+  \
+  \ 2018-03-09: Update stack notation "x y" to "col row".
 
   \ vim: filetype=soloforth

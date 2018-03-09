@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803091618
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,17 +27,17 @@
 
 unneeding form>xy ?( need columns need rows need */
 
-: form>xy ( cols rows -- x y )
+: form>xy ( cols rows -- col row )
   xy swap >r rows */ r> swap >r columns */ r> ; ?)
 
   \ doc{
   \
-  \ form>xy ( cols rows -- x y ) "form-to-x-y"
+  \ form>xy ( cols rows -- col row ) "form-to-x-y"
   \
-  \ _x y_ is the new cursor position corresponding to a display
-  \ mode whose `form` is _cols rows_. _x y_ are calculated with
-  \ the values returned by `xy`, `columns` and `rows` in the
-  \ current mode.
+  \ _col row_ is the new cursor position corresponding to a
+  \ display mode whose `form` is _cols rows_. _col row_ are
+  \ calculated with the values returned by `xy`, `columns` and
+  \ `rows` in the current mode.
   \
   \ ``form>xy`` is a factor of `>form`.
   \
@@ -220,5 +220,7 @@ code (banked-mode-output) ( -- )
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-09: Update stack notation "x y" to "col row".
 
   \ vim: filetype=soloforth

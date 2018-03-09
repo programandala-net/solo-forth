@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201712092222
+  \ Last modified: 201803091618
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -16,7 +16,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ Credit
@@ -182,7 +182,7 @@ variable ball-frame  first-ball-frame ball-frame !
                    else   1 ball-frame +!  then ;
   \ Update the current frame of the ball graphic.
 
-: ball-xy ( -- x y ) x @ y @ ;
+: ball-xy ( -- col row ) x @ y @ ;
 
 : at-ball ( -- ) ball-xy g-at-xy ;
 
@@ -530,5 +530,7 @@ run-message
   \ 2017-05-07: Rename `print-points` and friends to `.points`.
   \
   \ 2017-12-09: Need `8*` instead of redefining it.
+  \
+  \ 2018-03-09: Update stack notation "x y" to "col row".
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 201709091408
+// Last modified: 201803091628
 // See change log at the end of the file
 
 === Stack notation
@@ -86,9 +86,6 @@ symbols for aligned addresses are used in the source, for clarity.
 | col         | 8-bit cursor column                          | 1 cell | 0 .. 31; 0 .. 41; 0 .. 63
 | row         | 8-bit cursor row                             | 1 cell | 0 .. 23
 
-| x           | 8-bit cursor x coordinate (column)           | 1 cell | 0 .. 31; 0 .. 41; 0 .. 63
-| y           | 8-bit cursor y coordinate (row)              | 1 cell | 0 .. 23
-
 | gx          | 8-bit (absolute) or 16-bit (relative) graphic x coordinate | 1 cell | 0 .. 255; -32768 .. 32767
 | gy          | 8-bit (absolute) or 16-bit (relative) graphic y coordinate | 1 cell | 0 .. 191; -32768 .. 32767; 0 .. 175
 
@@ -170,3 +167,5 @@ symbols for aligned addresses are used in the source, for clarity.
 //
 // 2017-09-09: Complete ranges of 48-bit and 64-bit numbers. Improve
 // the notation of intervals.
+//
+// 2018-03-09: Remove cursor coordinates notation "x y".

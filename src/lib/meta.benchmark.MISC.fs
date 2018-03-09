@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803091620
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -917,8 +917,8 @@ need column need row need .\"
 ( at-xy-display-0udg-bench )
 
 need bench{ need }bench.
-need at-xy-display-0udg ( c x y -- )
-need 0udg-at-xy-display ( x y c -- )
+need at-xy-display-0udg ( c col row -- )
+need 0udg-at-xy-display ( col row c -- )
 
 : run ( u -- )
   cr ." Results for " dup u. ." iterations"
@@ -3197,5 +3197,7 @@ need bench{ need }bench.
   \ 2018-02-20: Add `cells-+-bench`.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-09: Update stack notation "x y" to "col row".
 
   \ vim: filetype=soloforth

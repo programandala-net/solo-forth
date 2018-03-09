@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803081257
+  \ Last modified: 201803091620
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -342,7 +342,7 @@ here s" Black" s,
 
 create texts> , , , ,
 
-: menu-pars ( -- a1 a2 ca len x y n1 n2 )
+: menu-pars ( -- a1 a2 ca len col row n1 n2 )
   actions> texts> s" Border" 7 7 14 4 ;
 
 : h ( -- ) home default-colors ;
@@ -1652,5 +1652,7 @@ blk @ 1+ blk @ 2+ thru
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-08: Improve documentation of `menu-test`.
+  \
+  \ 2018-03-09: Update stack notation "x y" to "col row".
 
   \ vim: filetype=soloforth

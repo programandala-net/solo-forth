@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803091619
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -770,7 +770,7 @@ unneeding at-xy-display-udg ?(
 
 need assembler need display-char-bitmap_ need os-udg
 
-unused code at-xy-display-udg ( c x y -- )
+unused code at-xy-display-udg ( c col row -- )
 
   h pop, l a ld, h pop, a d ld, l e ld,
 
@@ -803,9 +803,9 @@ unused code at-xy-display-udg ( c x y -- )
 
   \ doc{
   \
-  \ at-xy-display-udg ( c x y -- ) "at-x-y-display-u-d-g"
+  \ at-xy-display-udg ( c col row -- ) "at-x-y-display-u-d-g"
   \
-  \ Display UDG _c_ at cursor coordinates _x y_. This is much
+  \ Display UDG _c_ at cursor coordinates _col row_. This is much
   \ faster than using `at-xy` and `emit-udg`, because no ROM
   \ routine is used, the cursor coordinates are not updated and
   \ the screen attributtes are not changed (only the character
@@ -819,7 +819,7 @@ unneeding udg-at-xy-display ?(
 
 need assembler need display-char-bitmap_ need os-udg
 
-unused code udg-at-xy-display ( x y c -- )
+unused code udg-at-xy-display ( col row c -- )
 
   h pop, h addp, h addp, h addp, os-udg d ftp, d addp,
 
@@ -850,10 +850,10 @@ unused code udg-at-xy-display ( x y c -- )
 
   \ doc{
   \
-  \ udg-at-xy-display ( x y c -- ) "u-d-g-at-x-y-display"
+  \ udg-at-xy-display ( col row c -- ) "u-d-g-at-x-y-display"
   \
-  \ Display UDG _c_ (0..255) at cursor coordinates _x y_. This
-  \ is much faster than a combination of `at-xy` and
+  \ Display UDG _c_ (0..255) at cursor coordinates _col row_.
+  \ This is much faster than a combination of `at-xy` and
   \ `emit-udg`, because no ROM routine is used, the cursor
   \ coordinates are not updated and the screen attributtes are
   \ not changed (only the character bitmap is displayed).
@@ -1206,5 +1206,7 @@ exx, jpnext, end-code
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-09: Update stack notation "x y" to "col row".
 
   \ vim: filetype=soloforth

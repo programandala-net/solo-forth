@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803091625
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -705,9 +705,9 @@ unneeding x>gx
 
   \ doc{
   \
-  \ x>gx ( x -- gx ) "x-to-g-x"
+  \ x>gx ( col -- gx ) "x-to-g-x"
   \
-  \ Convert column _x_ to graphic x coordinate _gx_.
+  \ Convert cursor column _col_ to graphic x coordinate _gx_.
   \
   \ See: `y>gy`, `gx>x`.
   \
@@ -719,9 +719,9 @@ unneeding y>gy
 
   \ doc{
   \
-  \ y>gy ( y -- gy ) "y-to-g-y"
+  \ y>gy ( row -- gy ) "y-to-g-y"
   \
-  \ Convert row _y_ to graphic y coordinate _gy_.
+  \ Convert cursor coordinate _row_ to graphic coordinate _gy_.
   \
   \ See: `x>gx`, `gy>y`.
   \
@@ -731,9 +731,9 @@ unneeding gx>x ?\ : gx>x ( gx -- x ) 8 / ;
 
   \ doc{
   \
-  \ gx>x ( gx -- x ) "g-x-to-x"
+  \ gx>x ( gx -- col ) "g-x-to-x"
   \
-  \ Convert graphic x coordinate _gx_ to column _x_.
+  \ Convert graphic coordinate _gx_ to cursor column _col_.
   \
   \ See: `gy>y`, `x>gx`.
   \
@@ -743,9 +743,10 @@ unneeding gy>y ?\ : gy>y ( gy -- y ) #191 swap - 8 / ;
 
   \ doc{
   \
-  \ gy>y ( gy -- y ) "g-y-to-y"
+  \ gy>y ( gy -- row ) "g-y-to-y"
   \
-  \ Convert graphic y coordinate _gy_ to row _y_.
+  \ Convert graphic y coordinate _gy_ to cursor coordinate
+  \ _row_.
   \
   \ See: `gx>x`, `y>gy`.
   \
@@ -802,9 +803,9 @@ code gxy>attra2 ( gx gy -- a )
   \ XXX TMP -- Test tool:
 
 need gxy>attra
-: p1 ( x y -- ) gxy>attra u. ;
-: p2 ( x y -- ) gxy>attra1 u. ;
-: p ( x y -- ) 2dup p1 p2 ;
+: p1 ( gx gy -- ) gxy>attra u. ;
+: p2 ( gx gy -- ) gxy>attra1 u. ;
+: p ( gx gy -- ) 2dup p1 p2 ;
 
   \ ===========================================================
   \ Change log
@@ -883,5 +884,8 @@ need gxy>attra
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-09: Update stack notation "x y" to "gx gy" or "col
+  \ row".
 
   \ vim: filetype=soloforth
