@@ -639,12 +639,6 @@ Options:
 // Display {{{1
 == Display
 
-== 2018-03-08
-
-NOTE: Milestone: 0.14.0
-
-Make `lwidth` a `cvariable` with `create`.
-
 === 2018-03-07
 
 NOTE: Milestone: 0.14.0

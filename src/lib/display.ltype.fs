@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803082300
+  \ Last modified: 201803091531
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -164,15 +164,15 @@ defer (lcr) ( -- ) ' cr ' (lcr) defer! -->
   \
   \ }doc
 
-variable lwidth columns lwidth !
+create lwidth columns c,
 
   \ doc{
   \
-  \ lwidth ( -- a ) "l-width"
+  \ lwidth ( -- ca ) "l-width"
   \
-  \ A variable containing the text width in columns used by
-  \ `ltype` and related words. Its default value is `columns`,
-  \ ie. the current width of the screen.
+  \ A byte variable containing the text width in columns used
+  \ by `ltype` and related words. Its default value is
+  \ `columns`, ie. the current width of the screen.
   \
   \ }doc
 
@@ -185,7 +185,7 @@ variable lwidth columns lwidth !
   \ If a word was displayed before in the current line, display
   \ a space as separator.
 
-: unfit? ( len -- f ) 1+ #ltyped @ + lwidth > ;
+: unfit? ( len -- f ) 1+ #ltyped @ + lwidth c@ > ;
   \ Is word length _len_ too long to be displayed in the
   \ current line?
 
@@ -258,5 +258,7 @@ need n>str
   \ Improve documentation.
   \
   \ 2018-03-08: Add words' pronunciaton.
+  \
+  \ 2018-03-09: Make `lwidth` a byte variable. Fix `unfit?`.
 
   \ vim: filetype=soloforth
