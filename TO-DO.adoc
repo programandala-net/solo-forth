@@ -867,6 +867,12 @@ Improve tab control.
 // Documentation {{{1
 == Documentation
 
+== 2018-03-09
+
+NOTE: Milestone: 0.14.0
+
+Replace term "characters" with "bytes".
+
 == 2018-03-08
 
 NOTE: Milestone: 0.14.0
