@@ -2,28 +2,10 @@
 
 ; By Marcos Cruz (programandala.net)
 
-; 2014-12-17: Converted from the HTML version of the ZX Spectrum manual, with
-; the help of Vim.  Regulary improved afterwards.
-;
-; 2015-01-12: New: first two ZX Spectrum +3 variables.
-;
-; 2015-01-15: New: 'sys_flags3'.
-;
-; 2015-01-16: New: all ZX Spectrum +3 variables.
-;
-; 2015-05-24: Changes to make the file usable as symbols input file by
-; z80dasm.
-;
-; 2015-09-06: Offset extracted to <zx_spectrum_system_variables_offsets.z80s>,
-; because the z80dasm disassembler does not accept calculations in its input
-; symbols file.
-;
-; 2016-08-05: Remove useless comment.
-;
-; 2016-08-15: Add individual bytes of sys_k_state; the second one is addressed
-; by TR-DOS 5.03.
+; Last modified: 201803090015
+; See change log at the end of the file
 
-; --------------------------------------------------------------
+; ==============================================================
 ; ZX Spectrum +3
 
 sys_nmiadd:      equ 23728 ; (2)
@@ -169,8 +151,10 @@ sys_tstack:         equ 23551 ; (0x5BFF) (X115)
                               ; guarantees at least 115 bytes of stack
                               ; when BASIC calls +3DOS.
 
-; --------------------------------------------------------------
+; ==============================================================
 ; ZX Spectrum 48K
+
+sys_printer_buffer: equ 23296 ; (0x5B00)
 
 sys_kstate:      equ 23552 ; (n8) Used in reading the keyboard.
 sys_kstate.1:    equ 23553
@@ -295,3 +279,28 @@ sys_ramtop:      equ 23730 ; (2) Address of last byte of BASIC system area.
 sys_p_ramt:      equ 23732 ; (2) Address of last byte of physical RAM.
 sys_p_ramt.high: equ 23733
 
+; ==============================================================
+; Change log
+
+; 2014-12-17: Converted from the HTML version of the ZX Spectrum manual, with
+; the help of Vim.  Regulary improved afterwards.
+;
+; 2015-01-12: New: first two ZX Spectrum +3 variables.
+;
+; 2015-01-15: New: 'sys_flags3'.
+;
+; 2015-01-16: New: all ZX Spectrum +3 variables.
+;
+; 2015-05-24: Changes to make the file usable as symbols input file by
+; z80dasm.
+;
+; 2015-09-06: Offset extracted to <zx_spectrum_system_variables_offsets.z80s>,
+; because the z80dasm disassembler does not accept calculations in its input
+; symbols file.
+;
+; 2016-08-05: Remove useless comment.
+;
+; 2016-08-15: Add individual bytes of sys_k_state; the second one is addressed
+; by TR-DOS 5.03.
+;
+; 2018-03-09: Add `sys_printer_buffer`.
