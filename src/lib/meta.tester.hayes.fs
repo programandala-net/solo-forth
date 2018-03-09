@@ -3,13 +3,13 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201803100008
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ Development tests.
+  \ Tester needed to run the Hayes test.
 
   \ ===========================================================
   \ Authors
@@ -17,7 +17,7 @@
   \ John Hayes S1I, 1995-11-27.
 
   \ Marcos Cruz (programandala.net) adapted it to Solo Forth,
-  \ 2015, 2016.
+  \ 2015, 2016, 2017.
 
   \ ===========================================================
   \ License
@@ -44,48 +44,100 @@ variable verbose  verbose off
   \ hang.
 
 : testing( ( "ccc<paren>" -- )
-  verbose @ if    cr ." Testing " postpone .(  exit  then
+  verbose @ if cr ." Testing " postpone .( exit then
             postpone ( ;
   \ Talking comment.
 
 : empty-stack ( i*x -- )
-  depth ?dup if  dup 0< if    negate 0 do  0  loop
-                        else  0 do  drop  loop  then  then ;
+  depth ?dup if dup 0< if   negate 0 do 0 loop
+                       else 0 do drop loop
+                       then then ;
   \ Empty stack. Handle underflowed stack too.
 
 : test-error ( -- )
-  cr ." Use WHERE to see the error line." empty-stack  abort ;
+  cr ." Use WHERE to see the error line." empty-stack abort ;
   \ Complete an error message and abort.
 
-variable actual-depth  \ stack record
+variable actual-depth \ stack record
 create actual-results $20 cells allot
 
-: { ( -- ) ;  \ syntactic sugar.
+: { ( -- ) ;
+
+  \ doc{
+  \
+  \ { ( -- )
+  \
+  \ Part of `hayes-tester`: Start a Hayes test.
+  \
+  \ See: `->`, `}`.
+  \
+  \ }doc
 
 -->
 
 ( hayes-tester )
 
 : -> ( i*x -- )
-  depth dup actual-depth !  \ record depth
-  ?dup if  0 do actual-results i cells + ! loop  then ;
-  \ Record depth and content of stack.
+  depth dup actual-depth ! \ record depth
+  ?dup if 0 do actual-results i cells + ! loop then ;
+
+  \ doc{
+  \
+  \ -> ( i*x -- )
+  \
+  \ Part of the `hayes-test`: Record depth and content of
+  \ stack.
+  \
+  \ See: `{`, `}`.
+  \
+  \ }doc
 
 : } ( ... -- )
-  depth actual-depth @ = if  \ depths match
-    depth ?dup if  \ there is something on the stack
-      0 do  \ for each stack item
-        actual-results i cells + @
-          \ compare actual with expected
-        <> if  cr ." Incorrect result" test-error leave  then
+  depth actual-depth @ = if \ depths match
+    depth ?dup if \ there is something on the stack
+      0 do actual-results i cells + @
+           <> if cr ." Incorrect result" test-error leave then
+           \ Compare actual stack item with expected.
       loop
     then
-  else  cr ." Wrong number of results:"
-        cr ." Expected=" depth . cr ." Actual=" actual-depth ?
-        test-error
-  then ;
-  \ Compare stack (expected) contents with saved (actual)
-  \ contents.
+  else cr ." Wrong number of results:"
+       cr ." Expected=" actual-depth ? cr ." Actual=" depth .
+       test-error then ;
+
+  \ doc{
+  \
+  \ } ( ... -- )
+  \
+  \ Part of `hayes-tester`: End a Hayes test by comparing stack
+  \ (expected) contents with saved (actual) contents.
+  \
+  \ See: `{`, `->`.
+  \
+  \ }doc
+
+: hayes-tester ( -- ) ;
+
+  \ doc{
+  \
+  \ hayes-tester ( -- )
+  \
+  \ Do nothing. This word is used just for doing ``need
+  \ hayes-tester``, loading `{`, `->`, and `}`, which are used
+  \ by `hayes-test`.
+  \
+  \ Usage example:
+
+  \ ....
+  \ { 1 2 3 swap -> 1 3 2 } ok
+  \ { 1 2 3 swap -> 1 2 2 } Incorrect result
+  \ Use WHERE to see the error line.
+  \ { 1 2 3 swap -> 1 2 } Wrong number of results:
+  \ Expected=3
+  \ Actual=2
+  \ Use WHERE to see the error line.
+  \ ....
+
+  \ }doc
 
   \ ===========================================================
   \ Change log
@@ -93,5 +145,11 @@ create actual-results $20 cells allot
   \ 2016-05-09: First version.
   \
   \ 2017-02-19: Need `do`, which has been moved to the library.
+  \
+  \ 2018-03-09: Update source style (spaces). Improve
+  \ documentation.
+  \
+  \ 2018-03-10: Fix `}`: the depths in the error message were
+  \ exchanged.
 
   \ vim: filetype=soloforth

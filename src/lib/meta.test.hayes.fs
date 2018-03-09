@@ -9,12 +9,14 @@
   \ ===========================================================
   \ Description
 
-  \ this program tests the core words of an ans forth system.
-  \ the program assumes a two's complement implementation where
-  \ the range of signed numbers is -2^(n-1) ... 2^(n-1)-1 and the
-  \ range of unsigned numbers is 0 ... 2^(n)-1.  i haven't
-  \ figured out how to test key, quit, abort, or abort"...  i
-  \ also haven't thought of a way to test environment?...
+  \ This program tests the core words of an ANS Forth system.
+  \
+  \ The test assumes a two's complement implementation where
+  \ the range of signed numbers is -2^(n-1)..2^(n-1)-1 and the
+  \ range of unsigned numbers is 0..2^(n)-1.
+  \
+  \ Some words are not tested: `key`, `quit`, `abort`, `abort"`
+  \ `environment?`...
 
   \ ===========================================================
   \ Authors
@@ -22,7 +24,7 @@
   \ John Hayes S1I, 1995-11-27.
 
   \ Marcos Cruz (programandala.net) adapted it to Solo Forth,
-  \ 2016.
+  \ 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -866,6 +868,25 @@ testing( dictionary search rules)
 
 decimal cr .( Test passed) cr
 
+  \ doc{
+  \
+  \ hayes-test ( -- )
+  \
+  \ A non-existant word. ``hayes-test`` is used just for doing
+  \ ``need hayes-test`` in order to run the Hayes test, which
+  \ tests the core words of an ANS Forth system.
+  \
+  \ The test assumes a two's complement implementation where
+  \ the range of signed numbers is -2^(n-1)..2^(n-1)-1 and the
+  \ range of unsigned numbers is 0..2^(n)-1.
+  \
+  \ Some words are not tested: `key`, `quit`, `abort`, `abort"`
+  \ `environment?`...
+  \
+  \ See: `hayes-tester`.
+  \
+  \ }doc
+
   \ ===========================================================
   \ Change log
 
@@ -888,5 +909,6 @@ decimal cr .( Test passed) cr
   \ the library.
   \
   \ 2018-03-09: Update notation "address units" to "bytes".
+  \ Improve documentation.
 
   \ vim: filetype=soloforth
