@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201702261232
+  \ Last modified: 201803091401
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -16,7 +16,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -52,10 +52,14 @@
   \
   \ extend ( -- )
   \
-  \ }doc
-  \
   \ Change the `cold` start parameters to extend the system to
   \ its current state.
+  \
+  \ WARNING: Under development.
+  \
+  \ See: `system`.
+  \
+  \ }doc
 
 : size ( -- u ) here 0 +origin - ;
 
@@ -64,6 +68,8 @@
   \ size ( -- u )
   \
   \ Size of the system.
+  \
+  \ See: `here`, `+origin`.
   \
   \ }doc
 
@@ -74,8 +80,12 @@
   \ system ( -- a len )
   \
   \ Prepare the system in order to save a copy.  Return its
-  \ start address and length, to be used as parameters for
-  \ saving the system to disk.
+  \ start address _a_ and length _len_, to be used as
+  \ parameters for saving the system to disk.
+  \
+  \ WARNING: Under development.
+  \
+  \ See: `extend`, `+origin`, `size`.
   \
   \ }doc
 
@@ -86,9 +96,13 @@
   \ turnkey ( xt -- a len )
   \
   \ Prepare the system in order to save a copy that will
-  \ execute the given xt after the ordinary boot process.
-  \ Return its start address and length, to be used as
+  \ execute _xt_ after the ordinary boot process.  Return its
+  \ start address _a_ and length _len_, to be used as
   \ parameters for saving the system to disk.
+  \
+  \ WARNING: Under development.
+  \
+  \ See: `boot`, `system`.
   \
   \ }doc
 
@@ -102,5 +116,7 @@
   \
   \ 2017-02-26: Update "hp" notation to "np", after the changes
   \ in the kernel.
+  \
+  \ 2018-03-09: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -3,14 +3,14 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201803081227
+; Last modified: 201803091357
 
 include version.z80s
 
 ; ==============================================================
 ; Author
 
-; Marcos Cruz (programandala.net), 2015, 2016, 2017.
+; Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
 ; ==============================================================
 ; License
@@ -7985,7 +7985,7 @@ u_less_than.de_hl:
 
 ; Origin: Gforth.
 ;
-; See: `last`, `current-latest`.
+; See: `last`, `current-latest`, `fyi`.
 ;
 ; }doc
 
@@ -8010,7 +8010,7 @@ u_less_than.de_hl:
 
 ; Origin: fig-Forth's ``latest``.
 ;
-; See: `latest`.
+; See: `latest`, `fyi`.
 ;
 ; }doc
 
@@ -10434,6 +10434,8 @@ error.message:
 ; _n_ is the number of words currently defined in the system,
 ; which is updated by `header,`.
 ;
+; See: `fyi`, `greeting`, `cold`.
+;
 ; }doc
 
   dw 0
@@ -12038,7 +12040,7 @@ endif
 ;
 ; Display the boot message.
 ;
-; See: `cold`.
+; See: `cold`, `fyi`.
 ;
 ; }doc
 
@@ -12238,7 +12240,7 @@ warm_start:
 ;
 ; Origin: fig-Forth.
 ;
-; See: `warm`.
+; See: `warm`, `greeting`.
 ;
 ; }doc
 
@@ -14823,7 +14825,7 @@ system_stack_pointer:
 ;
 ; Origin: Fig-Forth's ``limit`` constant.
 ;
-; See: `unused`, `farlimit`.
+; See: `unused`, `farlimit`, `fyi`, `greeting`.
 ;
 ; }doc
 
@@ -14847,7 +14849,7 @@ system_stack_pointer:
 ;
 ; Origin: Fig-Forth's ``limit`` constant.
 ;
-; See: `farunused`, `limit`, `far-banks`.
+; See: `farunused`, `limit`, `far-banks`, `fyi`. `greeting`.
 ;
 ; }doc
 
@@ -14872,7 +14874,7 @@ system_stack_pointer:
 
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See: `limit`, `farunused`.
+; See: `limit`, `farunused`, `fyi`, `greeting`.
 ;
 ; }doc
 
@@ -14895,7 +14897,7 @@ system_stack_pointer:
 ; : farunused ( -- u ) farlimit @ np @ - ;
 ; ----
 
-; See: `farlimit`, `unused`.
+; See: `farlimit`, `unused`, `fyi`, `greeting`.
 ;
 ; }doc
 
