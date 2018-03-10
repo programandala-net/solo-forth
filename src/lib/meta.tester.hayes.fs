@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803100008
+  \ Last modified: 201803100103
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -92,7 +92,7 @@ create actual-results $20 cells allot
   \
   \ }doc
 
-: } ( ... -- )
+: } ( i*x -- )
   depth actual-depth @ = if \ depths match
     depth ?dup if \ there is something on the stack
       0 do actual-results i cells + @
@@ -106,7 +106,7 @@ create actual-results $20 cells allot
 
   \ doc{
   \
-  \ } ( ... -- )
+  \ } ( i*x -- )
   \
   \ Part of `hayes-tester`: End a Hayes test by comparing stack
   \ (expected) contents with saved (actual) contents.
@@ -137,6 +137,8 @@ create actual-results $20 cells allot
   \ Use WHERE to see the error line.
   \ ....
 
+  \ See: `ttester`.
+  \
   \ }doc
 
   \ ===========================================================
@@ -150,6 +152,6 @@ create actual-results $20 cells allot
   \ documentation.
   \
   \ 2018-03-10: Fix `}`: the depths in the error message were
-  \ exchanged.
+  \ exchanged. Update stack notation and documentation.
 
   \ vim: filetype=soloforth
