@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-03-09
+:revdate: 2018-03-10
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -2729,6 +2729,13 @@ internally.
 === 2016-04-11
 
 Make the tape words return a standard _ior_.
+
+// Tests {{{1
+== Tests
+
+=== 2018-03-10
+
+Improve the layout of the messages of forth2012-test-suite.
 
 // Time {{{1
 == Time

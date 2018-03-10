@@ -454,7 +454,8 @@ disks/trdos/disk_0_boot.pentagon_1024.trd: tmp/disk_0_boot.trdos.pentagon_1024.t
 # ==============================================================
 # Source file lists
 
-not_ready = src/lib/meta.test.forth2012-test-suite.fs
+#not_ready = src/lib/meta.test.forth2012-test-suite.fs
+not_ready = 
 
 lib_files = $(sort $(wildcard src/lib/*.fs))
 dos_lib_files = $(sort $(wildcard src/lib/dos.*.fs))
