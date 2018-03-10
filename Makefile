@@ -106,7 +106,7 @@ gplusdos: gplusdosdisks
 gplusdosdisks: \
 	disks/gplusdos/disk_0_boot.mgt \
 	disks/gplusdos/disk_1_library.mgt \
-	disks/gplusdos/disk_2_games_and_editors.mgt \
+	disks/gplusdos/disk_2_programs.mgt \
 	disks/gplusdos/disk_3_workbench.mgt
 
 .PHONY: p
@@ -119,7 +119,7 @@ plus3dos: plus3dosdisks
 plus3dosdisks: \
 	disks/plus3dos/disk_0_boot.dsk \
 	disks/plus3dos/disk_1_library.dsk \
-	disks/plus3dos/disk_2_games_and_editors.dsk \
+	disks/plus3dos/disk_2_programs.dsk \
 	disks/plus3dos/disk_3_workbench.dsk
 
 .PHONY: t
@@ -137,7 +137,7 @@ trdosdisks: \
 .PHONY: trdosblockdisks
 trdosblockdisks: \
 	disks/trdos/disk_1_library.trd \
-	disks/trdos/disk_2_games_and_editors.trd \
+	disks/trdos/disk_2_programs.trd \
 	disks/trdos/disk_3_workbench.trd
 
 .PHONY: t128
@@ -543,7 +543,7 @@ tmp/workbench.fs: $(meta_lib_files)
 tmp/editors.fs: $(editor_lib_files)
 	cat $(editor_lib_files) > $@
 
-tmp/games_and_editors.fs: tmp/games.fs tmp/editors.fs
+tmp/programs.fs: tmp/games.fs tmp/editors.fs
 	cat $^ > $@
 
 # ----------------------------------------------
@@ -562,7 +562,7 @@ disks/gplusdos/disk_1_library.mgt: tmp/library.gplusdos.fs
 # ------------------------------
 # Additional disks
 
-disks/gplusdos/disk_2_games_and_editors.mgt: tmp/games_and_editors.fs
+disks/gplusdos/disk_2_programs.mgt: tmp/programs.fs
 	fsb2-mgt $< ;\
 	mv $(basename $<).mgt $@
 
@@ -632,7 +632,7 @@ disks/plus3dos/disk_1_library.dsk: tmp/library.plus3dos.fs
 # ------------------------------
 # Additional disks
 
-disks/plus3dos/disk_2_games_and_editors.dsk: tmp/games_and_editors.fs
+disks/plus3dos/disk_2_programs.dsk: tmp/programs.fs
 	fsb2-dsk $< ;\
 	mv $(basename $<).dsk $@
 
@@ -702,7 +702,7 @@ disks/trdos/disk_1_library.trd: tmp/library.trdos.fs
 # ------------------------------
 # Additional disks
 
-disks/trdos/disk_2_games_and_editors.trd: tmp/games_and_editors.fs
+disks/trdos/disk_2_programs.trd: tmp/programs.fs
 	fsb2-trd $< SoloFth2 ; \
 	mv $(basename $<).trd $@
 
