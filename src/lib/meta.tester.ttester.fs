@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803100103
+  \ Last modified: 201803102148
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -149,9 +149,7 @@ VARIABLE #ERRORS 0 #ERRORS ! \ for counting errors
 : "FLOATING" S" FLOATING" ;
   \ Only compiled `S"` in CORE.
 
-: "FLOATING-STACK" S" FLOATING-STACK" ;
-
--->
+: "FLOATING-STACK" S" FLOATING-STACK" ; -->
 
 ( ttester )
 
@@ -166,9 +164,7 @@ VARIABLE #ERRORS 0 #ERRORS ! \ for counting errors
 [ELSE] HAS-FLOATING
   \ We don't know whether the FP stack is separate.
   \ If we have FLOATING, we assume it is.
-[THEN] CONSTANT HAS-FLOATING-STACK
-
--->
+[THEN] CONSTANT HAS-FLOATING-STACK -->
 
 ( ttester )
 
@@ -232,27 +228,25 @@ HAS-FLOATING-STACK [IF]
     THEN ;
 
   : F{ ( -- )
-    FDEPTH START-FDEPTH ! 0 FCURSOR ! ;
-
--->
+    FDEPTH START-FDEPTH ! 0 FCURSOR ! ; -->
 
 ( ttester )
 
   : F-> ( i*x -- j*x )
     FDEPTH DUP ACTUAL-FDEPTH !
     START-FDEPTH @ > IF
-        FDEPTH START-FDEPTH @ - 0
-        DO ACTUAL-FRESULTS I FLOATS + F! LOOP
+      FDEPTH START-FDEPTH @ - 0
+      DO ACTUAL-FRESULTS I FLOATS + F! LOOP
     THEN ;
 
   : F} ( i*x -- j*x )
     FDEPTH ACTUAL-FDEPTH @ = IF
-        FDEPTH START-FDEPTH @ > IF
-            FDEPTH START-FDEPTH @ - 0 DO
-                ACTUAL-FRESULTS I FLOATS + F@ FCONF= INVERT
-                IF S" INCORRECT FP RESULT: " ERROR LEAVE THEN
-            LOOP
-        THEN
+      FDEPTH START-FDEPTH @ > IF
+        FDEPTH START-FDEPTH @ - 0 DO
+          ACTUAL-FRESULTS I FLOATS + F@ FCONF= INVERT
+          IF S" INCORRECT FP RESULT: " ERROR LEAVE THEN
+        LOOP
+      THEN
     ELSE S" WRONG NUMBER OF FP RESULTS: " ERROR THEN ; -->
 
 ( ttester )
@@ -268,15 +262,12 @@ HAS-FLOATING-STACK [IF]
       \ XXX TMP --:
       S" # OF FLOAT RESULTS BEFORE&AFTER '->' DOESN'T MATCH:"
       ERROR
-    THEN THEN ;
-
--->
+    THEN THEN ; -->
 
 ( ttester )
 
   : FTESTER ( R -- )
-    FDEPTH 0=
-    ACTUAL-FDEPTH @
+    FDEPTH 0= ACTUAL-FDEPTH @
     FCURSOR @ START-FDEPTH @ + 1+ < OR IF
       \ S" NUMBER OF FLOAT RESULTS AFTER '->' BELOW ...}T SPECIFICATION: " ERROR
       \ XXX TMP --:
@@ -286,26 +277,16 @@ HAS-FLOATING-STACK [IF]
       S" INCORRECT FP RESULT: " ERROR
     THEN THEN 1 FCURSOR +! ;
 
--->
-
-( ttester )
-
 [ELSE]
 
-  : EMPTY-FSTACK ;
-  : F{ ;
-  : F-> ;
-  : F} ;
-  : F...}T ;
+  : EMPTY-FSTACK ;  : F{ ;  : F-> ;  : F} ;  : F...}T ;
 
   HAS-FLOATING [IF]
 
     : COMPUTE-CELLS-PER-FP ( -- U )
-        DEPTH 0E DEPTH 1- >R FDROP R> SWAP - ;
+      DEPTH 0E DEPTH 1- >R FDROP R> SWAP - ;
 
-    COMPUTE-CELLS-PER-FP CONSTANT CELLS-PER-FP
-
--->
+    COMPUTE-CELLS-PER-FP CONSTANT CELLS-PER-FP -->
 
 ( ttester )
 
@@ -322,20 +303,15 @@ HAS-FLOATING-STACK [IF]
 
   [THEN]
 
-[THEN]
-
--->
+[THEN] -->
 
 ( ttester )
 
 : EMPTY-STACK ( i*x -- j*x ) ( F: i*x -- j*x )
-  DEPTH START-DEPTH @ < IF
-    START-DEPTH @ DEPTH DO 0 LOOP
-  THEN
-  DEPTH START-DEPTH @ > IF
-    DEPTH START-DEPTH @ DO DROP LOOP
-  THEN
-  EMPTY-FSTACK ;
+  DEPTH START-DEPTH @ <
+  IF START-DEPTH @ DEPTH DO 0 LOOP THEN
+  DEPTH START-DEPTH @ >
+  IF DEPTH START-DEPTH @ DO DROP LOOP THEN EMPTY-FSTACK ;
   \ Empty stack; handles underflowed stack too.
 
 : ERROR1 ( ca len -- )
@@ -344,10 +320,6 @@ HAS-FLOATING-STACK [IF]
   #ERRORS @ 1 + #ERRORS ! ; \ update error count
   \ Display an error message followed by the line that had the
   \ error.
-
--->
-
-( ttester )
 
 ' ERROR1 ERROR-XT !
 
@@ -364,12 +336,11 @@ HAS-FLOATING-STACK [IF]
   \ }doc
 
 : -> ( i*x -- )
-  DEPTH DUP ACTUAL-DEPTH ! \ record depth
-  START-DEPTH @ > IF \ there is something on the stack
+  DEPTH DUP ACTUAL-DEPTH ! START-DEPTH @ > IF
+    \ There is something on the stack.
     DEPTH START-DEPTH @ - 0 DO ACTUAL-RESULTS I CELLS + ! LOOP
-      \ Save them.
-  THEN
-  F-> ;
+      \ Save it.
+  THEN F-> ; -->
 
   \ doc{
   \
@@ -381,8 +352,6 @@ HAS-FLOATING-STACK [IF]
   \ See: `t{`, `}t`.
   \
   \ }doc
-
--->
 
 ( ttester )
 
@@ -397,8 +366,7 @@ HAS-FLOATING-STACK [IF]
     THEN
   ELSE \ depth mismatch
     S" Wrong number of results:" ERROR
-  THEN
-  F} ;
+  THEN F} ; -->
 
   \ doc{
   \
@@ -410,8 +378,6 @@ HAS-FLOATING-STACK [IF]
   \ See: `t{`, `->`.
   \
   \ }doc
-
--->
 
 ( ttester )
 
@@ -426,12 +392,7 @@ HAS-FLOATING-STACK [IF]
     \ XXX TMP --:
     S" # OF CELL RESULTS BEFORE AND AFTER '->' DOESN'T MATCH: "
     ERROR
-  THEN THEN
-  F...}T ;
-
--->
-
-( ttester )
+  THEN THEN F...}T ;
 
 : XTESTER ( X -- )
   DEPTH 0= ACTUAL-DEPTH @ XCURSOR @ START-DEPTH @ + 1+ < OR IF
@@ -441,10 +402,7 @@ HAS-FLOATING-STACK [IF]
     ERROR EXIT
   ELSE ACTUAL-RESULTS XCURSOR @ CELLS + @ <> IF
     S" INCORRECT CELL RESULT: " ERROR
-  THEN THEN
-  1 XCURSOR +! ;
-
--->
+  THEN THEN 1 XCURSOR +! ; -->
 
 ( ttester )
 
@@ -453,14 +411,9 @@ HAS-FLOATING-STACK [IF]
 : XXX}T XTESTER XTESTER XTESTER ...}T ;
 : XXXX}T XTESTER XTESTER XTESTER XTESTER ...}T ;
 
--->
-
-( ttester )
-
 HAS-FLOATING [IF]
 
-  : R}T FTESTER ...}T ;
-  : XR}T FTESTER XTESTER ...}T ;
+  : R}T FTESTER ...}T ;  : XR}T FTESTER XTESTER ...}T ;
   : RX}T XTESTER FTESTER ...}T ;
   : RR}T FTESTER FTESTER ...}T ;
   : XXR}T FTESTER XTESTER XTESTER ...}T ;
@@ -469,9 +422,7 @@ HAS-FLOATING [IF]
   : RXX}T XTESTER XTESTER FTESTER ...}T ;
   : RXR}T FTESTER XTESTER FTESTER ...}T ;
   : RRX}T XTESTER FTESTER FTESTER ...}T ;
-  : RRR}T FTESTER FTESTER FTESTER ...}T ;
-
--->
+  : RRR}T FTESTER FTESTER FTESTER ...}T ; -->
 
 ( ttester )
 
@@ -493,15 +444,17 @@ HAS-FLOATING [IF]
 
 ( ttester )
 
+
 VARIABLE VERBOSE FALSE VERBOSE !
   \ Set flag to TRUE for more verbose output; this may allow
   \ you to tell which test caused your system to hang.
 
-: TESTING   \ ( -- ) TALKING COMMENT.
-   SOURCE VERBOSE @
-   IF DUP >R TYPE CR R> >IN !
-   ELSE >IN ! DROP
-   THEN ;
+: TESTING ( -- )
+  SOURCE VERBOSE @
+  IF   DUP >R TYPE CR R> >IN !
+  ELSE >IN ! DROP
+  THEN ;
+  \ Talking comment.
 
 BASE !
 
@@ -538,6 +491,7 @@ BASE !
   \ forth2012-test-suite version 0.13.0
   \ (https://github.com/gerryjackson/forth2012-test-suite).
   \
-  \ 2018-03-10: Update stack comments.
+  \ 2018-03-10: Update stack comments. Improve source layout.
+  \ Compact the code, saving three blocks.
 
   \ vim: filetype=soloforth
