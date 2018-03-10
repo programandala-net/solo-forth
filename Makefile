@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201802271719
+# Last modified: 201803101409
 # See change loge at the end of the file.
 
 # ==============================================================
@@ -454,18 +454,25 @@ disks/trdos/disk_0_boot.pentagon_1024.trd: tmp/disk_0_boot.trdos.pentagon_1024.t
 # ==============================================================
 # Source file lists
 
+not_ready = src/lib/meta.test.forth2012-test-suite.fs
+
 lib_files = $(sort $(wildcard src/lib/*.fs))
 dos_lib_files = $(sort $(wildcard src/lib/dos.*.fs))
 editor_lib_files = $(sort $(wildcard src/lib/editor.*.fs))
 game_lib_files = $(sort $(wildcard src/lib/game.*.fs))
-meta_lib_files = $(sort $(wildcard src/lib/meta.*.fs))
-meta_benchmark_lib_files = $(sort $(wildcard src/lib/meta.benchmark.*.fs))
+
+meta_lib_files = $(filter-out $(not_ready),$(sort $(wildcard src/lib/meta.*.fs)))
+
+# XXX OLD:
+meta_benchmark_lib_files = $(filter-out $(not_ready),$(sort $(wildcard src/lib/meta.benchmark.*.fs)))
 meta_benchmark_misc_lib_files = src/lib/meta.benchmark.MISC.fs
 meta_benchmark_rng_lib_files = src/lib/meta.benchmark.rng.fs
 meta_benchmark_flow_lib_files = src/lib/meta.benchmark.flow.fs
-meta_test_lib_files = $(sort $(wildcard src/lib/meta.test*.fs))
+meta_test_lib_files = $(filter-out $(not_ready),$(sort $(wildcard src/lib/meta.test*.fs)))
+
 core_lib_files = \
-	$(filter-out $(editor_lib_files) $(game_lib_files) $(meta_lib_files), \
+	$(filter-out \
+			$(not_ready) $(editor_lib_files) $(game_lib_files) $(meta_lib_files), \
 			$(lib_files))
 no_dos_core_lib_files = \
 	$(filter-out $(dos_lib_files), $(core_lib_files))
@@ -1174,3 +1181,8 @@ oldbackup:
 # 2018-02-27: Move editors from the library disk to the games
 # disk and rename it, because the library didn't fit a TR-DOS
 # disk image.
+#
+# 2018-03-10: Add `not_ready` to exclude modules under
+# development. Needed for
+# <src/lib/meta.test.forth2012-test-suite.fs>, which is being
+# adapted.
