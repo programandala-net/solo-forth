@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803101607
+  \ Last modified: 201803101807
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -28,6 +28,8 @@
   \ ENVIRONMENT?...
 
   \ ===========================================================
+
+( forth2012-test-suite )
 
 CR CR SOURCE TYPE ( Preliminary test ) CR
 SOURCE ( These lines test SOURCE, TYPE, ) TYPE CR
@@ -72,12 +74,15 @@ SOURCE ( CR and parenthetic comments ) TYPE CR
   \ definition. Therefore a simple colon definition is tested
   \ next.
 
+-->
+
+( forth2012-test-suite )
+
   ( Pass #6: testing : ; )
 : .SRC SOURCE TYPE CR ; 6 >IN +! xxxxxx.SRC
 
   ( Pass #7: testing number input )
 19 >IN +! xxxxxxxxxxxxxxxxxxx.SRC
-
 
   \ `VARIABLE` is now tested as one will be used instead of
   \ `DROP` e.g. `Y !`.
@@ -95,9 +100,12 @@ VARIABLE Y 2 Y ! Y @ >IN +! xx.SRC
   ( Pass #10: testing WORD COUNT )
 MSG ab) >IN +! xxY ! .SRC
 
-
   \ For reporting success .MSG( is now defined
 : .MSG( MSG TYPE ; .MSG( Pass #11: testing WORD COUNT .MSG) CR
+
+-->
+
+( forth2012-test-suite )
 
   \ To define an error reporting word, `= 2* AND` will be
   \ needed, test them first. This assumes 2's complement
@@ -116,6 +124,10 @@ x.MSG( Pass #14: testing -1 interpreted correctly) CR
 -1 -1 AND 1+ 1+ >IN +! x.MSG( Pass #17: testing AND) CR
 -1  0 AND 1+ >IN +! x.MSG( Pass #18: testing AND) CR
 6  -1 AND >IN +! xxxxxx.MSG( Pass #19: testing AND) CR
+
+-->
+
+( forth2012-test-suite )
 
   \ Define ~ to use as a 'to end of line' comment. `\` cannot
   \ be used as it a Core Extension word
@@ -143,6 +155,10 @@ VARIABLE #ERRS 0 #ERRS !
 : Pass  -1 #ERRS +! 1 >IN +! Error ;
 ~ Pass is defined solely to test Error
 
+-->
+
+( forth2012-test-suite )
+
 -1 ?F~ Pass #20: testing ?F~ ?~~ Pass Error
 -1 ?T~ Error #1: testing ?T~ ?~~ ~
 
@@ -160,6 +176,10 @@ VARIABLE #ERRS 0 #ERRS !
 0  0< ?F~ Error #11: testing 0<
 1  0< ?F~ Error #12: testing 0<
 
+-->
+
+( forth2012-test-suite )
+
 DEPTH 1+ DEPTH = ?~~ Error #13: testing DEPTH
 
 ~ Up to now whether the data stack
@@ -171,6 +191,10 @@ DEPTH 1+ DEPTH = ?~~ Error #13: testing DEPTH
 DEPTH 0< 0= 1+ >IN +! ~ 0 0 >IN ! Remove any underflow
 DEPTH 0= 1+ >IN +! ~ Y !  0 >IN ! Empty the stack
 DEPTH 0= ?T~ Error #14: data stack not emptied
+
+-->
+
+( forth2012-test-suite )
 
 4 -5 SWAP 4 = SWAP -5 = = ?T~ Error #15: testing SWAP
 111 222 333 444
@@ -186,6 +210,10 @@ DEPTH 0= ?T~ Error #19: testing DEPTH = 0
 ~ display had ?~ simply been redefined
 
 : ?~ ( -1 | 0 -- ) DEPTH 1 = AND ?~~ ;
+
+-->
+
+( forth2012-test-suite )
 
 ~ -1 test success, 0 test failure
 
@@ -203,6 +231,11 @@ Y !   ~ equivalent to DROP
 123  -111 + 12   = ?~ Error #25: testing +
 -123 111  + -12  = ?~ Error #26: testing +
 -123 -111 + -234 = ?~ Error #27: testing +
+
+-->
+
+( forth2012-test-suite )
+
 -1 NEGATE 1 = ?~ Error #28: testing NEGATE
 0  NEGATE 0=  ?~ Error #29: testing NEGATE
 987 NEGATE -987 = ?~ Error #30: testing NEGATE
@@ -215,6 +248,11 @@ CREATE TST1 HERE TST1 = ?~ Error #32: testing CREATE HERE
 CSZ @ 0= 0= ?~ Error #36: testing CELLS
 3 CELLS CSZ @ DUP 2* + = ?~ Error #37: testing CELLS
 -3 CELLS CSZ @ DUP 2* + + 0= ?~ Error #38: testing CELLS
+
+-->
+
+( forth2012-test-suite )
+
 : TST2 ( f -- n ) DUP IF 1+ THEN ;
 0 TST2 0=  ?~ Error #39: testing IF THEN
 1 TST2 2 = ?~ Error #40: testing IF THEN
@@ -227,6 +265,11 @@ TST4 5 = ?~ Error #43: testing DO LOOP
 TST5 45 = ?~ Error #44: testing I
 : TST6 ( -- n ) 0 10 0 DO DUP 5 = IF LEAVE ELSE 1+ THEN LOOP ;
 TST6 5 = ?~ Error #45: testing LEAVE
+
+-->
+
+( forth2012-test-suite )
+
 : TST7 ( -- n1 n2 ) 123 >R 234 R> ;
 TST7 NEGATE + 111 = ?~ Error #46: testing >R R>
 : TST8 ( -- ch ) [CHAR] A ;
@@ -242,6 +285,10 @@ TST10
 ~ of a word called ?DEFINED to determine whether these are
 ~ already defined
 
+-->
+
+( forth2012-test-suite )
+
 VARIABLE TIMM1 0 TIMM1 !
 : TIMM2  123 TIMM1 ! ; IMMEDIATE
 : TIMM3 TIMM2 ; TIMM1 @ 123 = ?~ Error #48: testing IMMEDIATE
@@ -256,6 +303,10 @@ VARIABLE TIMM1 0 TIMM1 !
 : TIMM4  \ Error #52: testing \ is IMMEDIATE
 ;
 
+-->
+
+( forth2012-test-suite )
+
 ~ TRUE and FALSE are defined as colon definitions
 ~ to avoid using and having to test CONSTANT
 
@@ -268,6 +319,10 @@ FALSE 0=  ?~ Error #54: testing FALSE
 10 HEX 0A = ?~ Error #55: testing HEX
 AB 0A BASE ! 171 = ?~ Error #56: testing hex number
 
+-->
+
+( forth2012-test-suite )
+
 ~ Delete the ~ on the next 2 lines to check the final error
 ~ report
 ~ Error #998: testing a deliberate failure
@@ -279,6 +334,10 @@ AB 0A BASE ! 171 = ?~ Error #56: testing hex number
 CR .MSG( Results: ) CR
 CR .MSG( Pass messages #1 to #23 should be displayed above)
 CR .MSG( and no error messages) CR
+
+-->
+
+( forth2012-test-suite )
 
 ~ Finally display a message giving the number of tests that
 ~ failed.  This is complicated by the fact that untested words
@@ -294,6 +353,10 @@ CR
 DUP NEGATE 9 + 0< NEGATE >IN +! ( -10 + SWAP 1+ SWAP 0 >IN ! )
 ~ Display the error count
 SWAP ?DUP 0= 1+ >IN +! ( 48 + EMIT ( ) 48 + EMIT
+
+-->
+
+( forth2012-test-suite )
 
 .MSG(  test) #ERRS @ 1 = 1+ >IN +! ~ .MSG( s)
 .MSG(  failed out of 56 additional tests) CR
@@ -317,6 +380,10 @@ T{  0 BITSSET? -> 0 }T  \ ZERO IS ALL BITS CLEAR
 T{  1 BITSSET? -> 0 0 }T  \ OTHER NUMBER HAVE AT LEAST ONE BIT
 T{ -1 BITSSET? -> 0 0 }T
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING BOOLEANS: INVERT AND OR XOR
@@ -338,7 +405,9 @@ T{ 1S INVERT -> 0S }T
 T{ 0S 0S AND -> 0S }T
 T{ 0S 1S AND -> 0S }T
 T{ 1S 0S AND -> 0S }T
-T{ 1S 1S AND -> 1S }T
+T{ 1S 1S AND -> 1S }T -->
+
+( forth2012-test-suite )
 
 T{ 0S 0S OR -> 0S }T
 T{ 0S 1S OR -> 1S }T
@@ -349,6 +418,10 @@ T{ 0S 0S XOR -> 0S }T
 T{ 0S 1S XOR -> 1S }T
 T{ 1S 0S XOR -> 1S }T
 T{ 1S 1S XOR -> 0S }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -373,6 +446,10 @@ T{ 1S 2/ -> 1S }T            \ MSB PROPOGATED
 T{ 1S 1 XOR 2/ -> 1S }T
 T{ MSB 2/ MSB AND -> MSB }T
 
+-->
+
+( forth2012-test-suite )
+
 T{ 1 0 LSHIFT -> 1 }T
 T{ 1 1 LSHIFT -> 2 }T
 T{ 1 2 LSHIFT -> 4 }T
@@ -387,6 +464,10 @@ T{ 4 2 RSHIFT -> 1 }T
 T{ 8000 F RSHIFT -> 1 }T         \ BIGGEST
 T{ MSB 1 RSHIFT MSB AND -> 0 }T      \ RSHIFT ZERO FILLS MSBS
 T{ MSB 1 RSHIFT 2* -> MSB }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -407,7 +488,9 @@ T{ 2 0= -> <FALSE> }T
 T{ -1 0= -> <FALSE> }T
 T{ MAX-UINT 0= -> <FALSE> }T
 T{ MIN-INT 0= -> <FALSE> }T
-T{ MAX-INT 0= -> <FALSE> }T
+T{ MAX-INT 0= -> <FALSE> }T -->
+
+( forth2012-test-suite )
 
 T{ 0 0 = -> <TRUE> }T
 T{ 1 1 = -> <TRUE> }T
@@ -425,7 +508,10 @@ T{ MAX-INT 0< -> <FALSE> }T
 
 T{ 0 1 < -> <TRUE> }T
 T{ 1 2 < -> <TRUE> }T
-T{ -1 0 < -> <TRUE> }T
+T{ -1 0 < -> <TRUE> }T -->
+
+( forth2012-test-suite )
+
 T{ -1 1 < -> <TRUE> }T
 T{ MIN-INT 0 < -> <TRUE> }T
 T{ MIN-INT MAX-INT < -> <TRUE> }T
@@ -439,9 +525,11 @@ T{ 1 -1 < -> <FALSE> }T
 T{ 0 MIN-INT < -> <FALSE> }T
 T{ MAX-INT MIN-INT < -> <FALSE> }T
 T{ MAX-INT 0 < -> <FALSE> }T
-
 T{ 0 1 > -> <FALSE> }T
-T{ 1 2 > -> <FALSE> }T
+T{ 1 2 > -> <FALSE> }T -->
+
+( forth2012-test-suite )
+
 T{ -1 0 > -> <FALSE> }T
 T{ -1 1 > -> <FALSE> }T
 T{ MIN-INT 0 > -> <FALSE> }T
@@ -456,8 +544,10 @@ T{ 1 -1 > -> <TRUE> }T
 T{ 0 MIN-INT > -> <TRUE> }T
 T{ MAX-INT MIN-INT > -> <TRUE> }T
 T{ MAX-INT 0 > -> <TRUE> }T
+T{ 0 1 U< -> <TRUE> }T -->
 
-T{ 0 1 U< -> <TRUE> }T
+( forth2012-test-suite )
+
 T{ 1 2 U< -> <TRUE> }T
 T{ 0 MID-UINT U< -> <TRUE> }T
 T{ 0 MAX-UINT U< -> <TRUE> }T
@@ -469,11 +559,13 @@ T{ 2 1 U< -> <FALSE> }T
 T{ MID-UINT 0 U< -> <FALSE> }T
 T{ MAX-UINT 0 U< -> <FALSE> }T
 T{ MAX-UINT MID-UINT U< -> <FALSE> }T
-
 T{ 0 1 MIN -> 0 }T
 T{ 1 2 MIN -> 1 }T
 T{ -1 0 MIN -> -1 }T
-T{ -1 1 MIN -> -1 }T
+T{ -1 1 MIN -> -1 }T -->
+
+( forth2012-test-suite )
+
 T{ MIN-INT 0 MIN -> MIN-INT }T
 T{ MIN-INT MAX-INT MIN -> MIN-INT }T
 T{ 0 MAX-INT MIN -> 0 }T
@@ -486,10 +578,12 @@ T{ 1 -1 MIN -> -1 }T
 T{ 0 MIN-INT MIN -> MIN-INT }T
 T{ MAX-INT MIN-INT MIN -> MIN-INT }T
 T{ MAX-INT 0 MIN -> 0 }T
-
 T{ 0 1 MAX -> 1 }T
 T{ 1 2 MAX -> 2 }T
-T{ -1 0 MAX -> 0 }T
+T{ -1 0 MAX -> 0 }T -->
+
+( forth2012-test-suite )
+
 T{ -1 1 MAX -> 1 }T
 T{ MIN-INT 0 MAX -> 0 }T
 T{ MIN-INT MAX-INT MAX -> MAX-INT }T
@@ -504,6 +598,10 @@ T{ 0 MIN-INT MAX -> 0 }T
 T{ MAX-INT MIN-INT MAX -> MAX-INT }T
 T{ MAX-INT 0 MAX -> MAX-INT }T
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING STACK OPS: 2DROP 2DUP 2OVER 2SWAP ?DUP DEPTH DROP DUP
@@ -517,6 +615,11 @@ T{ 0 ?DUP -> 0 }T
 T{ 1 ?DUP -> 1 1 }T
 T{ -1 ?DUP -> -1 -1 }T
 T{ DEPTH -> 0 }T
+
+-->
+
+( forth2012-test-suite )
+
 T{ 0 DEPTH -> 0 1 }T
 T{ 0 1 DEPTH -> 0 1 2 }T
 T{ 0 DROP -> }T
@@ -525,6 +628,10 @@ T{ 1 DUP -> 1 1 }T
 T{ 1 2 OVER -> 1 2 1 }T
 T{ 1 2 3 ROT -> 2 3 1 }T
 T{ 1 2 SWAP -> 2 1 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -535,6 +642,10 @@ T{ : GR2 >R R@ R> DROP ; -> }T
 T{ 123 GR1 -> 123 }T
 T{ 123 GR2 -> 123 }T
 T{ 1S GR1 -> 1S }T   ( RETURN STACK HOLDS CELLS )
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -550,22 +661,27 @@ T{ -1 2 + -> 1 }T
 T{ -1 -2 + -> -3 }T
 T{ -1 1 + -> 0 }T
 T{ MID-UINT 1 + -> MID-UINT+1 }T
-
 T{ 0 5 - -> -5 }T
 T{ 5 0 - -> 5 }T
 T{ 0 -5 - -> 5 }T
-T{ -5 0 - -> -5 }T
+T{ -5 0 - -> -5 }T -->
+
+( forth2012-test-suite )
+
 T{ 1 2 - -> -1 }T
 T{ 1 -2 - -> 3 }T
 T{ -1 2 - -> -3 }T
 T{ -1 -2 - -> 1 }T
 T{ 0 1 - -> -1 }T
 T{ MID-UINT+1 1 - -> MID-UINT }T
-
 T{ 0 1+ -> 1 }T
 T{ -1 1+ -> 0 }T
 T{ 1 1+ -> 2 }T
 T{ MID-UINT 1+ -> MID-UINT+1 }T
+
+-->
+
+( forth2012-test-suite )
 
 T{ 2 1- -> 1 }T
 T{ 1 1- -> 0 }T
@@ -582,6 +698,10 @@ T{ 0 ABS -> 0 }T
 T{ 1 ABS -> 1 }T
 T{ -1 ABS -> 1 }T
 T{ MIN-INT ABS -> MID-UINT+1 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -601,6 +721,10 @@ T{ 1 0 M* -> 0 S>D }T
 T{ 1 2 M* -> 2 S>D }T
 T{ 2 1 M* -> 2 S>D }T
 T{ 3 3 M* -> 9 S>D }T
+-->
+
+( forth2012-test-suite )
+
 T{ -3 3 M* -> -9 S>D }T
 T{ 3 -3 M* -> -9 S>D }T
 T{ -3 -3 M* -> 9 S>D }T
@@ -613,6 +737,10 @@ T{ 2 MAX-INT M* -> MAX-INT 1 LSHIFT 0 }T
 T{ MIN-INT MIN-INT M* -> 0 MSB 1 RSHIFT }T
 T{ MAX-INT MIN-INT M* -> MSB MSB 2/ }T
 T{ MAX-INT MAX-INT M* -> 1 MSB 2/ INVERT }T
+-->
+
+( forth2012-test-suite )
+
 
 T{ 0 0 * -> 0 }T            \ TEST IDENTITIES
 T{ 0 1 * -> 0 }T
@@ -628,6 +756,10 @@ T{ MID-UINT+1 1 RSHIFT 2 * -> MID-UINT+1 }T
 T{ MID-UINT+1 2 RSHIFT 4 * -> MID-UINT+1 }T
 T{ MID-UINT+1 1 RSHIFT MID-UINT+1 OR 2 * -> MID-UINT+1 }T
 
+-->
+
+( forth2012-test-suite )
+
 T{ 0 0 UM* -> 0 0 }T
 T{ 0 1 UM* -> 0 0 }T
 T{ 1 0 UM* -> 0 0 }T
@@ -640,6 +772,10 @@ T{ MID-UINT+1 2 UM* -> 0 1 }T
 T{ MID-UINT+1 4 UM* -> 0 2 }T
 T{ 1S 2 UM* -> 1S 1 LSHIFT 1 }T
 T{ MAX-UINT MAX-UINT UM* -> 1 1 INVERT }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -656,6 +792,10 @@ T{ 2 S>D -1 FM/MOD -> 0 -2 }T
 T{ -1 S>D -1 FM/MOD -> 0 1 }T
 T{ -2 S>D -1 FM/MOD -> 0 2 }T
 T{ 2 S>D 2 FM/MOD -> 0 1 }T
+-->
+
+( forth2012-test-suite )
+
 T{ -1 S>D -1 FM/MOD -> 0 1 }T
 T{ -2 S>D -2 FM/MOD -> 0 1 }T
 T{  7 S>D  3 FM/MOD -> 1 2 }T
@@ -667,6 +807,10 @@ T{ MIN-INT S>D 1 FM/MOD -> 0 MIN-INT }T
 T{ MAX-INT S>D MAX-INT FM/MOD -> 0 1 }T
 T{ MIN-INT S>D MIN-INT FM/MOD -> 0 1 }T
 T{ 1S 1 4 FM/MOD -> 3 MAX-INT }T
+-->
+
+( forth2012-test-suite )
+
 T{ 1 MIN-INT M* 1 FM/MOD -> 0 MIN-INT }T
 T{ 1 MIN-INT M* MIN-INT FM/MOD -> 0 1 }T
 T{ 2 MIN-INT M* 2 FM/MOD -> 0 MIN-INT }T
@@ -679,6 +823,10 @@ T{ MIN-INT MIN-INT M* MIN-INT FM/MOD -> 0 MIN-INT }T
 T{ MIN-INT MAX-INT M* MIN-INT FM/MOD -> 0 MAX-INT }T
 T{ MIN-INT MAX-INT M* MAX-INT FM/MOD -> 0 MIN-INT }T
 T{ MAX-INT MAX-INT M* MAX-INT FM/MOD -> 0 MAX-INT }T
+
+-->
+
+( forth2012-test-suite )
 
 T{ 0 S>D 1 SM/REM -> 0 0 }T
 T{ 1 S>D 1 SM/REM -> 0 1 }T
@@ -694,6 +842,10 @@ T{ 2 S>D 2 SM/REM -> 0 1 }T
 T{ -1 S>D -1 SM/REM -> 0 1 }T
 T{ -2 S>D -2 SM/REM -> 0 1 }T
 T{  7 S>D  3 SM/REM -> 1 2 }T
+-->
+
+( forth2012-test-suite )
+
 T{  7 S>D -3 SM/REM -> 1 -2 }T
 T{ -7 S>D  3 SM/REM -> -1 -2 }T
 T{ -7 S>D -3 SM/REM -> -1 2 }T
@@ -706,6 +858,10 @@ T{ 2 MIN-INT M* 2 SM/REM -> 0 MIN-INT }T
 T{ 2 MIN-INT M* MIN-INT SM/REM -> 0 2 }T
 T{ 2 MAX-INT M* 2 SM/REM -> 0 MAX-INT }T
 T{ 2 MAX-INT M* MAX-INT SM/REM -> 0 2 }T
+-->
+
+( forth2012-test-suite )
+
 T{ MIN-INT MIN-INT M* MIN-INT SM/REM -> 0 MIN-INT }T
 T{ MIN-INT MAX-INT M* MIN-INT SM/REM -> 0 MAX-INT }T
 T{ MIN-INT MAX-INT M* MAX-INT SM/REM -> 0 MIN-INT }T
@@ -718,6 +874,10 @@ T{ 3 0 2 UM/MOD -> 1 1 }T
 T{ MAX-UINT 2 UM* 2 UM/MOD -> 0 MAX-UINT }T
 T{ MAX-UINT 2 UM* MAX-UINT UM/MOD -> 0 2 }T
 T{ MAX-UINT MAX-UINT UM* MAX-UINT UM/MOD -> 0 MAX-UINT }T
+
+-->
+
+( forth2012-test-suite )
 
 : IFFLOORED
    [ -3 2 / -2 = INVERT ] LITERAL IF POSTPONE \ THEN ;
@@ -740,6 +900,10 @@ IFSYM     : TMOD   T/MOD DROP ;
 IFSYM     : T*/MOD >R M* R> SM/REM ;
 IFSYM     : T*/    T*/MOD SWAP DROP ;
 
+-->
+
+( forth2012-test-suite )
+
 T{ 0 1 /MOD -> 0 1 T/MOD }T
 T{ 1 1 /MOD -> 1 1 T/MOD }T
 T{ 2 1 /MOD -> 2 1 T/MOD }T
@@ -754,9 +918,14 @@ T{ 2 2 /MOD -> 2 2 T/MOD }T
 T{ -1 -1 /MOD -> -1 -1 T/MOD }T
 T{ -2 -2 /MOD -> -2 -2 T/MOD }T
 T{ 7 3 /MOD -> 7 3 T/MOD }T
+-->
+
+( forth2012-test-suite )
+
 T{ 7 -3 /MOD -> 7 -3 T/MOD }T
 T{ -7 3 /MOD -> -7 3 T/MOD }T
 T{ -7 -3 /MOD -> -7 -3 T/MOD }T
+
 T{ MAX-INT 1 /MOD -> MAX-INT 1 T/MOD }T
 T{ MIN-INT 1 /MOD -> MIN-INT 1 T/MOD }T
 T{ MAX-INT MAX-INT /MOD -> MAX-INT MAX-INT T/MOD }T
@@ -768,7 +937,10 @@ T{ 2 1 / -> 2 1 T/ }T
 T{ -1 1 / -> -1 1 T/ }T
 T{ -2 1 / -> -2 1 T/ }T
 T{ 0 -1 / -> 0 -1 T/ }T
-T{ 1 -1 / -> 1 -1 T/ }T
+T{ 1 -1 / -> 1 -1 T/ }T -->
+
+( forth2012-test-suite )
+
 T{ 2 -1 / -> 2 -1 T/ }T
 T{ -1 -1 / -> -1 -1 T/ }T
 T{ -2 -1 / -> -2 -1 T/ }T
@@ -784,6 +956,10 @@ T{ MIN-INT 1 / -> MIN-INT 1 T/ }T
 T{ MAX-INT MAX-INT / -> MAX-INT MAX-INT T/ }T
 T{ MIN-INT MIN-INT / -> MIN-INT MIN-INT T/ }T
 
+-->
+
+( forth2012-test-suite )
+
 T{ 0 1 MOD -> 0 1 TMOD }T
 T{ 1 1 MOD -> 1 1 TMOD }T
 T{ 2 1 MOD -> 2 1 TMOD }T
@@ -797,6 +973,10 @@ T{ -2 -1 MOD -> -2 -1 TMOD }T
 T{ 2 2 MOD -> 2 2 TMOD }T
 T{ -1 -1 MOD -> -1 -1 TMOD }T
 T{ -2 -2 MOD -> -2 -2 TMOD }T
+-->
+
+( forth2012-test-suite )
+
 T{ 7 3 MOD -> 7 3 TMOD }T
 T{ 7 -3 MOD -> 7 -3 TMOD }T
 T{ -7 3 MOD -> -7 3 TMOD }T
@@ -811,6 +991,10 @@ T{ 1 2 1 */ -> 1 2 1 T*/ }T
 T{ 2 2 1 */ -> 2 2 1 T*/ }T
 T{ -1 2 1 */ -> -1 2 1 T*/ }T
 T{ -2 2 1 */ -> -2 2 1 T*/ }T
+-->
+
+( forth2012-test-suite )
+
 T{ 0 2 -1 */ -> 0 2 -1 T*/ }T
 T{ 1 2 -1 */ -> 1 2 -1 T*/ }T
 T{ 2 2 -1 */ -> 2 2 -1 T*/ }T
@@ -823,6 +1007,10 @@ T{ 7 2 3 */ -> 7 2 3 T*/ }T
 T{ 7 2 -3 */ -> 7 2 -3 T*/ }T
 T{ -7 2 3 */ -> -7 2 3 T*/ }T
 T{ -7 2 -3 */ -> -7 2 -3 T*/ }T
+-->
+
+( forth2012-test-suite )
+
 T{ MAX-INT 2 MAX-INT */ -> MAX-INT 2 MAX-INT T*/ }T
 T{ MIN-INT 2 MIN-INT */ -> MIN-INT 2 MIN-INT T*/ }T
 
@@ -837,6 +1025,10 @@ T{ 2 2 -1 */MOD -> 2 2 -1 T*/MOD }T
 T{ -1 2 -1 */MOD -> -1 2 -1 T*/MOD }T
 T{ -2 2 -1 */MOD -> -2 2 -1 T*/MOD }T
 T{ 2 2 2 */MOD -> 2 2 2 T*/MOD }T
+-->
+
+( forth2012-test-suite )
+
 T{ -1 2 -1 */MOD -> -1 2 -1 T*/MOD }T
 T{ -2 2 -2 */MOD -> -2 2 -2 T*/MOD }T
 T{ 7 2 3 */MOD -> 7 2 3 T*/MOD }T
@@ -845,6 +1037,10 @@ T{ -7 2 3 */MOD -> -7 2 3 T*/MOD }T
 T{ -7 2 -3 */MOD -> -7 2 -3 T*/MOD }T
 T{ MAX-INT 2 MAX-INT */MOD -> MAX-INT 2 MAX-INT T*/MOD }T
 T{ MIN-INT 2 MIN-INT */MOD -> MIN-INT 2 MIN-INT T*/MOD }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -858,12 +1054,13 @@ CONSTANT 1STA
 T{ 1STA 2NDA U< -> <TRUE> }T      \ HERE MUST GROW WITH ALLOT
 T{ 1STA 1+ -> 2NDA }T         \ ... BY ONE ADDRESS UNIT
 
+-->
+
+( forth2012-test-suite )
+
   \ MISSING TEST: NEGATIVE ALLOT
 
-HERE 1 ,
-HERE 2 ,
-CONSTANT 2ND
-CONSTANT 1ST
+HERE 1 , HERE 2 , CONSTANT 2ND CONSTANT 1ST
 T{ 1ST 2ND U< -> <TRUE> }T         \ HERE MUST GROW WITH ALLOT
 T{ 1ST CELL+ -> 2ND }T         \ ... BY ONE CELL
 T{ 1ST 1 CELLS + -> 2ND }T
@@ -877,10 +1074,11 @@ T{ 2 1 1ST 2! -> }T
 T{ 1ST 2@ -> 2 1 }T
 T{ 1S 1ST !  1ST @ -> 1S }T      \ CAN STORE CELL-WIDE VALUE
 
-HERE 1 C,
-HERE 2 C,
-CONSTANT 2NDC
-CONSTANT 1STC
+-->
+
+( forth2012-test-suite )
+
+HERE 1 C, HERE 2 C, CONSTANT 2NDC CONSTANT 1STC
 T{ 1STC 2NDC U< -> <TRUE> }T      \ HERE MUST GROW WITH ALLOT
 T{ 1STC CHAR+ -> 2NDC }T         \ ... BY ONE CHAR
 T{ 1STC 1 CHARS + -> 2NDC }T
@@ -892,6 +1090,10 @@ T{ 1STC C@ 2NDC C@ -> 3 4 }T
 
 ALIGN 1 ALLOT HERE ALIGN HERE 3 CELLS ALLOT
 CONSTANT A-ADDR  CONSTANT UA-ADDR
+-->
+
+( forth2012-test-suite )
+
 T{ UA-ADDR ALIGNED -> A-ADDR }T
 T{    1 A-ADDR C!  A-ADDR C@ ->    1 }T
 T{ 1234 A-ADDR  !  A-ADDR  @ -> 1234 }T
@@ -907,6 +1109,10 @@ T{ 123 456 A-ADDR CELL+ 2!  A-ADDR CELL+ 2@ -> 123 456 }T
           REPEAT DROP ;
   \ CHARACTERS >= 1 AU, <= SIZE OF CELL, >= 8 BITS
 
+-->
+
+( forth2012-test-suite )
+
 T{ 1 CHARS 1 < -> <FALSE> }T
 T{ 1 CHARS 1 CELLS > -> <FALSE> }T
   \ TBD: HOW TO FIND NUMBER OF BITS?
@@ -921,6 +1127,10 @@ T{ 0 1ST ! -> }T
 T{ 1 1ST +! -> }T
 T{ 1ST @ -> 1 }T
 T{ -1 1ST +! 1ST @ -> 0 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -938,6 +1148,10 @@ T{ GC3 -> 58 }T
 T{ : GC4 S" XY" ; -> }T
 T{ GC4 SWAP DROP -> 2 }T
 T{ GC4 DROP DUP C@ SWAP CHAR+ C@ -> 58 59 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -957,6 +1171,10 @@ T{ : GT3 GT2 LITERAL ; -> }T
 T{ GT3 -> ' GT1 }T
 T{ GT1STRING COUNT -> GT1STRING CHAR+ 3 }T
 
+-->
+
+( forth2012-test-suite )
+
 T{ : GT4 POSTPONE GT1 ; IMMEDIATE -> }T
 T{ : GT5 GT4 ; -> }T
 T{ GT5 -> 123 }T
@@ -968,6 +1186,10 @@ T{ : GT8 STATE @ ; IMMEDIATE -> }T
 T{ GT8 -> 0 }T
 T{ : GT9 GT8 LITERAL ; -> }T
 T{ GT9 0= -> <FALSE> }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -988,6 +1210,10 @@ T{ 4 GI3 -> 4 5 }T
 T{ 5 GI3 -> 5 }T
 T{ 6 GI3 -> 6 }T
 
+-->
+
+( forth2012-test-suite )
+
 T{ : GI4 BEGIN DUP 1+ DUP 5 > UNTIL ; -> }T
 T{ 3 GI4 -> 3 4 5 6 }T
 T{ 5 GI4 -> 5 6 }T
@@ -1002,6 +1228,10 @@ T{ 3 GI5 -> 3 4 5 123 }T
 T{ 4 GI5 -> 4 5 123 }T
 T{ 5 GI5 -> 5 123 }T
 
+-->
+
+( forth2012-test-suite )
+
 T{ : GI6 ( N -- 0,1,..N )
      DUP IF DUP >R 1- RECURSE R> THEN ; -> }T
 T{ 0 GI6 -> 0 }T
@@ -1009,6 +1239,10 @@ T{ 1 GI6 -> 0 1 }T
 T{ 2 GI6 -> 0 1 2 }T
 T{ 3 GI6 -> 0 1 2 3 }T
 T{ 4 GI6 -> 0 1 2 3 4 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -1028,9 +1262,11 @@ T{ : GD3 DO 1 0 DO J LOOP LOOP ; -> }T
 T{ 4 1 GD3 -> 1 2 3 }T
 T{ 2 -1 GD3 -> -1 0 1 }T
 T{ MID-UINT+1 MID-UINT GD3 -> MID-UINT }T
-
 T{ : GD4 DO 1 0 DO J LOOP -1 +LOOP ; -> }T
-T{ 1 4 GD4 -> 4 3 2 1 }T
+T{ 1 4 GD4 -> 4 3 2 1 }T -->
+
+( forth2012-test-suite )
+
 T{ -1 2 GD4 -> 2 1 0 -1 }T
 T{ MID-UINT MID-UINT+1 GD4 -> MID-UINT+1 MID-UINT }T
 
@@ -1043,21 +1279,19 @@ T{ 6 GD5 -> 234 }T
 T{
   : GD6
     \ ( PAT: T{0 0},{0 0}{1 0}{1 1},{0 0}{1 0}{1 1}{2 0}{2 1}{2 2} )
-    0 SWAP 0 DO
-       I 1+ 0 DO
-         I J + 3 = IF I UNLOOP I UNLOOP EXIT THEN 1+
-       LOOP
-    LOOP ;
-  -> }T
+    0 SWAP 0 DO I 1+ 0 DO
+     I J + 3 = IF I UNLOOP I UNLOOP EXIT THEN 1+
+    LOOP LOOP ; -> }T
 
 T{ 1 GD6 -> 1 }T
 T{ 2 GD6 -> 3 }T
-T{ 3 GD6 -> 4 1 2 }T
+T{ 3 GD6 -> 4 1 2 }T -->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
-TESTING DEFINING WORDS: : ; CONSTANT VARIABLE CREATE DOES>
-TESTING >BODY
+TESTING Definers: : ; CONSTANT VARIABLE CREATE DOES> >BODY
 
 T{ 123 CONSTANT X123 -> }T
 T{ X123 -> 123 }T
@@ -1073,9 +1307,11 @@ T{ : NOP : POSTPONE ; ; -> }T
 T{ NOP NOP1 NOP NOP2 -> }T
 T{ NOP1 -> }T
 T{ NOP2 -> }T
-
 T{ : DOES1 DOES> @ 1 + ; -> }T
-T{ : DOES2 DOES> @ 2 + ; -> }T
+T{ : DOES2 DOES> @ 2 + ; -> }T -->
+
+( forth2012-test-suite )
+
 T{ CREATE CR1 -> }T
 T{ CR1 -> HERE }T
 T{ ' CR1 >BODY -> HERE }T
@@ -1091,6 +1327,10 @@ T{ WEIRD: W1 -> }T
 T{ ' W1 >BODY -> HERE }T
 T{ W1 -> HERE 1 + }T
 T{ W1 -> HERE 2 + }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -1111,6 +1351,10 @@ T{ GE6 -> 123 }T
 T{ : GE7 GE2 GE5 ; -> }T
 T{ GE7 -> 124 }T
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING SOURCE >IN WORD
@@ -1129,6 +1373,10 @@ T{ 2 SCANS !
 : GS2  5 SCANS ! S" 123 RESCAN?" EVALUATE ;
 T{ GS2 -> 123 123 123 123 123 }T
 
+-->
+
+( forth2012-test-suite )
+
 : GS3 WORD COUNT SWAP C@ ;
 T{ BL GS3 HELLO -> 5 CHAR H }T
 T{ CHAR " GS3 GOODBYE" -> 7 CHAR G }T
@@ -1138,6 +1386,10 @@ DROP -> 0 }T            \ BLANK LINE RETURN ZERO-LENGTH STRING
 : GS4 SOURCE >IN ! DROP ;
 T{ GS4 123 456
 -> }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -1157,7 +1409,10 @@ TESTING <# # #S #> HOLD SIGN BASE >NUMBER HEX DECIMAL
    THEN ;
 
 : GP1  <# 41 HOLD 42 HOLD 0 0 #> S" BA" S= ;
-T{ GP1 -> <TRUE> }T
+
+T{ GP1 -> <TRUE> }T -->
+
+( forth2012-test-suite )
 
 : GP2  <# -1 SIGN 0 SIGN -1 SIGN 0 0 #> S" --" S= ;
 T{ GP2 -> <TRUE> }T
@@ -1173,6 +1428,10 @@ T{ GP4 -> <TRUE> }T
    0 0 INVERT BEGIN DUP WHILE >R 1+ R> 2* REPEAT DROP ;
 COUNT-BITS 2* CONSTANT #BITS-UD      \ NUMBER OF BITS IN UD
 
+-->
+
+( forth2012-test-suite )
+
 : GP5
    BASE @ <TRUE>
    MAX-BASE 1+ 2 DO         \ FOR EACH POSSIBLE BASE
@@ -1181,6 +1440,10 @@ COUNT-BITS 2* CONSTANT #BITS-UD      \ NUMBER OF BITS IN UD
    LOOP
    SWAP BASE ! ;
 T{ GP5 -> <TRUE> }T
+-->
+
+( forth2012-test-suite )
+
 
 : GP6
    BASE @ >R  2 BASE !
@@ -1192,6 +1455,10 @@ T{ GP5 -> <TRUE> }T
       >R CHAR+ R>
    LOOP SWAP DROP ;
 T{ GP6 -> <TRUE> }T
+
+-->
+
+( forth2012-test-suite )
 
 : GP7
    BASE @ >R    MAX-BASE BASE !
@@ -1207,6 +1474,10 @@ T{ GP6 -> <TRUE> }T
    R> BASE ! ;
 
 T{ GP7 -> <TRUE> }T
+
+-->
+
+( forth2012-test-suite )
 
   \ >NUMBER TESTS
 CREATE GN-BUF 0 C,
@@ -1224,13 +1495,15 @@ T{ 0 0 GN' -' >NUMBER -> 0 0 GN-STRING }T
 T{ 0 0 GN' +' >NUMBER -> 0 0 GN-STRING }T
 T{ 0 0 GN' .' >NUMBER -> 0 0 GN-STRING }T
 
-: >NUMBER-BASED
-   BASE @ >R BASE ! >NUMBER R> BASE ! ;
+: >NUMBER-BASED BASE @ >R BASE ! >NUMBER R> BASE ! ;
 
 T{ 0 0 GN' 2' 10 >NUMBER-BASED -> 2 0 GN-CONSUMED }T
 T{ 0 0 GN' 2'  2 >NUMBER-BASED -> 0 0 GN-STRING }T
 T{ 0 0 GN' F' 10 >NUMBER-BASED -> F 0 GN-CONSUMED }T
-T{ 0 0 GN' G' 10 >NUMBER-BASED -> 0 0 GN-STRING }T
+T{ 0 0 GN' G' 10 >NUMBER-BASED -> 0 0 GN-STRING }T -->
+
+( forth2012-test-suite )
+
 T{ 0 0 GN' G' MAX-BASE >NUMBER-BASED -> 10 0 GN-CONSUMED }T
 T{ 0 0 GN' Z' MAX-BASE >NUMBER-BASED -> 23 0 GN-CONSUMED }T
 
@@ -1248,9 +1521,18 @@ T{ 0 0 MAX-BASE GN1 -> 0 0 0 }T
 T{ MAX-UINT 0 MAX-BASE GN1 -> MAX-UINT 0 0 }T
 T{ MAX-UINT DUP MAX-BASE GN1 -> MAX-UINT DUP 0 }T
 
+-->
+
+( forth2012-test-suite )
+
 : GN2   \ ( -- 16 10 )
    BASE @ >R  HEX BASE @  DECIMAL BASE @  R> BASE ! ;
 T{ GN2 -> 10 A }T
+
+-->
+
+( forth2012-test-suite )
+
 
   \ ===========================================================
 
@@ -1275,6 +1557,10 @@ T{ SEEBUF -> 20 20 20 }T
 T{ SBUF FBUF 0 CHARS MOVE -> }T
 T{ SEEBUF -> 20 20 20 }T
 
+-->
+
+( forth2012-test-suite )
+
 T{ SBUF FBUF 1 CHARS MOVE -> }T
 T{ SEEBUF -> 12 20 20 }T
 
@@ -1286,6 +1572,10 @@ T{ SEEBUF -> 12 12 34 }T
 
 T{ FBUF CHAR+ FBUF 2 CHARS MOVE -> }T
 T{ SEEBUF -> 12 34 34 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -1300,6 +1590,10 @@ TESTING OUTPUT: . ." CR EMIT SPACE SPACES TYPE U.
   9 1+ 0 DO I . LOOP CR
   ." YOU SHOULD SEE 0-9 (WITH NO SPACES):" CR
   [CHAR] 9 1+ [CHAR] 0 DO I 0 SPACES EMIT LOOP CR
+-->
+
+( forth2012-test-suite )
+
   ." YOU SHOULD SEE A-G SEPARATED BY A SPACE:" CR
   [CHAR] G 1+ [CHAR] A DO I EMIT SPACE LOOP CR
   ." YOU SHOULD SEE 0-5 SEPARATED BY TWO SPACES:" CR
@@ -1312,6 +1606,10 @@ TESTING OUTPUT: . ." CR EMIT SPACE SPACES TYPE U.
 
 T{ OUTPUT-TEST -> }T
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING INPUT: ACCEPT
@@ -1319,13 +1617,16 @@ TESTING INPUT: ACCEPT
 CREATE ABUF 50 CHARS ALLOT
 
 : ACCEPT-TEST
-   CR ." PLEASE TYPE UP TO 80 CHARACTERS:" CR
-   ABUF 50 ACCEPT
-   CR ." RECEIVED: " [CHAR] " EMIT
-   ABUF SWAP TYPE [CHAR] " EMIT CR
-;
+  CR ." PLEASE TYPE UP TO 80 CHARACTERS:" CR
+  ABUF 50 ACCEPT
+  CR ." RECEIVED: " [CHAR] " EMIT
+  ABUF SWAP TYPE [CHAR] " EMIT CR ;
 
 T{ ACCEPT-TEST -> }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -1336,6 +1637,10 @@ T{ : GDX   123 ; : GDX   GDX 234 ; -> }T
 T{ GDX -> 123 234 }T
 
 CR .( End of Core word set tests) CR
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -1402,6 +1707,10 @@ TEST-BLOCK-COUNT 2 U< [?IF]
 \? .( Error: 2 Test Blocks are required to run tests ) CR ABORT
 [?THEN]
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING Random Number Utilities
@@ -1428,27 +1737,27 @@ TESTING Random Number Utilities
   \ Note: THIS IS NOT CRYPTOGRAPHIC QUALITY
 
 : PRNG
-    CREATE ( "name" -- )
-        4 CELLS ALLOT
-    DOES> ( -- prng )
-;
+  CREATE ( "name" -- ) 4 CELLS ALLOT DOES> ( -- prng ) ;
 
 : PRNG-ERROR-CODE ( prng -- errcode | 0 )
-    0 4 0 DO          \ prng acc
-        >R @++ R> OR  \ prng acc'
-    LOOP              \ prng xORyORzORw
-    NIP 0= ;          \ xORyORzORw=0
+  0 4 0 DO        \ prng acc
+    >R @++ R> OR  \ prng acc'
+  LOOP            \ prng xORyORzORw
+  NIP 0= ;        \ xORyORzORw=0
 
-: PRNG-COPY ( src-prng dst-prng -- )
-    4 CELLS MOVE ;
+: PRNG-COPY ( src-prng dst-prng -- ) 4 CELLS MOVE ;
+
+-->
+
+( forth2012-test-suite )
 
 : PRNG-SET-SEED ( prng w z y x -- )
-    4 PICK                 \ prng w z y x prng
-    4 0 DO !++ LOOP DROP   \ prng
-    DUP PRNG-ERROR-CODE IF \ prng
-        1 OVER +!          \ prng
-    THEN                   \ prng
-    DROP ;                 \
+  4 PICK                 \ prng w z y x prng
+  4 0 DO !++ LOOP DROP   \ prng
+  DUP PRNG-ERROR-CODE IF \ prng
+    1 OVER +!            \ prng
+  THEN                   \ prng
+  DROP ;
 
 BITS/CELL 64 = [?IF]
 \?  : PRNG-RND ( prng -- rnd )
@@ -1457,7 +1766,9 @@ BITS/CELL 64 = [?IF]
 \?      DUP 35 RSHIFT XOR
 \?      DUP  4 LSHIFT XOR
 \?      TUCK SWAP ! ;
-[?THEN]
+[?THEN] -->
+
+( forth2012-test-suite )
 
 BITS/CELL 32 = [?IF]
 \?  : PRNG-RND ( prng -- rnd )
@@ -1471,6 +1782,10 @@ BITS/CELL 32 = [?IF]
 \?      TUCK SWAP 3 CELLS + ! ;          \ rnd
 [?THEN]
 
+-->
+
+( forth2012-test-suite )
+
 BITS/CELL 16 = [?IF]
 \?  .( === NOT TESTED === )
 \?  : PRNG-RND ( prng -- rnd )
@@ -1483,6 +1798,10 @@ BITS/CELL 16 = [?IF]
 \?      TUCK SWAP CELL+ ! ;          \ rnd
 [?THEN]
   \ From http://b2d-f9r.blogspot.co.uk/2010/08/16-bit-xorshift-rng-now-with-more.html
+
+-->
+
+( forth2012-test-suite )
 
 [?DEF] PRNG-RND
 \?  .( You need to add a Psuedo Random Number Generator )
@@ -1502,6 +1821,10 @@ PRNG-SET-SEED
 : BLOCK-RND    ( -- rnd )             BLOCK-PRNG PRNG-RND ;
 : BLOCK-RANDOM ( lower upper -- rnd ) BLOCK-PRNG PRNG-RANDOM ;
 
+-->
+
+( forth2012-test-suite )
+
 : RND-TEST-BLOCK ( -- blk )
     FIRST-TEST-BLOCK LIMIT-TEST-BLOCK BLOCK-RANDOM ;
   \ PostCondition: T{ RND-TEST-BLOCK FIRST-TEST-BLOCK LIMIT-TEST-BLOCK WITHIN -> TRUE }T
@@ -1520,6 +1843,10 @@ PRNG-SET-SEED
 : RND-TEST-BLOCK-SEQ ( u -- blks )
     FIRST-TEST-BLOCK LIMIT-TEST-BLOCK ROT 1- - BLOCK-RANDOM ;
 
+-->
+
+( forth2012-test-suite )
+
   \ I'm not sure if this algorithm is correct if " 1 CHARS 1 <> ".
 : ELF-HASH-ACCUMULATE ( hash c-addr u -- hash )
   >R SWAP R> 0 DO             \ c-addr h
@@ -1535,6 +1862,10 @@ PRNG-SET-SEED
 
 : ELF-HASH ( c-addr u -- hash )
     0 ROT ROT ELF-HASH-ACCUMULATE ;
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -1556,6 +1887,10 @@ T{ RND-TEST-BLOCK DUP BLOCK SWAP BLOCK = -> TRUE }T
   \ BLOCK twice on distinct block numbers
   \ may or may not return the same value!
   \ Nothing to test
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -1587,6 +1922,10 @@ T{ RND-TEST-BLOCK DUP BUFFER SWAP BUFFER = -> TRUE }T
 T{ RND-TEST-BLOCK DUP BLOCK SWAP BUFFER = -> TRUE }T
 T{ RND-TEST-BLOCK DUP BUFFER SWAP BLOCK = -> TRUE }T
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING Read and Write access with UPDATE and FLUSH
@@ -1612,6 +1951,10 @@ T{ RND-TEST-BLOCK                 \ blk
    SWAP BLOCK                     \ hash blk-addr2
    1024 ELF-HASH = -> TRUE }T
 
+-->
+
+( forth2012-test-suite )
+
   \ Boundary Test: Modify first character
 T{ RND-TEST-BLOCK                  \ blk
    DUP BLANK-BUFFER                \ blk blk-addr1
@@ -1630,6 +1973,10 @@ T{ RND-TEST-BLOCK                  \ blk
    SWAP BLOCK                      \ hash blk-addr2
    1024 ELF-HASH = -> TRUE }T
 
+-->
+
+( forth2012-test-suite )
+
   \ Boundary Test: First and Last (and all other) blocks in the
   \ test range.
 
@@ -1646,6 +1993,10 @@ T{ RND-TEST-BLOCK                  \ blk
     0 ROT ROT DO                   \ hash
         I PREPARE-RND-BLOCK UPDATE \ hash'
     LOOP ;                         \ hash'
+
+-->
+
+( forth2012-test-suite )
 
 : READ-BLOCKS-AND-HASH ( blk2 blk1 -- hash )
     0 ROT ROT DO                         \ hash(i)
@@ -1664,6 +2015,10 @@ T{ LIMIT-TEST-BLOCK FIRST-TEST-BLOCK
     SWAP BLOCK                     \ hash blk-addr2
     1024 ELF-HASH = ;              \ TRUE
 
+-->
+
+( forth2012-test-suite )
+
   \ Double UPDATE make no difference
 : TUF1-1 ( -- ) UPDATE UPDATE FLUSH ;
 T{ ' TUF1-1 RND-TEST-BLOCK TUF1 -> TRUE }T
@@ -1679,6 +2034,10 @@ T{ RND-TEST-BLOCK                      \ blk
    OVER 0 SWAP PREPARE-RND-BLOCK DROP  \ blk hash
    FLUSH ( with no preliminary UPDATE) \ blk hash
    SWAP BLOCK 1024 ELF-HASH = -> TRUE }T
+
+-->
+
+( forth2012-test-suite )
 
   \ `UPDATE` only marks the current block buffer.  This test
   \ needs at least 2 distinct buffers, though this is not a
@@ -1700,6 +2059,10 @@ T{ RND-TEST-BLOCK                      \ blk
     2>R                        \ xt blk1 blk2
     FLUSH                      \ xt blk1 blk2
     OVER 0 SWAP
+-->
+
+( forth2012-test-suite )
+
     PREPARE-RND-BLOCK          \ xt blk1 blk2 hash1'
     OVER 0 SWAP
     PREPARE-RND-BLOCK          \ xt blk1 blk2 hash1' hash2'
@@ -1711,13 +2074,16 @@ T{ RND-TEST-BLOCK                      \ blk
     2R> 2R> \ hash1'' hash2'' hash1' hash2' hash1 hash2
   THEN ;
 
-: 2= ( x1 x2 x3 x4 -- flag )
-    ROT = ROT ROT = AND ;
+: 2= ( x1 x2 x3 x4 -- flag ) ROT = ROT ROT = AND ;
 
 : TUF2-0 ( blk1 blk2 -- blk1 blk2 ) ;   \ no updates
 
 T{ ' TUF2-0 2RND-TEST-BLOCKS TUF2 \ run test procedure
    2SWAP 2DROP 2= -> TRUE }T      \ compare expected and actual
+
+-->
+
+( forth2012-test-suite )
 
 : TUF2-1 ( blk1 blk2 -- blk1 blk2 )    \ update blk1 only
     OVER BLOCK DROP UPDATE ;
@@ -1734,7 +2100,11 @@ T{ ' TUF2-2 2RND-TEST-BLOCKS TUF2       \ run test procedure
 T{ ' TUF2-3 2RND-TEST-BLOCKS TUF2       \ run test procedure
    2DROP 2= -> TRUE }T
 
-  \ FLUSH and then UPDATE is ambiguous and untestable
+  \ `FLUSH` and then `UPDATE` is ambiguous and untestable.
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -1763,6 +2133,10 @@ T{ RND-TEST-BLOCK DUP BLANK-BUFFER
 T{ RND-TEST-BLOCK DUP BLANK-BUFFER
    UPDATE SAVE-BUFFERS SWAP BLOCK  = -> TRUE }T
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING BLK
@@ -1777,6 +2151,10 @@ T{ BLK @ UPDATE                     BLK @ = -> TRUE }T
 
 T{ BLK @ FLUSH        BLK @ = -> TRUE }T
 T{ BLK @ SAVE-BUFFERS BLK @ = -> TRUE }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -1802,6 +2180,10 @@ T{ BLOCK-RND FIRST-TEST-BLOCK 2DUP TL1 LOAD = -> TRUE }T
   \ Boundary Test: LIMIT-TEST-BLOCK-1
 T{ BLOCK-RND LIMIT-TEST-BLOCK 1- 2DUP TL1 LOAD = -> TRUE }T
 
+-->
+
+( forth2012-test-suite )
+
 : WRITE-AT-END-OF-BLOCK ( blk c-addr u -- )
     ROT BLANK-BUFFER
     OVER 1024 SWAP - CHARS +
@@ -1817,6 +2199,10 @@ T{ BLOCK-RND RND-TEST-BLOCK 2DUP TL2 LOAD = -> TRUE }T
 : TL3 ( blk -- )
     S" BLK @" WRITE-BLOCK ;
 T{ RND-TEST-BLOCK DUP TL3 DUP LOAD = -> TRUE }T
+
+-->
+
+( forth2012-test-suite )
 
   \ EVALUATE resets BLK
   \ u: "EVALUATE-BLK@"; u LOAD
@@ -1838,6 +2224,10 @@ T{ RND-TEST-BLOCK DUP TL4 LOAD -> 0 }T
     #S #> ;                    \ c-addr u
 T{ RND-TEST-BLOCK DUP TL3 DUP TL5 EVALUATE = -> TRUE }T
 
+-->
+
+( forth2012-test-suite )
+
   \ Nested LOADs
   \ u2: "BLK @"; u1: "LOAD u2"; u1 LOAD
 : TL6 ( blk1 blk2 -- )
@@ -1851,6 +2241,10 @@ T{ 2RND-TEST-BLOCKS 2DUP TL6 SWAP LOAD = -> TRUE }T
   \ specification.  If 2 distinct buffers are not returned,
   \ then the tests quits with a trivial Pass.
 
+-->
+
+( forth2012-test-suite )
+
 : TL7 ( blk1 blk2 -- u1 u2 rnd2 blk2-addr rnd1' rnd1 )
   OVER BUFFER OVER BUFFER = IF \ test needs 2 distinct buffers
     2DROP 0 0 0 0 0 0          \ Dummy result
@@ -1862,6 +2256,10 @@ T{ 2RND-TEST-BLOCKS 2DUP TL6 SWAP LOAD = -> TRUE }T
     BLOCK-RND DUP >R         \ blk1 blk2 blk1-addr rnd1'
     0 <# #S #>               \ blk1 blk2 blk1-addr c-addr u
     ROT SWAP CHARS MOVE      \ blk1 blk2
+-->
+
+( forth2012-test-suite )
+
     \ Now LOAD blk2
     DUP LOAD DUP >R          \ blk1 blk2 blk2-addr
     \ Write a new blk2
@@ -1885,6 +2283,10 @@ T{ 2RND-TEST-BLOCKS TL7                 \ run test procedure
   \ doesn't say.  Similarly, I would not expect `LOAD` to
   \ `FLUSH` the buffer cache, but the specification doesn't say
   \ so.
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -1913,6 +2315,10 @@ T{ LIMIT-TEST-BLOCK 1- DUP TLS3 LIST -> }T
     S" End of Screen" WRITE-AT-END-OF-BLOCK ;
 T{ RND-TEST-BLOCK DUP TLS4 LIST -> }T
 
+-->
+
+( forth2012-test-suite )
+
   \ `BLOCK`, `BUFFER`, `UPDATE` et al don't change SCR.
 
 : TLS5 ( blk -- )
@@ -1936,9 +2342,16 @@ T{ SCR @ FLUSH DUP 1+ BLOCK DROP UPDATE              SCR @ = ->
 T{ SCR @ FLUSH DUP 1+ BLOCK DROP UPDATE SAVE-BUFFERS SCR @ = ->
     TRUE }T
 
+-->
+
+( forth2012-test-suite )
+
 : TLS6 ( blk -- )
     S" SCR @" WRITE-BLOCK ;
 T{ SCR @ RND-TEST-BLOCK DUP TLS6 LOAD SCR @ OVER 2= -> TRUE }T
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -1958,14 +2371,22 @@ T{ RND-TEST-BLOCK                    \ blk
    SWAP BLOCK                        \ hash blk-addr2
    1024 ELF-HASH = -> TRUE }T
 
-  \ EMPTY-BUFFERS discards all buffers
-: TUF2-EB ( blk1 blk2 -- blk1 blk2 )
-    TUF2-1 TUF2-2 EMPTY-BUFFERS ;  \ c.f. TUF2-3
-T{ ' TUF2-EB 2RND-TEST-BLOCKS TUF2
-   2SWAP 2DROP 2= -> TRUE }T
+: TUF2-EB TUF2-1 TUF2-2 EMPTY-BUFFERS ;
+  \ ( blk1 blk2 -- blk1 blk2 )
+  \ EMPTY-BUFFERS discards all buffers.
+  \ c.f. TUF2-3
 
-  \ FLUSH and then EMPTY-BUFFERS is acceptable but untestable
-  \ EMPTY-BUFFERS and then UPDATE is ambiguous and untestable
+T{ ' TUF2-EB 2RND-TEST-BLOCKS TUF2 2SWAP 2DROP 2= -> TRUE }T
+
+  \ `FLUSH` and then `EMPTY-BUFFERS` is acceptable but
+  \ untestable.
+  \
+  \ `EMPTY-BUFFERS` and then `UPDATE` is ambiguous and
+  \ untestable.
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -1974,6 +2395,10 @@ TESTING >IN manipulation from a block source
 : TIN ( blk -- )
     S" 1 8 >IN +!     2        3" WRITE-BLOCK ;
 T{ RND-TEST-BLOCK DUP TIN LOAD -> 1 3 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -1992,6 +2417,10 @@ TESTING from a block source
     LOOP DROP                  \ blk   blk:"\ | | | | ... |"
     UPDATE SAVE-BUFFERS FLUSH  \ blk
     1024 SWAP LOAD ;           \ c/l
+-->
+
+( forth2012-test-suite )
+
 [?DEF] C/L
 [?ELSE]
 \? .( Given Characters per Line: ) C/L U. CR
@@ -2003,6 +2432,10 @@ TESTING from a block source
 
 : WRITE-BLOCK-LINE ( lin-addr[i] c-addr u -- lin-addr[i+1] )
     2>R DUP C/L CHARS + SWAP 2R> ROT SWAP MOVE ;
+
+-->
+
+( forth2012-test-suite )
 
   \ Discards to the end of the line
 : TCSIRIR1 ( blk -- )
@@ -2027,6 +2460,10 @@ VARIABLE T-CNT 0 T-CNT !
 : TCSIRIR2-EXPECTED S" EDCBCBA" ;
   \ Remember that the string comes out backwards
 
+-->
+
+( forth2012-test-suite )
+
 : TCSIRIR2 ( blk -- )
     C/L 1024 U< IF
         BLANK-BUFFER
@@ -2041,7 +2478,9 @@ VARIABLE T-CNT 0 T-CNT !
         S" 0 TCSIRIR2-EXPECTED"         WRITE-BLOCK
     THEN ;
 T{ RND-TEST-BLOCK DUP TCSIRIR2 LOAD TCSIRIR2-EXPECTED S=
-   -> 0 TRUE }T
+   -> 0 TRUE }T -->
+
+( forth2012-test-suite )
 
   \ REFILL across 2 blocks
 : TCSIRIR3 ( blks -- )
@@ -2061,6 +2500,10 @@ T{ 2 RND-TEST-BLOCK-SEQ DUP TCSIRIR3 LOAD
         S" 0 T-CNT !"                   WRITE-BLOCK-LINE
         S" <# MARK A SAVE-INPUT MARK B" WRITE-BLOCK-LINE
         S" MARK C REFILL MARK D"        WRITE-BLOCK-LINE
+-->
+
+( forth2012-test-suite )
+
         DROP UPDATE 1+ BLANK-BUFFER
         S" MARK E ABS CHAR 0 + HOLD"    WRITE-BLOCK-LINE
         S" 1 T-CNT +! MARK F ' RESTORE-INPUT "
@@ -2074,6 +2517,10 @@ T{ 2 RND-TEST-BLOCK-SEQ DUP TCSIRIR3 LOAD
 T{ 2 RND-TEST-BLOCK-SEQ DUP TCSIRIR4 LOAD TCSIRIR4-EXPECTED S=
    -> 0 TRUE }T
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING THRU
@@ -2086,6 +2533,10 @@ T{ 2 RND-TEST-BLOCK-SEQ DUP TT1 DUP DUP 1+ THRU 1- = -> TRUE }T
 BLOCK-ERRORS SET-ERROR-COUNT
 
 CR .( End of Block word tests) CR
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -2185,6 +2636,10 @@ TESTING TRUE FALSE
 T{ TRUE  -> 0 INVERT }T
 T{ FALSE -> 0 }T
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING <> U>   (contributed by James Bowman)
@@ -2196,6 +2651,10 @@ T{ 1 0 <> -> TRUE }T
 T{ -1 0 <> -> TRUE }T
 T{ 0 1 <> -> TRUE }T
 T{ 0 -1 <> -> TRUE }T
+
+-->
+
+( forth2012-test-suite )
 
 T{ 0 1 U> -> FALSE }T
 T{ 1 2 U> -> FALSE }T
@@ -2209,6 +2668,10 @@ T{ 2 1 U> -> TRUE }T
 T{ MID-UINT 0 U> -> TRUE }T
 T{ MAX-UINT 0 U> -> TRUE }T
 T{ MAX-UINT MID-UINT U> -> TRUE }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -2227,6 +2690,10 @@ T{ -1 0> -> FALSE }T
 T{ MIN-INT 0> -> FALSE }T
 T{ 1 0> -> TRUE }T
 T{ MAX-INT 0> -> TRUE }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -2247,6 +2714,10 @@ T{ RO5 0 ROLL -> RO5 }T
 T{ RO5 2 PICK -> 100 200 300 400 500 300 }T
 T{ RO5 1 PICK -> RO5 OVER }T
 T{ RO5 0 PICK -> RO5 DUP }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -2270,6 +2741,10 @@ TESTING HEX   (contributed by James Bowman)
 
 T{ BASE @ HEX BASE @ DECIMAL BASE @ - SWAP BASE ! -> 6 }T
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING WITHIN   (contributed by James Bowman)
@@ -2287,6 +2762,10 @@ T{ 0 MID-UINT+1 MID-UINT WITHIN -> TRUE }T
 T{ 0 MID-UINT+1 MID-UINT+1 WITHIN -> FALSE }T
 T{ 0 MID-UINT+1 MAX-UINT WITHIN -> FALSE }T
 T{ 0 MAX-UINT 0 WITHIN -> FALSE }T
+-->
+
+( forth2012-test-suite )
+
 T{ 0 MAX-UINT MID-UINT WITHIN -> TRUE }T
 T{ 0 MAX-UINT MID-UINT+1 WITHIN -> TRUE }T
 T{ 0 MAX-UINT MAX-UINT WITHIN -> FALSE }T
@@ -2301,6 +2780,10 @@ T{ MID-UINT MID-UINT MAX-UINT WITHIN -> TRUE }T
 T{ MID-UINT MID-UINT+1 0 WITHIN -> FALSE }T
 T{ MID-UINT MID-UINT+1 MID-UINT WITHIN -> FALSE }T
 T{ MID-UINT MID-UINT+1 MID-UINT+1 WITHIN -> FALSE }T
+-->
+
+( forth2012-test-suite )
+
 T{ MID-UINT MID-UINT+1 MAX-UINT WITHIN -> FALSE }T
 T{ MID-UINT MAX-UINT 0 WITHIN -> FALSE }T
 T{ MID-UINT MAX-UINT MID-UINT WITHIN -> FALSE }T
@@ -2314,6 +2797,10 @@ T{ MID-UINT+1 MID-UINT 0 WITHIN -> TRUE }T
 T{ MID-UINT+1 MID-UINT MID-UINT WITHIN -> FALSE }T
 T{ MID-UINT+1 MID-UINT MID-UINT+1 WITHIN -> FALSE }T
 T{ MID-UINT+1 MID-UINT MAX-UINT WITHIN -> TRUE }T
+-->
+
+( forth2012-test-suite )
+
 T{ MID-UINT+1 MID-UINT+1 0 WITHIN -> TRUE }T
 T{ MID-UINT+1 MID-UINT+1 MID-UINT WITHIN -> TRUE }T
 T{ MID-UINT+1 MID-UINT+1 MID-UINT+1 WITHIN -> FALSE }T
@@ -2328,6 +2815,10 @@ T{ MAX-UINT 0 MID-UINT+1 WITHIN -> FALSE }T
 T{ MAX-UINT 0 MAX-UINT WITHIN -> FALSE }T
 T{ MAX-UINT MID-UINT 0 WITHIN -> TRUE }T
 T{ MAX-UINT MID-UINT MID-UINT WITHIN -> FALSE }T
+-->
+
+( forth2012-test-suite )
+
 T{ MAX-UINT MID-UINT MID-UINT+1 WITHIN -> FALSE }T
 T{ MAX-UINT MID-UINT MAX-UINT WITHIN -> FALSE }T
 T{ MAX-UINT MID-UINT+1 0 WITHIN -> TRUE }T
@@ -2338,6 +2829,10 @@ T{ MAX-UINT MAX-UINT 0 WITHIN -> TRUE }T
 T{ MAX-UINT MAX-UINT MID-UINT WITHIN -> TRUE }T
 T{ MAX-UINT MAX-UINT MID-UINT+1 WITHIN -> TRUE }T
 T{ MAX-UINT MAX-UINT MAX-UINT WITHIN -> FALSE }T
+
+-->
+
+( forth2012-test-suite )
 
 T{ MIN-INT MIN-INT MIN-INT WITHIN -> FALSE }T
 T{ MIN-INT MIN-INT 0 WITHIN -> TRUE }T
@@ -2353,6 +2848,10 @@ T{ MIN-INT 1 1 WITHIN -> FALSE }T
 T{ MIN-INT 1 MAX-INT WITHIN -> FALSE }T
 T{ MIN-INT MAX-INT MIN-INT WITHIN -> FALSE }T
 T{ MIN-INT MAX-INT 0 WITHIN -> TRUE }T
+-->
+
+( forth2012-test-suite )
+
 T{ MIN-INT MAX-INT 1 WITHIN -> TRUE }T
 T{ MIN-INT MAX-INT MAX-INT WITHIN -> FALSE }T
 T{ 0 MIN-INT MIN-INT WITHIN -> FALSE }T
@@ -2367,6 +2866,10 @@ T{ 0 1 MIN-INT WITHIN -> FALSE }T
 T{ 0 1 0 WITHIN -> FALSE }T
 T{ 0 1 1 WITHIN -> FALSE }T
 T{ 0 1 MAX-INT WITHIN -> FALSE }T
+-->
+
+( forth2012-test-suite )
+
 T{ 0 MAX-INT MIN-INT WITHIN -> FALSE }T
 T{ 0 MAX-INT 0 WITHIN -> FALSE }T
 T{ 0 MAX-INT 1 WITHIN -> TRUE }T
@@ -2381,6 +2884,10 @@ T{ 1 0 1 WITHIN -> FALSE }T
 T{ 1 0 MAX-INT WITHIN -> TRUE }T
 T{ 1 1 MIN-INT WITHIN -> TRUE }T
 T{ 1 1 0 WITHIN -> TRUE }T
+-->
+
+( forth2012-test-suite )
+
 T{ 1 1 1 WITHIN -> FALSE }T
 T{ 1 1 MAX-INT WITHIN -> TRUE }T
 T{ 1 MAX-INT MIN-INT WITHIN -> FALSE }T
@@ -2395,6 +2902,10 @@ T{ MAX-INT 0 MIN-INT WITHIN -> TRUE }T
 T{ MAX-INT 0 0 WITHIN -> FALSE }T
 T{ MAX-INT 0 1 WITHIN -> FALSE }T
 T{ MAX-INT 0 MAX-INT WITHIN -> FALSE }T
+-->
+
+( forth2012-test-suite )
+
 T{ MAX-INT 1 MIN-INT WITHIN -> TRUE }T
 T{ MAX-INT 1 0 WITHIN -> TRUE }T
 T{ MAX-INT 1 1 WITHIN -> FALSE }T
@@ -2403,6 +2914,10 @@ T{ MAX-INT MAX-INT MIN-INT WITHIN -> TRUE }T
 T{ MAX-INT MAX-INT 0 WITHIN -> TRUE }T
 T{ MAX-INT MAX-INT 1 WITHIN -> TRUE }T
 T{ MAX-INT MAX-INT MAX-INT WITHIN -> FALSE }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -2428,6 +2943,11 @@ TESTING AGAIN   (contributed by James Bowman)
 T{ : AG0 701 BEGIN DUP 7 MOD 0= IF EXIT THEN 1+ AGAIN ; -> }T
 T{ AG0 -> 707 }T
 
+-->
+
+( forth2012-test-suite )
+
+
   \ ===========================================================
 
 TESTING MARKER   (contributed by James Bowman)
@@ -2442,6 +2962,10 @@ T{ MA1 MA2 MA1 -> 222 111 }T
 T{ MA? MA0 MA? MA1 MA? MA2 -> TRUE TRUE FALSE }T
 T{ MA0 -> }T
 T{ MA? MA0 MA? MA1 MA? MA2 -> FALSE FALSE FALSE }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -2464,6 +2988,10 @@ T{ 4  4 QD3 -> }T
 T{ 4  1 QD3 -> 1 2 3 }T
 T{ 2 -1 QD3 -> -1 0 1 }T
 
+-->
+
+( forth2012-test-suite )
+
 : QD4 ?DO I -1 +LOOP ;
 T{  4 4 QD4 -> }T
 T{  1 4 QD4 -> 4 3 2 1 }T
@@ -2473,6 +3001,10 @@ T{ -1 2 QD4 -> 2 1 0 -1 }T
 T{   1 50 QD5 -> 50 40 30 20 10 }T
 T{   0 50 QD5 -> 50 40 30 20 10 0 }T
 T{ -25 10 QD5 -> 10 0 -10 -20 }T
+
+-->
+
+( forth2012-test-suite )
 
 VARIABLE ITERS
 VARIABLE INCRMNT
@@ -2488,6 +3020,10 @@ VARIABLE INCRMNT
    +LOOP ITERS @
 ;
 
+-->
+
+( forth2012-test-suite )
+
 T{  4  4 -1 QD6 -> 0 }T
 T{  1  4 -1 QD6 -> 4 3 2 1 4 }T
 T{  4  1 -1 QD6 -> 1 0 -1 -2 -3 -4 6 }T
@@ -2502,7 +3038,10 @@ T{ -1  2 -1 QD6 -> 2 1 0 -1 4 }T
 T{  2 -1  0 QD6 -> -1 -1 -1 -1 -1 -1 6 }T
 T{ -1  2  0 QD6 -> 2 2 2 2 2 2 6 }T
 T{ -1  2  1 QD6 -> 2 3 4 5 6 7 6 }T
-T{  2 -1  1 QD6 -> -1 0 1 3 }T
+T{  2 -1  1 QD6 -> -1 0 1 3 }T -->
+
+( forth2012-test-suite )
+
 
   \ ===========================================================
 
@@ -2512,6 +3051,10 @@ T{ 8 BUFFER: BUF:TEST -> }T
 T{ BUF:TEST DUP ALIGNED = -> TRUE }T
 T{ 111 BUF:TEST ! 222 BUF:TEST CELL+ ! -> }T
 T{ BUF:TEST @ BUF:TEST CELL+ @ -> 111 222 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -2530,7 +3073,9 @@ T{ -333 VD2 -> }T
 T{ VAL2 -> -333 }T
 T{ VAL1 -> 222 }T
 T{ 123 VALUE VAL3 IMMEDIATE VAL3 -> 123 }T
-T{ : VD3 VAL3 LITERAL ; VD3 -> 123 }T
+T{ : VD3 VAL3 LITERAL ; VD3 -> 123 }T -->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -2548,6 +3093,10 @@ T{ 2 CS1 -> 222 }T
 T{ 3 CS1 -> 333 }T
 T{ 4 CS1 -> 999 }T
 
+-->
+
+( forth2012-test-suite )
+
   \ Nested CASE's
 
 : CS2 >R CASE -1 OF CASE R@ 1 OF 100 ENDOF
@@ -2560,8 +3109,9 @@ T{ 4 CS1 -> 999 }T
                     ENDCASE
                  ENDOF
                  >R 299 R>
-         ENDCASE R> DROP
-;
+         ENDCASE R> DROP ; -->
+
+( forth2012-test-suite )
 
 T{ -1 1 CS2 ->  100 }T
 T{ -1 2 CS2 ->  200 }T
@@ -2577,8 +3127,11 @@ T{  0 2 CS2 ->  299 }T
         1- FALSE OF 22 ENDOF
         1- FALSE OF 33 ENDOF
         44 SWAP
-   ENDCASE
-;
+   ENDCASE ;
+
+-->
+
+( forth2012-test-suite )
 
 T{ 1 CS3 -> 11 }T
 T{ 2 CS3 -> 22 }T
@@ -2591,6 +3144,10 @@ T{ : CS4 CASE ENDCASE ; 1 CS4 -> }T
 T{ : CS5 CASE 2 SWAP ENDCASE ; 1 CS5 -> 2 }T
 T{ : CS6 CASE 1 OF ENDOF 2 ENDCASE ; 1 CS6 -> }T
 T{ : CS7 CASE 3 OF ENDOF 2 ENDCASE ; 1 CS7 -> 1 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -2608,6 +3165,10 @@ T{ :NONAME ( n -- 0,1,..n ) DUP IF DUP >R 1- RECURSE R> THEN ;
 T{ 0 RN1 EXECUTE -> 0 }T
 T{ 4 RN1 EXECUTE -> 0 1 2 3 4 }T
 
+-->
+
+( forth2012-test-suite )
+
 :NONAME ( n -- n1 ) \ Multiple RECURSEs in one definition
    1- DUP
    CASE 0 OF EXIT ENDOF
@@ -2622,6 +3183,10 @@ T{  1 RN2 EXECUTE -> 0 }T
 T{  2 RN2 EXECUTE -> 11 0 }T
 T{  4 RN2 EXECUTE -> 33 22 11 0 }T
 T{ 25 RN2 EXECUTE -> 33 22 11 0 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -2642,6 +3207,10 @@ T{ : Q DUP+ COMPILE, ; -> }T
 T{ : AS1 [ Q ] ; -> }T
 T{ 123 AS1 -> 246 }T
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
   \ Cannot automatically test `SAVE-INPUT` and `RESTORE-INPUT`,
@@ -2660,6 +3229,10 @@ VARIABLE SI_INC 0 SI_INC !
 
 T{ S$ EVALUATE SI_INC @ -> 0 2345 15 }T
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING .(
@@ -2676,6 +3249,10 @@ T{ : DOTP CR ." Second message via ." [CHAR] " EMIT
      [ CR ] .( First message via .( ) ; DOTP -> }T
 CR CR
 T{ : IMM? BL WORD FIND NIP ; IMM? .( -> 1 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -2696,6 +3273,9 @@ LI1 0 <# #S #> NIP CONSTANT LENLI1
   LI2 OVER SPACES  . CR R@ 1+ LI2 SWAP  .R CR
   LI1 OVER SPACES U. CR R@    LI1 SWAP U.R CR
   LI2 SWAP SPACES U. CR R>    LI2 SWAP U.R CR ;
+-->
+
+( forth2012-test-suite )
 
 : .R&U.R ( -- )
   CR ." You should see lines duplicated:" CR
@@ -2706,6 +3286,10 @@ LI1 0 <# #S #> NIP CONSTANT LENLI1
 
 CR CR .( Output from .R and U.R)
 T{ .R&U.R -> }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -2720,8 +3304,11 @@ CHARS/PAD CHARS CONSTANT AUS/PAD
       OVER I CHARS + C@ OVER <>
       IF 2DROP UNLOOP FALSE EXIT THEN
    LOOP
-   2DROP TRUE
-;
+   2DROP TRUE ;
+
+-->
+
+( forth2012-test-suite )
 
 T{ PAD DROP -> }T
 T{ 0 INVERT PAD C! -> }T
@@ -2735,6 +3322,10 @@ T{ PAD 43 MAXCHAR CHECKPAD -> TRUE }T
 T{ PAD 43 CHARS + 9 0 CHECKPAD -> TRUE }T
 T{ PAD 52 CHARS + CHARS/PAD 52 - MAXCHAR CHECKPAD -> TRUE }T
 
+-->
+
+( forth2012-test-suite )
+
   \ Check that use of `WORD` and pictured numeric output do not
   \ corrupt `PAD`. Minimum size of buffers for these are 33
   \ chars and (2*n)+2 chars respectively where n is number of
@@ -2746,6 +3337,10 @@ MAX-UINT MAX-UINT <# #S CHAR 1 DUP HOLD HOLD #> 2DROP
 DECIMAL
 BL WORD 12345678123456781234567812345678 DROP
 T{ PAD CHARS/PAD 0 CHECKPAD -> TRUE }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -2760,6 +3355,10 @@ T{ CHAR A PARSE A SWAP DROP -> 0 }T
 T{ CHAR Z PARSE
    SWAP DROP -> 0 }T
 T{ CHAR " PARSE 4567 "DUP ROT ROT EVALUATE -> 5 4567 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -2776,6 +3375,10 @@ T{ PARSE-NAME
 T{ PARSE-NAME
   NIP -> 0 }T
 
+-->
+
+( forth2012-test-suite )
+
 T{ : PARSE-NAME-TEST ( "name1" "name2" -- n )
     PARSE-NAME PARSE-NAME S= ; -> }T
 T{ PARSE-NAME-TEST abcd abcd  -> TRUE }T
@@ -2786,6 +3389,10 @@ T{ PARSE-NAME-TEST abcde abcde
    -> TRUE }T         \ Parse to end of line
 T{ PARSE-NAME-TEST abcde           abcde
    -> TRUE }T         \ Leading and trailing spaces
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -2798,6 +3405,10 @@ T{ : IS-DEFER1 IS DEFER1 ; -> }T
 T{ : ACTION-DEFER1 ACTION-OF DEFER1 ; -> }T
 T{ : DEF! DEFER! ; -> }T
 T{ : DEF@ DEFER@ ; -> }T
+
+-->
+
+( forth2012-test-suite )
 
 T{ ' * ' DEFER1 DEFER! -> }T
 T{ 2 3 DEFER1 -> 6 }T
@@ -2813,6 +3424,10 @@ T{ ACTION-OF DEFER1 -> ' + }T
 T{ ACTION-DEFER1 -> ' + }T
 T{ ' - IS-DEFER1 -> }T
 T{ 1 2 DEFER1 -> -1 }T
+-->
+
+( forth2012-test-suite )
+
 T{ ' DEFER1 DEFER@ -> ' - }T
 T{ ' DEFER1 DEF@ -> ' - }T
 T{ ACTION-OF DEFER1 -> ' - }T
@@ -2821,6 +3436,10 @@ T{ ACTION-DEFER1 -> ' - }T
 T{ MY-DEFER DEFER2 -> }T
 T{ ' DUP IS DEFER2 -> }T
 T{ 1 DEFER2 -> 1 1 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -2835,6 +3454,10 @@ T{ 123 0 <# #S BL HOLD HTEST2 HOLDS BL HOLD HTEST HOLDS #>
 T{ : HLD HOLDS ; -> }T
 T{ 0 0 <#  HTEST HLD #> HTEST S= -> TRUE }T
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING REFILL SOURCE-ID
@@ -2844,6 +3467,10 @@ TESTING REFILL SOURCE-ID
 
 T{ : RF1  S" REFILL" EVALUATE ; RF1 -> FALSE }T
 T{ : SID1  S" SOURCE-ID" EVALUATE ; SID1 -> -1 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -2861,6 +3488,10 @@ T{ : SSQ2 S\" " ; SSQ2 SWAP DROP -> 0 }T    \ Empty string
 
 T{ : SSQ3 S\" \a\b\e\f\l\m\q\r\t\v\x0F0\x1Fa\xaBx\z\"\\" ;
    -> }T
+-->
+
+( forth2012-test-suite )
+
 T{ SSQ3 SWAP DROP          ->  20 }T \ String length
 T{ SSQ3 DROP            C@ ->   7 }T \ \a   BEL Bell
 T{ SSQ3 DROP  1 CHARS + C@ ->   8 }T \ \b   BS  Backspace
@@ -2875,6 +3506,10 @@ T{ SSQ3 DROP  9 CHARS + C@ ->   9 }T \ \t   TAB Horizontal Tab
 T{ SSQ3 DROP 10 CHARS + C@ ->  11 }T \ \v   VT  Vertical Tab
 T{ SSQ3 DROP 11 CHARS + C@ ->  15 }T \ \x0F     Given Char
 T{ SSQ3 DROP 12 CHARS + C@ ->  48 }T \ 0    0   Digit follow on
+-->
+
+( forth2012-test-suite )
+
 T{ SSQ3 DROP 13 CHARS + C@ ->  31 }T \ \x1F     Given Char
 T{ SSQ3 DROP 14 CHARS + C@ ->  97 }T \ a    a   Hex follow on
 T{ SSQ3 DROP 15 CHARS + C@ -> 171 }T \ \xaB
@@ -2893,6 +3528,10 @@ CR .( One line...)
 CR .( another line)
 T{ : SSQ4 S\" \nOne line...\nanotherLine\n" type ; SSQ4 -> }T
 
+-->
+
+( forth2012-test-suite )
+
   \ Test bare escapable characters appear as themselves:
 T{ : SSQ5 S\" abeflmnqrtvxz" S" abeflmnqrtvxz" S= ; SSQ5
    -> TRUE }T
@@ -2908,6 +3547,10 @@ T{ : SSQ9
      S\" 11 : SSQ10 s\\\" \\x32\\x32\" EVALUATE ;
      SSQ10 33" EVALUATE ; -> }T
 T{ SSQ9 -> 11 22 33 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 CORE-EXT-ERRORS SET-ERROR-COUNT
@@ -2968,16 +3611,15 @@ TESTING infinite loop
 
 VARIABLE ITERATIONS
 VARIABLE INCREMENT
+
 : GD7 ( LIMIT START INCREMENT -- )
-   INCREMENT !
-   0 ITERATIONS !
+   INCREMENT !  0 ITERATIONS !
    DO
       1 ITERATIONS +!
-      I
-      ITERATIONS @  6 = IF LEAVE THEN
-      INCREMENT @
-   +LOOP ITERATIONS @
-;
+      I ITERATIONS @  6 = IF LEAVE THEN INCREMENT @
+   +LOOP ITERATIONS @ ; -->
+
+( forth2012-test-suite )
 
 T{  4  4 -1 GD7 -> 4 1 }T
 T{  1  4 -1 GD7 -> 4 3 2 1 4 }T
@@ -2986,6 +3628,10 @@ T{  4  1  0 GD7 -> 1 1 1 1 1 1 6 }T
 T{  0  0  0 GD7 -> 0 0 0 0 0 0 6 }T
 T{  1  4  0 GD7 -> 4 4 4 4 4 4 6 }T
 T{  1  4  1 GD7 -> 4 5 6 7 8 9 6 }T
+-->
+
+( forth2012-test-suite )
+
 T{  4  1  1 GD7 -> 1 2 3 3 }T
 T{  4  4  1 GD7 -> 4 5 6 7 8 9 6 }T
 T{  2 -1 -1 GD7 -> -1 -2 -3 -4 -5 -6 6 }T
@@ -2997,6 +3643,10 @@ T{  2 -1  1 GD7 -> -1 0 1 3 }T
 T{ -20 30 -10 GD7 -> 30 20 10 0 -10 -20 6 }T
 T{ -20 31 -10 GD7 -> 31 21 11 1 -9 -19 6 }T
 T{ -20 29 -10 GD7 -> 29 19 9 -1 -11 5 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -3019,6 +3669,10 @@ T{ 0 0 MAX-UINT -USTEP GD8 -> 256 }T
 T{ 0 MAX-INT MIN-INT STEP GD8 -> 256 }T
 T{ 0 MIN-INT MAX-INT -STEP GD8 -> 256 }T
 
+-->
+
+( forth2012-test-suite )
+
   \ Two's complement arithmetic, wraps around modulo wordsize
   \ Only tested if the Forth system does wrap around, use of
   \ conditional compilation deliberately avoided.
@@ -3036,6 +3690,10 @@ T{ 0 0 0  USTEP +UWRAP? 256 GD9
 T{ 0 0 0 -USTEP -UWRAP?   1 GD9
 T{ 0 MIN-INT MAX-INT  STEP +WRAP? 1 GD9
 T{ 0 MAX-INT MIN-INT -STEP -WRAP? 1 GD9
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -3057,6 +3715,10 @@ T{ 0 MIN-INT 1+   0 MIN-INT GD8  -> 1 }T
 T{ 0 MIN-INT 1+  -1 MIN-INT GD8  -> 1 }T
 T{ 0 MIN-INT 1+   1 MIN-INT GD8  -> 2 }T
 T{ 0 MIN-INT 1+ DUP MIN-INT GD8  -> 1 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -3082,6 +3744,10 @@ T{ PL1 -> 1 2 3 18 19 }T
 T{ PL2 -> 1 2 }T
 : PL3 20 5 DO I 19 I 2 SET-I DUP 1 = IF DROP 0 I 6 SET-I THEN
            +LOOP ;
+-->
+
+( forth2012-test-suite )
+
 T{ PL3 -> 5 6 0 1 2 19 }T
 : PL4 20 1 DO I MAX-INT I 4 SET-I +LOOP ;
 T{ PL4 -> 1 2 3 4 }T
@@ -3096,6 +3762,10 @@ T{ PL7 -> -1 -2 -3 -4 -5 }T
             IF DROP 0 I -6 -SET-I THEN
          +LOOP ;
 T{ PL8 -> -5 -6 0 -1 -2 -20 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -3112,6 +3782,10 @@ TESTING multiple RECURSEs in one colon definition
 T{ 0 0 ACK ->  1 }T
 T{ 3 0 ACK ->  5 }T
 T{ 2 4 ACK -> 11 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -3132,6 +3806,10 @@ T{ 12345 DEPTH OVER 9 < 34 AND + 3 + >IN !
 T{ 14145 8115 ?DUP 0= 34 AND >IN +!
    TUCK MOD 14 >IN ! GCD CALCULATION -> 15 }T
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING IMMEDIATE with CONSTANT VARIABLE & CREATE [ ... DOES> ]
@@ -3148,8 +3826,14 @@ T{ 111 IW6 IW7 IW7 -> 112 }T
 T{ : IW8 IW7 LITERAL 1+ ; IW8 -> 113 }T
 T{ : IW9 CREATE , DOES> @ 2 + IMMEDIATE ; -> }T
 : FIND-IW BL WORD FIND NIP ; ( -- 0 | 1 | -1 )
-T{ 222 IW9 IW10 FIND-IW IW10 -> -1 }T \ IW10 is not immediate
-T{ IW10 FIND-IW IW10 -> 224 1 }T      \ IW10 becomes immediate
+
+T{ 222 IW9 IW10 FIND-IW IW10 -> -1 }T
+  \ IW10 is not immediate
+
+T{ IW10 FIND-IW IW10 -> 224 1 }T -->
+  \ IW10 becomes immediate
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -3170,6 +3854,10 @@ T{ ( A comment)1234 -> 1234 }T
 T{ : PB1 CR ." You should see 2345: "." 2345"( A comment) CR ;
    PB1 -> }T
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING number prefixes # $ % and 'c' character input
@@ -3187,6 +3875,10 @@ T{ 'z' -> 122 }T
 T{ 'Z' -> 90 }T
   \ Check BASE is unchanged
 T{ BASE @ OLD-BASE @ = -> <TRUE> }T
+
+-->
+
+( forth2012-test-suite )
 
   \ Repeat in Hex mode
 16 OLD-BASE ! 16 BASE !
@@ -3206,6 +3898,10 @@ DECIMAL
 T{ : nmp  #8327 $-2cbe %011010111 ''' ;
    nmp -> 8327 -11454 215 39 }T
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING definition names
@@ -3220,6 +3916,10 @@ T{ _`abcdefghijklmnopqrstuvwxyz{|} -> 3 }T
 : _`abcdefghijklmnopqrstuvwxyz{|~ 4 ; \ Last char different
 T{ _`abcdefghijklmnopqrstuvwxyz{|~ -> 4 }T
 T{ _`abcdefghijklmnopqrstuvwxyz{|} -> 3 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -3240,6 +3940,10 @@ CREATE NON-EXISTENT-WORD   \ Same as in exceptiontest.fth
   CHAR $ C, CHAR $ C,
 T{ NON-EXISTENT-WORD FIND -> NON-EXISTENT-WORD 0 }T
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING IF ... BEGIN ... REPEAT (unstructured)
@@ -3258,6 +3962,10 @@ TESTING DOES> doesn't cause a problem with a CREATEd address
 T{ CREATE 2K 3 , 2K , MAKE-2CONST 2K -> ' 2K >BODY 3 }T
 
 CR .( End of additional Core tests) CR
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -3313,6 +4021,10 @@ MAX-INTD INVERT CONSTANT MIN-INTD   \ 10...0
 MAX-INTD 2/     CONSTANT HI-INT     \ 001...1
 MIN-INTD 2/     CONSTANT LO-INT     \ 110...1
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING interpreter and compiler reading double numbers
@@ -3332,7 +4044,9 @@ T{ $-12AbCdEf. -> -313249263. }T
 T{ %10010110. -> 150. }T
 T{ %-10010110. -> -150. }T
   \ Check BASE is unchanged
-T{ BASE @ OLD-DBASE @ = -> <TRUE> }T
+T{ BASE @ OLD-DBASE @ = -> <TRUE> }T -->
+
+( forth2012-test-suite )
 
   \ Repeat in Hex mode
 16 OLD-DBASE ! 16 BASE !
@@ -3349,6 +4063,10 @@ DECIMAL
   \ Check number prefixes in compile mode
 T{ : dnmp  #8327. $-2cbe. %011010111. ; dnmp
    -> 8327. -11454. 215. }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -3372,6 +4090,10 @@ T{ : CD6 2C3 2LITERAL ; CD6 -> 4 5 }T
 MAX-2INT 2/  2CONSTANT HI-2INT   \ 001...1
 MIN-2INT 2/  2CONSTANT LO-2INT   \ 110...0
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING DNEGATE
@@ -3394,6 +4116,9 @@ T{ -1.  2. D+ ->  1. }T
 T{ -1. -2. D+ -> -3. }T
 T{ -1.  1. D+ ->  0. }T
 
+-->
+
+( forth2012-test-suite )
 
 TESTING D+ with mid range integers
 
@@ -3409,6 +4134,10 @@ T{ -1 -1  0  1 D+ -> -1  0 }T
 T{ MIN-INTD 0 2DUP D+ -> 0 1 }T
 T{ MIN-INTD S>D MIN-INTD 0 D+ -> 0 0 }T
 
+-->
+
+( forth2012-test-suite )
+
 TESTING D+ with large double integers
 
 T{ HI-2INT 1. D+ -> 0 HI-INT 1+ }T
@@ -3417,6 +4146,10 @@ T{ MAX-2INT MIN-2INT D+ -> -1. }T
 T{ MAX-2INT LO-2INT D+ -> HI-2INT }T
 T{ HI-2INT MIN-2INT D+ 1. D+ -> LO-2INT }T
 T{ LO-2INT 2DUP D+ -> MIN-2INT }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -3431,6 +4164,10 @@ T{ -1.  2. D- -> -3. }T
 T{ -1. -2. D- ->  1. }T
 T{ -1. -1. D- ->  0. }T
 
+-->
+
+( forth2012-test-suite )
+
 TESTING D- with mid-range integers
 
 T{  0  0  0  5 D- ->  0 -5 }T
@@ -3444,6 +4181,10 @@ T{  0 -1  0 -2 D- ->  0  1 }T
 T{  0  0  0  1 D- ->  0 -1 }T
 T{ MIN-INTD 0 2DUP D- -> 0. }T
 T{ MIN-INTD S>D MAX-INTD 0 D- -> 1 1SD }T
+-->
+
+( forth2012-test-suite )
+
 
 TESTING D- with large integers
 
@@ -3454,6 +4195,10 @@ T{ HI-2INT  LO-2INT  D- -> MAX-2INT }T
 T{ LO-2INT  HI-2INT  D- -> MIN-2INT 1. D+ }T
 T{ MIN-2INT MIN-2INT D- -> 0. }T
 T{ MIN-2INT LO-2INT  D- -> LO-2INT }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -3473,7 +4218,9 @@ T{ MAX-2INT  D0= -> FALSE }T
 T{ -1 MAX-INTD D0= -> FALSE }T
 T{ 0. D0= -> TRUE }T
 T{ -1. D0= -> FALSE }T
-T{ 0 MIN-INTD D0= -> FALSE }T
+T{ 0 MIN-INTD D0= -> FALSE }T -->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -3491,6 +4238,10 @@ T{ MAX-2INT D2/ -> HI-2INT }T
 T{ -1. D2/ -> -1. }T
 T{ MIN-2INT D2/ -> LO-2INT }T
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING D< D=
@@ -3507,6 +4258,10 @@ T{ 1.  0 1  D< -> TRUE  }T
 T{ 0 -1 1 -2 D< -> FALSE }T
 T{ 1 -2 0 -1 D< -> TRUE  }T
 T{ -1. MAX-2INT D< -> TRUE }T
+-->
+
+( forth2012-test-suite )
+
 T{ MIN-2INT MAX-2INT D< -> TRUE }T
 T{ MAX-2INT -1. D< -> FALSE }T
 T{ MAX-2INT MIN-2INT D< -> FALSE }T
@@ -3524,7 +4279,9 @@ T{  0.  0. D= -> TRUE  }T
 T{  0.  1. D= -> FALSE }T
 T{  1. -1. D= -> FALSE }T
 T{  1.  0. D= -> FALSE }T
-T{  1.  1. D= -> TRUE  }T
+T{  1.  1. D= -> TRUE  }T -->
+
+( forth2012-test-suite )
 
 T{ 0 -1 0 -1 D= -> TRUE  }T
 T{ 0 -1 0  0 D= -> FALSE }T
@@ -3536,6 +4293,10 @@ T{ 0  1 0 -1 D= -> FALSE }T
 T{ 0  1 0  0 D= -> FALSE }T
 T{ 0  1 0  1 D= -> TRUE  }T
 
+-->
+
+( forth2012-test-suite )
+
 T{ MAX-2INT MIN-2INT D= -> FALSE }T
 T{ MAX-2INT 0. D= -> FALSE }T
 T{ MAX-2INT MAX-2INT D= -> TRUE }T
@@ -3544,6 +4305,10 @@ T{ MAX-2INT MIN-2INT D= -> FALSE }T
 T{ MIN-2INT MIN-2INT D= -> TRUE }T
 T{ MIN-2INT LO-2INT  D=  -> FALSE }T
 T{ MIN-2INT MAX-2INT D= -> FALSE }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -3557,6 +4322,10 @@ T{ 2V1 2@ -> 0. }T
 T{ -1 -2 2V1 2! -> }T
 T{ 2V1 2@ -> -1 -2 }T
 T{ : CD4 2VARIABLE ; -> }T
+-->
+
+( forth2012-test-suite )
+
 T{ CD4 2V2 -> }T
 T{ : CD5 2V2 2! ; -> }T
 T{ -2 -1 CD5 -> }T
@@ -3565,6 +4334,10 @@ T{ 2VARIABLE 2V3 IMMEDIATE 5 6 2V3 2! -> }T
 T{ 2V3 2@ -> 5 6 }T
 T{ : CD7 2V3 [ 2@ ] 2LITERAL ; CD7 -> 5 6 }T
 T{ : CD8 [ 6 7 ] 2V3 [ 2! ] ; 2V3 2@ -> 6 7 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -3584,6 +4357,10 @@ T{ MAX-2INT MIN-2INT DMAX -> MAX-2INT }T
 T{ MIN-2INT MAX-2INT DMAX -> MAX-2INT }T
 T{ MIN-2INT LO-2INT  DMAX -> LO-2INT  }T
 
+-->
+
+( forth2012-test-suite )
+
 T{ MAX-2INT  1. DMAX -> MAX-2INT }T
 T{ MAX-2INT -1. DMAX -> MAX-2INT }T
 T{ MIN-2INT  1. DMAX ->  1. }T
@@ -3599,6 +4376,10 @@ T{  0. -1. DMIN -> -1. }T
 T{ -1.  1. DMIN -> -1. }T
 T{ -1. -2. DMIN -> -2. }T
 
+-->
+
+( forth2012-test-suite )
+
 T{ MAX-2INT HI-2INT  DMIN -> HI-2INT  }T
 T{ MAX-2INT MIN-2INT DMIN -> MIN-2INT }T
 T{ MIN-2INT MAX-2INT DMIN -> MIN-2INT }T
@@ -3608,6 +4389,10 @@ T{ MAX-2INT  1. DMIN ->  1. }T
 T{ MAX-2INT -1. DMIN -> -1. }T
 T{ MIN-2INT  1. DMIN -> MIN-2INT }T
 T{ MIN-2INT -1. DMIN -> MIN-2INT }T
+-->
+
+( forth2012-test-suite )
+
 
   \ ===========================================================
 
@@ -3622,6 +4407,10 @@ T{  1. DABS -> 1. }T
 T{ -1. DABS -> 1. }T
 T{ MAX-2INT DABS -> MAX-2INT }T
 T{ MIN-2INT 1. D+ DABS -> MAX-2INT }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -3646,6 +4435,10 @@ T{ MAX-2INT  8 16 M*/ -> HI-2INT }T
 T{ MAX-2INT -8 16 M*/ -> HI-2INT DNEGATE ?FLOORED }T
   \ FLOORED SUBTRACT 1
 
+-->
+
+( forth2012-test-suite )
+
 T{ MIN-2INT  8 16 M*/ -> LO-2INT }T
 T{ MIN-2INT -8 16 M*/ -> LO-2INT DNEGATE }T
 T{ MAX-2INT MAX-INTD MAX-INTD M*/ -> MAX-2INT }T
@@ -3656,6 +4449,10 @@ T{ MIN-2INT LO-2INT NIP 1- MAX-INTD M*/
    -> MIN-INTD 3 + HI-2INT NIP 2 + }T
 T{ MAX-2INT LO-2INT NIP DUP NEGATE M*/ -> MAX-2INT DNEGATE }T
 T{ MIN-2INT MAX-INTD DUP M*/ -> MIN-2INT }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -3673,6 +4470,10 @@ MIN-2INT 73 79 M*/ 2CONSTANT DBL2
 DBL1 D>ASCII 2CONSTANT "DBL1"
 DBL2 D>ASCII 2CONSTANT "DBL2"
 
+-->
+
+( forth2012-test-suite )
+
 : DOUBLEOUTPUT
    CR ." You should see lines duplicated:" CR
    5 SPACES "DBL1" TYPE CR
@@ -3686,6 +4487,9 @@ DBL2 D>ASCII 2CONSTANT "DBL2"
 ;
 
 T{ DOUBLEOUTPUT -> }T
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -3703,11 +4507,19 @@ T{ 1.  0 1  DU< -> TRUE  }T
 T{ 0 -1 1 -2 DU< -> FALSE }T
 T{ 1 -2 0 -1 DU< -> TRUE  }T
 
+-->
+
+( forth2012-test-suite )
+
 T{ MAX-2INT HI-2INT  DU< -> FALSE }T
 T{ HI-2INT  MAX-2INT DU< -> TRUE  }T
 T{ MAX-2INT MIN-2INT DU< -> TRUE }T
 T{ MIN-2INT MAX-2INT DU< -> FALSE }T
 T{ MIN-2INT LO-2INT  DU< -> TRUE }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -3719,6 +4531,9 @@ T{ 3333 4444 TO 2VAL -> }T
 T{ 2VAL -> 3333 4444 }T
 T{ : TO-2VAL TO 2VAL ; 5555 6666 TO-2VAL -> }T
 T{ 2VAL -> 5555 6666 }T
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -3745,14 +4560,11 @@ CR .( End of Double-Number word tests) CR
   \ file is to count errors in test results and present them as
   \ a summary at the end of the tests.
 
-DECIMAL
-
-VARIABLE TOTAL-ERRORS
+DECIMAL VARIABLE TOTAL-ERRORS
 
 : ERROR-COUNT ( "name" n1 -- n2 ) \ n2 = n1 + 1cell
-   CREATE  DUP , CELL+
-   DOES> ( -- offset ) @     \ offset in address units
-;
+  CREATE  DUP , CELL+
+  DOES> ( -- offset ) @ ;   \ offset in address units
 
 0     \ Offset into ERRORS[] array
 ERROR-COUNT CORE-ERRORS          ERROR-COUNT CORE-EXT-ERRORS
@@ -3761,7 +4573,9 @@ ERROR-COUNT FACILITY-ERRORS      ERROR-COUNT FILE-ERRORS
 ERROR-COUNT LOCALS-ERRORS        ERROR-COUNT MEMORY-ERRORS
 ERROR-COUNT SEARCHORDER-ERRORS   ERROR-COUNT STRING-ERRORS
 ERROR-COUNT TOOLS-ERRORS         ERROR-COUNT BLOCK-ERRORS
-CREATE ERRORS[] DUP ALLOT CONSTANT #ERROR-COUNTS
+CREATE ERRORS[] DUP ALLOT CONSTANT #ERROR-COUNTS -->
+
+( forth2012-test-suite )
 
   \ `SET-ERROR-COUNT` called at the end of each test file with
   \ its own offset into the `ERRORS[]` array. `#ERRORS` is in
@@ -3781,6 +4595,10 @@ CREATE ERRORS[] DUP ALLOT CONSTANT #ERROR-COUNTS
 
 INIT-ERRORS
 
+-->
+
+( forth2012-test-suite )
+
   \ Report summary of errors
 
 25 CONSTANT MARGIN
@@ -3798,10 +4616,12 @@ INIT-ERRORS
 : HLINE ( -- ) CR ." ---------------------------"  ;
 
 : REPORT-ERRORS
-   HLINE
-   CR 8 SPACES ." Error Report"
-   CR ." Word Set" 13 SPACES ." Errors"
-   HLINE
+   HLINE CR 8 SPACES ." Error Report"
+         CR ." Word Set" 13 SPACES ." Errors"
+   HLINE -->
+
+( forth2012-test-suite )
+
    S" Core" CORE-ERRORS SHOW-ERROR-COUNT
    S" Core extension" CORE-EXT-ERRORS SHOW-ERROR-COUNT
    S" Block" BLOCK-ERRORS SHOW-ERROR-COUNT
@@ -3814,9 +4634,10 @@ INIT-ERRORS
    S" Programming-tools" TOOLS-ERRORS SHOW-ERROR-COUNT
    S" Search-order" SEARCHORDER-ERRORS SHOW-ERROR-COUNT
    S" String" STRING-ERRORS SHOW-ERROR-COUNT
-   HLINE
-   TOTAL-ERRORS @ S" Total" SHOW-ERROR-LINE
-   HLINE CR CR ;
+   HLINE TOTAL-ERRORS @ S" Total" SHOW-ERROR-LINE
+   HLINE CR CR ; -->
+
+( forth2012-test-suite )
 
   \ To test the ANS Forth Exception word set and extension
   \ words
@@ -3876,6 +4697,10 @@ T{ C2 -> 1 2 8 0 }T            \ 0 THROW does nothing
 : C3 1 2 ['] T3 CATCH ;
 T{ C3 -> 1 2 99 }T            \ Restores stack to CATCH depth
 
+-->
+
+( forth2012-test-suite )
+
 : T4 1- DUP 0> IF RECURSE ELSE 999 THROW -222 THEN ;
 : C4 3 4 5 10 ['] T4 CATCH -111 ;
 T{ C4 -> 3 4 5 0 999 -111 }T   \ Test return stack unwinding
@@ -3886,6 +4711,9 @@ T{ C4 -> 3 4 5 0 999 -111 }T   \ Test return stack unwinding
   \ Test depth restored correctly after stack has been emptied.
 
 T{ C5 -> 5 }T
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -3902,16 +4730,20 @@ TESTING ABORT ABORT"
   \ for the results check.
 
 : T10 77 SWAP ABORT" This should not be displayed" ;
+
 : C6 CATCH
-   >R   R@ EXC_ABORT  = IF 11
-   ELSE R@ EXC_ABORT" = IF 12
-   ELSE R@ EXC_UNDEF  = IF 13
-   THEN THEN THEN R> DROP
-;
+  >R   R@ EXC_ABORT  = IF 11
+  ELSE R@ EXC_ABORT" = IF 12
+  ELSE R@ EXC_UNDEF  = IF 13
+  THEN THEN THEN R> DROP ;
 
 T{ 1 2 ' T6 C6  -> 1 2 11 }T     \ Test that ABORT is caught
 T{ 3 0 ' T10 C6 -> 3 77 }T       \ ABORT" does nothing
 T{ 4 5 ' T10 C6 -> 4 77 12 }T    \ ABORT" caught, no message
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -3922,6 +4754,10 @@ TESTING a system generated exception
 : T9 S" 111 112 T8 113" EVALUATE 114 ;
 
 T{ 6 7 ' T9 C6 3 -> 6 7 13 3 }T \ Test unlinking of sources
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -3963,12 +4799,12 @@ CR .( End of Exception word tests) CR
 TESTING Facility words
 
 DECIMAL
+
   \ ===========================================================
 
 TESTING BEGIN-STRUCTURE END-STRUCTURE +FIELD
 
-T{ BEGIN-STRUCTURE STRCT1
-   END-STRUCTURE   -> }T
+T{ BEGIN-STRUCTURE STRCT1 END-STRUCTURE -> }T
 T{ STRCT1 -> 0 }T
 
 T{ BEGIN-STRUCTURE STRCT2
@@ -3979,7 +4815,10 @@ T{ BEGIN-STRUCTURE STRCT2
    END-STRUCTURE   -> }T
 
 T{ STRCT2 -> 3 chars 1 cells + }T   \ +FIELD doesn't align
-T{ 0 F21 -> 0 }T
+T{ 0 F21 -> 0 }T -->
+
+( forth2012-test-suite )
+
 T{ 0 F22 -> 1 }T
 T{ 0 F23 -> 3 }T
 T{ 0 F24 -> 3 }T
@@ -3996,7 +4835,10 @@ T{ S21 F22 C@ -> 22 }T
 T{ S21 F23 C@ -> 44 }T
 T{ S21 F24 C@ -> 44 }T
 
-T{ CREATE S22 STRCT2 ALLOT -> }T
+T{ CREATE S22 STRCT2 ALLOT -> }T -->
+
+( forth2012-test-suite )
+
 T{ 55 S22 F21 C! -> }T
 T{ 66 S22 F22 C! -> }T
 T{ S21 F21 C@ -> 11 }T
@@ -4013,14 +4855,15 @@ T{ BEGIN-STRUCTURE STRCT3
       CFIELD: CF32
       CFIELD: CF33
       FIELD:  F33
-   END-STRUCTURE -> }T
+   END-STRUCTURE -> }T -->
+
+( forth2012-test-suite )
 
 T{ 0 F31  CELL+ -> 0 F32  }T
 T{ 0 CF31 CHAR+ -> 0 CF32 }T
 T{ 0 CF32 CHAR+ -> 0 CF33 }T
 T{ 0 CF33 CHAR+ ALIGNED -> 0 F33 }T
 T{ 0 F33 ALIGNED -> 0 F33 }T
-
 
 T{ CREATE S31 STRCT3 ALLOT -> }T
 T{ 1 S31 F31   ! -> }T
@@ -4029,10 +4872,11 @@ T{ 3 S31 CF31 C! -> }T
 T{ 4 S31 CF32 C! -> }T
 T{ 5 S31 F33   ! -> }T
 T{ S31 F31   @ -> 1 }T
-T{ S31 F32   @ -> 2 }T
-T{ S31 CF31 C@ -> 3 }T
-T{ S31 CF32 C@ -> 4 }T
-T{ S31 F33   @ -> 5 }T
+T{ S31 F32   @ -> 2 }T T{ S31 CF31 C@ -> 3 }T
+T{ S31 CF32 C@ -> 4 }T T{ S31 F33   @ -> 5 }T
+-->
+
+( forth2012-test-suite )
 
 TESTING Nested structures
 
@@ -4050,7 +4894,10 @@ T{ 22 S41 F41 F22  C! -> }T
 T{ 23 S41 F41 F23  C! -> }T
 T{ 24 S41 F42 F31   ! -> }T
 T{ 25 S41 F42 F32   ! -> }T
-T{ 26 S41 F42 CF31 C! -> }T
+T{ 26 S41 F42 CF31 C! -> }T -->
+
+( forth2012-test-suite )
+
 T{ 27 S41 F42 CF32 C! -> }T
 T{ 28 S41 F42 CF33 C! -> }T
 T{ 29 S41 F42 F33   ! -> }T
@@ -4065,6 +4912,10 @@ T{ S41 F42 F31   @ -> 24 }T
 T{ S41 F42 F32   @ -> 25 }T
 T{ S41 F42 CF31 C@ -> 26 }T
 T{ S41 F42 CF32 C@ -> 27 }T
+-->
+
+( forth2012-test-suite )
+
 T{ S41 F42 CF33 C@ -> 28 }T
 T{ S41 F42 F33   @ -> 29 }T
 T{ S41 F44 F21  C@ -> 30 }T
@@ -4074,6 +4925,10 @@ T{ S41 F44 F23  C@ -> 32 }T
 FACILITY-ERRORS SET-ERROR-COUNT
 
 CR .( End of Facility word tests) CR
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -4159,6 +5014,10 @@ T{ FN1 W/O OPEN-FILE SWAP FID1 ! -> 0 }T
 T{ LINE1 FID1 @ WRITE-LINE -> 0 }T
 T{ FID1 @ CLOSE-FILE -> 0 }T
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING R/O FILE-POSITION (simple)  READ-LINE
@@ -4173,6 +5032,10 @@ T{ BUF 100 FID1 @ READ-LINE ROT DUP #CHARS !
    -> TRUE 0 LINE1 SWAP DROP }T
 T{ BUF #CHARS @ LINE1 S= -> TRUE }T
 T{ FID1 @ CLOSE-FILE -> 0 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ Additional test contributed by Helmut Eller
 
@@ -4196,7 +5059,10 @@ T{ FID1 @ FILE-POSITION -> 0. 0 }T
 T{ BUF LINE1 NIP FID1 @ READ-LINE ROT DUP #CHARS !
    -> TRUE 0 LINE1 NIP }T
 T{ BUF #CHARS @ LINE1 S= -> TRUE }T
-T{ FID1 @ CLOSE-FILE -> 0 }T
+T{ FID1 @ CLOSE-FILE -> 0 }T -->
+
+( forth2012-test-suite )
+
 
   \ ===========================================================
 
@@ -4206,6 +5072,10 @@ TESTING (compile mode tested in Core tests)
 T{ S" abcdef" $" abcdef" S= -> TRUE }T
 T{ S" " $" " S= -> TRUE }T
 T{ S" ghi"$" ghi" S= -> TRUE }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -4225,6 +5095,10 @@ T{ FID1 @ FILE-POSITION -> 10. 0 }T
 T{ 0. FID1 @ REPOSITION-FILE -> 0 }T
 T{ RL1 -> LINE1 SWAP DROP TRUE 0 }T
 T{ RL1 ROT DUP #CHARS ! -> TRUE 0 LINE2 SWAP DROP }T
+-->
+
+( forth2012-test-suite )
+
 T{ BUF #CHARS @ LINE2 S= -> TRUE }T
 T{ RL1 -> 0 FALSE 0 }T
 T{ FID1 @ FILE-POSITION ROT ROT FP 2! -> 0 }T
@@ -4236,6 +5110,9 @@ T{ RL1 -> 0 TRUE 0 }T
 T{ RL1 -> 0 TRUE 0 }T
 T{ RL1 -> 0 FALSE 0 }T
 T{ FID1 @ CLOSE-FILE -> 0 }T
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -4258,7 +5135,10 @@ T{ CBUF BUF 29 FID2 @ READ-FILE -> 29 0 }T
 T{ PAD 29 BUF 29 S= -> TRUE }T
 T{ PAD 30 BUF 30 S= -> FALSE }T
 T{ CBUF BUF 29 FID2 @ READ-FILE -> 21 0 }T
-T{ PAD 29 + 21 BUF 21 S= -> TRUE }T
+T{ PAD 29 + 21 BUF 21 S= -> TRUE }T -->
+
+( forth2012-test-suite )
+
 T{ FID2 @ FILE-SIZE DROP FID2 @ FILE-POSITION DROP D=
    -> TRUE }T
 T{ BUF 10 FID2 @ READ-FILE -> 0 0 }T
@@ -4275,12 +5155,20 @@ T{ 0. FID2 @ REPOSITION-FILE -> 0 }T
 T{ CBUF BUF 100 FID2 @ READ-FILE -> 37 0 }T
 T{ PAD 37 BUF 37 S= -> TRUE }T
 T{ PAD 38 BUF 38 S= -> FALSE }T
+-->
+
+( forth2012-test-suite )
+
 T{ 500. FID2 @ RESIZE-FILE -> 0 }T
 T{ FID2 @ FILE-SIZE -> 500. 0 }T
 T{ 0. FID2 @ REPOSITION-FILE -> 0 }T
 T{ CBUF BUF 100 FID2 @ READ-FILE -> 100 0 }T
 T{ PAD 37 BUF 37 S= -> TRUE }T
 T{ FID2 @ CLOSE-FILE -> 0 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -4303,6 +5191,10 @@ T{ ( 1 2 3
 TESTING SOURCE-ID (can only test it does not return 0 or -1)
 
 T{ SOURCE-ID DUP -1 = SWAP 0= OR -> FALSE }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -4331,6 +5223,10 @@ T{ FID1 @ CLOSE-FILE -> 0 }T
   \ Tidy the test folder
 T{ fn3 DELETE-FILE DROP -> }T
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING REQUIRED REQUIRE INCLUDED
@@ -4348,6 +5244,10 @@ T{ 0
   REQUIRE required-helper2.fth
   S" required-helper2.fth" INCLUDED
   -> 2 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -4374,7 +5274,9 @@ T{ S\" abcd" S\" 1234" SSQ13 S= ROT ROT SSQ12 S=
 T{ S" abcd"  S\" 1234" SSQ13 S= ROT ROT SSQ12 S=
     -> TRUE TRUE }T
 T{ S\" abcd" S" 1234" SSQ13  S= ROT ROT SSQ12 S=
-    -> TRUE TRUE }T
+    -> TRUE TRUE }T -->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -4382,9 +5284,7 @@ TESTING SAVE-INPUT and RESTORE-INPUT with a file source
 
 VARIABLE SIV -1 SIV !
 
-: NEVEREXECUTED
-   CR ." This should never be executed" CR
-;
+: NEVEREXECUTED CR ." This should never be executed" CR ;
 
 T{ 11111 SAVE-INPUT
 
@@ -4402,14 +5302,14 @@ SIV @
 
 [?THEN]
 
-   -> 11111 0 22222 }T   \ 0 comes from RESTORE-INPUT
+   -> 11111 0 22222 }T -->
+     \ 0 comes from RESTORE-INPUT
+
+( forth2012-test-suite )
 
 TESTING nested SAVE-INPUT, RESTORE-INPUT and REFILL from a file
 
-: READ_A_LINE
-   REFILL 0=
-   ABORT" REFILL FAILED"
-;
+: READ_A_LINE REFILL 0= ABORT" REFILL FAILED" ;
 
 0 SI_INC !
 
@@ -4417,14 +5317,8 @@ CREATE 2RES -1 , -1 ,
   \ Don't use `2VARIABLE` from Double number word set.
 
 : SI2
-   READ_A_LINE
-   READ_A_LINE
-   SAVE-INPUT
-   READ_A_LINE
-   READ_A_LINE
-   S$ EVALUATE 2RES 2!
-   RESTORE-INPUT
-;
+  READ_A_LINE READ_A_LINE SAVE-INPUT
+  READ_A_LINE READ_A_LINE S$ EVALUATE 2RES 2! RESTORE-INPUT ;
 
   \ WARNING: do not delete or insert lines of text after si2 is
   \ called otherwise the next test will fail.
@@ -4440,6 +5334,10 @@ TESTING the nested results
  -> 0 0 2345 44444 55555 }T
 
   \ End of warning
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -4498,6 +5396,10 @@ T{ : LT1 {: | :} ; 1 LT1 -> 1 }T
 T{ : LT2 {: -- :} ; 2 LT2 -> 2 }T
 T{ : LT3 {: | -- :} ; 3 LT3 -> 3 }T
 
+-->
+
+( forth2012-test-suite )
+
 TESTING <arg>s and TO <arg>
 
 T{ : LT4 {: A :} ; 4 LT4 -> }T
@@ -4508,6 +5410,10 @@ T{ : LT8 {: A B :} B A 11 TO A A B 12 TO B B A ; 9 10 LT8
    -> 10 9 11 10 12 11 }T
 T{ : LT9 2DUP + {: A B C :} C B A ; 13 14 LT9 -> 27 14 13 }T
 
+-->
+
+( forth2012-test-suite )
+
 TESTING | <val>s and TO <val>s
 T{ : LT10 {: A B | :} B 2* A + ; 15 16 LT10 -> 47 }T
 T{ : LT11 {: A | B :} A 2* ; 17 18 LT11 -> 17 36 }T
@@ -4517,6 +5423,10 @@ T{ : LT13 {: | A :} ; 23 LT13 -> 23 }T
 T{ : LT14 {: | A B :} 24 TO B 25 TO A A B ; 26 LT14
    -> 26 25 24 }T
 
+-->
+
+( forth2012-test-suite )
+
 TESTING -- ignores everything up to :}
 T{ : LT15 {: -- DUP SWAP OVER :} DUP 28 SWAP OVER ;
    27 LT15 -> 27 28 27 28 }T
@@ -4525,6 +5435,10 @@ T{ : LT16 {: | A -- this should be ignored :} TO A A + ;
 T{ : LT17 {: A -- A + 1 :} A 1+ ; 31 LT17 -> 32 }T
 T{ : LT18 {: A | B -- 2A+B :} TO B A 2* B + ;
    33 34 LT18 -> 101 }T
+
+-->
+
+( forth2012-test-suite )
 
 TESTING local names supersede global names and numbers
 T{ : LT19 {: DUP DROP | SWAP -- OVER :}
@@ -4540,6 +5454,10 @@ T{ : LT21 {: A | B :} 39 TO B A B ; -> }T
 T{ : LT22 {: B | A :} 40 TO A A 2* B 2* LT21 A B ; -> }T
 T{ 41 LT22 -> 80 82 39 40 41 }T
 
+-->
+
+( forth2012-test-suite )
+
 TESTING locals in :NONAME & DOES>
 T{ 42 43 :NONAME {: W X | Y -- DUP :} 44 TO Y X W Y DUP ;
    EXECUTE -> 43 42 44 44 }T
@@ -4548,6 +5466,10 @@ T{ : LT23 {: P Q :}
      DOES> @ ROT ROT {: P Q | R -- DUP :} TO R Q R P ; -> }T
 T{ 45 46 LT23 LT24 -> }T
 T{ 47 48 LT24 -> 48 137 47 }T
+
+-->
+
+( forth2012-test-suite )
 
 TESTING locals in control structures
 T{ : LT25 {: A B :} IF A ELSE B THEN ; -1 50 51 LT25 -> 50 }T
@@ -4561,6 +5483,9 @@ T{ : LT28 1+ {: A B :} B A DO I LOOP ; 54 58 LT28
 T{ : LT29 {: I J :} 2 0 DO 5 3 DO I J LOOP LOOP ; -> }T
 T{ 59 60 LT29 -> 59 60 59 60 59 60 59 60 }T
 
+-->
+
+( forth2012-test-suite )
 
 TESTING recursion with locals
 T{ : LT30 {: A B :}
@@ -4576,11 +5501,19 @@ T{ : LT31 {: A B C D E F G H I J K L M N O P :}
 T{ 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 LT31
           -> 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0 }T
 
+-->
+
+( forth2012-test-suite )
+
 TESTING (LOCAL)
 T{ : LOCAL BL WORD COUNT (LOCAL) ; IMMEDIATE -> }T
 T{ : END-LOCALS 99 0 (LOCAL) ; IMMEDIATE     -> }T
 : LT32 LOCAL A LOCAL B LOCAL C END-LOCALS A B C ;
   61 62 63 LT32 -> 63 62 61 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -4600,6 +5533,10 @@ T{ : END-LOCALS 99 0 (LOCAL) ; IMMEDIATE     -> }T
 : LT36 68 ;
 T{ : LT37 {: LT36 :} LT36 ; 69 LT37 LT36 -> 69 68 }T
 
+-->
+
+( forth2012-test-suite )
+
 \? WORDLIST CONSTANT LTWL1
 \? WORDLIST CONSTANT LTWL2
 \? GET-CURRENT LTWL1 SET-CURRENT
@@ -4614,6 +5551,10 @@ T{ : LT37 {: LT36 :} LT36 ; 69 LT37 LT36 -> 69 68 }T
 \?    LT33 LTWL2 ALSO-LTWL LT33 PREVIOUS LT33 PREVIOUS LT33 ;
 \?    -> }T
 
+-->
+
+( forth2012-test-suite )
+
   \ If the next test fails the system may be left with `LTWL2`
   \ and/or `LTWL1` in the search order.
 
@@ -4624,6 +5565,10 @@ T{ : LT37 {: LT36 :} LT36 ; 69 LT37 LT36 -> 69 68 }T
 \? .( - priority of Locals not fully tested)
 \? CR
 [?THEN]
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -4691,7 +5636,9 @@ T{ ADDR1 @ FREE -> 0 }T
 
 T{ 99 ALLOCATE SWAP ADDR1 ! -> 0 }T
 T{ ADDR1 @ ALIGNED -> ADDR1 @ }T
-T{ ADDR1 @ FREE -> 0 }T
+T{ ADDR1 @ FREE -> 0 }T -->
+
+( forth2012-test-suite )
 
 T{ 50 CHARS ALLOCATE SWAP ADDR1 ! -> 0 }T
 
@@ -4702,14 +5649,10 @@ T{ 50 CHARS ALLOCATE SWAP ADDR1 ! -> 0 }T
   \ their definitions of `T{`.
 
 : CHECKMEM ( ad n --- )
-   0
-   DO
-      >R
-      T{ R@ C@ -> R> I 1+ SWAP >R }T
-      R> CHAR+
-   LOOP
-   DROP
-;
+  0 DO
+    >R T{ R@ C@ -> R> I 1+ SWAP >R }T
+    R> CHAR+
+  LOOP DROP ;
 
 ADDR1 @ 50 WRITEMEM ADDR1 @ 50 CHECKMEM
 
@@ -4717,7 +5660,9 @@ T{ ADDR1 @ 28 CHARS RESIZE SWAP ADDR1 ! -> 0 }T
 ADDR1 @ 28 CHECKMEM
 
 T{ ADDR1 @ 200 CHARS RESIZE SWAP ADDR1 ! -> 0 }T
-ADDR1 @ 28 CHECKMEM
+ADDR1 @ 28 CHECKMEM -->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -4740,22 +5685,23 @@ T{ ADDR1 @ FREE -> 0 }T   \ Tidy up
 T{ -1 ALLOCATE SWAP DROP 0= -> FALSE }T
   \ Memory allocate failed.
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING @ and ! work in ALLOCATEd memory
 TESTING (provided by Peter Knaggs)
 
 : WRITE-CELL-MEM ( ADDR N -- )
-  1+ 1 DO I OVER ! CELL+ LOOP DROP
-;
+  1+ 1 DO I OVER ! CELL+ LOOP DROP ;
 
 : CHECK-CELL-MEM ( ADDR N -- )
   1+ 1 DO
-    I SWAP >R >R
-    T{ R> ( I ) -> R@ ( ADDR ) @ }T
+    I SWAP >R >R T{ R> ( I ) -> R@ ( ADDR ) @ }T
     R> CELL+
-  LOOP DROP
-;
+  LOOP DROP ;
 
   \ Cell based access to the heap
 
@@ -4766,6 +5712,10 @@ ADDR1 @ 50 CHECK-CELL-MEM
 MEMORY-ERRORS SET-ERROR-COUNT
 
 CR .( End of Memory-Allocation word tests) CR
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -4786,6 +5736,10 @@ S" coreplustest.fth" INCLUDED
 S" utilities.fth" INCLUDED
 S" errorreport.fth" INCLUDED
 S" coreexttest.fth" INCLUDED
+-->
+
+( forth2012-test-suite )
+
 S" blocktest.fth" INCLUDED
 S" doubletest.fth" INCLUDED
 S" exceptiontest.fth" INCLUDED
@@ -4799,6 +5753,10 @@ S" stringtest.fth" INCLUDED
 REPORT-ERRORS
 
 CR .( Forth tests completed ) CR CR
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -4852,9 +5810,7 @@ ONLY FORTH DEFINITIONS
 
 TESTING Search-order word set
 
-DECIMAL
-
-VARIABLE WID1  VARIABLE WID2
+DECIMAL  VARIABLE WID1  VARIABLE WID2
 
   \ Only execute SAVE-ORDERLIST once
 : SAVE-ORDERLIST ( widn ... wid1 n -> )
@@ -4871,13 +5827,13 @@ CREATE ORDER-LIST
 T{ GET-ORDER SAVE-ORDERLIST -> }T
 
 : GET-ORDERLIST ( -- widn ... wid1 n )
-   ORDER-LIST DUP @ CELLS DUP ( -- ad n )
-   IF
-      OVER + DO I @ -1 CELLS +LOOP
-   ELSE
-      2DROP 0
-   THEN
-;
+  ORDER-LIST DUP @ CELLS DUP ( -- ad n )
+  IF   OVER + DO I @ -1 CELLS +LOOP
+  ELSE 2DROP 0 THEN ;
+
+-->
+
+( forth2012-test-suite )
 
 T{ GET-ORDER OVER -> GET-ORDER WID1 @ }T
   \ Forth wordlist at top
@@ -4887,6 +5843,10 @@ T{ GET-ORDER -> GET-ORDERLIST }T \ Check nothing changed
 T{ GET-ORDERLIST DROP GET-ORDERLIST 2* SET-ORDER -> }T
 T{ GET-ORDER -> GET-ORDERLIST DROP GET-ORDERLIST 2* }T
 T{ GET-ORDERLIST SET-ORDER GET-ORDER -> GET-ORDERLIST }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -4906,6 +5866,10 @@ T{ WORDLIST WID2 ! -> }T
 T{ WID2 @ SET-CURRENT -> }T
 T{ GET-CURRENT -> WID2 @ }T
 T{ WID1 @ SET-CURRENT -> }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -4935,6 +5899,10 @@ T{ SO2 -> 0 }T \ 0 set-order leaves an empty search order
 
 T{ SO3 -> SO4 }T       \ -1 SET-ORDER = ONLY
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING DEFINITIONS PREVIOUS
@@ -4946,6 +5914,10 @@ T{ GET-ORDER WID2 @ SWAP 1+ SET-ORDER DEFINITIONS GET-CURRENT
 T{ GET-ORDER -> GET-ORDERLIST WID2 @ SWAP 1+ }T
 T{ PREVIOUS GET-ORDER -> GET-ORDERLIST }T
 T{ DEFINITIONS GET-CURRENT -> FORTH-WORDLIST }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -4970,24 +5942,24 @@ T{ C"DUP" FIND -> XT  @ -1 }T
 T{ C"("  FIND -> XTI @  1 }T
 T{ C"X"   FIND -> C"X"   0 }T
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING new definitions are put into the correct wordlist
 
 : ALSOWID2 ALSO GET-ORDER WID2 @ ROT DROP SWAP SET-ORDER ;
-ALSOWID2
-: W2 1234  ;
-DEFINITIONS
-: W2 -9876 ; IMMEDIATE
 
-ONLY FORTH
-T{ W2 -> 1234 }T
-DEFINITIONS
-T{ W2 -> 1234 }T
-ALSOWID2
-T{ W2 -> -9876 }T
-DEFINITIONS
-T{ W2 -> -9876 }T
+ALSOWID2 : W2 1234  ;
+
+DEFINITIONS : W2 -9876 ; IMMEDIATE
+
+ONLY FORTH   T{ W2 -> 1234 }T
+DEFINITIONS  T{ W2 -> 1234 }T
+ALSOWID2     T{ W2 -> -9876 }T
+DEFINITIONS  T{ W2 -> -9876 }T
 
 ONLY FORTH DEFINITIONS
 
@@ -4998,7 +5970,9 @@ T{ $" W2" WID2 @ SEARCH-WORDLIST SO5 ->  1 -9876 }T
 
 : C"W2" C" W2" ;
 T{ ALSOWID2 C"W2" FIND SO5 ->  1 -9876 }T
-T{ PREVIOUS C"W2" FIND SO5 -> -1  1234 }T
+T{ PREVIOUS C"W2" FIND SO5 -> -1  1234 }T -->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -5012,6 +5986,10 @@ T{ ONLY FORTH DEFINITIONS ORDER -> }T
 CR .( Plus another unnamed wordlist)
 CR .( at the head of the search order) CR
 T{ ALSOWID2 DEFINITIONS ORDER -> }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -5067,9 +6045,7 @@ ONLY FORTH DEFINITIONS
   \     - COMPARE is case sensitive
   \ ===========================================================
 
-TESTING String word set
-
-DECIMAL
+DECIMAL  TESTING String word set
 
 T{ :  S1 S" abcdefghijklmnopqrstuvwxyz" ; -> }T
 T{ :  S2 S" abc"   ; -> }T
@@ -5080,7 +6056,9 @@ T{ :  S6 S" 12345" ; -> }T
 T{ :  S7 S" "      ; -> }T
 T{ :  S8 S" abc  " ; -> }T
 T{ :  S9 S"      " ; -> }T
-T{ : S10 S"    a " ; -> }T
+T{ : S10 S"    a " ; -> }T -->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -5100,6 +6078,10 @@ T{ S1  5 /STRING -> S1 SWAP 5 + SWAP 5 - }T
 T{ S1 10 /STRING -4 /STRING -> S1 6 /STRING }T
 T{ S1  0 /STRING -> S1 }T
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING SEARCH
@@ -5111,6 +6093,10 @@ T{ S1 S5 SEARCH -> S1 FALSE }T
 T{ S1 S6 SEARCH -> S1 FALSE }T
 T{ S1 S7 SEARCH -> S1 TRUE }T
 T{ S7 PAD 0 SEARCH -> S7 TRUE }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -5127,6 +6113,10 @@ T{ S1 S6 COMPARE ->  1 }T
 T{ S6 S1 COMPARE -> -1 }T
 T{ S7 PAD 0 COMPARE -> 0 }T
 
+-->
+
+( forth2012-test-suite )
+
 T{ S1 $" abdde"  COMPARE -> -1 }T
 T{ S1 $" abbde"  COMPARE ->  1 }T
 T{ S1 $" abcdf"  COMPARE -> -1 }T
@@ -5137,6 +6127,10 @@ T{ S1 $" abcdee" COMPARE ->  1 }T
 
 T{ S11 S12  COMPARE -> 1 }T
 T{ S12 S11  COMPARE -> -1 }T
+-->
+
+( forth2012-test-suite )
+
 
   \ ===========================================================
 
@@ -5155,7 +6149,9 @@ T{ $" apqapqapqa12345pqrstuvwxyz" PAD 26 COMPARE -> 0 }T
 T{ PAD PAD CHAR+ 10 CMOVE -> }T
 T{ $" aaaaaaaaaaa2345pqrstuvwxyz" PAD 26 COMPARE -> 0 }T
 T{ S7 PAD 14 CHARS + SWAP CMOVE -> }T
-T{ $" aaaaaaaaaaa2345pqrstuvwxyz" PAD 26 COMPARE -> 0 }T
+T{ $" aaaaaaaaaaa2345pqrstuvwxyz" PAD 26 COMPARE -> 0 }T -->
+
+( forth2012-test-suite )
 
 PAD 30 CHARS 0 FILL
 
@@ -5172,6 +6168,9 @@ T{ PAD 12 CHARS + PAD 11 CHARS + 10 CMOVE> -> }T
 T{ $" apqrstuhijtvvvvvvvvvvvwxyz" PAD 26 COMPARE -> 0 }T
 T{ S7 PAD 14 CHARS + SWAP CMOVE> -> }T
 T{ $" apqrstuhijtvvvvvvvvvvvwxyz" PAD 26 COMPARE -> 0 }T
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -5194,6 +6193,10 @@ T{ : S14 [ S1A ] SLITERAL ; -> }T
 T{ S1A S14 COMPARE -> 0 }T
 T{ S1A DROP S14 DROP = -> FALSE }T
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING UNESCAPE
@@ -5215,6 +6218,10 @@ T{ $" unchanged" SUBBUF UNESCAPE $" unchanged" $CHECK
 T{ $" %" SUBBUF UNESCAPE $" %%" $CHECK -> FALSE }T
 T{ $" %%%" SUBBUF UNESCAPE $" %%%%%%" $CHECK -> FALSE }T
 T{ $" abc%def" SUBBUF UNESCAPE $" abc%%def" $CHECK -> FALSE }T
+
+-->
+
+( forth2012-test-suite )
 
 T{ : TEST-UNESCAPE S" %abc%def%%ghi%" SUBBUF UNESCAPE ; -> }T
   \ Compile check.
@@ -5240,6 +6247,10 @@ T{ $" %%%%%%%" SUBBUF 25 SUBSTITUTE $" %%%%" $CHECKN
 
 : MAC1 S" mac1" ;  : MAC2 S" mac2" ;  : MAC3 S" mac3" ;
 
+-->
+
+( forth2012-test-suite )
+
 T{ $" wxyz" MAC1 REPLACES -> }T
 T{ $" %mac1%" SUBBUF 20 SUBSTITUTE $" wxyz" $CHECKN
    -> FALSE 1 }T
@@ -5253,6 +6264,10 @@ T{ $" %mac1%mac2" SUBBUF 20 SUBSTITUTE $" wxyzmac2" $CHECKN
 T{ $" abc %mac2% def%mac1%gh" SUBBUF 20 SUBSTITUTE
    $" abc 12 defwxyzgh" $CHECKN
       -> FALSE 2 }T
+-->
+
+( forth2012-test-suite )
+
 T{ : REPL ( caddr1 u1 "name" -- ) PARSE-NAME REPLACES ; -> }T
 T{ $" " REPL MAC3 -> }T    \ Check compiled version
 T{ $" abc%mac3%def%mac1%gh" SUBBUF 20 SUBSTITUTE
@@ -5267,6 +6282,10 @@ T{ $" %mac3%" MAC3 REPLACES -> }T
 T{ $" a%mac3%b" SUBBUF 20 SUBSTITUTE $" a%mac3%b" $CHECKN
       -> FALSE 1 }T    \ Check non-recursive
 T{ $" %%" MAC3 REPLACES -> }T
+-->
+
+( forth2012-test-suite )
+
 T{ $" abc%mac1%de%mac3%g%mac2%%%%mac1%hij" SUBBUF 30 SUBSTITUTE
       $" abcwxyzde%%g12%wxyzhij" $CHECKN -> FALSE 4 }T
 T{ $" ab%mac4%c" SUBBUF 20 SUBSTITUTE $" ab%mac4%c" $CHECKN
@@ -5287,6 +6306,10 @@ T{ $" %mac1%" SUBBUF 30 CHARS + UNESCAPE SUBBUF 10 SUBSTITUTE
 T{ $" %" SUBBUF 10 SUBSTITUTE $" %" $CHECKN -> FALSE 0 }T
 T{ $" %abc" SUBBUF 10 SUBSTITUTE $" %abc" $CHECKN -> FALSE 0 }T
 T{ $" abc%" SUBBUF 10 SUBSTITUTE $" abc%" $CHECKN -> FALSE 0 }T
+-->
+
+( forth2012-test-suite )
+
 T{ $" abc%mac1" SUBBUF 10 SUBSTITUTE $" abc%mac1" $CHECKN
    -> FALSE 0 }T
 T{ $" abc%mac1%d%%e%mac2%%mac3" SUBBUF 20 SUBSTITUTE
@@ -5304,6 +6327,10 @@ T{ $" zyxwvutsr" MAC3 REPLACES -> }T
 T{ $" abc%mac3%d" SUBBUF 10 SUBSTITUTE ROT ROT 2DROP 0<
    -> TRUE }T
 
+-->
+
+( forth2012-test-suite )
+
   \ Conditional test for overlapping strings, including the
   \ case where caddr1 = caddr2. If a system cannot handle
   \ overlapping strings it should return n < 0 with (caddr2 u2)
@@ -5314,8 +6341,7 @@ T{ $" abc%mac3%d" SUBBUF 10 SUBSTITUTE ROT ROT 2DROP 0<
   \ caddr1) and (string1 = string2) or n < 0
 
 : SUBST-N? ( n1 n2 -- f ) \ True if n1<0 or n1>=0 and n1=n2 )
-   OVER 0< IF DROP 0< 0= ELSE = THEN
-;
+  OVER 0< IF DROP 0< 0= ELSE = THEN ;
 
   \ Check the result of overlapped-subst
 
@@ -5323,33 +6349,36 @@ T{ $" abc%mac3%d" SUBBUF 10 SUBSTITUTE ROT ROT 2DROP 0<
   \ expected result
 
 : CHECK-SUBST ( caddr1 u1 bufad n n2 caddr2 u2 -- f )
-   >R >R ROT >R SUBST-N?         ( -- caddr1 u1 f1 )
-   IF
-      OVER R> =                  \ Check caddr1 = bufad
-      IF
-         R> R> COMPARE 0= EXIT   \ Check string1 = string2
-      THEN
-   ELSE
-      R> DROP
-   THEN
-   R> R> 2DROP 2DROP FALSE ;
+  >R >R ROT >R SUBST-N?         ( -- caddr1 u1 f1 )
+  IF   OVER R> =                  \ Check caddr1 = bufad
+       IF R> R> COMPARE 0= EXIT   \ Check string1 = string2
+       THEN
+  ELSE R> DROP
+  THEN R> R> 2DROP 2DROP FALSE ;
+
+-->
+
+( forth2012-test-suite )
 
   \ Copy string to (buf+u2) and expect substitution result at
   \ (buf+u3) u4 is length of result buffer then execute
   \ SUBSTITUTE and check the result
 
 : OVERLAPPED-SUBST ( caddr1 u1 u2 u3 u4 -- caddr5 u5 bufad n )
-   >R >R                    ( -- caddr1 u1 u2 ) ( R: -- u4 u3 )
-   CHARS SUBBUF + SWAP        ( -- caddr1 buf+u2' u1 )
-   DUP >R OVER >R MOVE        ( -- ) ( R: -- u4 u3 u1 buf+u2')
-   R> R> SUBBUF R> CHARS + R> ( -- buf+u2 u1 buf+u3' u4 )
-   OVER >R SUBSTITUTE R> SWAP ( -- caddr5 u5 buf+u3 n )
-;
+  >R >R                     ( -- caddr1 u1 u2 ) ( R: -- u4 u3 )
+  CHARS SUBBUF + SWAP        ( -- caddr1 buf+u2' u1 )
+  DUP >R OVER >R MOVE        ( -- ) ( R: -- u4 u3 u1 buf+u2')
+  R> R> SUBBUF R> CHARS + R> ( -- buf+u2 u1 buf+u3' u4 )
+  OVER >R SUBSTITUTE R> SWAP ; ( -- caddr5 u5 buf+u3 n )
 
 T{ $" zyxwvut" MAC3 REPLACES -> }T
 T{ $" zyx"     MAC2 REPLACES -> }T
 T{ $" a%mac3%b" 0 9 20 OVERLAPPED-SUBST 1
    $" azyxwvutb" CHECK-SUBST -> TRUE }T
+-->
+
+( forth2012-test-suite )
+
 T{ $" a%mac3%b" 0 3 20 OVERLAPPED-SUBST 1
    $" azyxwvutb" CHECK-SUBST -> TRUE }T
 T{ $" a%mac2%b" 0 3 20 OVERLAPPED-SUBST 1
@@ -5361,14 +6390,15 @@ T{ $" a%mac3%b" 3 0 20 OVERLAPPED-SUBST 1
 T{ $" a%mac3%b" 9 0 20 OVERLAPPED-SUBST 1
    $" azyxwvutb" CHECK-SUBST -> TRUE }T
 
-  \ Definition using a name on the stack
 : $CREATE ( caddr u -- )
-   S" name" REPLACES          ( -- )
-   S" CREATE %name%" SUBBUF 40 SUBSTITUTE
-   0 > IF EVALUATE THEN
-;
+  S" name" REPLACES ( -- )
+  S" CREATE %name%" SUBBUF 40 SUBSTITUTE 0 > IF EVALUATE THEN ;
+  \ Definition using a name on the stack.
+
 t{ $" SUBST2" $CREATE 123 , -> }t
-t{ SUBST2 @ -> 123 }t
+t{ SUBST2 @ -> 123 }t -->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -5445,6 +6475,10 @@ TESTING [IF] [ELSE] [THEN]
 T{ TRUE  [IF] 111 [ELSE] 222 [THEN] -> 111 }T
 T{ FALSE [IF] 111 [ELSE] 222 [THEN] -> 222 }T
 
+-->
+
+( forth2012-test-suite )
+
 T{ TRUE  [IF] 1     \ Code spread over more than 1 line
              2
           [ELSE]
@@ -5457,6 +6491,10 @@ T{ FALSE [IF]
              3 4
           [THEN] -> 3 4 }T
 
+-->
+
+( forth2012-test-suite )
+
 T{ TRUE  [IF] 1 TRUE  [IF] 2 [ELSE] 3 [THEN] [ELSE] 4 [THEN]
    -> 1 2 }T
 T{ FALSE [IF] 1 TRUE  [IF] 2 [ELSE] 3 [THEN] [ELSE] 4 [THEN]
@@ -5465,6 +6503,10 @@ T{ TRUE  [IF] 1 FALSE [IF] 2 [ELSE] 3 [THEN] [ELSE] 4 [THEN]
    -> 1 3 }T
 T{ FALSE [IF] 1 FALSE [IF] 2 [ELSE] 3 [THEN] [ELSE] 4 [THEN]
    -> 4 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -5490,7 +6532,9 @@ T{ 0  [IF]            \ Words ignored up to [ELSE] 2
 T{ -1 [IF] 2 [ELSE] 3 $" [THEN] 4 PT10 IGNORED TO END OF LINE"
       [THEN]
       \ A precaution in case [THEN] in string isn't recognised
-   -> 2 4 }T
+   -> 2 4 }T -->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -5506,31 +6550,35 @@ T{ [ELSE] -1 [IF] 15 [ELSE] 16 [THEN] 17 [THEN] 18 -> 18 }T
   \ A lone [THEN] is a noop
 T{ 19 [THEN] 20 -> 19 20 }T
 
+-->
+
+( forth2012-test-suite )
+
   \ ===========================================================
 
 TESTING CS-PICK and CS-ROLL
 
   \ Test PT5 based on example in ANS document p 176.
 
-: ?REPEAT
-   0 CS-PICK POSTPONE UNTIL
-; IMMEDIATE
+: ?REPEAT 0 CS-PICK POSTPONE UNTIL ; IMMEDIATE
 
 VARIABLE PT4
 
 T{ : PT5 ( N1 -- )
-      PT4 !
-      BEGIN
-         -1 PT4 +!
-         PT4 @ 4 > 0= ?REPEAT \ Back TO BEGIN if FALSE
-         111
-         PT4 @ 3 > 0= ?REPEAT
-         222
-         PT4 @ 2 > 0= ?REPEAT
-         333
-         PT4 @ 1 =
-      UNTIL
-; -> }T
+     PT4 !
+     BEGIN
+       -1 PT4 +!
+       PT4 @ 4 > 0= ?REPEAT \ Back TO BEGIN if FALSE
+       111
+       PT4 @ 3 > 0= ?REPEAT
+       222
+       PT4 @ 2 > 0= ?REPEAT
+       333
+       PT4 @ 1 =
+     UNTIL ; -> }T -->
+
+( forth2012-test-suite )
+
 
 T{ 6 PT5 -> 111 111 222 111 222 333 111 222 333 }T
 
@@ -5550,22 +6598,30 @@ T{ : PT6
 
 T{ 5 PT6 -> 5 4 3 2 1 }T
 
+-->
+
+( forth2012-test-suite )
+
 : MIX_UP 2 CS-ROLL ; IMMEDIATE  \ CS-ROT
 
-: PT7    ( f3 f2 f1 -- ? )
-   IF 1111 ROT ROT ( -- 1111 f3 f2 ) ( cs: -- orig1 )
-      IF 2222 SWAP ( -- 1111 2222 f3 ) ( cs: -- orig1 orig2 )
-         IF ( cs: -- orig1 orig2 orig3 )
-            3333 MIX_UP ( -- 1111 2222 3333 )
-                        ( cs: -- orig2 orig3 orig1 )
-         THEN ( cs: -- orig2 orig3 )
-         4444
-         \ Hence failure of first IF comes here and falls through
-      THEN ( cs: -- orig2 )
-      5555 \ Failure of 3rd IF comes here
-   THEN ( cs: -- )
-   6666 \ Failure of 2nd IF comes here
-;
+: PT7 ( f3 f2 f1 -- ? )
+  IF 1111 ROT ROT ( -- 1111 f3 f2 ) ( cs: -- orig1 )
+    IF 2222 SWAP ( -- 1111 2222 f3 ) ( cs: -- orig1 orig2 )
+      IF ( cs: -- orig1 orig2 orig3 )
+        3333 MIX_UP ( -- 1111 2222 3333 )
+                    ( cs: -- orig2 orig3 orig1 )
+      THEN ( cs: -- orig2 orig3 )
+      4444
+      \ Hence failure of first IF comes here and falls through
+    THEN ( cs: -- orig2 )
+    5555 \ Failure of 3rd IF comes here
+  THEN ( cs: -- )
+  6666 ; \ Failure of 2nd IF comes here
+
+-->
+
+( forth2012-test-suite )
+
 
 T{ -1 -1 -1 PT7 -> 1111 2222 3333 4444 5555 6666 }T
 T{  0 -1 -1 PT7 -> 1111 2222 5555 6666 }T
@@ -5575,19 +6631,18 @@ T{  0  0  0 PT7 -> 0    0    4444 5555 6666 }T
 : [1CS-ROLL] 1 CS-ROLL ; IMMEDIATE
 
 T{ : PT8
-      >R
-      AHEAD 111
-      BEGIN 222
-         [1CS-ROLL]
-         THEN
-         333
-         R> 1- >R
-         R@ 0<
-      UNTIL
-      R> DROP
-   ; -> }T
+     >R
+     AHEAD 111
+     BEGIN 222
+        [1CS-ROLL]
+        THEN
+        333
+        R> 1- >R  R@ 0<
+     UNTIL R> DROP ; -> }T
 
-T{ 1 PT8 -> 333 222 333 }T
+T{ 1 PT8 -> 333 222 333 }T -->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -5603,6 +6658,10 @@ T{ : DEF2 [DEFINED]   DEF1 [IF] 1 [ELSE] 2 [THEN] ; -> }T
 T{ : DEF3 [UNDEFINED] DEF1 [IF] 3 [ELSE] 4 [THEN] ; -> }T
 T{ DEF2 -> 1 }T
 T{ DEF3 -> 4 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -5625,7 +6684,9 @@ T{ NEW-SYN1 -> 1234 }T
 : SYN2 2345 ; IMMEDIATE
 T{ SYNONYM NEW-SYN2 SYN2 -> }T
 T{ NEW-SYN2 -> 2345 }T
-T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T
+T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T -->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -5645,6 +6706,10 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T
 \? : WDCT ( n nt -- n+1 f ) DROP 1+ TRUE ;
 \? T{ 0 ' WDCT TRAV-WL TRAVERSE-WORDLIST -> 0 }T
 
+-->
+
+( forth2012-test-suite )
+
 \? TRAV-WL SET-CURRENT
 \? : TRAV1 1 ;
 \? T{ 0 ' WDCT TRAV-WL TRAVERSE-WORDLIST -> 1 }T
@@ -5653,6 +6718,10 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T
 \? CURR-WL SET-CURRENT
 \? T{ 0 ' WDCT TRAV-WL TRAVERSE-WORDLIST -> 6 }T
    \ Traverse whole wordlist
+
+-->
+
+( forth2012-test-suite )
 
   \ Terminate `TRAVERSE-WORDLIST` after n words & check it
   \ compiles.
@@ -5667,6 +6736,10 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T
 \? T{ 1 PART-OF-WL -> 1 }T
 \? T{ 4 PART-OF-WL -> 4 }T
 \? T{ 9 PART-OF-WL -> 6 }T  \ Traverse whole wordlist
+
+-->
+
+( forth2012-test-suite )
 
   \ Testing `NAME>..` words require a name token. It will be
   \ easier to test them if there is a way of obtaining the name
@@ -5692,8 +6765,11 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T
 \?    ELSE
 \?       2DROP
 \?    THEN
-\?    DROP R>
-\? ;
+\?    DROP R> ;
+
+-->
+
+( forth2012-test-suite )
 
   \ Compare string (caddr u) with name associated with nt
 \? : NAME? ( caddr u nt -- caddr u f )
@@ -5717,6 +6793,10 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T
   \ Test NAME>INTERPRET on a word with interpretation semantics
 \? T{ $" TRAV3" TRAV-WL GET-NAME-TOKEN NAME>INTERPRET EXECUTE
 \?   -> 3 }T
+
+-->
+
+( forth2012-test-suite )
 
   \ Test `NAME>INTERPRET` on a word without interpretation
   \ semantics. It is difficult to choose a suitable word
@@ -5749,6 +6829,10 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T
 \?       0      \ AGAIN is a Core Ext word
 \?    UNTIL ;
 
+-->
+
+( forth2012-test-suite )
+
 \? : TIF? ( -- )
 \?   TIF-SKIP @ 0=
 \?   IF
@@ -5760,6 +6844,10 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T
 \?     ." So NAME>INTERPRET returning 0 is untested." CR
 \?   THEN ;
 
+-->
+
+( forth2012-test-suite )
+
 \? 0 TIF-SKIP !
 \? TIF DUP SWAP DROP
 \? TIF >R R> R@ ." ; EXIT ['] [CHAR] RECURSE ABORT" DOES>
@@ -5767,6 +6855,10 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T
 \? TIF DO I J LOOP +LOOP UNLOOP LEAVE IF ELSE THEN BEGIN WHILE
 \? TIF REPEAT UNTIL
 \? TIF?
+
+-->
+
+( forth2012-test-suite )
 
   \ Test NAME>COMPILE
 \? : N>C ( caddr u -- )
@@ -5786,6 +6878,10 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T
 \? : TRAV3 33 ; : TRAV3 333 ; : TRAV7 7 ; : TRAV3 3333 ;
 \? CURR-WL SET-CURRENT
 
+-->
+
+( forth2012-test-suite )
+
 \? : (GET-ALL) ( caddr u nt -- [n] caddr u true )
 \?    DUP >R NAME? IF R@ NAME>INTERPRET EXECUTE ROT ROT THEN
 \?    R> DROP TRUE
@@ -5801,6 +6897,10 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T
 \? .( Some search-order words not present) CR
 \? .( TRAVERSE-WORDLIST etc not tested) CR
 [?THEN]
+
+-->
+
+( forth2012-test-suite )
 
   \ ===========================================================
 
@@ -5848,6 +6948,10 @@ T{ -1 (\?) ! [?DEF] ?DEFTEST1 (\?) @ -> 0 }T
   \ If needed in the blocks test program they will need to be
   \ modified here or redefined there.
 
+-->
+
+( forth2012-test-suite )
+
   \ \? is a conditional comment
 : \? ( "..." -- ) (\?) @ IF EXIT THEN SOURCE >IN ! DROP ;
   IMMEDIATE
@@ -5868,22 +6972,25 @@ T{ [?DEF] ?DEFTEST2 \? : ?DEFTEST1 2 ; \ Should be redefined
 \?    TUCK - >R CHARS + R>
 \? ;
 
+-->
+
+( forth2012-test-suite )
+
 \? : PARSE ( ch "ccc<ch>" -- caddr u )
 \?    >R SOURCE >IN @ BUMP
 \?    OVER R> SWAP >R >R ( -- start u1 ) ( R: -- start ch )
-\?    BEGIN
-\?       DUP
-\?    WHILE
-\?       OVER C@ R@ = 0=
-\?    WHILE
-\?       1 BUMP
-\?    REPEAT
-\?       1-                      ( end u2 ) \ delimiter found
+\?    BEGIN  DUP
+\?    WHILE  OVER C@ R@ = 0=
+\?    WHILE  1 BUMP
+\?    REPEAT 1-                  ( end u2 ) \ delimiter found
 \?    THEN
 \?    SOURCE NIP SWAP - >IN !    ( -- end )
 \?    R> DROP R>                 ( -- end start )
-\?    TUCK - 1 CHARS /           ( -- start u )
-\? ;
+\?    TUCK - 1 CHARS / ;         ( -- start u )
+
+-->
+
+( forth2012-test-suite )
 
 [?DEF] .(  \? : .(  [CHAR] ) PARSE TYPE ; IMMEDIATE
 
@@ -5902,6 +7009,10 @@ T{ [?DEF] ?DEFTEST2 \? : ?DEFTEST1 2 ; \ Should be redefined
 \?     CHAR+ SWAP CHAR+
 \?   LOOP 2DROP TRUE ;
 
+-->
+
+( forth2012-test-suite )
+
   \ Buffer for strings in interpretive mode since `S"` only
   \ valid in compilation mode when File-Access word set is
   \ defined.
@@ -5912,15 +7023,18 @@ CREATE SBUF2 SBUF-SIZE CHARS ALLOT
 
   \ ($") saves a counted string at (caddr)
 : ($") ( caddr "ccc" -- caddr' u )
-   [CHAR] " PARSE ROT 2DUP C!       ( -- ca2 u2 ca)
-   CHAR+ SWAP 2DUP 2>R CHARS MOVE   ( -- ) ( R: -- ca' u2 )
-   2R>
-;
+  [CHAR] " PARSE ROT 2DUP C!       ( -- ca2 u2 ca)
+  CHAR+ SWAP 2DUP 2>R CHARS MOVE   ( -- ) ( R: -- ca' u2 )
+  2R> ;
 
 : $" ( "ccc" -- caddr u ) SBUF1 ($") ;
 : $2" ( "ccc" -- caddr u ) SBUF2 ($") ;
 : $CLEAR ( caddr -- ) SBUF-SIZE BL FILL ;
 : CLEAR-SBUFS ( -- ) SBUF1 $CLEAR SBUF2 $CLEAR ;
+
+-->
+
+( forth2012-test-suite )
 
   \ More definitions in core.fr used in other test programs,
   \ conditionally defined here if core.fr has not been loaded.
@@ -5936,6 +7050,10 @@ CREATE SBUF2 SBUF-SIZE CHARS ALLOT
 
 BASE @ 2 BASE ! -1 0 <# #S #> SWAP DROP
 CONSTANT BITS/CELL BASE !
+
+-->
+
+( forth2012-test-suite )
 
 
   \ ===========================================================
@@ -5969,6 +7087,6 @@ CR $" Test utilities loaded" TYPE CR
   \ Jackson's forth2012-test-suite version 0.13.0
   \ (https://github.com/gerryjackson/forth2012-test-suite).
   \
-  \ 2018-03-10: Make all lines fit.
+  \ 2018-03-10: Make all lines fit. Divide code into blocks.
 
   \ vim: filetype=soloforth
