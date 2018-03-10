@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803102148
+  \ Last modified: 201803102334
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -449,12 +449,12 @@ VARIABLE VERBOSE FALSE VERBOSE !
   \ Set flag to TRUE for more verbose output; this may allow
   \ you to tell which test caused your system to hang.
 
-: TESTING ( -- )
-  SOURCE VERBOSE @
-  IF   DUP >R TYPE CR R> >IN !
-  ELSE >IN ! DROP
-  THEN ;
-  \ Talking comment.
+: TESTING ( "ccc" -- )
+  ?LOADING
+  C/L >IN @ C/L MOD - \ chars left on the current block line
+  VERBOSE @ IF   BLK @ BLOCK >IN @ + OVER TYPE CR
+            THEN >IN +! ;
+  \ Display the rest of the current block line, then skip it.
 
 BASE !
 
@@ -492,6 +492,7 @@ BASE !
   \ (https://github.com/gerryjackson/forth2012-test-suite).
   \
   \ 2018-03-10: Update stack comments. Improve source layout.
-  \ Compact the code, saving three blocks.
+  \ Compact the code, saving three blocks. Rewrite `testing`
+  \ for blocks.
 
   \ vim: filetype=soloforth
