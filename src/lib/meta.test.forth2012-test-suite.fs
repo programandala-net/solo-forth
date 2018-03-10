@@ -3,8 +3,10 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803092254
+  \ Last modified: 201803101607
   \ See change log at the end of the file
+
+  \ XXX UNDER DEVELOPMENT
 
   \ ===========================================================
 
@@ -28,60 +30,85 @@
   \ ===========================================================
 
 CR CR SOURCE TYPE ( Preliminary test ) CR
-SOURCE ( These lines test SOURCE, TYPE, CR and parenthetic comments ) TYPE CR
-( The next line of output should be blank to test CR ) SOURCE TYPE CR CR
+SOURCE ( These lines test SOURCE, TYPE, ) TYPE CR
+SOURCE ( CR and parenthetic comments ) TYPE CR
 
-( It is now assumed that SOURCE, TYPE, CR and comments work. SOURCE and      )
-( TYPE will be used to report test passes until something better can be      )
-( defined to report errors. Until then reporting failures will depend on the )
-( system under test and will usually be via reporting an unrecognised word   )
-( or possibly the system crashing. Tests will be numbered by #n from now on  )
-( to assist fault finding. Test failures successes will be indicated by      )
-( 'Pass: #n ...' and failures by 'Error: #n ...'                             )
+  \ It is now assumed that SOURCE, TYPE, CR and comments work.
+  \ SOURCE and TYPE will be used to report test passes until
+  \ something better can be defined to report errors. Until
+  \ then reporting failures will depend on the system under
+  \ test and will usually be via reporting an unrecognised word
+  \ or possibly the system crashing. Tests will be numbered by
+  \ #n from now on to assist fault finding. Test failures
+  \ successes will be indicated by 'Pass: #n ...' and failures
+  \ by 'Error: #n ...'
 
-( Initial tests of >IN +! and 1+ )
-( Check that n >IN +! acts as an interpretive IF, where n >= 0 )
-( Pass #1: testing 0 >IN +! ) 0 >IN +! SOURCE TYPE CR
-( Pass #2: testing 1 >IN +! ) 1 >IN +! xSOURCE TYPE CR
-( Pass #3: testing 1+ ) 1 1+ >IN +! xxSOURCE TYPE CR
+  \ Initial tests of `>IN +!` and `1+`.  Check that `n >IN +!`
+  \ acts as an interpretive `IF`, where n >= 0.
 
-( Test results can now be reported using the >IN +! trick to skip )
-( 1 or more characters )
+  ( Pass #1: testing 0 >IN +! ) 0 >IN +! SOURCE TYPE CR
+  ( Pass #2: testing 1 >IN +! ) 1 >IN +! xSOURCE TYPE CR
+  ( Pass #3: testing 1+ ) 1 1+ >IN +! xxSOURCE TYPE CR
 
-( The value of BASE is unknown so it is not safe to use digits > 1, therefore )
-( it will be set it to binary and then decimal, this also tests @ and ! )
+  \ Test results can now be reported using the >IN +! trick to
+  \ skip 1 or more characters
 
-( Pass #4: testing @ ! BASE ) 0 1+ 1+ BASE ! BASE @ >IN +! xxSOURCE TYPE CR
-( Set BASE to decimal ) 1010 BASE !
-( Pass #5: testing decimal BASE ) BASE @ >IN +! xxxxxxxxxxSOURCE TYPE CR
+  \ The value of `BASE` is unknown so it is not safe to use
+  \ digits > 1, therefore it will be set it to binary and then
+  \ decimal, this also tests `@` and `!`.
 
-( Now in decimal mode and digits >1 can be used )
+  ( Pass #4: testing @ ! BASE )
+  0 1+ 1+ BASE ! BASE @ >IN +! xxSOURCE TYPE CR
+  ( Set BASE to decimal ) 1010 BASE !
+  ( Pass #5: testing decimal BASE )
+  BASE @ >IN +! xxxxxxxxxxSOURCE TYPE CR
 
-( A better error reporting word is needed, much like .( which can't  )
-( be used as it is in the Core Extension word set, similarly PARSE can't be )
-( used either, only WORD is available to parse a message and must be used   )
-( in a colon definition. Therefore a simple colon definition is tested next )
+  \ Now in decimal mode and digits >1 can be used
 
-( Pass #6: testing : ; ) : .SRC SOURCE TYPE CR ; 6 >IN +! xxxxxx.SRC
-( Pass #7: testing number input ) 19 >IN +! xxxxxxxxxxxxxxxxxxx.SRC
+  \ A better error reporting word is needed, much like `.(`
+  \ which can't be used as it is in the Core Extension word
+  \ set, similarly `PARSE` can't be used either, only `WORD` is
+  \ available to parse a message and must be used in a colon
+  \ definition. Therefore a simple colon definition is tested
+  \ next.
 
-( VARIABLE is now tested as one will be used instead of DROP e.g. Y ! )
+  ( Pass #6: testing : ; )
+: .SRC SOURCE TYPE CR ; 6 >IN +! xxxxxx.SRC
 
-( Pass #8: testing VARIABLE ) VARIABLE Y 2 Y ! Y @ >IN +! xx.SRC
+  ( Pass #7: testing number input )
+19 >IN +! xxxxxxxxxxxxxxxxxxx.SRC
 
-: MSG 41 WORD COUNT ;  ( 41 is the ASCII code for right parenthesis )
-( The next tests MSG leaves 2 itmes on the data stack )
-( Pass #9: testing WORD COUNT ) 5 MSG abcdef) Y ! Y ! >IN +! xxxxx.SRC
-( Pass #10: testing WORD COUNT ) MSG ab) >IN +! xxY ! .SRC
 
-( For reporting success .MSG( is now defined )
+  \ `VARIABLE` is now tested as one will be used instead of
+  \ `DROP` e.g. `Y !`.
+
+  ( Pass #8: testing VARIABLE )
+VARIABLE Y 2 Y ! Y @ >IN +! xx.SRC
+
+: MSG 41 WORD COUNT ;
+  \ 41 is the ASCII code for right parenthesis.
+
+  \ The next tests MSG leaves 2 itmes on the data stack
+  ( Pass #9: testing WORD COUNT )
+5 MSG abcdef) Y ! Y ! >IN +! xxxxx.SRC
+
+  ( Pass #10: testing WORD COUNT )
+MSG ab) >IN +! xxY ! .SRC
+
+
+  \ For reporting success .MSG( is now defined
 : .MSG( MSG TYPE ; .MSG( Pass #11: testing WORD COUNT .MSG) CR
 
-( To define an error reporting word, = 2* AND will be needed, test them first )
-( This assumes 2's complement arithmetic )
-1 1 = 1+ 1+ >IN +! x.MSG( Pass #12: testing = returns all 1's for true) CR
-1 0 = 1+ >IN +! x.MSG( Pass #13: testing = returns 0 for false) CR
-1 1 = -1 = 1+ 1+ >IN +! x.MSG( Pass #14: testing -1 interpreted correctly) CR
+  \ To define an error reporting word, `= 2* AND` will be
+  \ needed, test them first. This assumes 2's complement
+  \ arithmetic.
+
+1 1 = 1+ 1+ >IN +!
+x.MSG( Pass #12: testing = returns all 1's for true) CR
+1 0 = 1+ >IN +!
+x.MSG( Pass #13: testing = returns 0 for false) CR
+1 1 = -1 = 1+ 1+ >IN +!
+x.MSG( Pass #14: testing -1 interpreted correctly) CR
 
 1 2* >IN +! xx.MSG( Pass #15: testing 2*) CR
 -1 2* 1+ 1+ 1+ >IN +! x.MSG( Pass #16: testing 2*) CR
@@ -90,25 +117,31 @@ SOURCE ( These lines test SOURCE, TYPE, CR and parenthetic comments ) TYPE CR
 -1  0 AND 1+ >IN +! x.MSG( Pass #18: testing AND) CR
 6  -1 AND >IN +! xxxxxx.MSG( Pass #19: testing AND) CR
 
-( Define ~ to use as a 'to end of line' comment. \ cannot be used as it a )
-( Core Extension word )
-: ~  ( -- )  SOURCE >IN ! Y ! ;
+  \ Define ~ to use as a 'to end of line' comment. `\` cannot
+  \ be used as it a Core Extension word
 
-( Rather than relying on a pass message test words can now be defined to )
-( report errors in the event of a failure. For convenience words ?T~ and )
-( ?F~ are defined together with a helper ?~~ to test for TRUE and FALSE  )
-( Usage is: <test> ?T~ Error #n: <message>                               )
-( Success makes >IN index the ~ in ?T~ or ?F~ to skip the error message. )
-( Hence it is essential there is only 1 space between ?T~ and Error      )
+: ~ ( -- ) SOURCE >IN ! Y ! ;
 
-: ?~~  ( -1 | 0 -- )  2* >IN +! ;
-: ?F~ ( f -- )   0 = ?~~ ;
-: ?T~ ( f -- )  -1 = ?~~ ;
+  \ Rather than relying on a pass message test words can now be
+  \ defined to report errors in the event of a failure. For
+  \ convenience words `?T~` and `?F~` are defined together with
+  \ a helper `?~~` to test for TRUE and FALSE. Usage is:
+  \
+  \ <test> ?T~ Error #n: <message>
+  \
+  \ Success makes `>IN` index the `~` in `?T~` or `?F~` to skip
+  \ the error message.  Hence it is essential there is only 1
+  \ space between `?T~` and "Error".
 
-( Errors will be counted )
+: ?~~ ( -1 | 0 -- ) 2* >IN +! ;
+: ?F~ ( f -- )  0 = ?~~ ;
+: ?T~ ( f -- ) -1 = ?~~ ;
+
+  \ Errors will be counted
 VARIABLE #ERRS 0 #ERRS !
 : Error  1 #ERRS +! -6 >IN +! .MSG( CR ;
-: Pass  -1 #ERRS +! 1 >IN +! Error ;  ~ Pass is defined solely to test Error
+: Pass  -1 #ERRS +! 1 >IN +! Error ;
+~ Pass is defined solely to test Error
 
 -1 ?F~ Pass #20: testing ?F~ ?~~ Pass Error
 -1 ?T~ Error #1: testing ?T~ ?~~ ~
@@ -127,34 +160,40 @@ VARIABLE #ERRS 0 #ERRS !
 0  0< ?F~ Error #11: testing 0<
 1  0< ?F~ Error #12: testing 0<
 
- DEPTH 1+ DEPTH = ?~~ Error #13: testing DEPTH
- ~ Up to now whether the data stack was empty or not hasn't mattered as
- ~ long as it didn't overflow. Now it will be emptied - also
- ~ removing any unreported underflow
- DEPTH 0< 0= 1+ >IN +! ~ 0 0 >IN ! Remove any underflow
- DEPTH 0= 1+ >IN +! ~ Y !  0 >IN ! Empty the stack
- DEPTH 0= ?T~ Error #14: data stack not emptied
+DEPTH 1+ DEPTH = ?~~ Error #13: testing DEPTH
 
- 4 -5 SWAP 4 = SWAP -5 = = ?T~ Error #15: testing SWAP
- 111 222 333 444
- DEPTH 4 = ?T~ Error #16: testing DEPTH
- 444 = SWAP 333 = = DEPTH 3 = = ?T~ Error #17: testing SWAP DEPTH
- 222 = SWAP 111 = = DEPTH 1 = = ?T~ Error #18: testing SWAP DEPTH
- DEPTH 0= ?T~ Error #19: testing DEPTH = 0
+~ Up to now whether the data stack
+~ was empty or not~ hasn't mattered
+~ as long as it didn't overflow.
+~ Now it will be emptied - also
+~ removing any unreported underflow
+
+DEPTH 0< 0= 1+ >IN +! ~ 0 0 >IN ! Remove any underflow
+DEPTH 0= 1+ >IN +! ~ Y !  0 >IN ! Empty the stack
+DEPTH 0= ?T~ Error #14: data stack not emptied
+
+4 -5 SWAP 4 = SWAP -5 = = ?T~ Error #15: testing SWAP
+111 222 333 444
+DEPTH 4 = ?T~ Error #16: testing DEPTH
+444 = SWAP 333 = = DEPTH 3 = = ?T~ Error#17: testing SWAP DEPTH
+222 = SWAP 111 = = DEPTH 1 = = ?T~ Error#18: testing SWAP DEPTH
+DEPTH 0= ?T~ Error #19: testing DEPTH = 0
 
 ~ From now on the stack is expected to be empty after a test so
-~ ?~ will be defined to include a check on the stack depth. Note
-~ that ?~~ was defined and used earlier instead of ?~ to avoid
-~ (irritating) redefinition messages that many systems display had
-~ ?~ simply been redefined
+~ ?~ will be defined to include a check on the stack depth.
+~ Note that ?~~ was defined and used earlier instead of ?~ to
+~ avoid (irritating) redefinition messages that many systems
+~ display had ?~ simply been redefined
 
-: ?~  ( -1 | 0 -- )  DEPTH 1 = AND ?~~ ; ~ -1 test success, 0 test failure
+: ?~ ( -1 | 0 -- ) DEPTH 1 = AND ?~~ ;
+
+~ -1 test success, 0 test failure
 
 123 -1 ?~ Pass #21: testing ?~
 Y !   ~ equivalent to DROP
 
-~ Testing the remaining Core words used in the Hayes tester, with the above
-~ definitions these are straightforward
+~ Testing the remaining Core words used in the Hayes tester,
+~ with the above definitions these are straightforward
 
 1 DROP DEPTH 0= ?~ Error #20: testing DROP
 123 DUP  = ?~ Error #21: testing DUP
@@ -176,45 +215,49 @@ CREATE TST1 HERE TST1 = ?~ Error #32: testing CREATE HERE
 CSZ @ 0= 0= ?~ Error #36: testing CELLS
 3 CELLS CSZ @ DUP 2* + = ?~ Error #37: testing CELLS
 -3 CELLS CSZ @ DUP 2* + + 0= ?~ Error #38: testing CELLS
-: TST2  ( f -- n )  DUP IF 1+ THEN ;
+: TST2 ( f -- n ) DUP IF 1+ THEN ;
 0 TST2 0=  ?~ Error #39: testing IF THEN
 1 TST2 2 = ?~ Error #40: testing IF THEN
-: TST3  ( n1 -- n2 )  IF 123 ELSE 234 THEN ;
+: TST3 ( n1 -- n2 ) IF 123 ELSE 234 THEN ;
 0 TST3 234 = ?~ Error #41: testing IF ELSE THEN
 1 TST3 123 = ?~ Error #42: testing IF ELSE THEN
-: TST4  ( -- n )  0 5 0 DO 1+ LOOP ;
+: TST4 ( -- n ) 0 5 0 DO 1+ LOOP ;
 TST4 5 = ?~ Error #43: testing DO LOOP
-: TST5  ( -- n )  0 10 0 DO I + LOOP ;
+: TST5 ( -- n ) 0 10 0 DO I + LOOP ;
 TST5 45 = ?~ Error #44: testing I
-: TST6  ( -- n )  0 10 0 DO DUP 5 = IF LEAVE ELSE 1+ THEN LOOP ;
+: TST6 ( -- n ) 0 10 0 DO DUP 5 = IF LEAVE ELSE 1+ THEN LOOP ;
 TST6 5 = ?~ Error #45: testing LEAVE
-: TST7  ( -- n1 n2 ) 123 >R 234 R> ;
+: TST7 ( -- n1 n2 ) 123 >R 234 R> ;
 TST7 NEGATE + 111 = ?~ Error #46: testing >R R>
-: TST8  ( -- ch )  [CHAR] A ;
+: TST8 ( -- ch ) [CHAR] A ;
 TST8 65 = ?~ Error #47: testing [CHAR]
-: TST9  ( -- )  [CHAR] s [CHAR] s [CHAR] a [CHAR] P 4 0 DO EMIT LOOP ;
+: TST9 ( -- )
+  [CHAR] s [CHAR] s [CHAR] a [CHAR] P 4 0 DO EMIT LOOP ;
 TST9 .MSG(  #22: testing EMIT) CR
-: TST10  ( -- )  S" Pass #23: testing S" TYPE [CHAR] " EMIT CR ; TST10
+: TST10 ( -- ) S" Pass #23: testing S" TYPE [CHAR] " EMIT CR ;
+TST10
 
-~ The Hayes tester uses some words from the Core extension word set
-~ These will be conditionally defined following definition of a
-~ word called ?DEFINED to determine whether these are already defined
+~ The Hayes tester uses some words from the Core extension word
+~ set. These will be conditionally defined following definition
+~ of a word called ?DEFINED to determine whether these are
+~ already defined
 
 VARIABLE TIMM1 0 TIMM1 !
 : TIMM2  123 TIMM1 ! ; IMMEDIATE
 : TIMM3 TIMM2 ; TIMM1 @ 123 = ?~ Error #48: testing IMMEDIATE
 
-: ?DEFINED  ( "name" -- 0 | -1 )  32 WORD FIND SWAP DROP 0= 0= ;
+: ?DEFINED ( "name" -- 0 | -1 ) 32 WORD FIND SWAP DROP 0= 0= ;
 ?DEFINED SWAP ?~ Error #49: testing FIND ?DEFINED
-?DEFINED <<no-such-word-hopefully>> 0= ?~ Error #50 testing FIND ?DEFINED
+?DEFINED <<no-such-word-hopefully>> 0=
+?~ Error #50 testing FIND ?DEFINED
 
 ?DEFINED \ ?~ : \ ~ ; IMMEDIATE
   \ Error #51: testing \
 : TIMM4  \ Error #52: testing \ is IMMEDIATE
 ;
 
-~ TRUE and FALSE are defined as colon definitions to avoid using and
-~ having to test CONSTANT
+~ TRUE and FALSE are defined as colon definitions
+~ to avoid using and having to test CONSTANT
 
 ?DEFINED TRUE  ?~ : TRUE 1 NEGATE ;
 ?DEFINED FALSE ?~ : FALSE 0 ;
@@ -225,23 +268,25 @@ FALSE 0=  ?~ Error #54: testing FALSE
 10 HEX 0A = ?~ Error #55: testing HEX
 AB 0A BASE ! 171 = ?~ Error #56: testing hex number
 
-~ Delete the ~ on the next 2 lines to check the final error report
+~ Delete the ~ on the next 2 lines to check the final error
+~ report
 ~ Error #998: testing a deliberate failure
 ~ Error #999: testing a deliberate failure
 
-~ Describe the messages that should be seen. The previously defined .MSG(
-~ can be used for text messages
+~ Describe the messages that should be seen. The previously
+~ defined .MSG( can be used for text messages
 
 CR .MSG( Results: ) CR
 CR .MSG( Pass messages #1 to #23 should be displayed above)
 CR .MSG( and no error messages) CR
 
-~ Finally display a message giving the number of tests that failed.
-~ This is complicated by the fact that untested words including .( ." and .
-~ cannot be used. Also more colon definitions shouldn't be defined than are
-~ needed. To display a number, note that the number of errors will have
-~ one or two digits at most and an interpretive loop can be used to
-~ display those.
+~ Finally display a message giving the number of tests that
+~ failed.  This is complicated by the fact that untested words
+~ including .( ." and .  cannot be used. Also more colon
+~ definitions shouldn't be defined than are ~ needed. To
+~ display a number, note that the number of errors will have
+~ one or two digits at most and an interpretive loop can be
+~ used to display those.
 
 CR
 0 #ERRS @
@@ -265,11 +310,11 @@ HEX
 
 TESTING BASIC ASSUMPTIONS
 
-T{ -> }T               \ START WITH CLEAN SLATE
-( TEST IF ANY BITS ARE SET; ANSWER IN BASE 1 )
+T{ -> }T \ START WITH CLEAN SLATE
+  \ TEST IF ANY BITS ARE SET; ANSWER IN BASE 1
 T{ : BITSSET? IF 0 0 ELSE 0 THEN ; -> }T
-T{  0 BITSSET? -> 0 }T      ( ZERO IS ALL BITS CLEAR )
-T{  1 BITSSET? -> 0 0 }T      ( OTHER NUMBER HAVE AT LEAST ONE BIT )
+T{  0 BITSSET? -> 0 }T  \ ZERO IS ALL BITS CLEAR
+T{  1 BITSSET? -> 0 0 }T  \ OTHER NUMBER HAVE AT LEAST ONE BIT
 T{ -1 BITSSET? -> 0 0 }T
 
   \ ===========================================================
@@ -680,8 +725,9 @@ T{ MAX-UINT MAX-UINT UM* MAX-UINT UM/MOD -> 0 MAX-UINT }T
 : IFSYM
    [ -3 2 / -1 = INVERT ] LITERAL IF POSTPONE \ THEN ;
 
-  \ THE SYSTEM MIGHT DO EITHER FLOORED OR SYMMETRIC DIVISION.
-  \ SINCE WE HAVE ALREADY TESTED M*, FM/MOD, AND SM/REM WE CAN USE THEM IN TEST.
+  \ The system might do either floored or symmetric division.
+  \ since we have already tested `M*`, `FM/MOD`, and `SM/REM`
+  \ we can use them in test.
 
 IFFLOORED : T/MOD  >R S>D R> FM/MOD ;
 IFFLOORED : T/     T/MOD SWAP DROP ;
@@ -948,14 +994,16 @@ T{ 5 GI4 -> 5 6 }T
 T{ 6 GI4 -> 6 7 }T
 
 T{ : GI5 BEGIN DUP 2 >
-         WHILE DUP 5 < WHILE DUP 1+ REPEAT 123 ELSE 345 THEN ; -> }T
+         WHILE DUP 5 <
+         WHILE DUP 1+ REPEAT 123 ELSE 345 THEN ; -> }T
 T{ 1 GI5 -> 1 345 }T
 T{ 2 GI5 -> 2 345 }T
 T{ 3 GI5 -> 3 4 5 123 }T
 T{ 4 GI5 -> 4 5 123 }T
 T{ 5 GI5 -> 5 123 }T
 
-T{ : GI6 ( N -- 0,1,..N ) DUP IF DUP >R 1- RECURSE R> THEN ; -> }T
+T{ : GI6 ( N -- 0,1,..N )
+     DUP IF DUP >R 1- RECURSE R> THEN ; -> }T
 T{ 0 GI6 -> 0 }T
 T{ 1 GI6 -> 0 1 }T
 T{ 2 GI6 -> 0 1 2 }T
@@ -986,15 +1034,22 @@ T{ 1 4 GD4 -> 4 3 2 1 }T
 T{ -1 2 GD4 -> 2 1 0 -1 }T
 T{ MID-UINT MID-UINT+1 GD4 -> MID-UINT+1 MID-UINT }T
 
-T{ : GD5 123 SWAP 0 DO I 4 > IF DROP 234 LEAVE THEN LOOP ; -> }T
+T{ : GD5 123 SWAP 0 DO I 4 > IF DROP 234 LEAVE THEN LOOP ;
+   -> }T
 T{ 1 GD5 -> 123 }T
 T{ 5 GD5 -> 123 }T
 T{ 6 GD5 -> 234 }T
 
-T{ : GD6  ( PAT: T{0 0},{0 0}{1 0}{1 1},{0 0}{1 0}{1 1}{2 0}{2 1}{2 2} )
-   0 SWAP 0 DO
-      I 1+ 0 DO I J + 3 = IF I UNLOOP I UNLOOP EXIT THEN 1+ LOOP
-    LOOP ; -> }T
+T{
+  : GD6
+    \ ( PAT: T{0 0},{0 0}{1 0}{1 1},{0 0}{1 0}{1 1}{2 0}{2 1}{2 2} )
+    0 SWAP 0 DO
+       I 1+ 0 DO
+         I J + 3 = IF I UNLOOP I UNLOOP EXIT THEN 1+
+       LOOP
+    LOOP ;
+  -> }T
+
 T{ 1 GD6 -> 1 }T
 T{ 2 GD6 -> 3 }T
 T{ 3 GD6 -> 4 1 2 }T
@@ -1046,12 +1101,12 @@ TESTING EVALUATE
 : GE3 S" : GE4 345 ;" ;
 : GE5 EVALUATE ; IMMEDIATE
 
-T{ GE1 EVALUATE -> 123 }T         ( TEST EVALUATE IN INTERP. STATE )
+T{ GE1 EVALUATE -> 123 }T \ TEST EVALUATE IN INTERP. STATE
 T{ GE2 EVALUATE -> 124 }T
 T{ GE3 EVALUATE -> }T
 T{ GE4 -> 345 }T
 
-T{ : GE6 GE1 GE5 ; -> }T         ( TEST EVALUATE IN COMPILE STATE )
+T{ : GE6 GE1 GE5 ; -> }T \ TEST EVALUATE IN COMPILE STATE
 T{ GE6 -> 123 }T
 T{ : GE7 GE2 GE5 ; -> }T
 T{ GE7 -> 124 }T
@@ -1162,7 +1217,10 @@ CREATE GN-BUF 0 C,
 T{ 0 0 GN' 0' >NUMBER -> 0 0 GN-CONSUMED }T
 T{ 0 0 GN' 1' >NUMBER -> 1 0 GN-CONSUMED }T
 T{ 1 0 GN' 1' >NUMBER -> BASE @ 1+ 0 GN-CONSUMED }T
-T{ 0 0 GN' -' >NUMBER -> 0 0 GN-STRING }T   \ SHOULD FAIL TO CONVERT THESE
+
+T{ 0 0 GN' -' >NUMBER -> 0 0 GN-STRING }T
+  \ SHOULD FAIL TO CONVERT THESE
+
 T{ 0 0 GN' +' >NUMBER -> 0 0 GN-STRING }T
 T{ 0 0 GN' .' >NUMBER -> 0 0 GN-STRING }T
 
@@ -1176,11 +1234,13 @@ T{ 0 0 GN' G' 10 >NUMBER-BASED -> 0 0 GN-STRING }T
 T{ 0 0 GN' G' MAX-BASE >NUMBER-BASED -> 10 0 GN-CONSUMED }T
 T{ 0 0 GN' Z' MAX-BASE >NUMBER-BASED -> 23 0 GN-CONSUMED }T
 
-: GN1   \ ( UD BASE -- UD' LEN ) UD SHOULD EQUAL UD' AND LEN SHOULD BE ZERO.
-   BASE @ >R BASE !
-   <# #S #>
-   0 0 2SWAP >NUMBER SWAP DROP      \ RETURN LENGTH ONLY
-   R> BASE ! ;
+: GN1 ( UD BASE -- UD' LEN )
+  \ UD SHOULD EQUAL UD' AND LEN SHOULD BE ZERO.
+  BASE @ >R BASE !
+  <# #S #>
+  0 0 2SWAP >NUMBER SWAP DROP \ RETURN LENGTH ONLY
+  R> BASE ! ;
+
 T{ 0 0 2 GN1 -> 0 0 0 }T
 T{ MAX-UINT 0 2 GN1 -> MAX-UINT 0 0 }T
 T{ MAX-UINT DUP 2 GN1 -> MAX-UINT DUP 0 }T
@@ -1232,24 +1292,23 @@ T{ SEEBUF -> 12 34 34 }T
 TESTING OUTPUT: . ." CR EMIT SPACE SPACES TYPE U.
 
 : OUTPUT-TEST
-   ." YOU SHOULD SEE THE STANDARD GRAPHIC CHARACTERS:" CR
-   41 BL DO I EMIT LOOP CR
-   61 41 DO I EMIT LOOP CR
-   7F 61 DO I EMIT LOOP CR
-   ." YOU SHOULD SEE 0-9 SEPARATED BY A SPACE:" CR
-   9 1+ 0 DO I . LOOP CR
-   ." YOU SHOULD SEE 0-9 (WITH NO SPACES):" CR
-   [CHAR] 9 1+ [CHAR] 0 DO I 0 SPACES EMIT LOOP CR
-   ." YOU SHOULD SEE A-G SEPARATED BY A SPACE:" CR
-   [CHAR] G 1+ [CHAR] A DO I EMIT SPACE LOOP CR
-   ." YOU SHOULD SEE 0-5 SEPARATED BY TWO SPACES:" CR
-   5 1+ 0 DO I [CHAR] 0 + EMIT 2 SPACES LOOP CR
-   ." YOU SHOULD SEE TWO SEPARATE LINES:" CR
-   S" LINE 1" TYPE CR S" LINE 2" TYPE CR
-   ." YOU SHOULD SEE THE NUMBER RANGES OF SIGNED AND UNSIGNED NUMBERS:" CR
-   ."   SIGNED: " MIN-INT . MAX-INT . CR
-   ." UNSIGNED: " 0 U. MAX-UINT U. CR
-;
+  ." YOU SHOULD SEE THE STANDARD GRAPHIC CHARACTERS:" CR
+  41 BL DO I EMIT LOOP CR
+  61 41 DO I EMIT LOOP CR
+  7F 61 DO I EMIT LOOP CR
+  ." YOU SHOULD SEE 0-9 SEPARATED BY A SPACE:" CR
+  9 1+ 0 DO I . LOOP CR
+  ." YOU SHOULD SEE 0-9 (WITH NO SPACES):" CR
+  [CHAR] 9 1+ [CHAR] 0 DO I 0 SPACES EMIT LOOP CR
+  ." YOU SHOULD SEE A-G SEPARATED BY A SPACE:" CR
+  [CHAR] G 1+ [CHAR] A DO I EMIT SPACE LOOP CR
+  ." YOU SHOULD SEE 0-5 SEPARATED BY TWO SPACES:" CR
+  5 1+ 0 DO I [CHAR] 0 + EMIT 2 SPACES LOOP CR
+  ." YOU SHOULD SEE TWO SEPARATE LINES:" CR
+  S" LINE 1" TYPE CR S" LINE 2" TYPE CR
+  ." YOU SHOULD SEE THE NUMBER RANGES:" CR
+  ."   SIGNED: " MIN-INT . MAX-INT . CR
+  ." UNSIGNED: " 0 U. MAX-UINT U. CR ;
 
 T{ OUTPUT-TEST -> }T
 
@@ -1340,16 +1399,17 @@ FIRST-TEST-BLOCK LIMIT-TEST-BLOCK U< 0= [?IF]
 
 LIMIT-TEST-BLOCK FIRST-TEST-BLOCK - CONSTANT TEST-BLOCK-COUNT
 TEST-BLOCK-COUNT 2 U< [?IF]
-\?  .( Error: At least 2 Test Blocks are required to run the tests ) CR ABORT
+\? .( Error: 2 Test Blocks are required to run tests ) CR ABORT
 [?THEN]
 
   \ ===========================================================
 
 TESTING Random Number Utilities
 
-  \ The block tests make extensive use of random numbers to select blocks to test
-  \ and to set the contents of the block.  It also makes use of a Hash code to
-  \ ensure the integrity of the blocks against unexpected changes.
+  \ The block tests make extensive use of random numbers to
+  \ select blocks to test and to set the contents of the block.
+  \ It also makes use of a Hash code to ensure the integrity of
+  \ the blocks against unexpected changes.
 
   \ == Memory Walk tools ==
 
@@ -1413,7 +1473,6 @@ BITS/CELL 32 = [?IF]
 
 BITS/CELL 16 = [?IF]
 \?  .( === NOT TESTED === )
-\?  \ From http://b2d-f9r.blogspot.co.uk/2010/08/16-bit-xorshift-rng-now-with-more.html
 \?  : PRNG-RND ( prng -- rnd )
 \?      DUP @                        \ prng x
 \?      DUP 5 LSHIFT XOR             \ prng t=x^(x<<5)
@@ -1423,9 +1482,11 @@ BITS/CELL 16 = [?IF]
 \?      XOR                          \ prng rnd=y'^t'
 \?      TUCK SWAP CELL+ ! ;          \ rnd
 [?THEN]
+  \ From http://b2d-f9r.blogspot.co.uk/2010/08/16-bit-xorshift-rng-now-with-more.html
 
 [?DEF] PRNG-RND
-\?  .( You need to add a Psuedo Random Number Generator for your cell size: )
+\?  .( You need to add a Psuedo Random Number Generator )
+\?  .( for your cell size: )
 \?  BITS/CELL U. CR
 \?  ABORT
 [?THEN]
@@ -1436,8 +1497,9 @@ BITS/CELL 16 = [?IF]
 
 PRNG BLOCK-PRNG
   \ Generated by Random.org
-BLOCK-PRNG -1865266521 188896058 -2021545234 -1456609962 PRNG-SET-SEED
-: BLOCK-RND ( -- rnd )                BLOCK-PRNG PRNG-RND ;
+BLOCK-PRNG -1865266521 188896058 -2021545234 -1456609962
+PRNG-SET-SEED
+: BLOCK-RND    ( -- rnd )             BLOCK-PRNG PRNG-RND ;
 : BLOCK-RANDOM ( lower upper -- rnd ) BLOCK-PRNG PRNG-RANDOM ;
 
 : RND-TEST-BLOCK ( -- blk )
@@ -1460,15 +1522,16 @@ BLOCK-PRNG -1865266521 188896058 -2021545234 -1456609962 PRNG-SET-SEED
 
   \ I'm not sure if this algorithm is correct if " 1 CHARS 1 <> ".
 : ELF-HASH-ACCUMULATE ( hash c-addr u -- hash )
-    >R SWAP R> 0 DO                          \ c-addr h
-        4 LSHIFT                             \ c-addr h<<=4
-        SWAP C@++ ROT +                      \ c-addr' h+=*s
-        DUP [ HEX ] F0000000 [ DECIMAL ] AND \ c-addr' h high=h&0xF0000000
-        DUP IF                               \ c-addr' h high
-            DUP >R 24 RSHIFT XOR R>          \ c-addr' h^=high>>24 high
-        THEN                                 \ c-addr' h high
-        INVERT AND                           \ c-addr' h&=~high
-    LOOP NIP ;
+  >R SWAP R> 0 DO             \ c-addr h
+    4 LSHIFT                  \ c-addr h<<=4
+    SWAP C@++ ROT +           \ c-addr' h+=*s
+    DUP [ HEX ] F0000000
+    [ DECIMAL ] AND           \ c-addr' h high=h&0xF0000000
+    DUP IF                    \ c-addr' h high
+      DUP >R 24 RSHIFT XOR R> \ c-addr' h^=high>>24 high
+    THEN                      \ c-addr' h high
+    INVERT AND                \ c-addr' h&=~high
+  LOOP NIP ;
 
 : ELF-HASH ( c-addr u -- hash )
     0 ROT ROT ELF-HASH-ACCUMULATE ;
@@ -1528,10 +1591,11 @@ T{ RND-TEST-BLOCK DUP BUFFER SWAP BLOCK = -> TRUE }T
 
 TESTING Read and Write access with UPDATE and FLUSH
 
-  \ Ideally, we'd like to be able to test the persistence across power cycles
-  \ of the writes, but we can't do that in a simple test.
-  \ The tests below could be fooled by a large buffers store and a tricky FLUSH
-  \ but what else are you going to do?
+  \ Ideally, we'd like to be able to test the persistence
+  \ across power cycles of the writes, but we can't do that in
+  \ a simple test.  The tests below could be fooled by a large
+  \ buffers store and a tricky `FLUSH` but what else are you
+  \ going to do?
 
   \ Signatures
 T{ RND-TEST-BLOCK BLOCK DROP UPDATE -> }T
@@ -1566,15 +1630,17 @@ T{ RND-TEST-BLOCK                  \ blk
    SWAP BLOCK                      \ hash blk-addr2
    1024 ELF-HASH = -> TRUE }T
 
-  \ Boundary Test: First and Last (and all other) blocks in the test range
+  \ Boundary Test: First and Last (and all other) blocks in the
+  \ test range.
+
 1024 8 * BITS/CELL / CONSTANT CELLS/BLOCK
 
 : PREPARE-RND-BLOCK ( hash blk -- hash' )
-    BUFFER DUP                     \ hash blk-addr blk-addr
-    CELLS/BLOCK 0 DO               \ hash blk-addr blk-addr[i]
-        BLOCK-RND OVER ! CELL+     \ hash blk-addr blk-addr[i+1]
-    LOOP DROP                      \ hash blk-addr
-    1024 ELF-HASH-ACCUMULATE ;     \ hash'
+  BUFFER DUP                 \ hash blk-addr blk-addr
+  CELLS/BLOCK 0 DO           \ hash blk-addr blk-addr[i]
+    BLOCK-RND OVER ! CELL+   \ hash blk-addr blk-addr[i+1]
+  LOOP DROP                  \ hash blk-addr
+  1024 ELF-HASH-ACCUMULATE ; \ hash'
 
 : WRITE-RND-BLOCKS-WITH-HASH ( blk2 blk1 -- hash )
     0 ROT ROT DO                   \ hash
@@ -1586,8 +1652,10 @@ T{ RND-TEST-BLOCK                  \ blk
         I BLOCK 1024 ELF-HASH-ACCUMULATE \ hash(i+1)
     LOOP ;                               \ hash
 
-T{ LIMIT-TEST-BLOCK FIRST-TEST-BLOCK WRITE-RND-BLOCKS-WITH-HASH FLUSH
-   LIMIT-TEST-BLOCK FIRST-TEST-BLOCK READ-BLOCKS-AND-HASH = -> TRUE }T
+T{ LIMIT-TEST-BLOCK FIRST-TEST-BLOCK
+   WRITE-RND-BLOCKS-WITH-HASH FLUSH
+   LIMIT-TEST-BLOCK FIRST-TEST-BLOCK READ-BLOCKS-AND-HASH =
+   -> TRUE }T
 
 : TUF1 ( xt blk -- hash )
     DUP BLANK-BUFFER               \ xt blk blk-addr1
@@ -1612,46 +1680,56 @@ T{ RND-TEST-BLOCK                      \ blk
    FLUSH ( with no preliminary UPDATE) \ blk hash
    SWAP BLOCK 1024 ELF-HASH = -> TRUE }T
 
-  \ UPDATE only marks the current block buffer
-  \ This test needs at least 2 distinct buffers, though this is not a
-  \ requirement of the language specification.  If 2 distinct buffers
-  \ are not returned, then the tests quits with a trivial Pass
-: TUF2 ( xt blk1 blk2 -- hash1'' hash2'' hash1' hash2' hash1 hash2 )
-    OVER BUFFER OVER BUFFER = IF             \ test needs 2 distinct buffers
-        2DROP DROP 0 0 0 0 0 0               \ Dummy result
-    ELSE
-        OVER 0 SWAP PREPARE-RND-BLOCK UPDATE \ xt blk1 blk2 hash1
-        OVER 0 SWAP PREPARE-RND-BLOCK UPDATE \ xt blk1 blk2 hash1 hash2
-        2>R                                  \ xt blk1 blk2
-        FLUSH                                \ xt blk1 blk2
-        OVER 0 SWAP PREPARE-RND-BLOCK        \ xt blk1 blk2 hash1'
-        OVER 0 SWAP PREPARE-RND-BLOCK        \ xt blk1 blk2 hash1' hash2'
-        2>R                                  \ xt blk1 blk2
-        ROT EXECUTE                          \ blk1 blk2
-        FLUSH                                \ blk1 blk2
-        SWAP BLOCK 1024 ELF-HASH             \ blk2 hash1''
-        SWAP BLOCK 1024 ELF-HASH             \ hash1'' hash2''
-        2R> 2R> \ hash1'' hash2'' hash1' hash2' hash1 hash2
-    THEN ;
+  \ `UPDATE` only marks the current block buffer.  This test
+  \ needs at least 2 distinct buffers, though this is not a
+  \ requirement of the language specification.  If 2 distinct
+  \ buffers are not returned, then the tests quits with a
+  \ trivial Pass.
+
+: TUF2
+  \ ( xt blk1 blk2 -- hash1'' hash2'' hash1' hash2' hash1 hash2 )
+  OVER BUFFER OVER BUFFER = IF \ test needs 2 distinct buffers
+    2DROP DROP 0 0 0 0 0 0     \ Dummy result
+  ELSE
+    OVER 0 SWAP
+    PREPARE-RND-BLOCK
+    UPDATE                     \ xt blk1 blk2 hash1
+    OVER 0 SWAP
+    PREPARE-RND-BLOCK
+    UPDATE                     \ xt blk1 blk2 hash1 hash2
+    2>R                        \ xt blk1 blk2
+    FLUSH                      \ xt blk1 blk2
+    OVER 0 SWAP
+    PREPARE-RND-BLOCK          \ xt blk1 blk2 hash1'
+    OVER 0 SWAP
+    PREPARE-RND-BLOCK          \ xt blk1 blk2 hash1' hash2'
+    2>R                        \ xt blk1 blk2
+    ROT EXECUTE                \ blk1 blk2
+    FLUSH                      \ blk1 blk2
+    SWAP BLOCK 1024 ELF-HASH   \ blk2 hash1''
+    SWAP BLOCK 1024 ELF-HASH   \ hash1'' hash2''
+    2R> 2R> \ hash1'' hash2'' hash1' hash2' hash1 hash2
+  THEN ;
 
 : 2= ( x1 x2 x3 x4 -- flag )
     ROT = ROT ROT = AND ;
 
 : TUF2-0 ( blk1 blk2 -- blk1 blk2 ) ;   \ no updates
-T{ ' TUF2-0 2RND-TEST-BLOCKS TUF2       \ run test procedure
-   2SWAP 2DROP 2= -> TRUE }T            \ compare expected and actual
 
-: TUF2-1 ( blk1 blk2 -- blk1 blk2 )     \ update blk1 only
+T{ ' TUF2-0 2RND-TEST-BLOCKS TUF2 \ run test procedure
+   2SWAP 2DROP 2= -> TRUE }T      \ compare expected and actual
+
+: TUF2-1 ( blk1 blk2 -- blk1 blk2 )    \ update blk1 only
     OVER BLOCK DROP UPDATE ;
 T{ ' TUF2-1 2RND-TEST-BLOCKS TUF2       \ run test procedure
    SWAP DROP SWAP DROP 2= -> TRUE }T
 
-: TUF2-2 ( blk1 blk2 -- blk1 blk2 )     \ update blk2 only
+: TUF2-2 ( blk1 blk2 -- blk1 blk2 )    \ update blk2 only
     DUP BUFFER DROP UPDATE ;
 T{ ' TUF2-2 2RND-TEST-BLOCKS TUF2       \ run test procedure
    DROP ROT DROP SWAP 2= -> TRUE }T
 
-: TUF2-3 ( blk1 blk2 -- blk1 blk2 )     \ update blk1 and blk2
+: TUF2-3 ( blk1 blk2 -- blk1 blk2 )    \ update blk1 and blk2
     TUF2-1 TUF2-2 ;
 T{ ' TUF2-3 2RND-TEST-BLOCKS TUF2       \ run test procedure
    2DROP 2= -> TRUE }T
@@ -1662,11 +1740,14 @@ T{ ' TUF2-3 2RND-TEST-BLOCKS TUF2       \ run test procedure
 
 TESTING SAVE-BUFFERS
 
-  \ In principle, all the tests above can be repeated with SAVE-BUFFERS instead of
-  \ FLUSH.  However, only the full random test is repeated...
+  \ In principle, all the tests above can be repeated with
+  \ `SAVE-BUFFERS` instead of `FLUSH`.  However, only the full
+  \ random test is repeated...
 
-T{ LIMIT-TEST-BLOCK FIRST-TEST-BLOCK WRITE-RND-BLOCKS-WITH-HASH SAVE-BUFFERS
-   LIMIT-TEST-BLOCK FIRST-TEST-BLOCK READ-BLOCKS-AND-HASH = -> TRUE }T
+T{ LIMIT-TEST-BLOCK FIRST-TEST-BLOCK WRITE-RND-BLOCKS-WITH-HASH
+   SAVE-BUFFERS
+   LIMIT-TEST-BLOCK FIRST-TEST-BLOCK READ-BLOCKS-AND-HASH =
+   -> TRUE }T
 
   \ FLUSH and then SAVE-BUFFERS is harmless but undetectable
   \ SAVE-BUFFERS and then FLUSH is undetectable
@@ -1704,7 +1785,8 @@ TESTING LOAD and EVALUATE
   \ Signature: n LOAD --> blank screen
 T{ RND-TEST-BLOCK DUP BLANK-BUFFER DROP UPDATE FLUSH LOAD -> }T
 
-T{ BLK @ RND-TEST-BLOCK DUP BLANK-BUFFER DROP UPDATE FLUSH LOAD BLK @ = -> TRUE }T
+T{ BLK @ RND-TEST-BLOCK DUP BLANK-BUFFER DROP
+   UPDATE FLUSH LOAD BLK @ = -> TRUE }T
 
 : WRITE-BLOCK ( blk c-addr u -- )
     ROT BLANK-BUFFER SWAP CHARS MOVE UPDATE FLUSH ;
@@ -1763,42 +1845,46 @@ T{ RND-TEST-BLOCK DUP TL3 DUP TL5 EVALUATE = -> TRUE }T
     TL5 WRITE-BLOCK ;
 T{ 2RND-TEST-BLOCKS 2DUP TL6 SWAP LOAD = -> TRUE }T
 
-  \ LOAD changes the currect block that is effected by UPDATE
-  \ This test needs at least 2 distinct buffers, though this is not a
-  \ requirement of the language specification.  If 2 distinct buffers
-  \ are not returned, then the tests quits with a trivial Pass
+  \ `LOAD` changes the currect block that is effected by
+  \ `UPDATE` This test needs at least 2 distinct buffers,
+  \ though this is not a requirement of the language
+  \ specification.  If 2 distinct buffers are not returned,
+  \ then the tests quits with a trivial Pass.
+
 : TL7 ( blk1 blk2 -- u1 u2 rnd2 blk2-addr rnd1' rnd1 )
-    OVER BUFFER OVER BUFFER = IF        \ test needs 2 distinct buffers
-        2DROP 0 0 0 0 0 0               \ Dummy result
-    ELSE
-        OVER BLOCK-RND DUP ROT TL1 >R   \ blk1 blk2
-        DUP S" SOURCE DROP" WRITE-BLOCK \ blk1 blk2
-        \ change blk1 to a new rnd, but don't UPDATE
-        OVER BLANK-BUFFER               \ blk1 blk2 blk1-addr
-        BLOCK-RND DUP >R                \ blk1 blk2 blk1-addr rnd1'
-        0 <# #S #>                      \ blk1 blk2 blk1-addr c-addr u
-        ROT SWAP CHARS MOVE             \ blk1 blk2
-        \ Now LOAD blk2
-        DUP LOAD DUP >R                 \ blk1 blk2 blk2-addr
-        \ Write a new blk2
-        DUP 1024 BL FILL                \ blk1 blk2 blk2-addr
-        BLOCK-RND DUP >R                \ blk1 blk2 blk2-addr rnd2
-        0 <# #S #>                      \ blk1 blk2 blk2-addr c-addr u
-        ROT SWAP CHARS MOVE             \ blk1 blk2
-        \ The following UPDATE should refer to the LOADed blk2, not blk1
-        UPDATE FLUSH                    \ blk1 blk2
-        \ Finally, load both blocks then collect all results
-        LOAD SWAP LOAD                  \ u2 u1
-        R> R> R> R>                     \ u2 u1 rnd2 blk2-addr rnd1' rnd1
-    THEN ;
+  OVER BUFFER OVER BUFFER = IF \ test needs 2 distinct buffers
+    2DROP 0 0 0 0 0 0          \ Dummy result
+  ELSE
+    OVER BLOCK-RND DUP ROT TL1 >R   \ blk1 blk2
+    DUP S" SOURCE DROP" WRITE-BLOCK \ blk1 blk2
+    \ change blk1 to a new rnd, but don't UPDATE
+    OVER BLANK-BUFFER        \ blk1 blk2 blk1-addr
+    BLOCK-RND DUP >R         \ blk1 blk2 blk1-addr rnd1'
+    0 <# #S #>               \ blk1 blk2 blk1-addr c-addr u
+    ROT SWAP CHARS MOVE      \ blk1 blk2
+    \ Now LOAD blk2
+    DUP LOAD DUP >R          \ blk1 blk2 blk2-addr
+    \ Write a new blk2
+    DUP 1024 BL FILL         \ blk1 blk2 blk2-addr
+    BLOCK-RND DUP >R         \ blk1 blk2 blk2-addr rnd2
+    0 <# #S #>               \ blk1 blk2 blk2-addr c-addr u
+    ROT SWAP CHARS MOVE      \ blk1 blk2
+    \ The following UPDATE should refer to the LOADed blk2, not blk1
+    UPDATE FLUSH             \ blk1 blk2
+    \ Finally, load both blocks then collect all results
+    LOAD SWAP LOAD           \ u2 u1
+    R> R> R> R>              \ u2 u1 rnd2 blk2-addr rnd1' rnd1
+  THEN ;
+
 T{ 2RND-TEST-BLOCKS TL7                 \ run test procedure
    SWAP DROP SWAP DROP                  \ u2 u1 rnd2 rnd1
    2= -> TRUE }T
 
-  \ I would expect LOAD to work on the contents of the buffer cache
-  \ and not the block device, but the specification doesn't say.
-  \ Similarly, I would not expect LOAD to FLUSH the buffer cache,
-  \ but the specification doesn't say so.
+  \ I would expect LOAD to work on the contents of the buffer
+  \ cache and not the block device, but the specification
+  \ doesn't say.  Similarly, I would not expect `LOAD` to
+  \ `FLUSH` the buffer cache, but the specification doesn't say
+  \ so.
 
   \ ===========================================================
 
@@ -1827,21 +1913,32 @@ T{ LIMIT-TEST-BLOCK 1- DUP TLS3 LIST -> }T
     S" End of Screen" WRITE-AT-END-OF-BLOCK ;
 T{ RND-TEST-BLOCK DUP TLS4 LIST -> }T
 
-  \ BLOCK, BUFFER, UPDATE et al don't change SCR
+  \ `BLOCK`, `BUFFER`, `UPDATE` et al don't change SCR.
+
 : TLS5 ( blk -- )
-    S" Should show another (mostly) blank screen" WRITE-BLOCK ;
-  \ the first test below sets the scenario for the subsequent tests
-  \ BLK is unchanged by LIST
-T{ BLK @ RND-TEST-BLOCK DUP TLS5 LIST                BLK @ = -> TRUE }T
+  S" Should show another (mostly) blank screen" WRITE-BLOCK ;
+
+  \ The first test below sets the scenario for the subsequent
+  \ tests `BLK` is unchanged by `LIST`.
+
+T{ BLK @ RND-TEST-BLOCK DUP TLS5 LIST                BLK @ = ->
+   TRUE }T
   \ SCR is unchanged by Earlier words
-T{ SCR @ FLUSH                                       SCR @ = -> TRUE }T
-T{ SCR @ FLUSH DUP 1+ BUFFER DROP                    SCR @ = -> TRUE }T
-T{ SCR @ FLUSH DUP 1+ BLOCK DROP                     SCR @ = -> TRUE }T
-T{ SCR @ FLUSH DUP 1+ BLOCK DROP UPDATE              SCR @ = -> TRUE }T
-T{ SCR @ FLUSH DUP 1+ BLOCK DROP UPDATE SAVE-BUFFERS SCR @ = -> TRUE }T
+
+T{ SCR @ FLUSH                                       SCR @ = ->
+    TRUE }T
+T{ SCR @ FLUSH DUP 1+ BUFFER DROP                    SCR @ = ->
+    TRUE }T
+T{ SCR @ FLUSH DUP 1+ BLOCK DROP                     SCR @ = ->
+    TRUE }T
+T{ SCR @ FLUSH DUP 1+ BLOCK DROP UPDATE              SCR @ = ->
+    TRUE }T
+T{ SCR @ FLUSH DUP 1+ BLOCK DROP UPDATE SAVE-BUFFERS SCR @ = ->
+    TRUE }T
+
 : TLS6 ( blk -- )
     S" SCR @" WRITE-BLOCK ;
-T{ SCR @ RND-TEST-BLOCK DUP TLS6 LOAD                SCR @ OVER 2= -> TRUE }T
+T{ SCR @ RND-TEST-BLOCK DUP TLS6 LOAD SCR @ OVER 2= -> TRUE }T
 
   \ ===========================================================
 
@@ -1887,13 +1984,14 @@ TESTING from a block source
   \ Assumes an even number of characters per line
 : | ( u -- u-2 ) 2 - ;
 : C/L-CALC ( blk -- c/l )
-    DUP BLANK-BUFFER                 \ blk blk-addr
-    [CHAR] \ OVER C!                 \ blk blk-addr  blk:"\"
-    511 0 DO                         \ blk c-addr[i]
-        CHAR+ CHAR+ [CHAR] | OVER C! \ blk c-addr[i+1]
-    LOOP DROP                        \ blk   blk:"\ | | | | ... |"
-    UPDATE SAVE-BUFFERS FLUSH        \ blk
-    1024 SWAP LOAD ;                 \ c/l
+    DUP BLANK-BUFFER           \ blk blk-addr
+    [CHAR] \ OVER C!           \ blk blk-addr  blk:"\"
+    511 0 DO                   \ blk c-addr[i]
+        CHAR+ CHAR+
+        [CHAR] | OVER C!       \ blk c-addr[i+1]
+    LOOP DROP                  \ blk   blk:"\ | | | | ... |"
+    UPDATE SAVE-BUFFERS FLUSH  \ blk
+    1024 SWAP LOAD ;           \ c/l
 [?DEF] C/L
 [?ELSE]
 \? .( Given Characters per Line: ) C/L U. CR
@@ -1925,28 +2023,38 @@ VARIABLE T-CNT 0 T-CNT !
     IF EXECUTE ELSE DROP THEN ;
 
   \ SAVE-INPUT and RESTORE-INPUT within a single block
-: TCSIRIR2-EXPECTED S" EDCBCBA" ; \ Remember that the string comes out backwards
+
+: TCSIRIR2-EXPECTED S" EDCBCBA" ;
+  \ Remember that the string comes out backwards
+
 : TCSIRIR2 ( blk -- )
     C/L 1024 U< IF
         BLANK-BUFFER
         S" 0 T-CNT !"                   WRITE-BLOCK-LINE
         S" <# MARK A SAVE-INPUT MARK B" WRITE-BLOCK-LINE
-S" 1 T-CNT +! MARK C ' RESTORE-INPUT T-CNT @ 2 < ?EXECUTE MARK D" WRITE-BLOCK-LINE
+        S" 1 T-CNT +! MARK C ' RESTORE-INPUT "
+        s" T-CNT @ 2 < ?EXECUTE MARK D" s+
+                                        WRITE-BLOCK-LINE
         S" MARK E 0 0 #>"               WRITE-BLOCK-LINE
         UPDATE SAVE-BUFFERS DROP
     ELSE
         S" 0 TCSIRIR2-EXPECTED"         WRITE-BLOCK
     THEN ;
-T{ RND-TEST-BLOCK DUP TCSIRIR2 LOAD TCSIRIR2-EXPECTED S= -> 0 TRUE }T
+T{ RND-TEST-BLOCK DUP TCSIRIR2 LOAD TCSIRIR2-EXPECTED S=
+   -> 0 TRUE }T
 
   \ REFILL across 2 blocks
 : TCSIRIR3 ( blks -- )
     DUP S" 1 2 3 REFILL 4 5 6" WRITE-BLOCK
     1+  S" 10 11 12"           WRITE-BLOCK ;
-T{ 2 RND-TEST-BLOCK-SEQ DUP TCSIRIR3 LOAD -> 1 2 3 -1 10 11 12 }T
+T{ 2 RND-TEST-BLOCK-SEQ DUP TCSIRIR3 LOAD
+   -> 1 2 3 -1 10 11 12 }T
 
   \ SAVE-INPUT and RESTORE-INPUT across 2 blocks
-: TCSIRIR4-EXPECTED S" HGF1ECBF1ECBA" ; \ Remember that the string comes out backwards
+
+: TCSIRIR4-EXPECTED S" HGF1ECBF1ECBA" ;
+  \ Remember that the string comes out backwards
+
 : TCSIRIR4 ( blks -- )
     C/L 1024 U< IF
         DUP BLANK-BUFFER
@@ -1955,13 +2063,16 @@ T{ 2 RND-TEST-BLOCK-SEQ DUP TCSIRIR3 LOAD -> 1 2 3 -1 10 11 12 }T
         S" MARK C REFILL MARK D"        WRITE-BLOCK-LINE
         DROP UPDATE 1+ BLANK-BUFFER
         S" MARK E ABS CHAR 0 + HOLD"    WRITE-BLOCK-LINE
-S" 1 T-CNT +! MARK F ' RESTORE-INPUT T-CNT @ 2 < ?EXECUTE MARK G" WRITE-BLOCK-LINE
+        S" 1 T-CNT +! MARK F ' RESTORE-INPUT "
+        S" T-CNT @ 2 < ?EXECUTE MARK G" s+
+                                        WRITE-BLOCK-LINE
         S" MARK H 0 0 #>"               WRITE-BLOCK-LINE
         DROP UPDATE SAVE-BUFFERS
     ELSE
         S" 0 TCSIRIR4-EXPECTED"         WRITE-BLOCK
     THEN ;
-T{ 2 RND-TEST-BLOCK-SEQ DUP TCSIRIR4 LOAD TCSIRIR4-EXPECTED S= -> 0 TRUE }T
+T{ 2 RND-TEST-BLOCK-SEQ DUP TCSIRIR4 LOAD TCSIRIR4-EXPECTED S=
+   -> 0 TRUE }T
 
   \ ===========================================================
 
@@ -1980,13 +2091,15 @@ CR .( End of Block word tests) CR
 
   \ To test the ANS Forth Core Extension word set
 
-  \ This program was written by Gerry Jackson in 2006, with contributions from
-  \ others where indicated, and is in the public domain - it can be distributed
-  \ and/or modified in any way but please retain this notice.
+  \ This program was written by Gerry Jackson in 2006, with
+  \ contributions from others where indicated, and is in the
+  \ public domain - it can be distributed and/or modified in
+  \ any way but please retain this notice.
 
-  \ This program is distributed in the hope that it will be useful,
-  \ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  \ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  \ This program is distributed in the hope that it will be
+  \ useful, but WITHOUT ANY WARRANTY; without even the implied
+  \ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  \ PURPOSE.
 
   \ The tests are not claimed to be comprehensive or correct
 
@@ -2296,11 +2409,17 @@ T{ MAX-INT MAX-INT MAX-INT WITHIN -> FALSE }T
 TESTING UNUSED  (contributed by James Bowman & Peter Knaggs)
 
 VARIABLE UNUSED0
+
 T{ UNUSED DROP -> }T
-T{ ALIGN UNUSED UNUSED0 ! 0 , UNUSED CELL+ UNUSED0 @ = -> TRUE }T
-T{ UNUSED UNUSED0 ! 0 C, UNUSED CHAR+ UNUSED0 @ =
-         -> TRUE }T  \ aligned -> unaligned
-T{ UNUSED UNUSED0 ! 0 C, UNUSED CHAR+ UNUSED0 @ = -> TRUE }T  \ unaligned -> ?
+
+T{ ALIGN UNUSED UNUSED0 ! 0 , UNUSED CELL+ UNUSED0 @ =
+   -> TRUE }T
+
+T{ UNUSED UNUSED0 ! 0 C, UNUSED CHAR+ UNUSED0 @ = -> TRUE }T
+  \ aligned -> unaligned
+
+T{ UNUSED UNUSED0 ! 0 C, UNUSED CHAR+ UNUSED0 @ = -> TRUE }T
+  \ unaligned -> ?
 
   \ ===========================================================
 
@@ -2453,7 +2572,7 @@ T{  0 2 CS2 ->  299 }T
 
   \ Boolean short circuiting using CASE
 
-: CS3  ( N1 -- N2 )
+: CS3 ( N1 -- N2 )
    CASE 1- FALSE OF 11 ENDOF
         1- FALSE OF 22 ENDOF
         1- FALSE OF 33 ENDOF
@@ -2489,7 +2608,7 @@ T{ :NONAME ( n -- 0,1,..n ) DUP IF DUP >R 1- RECURSE R> THEN ;
 T{ 0 RN1 EXECUTE -> 0 }T
 T{ 4 RN1 EXECUTE -> 0 1 2 3 4 }T
 
-:NONAME  ( n -- n1 )    \ Multiple RECURSEs in one definition
+:NONAME ( n -- n1 ) \ Multiple RECURSEs in one definition
    1- DUP
    CASE 0 OF EXIT ENDOF
         1 OF 11 SWAP RECURSE ENDOF
@@ -2524,7 +2643,9 @@ T{ : AS1 [ Q ] ; -> }T
 T{ 123 AS1 -> 246 }T
 
   \ ===========================================================
-  \ Cannot automatically test SAVE-INPUT and RESTORE-INPUT from a console source
+
+  \ Cannot automatically test `SAVE-INPUT` and `RESTORE-INPUT`,
+  \ from a console source.
 
 TESTING SAVE-INPUT and RESTORE-INPUT with a string source
 
@@ -2547,8 +2668,11 @@ CR CR .( Output from .()
 T{ CR .( You should see -9876: ) -9876 . -> }T
 T{ CR .( and again: ).( -9876)CR -> }T
 
-CR CR .( On the next 2 lines you should see First then Second messages:)
-T{ : DOTP  CR ." Second message via ." [CHAR] " EMIT    \ Check .( is immediate
+CR CR .( On the next 2 lines you should see First then Second )
+      .( messages:)
+
+T{ : DOTP CR ." Second message via ." [CHAR] " EMIT
+     \ Check .( is immediate
      [ CR ] .( First message via .( ) ; DOTP -> }T
 CR CR
 T{ : IMM? BL WORD FIND NIP ; IMM? .( -> 1 }T
@@ -2557,26 +2681,28 @@ T{ : IMM? BL WORD FIND NIP ; IMM? .( -> 1 }T
 
 TESTING .R and U.R - has to handle different cell sizes
 
-  \ Create some large integers just below/above MAX and Min INTs
+  \ Create some large integers just below/above `MAX-INT` and
+  \ `MIN-INT`.
+
 MAX-INT 73 79 */ CONSTANT LI1
 MIN-INT 71 73 */ CONSTANT LI2
 
 LI1 0 <# #S #> NIP CONSTANT LENLI1
 
-: (.R&U.R)  ( u1 u2 -- )  \ u1 <= string length, u2 is required indentation
-   TUCK + >R
-   LI1 OVER SPACES  . CR R@    LI1 SWAP  .R CR
-   LI2 OVER SPACES  . CR R@ 1+ LI2 SWAP  .R CR
-   LI1 OVER SPACES U. CR R@    LI1 SWAP U.R CR
-   LI2 SWAP SPACES U. CR R>    LI2 SWAP U.R CR
-;
+: (.R&U.R) ( u1 u2 -- )
+  \ u1 <= string length, u2 is required indentation
+  TUCK + >R
+  LI1 OVER SPACES  . CR R@    LI1 SWAP  .R CR
+  LI2 OVER SPACES  . CR R@ 1+ LI2 SWAP  .R CR
+  LI1 OVER SPACES U. CR R@    LI1 SWAP U.R CR
+  LI2 SWAP SPACES U. CR R>    LI2 SWAP U.R CR ;
 
-: .R&U.R  ( -- )
-   CR ." You should see lines duplicated:" CR
-   ." indented by 0 spaces" CR 0      0 (.R&U.R) CR
-   ." indented by 0 spaces" CR LENLI1 0 (.R&U.R) CR \ Just fits required width
-   ." indented by 5 spaces" CR LENLI1 5 (.R&U.R) CR
-;
+: .R&U.R ( -- )
+  CR ." You should see lines duplicated:" CR
+  ." indented by 0 spaces" CR 0      0 (.R&U.R) CR
+  ." indented by 0 spaces" CR LENLI1 0 (.R&U.R) CR
+    \ Just fits required width
+  ." indented by 5 spaces" CR LENLI1 5 (.R&U.R) CR ;
 
 CR CR .( Output from .R and U.R)
 T{ .R&U.R -> }T
@@ -2588,7 +2714,7 @@ TESTING PAD ERASE
 
 84 CONSTANT CHARS/PAD      \ Minimum size of PAD in chars
 CHARS/PAD CHARS CONSTANT AUS/PAD
-: CHECKPAD  ( caddr u ch -- f )  \ f = TRUE if u chars = ch
+: CHECKPAD ( caddr u ch -- f ) \ f = TRUE if u chars = ch
    SWAP 0
    ?DO
       OVER I CHARS + C@ OVER <>
@@ -2602,15 +2728,17 @@ T{ 0 INVERT PAD C! -> }T
 T{ PAD C@ CONSTANT MAXCHAR -> }T
 T{ PAD CHARS/PAD 2DUP MAXCHAR FILL MAXCHAR CHECKPAD -> TRUE }T
 T{ PAD CHARS/PAD 2DUP CHARS ERASE 0 CHECKPAD -> TRUE }T
-T{ PAD CHARS/PAD 2DUP MAXCHAR FILL PAD 0 ERASE MAXCHAR CHECKPAD -> TRUE }T
+T{ PAD CHARS/PAD 2DUP MAXCHAR FILL PAD 0 ERASE MAXCHAR CHECKPAD
+   -> TRUE }T
 T{ PAD 43 CHARS + 9 CHARS ERASE -> }T
 T{ PAD 43 MAXCHAR CHECKPAD -> TRUE }T
 T{ PAD 43 CHARS + 9 0 CHECKPAD -> TRUE }T
 T{ PAD 52 CHARS + CHARS/PAD 52 - MAXCHAR CHECKPAD -> TRUE }T
 
-  \ Check that use of WORD and pictured numeric output do not corrupt PAD
-  \ Minimum size of buffers for these are 33 chars and (2*n)+2 chars respectively
-  \ where n is number of bits per cell
+  \ Check that use of `WORD` and pictured numeric output do not
+  \ corrupt `PAD`. Minimum size of buffers for these are 33
+  \ chars and (2*n)+2 chars respectively where n is number of
+  \ bits per cell.
 
 PAD CHARS/PAD ERASE
 2 BASE !
@@ -2638,8 +2766,8 @@ T{ CHAR " PARSE 4567 "DUP ROT ROT EVALUATE -> 5 4567 }T
 TESTING PARSE-NAME  (Forth 2012)
   \ Adapted from the PARSE-NAME RfD tests
 
-T{ PARSE-NAME abcd  STR1  S= -> TRUE }T        \ No leading spaces
-T{ PARSE-NAME      abcde STR2 S= -> TRUE }T    \ Leading spaces
+T{ PARSE-NAME abcd  STR1  S= -> TRUE }T     \ No leading spaces
+T{ PARSE-NAME      abcde STR2 S= -> TRUE }T \ Leading spaces
 
   \ Test empty parse area, new lines are necessary
 T{ PARSE-NAME
@@ -2710,8 +2838,9 @@ T{ 0 0 <#  HTEST HLD #> HTEST S= -> TRUE }T
   \ ===========================================================
 
 TESTING REFILL SOURCE-ID
-  \ REFILL and SOURCE-ID from the user input device can't be tested from a file,
-  \ can only be tested from a string via EVALUATE
+  \ `REFILL` and `SOURCE-ID` from the user input device can't
+  \ be tested from a file, can only be tested from a string via
+  \ `EVALUATE`.
 
 T{ : RF1  S" REFILL" EVALUATE ; RF1 -> FALSE }T
 T{ : SID1  S" SOURCE-ID" EVALUATE ; SID1 -> -1 }T
@@ -2719,53 +2848,65 @@ T{ : SID1  S" SOURCE-ID" EVALUATE ; SID1 -> -1 }T
   \ ===========================================================
 
 TESTING S\"  (Forth 2012 compilation mode)
-  \ Extended the Forth 200X RfD tests
-  \ Note this tests the Core Ext definition of S\" which has unedfined
-  \ interpretation semantics. S\" in interpretation mode is tested in the tests on
-  \ the File-Access word set
+
+  \ Extended the Forth 200X RfD tests.
+
+  \ Note this tests the Core Ext definition of `S\"` which has
+  \ undefined interpretation semantics. `S\"` in interpretation
+  \ mode is tested in the tests on the File-Access word set.
 
 T{ : SSQ1 S\" abc" S" abc" S= ; -> }T  \ No escapes
 T{ SSQ1 -> TRUE }T
 T{ : SSQ2 S\" " ; SSQ2 SWAP DROP -> 0 }T    \ Empty string
 
-T{ : SSQ3 S\" \a\b\e\f\l\m\q\r\t\v\x0F0\x1Fa\xaBx\z\"\\" ; -> }T
-T{ SSQ3 SWAP DROP          ->  20 }T    \ String length
-T{ SSQ3 DROP            C@ ->   7 }T    \ \a   BEL  Bell
-T{ SSQ3 DROP  1 CHARS + C@ ->   8 }T    \ \b   BS   Backspace
-T{ SSQ3 DROP  2 CHARS + C@ ->  27 }T    \ \e   ESC  Escape
-T{ SSQ3 DROP  3 CHARS + C@ ->  12 }T    \ \f   FF   Form feed
-T{ SSQ3 DROP  4 CHARS + C@ ->  10 }T    \ \l   LF   Line feed
-T{ SSQ3 DROP  5 CHARS + C@ ->  13 }T    \ \m        CR of CR/LF pair
-T{ SSQ3 DROP  6 CHARS + C@ ->  10 }T    \           LF of CR/LF pair
-T{ SSQ3 DROP  7 CHARS + C@ ->  34 }T    \ \q   "    Double Quote
-T{ SSQ3 DROP  8 CHARS + C@ ->  13 }T    \ \r   CR   Carriage Return
-T{ SSQ3 DROP  9 CHARS + C@ ->   9 }T    \ \t   TAB  Horizontal Tab
-T{ SSQ3 DROP 10 CHARS + C@ ->  11 }T    \ \v   VT   Vertical Tab
-T{ SSQ3 DROP 11 CHARS + C@ ->  15 }T    \ \x0F      Given Char
-T{ SSQ3 DROP 12 CHARS + C@ ->  48 }T    \ 0    0    Digit follow on
-T{ SSQ3 DROP 13 CHARS + C@ ->  31 }T    \ \x1F      Given Char
-T{ SSQ3 DROP 14 CHARS + C@ ->  97 }T    \ a    a    Hex follow on
-T{ SSQ3 DROP 15 CHARS + C@ -> 171 }T    \ \xaB      Insensitive Given Char
-T{ SSQ3 DROP 16 CHARS + C@ -> 120 }T    \ x    x    Non hex follow on
-T{ SSQ3 DROP 17 CHARS + C@ ->   0 }T    \ \z   NUL  No Character
-T{ SSQ3 DROP 18 CHARS + C@ ->  34 }T    \ \"   "    Double Quote
-T{ SSQ3 DROP 19 CHARS + C@ ->  92 }T    \ \\   \    Back Slash
+T{ : SSQ3 S\" \a\b\e\f\l\m\q\r\t\v\x0F0\x1Fa\xaBx\z\"\\" ;
+   -> }T
+T{ SSQ3 SWAP DROP          ->  20 }T \ String length
+T{ SSQ3 DROP            C@ ->   7 }T \ \a   BEL Bell
+T{ SSQ3 DROP  1 CHARS + C@ ->   8 }T \ \b   BS  Backspace
+T{ SSQ3 DROP  2 CHARS + C@ ->  27 }T \ \e   ESC Escape
+T{ SSQ3 DROP  3 CHARS + C@ ->  12 }T \ \f   FF  Form feed
+T{ SSQ3 DROP  4 CHARS + C@ ->  10 }T \ \l   LF  Line feed
+T{ SSQ3 DROP  5 CHARS + C@ ->  13 }T \ \m       CR of CR/LF
+T{ SSQ3 DROP  6 CHARS + C@ ->  10 }T \          LF of CR/LF
+T{ SSQ3 DROP  7 CHARS + C@ ->  34 }T \ \q   "   Double Quote
+T{ SSQ3 DROP  8 CHARS + C@ ->  13 }T \ \r   CR  Carriage Return
+T{ SSQ3 DROP  9 CHARS + C@ ->   9 }T \ \t   TAB Horizontal Tab
+T{ SSQ3 DROP 10 CHARS + C@ ->  11 }T \ \v   VT  Vertical Tab
+T{ SSQ3 DROP 11 CHARS + C@ ->  15 }T \ \x0F     Given Char
+T{ SSQ3 DROP 12 CHARS + C@ ->  48 }T \ 0    0   Digit follow on
+T{ SSQ3 DROP 13 CHARS + C@ ->  31 }T \ \x1F     Given Char
+T{ SSQ3 DROP 14 CHARS + C@ ->  97 }T \ a    a   Hex follow on
+T{ SSQ3 DROP 15 CHARS + C@ -> 171 }T \ \xaB
+                                     \ Insensitive Given Char
+T{ SSQ3 DROP 16 CHARS + C@ -> 120 }T \ x    x
+                                     \ Non hex follow on
+T{ SSQ3 DROP 17 CHARS + C@ ->   0 }T \ \z   NUL No Character
+T{ SSQ3 DROP 18 CHARS + C@ ->  34 }T \ \"   "   Double Quote
+T{ SSQ3 DROP 19 CHARS + C@ ->  92 }T \ \\   \   Back Slash
 
-  \ The above does not test \n as this is a system dependent value.
-  \ Check it displays a new line
+  \ The above does not test `\n` as this is a system dependent
+  \ value.  Check it displays a new line:
+
 CR .( The next test should display:)
 CR .( One line...)
 CR .( another line)
 T{ : SSQ4 S\" \nOne line...\nanotherLine\n" type ; SSQ4 -> }T
 
-  \ Test bare escapable characters appear as themselves
-T{ : SSQ5 S\" abeflmnqrtvxz" S" abeflmnqrtvxz" S= ; SSQ5 -> TRUE }T
+  \ Test bare escapable characters appear as themselves:
+T{ : SSQ5 S\" abeflmnqrtvxz" S" abeflmnqrtvxz" S= ; SSQ5
+   -> TRUE }T
 
-T{ : SSQ6 S\" a\""2DROP 1111 ; SSQ6 -> 1111 }T \ Parsing behaviour
+T{ : SSQ6 S\" a\""2DROP 1111 ; SSQ6 -> 1111 }T
+  \ Parsing behaviour
 
-T{ : SSQ7  S\" 111 : SSQ8 s\\\" 222\" EVALUATE ; SSQ8 333" EVALUATE ; -> }T
+T{ : SSQ7
+     S\" 111 : SSQ8 s\\\" 222\" EVALUATE ; SSQ8 333" EVALUATE ;
+   -> }T
 T{ SSQ7 -> 111 222 333 }T
-T{ : SSQ9  S\" 11 : SSQ10 s\\\" \\x32\\x32\" EVALUATE ; SSQ10 33" EVALUATE ; -> }T
+T{ : SSQ9
+     S\" 11 : SSQ10 s\\\" \\x32\\x32\" EVALUATE ;
+     SSQ10 33" EVALUATE ; -> }T
 T{ SSQ9 -> 11 22 33 }T
 
   \ ===========================================================
@@ -2773,16 +2914,17 @@ CORE-EXT-ERRORS SET-ERROR-COUNT
 
 CR .( End of Core Extension word tests) CR
 
-
   \ Additional tests on the the ANS Forth Core word set
 
-  \ This program was written by Gerry Jackson in 2007, with contributions from
-  \ others where indicated, and is in the public domain - it can be distributed
-  \ and/or modified in any way but please retain this notice.
+  \ This program was written by Gerry Jackson in 2007, with
+  \ contributions from others where indicated, and is in the
+  \ public domain - it can be distributed and/or modified in
+  \ any way but please retain this notice.
 
-  \ This program is distributed in the hope that it will be useful,
-  \ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  \ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  \ This program is distributed in the hope that it will be
+  \ useful, but WITHOUT ANY WARRANTY; without even the implied
+  \ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  \ PURPOSE.
 
   \ The tests are not claimed to be comprehensive or correct
 
@@ -2820,7 +2962,8 @@ CR .( End of Core Extension word tests) CR
 
 DECIMAL
 
-TESTING DO +LOOP with run-time increment, negative increment, infinite loop
+TESTING DO +LOOP with run-time increment, negative increment,
+TESTING infinite loop
   \ Contributed by Reinhold Straub
 
 VARIABLE ITERATIONS
@@ -2877,15 +3020,15 @@ T{ 0 MAX-INT MIN-INT STEP GD8 -> 256 }T
 T{ 0 MIN-INT MAX-INT -STEP GD8 -> 256 }T
 
   \ Two's complement arithmetic, wraps around modulo wordsize
-  \ Only tested if the Forth system does wrap around, use of conditional
-  \ compilation deliberately avoided
+  \ Only tested if the Forth system does wrap around, use of
+  \ conditional compilation deliberately avoided.
 
 MAX-INT 1+ MIN-INT = CONSTANT +WRAP?
 MIN-INT 1- MAX-INT = CONSTANT -WRAP?
 MAX-UINT 1+ 0=       CONSTANT +UWRAP?
 0 1- MAX-UINT =      CONSTANT -UWRAP?
 
-: GD9  ( n limit start step f result -- )
+: GD9 ( n limit start step f result -- )
    >R IF GD8 ELSE 2DROP 2DROP R@ THEN -> R> }T
 ;
 
@@ -2898,7 +3041,8 @@ T{ 0 MAX-INT MIN-INT -STEP -WRAP? 1 GD9
 
 TESTING DO +LOOP with maximum and minimum increments
 
-: (-MI) MAX-INT DUP NEGATE + 0= IF MAX-INT NEGATE ELSE -32767 THEN ;
+: (-MI)
+  MAX-INT DUP NEGATE + 0= IF MAX-INT NEGATE ELSE -32767 THEN ;
 (-MI) CONSTANT -MAX-INT
 
 T{ 0 1 0 MAX-INT GD8  -> 1 }T
@@ -2922,10 +3066,10 @@ TESTING +LOOP setting I to an arbitrary value
   \ set to any value including a value outside the range given
   \ to the corresponding  DO.
 
-: SET-I  ( n1 n2 n3 -- n1-n2 | 1 )
+: SET-I ( n1 n2 n3 -- n1-n2 | 1 )
   OVER = IF - ELSE 2DROP 1 THEN ;
-  \ SET-I is a helper to set I in a DO ... +LOOP to a given value
-  \ n2 is the value of I in a DO ... +LOOP
+  \ SET-I is a helper to set I in a DO...+LOOP to a given value
+  \ n2 is the value of I in a DO...+LOOP
   \ n3 is a test value
   \ If n2=n3 then return n1-n2 else return 1
 
@@ -2936,7 +3080,8 @@ TESTING +LOOP setting I to an arbitrary value
 T{ PL1 -> 1 2 3 18 19 }T
 : PL2 20 1 DO I 20 I 2 SET-I +LOOP ;
 T{ PL2 -> 1 2 }T
-: PL3 20 5 DO I 19 I 2 SET-I DUP 1 = IF DROP 0 I 6 SET-I THEN +LOOP ;
+: PL3 20 5 DO I 19 I 2 SET-I DUP 1 = IF DROP 0 I 6 SET-I THEN
+           +LOOP ;
 T{ PL3 -> 5 6 0 1 2 19 }T
 : PL4 20 1 DO I MAX-INT I 4 SET-I +LOOP ;
 T{ PL4 -> 1 2 3 4 }T
@@ -2946,19 +3091,23 @@ T{ PL5 -> -1 -2 -3 -19 -20 }T
 T{ PL6 -> -1 -2 -3 -4 }T
 : PL7 -20 -1 DO I MIN-INT I -5 -SET-I +LOOP ;
 T{ PL7 -> -1 -2 -3 -4 -5 }T
-: PL8 -20 -5 DO I -20 I -2 -SET-I DUP -1 = IF DROP 0 I -6 -SET-I THEN +LOOP ;
+: PL8
+  -20 -5 DO I -20 I -2 -SET-I DUP -1 =
+            IF DROP 0 I -6 -SET-I THEN
+         +LOOP ;
 T{ PL8 -> -5 -6 0 -1 -2 -20 }T
 
   \ ===========================================================
 
 TESTING multiple RECURSEs in one colon definition
 
-: ACK ( m n -- u )    \ Ackermann function, from Rosetta Code
-   OVER 0= IF  NIP 1+ EXIT  THEN       \ ack(0, n) = n+1
-   SWAP 1- SWAP                        ( -- m-1 n )
-   DUP  0= IF  1+  RECURSE EXIT  THEN  \ ack(m, 0) = ack(m-1, 1)
-   1- OVER 1+ SWAP RECURSE RECURSE     \ ack(m, n) = ack(m-1, ack(m,n-1))
-;
+: ACK ( m n -- u ) \ Ackermann function, from Rosetta Code
+   OVER 0= IF  NIP 1+ EXIT  THEN \ ack(0, n) = n+1
+   SWAP 1- SWAP ( -- m-1 n )
+   DUP  0= IF  1+  RECURSE EXIT  THEN \ ack(m, 0) = ack(m-1, 1)
+   1- OVER 1+ SWAP
+   RECURSE RECURSE \ ack(m, n) = ack(m-1, ack(m,n-1))
+  ;
 
 T{ 0 0 ACK ->  1 }T
 T{ 3 0 ACK ->  5 }T
@@ -2967,7 +3116,8 @@ T{ 2 4 ACK -> 11 }T
   \ ===========================================================
 
 TESTING multiple ELSE's in an IF statement
-  \ Discussed on comp.lang.forth and accepted as valid ANS Forth
+  \ Discussed on comp.lang.forth and accepted as valid ANS
+  \ Forth.
 
 : MELSE IF 1 ELSE 2 ELSE 3 ELSE 4 ELSE 5 THEN ;
 T{ 0 MELSE -> 2 4 }T
@@ -2977,12 +3127,14 @@ T{ -1 MELSE -> 1 3 5 }T
 
 TESTING manipulation of >IN in interpreter mode
 
-T{ 12345 DEPTH OVER 9 < 34 AND + 3 + >IN ! -> 12345 2345 345 45 5 }T
-T{ 14145 8115 ?DUP 0= 34 AND >IN +! TUCK MOD 14 >IN ! GCD CALCULATION -> 15 }T
+T{ 12345 DEPTH OVER 9 < 34 AND + 3 + >IN !
+   -> 12345 2345 345 45 5 }T
+T{ 14145 8115 ?DUP 0= 34 AND >IN +!
+   TUCK MOD 14 >IN ! GCD CALCULATION -> 15 }T
 
   \ ===========================================================
 
-TESTING IMMEDIATE with CONSTANT  VARIABLE and CREATE [ ... DOES> ]
+TESTING IMMEDIATE with CONSTANT VARIABLE & CREATE [ ... DOES> ]
 
 T{ 123 CONSTANT IW1 IMMEDIATE IW1 -> 123 }T
 T{ : IW2 IW1 LITERAL ; IW2 -> 123 }T
@@ -2995,9 +3147,9 @@ T{ : IW6 CREATE , IMMEDIATE DOES> @ 1+ ; -> }T
 T{ 111 IW6 IW7 IW7 -> 112 }T
 T{ : IW8 IW7 LITERAL 1+ ; IW8 -> 113 }T
 T{ : IW9 CREATE , DOES> @ 2 + IMMEDIATE ; -> }T
-: FIND-IW BL WORD FIND NIP ;  ( -- 0 | 1 | -1 )
-T{ 222 IW9 IW10 FIND-IW IW10 -> -1 }T   \ IW10 is not immediate
-T{ IW10 FIND-IW IW10 -> 224 1 }T        \ IW10 becomes immediate
+: FIND-IW BL WORD FIND NIP ; ( -- 0 | 1 | -1 )
+T{ 222 IW9 IW10 FIND-IW IW10 -> -1 }T \ IW10 is not immediate
+T{ IW10 FIND-IW IW10 -> 224 1 }T      \ IW10 becomes immediate
 
   \ ===========================================================
 
@@ -3010,11 +3162,13 @@ T{ : IT3 IT2 ; IT1 @ -> 1234 }T
   \ ===========================================================
 
 TESTING parsing behaviour of S" ." and (
-  \ which should parse to just beyond the terminating character no space needed
+  \ which should parse to just beyond the terminating character
+  \ no space needed
 
 T{ : GC5 S" A string"2DROP ; GC5 -> }T
 T{ ( A comment)1234 -> 1234 }T
-T{ : PB1 CR ." You should see 2345: "." 2345"( A comment) CR ; PB1 -> }T
+T{ : PB1 CR ." You should see 2345: "." 2345"( A comment) CR ;
+   PB1 -> }T
 
   \ ===========================================================
 
@@ -3049,7 +3203,8 @@ T{ BASE @ OLD-BASE @ = -> <TRUE> }T   \ 2
 
 DECIMAL
   \ Check number prefixes in compile mode
-T{ : nmp  #8327 $-2cbe %011010111 ''' ; nmp -> 8327 -11454 215 39 }T
+T{ : nmp  #8327 $-2cbe %011010111 ''' ;
+   nmp -> 8327 -11454 215 39 }T
 
   \ ===========================================================
 
@@ -3062,7 +3217,7 @@ T{ !"#$%&'()*+,-./0123456789:;<=>? -> 1 }T
 T{ @ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^ -> 2 }T
 : _`abcdefghijklmnopqrstuvwxyz{|} 3 ;
 T{ _`abcdefghijklmnopqrstuvwxyz{|} -> 3 }T
-: _`abcdefghijklmnopqrstuvwxyz{|~ 4 ;     \ Last character different
+: _`abcdefghijklmnopqrstuvwxyz{|~ 4 ; \ Last char different
 T{ _`abcdefghijklmnopqrstuvwxyz{|~ -> 4 }T
 T{ _`abcdefghijklmnopqrstuvwxyz{|} -> 3 }T
 
@@ -3072,21 +3227,26 @@ TESTING FIND with a zero length string and a non-existent word
 
 CREATE EMPTYSTRING 0 C,
 : EMPTYSTRING-FIND-CHECK ( c-addr 0 | xt 1 | xt -1 -- t|f )
-    DUP IF ." FIND returns a TRUE value for an empty string!" CR THEN
+    DUP IF ." FIND returns a TRUE value for an empty string!"
+           CR THEN
     0= SWAP EMPTYSTRING = = ;
 T{ EMPTYSTRING FIND EMPTYSTRING-FIND-CHECK -> <TRUE> }T
 
 CREATE NON-EXISTENT-WORD   \ Same as in exceptiontest.fth
-       15 C, CHAR $ C, CHAR $ C, CHAR Q C, CHAR W C, CHAR E C, CHAR Q C,
-   CHAR W C, CHAR E C, CHAR Q C, CHAR W C, CHAR E C, CHAR R C, CHAR T C,
-   CHAR $ C, CHAR $ C,
+      15 C, CHAR $ C, CHAR $ C, CHAR Q C, CHAR W C, CHAR E C,
+  CHAR Q C,
+  CHAR W C, CHAR E C, CHAR Q C, CHAR W C, CHAR E C, CHAR R C,
+  CHAR T C,
+  CHAR $ C, CHAR $ C,
 T{ NON-EXISTENT-WORD FIND -> NON-EXISTENT-WORD 0 }T
 
   \ ===========================================================
 
 TESTING IF ... BEGIN ... REPEAT (unstructured)
 
-T{ : UNS1 DUP 0 > IF 9 SWAP BEGIN 1+ DUP 3 > IF EXIT THEN REPEAT ; -> }T
+T{ : UNS1
+     DUP 0 > IF 9 SWAP BEGIN 1+ DUP 3 > IF EXIT THEN REPEAT ;
+   -> }T
 T{ -6 UNS1 -> -6 }T
 T{  1 UNS1 -> 9 4 }T
 
@@ -3101,15 +3261,18 @@ CR .( End of additional Core tests) CR
 
   \ ===========================================================
 
-  \ To test the ANS Forth Double-Number word set and double number extensions
+  \ To test the ANS Forth Double-Number word set and double
+  \ number extensions
 
-  \ This program was written by Gerry Jackson in 2006, with contributions from
-  \ others where indicated, and is in the public domain - it can be distributed
-  \ and/or modified in any way but please retain this notice.
+  \ This program was written by Gerry Jackson in 2006, with
+  \ contributions from others where indicated, and is in the
+  \ public domain - it can be distributed and/or modified in
+  \ any way but please retain this notice.
 
-  \ This program is distributed in the hope that it will be useful,
-  \ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  \ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  \ This program is distributed in the hope that it will be
+  \ useful, but WITHOUT ANY WARRANTY; without even the implied
+  \ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  \ PURPOSE.
 
   \ The tests are not claimed to be comprehensive or correct
   \ ===========================================================
@@ -3152,7 +3315,8 @@ MIN-INTD 2/     CONSTANT LO-INT     \ 110...1
 
   \ ===========================================================
 
-TESTING interpreter and compiler reading double numbers, with/without prefixes
+TESTING interpreter and compiler reading double numbers
+TESTING with/without prefixes
 
 T{ 1. -> 1 0 }T
 T{ -2. -> -2 -1 }T
@@ -3183,7 +3347,8 @@ T{ BASE @ OLD-DBASE @ = -> <TRUE> }T   \ 2
 
 DECIMAL
   \ Check number prefixes in compile mode
-T{ : dnmp  #8327. $-2cbe. %011010111. ; dnmp -> 8327. -11454. 215. }T
+T{ : dnmp  #8327. $-2cbe. %011010111. ; dnmp
+   -> 8327. -11454. 215. }T
 
   \ ===========================================================
 
@@ -3347,7 +3512,9 @@ T{ MAX-2INT -1. D< -> FALSE }T
 T{ MAX-2INT MIN-2INT D< -> FALSE }T
 T{ MAX-2INT 2DUP -1. D+ D< -> FALSE }T
 T{ MIN-2INT 2DUP  1. D+ D< -> TRUE  }T
-T{ MAX-INTD S>D 2DUP 1. D+ D< -> TRUE }T \ Ensure D< acts on MS cells
+
+T{ MAX-INTD S>D 2DUP 1. D+ D< -> TRUE }T
+  \ Ensure D< acts on MS cells
 
 T{ -1. -1. D= -> TRUE  }T
 T{ -1.  0. D= -> FALSE }T
@@ -3465,8 +3632,8 @@ T{ MAX-2INT -1 M+ -> MAX-2INT -1. D+ }T
 T{ MIN-2INT  1 M+ -> MIN-2INT  1. D+ }T
 T{ LO-2INT  -1 M+ -> LO-2INT  -1. D+ }T
 
-  \ To correct the result if the division is floored, only used when
-  \ necessary i.e. negative quotient and remainder <> 0
+  \ To correct the result if the division is floored, only used
+  \ when necessary i.e. negative quotient and remainder <> 0.
 
 : ?FLOORED [ -3 2 / -2 = ] LITERAL IF 1. D- THEN ;
 
@@ -3475,13 +3642,18 @@ T{  5. -7 11 M*/ -> -3. ?FLOORED }T    \ FLOORED -4.
 T{ -5.  7 11 M*/ -> -3. ?FLOORED }T    \ FLOORED -4.
 T{ -5. -7 11 M*/ ->  3. }T
 T{ MAX-2INT  8 16 M*/ -> HI-2INT }T
-T{ MAX-2INT -8 16 M*/ -> HI-2INT DNEGATE ?FLOORED }T  \ FLOORED SUBTRACT 1
+
+T{ MAX-2INT -8 16 M*/ -> HI-2INT DNEGATE ?FLOORED }T
+  \ FLOORED SUBTRACT 1
+
 T{ MIN-2INT  8 16 M*/ -> LO-2INT }T
 T{ MIN-2INT -8 16 M*/ -> LO-2INT DNEGATE }T
 T{ MAX-2INT MAX-INTD MAX-INTD M*/ -> MAX-2INT }T
-T{ MAX-2INT MAX-INTD 2/ MAX-INTD M*/ -> MAX-INTD 1- HI-2INT NIP }T
+T{ MAX-2INT MAX-INTD 2/ MAX-INTD M*/
+   -> MAX-INTD 1- HI-2INT NIP }T
 T{ MIN-2INT LO-2INT NIP DUP NEGATE M*/ -> MIN-2INT }T
-T{ MIN-2INT LO-2INT NIP 1- MAX-INTD M*/ -> MIN-INTD 3 + HI-2INT NIP 2 + }T
+T{ MIN-2INT LO-2INT NIP 1- MAX-INTD M*/
+   -> MIN-INTD 3 + HI-2INT NIP 2 + }T
 T{ MAX-2INT LO-2INT NIP DUP NEGATE M*/ -> MAX-2INT DNEGATE }T
 T{ MIN-2INT MAX-INTD DUP M*/ -> MIN-2INT }T
 
@@ -3493,7 +3665,7 @@ TESTING D. D.R
 MAX-2INT 71 73 M*/ 2CONSTANT DBL1
 MIN-2INT 73 79 M*/ 2CONSTANT DBL2
 
-: D>ASCII  ( D -- CADDR U )
+: D>ASCII ( D -- CADDR U )
    DUP >R <# DABS #S R> SIGN #>    ( -- CADDR1 U )
    HERE SWAP 2DUP 2>R CHARS DUP ALLOT MOVE 2R>
 ;
@@ -3554,29 +3726,32 @@ DOUBLE-ERRORS SET-ERROR-COUNT
 
 CR .( End of Double-Number word tests) CR
 
-  \ To collect and report on the number of errors resulting from running the
-  \ ANS Forth and Forth 2012 test programs
+  \ To collect and report on the number of errors resulting
+  \ from running the ANS Forth and Forth 2012 test programs
 
-  \ This program was written by Gerry Jackson in 2015, and is in the public
-  \ domain - it can be distributed and/or modified in any way but please
-  \ retain this notice.
+  \ This program was written by Gerry Jackson in 2015, and is
+  \ in the public domain - it can be distributed and/or
+  \ modified in any way but please retain this notice.
 
-  \ This program is distributed in the hope that it will be useful,
-  \ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  \ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  \ This program is distributed in the hope that it will be
+  \ useful, but WITHOUT ANY WARRANTY; without even the implied
+  \ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  \ PURPOSE.
 
   \ ===========================================================
-  \ This file is INCLUDED after Core tests are complete and only uses Core words
-  \ already tested. The purpose of this file is to count errors in test results
-  \ and present them as a summary at the end of the tests.
+
+  \ This file is INCLUDED after Core tests are complete and
+  \ only uses Core words already tested. The purpose of this
+  \ file is to count errors in test results and present them as
+  \ a summary at the end of the tests.
 
 DECIMAL
 
 VARIABLE TOTAL-ERRORS
 
-: ERROR-COUNT  ( "name" n1 -- n2 )  \ n2 = n1 + 1cell
+: ERROR-COUNT ( "name" n1 -- n2 ) \ n2 = n1 + 1cell
    CREATE  DUP , CELL+
-   DOES>  ( -- offset ) @     \ offset in address units
+   DOES> ( -- offset ) @     \ offset in address units
 ;
 
 0     \ Offset into ERRORS[] array
@@ -3588,16 +3763,17 @@ ERROR-COUNT SEARCHORDER-ERRORS   ERROR-COUNT STRING-ERRORS
 ERROR-COUNT TOOLS-ERRORS         ERROR-COUNT BLOCK-ERRORS
 CREATE ERRORS[] DUP ALLOT CONSTANT #ERROR-COUNTS
 
-  \ SET-ERROR-COUNT called at the end of each test file with its own offset into
-  \ the ERRORS[] array. #ERRORS is in files tester.fr and ttester.fs
+  \ `SET-ERROR-COUNT` called at the end of each test file with
+  \ its own offset into the `ERRORS[]` array. `#ERRORS` is in
+  \ files <tester.fr> and <ttester.fs>.
 
-: SET-ERROR-COUNT  ( offset -- )
+: SET-ERROR-COUNT ( offset -- )
    #ERRORS @ SWAP ERRORS[] + !
    #ERRORS @ TOTAL-ERRORS +!
    0 #ERRORS !
 ;
 
-: INIT-ERRORS  ( -- )
+: INIT-ERRORS ( -- )
    ERRORS[] #ERROR-COUNTS OVER + SWAP DO -1 I ! 1 CELLS +LOOP
    0 TOTAL-ERRORS !
    CORE-ERRORS SET-ERROR-COUNT
@@ -3609,17 +3785,17 @@ INIT-ERRORS
 
 25 CONSTANT MARGIN
 
-: SHOW-ERROR-LINE  ( n caddr u -- )
+: SHOW-ERROR-LINE ( n caddr u -- )
    CR SWAP OVER TYPE MARGIN - ABS >R
    DUP -1 = IF DROP R> 1- SPACES ." -" ELSE
    R> .R THEN
 ;
 
-: SHOW-ERROR-COUNT  ( caddr u offset -- )
+: SHOW-ERROR-COUNT ( caddr u offset -- )
    ERRORS[] + @ ROT ROT SHOW-ERROR-LINE
 ;
 
-: HLINE  ( -- )  CR ." ---------------------------"  ;
+: HLINE ( -- ) CR ." ---------------------------"  ;
 
 : REPORT-ERRORS
    HLINE
@@ -3640,17 +3816,20 @@ INIT-ERRORS
    S" String" STRING-ERRORS SHOW-ERROR-COUNT
    HLINE
    TOTAL-ERRORS @ S" Total" SHOW-ERROR-LINE
-   HLINE CR CR
-;
-  \ To test the ANS Forth Exception word set and extension words
+   HLINE CR CR ;
 
-  \ This program was written by Gerry Jackson in 2006, with contributions from
-  \ others where indicated, and is in the public domain - it can be distributed
-  \ and/or modified in any way but please retain this notice.
+  \ To test the ANS Forth Exception word set and extension
+  \ words
 
-  \ This program is distributed in the hope that it will be useful,
-  \ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  \ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  \ This program was written by Gerry Jackson in 2006, with
+  \ contributions from others where indicated, and is in the
+  \ public domain - it can be distributed and/or modified in
+  \ any way but please retain this notice.
+
+  \ This program is distributed in the hope that it will be
+  \ useful, but WITHOUT ANY WARRANTY; without even the implied
+  \ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  \ PURPOSE.
 
   \ The tests are not claimed to be comprehensive or correct
 
@@ -3702,8 +3881,10 @@ T{ C3 -> 1 2 99 }T            \ Restores stack to CATCH depth
 T{ C4 -> 3 4 5 0 999 -111 }T   \ Test return stack unwinding
 
 : T5 2DROP 2DROP 9999 THROW ;
-: C5 1 2 3 4 ['] T5 CATCH            \ Test depth restored correctly
-   DEPTH >R DROP 2DROP 2DROP R> ;   \ after stack has been emptied
+
+: C5 1 2 3 4 ['] T5 CATCH DEPTH >R DROP 2DROP 2DROP R> ;
+  \ Test depth restored correctly after stack has been emptied.
+
 T{ C5 -> 5 }T
 
   \ ===========================================================
@@ -3715,9 +3896,10 @@ TESTING ABORT ABORT"
 -13 CONSTANT EXC_UNDEF
 : T6 ABORT ;
 
-  \ The 77 in T10 is necessary for the second ABORT" test as the data stack
-  \ is restored to a depth of 2 when THROW is executed. The 77 ensures the top
-  \ of stack value is known for the results check
+  \ The 77 in `T10` is necessary for the second `ABORT"` test
+  \ as the data stack is restored to a depth of 2 when `THROW`
+  \ is executed. The 77 ensures the top of stack value is known
+  \ for the results check.
 
 : T10 77 SWAP ABORT" This should not be displayed" ;
 : C6 CATCH
@@ -3739,7 +3921,7 @@ TESTING a system generated exception
 : T8 S" 222 T7 223" EVALUATE 224 ;
 : T9 S" 111 112 T8 113" EVALUATE 114 ;
 
-T{ 6 7 ' T9 C6 3 -> 6 7 13 3 }T         \ Test unlinking of sources
+T{ 6 7 ' T9 C6 3 -> 6 7 13 3 }T \ Test unlinking of sources
 
   \ ===========================================================
 
@@ -3749,13 +3931,15 @@ CR .( End of Exception word tests) CR
 
   \ To test part of the Forth 2012 Facility word set
 
-  \ This program was written by Gerry Jackson in 2015, with contributions from
-  \ others where indicated, and is in the public domain - it can be distributed
-  \ and/or modified in any way but please retain this notice.
+  \ This program was written by Gerry Jackson in 2015, with
+  \ contributions from others where indicated, and is in the
+  \ public domain - it can be distributed and/or modified in
+  \ any way but please retain this notice.
 
-  \ This program is distributed in the hope that it will be useful,
-  \ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  \ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  \ This program is distributed in the hope that it will be
+  \ useful, but WITHOUT ANY WARRANTY; without even the implied
+  \ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  \ PURPOSE.
 
   \ The tests are not claimed to be comprehensive or correct
 
@@ -3985,18 +4169,23 @@ VARIABLE #CHARS
 
 T{ FN1 R/O OPEN-FILE SWAP FID1 ! -> 0 }T
 T{ FID1 @ FILE-POSITION -> 0. 0 }T
-T{ BUF 100 FID1 @ READ-LINE ROT DUP #CHARS ! -> TRUE 0 LINE1 SWAP DROP }T
+T{ BUF 100 FID1 @ READ-LINE ROT DUP #CHARS !
+   -> TRUE 0 LINE1 SWAP DROP }T
 T{ BUF #CHARS @ LINE1 S= -> TRUE }T
 T{ FID1 @ CLOSE-FILE -> 0 }T
 
   \ Additional test contributed by Helmut Eller
-  \ Test with buffer shorter than the line including zero length buffer.
+
+  \ Test with buffer shorter than the line including zero
+  \ length buffer.
+
 T{ FN1 R/O OPEN-FILE SWAP FID1 ! -> 0 }T
 T{ FID1 @ FILE-POSITION -> 0. 0 }T
 T{ BUF 0 FID1 @ READ-LINE ROT DUP #CHARS ! -> TRUE 0 0 }T
 T{ BUF 3 FID1 @ READ-LINE ROT DUP #CHARS ! -> TRUE 0 3 }T
 T{ BUF #CHARS @ LINE1 DROP 3 S= -> TRUE }T
-T{ BUF 100 FID1 @ READ-LINE ROT DUP #CHARS ! -> TRUE 0 LINE1 NIP 3 - }T
+T{ BUF 100 FID1 @ READ-LINE ROT DUP #CHARS !
+   -> TRUE 0 LINE1 NIP 3 - }T
 T{ BUF #CHARS @ LINE1 3 /STRING S= -> TRUE }T
 T{ FID1 @ CLOSE-FILE -> 0 }T
 
@@ -4004,13 +4193,15 @@ T{ FID1 @ CLOSE-FILE -> 0 }T
   \ Test with buffer exactly as long as the line.
 T{ FN1 R/O OPEN-FILE SWAP FID1 ! -> 0 }T
 T{ FID1 @ FILE-POSITION -> 0. 0 }T
-T{ BUF LINE1 NIP FID1 @ READ-LINE ROT DUP #CHARS ! -> TRUE 0 LINE1 NIP }T
+T{ BUF LINE1 NIP FID1 @ READ-LINE ROT DUP #CHARS !
+   -> TRUE 0 LINE1 NIP }T
 T{ BUF #CHARS @ LINE1 S= -> TRUE }T
 T{ FID1 @ CLOSE-FILE -> 0 }T
 
   \ ===========================================================
 
-TESTING S" in interpretation mode (compile mode tested in Core tests)
+TESTING S" in interpretation mode
+TESTING (compile mode tested in Core tests)
 
 T{ S" abcdef" $" abcdef" S= -> TRUE }T
 T{ S" " $" " S= -> TRUE }T
@@ -4018,7 +4209,8 @@ T{ S" ghi"$" ghi" S= -> TRUE }T
 
   \ ===========================================================
 
-TESTING R/W WRITE-FILE REPOSITION-FILE READ-FILE FILE-POSITION S"
+TESTING R/W WRITE-FILE REPOSITION-FILE
+TESTING READ-FILE FILE-POSITION S"
 
 : LINE2 S" Line 2 blah blah blah" ;
 : RL1 BUF 100 FID1 @ READ-LINE ;
@@ -4054,8 +4246,9 @@ TESTING BIN READ-FILE FILE-SIZE
 VARIABLE FID2
 : SETPAD PAD 50 0 DO I OVER C! CHAR+ LOOP DROP ;
 
-SETPAD   \ If anything else is defined setpad must be called again
-         \ as pad may move
+SETPAD
+  \ If anything else is defined setpad must be called again as
+  \ pad may move.
 
 T{ FN2 R/W BIN CREATE-FILE SWAP FID2 ! -> 0 }T
 T{ PAD 50 FID2 @ WRITE-FILE FID2 @ FLUSH-FILE -> 0 0 }T
@@ -4066,7 +4259,8 @@ T{ PAD 29 BUF 29 S= -> TRUE }T
 T{ PAD 30 BUF 30 S= -> FALSE }T
 T{ CBUF BUF 29 FID2 @ READ-FILE -> 21 0 }T
 T{ PAD 29 + 21 BUF 21 S= -> TRUE }T
-T{ FID2 @ FILE-SIZE DROP FID2 @ FILE-POSITION DROP D= -> TRUE }T
+T{ FID2 @ FILE-SIZE DROP FID2 @ FILE-POSITION DROP D=
+   -> TRUE }T
 T{ BUF 10 FID2 @ READ-FILE -> 0 0 }T
 T{ FID2 @ CLOSE-FILE -> 0 }T
 
@@ -4121,11 +4315,17 @@ TESTING RENAME-FILE FILE-STATUS FLUSH-FILE
 T{ FN3 DELETE-FILE DROP -> }T
 T{ FN1 FN3 RENAME-FILE 0= -> TRUE }T
 T{ FN1 FILE-STATUS SWAP DROP 0= -> FALSE }T
-T{ FN3 FILE-STATUS SWAP DROP 0= -> TRUE }T  \ Return value is undefined
+
+T{ FN3 FILE-STATUS SWAP DROP 0= -> TRUE }T
+  \ Return value is undefined.
+
 T{ FN3 R/W OPEN-FILE SWAP FID1 ! -> 0 }T
 T{ >END -> 0 }T
 T{ S" Final line" fid1 @ WRITE-LINE -> 0 }T
-T{ FID1 @ FLUSH-FILE -> 0 }T      \ Can only test FLUSH-FILE doesn't fail
+
+T{ FID1 @ FLUSH-FILE -> 0 }T
+  \ Can only test FLUSH-FILE doesn't fail.
+
 T{ FID1 @ CLOSE-FILE -> 0 }T
 
   \ Tidy the test folder
@@ -4153,20 +4353,28 @@ T{ 0
 
 TESTING S\" (Forth 2012 interpretation mode)
 
-  \ S\" in compilation mode already tested in Core Extension tests
-T{ : SSQ11 S\" \a\b\e\f\l\m\q\r\t\v\x0F0\x1Fa\xaBx\z\"\\" ; -> }T
-T{ S\" \a\b\e\f\l\m\q\r\t\v\x0F0\x1Fa\xaBx\z\"\\" SSQ11  S= -> TRUE }T
+  \ S\" in compilation mode already tested in Core Extension
+  \ tests.
+
+T{ : SSQ11 S\" \a\b\e\f\l\m\q\r\t\v\x0F0\x1Fa\xaBx\z\"\\" ;
+   -> }T
+
+T{ S\" \a\b\e\f\l\m\q\r\t\v\x0F0\x1Fa\xaBx\z\"\\" SSQ11  S=
+   -> TRUE }T
 
   \ ===========================================================
 
 TESTING two buffers available for S" and/or S\" (Forth 2012)
 
 : SSQ12 S" abcd" ;   : SSQ13 S" 1234" ;
-T{ S" abcd"  S" 1234" SSQ13  S= ROT ROT SSQ12 S= -> TRUE TRUE }T
-T{ S\" abcd" S\" 1234" SSQ13 S= ROT ROT SSQ12 S= -> TRUE TRUE }T
-T{ S" abcd"  S\" 1234" SSQ13 S= ROT ROT SSQ12 S= -> TRUE TRUE }T
-T{ S\" abcd" S" 1234" SSQ13  S= ROT ROT SSQ12 S= -> TRUE TRUE }T
-
+T{ S" abcd"  S" 1234" SSQ13  S= ROT ROT SSQ12 S=
+    -> TRUE TRUE }T
+T{ S\" abcd" S\" 1234" SSQ13 S= ROT ROT SSQ12 S=
+    -> TRUE TRUE }T
+T{ S" abcd"  S\" 1234" SSQ13 S= ROT ROT SSQ12 S=
+    -> TRUE TRUE }T
+T{ S\" abcd" S" 1234" SSQ13  S= ROT ROT SSQ12 S=
+    -> TRUE TRUE }T
 
   \ ===========================================================
 
@@ -4205,7 +4413,8 @@ TESTING nested SAVE-INPUT, RESTORE-INPUT and REFILL from a file
 
 0 SI_INC !
 
-CREATE 2RES -1 , -1 ,   \ Don't use 2VARIABLE from Double number word set
+CREATE 2RES -1 , -1 ,
+  \ Don't use `2VARIABLE` from Double number word set.
 
 : SI2
    READ_A_LINE
@@ -4217,8 +4426,8 @@ CREATE 2RES -1 , -1 ,   \ Don't use 2VARIABLE from Double number word set
    RESTORE-INPUT
 ;
 
-  \ WARNING: do not delete or insert lines of text after si2 is called
-  \ otherwise the next test will fail
+  \ WARNING: do not delete or insert lines of text after si2 is
+  \ called otherwise the next test will fail.
 
 T{ SI2
 33333               \ This line should be ignored
@@ -4239,9 +4448,9 @@ FILE-ERRORS SET-ERROR-COUNT
 CR .( End of File-Access word set tests) CR
   \ To test the ANS Forth and Forth 2012 Locals word set
 
-  \ This program was written by Gerry Jackson in 2015 and is in the public domain
-  \ =========================================================== it can be distributed and/or modified in any way but please retain this
-  \ notice.
+  \ This program was written by Gerry Jackson in 2015 and is in
+  \ the public domain - it can be distributed and/or modified
+  \ in any way but please retain this notice.
 
   \ This program is distributed in the hope that it will be useful,
   \ but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -4295,36 +4504,48 @@ T{ : LT4 {: A :} ; 4 LT4 -> }T
 T{ : LT5 {: A :} A ; 5 LT5 -> 5 }T
 T{ : LT6 DEPTH {: A B :} DEPTH A B ; 6 LT6 -> 0 6 1 }T
 T{ : LT7 {: A B :} B A ; 7 8 LT7 -> 8 7 }T
-T{ : LT8 {: A B :} B A 11 TO A A B 12 TO B B A ; 9 10 LT8 -> 10 9 11 10 12 11 }T
+T{ : LT8 {: A B :} B A 11 TO A A B 12 TO B B A ; 9 10 LT8
+   -> 10 9 11 10 12 11 }T
 T{ : LT9 2DUP + {: A B C :} C B A ; 13 14 LT9 -> 27 14 13 }T
 
 TESTING | <val>s and TO <val>s
 T{ : LT10 {: A B | :} B 2* A + ; 15 16 LT10 -> 47 }T
 T{ : LT11 {: A | B :} A 2* ; 17 18 LT11 -> 17 36 }T
-T{ : LT12 {: A | B C :} 20 TO B A 21 TO A 22 TO C A C B ; 19 LT12 -> 19 21 22 20 }T
+T{ : LT12 {: A | B C :} 20 TO B A 21 TO A 22 TO C A C B ;
+   19 LT12 -> 19 21 22 20 }T
 T{ : LT13 {: | A :} ; 23 LT13 -> 23 }T
-T{ : LT14 {: | A B :} 24 TO B 25 TO A A B ; 26 LT14 -> 26 25 24 }T
+T{ : LT14 {: | A B :} 24 TO B 25 TO A A B ; 26 LT14
+   -> 26 25 24 }T
 
 TESTING -- ignores everything up to :}
-T{ : LT15 {: -- DUP SWAP OVER :} DUP 28 SWAP OVER ; 27 LT15 -> 27 28 27 28 }T
-T{ : LT16 {: | A -- this should be ignored :} TO A A + ; 29 30 LT16 -> 59 }T
+T{ : LT15 {: -- DUP SWAP OVER :} DUP 28 SWAP OVER ;
+   27 LT15 -> 27 28 27 28 }T
+T{ : LT16 {: | A -- this should be ignored :} TO A A + ;
+   29 30 LT16 -> 59 }T
 T{ : LT17 {: A -- A + 1 :} A 1+ ; 31 LT17 -> 32 }T
-T{ : LT18 {: A | B -- 2A+B :} TO B A 2* B + ; 33 34 LT18 -> 101 }T
+T{ : LT18 {: A | B -- 2A+B :} TO B A 2* B + ;
+   33 34 LT18 -> 101 }T
 
 TESTING local names supersede global names and numbers
-T{ : LT19 {: DUP DROP | SWAP -- OVER :} 35 TO SWAP SWAP DUP DROP OVER ; -> }T
+T{ : LT19 {: DUP DROP | SWAP -- OVER :}
+   35 TO SWAP SWAP DUP DROP OVER ; -> }T
 T{ 36 37 38 LT19 -> 36 35 37 38 37 }T
-T{ HEX : LT20 {: BEAD DEAF :} DEAF BEAD ; BEEF DEAD LT20 -> DEAD BEEF }T DECIMAL
+T{ HEX : LT20 {: BEAD DEAF :} DEAF BEAD ; BEEF DEAD LT20
+   -> DEAD BEEF }T DECIMAL
 
-TESTING definition with locals calling another with same name locals
+TESTING definition with locals calling another
+TESTING with same name locals
+
 T{ : LT21 {: A | B :} 39 TO B A B ; -> }T
 T{ : LT22 {: B | A :} 40 TO A A 2* B 2* LT21 A B ; -> }T
 T{ 41 LT22 -> 80 82 39 40 41 }T
 
 TESTING locals in :NONAME & DOES>
-T{ 42 43 :NONAME {: W X | Y -- DUP :} 44 TO Y X W Y DUP ; EXECUTE -> 43 42 44 44 }T
-T{ : LT23 {: P Q :} CREATE P Q 2* + ,
-                    DOES> @ ROT ROT {: P Q | R -- DUP :} TO R Q R P ; -> }T
+T{ 42 43 :NONAME {: W X | Y -- DUP :} 44 TO Y X W Y DUP ;
+   EXECUTE -> 43 42 44 44 }T
+T{ : LT23 {: P Q :}
+     CREATE P Q 2* + ,
+     DOES> @ ROT ROT {: P Q | R -- DUP :} TO R Q R P ; -> }T
 T{ 45 46 LT23 LT24 -> }T
 T{ 47 48 LT24 -> 48 137 47 }T
 
@@ -4335,13 +4556,15 @@ T{ : LT26 {: A :} 0 BEGIN A WHILE 2 + A 1- TO A REPEAT ; -> }T
 T{ 5 LT26 -> 10 }T
 T{ : LT27 {: A :} 0 BEGIN A 1- TO A 3 + A 0= UNTIL ; -> }T
 T{ 5 LT27 -> 15 }T
-T{ : LT28 1+ {: A B :} B A DO I LOOP ; 54 58 LT28 -> 54 55 56 57 58 }T
+T{ : LT28 1+ {: A B :} B A DO I LOOP ; 54 58 LT28
+   -> 54 55 56 57 58 }T
 T{ : LT29 {: I J :} 2 0 DO 5 3 DO I J LOOP LOOP ; -> }T
 T{ 59 60 LT29 -> 59 60 59 60 59 60 59 60 }T
 
 
 TESTING recursion with locals
-T{ : LT30 {: A B :} A 0> IF A B * A 1- B 10 * RECURSE A B THEN ; -> }T
+T{ : LT30 {: A B :}
+     A 0> IF A B * A 1- B 10 * RECURSE A B THEN ; -> }T
 T{ 3 10 LT30 -> 30 200 1000 1 1000 2 100 3 10 }T
 
 TESTING system supplies at least 16 locals
@@ -4356,17 +4579,22 @@ T{ 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 LT31
 TESTING (LOCAL)
 T{ : LOCAL BL WORD COUNT (LOCAL) ; IMMEDIATE -> }T
 T{ : END-LOCALS 99 0 (LOCAL) ; IMMEDIATE     -> }T
-: LT32 LOCAL A LOCAL B LOCAL C END-LOCALS A B C ; 61 62 63 LT32 -> 63 62 61 }T
+: LT32 LOCAL A LOCAL B LOCAL C END-LOCALS A B C ;
+  61 62 63 LT32 -> 63 62 61 }T
 
   \ ===========================================================
-  \ These tests require Search-order words WORDLIST GET-CURRENT SET-CURRENT
-  \ GET-ORDER SET-ORDER PREVIOUS. If any of these are not available the following
-  \ tests will be ignored except for the simple test
-[?UNDEF] WORDLIST \? [?UNDEF] GET-CURRENT \? [?UNDEF] SET-CURRENT
+
+  \ These tests require Search-order words `WORDLIST`,
+  \ `GET-CURRENT`, `SET-CURRENT`, `GET-ORDER`, `SET-ORDER`,
+  \ `PREVIOUS`. If any of these are not available the following
+  \ tests will be ignored except for the simple test.
+
+[?UNDEF] WORDLIST \? [?UNDEF] GET-CURRENT
+\? [?UNDEF] SET-CURRENT
 \? [?UNDEF] GET-ORDER \? [?UNDEF] SET-ORDER
 
-\? TESTING that local names are always found first & that they are not available
-  \ after the end of a definition.
+\? TESTING that local names are always found first & that they
+\? TESTING are not available after the end of a definition.
 
   \ Simple test
 : LT36 68 ;
@@ -4379,17 +4607,21 @@ T{ : LT37 {: LT36 :} LT36 ; 69 LT37 LT36 -> 69 68 }T
 \? LTWL2 SET-CURRENT
 \? : LT33 65 ;       \ Redefine LT33 in LTWL2 wordlist
 \? SET-CURRENT
-\? : ALSO-LTWL  ( wid -- )  >R GET-ORDER R> SWAP 1+ SET-ORDER ;
+\? : ALSO-LTWL ( wid -- ) >R GET-ORDER R> SWAP 1+ SET-ORDER ;
 \? LTWL1 ALSO-LTWL   \ Add LTWL1 to search-order
 \? T{ : LT34 {: LT33 :} LT33 ; 66 LT34 LT33 -> 66 64 }T
-\? T{ : LT35 {: LT33 :} LT33 LTWL2 ALSO-LTWL LT33 PREVIOUS LT33 PREVIOUS LT33 ;
+\? T{ : LT35 {: LT33 :}
+\?    LT33 LTWL2 ALSO-LTWL LT33 PREVIOUS LT33 PREVIOUS LT33 ;
 \?    -> }T
-  \ If the next test fails the system may be left with LTWL2 and/or LTWL1 in the
-  \ search order
+
+  \ If the next test fails the system may be left with `LTWL2`
+  \ and/or `LTWL1` in the search order.
+
 \? T{ 67 LT35 -> 67 67 67 67 }T
 [?ELSE]
 \? CR CR
-\? .( Some search-order words not present - priority of Locals not fully tested)
+\? .( Some search-order words not present)
+\? .( - priority of Locals not fully tested)
 \? CR
 [?THEN]
 
@@ -4400,13 +4632,15 @@ LOCALS-ERRORS SET-ERROR-COUNT    \ For final error report
 CR .( End of Locals word set tests. ) .S
   \ To test the ANS Forth Memory-Allocation word set
 
-  \ This program was written by Gerry Jackson in 2006, with contributions from
-  \ others where indicated, and is in the public domain - it can be distributed
-  \ and/or modified in any way but please retain this notice.
+  \ This program was written by Gerry Jackson in 2006, with
+  \ contributions from others where indicated, and is in the
+  \ public domain - it can be distributed and/or modified in
+  \ any way but please retain this notice.
 
-  \ This program is distributed in the hope that it will be useful,
-  \ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  \ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  \ This program is distributed in the hope that it will be
+  \ useful, but WITHOUT ANY WARRANTY; without even the implied
+  \ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  \ PURPOSE.
 
   \ The tests are not claimed to be comprehensive or correct
 
@@ -4451,8 +4685,8 @@ VARIABLE DATSP
 
 HERE DATSP !
 T{ 100 ALLOCATE SWAP ADDR1 ! -> 0 }T
-T{ ADDR1 @ ALIGNED -> ADDR1 @ }T   \ Test address is aligned
-T{ HERE -> DATSP @ }T            \ Check data space pointer is unchanged
+T{ ADDR1 @ ALIGNED -> ADDR1 @ }T \ Test address is aligned
+T{ HERE -> DATSP @ }T \ Check data space pointer is unchanged
 T{ ADDR1 @ FREE -> 0 }T
 
 T{ 99 ALLOCATE SWAP ADDR1 ! -> 0 }T
@@ -4463,10 +4697,11 @@ T{ 50 CHARS ALLOCATE SWAP ADDR1 ! -> 0 }T
 
 : WRITEMEM 0 DO I 1+ OVER C! CHAR+ LOOP DROP ;   ( ad n -- )
 
-  \ CHECKMEM is defined this way to maintain compatibility with both
-  \ tester.fr and ttester.fs which differ in their definitions of T{
+  \ `CHECKMEM` is defined this way to maintain compatibility
+  \ with both <tester.fr> and <ttester.fs> which differ in
+  \ their definitions of `T{`.
 
-: CHECKMEM  ( ad n --- )
+: CHECKMEM ( ad n --- )
    0
    DO
       >R
@@ -4486,24 +4721,29 @@ ADDR1 @ 28 CHECKMEM
 
   \ ===========================================================
 
-TESTING failure of RESIZE and ALLOCATE (unlikely to be enough memory)
+TESTING failure of RESIZE and ALLOCATE
+TESTING (unlikely to be enough memory)
 
   \ This test relies on the previous test having passed
 
 VARIABLE RESIZE-OK
-T{ ADDR1 @ -1 CHARS RESIZE 0= DUP RESIZE-OK ! -> ADDR1 @ FALSE }T
+T{ ADDR1 @ -1 CHARS RESIZE 0= DUP RESIZE-OK !
+   -> ADDR1 @ FALSE }T
 
   \ Check unRESIZEd allocation is unchanged following RESIZE failure
-: MEM?  RESIZE-OK @ 0= IF ADDR1 @ 28 CHECKMEM THEN ;   \ Avoid using [IF]
+: MEM?  RESIZE-OK @ 0= IF ADDR1 @ 28 CHECKMEM THEN ;
+  \ Avoid using `[IF]`.
 MEM?
 
 T{ ADDR1 @ FREE -> 0 }T   \ Tidy up
 
-T{ -1 ALLOCATE SWAP DROP 0= -> FALSE }T      \ Memory allocate failed
+T{ -1 ALLOCATE SWAP DROP 0= -> FALSE }T
+  \ Memory allocate failed.
 
   \ ===========================================================
 
-TESTING @  and ! work in ALLOCATEd memory (provided by Peter Knaggs)
+TESTING @ and ! work in ALLOCATEd memory
+TESTING (provided by Peter Knaggs)
 
 : WRITE-CELL-MEM ( ADDR N -- )
   1+ 1 DO I OVER ! CELL+ LOOP DROP
@@ -4531,11 +4771,11 @@ CR .( End of Memory-Allocation word tests) CR
 
   \ ANS Forth tests - run all tests
 
-  \ Adjust the file paths as appropriate to your system
-  \ Select the appropriate test harness, either the simple tester.fr
-  \ or the more complex ttester.fs
+  \ Adjust the file paths as appropriate to your system Select
+  \ the appropriate test harness, either the simple <tester.fr>
+  \ or the more complex <ttester.fs>.
 
-CR .( Running ANS Forth and Forth 2012 test programs, version 0.13) CR
+CR .( Running forth-2012-test-suite) CR
 
 S" prelimtest.fth" INCLUDED
 S" tester.fr" INCLUDED
@@ -4562,15 +4802,18 @@ CR .( Forth tests completed ) CR CR
 
   \ ===========================================================
 
-  \ To test the ANS Forth search-order word set and search order extensions
+  \ To test the ANS Forth search-order word set and search
+  \ order extensions
 
-  \ This program was written by Gerry Jackson in 2006, with contributions from
-  \ others where indicated, and is in the public domain - it can be distributed
-  \ and/or modified in any way but please retain this notice.
+  \ This program was written by Gerry Jackson in 2006, with
+  \ contributions from others where indicated, and is in the
+  \ public domain - it can be distributed and/or modified in
+  \ any way but please retain this notice.
 
-  \ This program is distributed in the hope that it will be useful,
-  \ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  \ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  \ This program is distributed in the hope that it will be
+  \ useful, but WITHOUT ANY WARRANTY; without even the implied
+  \ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  \ PURPOSE.
 
   \ The tests are not claimed to be comprehensive or correct
 
@@ -4614,7 +4857,8 @@ DECIMAL
 VARIABLE WID1  VARIABLE WID2
 
   \ Only execute SAVE-ORDERLIST once
-: SAVE-ORDERLIST ( widn ... wid1 n -> ) DUP , ?DUP IF 0 DO , LOOP THEN ;
+: SAVE-ORDERLIST ( widn ... wid1 n -> )
+  DUP , ?DUP IF 0 DO , LOOP THEN ;
 
   \ ===========================================================
 
@@ -4626,8 +4870,8 @@ CREATE ORDER-LIST
 
 T{ GET-ORDER SAVE-ORDERLIST -> }T
 
-: GET-ORDERLIST  ( -- widn ... wid1 n )
-   ORDER-LIST DUP @ CELLS DUP  ( -- ad n )
+: GET-ORDERLIST ( -- widn ... wid1 n )
+   ORDER-LIST DUP @ CELLS DUP ( -- ad n )
    IF
       OVER + DO I @ -1 CELLS +LOOP
    ELSE
@@ -4635,9 +4879,11 @@ T{ GET-ORDER SAVE-ORDERLIST -> }T
    THEN
 ;
 
-T{ GET-ORDER OVER -> GET-ORDER WID1 @ }T \ Forth wordlist at top
-T{ GET-ORDER SET-ORDER -> }T             \ Effectively noop
-T{ GET-ORDER -> GET-ORDERLIST }T         \ Check nothing changed
+T{ GET-ORDER OVER -> GET-ORDER WID1 @ }T
+  \ Forth wordlist at top
+
+T{ GET-ORDER SET-ORDER -> }T \ Effectively noop
+T{ GET-ORDER -> GET-ORDERLIST }T \ Check nothing changed
 T{ GET-ORDERLIST DROP GET-ORDERLIST 2* SET-ORDER -> }T
 T{ GET-ORDER -> GET-ORDERLIST DROP GET-ORDERLIST 2* }T
 T{ GET-ORDERLIST SET-ORDER GET-ORDER -> GET-ORDERLIST }T
@@ -4647,7 +4893,9 @@ T{ GET-ORDERLIST SET-ORDER GET-ORDER -> GET-ORDERLIST }T
 TESTING ALSO ONLY FORTH
 
 T{ ALSO GET-ORDER -> GET-ORDERLIST OVER SWAP 1+ }T
-T{ ONLY FORTH GET-ORDER -> GET-ORDERLIST }T    \ See assumptions above
+
+T{ ONLY FORTH GET-ORDER -> GET-ORDERLIST }T
+  \ See assumptions above
 
   \ ===========================================================
 
@@ -4661,21 +4909,26 @@ T{ WID1 @ SET-CURRENT -> }T
 
   \ ===========================================================
 
-TESTING minimum search order list contains FORTH-WORDLIST and SET-ORDER
+TESTING minimum search order list
+TESTING contains FORTH-WORDLIST and SET-ORDER
 
-: SO1 SET-ORDER ;    \ In case it is unavailable in the forth wordlist
+: SO1 SET-ORDER ;
+  \ In case it is unavailable in the forth wordlist.
 
 T{ ONLY FORTH-WORDLIST 1 SET-ORDER GET-ORDERLIST SO1 -> }T
 T{ GET-ORDER -> GET-ORDERLIST }T
 
   \ ===========================================================
 
-TESTING GET-ORDER SET-ORDER with 0 and -1 number of wids argument
+TESTING GET-ORDER SET-ORDER
+TESTING with 0 and -1 number of wids argument
 
-: SO2A GET-ORDER GET-ORDERLIST SET-ORDER ; \  To recover search order
+: SO2A GET-ORDER GET-ORDERLIST SET-ORDER ;
+  \ To recover search order.
+
 : SO2 0 SET-ORDER SO2A ;
 
-T{ SO2 -> 0 }T         \ 0 set-order leaves an empty search order
+T{ SO2 -> 0 }T \ 0 set-order leaves an empty search order
 
 : SO3 -1 SET-ORDER SO2A ;
 : SO4 ONLY SO2A ;
@@ -4688,7 +4941,8 @@ TESTING DEFINITIONS PREVIOUS
 
 T{ ONLY FORTH DEFINITIONS -> }T
 T{ GET-CURRENT -> FORTH-WORDLIST }T
-T{ GET-ORDER WID2 @ SWAP 1+ SET-ORDER DEFINITIONS GET-CURRENT -> WID2 @ }T
+T{ GET-ORDER WID2 @ SWAP 1+ SET-ORDER DEFINITIONS GET-CURRENT
+   -> WID2 @ }T
 T{ GET-ORDER -> GET-ORDERLIST WID2 @ SWAP 1+ }T
 T{ PREVIOUS GET-ORDER -> GET-ORDERLIST }T
 T{ DEFINITIONS GET-CURRENT -> FORTH-WORDLIST }T
@@ -4748,12 +5002,15 @@ T{ PREVIOUS C"W2" FIND SO5 -> -1  1234 }T
 
   \ ===========================================================
 
-TESTING ORDER  \ Should display search order and compilation wordlist
+TESTING ORDER
+  \ Should display search order and compilation wordlist.
 
-CR .( ONLY FORTH DEFINITIONS search order and compilation wordlist) CR
+CR .( ONLY FORTH DEFINITIONS search order)
+CR .( and compilation wordlist) CR
 T{ ONLY FORTH DEFINITIONS ORDER -> }T
 
-CR .( Plus another unnamed wordlist at the head of the search order) CR
+CR .( Plus another unnamed wordlist)
+CR .( at the head of the search order) CR
 T{ ALSOWID2 DEFINITIONS ORDER -> }T
 
   \ ===========================================================
@@ -4762,16 +5019,20 @@ SEARCHORDER-ERRORS SET-ERROR-COUNT
 
 CR .( End of Search Order word tests) CR
 
-ONLY FORTH DEFINITIONS      \ Leave search order in the standard state
+ONLY FORTH DEFINITIONS
+  \ Leave search order in the standard state.
+
   \ To test the ANS Forth String word set
 
-  \ This program was written by Gerry Jackson in 2006, with contributions from
-  \ others where indicated, and is in the public domain - it can be distributed
-  \ and/or modified in any way but please retain this notice.
+  \ This program was written by Gerry Jackson in 2006, with
+  \ contributions from others where indicated, and is in the
+  \ public domain - it can be distributed and/or modified in
+  \ any way but please retain this notice.
 
-  \ This program is distributed in the hope that it will be useful,
-  \ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  \ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  \ This program is distributed in the hope that it will be
+  \ useful, but WITHOUT ANY WARRANTY; without even the implied
+  \ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  \ PURPOSE.
 
   \ The tests are not claimed to be comprehensive or correct
 
@@ -4885,7 +5146,8 @@ PAD 30 CHARS 0 FILL
 T{ S1 PAD SWAP CMOVE -> }T
 T{ S1 PAD S1 SWAP DROP COMPARE -> 0 }T
 T{ S6 PAD 10 CHARS + SWAP CMOVE -> }T
-T{ $" abcdefghij12345pqrstuvwxyz" PAD S1 SWAP DROP COMPARE -> 0 }T
+T{ $" abcdefghij12345pqrstuvwxyz" PAD S1 SWAP DROP COMPARE
+   -> 0 }T
 T{ PAD 15 CHARS + PAD CHAR+ 6 CMOVE -> }T
 T{ $" apqrstuhij12345pqrstuvwxyz" PAD 26 COMPARE -> 0 }T
 T{ PAD PAD 3 CHARS + 7 CMOVE -> }T
@@ -4900,7 +5162,8 @@ PAD 30 CHARS 0 FILL
 T{ S1 PAD SWAP CMOVE> -> }T
 T{ S1 PAD S1 SWAP DROP COMPARE -> 0 }T
 T{ S6 PAD 10 CHARS + SWAP CMOVE> -> }T
-T{ $" abcdefghij12345pqrstuvwxyz" PAD S1 SWAP DROP COMPARE -> 0 }T
+T{ $" abcdefghij12345pqrstuvwxyz" PAD S1 SWAP DROP COMPARE
+   -> 0 }T
 T{ PAD 15 CHARS + PAD CHAR+ 6 CMOVE> -> }T
 T{ $" apqrstuhij12345pqrstuvwxyz" PAD 26 COMPARE -> 0 }T
 T{ PAD 13 CHARS + PAD 10 CHARS + 7 CMOVE> -> }T
@@ -4914,7 +5177,8 @@ T{ $" apqrstuhijtvvvvvvvvvvvwxyz" PAD 26 COMPARE -> 0 }T
 
 TESTING BLANK
 
-: S13 S" aaaaa      a" ;   \ Don't move this down as it might corrupt PAD
+: S13 S" aaaaa      a" ;
+  \ Don't move this down as it might corrupt `PAD`.
 
 T{ PAD 25 CHAR a FILL -> }T
 T{ PAD 5 CHARS + 6 BLANK -> }T
@@ -4924,7 +5188,8 @@ T{ PAD 12 S13 COMPARE -> 0 }T
 
 TESTING SLITERAL
 
-T{ HERE DUP S1 DUP ALLOT ROT SWAP CMOVE S1 SWAP DROP 2CONSTANT S1A -> }T
+T{ HERE DUP S1 DUP ALLOT ROT SWAP CMOVE S1 SWAP DROP 2CONSTANT
+   S1A -> }T
 T{ : S14 [ S1A ] SLITERAL ; -> }T
 T{ S1A S14 COMPARE -> 0 }T
 T{ S1A DROP S14 DROP = -> FALSE }T
@@ -4935,45 +5200,68 @@ TESTING UNESCAPE
 
 CREATE SUBBUF 48 CHARS ALLOT
 
-  \ $CHECK AND $CHECKN return f = 0 if caddr1 = SUBBUF and string1 = string2
-: $CHECK   ( caddr1 u1 caddr2 u2 -- f )  2SWAP OVER SUBBUF <> >R COMPARE R> or ;
-: $CHECKN  ( caddr1 u1 n caddr2 u2 -- f n )  ROT >R $CHECK R> ;
+  \ $CHECK AND $CHECKN return f = 0 if caddr1 = SUBBUF and
+  \ string1 = string2
 
-T{ 123 SUBBUF C! $" " SUBBUF UNESCAPE SUBBUF 0 $CHECK -> FALSE }T
+: $CHECK   ( caddr1 u1 caddr2 u2 -- f )
+  2SWAP OVER SUBBUF <> >R COMPARE R> or ;
+: $CHECKN ( caddr1 u1 n caddr2 u2 -- f n ) ROT >R $CHECK R> ;
+
+T{ 123 SUBBUF C! $" " SUBBUF UNESCAPE SUBBUF 0 $CHECK
+   -> FALSE }T
 T{ SUBBUF C@ -> 123 }T
-T{ $" unchanged" SUBBUF UNESCAPE $" unchanged" $CHECK -> FALSE }T
+T{ $" unchanged" SUBBUF UNESCAPE $" unchanged" $CHECK
+   -> FALSE }T
 T{ $" %" SUBBUF UNESCAPE $" %%" $CHECK -> FALSE }T
 T{ $" %%%" SUBBUF UNESCAPE $" %%%%%%" $CHECK -> FALSE }T
 T{ $" abc%def" SUBBUF UNESCAPE $" abc%%def" $CHECK -> FALSE }T
-T{ : TEST-UNESCAPE S" %abc%def%%ghi%" SUBBUF UNESCAPE ; -> }T \ Compile check
+
+T{ : TEST-UNESCAPE S" %abc%def%%ghi%" SUBBUF UNESCAPE ; -> }T
+  \ Compile check.
+
 T{ TEST-UNESCAPE $" %%abc%%def%%%%ghi%%" $CHECK -> FALSE }T
 
 TESTING SUBSTITUTE REPLACES
 
-T{ $" abcdef" SUBBUF 20 SUBSTITUTE $" abcdef" $CHECKN -> FALSE 0 }T \ Unchanged
-T{ $" " SUBBUF 20 SUBSTITUTE $" " $CHECKN -> FALSE 0 }T    \ Zero length string
-T{ $" %%" SUBBUF 20 SUBSTITUTE $" %" $CHECKN -> FALSE 0 }T        \ %% --> %
-T{ $" %%%%%%" SUBBUF 25 SUBSTITUTE $" %%%" $CHECKN -> FALSE 0 }T
-T{ $" %%%%%%%" SUBBUF 25 SUBSTITUTE $" %%%%" $CHECKN -> FALSE 0 }T \ Odd no. %'s
+T{ $" abcdef" SUBBUF 20 SUBSTITUTE $" abcdef" $CHECKN
+   -> FALSE 0 }T \ Unchanged
+
+T{ $" " SUBBUF 20 SUBSTITUTE $" " $CHECKN -> FALSE 0 }T
+  \ Zero length string.
+
+T{ $" %%" SUBBUF 20 SUBSTITUTE $" %" $CHECKN
+   -> FALSE 0 }T \ %% --> %
+
+T{ $" %%%%%%" SUBBUF 25 SUBSTITUTE $" %%%" $CHECKN
+   -> FALSE 0 }T
+
+T{ $" %%%%%%%" SUBBUF 25 SUBSTITUTE $" %%%%" $CHECKN
+   -> FALSE 0 }T \ Odd no. %'s
 
 : MAC1 S" mac1" ;  : MAC2 S" mac2" ;  : MAC3 S" mac3" ;
 
 T{ $" wxyz" MAC1 REPLACES -> }T
-T{ $" %mac1%" SUBBUF 20 SUBSTITUTE $" wxyz" $CHECKN -> FALSE 1 }T
-T{ $" abc%mac1%d" SUBBUF 20 SUBSTITUTE $" abcwxyzd" $CHECKN -> FALSE 1 }T
+T{ $" %mac1%" SUBBUF 20 SUBSTITUTE $" wxyz" $CHECKN
+   -> FALSE 1 }T
+T{ $" abc%mac1%d" SUBBUF 20 SUBSTITUTE $" abcwxyzd" $CHECKN
+   -> FALSE 1 }T
 T{ : SUBST SUBBUF 20 SUBSTITUTE ; -> }T   \ Check it compiles
 T{ $" defg%mac1%hi" SUBST $" defgwxyzhi" $CHECKN -> FALSE 1 }T
 T{ $" 12" MAC2 REPLACES -> }T
-T{ $" %mac1%mac2" SUBBUF 20 SUBSTITUTE $" wxyzmac2" $CHECKN -> FALSE 1 }T
-T{ $" abc %mac2% def%mac1%gh" SUBBUF 20 SUBSTITUTE $" abc 12 defwxyzgh" $CHECKN
+T{ $" %mac1%mac2" SUBBUF 20 SUBSTITUTE $" wxyzmac2" $CHECKN
+   -> FALSE 1 }T
+T{ $" abc %mac2% def%mac1%gh" SUBBUF 20 SUBSTITUTE
+   $" abc 12 defwxyzgh" $CHECKN
       -> FALSE 2 }T
-T{ : REPL  ( caddr1 u1 "name" -- )  PARSE-NAME REPLACES ; -> }T
+T{ : REPL ( caddr1 u1 "name" -- ) PARSE-NAME REPLACES ; -> }T
 T{ $" " REPL MAC3 -> }T    \ Check compiled version
-T{ $" abc%mac3%def%mac1%gh" SUBBUF 20 SUBSTITUTE $" abcdefwxyzgh" $CHECKN
+T{ $" abc%mac3%def%mac1%gh" SUBBUF 20 SUBSTITUTE
+   $" abcdefwxyzgh" $CHECKN
       -> FALSE 2 }T      \ Zero length string substituted
 T{ $" %mac3%" SUBBUF 10 SUBSTITUTE $" " $CHECKN
       -> FALSE 1 }T      \ Zero length string substituted
-T{ $" abc%%mac1%%%mac2%" SUBBUF 20 SUBSTITUTE $" abc%mac1%12" $CHECKN
+T{ $" abc%%mac1%%%mac2%" SUBBUF 20 SUBSTITUTE
+   $" abc%mac1%12" $CHECKN
       -> FALSE 1 }T   \ Check substitution is single pass
 T{ $" %mac3%" MAC3 REPLACES -> }T
 T{ $" a%mac3%b" SUBBUF 20 SUBSTITUTE $" a%mac3%b" $CHECKN
@@ -4989,41 +5277,52 @@ T{ $" %mac5%" SUBBUF 20 SUBSTITUTE $" %mac5%" $CHECKN
       -> FALSE 0 }T   \ Non-substitution name passed unchanged
 
   \ Check UNESCAPE SUBSTITUTE leaves a string unchanged
-T{ $" %mac1%" SUBBUF 30 CHARS + UNESCAPE SUBBUF 10 SUBSTITUTE $" %mac1%" $CHECKN
+T{ $" %mac1%" SUBBUF 30 CHARS + UNESCAPE SUBBUF 10 SUBSTITUTE
+   $" %mac1%" $CHECKN
    -> FALSE 0 }T
 
-  \ Check with odd numbers of % characters, last is passed unchanged
+  \ Check with odd numbers of "%" characters, last is passed
+  \ unchanged.
+
 T{ $" %" SUBBUF 10 SUBSTITUTE $" %" $CHECKN -> FALSE 0 }T
 T{ $" %abc" SUBBUF 10 SUBSTITUTE $" %abc" $CHECKN -> FALSE 0 }T
 T{ $" abc%" SUBBUF 10 SUBSTITUTE $" abc%" $CHECKN -> FALSE 0 }T
-T{ $" abc%mac1" SUBBUF 10 SUBSTITUTE $" abc%mac1" $CHECKN -> FALSE 0 }T
+T{ $" abc%mac1" SUBBUF 10 SUBSTITUTE $" abc%mac1" $CHECKN
+   -> FALSE 0 }T
 T{ $" abc%mac1%d%%e%mac2%%mac3" SUBBUF 20 SUBSTITUTE
       $" abcwxyzd%e12%mac3" $CHECKN -> FALSE 2 }T
 
   \ Check for errors
-T{ $" abcd" SUBBUF 4 SUBSTITUTE $" abcd" $CHECKN -> FALSE 0 }T  \ Just fits
-T{ $" abcd" SUBBUF 3 SUBSTITUTE ROT ROT 2DROP 0< -> TRUE }T     \ Just too long
+T{ $" abcd" SUBBUF 4 SUBSTITUTE $" abcd" $CHECKN -> FALSE 0 }T
+  \ Just fits
+
+T{ $" abcd" SUBBUF 3 SUBSTITUTE ROT ROT 2DROP 0< -> TRUE }T
+  \ Just too long
+
 T{ $" abcd" SUBBUF 0 SUBSTITUTE ROT ROT 2DROP 0< -> TRUE }T
 T{ $" zyxwvutsr" MAC3 REPLACES -> }T
-T{ $" abc%mac3%d" SUBBUF 10 SUBSTITUTE ROT ROT 2DROP 0< -> TRUE }T
+T{ $" abc%mac3%d" SUBBUF 10 SUBSTITUTE ROT ROT 2DROP 0<
+   -> TRUE }T
 
-  \ Conditional test for overlapping strings, including the case where
-  \ caddr1 = caddr2. If a system cannot handle overlapping strings it should
-  \ return n < 0 with (caddr2 u2) undefined. If it can handle them correctly
-  \ it should return the usual results for success. The following definition
-  \ applies the appropriate tests depending on whether n < 0 or not.
-  \ Return ( f n ) where f = TRUE if:
-  \   n >= 0 and (bufad = caddr1)
-  \          and (string1 = string2)
-  \   or n < 0
+  \ Conditional test for overlapping strings, including the
+  \ case where caddr1 = caddr2. If a system cannot handle
+  \ overlapping strings it should return n < 0 with (caddr2 u2)
+  \ undefined. If it can handle them correctly it should return
+  \ the usual results for success. The following definition
+  \ applies the appropriate tests depending on whether n < 0 or
+  \ not.  Return ( f n ) where f = TRUE if: n >= 0 and (bufad =
+  \ caddr1) and (string1 = string2) or n < 0
 
-: SUBST-N?  ( n1 n2 -- f )  \ True if n1<0 or n1>=0 and n1=n2 )
+: SUBST-N? ( n1 n2 -- f ) \ True if n1<0 or n1>=0 and n1=n2 )
    OVER 0< IF DROP 0< 0= ELSE = THEN
 ;
 
   \ Check the result of overlapped-subst
-  \ n2 is expected number of substitutions, caddr2 u2 the expected result
-: CHECK-SUBST  ( caddr1 u1 bufad n n2 caddr2 u2 -- f )
+
+  \ n2 is expected number of substitutions, caddr2 u2 the
+  \ expected result
+
+: CHECK-SUBST ( caddr1 u1 bufad n n2 caddr2 u2 -- f )
    >R >R ROT >R SUBST-N?         ( -- caddr1 u1 f1 )
    IF
       OVER R> =                  \ Check caddr1 = bufad
@@ -5033,32 +5332,37 @@ T{ $" abc%mac3%d" SUBBUF 10 SUBSTITUTE ROT ROT 2DROP 0< -> TRUE }T
    ELSE
       R> DROP
    THEN
-   R> R> 2DROP 2DROP FALSE
-;
+   R> R> 2DROP 2DROP FALSE ;
 
-  \ Copy string to (buf+u2) and expect substitution result at (buf+u3)
-  \ u4 is length of result buffer
-  \ then execute SUBSTITUTE and check the result
+  \ Copy string to (buf+u2) and expect substitution result at
+  \ (buf+u3) u4 is length of result buffer then execute
+  \ SUBSTITUTE and check the result
 
-: OVERLAPPED-SUBST  ( caddr1 u1 u2 u3 u4 -- caddr5 u5 bufad n )
-   >R >R                            ( -- caddr1 u1 u2 )  ( R: -- u4 u3 )
-   CHARS SUBBUF + SWAP                 ( -- caddr1 buf+u2' u1 )
-   DUP >R OVER >R MOVE              ( -- )  ( R: -- u4 u3 u1 buf+u2')
-   R> R> SUBBUF R> CHARS + R>          ( -- buf+u2 u1 buf+u3' u4 )
-   OVER >R SUBSTITUTE R> SWAP       ( -- caddr5 u5 buf+u3 n )
+: OVERLAPPED-SUBST ( caddr1 u1 u2 u3 u4 -- caddr5 u5 bufad n )
+   >R >R                    ( -- caddr1 u1 u2 ) ( R: -- u4 u3 )
+   CHARS SUBBUF + SWAP        ( -- caddr1 buf+u2' u1 )
+   DUP >R OVER >R MOVE        ( -- ) ( R: -- u4 u3 u1 buf+u2')
+   R> R> SUBBUF R> CHARS + R> ( -- buf+u2 u1 buf+u3' u4 )
+   OVER >R SUBSTITUTE R> SWAP ( -- caddr5 u5 buf+u3 n )
 ;
 
 T{ $" zyxwvut" MAC3 REPLACES -> }T
 T{ $" zyx"     MAC2 REPLACES -> }T
-T{ $" a%mac3%b" 0 9 20 OVERLAPPED-SUBST 1 $" azyxwvutb" CHECK-SUBST -> TRUE }T
-T{ $" a%mac3%b" 0 3 20 OVERLAPPED-SUBST 1 $" azyxwvutb" CHECK-SUBST -> TRUE }T
-T{ $" a%mac2%b" 0 3 20 OVERLAPPED-SUBST 1 $" azyxb"     CHECK-SUBST -> TRUE }T
-T{ $" abcdefgh" 0 0 20 OVERLAPPED-SUBST 0 $" abcdefgh"  CHECK-SUBST -> TRUE }T
-T{ $" a%mac3%b" 3 0 20 OVERLAPPED-SUBST 1 $" azyxwvutb" CHECK-SUBST -> TRUE }T
-T{ $" a%mac3%b" 9 0 20 OVERLAPPED-SUBST 1 $" azyxwvutb" CHECK-SUBST -> TRUE }T
+T{ $" a%mac3%b" 0 9 20 OVERLAPPED-SUBST 1
+   $" azyxwvutb" CHECK-SUBST -> TRUE }T
+T{ $" a%mac3%b" 0 3 20 OVERLAPPED-SUBST 1
+   $" azyxwvutb" CHECK-SUBST -> TRUE }T
+T{ $" a%mac2%b" 0 3 20 OVERLAPPED-SUBST 1
+   $" azyxb"     CHECK-SUBST -> TRUE }T
+T{ $" abcdefgh" 0 0 20 OVERLAPPED-SUBST 0
+   $" abcdefgh"  CHECK-SUBST -> TRUE }T
+T{ $" a%mac3%b" 3 0 20 OVERLAPPED-SUBST 1
+   $" azyxwvutb" CHECK-SUBST -> TRUE }T
+T{ $" a%mac3%b" 9 0 20 OVERLAPPED-SUBST 1
+   $" azyxwvutb" CHECK-SUBST -> TRUE }T
 
   \ Definition using a name on the stack
-: $CREATE  ( caddr u -- )
+: $CREATE ( caddr u -- )
    S" name" REPLACES          ( -- )
    S" CREATE %name%" SUBBUF 40 SUBSTITUTE
    0 > IF EVALUATE THEN
@@ -5071,15 +5375,19 @@ t{ SUBST2 @ -> 123 }t
 STRING-ERRORS SET-ERROR-COUNT
 
 CR .( End of String word tests) CR
-  \ To test some of the ANS Forth Programming Tools and extension wordset
 
-  \ This program was written by Gerry Jackson in 2006, with contributions from
-  \ others where indicated, and is in the public domain - it can be distributed
-  \ and/or modified in any way but please retain this notice.
+  \ To test some of the ANS Forth Programming Tools and
+  \ extension wordset
 
-  \ This program is distributed in the hope that it will be useful,
-  \ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  \ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  \ This program was written by Gerry Jackson in 2006, with
+  \ contributions from others where indicated, and is in the
+  \ public domain - it can be distributed and/or modified in
+  \ any way but please retain this notice.
+
+  \ This program is distributed in the hope that it will be
+  \ useful, but WITHOUT ANY WARRANTY; without even the implied
+  \ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  \ PURPOSE.
 
   \ The tests are not claimed to be comprehensive or correct
 
@@ -5149,10 +5457,14 @@ T{ FALSE [IF]
              3 4
           [THEN] -> 3 4 }T
 
-T{ TRUE  [IF] 1 TRUE  [IF] 2 [ELSE] 3 [THEN] [ELSE] 4 [THEN] -> 1 2 }T
-T{ FALSE [IF] 1 TRUE  [IF] 2 [ELSE] 3 [THEN] [ELSE] 4 [THEN] -> 4 }T
-T{ TRUE  [IF] 1 FALSE [IF] 2 [ELSE] 3 [THEN] [ELSE] 4 [THEN] -> 1 3 }T
-T{ FALSE [IF] 1 FALSE [IF] 2 [ELSE] 3 [THEN] [ELSE] 4 [THEN] -> 4 }T
+T{ TRUE  [IF] 1 TRUE  [IF] 2 [ELSE] 3 [THEN] [ELSE] 4 [THEN]
+   -> 1 2 }T
+T{ FALSE [IF] 1 TRUE  [IF] 2 [ELSE] 3 [THEN] [ELSE] 4 [THEN]
+   -> 4 }T
+T{ TRUE  [IF] 1 FALSE [IF] 2 [ELSE] 3 [THEN] [ELSE] 4 [THEN]
+   -> 1 3 }T
+T{ FALSE [IF] 1 FALSE [IF] 2 [ELSE] 3 [THEN] [ELSE] 4 [THEN]
+   -> 4 }T
 
   \ ===========================================================
 
@@ -5167,7 +5479,8 @@ T{ PT9 [THEN] NIP -> 1 }T
 
   \ ===========================================================
 
-TESTING [IF] and [ELSE] carry out a text scan by parsing and discarding words
+TESTING [IF] and [ELSE] carry out a text scan
+TESTING by parsing and discarding words
   \ so that an [ELSE] or [THEN] in a comment or string is recognised
 
 : PT10 REFILL DROP REFILL DROP ;
@@ -5175,7 +5488,8 @@ TESTING [IF] and [ELSE] carry out a text scan by parsing and discarding words
 T{ 0  [IF]            \ Words ignored up to [ELSE] 2
       [THEN] -> 2 }T
 T{ -1 [IF] 2 [ELSE] 3 $" [THEN] 4 PT10 IGNORED TO END OF LINE"
-      [THEN]          \ A precaution in case [THEN] in string isn't recognised
+      [THEN]
+      \ A precaution in case [THEN] in string isn't recognised
    -> 2 4 }T
 
   \ ===========================================================
@@ -5204,7 +5518,7 @@ TESTING CS-PICK and CS-ROLL
 
 VARIABLE PT4
 
-T{ : PT5  ( N1 -- )
+T{ : PT5 ( N1 -- )
       PT4 !
       BEGIN
          -1 PT4 +!
@@ -5221,7 +5535,8 @@ T{ : PT5  ( N1 -- )
 T{ 6 PT5 -> 111 111 222 111 222 333 111 222 333 }T
 
 
-T{ : ?DONE POSTPONE IF 1 CS-ROLL ; IMMEDIATE -> }T  \ Same as WHILE
+T{ : ?DONE POSTPONE IF 1 CS-ROLL ; IMMEDIATE
+   -> }T  \ Same as WHILE
 T{ : PT6
       >R
       BEGIN
@@ -5238,16 +5553,18 @@ T{ 5 PT6 -> 5 4 3 2 1 }T
 : MIX_UP 2 CS-ROLL ; IMMEDIATE  \ CS-ROT
 
 : PT7    ( f3 f2 f1 -- ? )
-   IF 1111 ROT ROT         ( -- 1111 f3 f2 )     ( cs: -- orig1 )
-      IF 2222 SWAP         ( -- 1111 2222 f3 )   ( cs: -- orig1 orig2 )
-         IF                                      ( cs: -- orig1 orig2 orig3 )
-            3333 MIX_UP    ( -- 1111 2222 3333 ) ( cs: -- orig2 orig3 orig1 )
-         THEN                                    ( cs: -- orig2 orig3 )
-         4444        \ Hence failure of first IF comes here and falls through
-      THEN                                      ( cs: -- orig2 )
-      5555           \ Failure of 3rd IF comes here
-   THEN                                         ( cs: -- )
-   6666              \ Failure of 2nd IF comes here
+   IF 1111 ROT ROT ( -- 1111 f3 f2 ) ( cs: -- orig1 )
+      IF 2222 SWAP ( -- 1111 2222 f3 ) ( cs: -- orig1 orig2 )
+         IF ( cs: -- orig1 orig2 orig3 )
+            3333 MIX_UP ( -- 1111 2222 3333 )
+                        ( cs: -- orig2 orig3 orig1 )
+         THEN ( cs: -- orig2 orig3 )
+         4444
+         \ Hence failure of first IF comes here and falls through
+      THEN ( cs: -- orig2 )
+      5555 \ Failure of 3rd IF comes here
+   THEN ( cs: -- )
+   6666 \ Failure of 2nd IF comes here
 ;
 
 T{ -1 -1 -1 PT7 -> 1111 2222 3333 4444 5555 6666 }T
@@ -5311,14 +5628,17 @@ T{ NEW-SYN2 -> 2345 }T
 T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T
 
   \ ===========================================================
-  \ These tests require GET-CURRENT SET-CURRENT WORDLIST from the optional
-  \ Search-Order word set. If any of these are not available the tests
-  \ will be ignored
 
-[?UNDEF] WORDLIST \? [?UNDEF] GET-CURRENT \? [?UNDEF] SET-CURRENT
+  \ These tests require `GET-CURRENT`, `SET-CURRENT` and
+  \ `WORDLIST` from the optional Search-Order word set. If any
+  \ of these are not available the tests will be ignored.
+
+[?UNDEF] WORDLIST \? [?UNDEF] GET-CURRENT
+\? [?UNDEF] SET-CURRENT
 \? [?UNDEF] FORTH-WORDLIST
 
-\? TESTING TRAVERSE-WORDLIST NAME>COMPILE NAME>INTERPRET NAME>STRING
+\? TESTING TRAVERSE-WORDLIST NAME>COMPILE NAME>INTERPRET
+\? NAME>STRING
 
 \? GET-CURRENT CONSTANT CURR-WL
 \? WORDLIST CONSTANT TRAV-WL
@@ -5328,15 +5648,19 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T
 \? TRAV-WL SET-CURRENT
 \? : TRAV1 1 ;
 \? T{ 0 ' WDCT TRAV-WL TRAVERSE-WORDLIST -> 1 }T
-\? : TRAV2 2 ; : TRAV3 3 ; : TRAV4 4 ; : TRAV5 5 ; : TRAV6 6 ; IMMEDIATE
+\? : TRAV2 2 ; : TRAV3 3 ; : TRAV4 4 ; : TRAV5 5 ;
+\? : TRAV6 6 ; IMMEDIATE
 \? CURR-WL SET-CURRENT
-\? T{ 0 ' WDCT TRAV-WL TRAVERSE-WORDLIST -> 6 }T  \ Traverse whole wordlist
+\? T{ 0 ' WDCT TRAV-WL TRAVERSE-WORDLIST -> 6 }T
+   \ Traverse whole wordlist
 
-  \ Terminate TRAVERSE-WORDLIST after n words & check it compiles
-\? : (PART-OF-WL)  ( ct n nt -- ct+1 n-1 )
+  \ Terminate `TRAVERSE-WORDLIST` after n words & check it
+  \ compiles.
+
+\? : (PART-OF-WL) ( ct n nt -- ct+1 n-1 )
 \?    DROP DUP IF SWAP 1+ SWAP 1- THEN DUP
 \? ;
-\? : PART-OF-WL  ( n -- ct 0 | ct+1 n-1)
+\? : PART-OF-WL ( n -- ct 0 | ct+1 n-1)
 \?    0 SWAP ['] (PART-OF-WL) TRAV-WL TRAVERSE-WORDLIST DROP
 \? ;
 \? T{ 0 PART-OF-WL -> 0 }T
@@ -5344,23 +5668,25 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T
 \? T{ 4 PART-OF-WL -> 4 }T
 \? T{ 9 PART-OF-WL -> 6 }T  \ Traverse whole wordlist
 
-  \ Testing NAME>.. words require a name token. It will be easier to test them
-  \ if there is a way of obtaining the name token of a given word. To get this we
-  \ need a definition to compare a given name with the result of NAME>STRING.
-  \ The output from NAME>STRING has to be copied into a buffer and converted to a
-  \ known case as different Forth systems may store names as lower, upper or
-  \ mixed case.
+  \ Testing `NAME>..` words require a name token. It will be
+  \ easier to test them if there is a way of obtaining the name
+  \ token of a given word. To get this we need a definition to
+  \ compare a given name with the result of `NAME>STRING`.  The
+  \ output from `NAME>STRING` has to be copied into a buffer
+  \ and converted to a known case as different Forth systems
+  \ may store names as lower, upper or mixed case.
 
 \? CREATE UCBUF 32 CHARS ALLOT    \ The buffer
 
   \ Convert string to upper case and save in the buffer.
 
-\? : >UPPERCASE  ( caddr u  -- caddr2 u2 )
+\? : >UPPERCASE ( caddr u  -- caddr2 u2 )
 \?    32 MIN DUP >R UCBUF DUP 2SWAP
 \?    OVER + SWAP 2DUP U>
 \?    IF
-\?       DO          \ ?DO can't be used, as it is a Core Extension word
-\?          I C@ DUP [CHAR] a [CHAR] z 1+ WITHIN IF 32 INVERT AND THEN
+\?       DO \ ?DO can't be used, as it is a Core Extension word
+\?          I C@ DUP [CHAR] a [CHAR] z 1+ WITHIN
+\?          IF 32 INVERT AND THEN
 \?          OVER C! CHAR+
 \?       LOOP
 \?    ELSE
@@ -5370,29 +5696,32 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T
 \? ;
 
   \ Compare string (caddr u) with name associated with nt
-\? : NAME?  ( caddr u nt -- caddr u f )   \ f = true for name = (caddr u) string
-\?    NAME>STRING >UPPERCASE 2OVER S=
-\? ;
+\? : NAME? ( caddr u nt -- caddr u f )
+\?    \ f = true for name = (caddr u) string
+\?    NAME>STRING >UPPERCASE 2OVER S= ;
 
   \ The word to be executed by TRAVERSE-WORDLIST
-\? : GET-NT  ( caddr u 0 nt -- caddr u nt false | caddr u 0 nt ) \ nt <> 0
-\?    2>R R@ NAME? IF R> R> ELSE 2R> THEN
-\? ;
+\? : GET-NT ( caddr u 0 nt -- caddr u nt false | caddr u 0 nt )
+\?    \ nt <> 0
+\?    2>R R@ NAME? IF R> R> ELSE 2R> THEN ;
 
   \ Get name token of (caddr u) in wordlist wid, return 0 if not present
-\? : GET-NAME-TOKEN  ( caddr u wid -- nt | 0 )
-\?    0 ['] GET-NT ROT TRAVERSE-WORDLIST >R 2DROP R>
-\? ;
+\? : GET-NAME-TOKEN ( caddr u wid -- nt | 0 )
+\?    0 ['] GET-NT ROT TRAVERSE-WORDLIST >R 2DROP R> ;
 
   \ Test NAME>STRING via TRAVERSE-WORDLIST
-\? T{ $" ABCDE" TRAV-WL GET-NAME-TOKEN 0= -> TRUE  }T \ Not in wordlist
+\? T{ $" ABCDE" TRAV-WL GET-NAME-TOKEN 0= -> TRUE  }T
+   \ Not in wordlist
 \? T{ $" TRAV4" TRAV-WL GET-NAME-TOKEN 0= -> FALSE }T
 
   \ Test NAME>INTERPRET on a word with interpretation semantics
-\? T{ $" TRAV3" TRAV-WL GET-NAME-TOKEN NAME>INTERPRET EXECUTE -> 3 }T
+\? T{ $" TRAV3" TRAV-WL GET-NAME-TOKEN NAME>INTERPRET EXECUTE
+\?   -> 3 }T
 
-  \ Test NAME>INTERPRET on a word without interpretation semantics. It is
-  \ difficult to choose a suitable word because:
+  \ Test `NAME>INTERPRET` on a word without interpretation
+  \ semantics. It is difficult to choose a suitable word
+  \ because:
+
   \    - a user cannot define one in a standard system
   \    - a Forth system may choose to define interpretation semantics for a word
   \      despite the standard stating they are undefined. If so the behaviour
@@ -5407,57 +5736,70 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T
   \ displayed to that effect. No system can fail this test!
 
 \? VARIABLE TIF-SKIP
-\? : TIF  ( "name1 ... namen" -- )  \ TIF = TEST-INTERPRETATION-UNDEFINED
+\? : TIF ( "name1 ... namen" -- )
+\?    \ TIF = TEST-INTERPRETATION-UNDEFINED
 \?    BEGIN
 \?       TIF-SKIP @ IF SOURCE >IN ! DROP EXIT THEN
 \?       BL WORD COUNT DUP 0= IF 2DROP EXIT THEN  \ End of line
 \?       FORTH-WORDLIST GET-NAME-TOKEN ?DUP ( -- nt nt | 0 0 )
 \?       IF
-\?          NAME>INTERPRET 0= TIF-SKIP ! \ Returning 0 skips further tests
+\?          NAME>INTERPRET 0= TIF-SKIP !
+\?            \ Returning 0 skips further tests
 \?       THEN
 \?       0      \ AGAIN is a Core Ext word
-\?    UNTIL
-\? ;
+\?    UNTIL ;
 
-\? : TIF?  ( -- )
-\?    TIF-SKIP @ 0=
-\?    IF
-\?       CR ." NAME>INTERPRET returns an execution token for all" CR
-\?       ." core words with undefined interpretation semantics." CR
-\?       ." So NAME>INTERPRET returning 0 is untested." CR
-\?    THEN
-\? ;
+\? : TIF? ( -- )
+\?   TIF-SKIP @ 0=
+\?   IF
+\?     CR
+\?     ." NAME>INTERPRET returns an execution token for all"
+\?     CR
+\?     ." core words with undefined interpretation semantics."
+\?     CR
+\?     ." So NAME>INTERPRET returning 0 is untested." CR
+\?   THEN ;
 
 \? 0 TIF-SKIP !
 \? TIF DUP SWAP DROP
-\? TIF >R R> R@ ." ; EXIT ['] [CHAR] RECURSE ABORT" DOES> LITERAL POSTPONE
-\? TIF DO I J LOOP +LOOP UNLOOP LEAVE IF ELSE THEN BEGIN WHILE REPEAT UNTIL
+\? TIF >R R> R@ ." ; EXIT ['] [CHAR] RECURSE ABORT" DOES>
+\? TIF LITERAL POSTPONE
+\? TIF DO I J LOOP +LOOP UNLOOP LEAVE IF ELSE THEN BEGIN WHILE
+\? TIF REPEAT UNTIL
 \? TIF?
 
   \ Test NAME>COMPILE
-\? : N>C  ( caddr u -- )  TRAV-WL GET-NAME-TOKEN NAME>COMPILE EXECUTE ; IMMEDIATE
-\? T{ : N>C1  ( -- n )  [ $" TRAV2" ] N>C ; N>C1 -> 2 }T          \ Not immediate
-\? T{ : N>C2  ( -- n )  [ $" TRAV6" ] N>C LITERAL ; N>C2 -> 6 }T  \ Immediate word
-\? T{ $" TRAV6" TRAV-WL GET-NAME-TOKEN NAME>COMPILE EXECUTE -> 6 }T
+\? : N>C ( caddr u -- )
+\?   TRAV-WL GET-NAME-TOKEN NAME>COMPILE EXECUTE ; IMMEDIATE
+
+\? T{ : N>C1 ( -- n ) [ $" TRAV2" ] N>C ; N>C1 -> 2 }T
+        \ Not immediate
+
+\? T{ : N>C2 ( -- n ) [ $" TRAV6" ] N>C LITERAL ; N>C2 -> 6 }T
+        \ Immediate word
+
+\? T{ $" TRAV6" TRAV-WL GET-NAME-TOKEN NAME>COMPILE EXECUTE
+\?    -> 6 }T
 
   \ Test the order of finding words with the same name
 \? TRAV-WL SET-CURRENT
 \? : TRAV3 33 ; : TRAV3 333 ; : TRAV7 7 ; : TRAV3 3333 ;
 \? CURR-WL SET-CURRENT
 
-\? : (GET-ALL)  ( caddr u nt -- [n] caddr u true )
+\? : (GET-ALL) ( caddr u nt -- [n] caddr u true )
 \?    DUP >R NAME? IF R@ NAME>INTERPRET EXECUTE ROT ROT THEN
 \?    R> DROP TRUE
 \? ;
 
-\? : GET-ALL  ( caddr u -- i*x )
+\? : GET-ALL ( caddr u -- i*x )
 \?    ['] (GET-ALL) TRAV-WL TRAVERSE-WORDLIST 2DROP
 \? ;
 
 \? T{ $" TRAV3" GET-ALL -> 3333 333 33 3 }T
 [?ELSE]
 \? CR CR
-\? .( Some search-order words not present - TRAVERSE-WORDLIST etc not tested) CR
+\? .( Some search-order words not present) CR
+\? .( TRAVERSE-WORDLIST etc not tested) CR
 [?THEN]
 
   \ ===========================================================
@@ -5465,22 +5807,27 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T
 TOOLS-ERRORS SET-ERROR-COUNT
 
 CR .( End of Programming Tools word tests) CR
-( The ANS/Forth 2012 test suite is being modified so that the test programs  )
-( for the optional word sets only use standard words from the Core word set. )
-( This file, which is included *after* the Core test programs, contains      )
-( various definitions for use by the optional word set test programs to      )
-( remove any dependencies between word sets.                                 )
+
+  \ The ANS/Forth 2012 test suite is being modified so that the
+  \ test programs for the optional word sets only use standard
+  \ words from the Core word set.  This file, which is included
+  \ *after* the Core test programs, contains various
+  \ definitions for use by the optional word set test programs
+  \ to remove any dependencies between word sets.
 
 DECIMAL
 
-( First a definition to see if a word is already defined. Note that          )
-( [DEFINED] [IF] [ELSE] and [THEN] are in the optional Programming Tools     )
-( word set.                                                                  )
+  \ First a definition to see if a word is already defined.
+  \ Note that `[DEFINED]`, `[IF]`, `[ELSE]` and `[THEN]` are in
+  \ the optional Programming Tools word set.
 
-VARIABLE (\?) 0 (\?) !     ( Flag: Word defined = 0 | word undefined = -1 )
+VARIABLE (\?) 0 (\?) !
+  \ Flag: Word defined = 0 | word undefined = -1
 
-( [?DEF]  followed by [?IF] cannot be used again until after [THEN] )
-: [?DEF]  ( "name" -- )
+  \ `[?DEF]` followed by `[?IF]` cannot be used again until
+  \ after `[THEN]`.
+
+: [?DEF] ( "name" -- )
    BL WORD FIND SWAP DROP 0= (\?) !
 ;
 
@@ -5492,21 +5839,23 @@ T{ -1 (\?) ! [?DEF] ?DEFTEST1 (\?) @ -> 0 }T
 : [?UNDEF] [?DEF] (\?) @ 0= (\?) ! ;
 
   \ Equivalents of [IF] [ELSE] [THEN], these must not be nested
-: [?IF]  ( f -- )  (\?) ! ; IMMEDIATE
-: [?ELSE]  ( -- )  (\?) @ 0= (\?) ! ; IMMEDIATE
-: [?THEN]  ( -- )  0 (\?) ! ; IMMEDIATE
+: [?IF] ( f -- ) (\?) ! ; IMMEDIATE
+: [?ELSE] ( -- ) (\?) @ 0= (\?) ! ; IMMEDIATE
+: [?THEN] ( -- ) 0 (\?) ! ; IMMEDIATE
 
-( A conditional comment and \ will be defined. Note that these definitions )
-( are inadequate for use in Forth blocks. If needed in the blocks test     )
-( program they will need to be modified here or redefined there )
+  \ A conditional comment and \ will be defined. Note that
+  \ these definitions are inadequate for use in Forth blocks.
+  \ If needed in the blocks test program they will need to be
+  \ modified here or redefined there.
 
-( \? is a conditional comment )
-: \?  ( "..." -- )  (\?) @ IF EXIT THEN SOURCE >IN ! DROP ; IMMEDIATE
+  \ \? is a conditional comment
+: \? ( "..." -- ) (\?) @ IF EXIT THEN SOURCE >IN ! DROP ;
+  IMMEDIATE
 
   \ Test \?
-T{ [?DEF] ?DEFTEST1 \? : ?DEFTEST1 2 ;    \ Should not be redefined
+T{ [?DEF] ?DEFTEST1 \? : ?DEFTEST1 2 ; \ Shouldn't be redefined
           ?DEFTEST1 -> 1 }T
-T{ [?DEF] ?DEFTEST2 \? : ?DEFTEST1 2 ;    \ Should be redefined
+T{ [?DEF] ?DEFTEST2 \? : ?DEFTEST1 2 ; \ Should be redefined
           ?DEFTEST1 -> 2 }T
 
 [?DEF] TRUE  \? -1 CONSTANT TRUE
@@ -5515,13 +5864,13 @@ T{ [?DEF] ?DEFTEST2 \? : ?DEFTEST1 2 ;    \ Should be redefined
 [?DEF] TUCK  \?  : TUCK SWAP OVER ;
 
 [?DEF] PARSE
-\? : BUMP  ( caddr u n -- caddr+n u-n )
+\? : BUMP ( caddr u n -- caddr+n u-n )
 \?    TUCK - >R CHARS + R>
 \? ;
 
-\? : PARSE  ( ch "ccc<ch>" -- caddr u )
+\? : PARSE ( ch "ccc<ch>" -- caddr u )
 \?    >R SOURCE >IN @ BUMP
-\?    OVER R> SWAP >R >R         ( -- start u1 ) ( R: -- start ch )
+\?    OVER R> SWAP >R >R ( -- start u1 ) ( R: -- start ch )
 \?    BEGIN
 \?       DUP
 \?    WHILE
@@ -5529,7 +5878,7 @@ T{ [?DEF] ?DEFTEST2 \? : ?DEFTEST1 2 ;    \ Should be redefined
 \?    WHILE
 \?       1 BUMP
 \?    REPEAT
-\?       1-                      ( end u2 )  \ delimiter found
+\?       1-                      ( end u2 ) \ delimiter found
 \?    THEN
 \?    SOURCE NIP SWAP - >IN !    ( -- end )
 \?    R> DROP R>                 ( -- end start )
@@ -5538,51 +5887,55 @@ T{ [?DEF] ?DEFTEST2 \? : ?DEFTEST1 2 ;    \ Should be redefined
 
 [?DEF] .(  \? : .(  [CHAR] ) PARSE TYPE ; IMMEDIATE
 
-  \ S=  to compare (case sensitive) two strings to avoid use of COMPARE from
-  \ the String word set. It is defined in core.fr and conditionally defined
-  \ here if core.fr has not been included by the user
+  \ `S=` to compare (case sensitive) two strings to avoid use
+  \ of `COMPARE` from the String word set. It is defined in
+  \ core.fr and conditionally defined here if core.fr has not
+  \ been included by the usera.
 
 [?DEF] S=
-\? : S=  ( caddr1 u1 caddr2 u2 -- f )   \ f = TRUE if strings are equal
-\?    ROT OVER = 0= IF DROP 2DROP FALSE EXIT THEN
-\?    DUP 0= IF DROP 2DROP TRUE EXIT THEN
-\?    0 DO
-\?         OVER C@ OVER C@ = 0= IF 2DROP FALSE UNLOOP EXIT THEN
-\?         CHAR+ SWAP CHAR+
-\?      LOOP 2DROP TRUE
-\? ;
+\? : S= ( caddr1 u1 caddr2 u2 -- f )
+\?   \ f = TRUE if strings are equal
+\?   ROT OVER = 0= IF DROP 2DROP FALSE EXIT THEN
+\?   DUP 0= IF DROP 2DROP TRUE EXIT THEN
+\?   0 DO
+\?     OVER C@ OVER C@ = 0= IF 2DROP FALSE UNLOOP EXIT THEN
+\?     CHAR+ SWAP CHAR+
+\?   LOOP 2DROP TRUE ;
 
-  \ Buffer for strings in interpretive mode since S" only valid in compilation
-  \ mode when File-Access word set is defined
+  \ Buffer for strings in interpretive mode since `S"` only
+  \ valid in compilation mode when File-Access word set is
+  \ defined.
 
 64 CONSTANT SBUF-SIZE
 CREATE SBUF1 SBUF-SIZE CHARS ALLOT
 CREATE SBUF2 SBUF-SIZE CHARS ALLOT
 
   \ ($") saves a counted string at (caddr)
-: ($")  ( caddr "ccc" -- caddr' u )
+: ($") ( caddr "ccc" -- caddr' u )
    [CHAR] " PARSE ROT 2DUP C!       ( -- ca2 u2 ca)
-   CHAR+ SWAP 2DUP 2>R CHARS MOVE   ( -- )  ( R: -- ca' u2 )
+   CHAR+ SWAP 2DUP 2>R CHARS MOVE   ( -- ) ( R: -- ca' u2 )
    2R>
 ;
 
-: $"   ( "ccc" -- caddr u )  SBUF1 ($") ;
-: $2"  ( "ccc" -- caddr u )  SBUF2 ($") ;
-: $CLEAR  ( caddr -- ) SBUF-SIZE BL FILL ;
-: CLEAR-SBUFS  ( -- )  SBUF1 $CLEAR SBUF2 $CLEAR ;
+: $" ( "ccc" -- caddr u ) SBUF1 ($") ;
+: $2" ( "ccc" -- caddr u ) SBUF2 ($") ;
+: $CLEAR ( caddr -- ) SBUF-SIZE BL FILL ;
+: CLEAR-SBUFS ( -- ) SBUF1 $CLEAR SBUF2 $CLEAR ;
 
-  \ More definitions in core.fr used in other test programs, conditionally
-  \ defined here if core.fr has not been loaded
+  \ More definitions in core.fr used in other test programs,
+  \ conditionally defined here if core.fr has not been loaded.
 
 [?DEF] MAX-UINT   \? 0 INVERT                 CONSTANT MAX-UINT
 [?DEF] MAX-INT    \? 0 INVERT 1 RSHIFT        CONSTANT MAX-INT
 [?DEF] MIN-INT    \? 0 INVERT 1 RSHIFT INVERT CONSTANT MIN-INT
 [?DEF] MID-UINT   \? 0 INVERT 1 RSHIFT        CONSTANT MID-UINT
-[?DEF] MID-UINT+1 \? 0 INVERT 1 RSHIFT INVERT CONSTANT MID-UINT+1
+[?DEF] MID-UINT+1 \? 0 INVERT 1 RSHIFT INVERT
+  CONSTANT MID-UINT+1
 
 [?DEF] 2CONSTANT \? : 2CONSTANT  CREATE , , DOES> 2@ ;
 
-BASE @ 2 BASE ! -1 0 <# #S #> SWAP DROP CONSTANT BITS/CELL BASE !
+BASE @ 2 BASE ! -1 0 <# #S #> SWAP DROP
+CONSTANT BITS/CELL BASE !
 
 
   \ ===========================================================
@@ -5612,8 +5965,10 @@ CR $" Test utilities loaded" TYPE CR
   \ ===========================================================
   \ Change log
 
-  \ 2018-03-09: Start. Adapted from Gerry Jackson's
-  \ forth2012-test-suite version 0.13.0
+  \ 2018-03-09: Start the adaptation of the code from Gerry
+  \ Jackson's forth2012-test-suite version 0.13.0
   \ (https://github.com/gerryjackson/forth2012-test-suite).
+  \
+  \ 2018-03-10: Make all lines fit.
 
   \ vim: filetype=soloforth
