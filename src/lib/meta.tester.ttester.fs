@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803111559
+  \ Last modified: 201803111922
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -448,7 +448,8 @@ VARIABLE VERBOSE TRUE VERBOSE !
   \ Set flag to TRUE for more verbose output; this may allow
   \ you to tell which test caused your system to hang.
 
-: BLK-LINE ( -- ca len ) BLK @ BLOCK >IN @ C/L / + C/L ;
+: BLK-LINE ( -- ca len )
+  BLK @ BLOCK >IN @ DUP C/L MOD - + C/L ;
   \ Return the current line _ca len_ of the block being
   \ interpreted.
   \

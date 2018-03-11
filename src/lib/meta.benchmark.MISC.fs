@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091620
+  \ Last modified: 201803111851
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,6 +27,39 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( >in-bench )
+
+need ticks need timer
+
+: in>l1 >in @ dup c/l mod - ;
+: in>l2 >in @ c/l / c/l * ;
+
+: run ( n -- )
+  >r
+  cr ." in>l1 " ticks r@ 0 ?do in>l1 drop        loop timer
+  cr ." in>l2 " ticks r@ 0 ?do in>l2 drop        loop timer
+  cr ." >in @ " ticks r@ 0 ?do >in @ >in @ 2drop loop timer
+  cr ." dup   " ticks r@ 0 ?do >in @ dup   2drop loop timer
+  r> drop ;
+
+  \ 2018-03-11:
+
+  \        Ticks
+  \        ---------------------------
+  \ Times  in>l1  in>l2
+  \ -----  -----  -----
+  \   100      9     13
+  \  1000     90    128
+  \ 10000    897   1280
+
+  \        Ticks
+  \        ---------------------------
+  \ Times  >in @  dup
+  \ -----  -----  ---
+  \   100      1    1
+  \  1000     12    9
+  \ 10000    113   90
 
 ( cells-+-bench )
 
@@ -3199,5 +3232,7 @@ need bench{ need }bench.
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-09: Update stack notation "x y" to "col row".
+  \
+  \ 2018-03-11: Add `>in-bench`.
 
   \ vim: filetype=soloforth

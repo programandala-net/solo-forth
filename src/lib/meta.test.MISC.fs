@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091620
+  \ Last modified: 201803111931
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -22,6 +22,21 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( testing-test )
+
+: blk-line ( -- ca len )
+  blk @ block >in @ dup c/l mod - + c/l ;
+  \ Return the current line _ca len_ of the block being
+  \ interpreted.
+
+: testing ( "ccc" -- )
+  ?loading blk-line >in/l /string type cr ->in/l >in +! ;
+
+blk-line cr '<' emit type '>' emit cr ( testing hello )
+testing message 1 testing this is not a message
+testing message 2
+1 2 + .
 
 ( write-file-test )
 
@@ -1654,5 +1669,8 @@ blk @ 1+ blk @ 2+ thru
   \ 2018-03-08: Improve documentation of `menu-test`.
   \
   \ 2018-03-09: Update stack notation "x y" to "col row".
+  \
+  \ 2018-03-11: Add `testing-test`. (`testing` is part of
+  \ `ttester`).
 
   \ vim: filetype=soloforth
