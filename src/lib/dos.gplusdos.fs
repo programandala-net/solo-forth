@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803112306
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -330,7 +330,7 @@ unneeding dos-vars ?\ 8192 constant dos-vars
   \
   \ }doc
 
-( get-drive )
+( get-drive 2-block-drives )
 
 unneeding get-drive ?( need dos-in, need dos-out,
 
@@ -358,6 +358,25 @@ code get-drive ( -- n ) dos-in, 3A c, 3ACE , dos-out, pusha jp,
   \ ----
   \
   \ See: `set-drive`.
+  \
+  \ }doc
+
+unneeding 2-block-drives ?( need set-block-drives
+
+: 2-block-drives ( -- ) 2 1 2 set-block-drives ;
+
+2-block-drives ?)
+
+  \ doc{
+  \
+  \ 2-block-drives ( -- )
+  \
+  \ Set all drives as block drives, in normal order: 1 and 2.
+  \
+  \ Note: For convenience, when this word is loaded, it's also
+  \ executed.
+  \
+  \ See: `set-block-drives`.
   \
   \ }doc
 
@@ -1511,5 +1530,7 @@ code (rename-file ( -- ior )
   \ opcodes.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-11: Add `2-block-drives`.
 
   \ vim: filetype=soloforth

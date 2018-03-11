@@ -1,6 +1,6 @@
 = Solo Forth %VERSION% %DOS%
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-03-10
+:revdate: 2018-03-11
 :toc:
 :toclevels: 1
 :toc-placement!:
@@ -329,15 +329,19 @@ First, in order to access disk image number 3, follow these steps:
   the second disk drive of your emulated machine, if it's not already
   "inserted".
 . Enter command `1 load` to load the `need` tool.
-. Enter command `need set-block-drives` to load `set-block-drives`.
-. Depending on your DOS, configure the block drives as follows:
-  ** On G+DOS: `2 1 2 set-block-drives`
-  ** On TR-DOS: 1 0 2 set-block-drives`
-  ** On +3DOS: 'B' 'A' 2 set-block-drives`
+. Enter command `need 2-block-drives` to set the first two disk drives
+  as block drives, in their normal order.
 
 Now the first two disk drives are used as block drives, and `need`
-will search both of them as configured: first the first one (the
+will search both of them in the normal order: first the first one (the
 library), then the second one (the benchmarks and tests).
+
+Note `need 2-block-drives` not only loads the word `2-block-drives`,
+but also executes it. This is equivalent to the following commands:
+
+- On G+DOS: `need set-block-drives 2 1 2 set-block-drives`
+- On TR-DOS: `need set-block-drives 1 0 2 set-block-drives`
+- On +3DOS: `need set-block-drives 'B' 'A' 2 set-block-drives`
 
 Second, depending on the code you want to run, enter the corresponding
 command:

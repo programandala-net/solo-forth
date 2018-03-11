@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803112306
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -326,7 +326,7 @@ unneeding filename>filetype
   \
   \ }doc
 
-( get-drive (acat acat )
+( get-drive 2-block-drives (acat acat )
 
 unneeding get-drive
 
@@ -349,6 +349,26 @@ unneeding get-drive
   \ ----
 
   \ See: `set-drive`.
+  \
+  \ }doc
+
+unneeding 2-block-drives ?( need set-block-drives
+
+: 2-block-drives ( -- ) 1 0 2 set-block-drives ;
+
+2-block-drives ?)
+
+  \ doc{
+  \
+  \ 2-block-drives ( -- )
+  \
+  \ Set all drives as block drives, in normal order: 0, 1, 2
+  \ and 3.
+  \
+  \ Note: For convenience, when this word is loaded, it's also
+  \ executed.
+  \
+  \ See: `set-block-drives`.
   \
   \ }doc
 
@@ -1229,5 +1249,7 @@ need read-file-descriptor need write-file-descriptor
   \ 2018-03-02: Improve `cat`.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-11: Add `2-block-drives`.
 
   \ vim: filetype=soloforth
