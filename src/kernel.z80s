@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201803091548
+; Last modified: 201803111934
 
 include version.z80s
 
@@ -11184,8 +11184,6 @@ endif
 ; ----------------------------------------------
   _variable_header interpret_table_,'interpret-table'
 
-  ; XXX FIXME -- not used, bad value, bad description
-
 ; doc{
 ;
 ; interpret-table ( -- a )
@@ -15653,6 +15651,52 @@ question_backslash.exit:
   ; in the library.
 
 ; ----------------------------------------------
+  _colon_header to_in_slash_l_,'>in/l'
+
+; doc{
+;
+; Return number _n_ of characters already interpreted in the
+; current line of the block being interpreted.  No check is done
+; if any block is actually being interpreted.
+;
+; Definition:
+
+; ----
+; : >in/l ( -- n ) >in @ c/l mod ;
+; ----
+
+; See: `->in/l`, `>in`, `c/l`.
+;
+; }doc
+
+  dw to_in_,fetch_,c_slash_l_,mod_
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header minus_to_in_slash_l_,'->in/l'
+
+; doc{
+;
+; Return number _n_ of characters not interpreted yet in the
+; current line of the block being interpreted.  No check is done
+; if any block is actually being interpreted.
+;
+; ``->in/l`` is a factor of `\`.
+;
+; Definition:
+
+; ----
+; : ->in/l ( -- n ) c/l >in/l - ;
+; ----
+
+; See: `>in/l`, `>in`, `c/l`.
+;
+; }doc
+
+  dw c_slash_l_,to_in_slash_l_,minus_
+  dw exit_
+
+; ----------------------------------------------
   _colon_header backslash_,'\',immediate
 
 ; doc{
@@ -15665,9 +15709,16 @@ question_backslash.exit:
 ;
 ; ``\`` is an `immediate` word.
 ;
+; Definition:
+
+; ----
+; : \ ( "ccc" -- )
+;   loading? if ->in/l parsed exit then #tib @ >in ! ;
+; ----
+
 ; Origin: Forth-94 (BLOCK EXT), Forth-2012 (BLOCK EXT).
 ;
-; See: `(`.
+; See: `(`, `->in/l`.
 ;
 ; }doc
 
@@ -15680,12 +15731,8 @@ question_backslash.exit:
 
 backslash.loading:
   ; Loading
-  dw to_in_,fetch_,c_slash_l_,mod_
-  dw c_slash_l_,swap_,minus_
-  dw parsed_
+  dw minus_to_in_slash_l_,parsed_
   dw exit_
-
-  ; XXX TODO -- Add the definition to the documentation.
 
 ; ----------------------------------------------
   _colon_header dot_paren_,'.(',immediate

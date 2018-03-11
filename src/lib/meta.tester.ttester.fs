@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803111922
+  \ Last modified: 201803111925
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -452,18 +452,6 @@ VARIABLE VERBOSE TRUE VERBOSE !
   BLK @ BLOCK >IN @ DUP C/L MOD - + C/L ;
   \ Return the current line _ca len_ of the block being
   \ interpreted.
-  \
-  \ XXX TODO -- Move to the library.
-
-: >IN/L ( -- n ) >IN @ C/L MOD ;
-  \ Return number _n_ of characters already interpreted in the
-  \ current line of the block being interpreted.
-  \
-  \ XXX TODO -- Move to the library.
-
-: ->IN/L ( -- n ) C/L >IN/L - ;
-  \ Return number _n_ of characters not interpreted yet in the
-  \ current line of the block being interpreted.
   \
   \ XXX TODO -- Move to the library.
 
