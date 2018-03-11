@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803111925
+  \ Last modified: 201803112012
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -314,12 +314,11 @@ HAS-FLOATING-STACK [IF]
   IF DEPTH START-DEPTH @ DO DROP LOOP THEN EMPTY-FSTACK ;
   \ Empty stack; handles underflowed stack too.
 
-: ERROR1 ( ca len -- )
-  CR TYPE CR SOURCE TYPE CR \ display error line
-  EMPTY-STACK               \ throw away everything else
-  #ERRORS @ 1 + #ERRORS ! ; \ update error count
-  \ Display an error message followed by the line that had the
-  \ error.
+: ERROR1 ( ca len -- ) CR TYPE CR BLK-LINE TYPE CR
+                       EMPTY-STACK  #ERRORS @ 1 + #ERRORS ! ;
+  \ The default error manager. Display an error message
+  \ followed by the line that had the error. Empty the stack
+  \ and update the error count.
 
 ' ERROR1 ERROR-XT !
 
@@ -494,6 +493,7 @@ BASE !
   \ for blocks.
   \
   \ 2018-03-11: Activate `verbose` by default. Factor
-  \ `blk-line`, `>in/l` and `->in/l` from `testing`.
+  \ `blk-line`, `>in/l` and `->in/l` from `testing`. Modify
+  \ `error1` to display the current block line.
 
   \ vim: filetype=soloforth
