@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201803111934
+; Last modified: 201803111947
 
 include version.z80s
 
@@ -15657,7 +15657,7 @@ question_backslash.exit:
 ;
 ; Return number _n_ of characters already interpreted in the
 ; current line of the block being interpreted.  No check is done
-; if any block is actually being interpreted.
+; whether any block is actually being interpreted.
 ;
 ; Definition:
 
@@ -15665,7 +15665,7 @@ question_backslash.exit:
 ; : >in/l ( -- n ) >in @ c/l mod ;
 ; ----
 
-; See: `->in/l`, `>in`, `c/l`.
+; See: `blk-line`, `->in/l`, `>in`, `c/l`.
 ;
 ; }doc
 
@@ -15679,7 +15679,7 @@ question_backslash.exit:
 ;
 ; Return number _n_ of characters not interpreted yet in the
 ; current line of the block being interpreted.  No check is done
-; if any block is actually being interpreted.
+; whether any block is actually being interpreted.
 ;
 ; ``->in/l`` is a factor of `\`.
 ;
@@ -15689,7 +15689,7 @@ question_backslash.exit:
 ; : ->in/l ( -- n ) c/l >in/l - ;
 ; ----
 
-; See: `>in/l`, `>in`, `c/l`.
+; See: `blk-line`, `>in/l`, `>in`, `c/l`.
 ;
 ; }doc
 

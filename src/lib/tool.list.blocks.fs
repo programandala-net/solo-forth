@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091407
+  \ Last modified: 201803111958
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -29,15 +29,16 @@ unneeding /line# ?\ : /line# ( -- n ) #16 base @ - 4 / 1+ ;
 
   \ doc{
   \
-  \ /line# ( -- # ) "slash-line-hash"
+  \ /line# ( -- n ) "slash-line-hash"
   \
   \ Maximum length of a line number in the current radix.
   \ It works for decimal, hex and binary.
   \
+  \ See: `.line#`.
+  \
   \ }doc
 
-unneeding .line#
-?\ need /line#  : .line# ( n -- ) /line# .r ;
+unneeding .line# ?\ need /line# : .line# ( n -- ) /line# .r ;
 
   \ doc{
   \
@@ -47,9 +48,12 @@ unneeding .line#
   \ width depends on the current radix (decimal, hex or
   \ binary).
   \
+  \ See: `/line#`.
+  \
   \ }doc
 
 unneeding .line
+
 ?\ : .line ( n1 n2 -- ) line>string -trailing type ;
 
   \ doc{
@@ -59,6 +63,8 @@ unneeding .line
   \ Display line _n1_ from block _n2_, without trailing spaces.
   \
   \ Origin: fig-Forth.
+  \
+  \ See: `.line#`, `blk-line`.
   \
   \ }doc
 
@@ -72,12 +78,13 @@ unneeding list-line ?( need .line# need .line
   \
   \ List line _n_ from block _u_, without trailing spaces.
   \
-  \ See: `list-lines`, `.line#`, `list`.
+  \ See: `list-lines`, `.line#`, `.line`. `list`, `blk-line`.
   \
   \ }doc
 
-unneeding list-lines ?(
-need .line need nuf? need list-line need ?leave
+unneeding list-lines ?( need .line need nuf?
+                        need list-line need ?leave
+
 : list-lines ( u n1 n2 -- )
   rot dup scr ! cr ." Block " u.  1+ swap
   ?do  i scr @ list-line nuf? ?leave  loop cr ; ?)
@@ -93,6 +100,7 @@ need .line need nuf? need list-line need ?leave
   \ }doc
 
 unneeding list ?( need list-lines
+
 : list ( u -- ) dup max-blocks 1- u> #-35 ?throw
                     0 [ l/scr 1- ] literal list-lines ; ?)
 
@@ -110,9 +118,9 @@ unneeding list ?( need list-lines
   \
   \ }doc
 
-( /block# view .block# .index index )
+( /block# view .block# .index index blk-line )
 
-unneeding /block# ?\ 3 constant /block#  exit
+unneeding /block# ?\ 3 constant /block#
 
 unneeding view ?( need locate need list
 
@@ -132,11 +140,12 @@ unneeding view ?( need locate need list
   \ }doc
 
 unneeding .block# ?( need /block#
+
 : .block# ( n -- ) /block# .r ; ?)
 
 unneeding .index ?( need .line
-: .index ( u -- )
-  cr dup .block# space 0 swap .line ; ?)
+
+: .index ( u -- ) cr dup .block# space 0 swap .line ; ?)
 
   \ doc{
   \
@@ -148,6 +157,7 @@ unneeding .index ?( need .line
   \ }doc
 
 unneeding index ?( need .line need nuf? need ?leave
+
 : index ( u1 u2 -- )
   1+ swap ?do  cr i .block# space 0 i .line  nuf? ?leave
   loop ; ?)
@@ -162,6 +172,23 @@ unneeding index ?( need .line need nuf? need ?leave
   \
   \ Origin: fig-Forth, Forth-79 (Reference Word Set), Forth-83
   \ (Uncontrolled Reference Words).
+  \
+  \ }doc
+
+unneeding blk-line ?(
+
+: blk-line ( -- ca len )
+  blk @ block >in @ dup c/l mod - + c/l ; ?)
+
+  \ doc{
+  \
+  \ blk-line ( -- ca len )
+  \
+  \ Return the current line _ca len_ of the block being
+  \ interpreted.  No check is done whether any block is
+  \ actually being interpreted.
+  \
+  \ See: `blk`, `block`, `>in/l`, `->in/l`, `c/l`.
   \
   \ }doc
 
@@ -478,5 +505,8 @@ need list-lines
   \ 2017-05-07: Improve documentation.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-11: Fix stack comment. Improve documentation. Move
+  \ `blk-line` from the `ttester` module.
 
   \ vim: filetype=soloforth

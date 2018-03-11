@@ -132,7 +132,7 @@
 
 ( ttester )
 
-need environment? need [if] need do
+need environment? need [if] need do need blk-line
 
 BASE @ DECIMAL
 
@@ -447,13 +447,6 @@ HAS-FLOATING [IF]
 VARIABLE VERBOSE TRUE VERBOSE !
   \ Set flag to TRUE for more verbose output; this may allow
   \ you to tell which test caused your system to hang.
-
-: BLK-LINE ( -- ca len )
-  BLK @ BLOCK >IN @ DUP C/L MOD - + C/L ;
-  \ Return the current line _ca len_ of the block being
-  \ interpreted.
-  \
-  \ XXX TODO -- Move to the library.
 
 : TESTING ( "ccc" -- )
   ?LOADING
