@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803081227
+  \ Last modified: 201803112245
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -91,8 +91,9 @@ unneeding parse-all ?( : parse-all ( "ccc" -- ca len )
 ( execute-parsing string>source evaluate )
 
 unneeding string>source ?(
+
 : string>source ( ca len -- )
-  blk off  (source-id) on  set-source ; ?)
+  blk off (source-id) on set-source ; ?)
 
   \ doc{
   \
@@ -105,7 +106,8 @@ unneeding string>source ?(
   \ }doc
 
 unneeding execute-parsing ?( need need-here
-need-here string>source
+                             need-here string>source
+
 : execute-parsing ( ca len xt -- )
   nest-source >r string>source r> execute unnest-source ; ?)
 
@@ -123,8 +125,8 @@ need-here string>source
   \
   \ }doc
 
-unneeding evaluate ?( need need-here
-need-here execute-parsing
+unneeding evaluate ?( need need-here need-here execute-parsing
+
 : evaluate ( i*x ca len -- j*x )
   ['] interpret execute-parsing ; ?)
 
@@ -146,8 +148,7 @@ need-here execute-parsing
 
 ( char [char] word )
 
-unneeding char
-?\ : char ( "name" -- c ) parse-name drop c@ ;
+unneeding char ?\ : char ( "name" -- c ) parse-name drop c@ ;
 
   \ doc{
   \
@@ -169,7 +170,7 @@ unneeding char
   \
   \ }doc
 
-unneeding [char]  ?(
+unneeding [char]  ?( need char
 
 : [char] ( "name" -- c )
   char postpone cliteral ; immediate compile-only ?)
@@ -317,5 +318,7 @@ unneeding word ?(
   \ 2018-03-07: Add words' pronunciaton.
   \
   \ 2018-03-08: Documente `defined?` and `parse-char`.
+  \
+  \ 2018-03-11: Fix requirement of `[char]`.
 
   \ vim: filetype=soloforth
