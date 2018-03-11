@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072325
+  \ Last modified: 201803112107
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -65,7 +65,7 @@ unneeding value ?( need to need ;code
   \
   \ }doc
 
-unneeding 2value ?( need to
+unneeding 2value ?( need to need ;code
 
 : 2value ( x1 x2 "name"  -- )
   create 2 c, 2, ;code 23 c, ' 2@ 1+ jp, end-code ?)
@@ -164,5 +164,7 @@ create to> ' c! , ' ! , ' 2! ,
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-07: Add words' pronunciaton. Improve documentation.
+  \
+  \ 2018-03-11: Fix requirement of `2value`.
 
   \ vim: filetype=soloforth
