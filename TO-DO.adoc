@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-03-10
+:revdate: 2018-03-11
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -2211,7 +2211,13 @@ Study the way v.Forth manages the interrupts and adapt it.
 // Library {{{1
 == Library
 
-=== 2018-02-14, 2018-02-28
+=== 2018-03-11
+
+NOTE: Milestone: 0.14.0
+
+Move `2variable` to the library.
+
+=== 2018-02-14, 2018-02-28, 2018-03-11
 
 One 640-KiB TR-DOS disk is barely enough to contain the library.
 
@@ -2222,7 +2228,7 @@ To compact the code:
   long-name words into one block.
 - Move the stack comments to a meta comment below the code. This will
   make many one-liners fit one line.
-- Use `needing X 0(` instead of `[unneeded] X ?(`, i.e. with
+- Use `needing X 0(` instead of `unneeding X ?(`, i.e. with
   zero-version of the conditional comments.
 
 To save some blocks:
@@ -2259,6 +2265,13 @@ Words that could be moved to the library, if the `need` tool didn't use them:
 
 // Loading {{{1
 == Loading
+
+=== 2018-03-11
+
+Check `need-here`: `needed-word 2!` is duplicated. Compare with
+`locate-needed`.
+
+Extract a common factor from `need-here` and `locate-needed`?
 
 === 2017-02-12
 
@@ -2735,7 +2748,8 @@ Make the tape words return a standard _ior_.
 
 === 2018-03-10
 
-Improve the layout of the messages of forth2012-test-suite.
+- Improve the layout of the messages of forth2012-test-suite.
+- Compact the source of forth2012-test-suite to save blocks.
 
 // Time {{{1
 == Time
