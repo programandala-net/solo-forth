@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803110127
+  \ Last modified: 201803111559
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -448,11 +448,28 @@ VARIABLE VERBOSE TRUE VERBOSE !
   \ Set flag to TRUE for more verbose output; this may allow
   \ you to tell which test caused your system to hang.
 
+: BLK-LINE ( -- ca len ) BLK @ BLOCK >IN @ C/L / + C/L ;
+  \ Return the current line _ca len_ of the block being
+  \ interpreted.
+  \
+  \ XXX TODO -- Move to the library.
+
+: >IN/L ( -- n ) >IN @ C/L MOD ;
+  \ Return number _n_ of characters already interpreted in the
+  \ current line of the block being interpreted.
+  \
+  \ XXX TODO -- Move to the library.
+
+: ->IN/L ( -- n ) C/L >IN/L - ;
+  \ Return number _n_ of characters not interpreted yet in the
+  \ current line of the block being interpreted.
+  \
+  \ XXX TODO -- Move to the library.
+
 : TESTING ( "ccc" -- )
   ?LOADING
-  C/L >IN @ C/L MOD - \ chars left on the current block line
-  VERBOSE @ IF   BLK @ BLOCK >IN @ + OVER TYPE CR
-            THEN >IN +! ;
+  VERBOSE @ IF   BLK-LINE >IN/L /STRING TYPE CR
+            THEN ->IN/L >IN +! ;
   \ Display the rest of the current block line, then skip it.
 
 BASE !
@@ -494,6 +511,7 @@ BASE !
   \ Compact the code, saving three blocks. Rewrite `testing`
   \ for blocks.
   \
-  \ 2018-03-11: Activate `verbose` by default.
+  \ 2018-03-11: Activate `verbose` by default. Factor
+  \ `blk-line`, `>in/l` and `->in/l` from `testing`.
 
   \ vim: filetype=soloforth
