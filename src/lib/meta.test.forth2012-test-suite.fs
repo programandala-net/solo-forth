@@ -114,10 +114,9 @@ CR
 
 ( forth2012-pre-test )
 
-  \ Define ~ to use as a 'to end of line' comment. `\` cannot
-  \ be used as it a Core Extension word
-
-: ~ ( -- ) SOURCE >IN ! Y ! ;
+: ~ ( -- ) ->in/l parsed ;
+  \ Define `~` to use as a 'to end of line' comment. `\` cannot
+  \ be used as it is a Core Extension word.
 
   \ Rather than relying on a pass message test words can now be
   \ defined to report errors in the event of a failure. For
@@ -6987,7 +6986,7 @@ CR .( End of Programming Tools word tests) CR
   \ definitions for use by the optional word set test programs
   \ to remove any dependencies between word sets.
 
-need ttester need word need find
+need ttester need word need find need [char] need rshift
 
 DECIMAL
 
@@ -7022,9 +7021,8 @@ T{ -1 (\?) ! [?DEF] ?DEFTEST1 (\?) @ -> 0 }T
   \ If needed in the blocks test program they will need to be
   \ modified here or redefined there.
 
+: \? ( "..." -- ) (\?) @ ?EXIT POSTPONE \ ; IMMEDIATE
   \ \? is a conditional comment
-: \? ( "..." -- ) (\?) @ IF EXIT THEN SOURCE >IN ! DROP ;
-  IMMEDIATE
 
   \ Test \?
 T{ [?DEF] ?DEFTEST1 \? : ?DEFTEST1 2 ; \ Shouldn't be redefined
@@ -7062,7 +7060,7 @@ T{ [?DEF] ?DEFTEST2 \? : ?DEFTEST1 2 ; \ Should be redefined
 
 ( forth2012-utilities-test )
 
-[?DEF] .(  \? : .(  [CHAR] ) PARSE TYPE ; IMMEDIATE
+[?DEF] .( \? : .(  [CHAR] ) PARSE TYPE ; IMMEDIATE
 
   \ `S=` to compare (case sensitive) two strings to avoid use
   \ of `COMPARE` from the String word set. It is defined in
@@ -7182,6 +7180,6 @@ cr .( Forth-2012 tests completed ) cr cr
   \ Make the tests independent.
   \
   \ 2018-03-11: Add internal requirements, i.e. tests needed by
-  \ tests.
+  \ tests. Adapt `\?` and `~` to blocks.
 
   \ vim: filetype=soloforth
