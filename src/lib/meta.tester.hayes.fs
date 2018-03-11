@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803100103
+  \ Last modified: 201803110126
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -17,7 +17,7 @@
   \ John Hayes S1I, 1995-11-27.
 
   \ Marcos Cruz (programandala.net) adapted it to Solo Forth,
-  \ 2015, 2016, 2017.
+  \ 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -38,7 +38,7 @@
 
 need where need do
 
-variable verbose  verbose off
+variable verbose  verbose on
   \ Set this flag to true for more verbose output;
   \ this may allow you to tell which test caused your system to
   \ hang.
@@ -153,5 +153,7 @@ create actual-results $20 cells allot
   \
   \ 2018-03-10: Fix `}`: the depths in the error message were
   \ exchanged. Update stack notation and documentation.
+  \
+  \ 2018-03-11: Activate `verbose` by default.
 
   \ vim: filetype=soloforth

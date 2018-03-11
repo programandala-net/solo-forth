@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803102334
+  \ Last modified: 201803110127
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -444,8 +444,7 @@ HAS-FLOATING [IF]
 
 ( ttester )
 
-
-VARIABLE VERBOSE FALSE VERBOSE !
+VARIABLE VERBOSE TRUE VERBOSE !
   \ Set flag to TRUE for more verbose output; this may allow
   \ you to tell which test caused your system to hang.
 
@@ -494,5 +493,7 @@ BASE !
   \ 2018-03-10: Update stack comments. Improve source layout.
   \ Compact the code, saving three blocks. Rewrite `testing`
   \ for blocks.
+  \
+  \ 2018-03-11: Activate `verbose` by default.
 
   \ vim: filetype=soloforth
