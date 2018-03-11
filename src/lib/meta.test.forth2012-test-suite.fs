@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803112225
+  \ Last modified: 201803112349
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -372,13 +372,11 @@ CR CR .MSG( --- End of Preliminary Tests --- ) CR
 
 need ttester
 
-CR
-TESTING CORE WORDS
-HEX
+CR HEX TESTING Core word set
 
   \ ===========================================================
 
-TESTING BASIC ASSUMPTIONS
+TESTING Basic assumptions
 
 T{ -> }T \ START WITH CLEAN SLATE
   \ TEST IF ANY BITS ARE SET; ANSWER IN BASE 1
@@ -393,7 +391,7 @@ T{ -1 BITSSET? -> 0 0 }T
 
   \ ===========================================================
 
-TESTING BOOLEANS: INVERT AND OR XOR
+TESTING INVERT AND OR XOR
 
 T{ 0 0 AND -> 0 }T
 T{ 0 1 AND -> 0 }T
@@ -478,7 +476,7 @@ T{ MSB 1 RSHIFT 2* -> MSB }T
 
   \ ===========================================================
 
-TESTING COMPARISONS: 0= = 0< < > U< MIN MAX
+TESTING 0= = 0< < > U< MIN MAX
 
 0 INVERT         CONSTANT MAX-UINT
 0 INVERT 1 RSHIFT      CONSTANT MAX-INT
@@ -611,8 +609,7 @@ T{ MAX-INT 0 MAX -> MAX-INT }T
 
   \ ===========================================================
 
-TESTING STACK OPS: 2DROP 2DUP 2OVER 2SWAP ?DUP DEPTH DROP DUP
-TESTING OVER ROT SWAP
+TESTING 2DROP 2DUP 2OVER 2SWAP ?DUP DEPTH
 
 T{ 1 2 2DROP -> }T
 T{ 1 2 2DUP -> 1 2 1 2 }T
@@ -622,13 +619,15 @@ T{ 0 ?DUP -> 0 }T
 T{ 1 ?DUP -> 1 1 }T
 T{ -1 ?DUP -> -1 -1 }T
 T{ DEPTH -> 0 }T
+T{ 0 DEPTH -> 0 1 }T
+T{ 0 1 DEPTH -> 0 1 2 }T
 
 -->
 
 ( forth2012-core-test )
 
-T{ 0 DEPTH -> 0 1 }T
-T{ 0 1 DEPTH -> 0 1 2 }T
+TESTING DROP DUP OVER ROT SWAP
+
 T{ 0 DROP -> }T
 T{ 1 2 DROP -> 1 }T
 T{ 1 DUP -> 1 1 }T
@@ -656,7 +655,7 @@ T{ 1S GR1 -> 1S }T   ( RETURN STACK HOLDS CELLS )
 
   \ ===========================================================
 
-TESTING ADD/SUBTRACT: + - 1+ 1- ABS NEGATE
+TESTING + - 1+ 1- ABS NEGATE
 
 T{ 0 5 + -> 5 }T
 T{ 5 0 + -> 5 }T
@@ -712,7 +711,7 @@ T{ MIN-INT ABS -> MID-UINT+1 }T
 
   \ ===========================================================
 
-TESTING MULTIPLY: S>D * M* UM*
+TESTING S>D * M* UM*
 
 T{ 0 S>D -> 0 0 }T
 T{ 1 S>D -> 1 0 }T
@@ -786,7 +785,7 @@ T{ MAX-UINT MAX-UINT UM* -> 1 1 INVERT }T
 
   \ ===========================================================
 
-TESTING DIVIDE: FM/MOD SM/REM UM/MOD */ */MOD / /MOD MOD
+TESTING FM/MOD SM/REM UM/MOD */ */MOD / /MOD MOD
 
 need fm/mod need */
 
@@ -1053,10 +1052,7 @@ T{ MIN-INT 2 MIN-INT */MOD -> MIN-INT 2 MIN-INT T*/MOD }T
 
   \ ===========================================================
 
-TESTING HERE , @ ! CELL+ CELLS C, C@ C! CHARS 2@ 2! ALIGN
-TESTING ALIGNED +! ALLOT
-
-need align need aligned
+TESTING HERE , @ ! CELL+ CELLS C, C@ C! CHARS 2@ 2!
 
 HERE 1 ALLOT
 HERE
@@ -1099,6 +1095,11 @@ T{ 1STC C@ 2NDC C@ -> 3 2 }T
 T{ 4 2NDC C! -> }T
 T{ 1STC C@ 2NDC C@ -> 3 4 }T
 
+  \ ===========================================================
+
+TESTING ALIGN ALIGNED +! ALLOT
+
+need align need aligned
 ALIGN 1 ALLOT HERE ALIGN HERE 3 CELLS ALLOT
 CONSTANT A-ADDR  CONSTANT UA-ADDR
 -->
@@ -1169,7 +1170,6 @@ T{ GC4 DROP DUP C@ SWAP CHAR+ C@ -> 58 59 }T
   \ ===========================================================
 
 TESTING ' ['] FIND EXECUTE IMMEDIATE COUNT LITERAL POSTPONE
-TESTING STATE
 
 need find
 
@@ -1196,6 +1196,8 @@ T{ GT5 -> 123 }T
 T{ : GT6 345 ; IMMEDIATE -> }T
 T{ : GT7 POSTPONE GT6 ; -> }T
 T{ GT7 -> 345 }T
+
+TESTING STATE
 
 T{ : GT8 STATE @ ; IMMEDIATE -> }T
 T{ GT8 -> 0 }T
@@ -1306,7 +1308,7 @@ T{ 3 GD6 -> 4 1 2 }T -->
 
   \ ===========================================================
 
-TESTING Definers: : ; CONSTANT VARIABLE CREATE DOES> >BODY
+TESTING : ; CONSTANT VARIABLE CREATE DOES> >BODY
 
 need >body
 
@@ -1608,7 +1610,7 @@ T{ SEEBUF -> 12 34 34 }T
 
   \ ===========================================================
 
-TESTING OUTPUT: . ." CR EMIT SPACE SPACES TYPE U.
+TESTING . ." CR EMIT SPACE SPACES TYPE U.
 
 : OUTPUT-TEST
   ." YOU SHOULD SEE THE STANDARD GRAPHIC CHARACTERS:" CR
@@ -1641,7 +1643,7 @@ T{ OUTPUT-TEST -> }T
 
   \ ===========================================================
 
-TESTING INPUT: ACCEPT
+TESTING ACCEPT
 
 CREATE ABUF 50 CHARS ALLOT
 
@@ -1659,9 +1661,9 @@ T{ ACCEPT-TEST -> }T
 
   \ ===========================================================
 
-TESTING DICTIONARY SEARCH RULES
+TESTING Dictionary search rules
 
-T{ : GDX   123 ; : GDX   GDX 234 ; -> }T
+T{ : GDX 123 ; : GDX GDX 234 ; -> }T
 
 T{ GDX -> 123 234 }T
 
@@ -1742,7 +1744,7 @@ TEST-BLOCK-COUNT 2 U< [?IF]
 
   \ ===========================================================
 
-TESTING Random Number Utilities
+TESTING Random number utilities
 
   \ The block tests make extensive use of random numbers to
   \ select blocks to test and to set the contents of the block.
@@ -1898,7 +1900,7 @@ PRNG-SET-SEED
 
   \ ===========================================================
 
-TESTING BLOCK ( read-only mode )
+TESTING BLOCK (read-only mode)
 
   \ BLOCK signature
 T{ RND-TEST-BLOCK BLOCK DUP ALIGNED = -> TRUE }T
@@ -1923,7 +1925,7 @@ T{ RND-TEST-BLOCK DUP BLOCK SWAP BLOCK = -> TRUE }T
 
   \ ===========================================================
 
-TESTING BUFFER ( read-only mode )
+TESTING BUFFER (read-only mode)
 
   \ Although it is not in the spirit of the specification,
   \ a compliant definition of BUFFER would be
@@ -1957,7 +1959,7 @@ T{ RND-TEST-BLOCK DUP BUFFER SWAP BLOCK = -> TRUE }T
 
   \ ===========================================================
 
-TESTING Read and Write access with UPDATE and FLUSH
+TESTING Read and write access with UPDATE and FLUSH
 
 need update need flush
 
@@ -2189,7 +2191,7 @@ T{ BLK @ SAVE-BUFFERS BLK @ = -> TRUE }T
 
   \ ===========================================================
 
-TESTING LOAD and EVALUATE
+TESTING LOAD EVALUATE
 
 need evaluate
 
@@ -2323,7 +2325,7 @@ T{ 2RND-TEST-BLOCKS TL7                 \ run test procedure
 
   \ ===========================================================
 
-TESTING LIST and SCR
+TESTING LIST SCR
 
 need list
 
@@ -2435,8 +2437,7 @@ T{ RND-TEST-BLOCK DUP TIN LOAD -> 1 3 }T
 
   \ ===========================================================
 
-TESTING \, SAVE-INPUT, RESTORE-INPUT and REFILL
-TESTING from a block source
+TESTING \ SAVE-INPUT RESTORE-INPUT REFILL from a block source
 
 need save-input need restore-input
 
@@ -3271,7 +3272,7 @@ T{ 123 AS1 -> 246 }T
   \ Cannot automatically test `SAVE-INPUT` and `RESTORE-INPUT`,
   \ from a console source.
 
-TESTING SAVE-INPUT and RESTORE-INPUT with a string source
+TESTING SAVE-INPUT RESTORE-INPUT with a string source
 
 need save-input need restore-input
 
@@ -3421,7 +3422,7 @@ T{ CHAR " PARSE 4567 "DUP ROT ROT EVALUATE -> 5 4567 }T
 
   \ ===========================================================
 
-TESTING PARSE-NAME  (Forth 2012)
+TESTING PARSE-NAME
   \ Adapted from the PARSE-NAME RfD tests
 
 T{ PARSE-NAME abcd  STR1  S= -> TRUE }T     \ No leading spaces
@@ -3868,7 +3869,7 @@ T{ -1 MELSE -> 1 3 5 }T
 
 --> \ XXX TMP -- Skip this test.
 
-TESTING manipulation of >IN in interpreter mode
+TESTING Manipulation of >IN in interpreter mode
 
 T{ 12345 DEPTH OVER 9 < 34 AND + 3 + >IN !
 
@@ -3912,7 +3913,7 @@ T{ IW10 FIND-IW IW10 -> 224 1 }T
 
   \ ===========================================================
 
-TESTING that IMMEDIATE doesn't toggle a flag
+TESTING That IMMEDIATE doesn't toggle a flag
 
 VARIABLE IT1 0 IT1 !
 : IT2 1234 IT1 ! ; IMMEDIATE IMMEDIATE
@@ -3920,7 +3921,7 @@ T{ : IT3 IT2 ; IT1 @ -> 1234 }T
 
   \ ===========================================================
 
-TESTING parsing behaviour of S" ." and (
+TESTING Parsing behaviour of S" ." and (
   \ which should parse to just beyond the terminating character
   \ no space needed
 
@@ -3935,7 +3936,7 @@ T{ : PB1 CR ." You should see 2345: "." 2345"( A comment) CR ;
 
   \ ===========================================================
 
-TESTING number prefixes # $ % and 'c' character input
+TESTING Number prefixes # $ % and 'c' character input
   \ Adapted from the Forth 200X Draft 14.5 document
 
 VARIABLE OLD-BASE
@@ -3948,8 +3949,9 @@ T{ %10010110 -> 150 }T
 T{ %-10010110 -> -150 }T
 T{ 'z' -> 122 }T
 T{ 'Z' -> 90 }T
-  \ Check BASE is unchanged
+
 T{ BASE @ OLD-BASE @ = -> <TRUE> }T
+  \ Check BASE is unchanged.
 
 -->
 
@@ -3979,7 +3981,7 @@ T{ : nmp  #8327 $-2cbe %011010111 ''' ;
 
   \ ===========================================================
 
-TESTING definition names
+TESTING Definition names
   \ should support {1..31} graphical characters
 
 : !"#$%&'()*+,-./0123456789:;<=>? 1 ;
@@ -4099,7 +4101,7 @@ MIN-INTD 2/     CONSTANT LO-INT     \ 110...1
 
   \ ===========================================================
 
-TESTING interpreter and compiler reading double numbers
+TESTING Interpreter and compiler reading double numbers
 TESTING with/without prefixes
 
 T{ 1. -> 1 0 }T
@@ -4834,7 +4836,7 @@ T{ 4 5 ' T10 C6 -> 4 77 12 }T -->
 
   \ ===========================================================
 
-TESTING a system generated exception
+TESTING A system generated exception
 
 : T7 S" 333 $$QWEQWEQWERT$$ 334" EVALUATE 335 ;
 : T8 S" 222 T7 223" EVALUATE 224 ;
@@ -5072,7 +5074,7 @@ CR .( End of Facility word tests) CR
 need ttester need forth2012-core-test
 need forth2012-utilities-test need forth2012-report-errors
 
-DECIMAL  TESTING File Access word set
+DECIMAL TESTING File Access word set
 
   \ ===========================================================
 
@@ -5151,7 +5153,7 @@ T{ FID1 @ CLOSE-FILE -> 0 }T -->
   \ ===========================================================
 
 TESTING S" in interpretation mode
-TESTING (compile mode tested in Core tests)
+  \ Ccompile mode tested in Core tests.
 
 T{ S" abcdef" $" abcdef" S= -> TRUE }T
 T{ S" " $" " S= -> TRUE }T
@@ -5270,7 +5272,7 @@ T{ FN2 DELETE-FILE 0= -> FALSE }T
 
   \ ===========================================================
 
-TESTING multi-line ( comments
+TESTING Multi-line ( comments
 
 T{ ( 1 2 3
 4 5 6
@@ -5338,7 +5340,7 @@ T{ 0
 
   \ ===========================================================
 
-TESTING S\" (Forth 2012 interpretation mode)
+TESTING S\" (interpretation mode)
 
 need s\"
 
@@ -5356,7 +5358,7 @@ T{ S\" \a\b\e\f\l\m\q\r\t\v\x0F0\x1Fa\xaBx\z\"\\" SSQ11 S=
 
   \ ===========================================================
 
-TESTING two buffers available for S" and/or S\"
+TESTING Two buffers available for S" and/or S\"
 
 : SSQ12 S" abcd" ;   : SSQ13 S" 1234" ;
 
@@ -5371,7 +5373,7 @@ T{ S\" abcd" S" 1234" SSQ13  S= ROT ROT SSQ12 S=
 
   \ ===========================================================
 
-TESTING SAVE-INPUT and RESTORE-INPUT with a file source
+TESTING SAVE-INPUT RESTORE-INPUT with a file source
 
 need save-input need restore-input -->
 
@@ -5402,7 +5404,7 @@ SIV @
 
 ( forth2012-file-test )
 
-TESTING nested SAVE-INPUT, RESTORE-INPUT and REFILL from a file
+TESTING Nested SAVE-INPUT RESTORE-INPUT REFILL from a file
 
 need save-input need restore-input
 
@@ -5424,7 +5426,7 @@ T{ SI2
 
 55555
 
-TESTING the nested results
+TESTING The nested results
 
  -> 0 0 2345 44444 55555 }T
 
@@ -5485,7 +5487,7 @@ DECIMAL
   \ <val>s are uninitialised
   \ <out>s are ignored (treated as a comment)
 
-TESTING null locals
+TESTING Null locals
 
 T{ : LT0 {: :} ; 0 LT0 -> 0 }T
 T{ : LT1 {: | :} ; 1 LT1 -> 1 }T
@@ -5511,6 +5513,7 @@ T{ : LT9 2DUP + {: A B C :} C B A ; 13 14 LT9 -> 27 14 13 }T
 ( forth2012-locals-test )
 
 TESTING | <val>s and TO <val>s
+
 T{ : LT10 {: A B | :} B 2* A + ; 15 16 LT10 -> 47 }T
 T{ : LT11 {: A | B :} A 2* ; 17 18 LT11 -> 17 36 }T
 T{ : LT12 {: A | B C :} 20 TO B A 21 TO A 22 TO C A C B ;
@@ -5524,6 +5527,7 @@ T{ : LT14 {: | A B :} 24 TO B 25 TO A A B ; 26 LT14
 ( forth2012-locals-test )
 
 TESTING -- ignores everything up to :}
+
 T{ : LT15 {: -- DUP SWAP OVER :} DUP 28 SWAP OVER ;
    27 LT15 -> 27 28 27 28 }T
 T{ : LT16 {: | A -- this should be ignored :} TO A A + ;
@@ -5536,14 +5540,15 @@ T{ : LT18 {: A | B -- 2A+B :} TO B A 2* B + ;
 
 ( forth2012-locals-test )
 
-TESTING local names supersede global names and numbers
+TESTING Local names supersede global names and numbers
+
 T{ : LT19 {: DUP DROP | SWAP -- OVER :}
    35 TO SWAP SWAP DUP DROP OVER ; -> }T
 T{ 36 37 38 LT19 -> 36 35 37 38 37 }T
 T{ HEX : LT20 {: BEAD DEAF :} DEAF BEAD ; BEEF DEAD LT20
    -> DEAD BEEF }T DECIMAL
 
-TESTING definition with locals calling another
+TESTING Definition with locals calling another
 TESTING with same name locals
 
 T{ : LT21 {: A | B :} 39 TO B A B ; -> }T
@@ -5554,7 +5559,7 @@ T{ 41 LT22 -> 80 82 39 40 41 }T
 
 ( forth2012-locals-test )
 
-TESTING locals in :NONAME & DOES>
+TESTING Locals in :NONAME & DOES>
 
 need :noname
 
@@ -5570,7 +5575,7 @@ T{ 47 48 LT24 -> 48 137 47 }T
 
 ( forth2012-locals-test )
 
-TESTING locals in control structures
+TESTING Locals in control structures
 
 T{ : LT25 {: A B :} IF A ELSE B THEN ; -1 50 51 LT25 -> 50 }T
 T{ 0 52 53 LT25 -> 53 }T
@@ -5587,7 +5592,7 @@ T{ 59 60 LT29 -> 59 60 59 60 59 60 59 60 }T
 
 ( forth2012-locals-test )
 
-TESTING recursion with locals
+TESTING Recursion with locals
 
 need recurse
 
@@ -5595,7 +5600,7 @@ T{ : LT30 {: A B :}
      A 0> IF A B * A 1- B 10 * RECURSE A B THEN ; -> }T
 T{ 3 10 LT30 -> 30 200 1000 1 1000 2 100 3 10 }T
 
-TESTING system supplies at least 16 locals
+TESTING System supplies at least 16 locals
 
 : LOC-ENVQ S" #LOCALS" ENVIRONMENT? ;
 T{ LOC-ENVQ SWAP 15 > -> TRUE TRUE }T
@@ -5632,7 +5637,7 @@ T{ : END-LOCALS 99 0 (LOCAL) ; IMMEDIATE     -> }T
 \? [?UNDEF] SET-CURRENT
 \? [?UNDEF] GET-ORDER \? [?UNDEF] SET-ORDER
 
-\? TESTING that local names are always found first & that they
+\? TESTING Local names are always found first & that they
 \? TESTING are not available after the end of a definition.
 
   \ Simple test
@@ -5771,7 +5776,7 @@ ADDR1 @ 28 CHECKMEM -->
 
   \ ===========================================================
 
-TESTING failure of RESIZE and ALLOCATE
+TESTING Failure of RESIZE and ALLOCATE
 TESTING (unlikely to be enough memory)
 
   \ This test relies on the previous test having passed
@@ -5796,7 +5801,7 @@ T{ -1 ALLOCATE SWAP DROP 0= -> FALSE }T
 
   \ ===========================================================
 
-TESTING @ and ! work in ALLOCATEd memory
+TESTING @ ! work in ALLOCATEd memory
   \ Credit: Provided by Peter Knaggs
 
 : WRITE-CELL-MEM ( ADDR N -- )
@@ -5933,7 +5938,7 @@ T{ WID1 @ SET-CURRENT -> }T
 
   \ ===========================================================
 
-TESTING minimum search order list
+TESTING Minimum search order list
 TESTING contains FORTH-WORDLIST and SET-ORDER
 
 : SO1 SET-ORDER ;
@@ -6010,7 +6015,7 @@ T{ C"X"   FIND -> C"X"   0 }T
 
   \ ===========================================================
 
-TESTING new definitions are put into the correct wordlist
+TESTING New definitions are put into the correct wordlist
 
 : ALSOWID2 ALSO GET-ORDER WID2 @ ROT DROP SWAP SET-ORDER ;
 
@@ -6198,7 +6203,7 @@ T{ S12 S11  COMPARE -> -1 }T
 
   \ ===========================================================
 
-TESTING CMOVE and CMOVE>
+TESTING CMOVE CMOVE>
 
 PAD 30 CHARS 0 FILL
 T{ S1 PAD SWAP CMOVE -> }T
@@ -6578,7 +6583,7 @@ T{ FALSE [IF] 1 FALSE [IF] 2 [ELSE] 3 [THEN] [ELSE] 4 [THEN]
 
   \ ===========================================================
 
-TESTING immediacy of [IF] [ELSE] [THEN]
+TESTING Immediacy of [IF] [ELSE] [THEN]
 
 T{ : PT2 [  0 ] [IF] 1111 [ELSE] 2222 [THEN]  ; PT2 -> 2222 }T
 T{ : PT3 [ -1 ] [IF] 3333 [ELSE] 4444 [THEN]  ; PT3 -> 3333 }T
@@ -6606,7 +6611,7 @@ T{ -1 [IF] 2 [ELSE] 3 $" [THEN] 4 PT10 IGNORED TO END OF LINE"
 
   \ ===========================================================
 
-TESTING [ELSE] and [THEN] without a preceding [IF]
+TESTING [ELSE] [THEN] without a preceding [IF]
 
   \ [ELSE] ... [THEN] acts like a multi-line comment
 T{ [ELSE]
@@ -6624,7 +6629,7 @@ T{ 19 [THEN] 20 -> 19 20 }T
 
   \ ===========================================================
 
-TESTING CS-PICK and CS-ROLL
+TESTING CS-PICK CS-ROLL
 
 need cs-pick need cs-roll
 
@@ -7180,6 +7185,6 @@ cr .( Forth-2012 tests completed ) cr cr
   \ Make the tests independent.
   \
   \ 2018-03-11: Add internal requirements, i.e. tests needed by
-  \ tests. Adapt `\?` and `~` to blocks.
+  \ tests. Adapt `\?` and `~` to blocks. Improve messages.
 
   \ vim: filetype=soloforth
