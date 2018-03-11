@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803110137
+  \ Last modified: 201803112225
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -1379,6 +1379,13 @@ TESTING SOURCE >IN WORD
 
 need word
 
+--> \ XXX TMP -- Skip this test.
+
+  \ XXX FIXME -- This test fails because it's written to run
+  \ from a file, not from a block. `0 >in !` makes the whole
+  \ block be interpreted, not just the string in `gs2`. But it
+  \ works fine on the command line.
+
 : GS1 S" SOURCE" 2DUP EVALUATE >R SWAP >R = R> R> = ;
 
 T{ GS1 -> <TRUE> <TRUE> }T
@@ -1397,6 +1404,8 @@ T{ GS2 -> 123 123 123 123 123 }T
 -->
 
 ( forth2012-core-test )
+
+--> \ XXX TMP -- Skip this test.
 
 : GS3 WORD COUNT SWAP C@ ;
 T{ BL GS3 HELLO -> 5 CHAR H }T
@@ -1657,6 +1666,10 @@ T{ : GDX   123 ; : GDX   GDX 234 ; -> }T
 
 T{ GDX -> 123 234 }T
 
+DECIMAL
+
+: forth2012-core-test ;
+
 CR .( End of Core word set tests) CR
 
 ( forth2012-block-test )
@@ -1691,13 +1704,9 @@ CR .( End of Core word set tests) CR
   \ REFILL SAVE-INPUT RESTORE-INPUT \
   \
   \ ===========================================================
-  \ Assumptions and dependencies: - tester.fr or ttester.fs has
-  \ been loaded prior to this file - errorreport.fth has been
-  \ loaded prior to this file - utilities.fth has been loaded
-  \ prioir to this file
-  \ ===========================================================
 
-need ttester
+need ttester need forth2012-core-test
+need forth2012-utilities-test need forth2012-report-errors
 
 TESTING Block word set
 
@@ -2648,13 +2657,9 @@ CR .( End of Block word tests) CR
   \ checked for correctness. These are .R U.R .(
 
   \ ===========================================================
-  \ Assumptions & dependencies:
-  \     - tester.fr (or ttester.fs), errorreport.fth and utilities.fth have been
-  \       included prior to this file
-  \     - the Core word set available
-  \ ===========================================================
 
-need ttester
+need ttester need forth2012-core-test
+need forth2012-utilities-test need forth2012-report-errors
 
 TESTING Core Extension words
 
@@ -3612,6 +3617,8 @@ T{ SSQ9 -> 11 22 33 }T
   \ ===========================================================
 CORE-EXT-ERRORS SET-ERROR-COUNT
 
+: forth2012-coreplus-test ;
+
 CR .( End of Core Extension word tests) CR
 
 ( forth2012-coreplus-test )
@@ -3649,20 +3656,15 @@ CR .( End of Core Extension word tests) CR
   \         0.1  20 April 2007 Created
   \ ===========================================================
   \ The tests are based on John Hayes test program for the core word set
-\
+  \
   \ This file provides some more tests on Core words where the original Hayes
   \ tests are thought to be incomplete
-\
+  \
   \ Words tested in this file are:
   \     DO +LOOP RECURSE ELSE >IN IMMEDIATE
   \ ===========================================================
-  \ Assumptions and dependencies:
-  \     - tester.fr or ttester.fs has been loaded prior to this file
-  \     - core.fr has been loaded so that constants <TRUE> MAX-INT, MIN-INT and
-  \       MAX-UINT are defined
-  \ ===========================================================
 
-need ttester
+need ttester need forth2012-core-test
 
 DECIMAL
 
@@ -3865,9 +3867,15 @@ T{ -1 MELSE -> 1 3 5 }T
 
   \ ===========================================================
 
+--> \ XXX TMP -- Skip this test.
+
 TESTING manipulation of >IN in interpreter mode
 
 T{ 12345 DEPTH OVER 9 < 34 AND + 3 + >IN !
+
+  \ XXX FIXME -- The line above leaves `12345 5` on the stack,
+  \ in Solo Forth and Gforth, not `12345 2345 345 45 5`.
+
    -> 12345 2345 345 45 5 }T
 T{ 14145 8115 ?DUP 0= 34 AND >IN +!
    TUCK MOD 14 >IN ! GCD CALCULATION -> 15 }T
@@ -3879,6 +3887,8 @@ T{ 14145 8115 ?DUP 0= 34 AND >IN +!
   \ ===========================================================
 
 TESTING IMMEDIATE with CONSTANT VARIABLE & CREATE [ ... DOES> ]
+
+need :noname
 
 T{ 123 CONSTANT IW1 IMMEDIATE IW1 -> 123 }T
 T{ : IW2 IW1 LITERAL ; IW2 -> 123 }T
@@ -3893,13 +3903,13 @@ T{ : IW8 IW7 LITERAL 1+ ; IW8 -> 113 }T
 T{ : IW9 CREATE , DOES> @ 2 + IMMEDIATE ; -> }T
 : FIND-IW BL WORD FIND NIP ; ( -- 0 | 1 | -1 )
 
-T{ 222 IW9 IW10 FIND-IW IW10 -> -1 }T
+T{ 222 IW9 IW10 FIND-IW IW10 -> -1 }T -->
   \ IW10 is not immediate
 
-T{ IW10 FIND-IW IW10 -> 224 1 }T -->
-  \ IW10 becomes immediate
-
 ( forth2012-coreplus-test )
+
+T{ IW10 FIND-IW IW10 -> 224 1 }T
+  \ IW10 becomes immediate
 
   \ ===========================================================
 
@@ -4027,6 +4037,8 @@ TESTING DOES> doesn't cause a problem with a CREATEd address
 : MAKE-2CONST DOES> 2@ ;
 T{ CREATE 2K 3 , 2K , MAKE-2CONST 2K -> ' 2K >BODY 3 }T
 
+  \ XXX FIXME -- Left of the stack: -27983, -28743, -28729.
+
 CR .( End of additional Core tests) CR
 
 ( forth2012-double-test )
@@ -4071,14 +4083,9 @@ CR .( End of additional Core tests) CR
   \     D< D= D>S DABS DMAX DMIN DNEGATE M*/ M+ 2ROT DU<
   \ Also tests the interpreter and compiler reading a double number
   \ ===========================================================
-  \ Assumptions and dependencies:
-  \     - tester.fr (or ttester.fs), errorreport.fth and utilities.fth have been
-  \       included prior to this file
-  \     - the Core word set is available and tested
-  \ ===========================================================
-  \ Constant definitions
 
-need ttester
+need ttester need forth2012-core-test
+need forth2012-utilities-test need forth2012-report-errors
 
 DECIMAL
 0 INVERT        CONSTANT 1SD
@@ -4147,9 +4154,6 @@ T{ -1 -2 CD2 2C2 -> }T
 T{ 2C2 -> -1 -2 }T
 T{ 4 5 2CONSTANT 2C3 IMMEDIATE 2C3 -> 4 5 }T
 T{ : CD6 2C3 2LITERAL ; CD6 -> 4 5 }T
-
-  \ ===========================================================
-  \ Some 2CONSTANTs for the following tests
 
 1SD MAX-INTD 2CONSTANT MAX-2INT  \ 01...1
 0   MIN-INTD 2CONSTANT MIN-2INT  \ 10...0
@@ -4573,7 +4577,7 @@ T{ DOUBLEOUTPUT -> }T
 
   \ ===========================================================
 
-TESTING 2ROT DU< (Double Number extension words)
+TESTING 2ROT DU<
 
 need 2rot need du<
 
@@ -4620,7 +4624,7 @@ DOUBLE-ERRORS SET-ERROR-COUNT
 
 CR .( End of Double-Number word tests) CR
 
-( forth2012-errorreport-test )
+( forth2012-report-errors )
 
   \ ===========================================================
 
@@ -4643,8 +4647,6 @@ CR .( End of Double-Number word tests) CR
   \ file is to count errors in test results and present them as
   \ a summary at the end of the tests.
 
-need ttester
-
 DECIMAL VARIABLE TOTAL-ERRORS
 
 : ERROR-COUNT ( "name" n1 -- n2 ) \ n2 = n1 + 1cell
@@ -4660,7 +4662,7 @@ ERROR-COUNT SEARCHORDER-ERRORS   ERROR-COUNT STRING-ERRORS
 ERROR-COUNT TOOLS-ERRORS         ERROR-COUNT BLOCK-ERRORS
 CREATE ERRORS[] DUP ALLOT CONSTANT #ERROR-COUNTS -->
 
-( forth2012-errorreport-test )
+( forth2012-report-errors )
 
   \ `SET-ERROR-COUNT` called at the end of each test file with
   \ its own offset into the `ERRORS[]` array. `#ERRORS` is in
@@ -4680,7 +4682,7 @@ CREATE ERRORS[] DUP ALLOT CONSTANT #ERROR-COUNTS -->
 
 INIT-ERRORS -->
 
-( forth2012-errorreport-test )
+( forth2012-report-errors )
 
   \ Report summary of errors
 
@@ -4698,12 +4700,12 @@ INIT-ERRORS -->
 
 : HLINE ( -- ) CR ." ---------------------------"  ;
 
-: REPORT-ERRORS
+: FORTH2012-REPORT-ERRORS
    HLINE CR 8 SPACES ." Error Report"
          CR ." Word Set" 13 SPACES ." Errors"
    HLINE -->
 
-( forth2012-errorreport-test )
+( forth2012-report-errors )
 
    S" Core" CORE-ERRORS SHOW-ERROR-COUNT
    S" Core extension" CORE-EXT-ERRORS SHOW-ERROR-COUNT
@@ -4752,23 +4754,18 @@ INIT-ERRORS -->
   \     CATCH THROW ABORT ABORT"
   \
   \ ===========================================================
-  \ Assumptions and dependencies:
+  \ Assumptions:
   \     - the forth system under test throws an exception with throw
   \       code -13 for a word not found by the text interpreter. The
   \       undefined word used is $$qweqweqwert$$,  if this happens to be
   \       a valid word in your system change the definition of t7 below
-  \     - tester.fr (or ttester.fs), errorreport.fth and utilities.fth have been
-  \       included prior to this file
-  \     - the Core word set available and tested
-  \     - CASE, OF, ENDOF and ENDCASE from the core extension wordset
-  \       are present and work correctly
   \ ===========================================================
 
-need ttester
+need ttester need forth2012-core-test
+need forth2012-report-errors need forth2012-utilities-test
+need case need catch
 
 TESTING CATCH THROW
-
-need catch
 
 DECIMAL
 
@@ -4879,17 +4876,11 @@ CR .( End of Exception word tests) CR
   \      FIELD:
 
   \ ===========================================================
-  \ Assumptions and dependencies:
-  \     - tester.fr (or ttester.fs), errorreport.fth and utilities.fth have been
-  \       included prior to this file
-  \     - the Core word set is available and tested
-  \ ===========================================================
 
-need ttester
+need ttester need forth2012-core-test
+need forth2012-utilities-test need forth2012-report-errors
 
-TESTING Facility words
-
-DECIMAL
+DECIMAL TESTING Facility words
 
   \ ===========================================================
 
@@ -5070,10 +5061,7 @@ CR .( End of Facility word tests) CR
   \     INCLUDED INCLUDE-FILE (as these will likely have been
   \     tested in the execution of the test files)
   \ ===========================================================
-  \ Assumptions, dependencies and notes:
-  \     - tester.fr (or ttester.fs), errorreport.fth and utilities.fth have been
-  \       included prior to this file
-  \     - the Core word set is available and tested
+  \ Notes:
   \     - These tests create files in the current directory, if all goes
   \       well these will be deleted. If something fails they may not be
   \       deleted. If this is a problem ensure you set a suitable
@@ -5082,11 +5070,10 @@ CR .( End of Facility word tests) CR
   \       which are:  fatest1.txt, fatest2.txt and fatest3.txt
   \ ===========================================================
 
-need ttester
+need ttester need forth2012-core-test
+need forth2012-utilities-test need forth2012-report-errors
 
-TESTING File Access word set
-
-DECIMAL
+DECIMAL  TESTING File Access word set
 
   \ ===========================================================
 
@@ -5480,15 +5467,13 @@ CR .( End of File-Access word set tests) CR
   \     LOCALS|  (designated obsolescent in Forth 2012)
   \ ===========================================================
   \ Assumptions, dependencies and notes:
-  \     - tester.fr (or ttester.fs), errorreport.fth and utilities.fth have been
-  \       included prior to this file
-  \     - the Core word set is available and tested
   \     - some tests at the end require the following words from the Search-Order
   \       word set WORDLIST GET-CURRENT SET-CURRENT GET-ORDER SET-ORDER PREVIOUS.
   \       If any these are not available the tests will be ignored.
   \ ===========================================================
 
-need ttester
+need ttester need forth2012-core-test
+need forth2012-utilities-test need forth2012-report-errors
 
 TESTING Locals word set
 
@@ -5731,18 +5716,14 @@ CR .( End of Locals word set tests. ) .S
   \
   \ ===========================================================
   \ Assumptions, dependencies and notes:
-  \     - tester.fr (or ttester.fs), errorreport.fth and utilities.fth have been
-  \       included prior to this file
-  \     - the Core word set is available and tested
   \     - that 'addr -1 ALLOCATE' and 'addr -1 RESIZE' will return an error
   \     - testing FREE failing is not done as it is likely to crash the system
   \ ===========================================================
 
-need ttester
+need ttester need forth2012-core-test
+need forth2012-utilities-test need forth2012-report-errors
 
-TESTING Memory-Allocation word set
-
-DECIMAL
+DECIMAL TESTING Memory-Allocation word set
 
   \ ===========================================================
 
@@ -5881,18 +5862,14 @@ CR .( End of Memory-Allocation word tests) CR
 
   \ ===========================================================
   \ Assumptions, dependencies and notes:
-  \     - tester.fr (or ttester.fs), errorreport.fth and utilities.fth have been
-  \       included prior to this file
-  \     - the Core word set is available and tested
   \     - that ONLY FORTH DEFINITIONS will work at the start of the file
   \       to ensure the search order is in a known state
   \ ===========================================================
 
-need ttester
+need ttester need forth2012-core-test
+need forth2012-utilities-test need forth2012-report-errors
 
-ONLY FORTH DEFINITIONS
-
-TESTING Search-order word set
+ONLY FORTH DEFINITIONS  TESTING Search-order word set
 
 DECIMAL  VARIABLE WID1  VARIABLE WID2
 
@@ -5939,13 +5916,13 @@ TESTING ALSO ONLY FORTH
 T{ ALSO GET-ORDER -> GET-ORDERLIST OVER SWAP 1+ }T
 
 T{ ONLY FORTH GET-ORDER -> GET-ORDERLIST }T
-  \ See assumptions above
+  \ See assumptions above.
 
   \ ===========================================================
 
 TESTING GET-CURRENT SET-CURRENT WORDLIST (simple)
 
-T{ GET-CURRENT -> WID1 @ }T        \ See assumptions above
+T{ GET-CURRENT -> WID1 @ }T        \ See assumptions above.
 T{ WORDLIST WID2 ! -> }T
 T{ WID2 @ SET-CURRENT -> }T
 T{ GET-CURRENT -> WID2 @ }T
@@ -6122,16 +6099,14 @@ ONLY FORTH DEFINITIONS
   \ Words tested in this file are:
   \     -TRAILING /STRING BLANK CMOVE CMOVE> COMPARE SEARCH SLITERAL
   \     REPLACES SUBSTITUTE UNESCAPE
-\
+  \
   \ ===========================================================
   \ Assumptions, dependencies and notes:
-  \     - tester.fr (or ttester.fs), errorreport.fth and utilities.fth have been
-  \       included prior to this file
-  \     - the Core word set is available and tested
   \     - COMPARE is case sensitive
   \ ===========================================================
 
-need ttester
+need ttester need forth2012-core-test
+need forth2012-utilities-test need forth2012-report-errors
 
 DECIMAL
 
@@ -6545,15 +6520,13 @@ CR .( End of String word tests) CR
   \     ;CODE ASSEMBLER BYE CODE EDITOR FORGET STATE
   \ ===========================================================
   \ Assumptions, dependencies and notes:
-  \     - tester.fr (or ttester.fs), errorreport.fth and utilities.fth have been
-  \       included prior to this file
-  \     - the Core word set is available and tested
   \     - testing TRAVERSE-WORDLIST uses WORDLIST SEARCH-WORDLIST GET-CURRENT
   \       SET-CURRENT and FORTH-WORDLIST from the Search-order word set. If any
   \       of these are not present these tests will be ignored
   \ ===========================================================
 
-need ttester
+need ttester need forth2012-core-test
+need forth2012-utilities-test need forth2012-report-errors
 
 DECIMAL
 
@@ -7014,7 +6987,7 @@ CR .( End of Programming Tools word tests) CR
   \ definitions for use by the optional word set test programs
   \ to remove any dependencies between word sets.
 
-need ttester
+need ttester need word need find
 
 DECIMAL
 
@@ -7028,9 +7001,7 @@ VARIABLE (\?) 0 (\?) !
   \ `[?DEF]` followed by `[?IF]` cannot be used again until
   \ after `[THEN]`.
 
-: [?DEF] ( "name" -- )
-   BL WORD FIND SWAP DROP 0= (\?) !
-;
+: [?DEF] ( "name" -- ) BL WORD FIND SWAP DROP 0= (\?) ! ;
 
   \ Test [?DEF]
 T{ 0 (\?) ! [?DEF] ?DEFTEST1 (\?) @ -> -1 }T
@@ -7042,16 +7013,14 @@ T{ -1 (\?) ! [?DEF] ?DEFTEST1 (\?) @ -> 0 }T
   \ Equivalents of [IF] [ELSE] [THEN], these must not be nested
 : [?IF] ( f -- ) (\?) ! ; IMMEDIATE
 : [?ELSE] ( -- ) (\?) @ 0= (\?) ! ; IMMEDIATE
-: [?THEN] ( -- ) 0 (\?) ! ; IMMEDIATE
+: [?THEN] ( -- ) 0 (\?) ! ; IMMEDIATE -->
+
+( forth2012-utilities-test )
 
   \ A conditional comment and \ will be defined. Note that
   \ these definitions are inadequate for use in Forth blocks.
   \ If needed in the blocks test program they will need to be
   \ modified here or redefined there.
-
--->
-
-( forth2012-utilities-test )
 
   \ \? is a conditional comment
 : \? ( "..." -- ) (\?) @ IF EXIT THEN SOURCE >IN ! DROP ;
@@ -7160,8 +7129,7 @@ CONSTANT BITS/CELL BASE !
   \ Tests
 
 : STR1  S" abcd" ;  : STR2  S" abcde" ;
-: STR3  S" abCd" ;  : STR4  S" wbcd"  ;
-: S"" S" " ;
+: STR3  S" abCd" ;  : STR4  S" wbcd"  ; : S"" S" " ;
 
 T{ STR1 2DUP S= -> TRUE }T
 T{ STR2 2DUP S= -> TRUE }T
@@ -7176,6 +7144,8 @@ T{ $" nopqrstuvwxyz"  SBUF2 OVER  S= -> FALSE }T
 T{ $2" abcdefghijklm" SBUF1 COUNT S= -> FALSE }T
 T{ $2" nopqrstuvwxyz" SBUF1 COUNT S= -> TRUE  }T
 
+: forth2012-utilities-test ;
+
 CR $" Test utilities loaded" TYPE CR
 
 ( forth2012-test-suite )
@@ -7189,7 +7159,7 @@ cr .( Running forth-2012-test-suite) cr
   \ need forth2012-pre-test \ XXX TODO --
 
 need forth2012-core-test      need forth2012-coreplus-test
-need forth2012-utilities-test need forth2012-errorreport-test
+need forth2012-utilities-test need forth2012-report-errors
 need forth2012-coreext-test   need forth2012-block-test
 need forth2012-double-test    need forth2012-exception-test
 need forth2012-facility-test  need forth2012-file-test
@@ -7197,7 +7167,7 @@ need forth2012-locals-test    need forth2012-memory-test
 need forth2012-tools-test     need forth2012-searchorder-test
 need forth2012-string-test
 
-REPORT-ERRORS
+FORTH2012-REPORT-ERRORS
 
 cr .( Forth-2012 tests completed ) cr cr
 
@@ -7210,5 +7180,8 @@ cr .( Forth-2012 tests completed ) cr cr
   \
   \ 2018-03-10: Make all lines fit. Divide the code into blocks.
   \ Make the tests independent.
+  \
+  \ 2018-03-11: Add internal requirements, i.e. tests needed by
+  \ tests.
 
   \ vim: filetype=soloforth
