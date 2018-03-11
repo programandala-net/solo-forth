@@ -25,7 +25,22 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( marker )
+( anew marker )
+
+unneeding anew ?( need possibly need marker
+
+  \ Credit:
+  \
+  \ Code adapted from Wil Baden.
+
+  \ XXX TODO -- test
+  \ XXX TODO -- use `save-input` and `restore-source` when
+  \ possible
+
+: anew ( "name" -- ) >in @ possibly >in ! marker ; ?)
+
+unneeding marker ?exit
+
 
   \ XXX TODO -- save and restore also the nt associated (+4):
   \ |===
@@ -34,10 +49,9 @@
   \ | +4 | _nt|0_, word list name pointer, or zero
   \ |===
 
-: wordlists, ( -- )
-  latest-wordlist @ begin
-    dup cell- @ ( a nt ) , @
-  ?dup 0= until ;
+: wordlists, ( -- ) latest-wordlist @
+                    begin dup cell- @ ( a nt ) , @ ?dup 0=
+                    until ;
   \ XXX TODO -- adapt to `latest-wordlist`
 
   \ doc{
@@ -49,11 +63,10 @@
   \
   \ }doc
 
-: @wordlists ( a -- )
-  latest-wordlist @ begin
-    2dup  swap @ swap cell- !
-    swap cell+ swap  @
-  ?dup 0= until  drop ;
+: @wordlists ( a -- ) latest-wordlist @ begin
+                        2dup swap @ swap cell- !
+                        swap cell+ swap @
+                      ?dup 0= until  drop ; -->
   \ XXX TODO -- adapt to `latest-wordlist`
 
   \ doc{
@@ -64,8 +77,6 @@
   \
   \ }doc
 
--->
-
 ( marker )
 
   \ Credit:
@@ -73,16 +84,14 @@
   \ Code partly inspired by m3forth's `marker`:
   \ https://github.com/oco2000/m3forth/blob/master/lib/include/core-ext.f
 
-need get-order need @cell+ need nn, need nn@ need there
+need get-order need @+ need nn, need nn@ need there
 
 : @order ( a -- ) nn@ set-order ;
 
 : unmarker ( a -- )
-  dup there
-  @cell+ np!  @cell+ last !  @cell+ lastxt !
-  @cell+ latest-wordlist !
-  @cell+ set-current
-  dup dup @ 1+ cells + >r  @order  r> @wordlists ;
+  dup there @+ np! @+ last ! @+ lastxt !
+            @+ latest-wordlist ! @+ set-current
+  dup dup @ 1+ cells + >r @order r> @wordlists ;
 
   \ doc{
   \
@@ -137,20 +146,6 @@ need get-order need @cell+ need nn, need nn@ need there
   \
   \ }doc
 
-( anew )
-
-need possibly need marker
-
-  \ Credit:
-  \
-  \ Code adapted from Wil Baden.
-
-  \ XXX TODO -- test
-  \ XXX TODO -- use `save-input` and `restore-source` when
-  \ possible
-
-: anew ( "name" -- ) >in @  possibly  >in !  marker ;
-
   \ ===========================================================
   \ Change log
 
@@ -182,5 +177,8 @@ need possibly need marker
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
   \
   \ 2018-03-09: Add words' pronunciaton.
+  \
+  \ 2018-03-11: Fix: replace old `@cell+` with `@+`. Compact
+  \ the code, saving one block.
 
   \ vim: filetype=soloforth
