@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803112012
+  \ Last modified: 201803112042
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -449,7 +449,7 @@ VARIABLE VERBOSE TRUE VERBOSE !
 
 : TESTING ( "ccc" -- )
   ?LOADING
-  VERBOSE @ IF   BLK-LINE >IN/L /STRING TYPE CR
+  VERBOSE @ IF   BLK-LINE >IN/L /STRING -TRAILING TYPE CR
             THEN ->IN/L >IN +! ;
   \ Display the rest of the current block line, then skip it.
 
@@ -494,6 +494,7 @@ BASE !
   \
   \ 2018-03-11: Activate `verbose` by default. Factor
   \ `blk-line`, `>in/l` and `->in/l` from `testing`. Modify
-  \ `error1` to display the current block line.
+  \ `error1` to display the current block line. Remove trailing
+  \ spaces from the `testing` messages.
 
   \ vim: filetype=soloforth
