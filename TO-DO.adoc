@@ -867,13 +867,20 @@ Improve tab control.
 // Documentation {{{1
 == Documentation
 
-== 2018-03-09
+=== 2018-03-11
+
+NOTE: Milestone: 0.14.0
+
+Add a section about how to use more than one block disk, and link to
+it.
+
+=== 2018-03-09
 
 NOTE: Milestone: 0.14.0
 
 Replace term "characters" with "bytes".
 
-== 2018-03-08
+=== 2018-03-08
 
 NOTE: Milestone: 0.14.0
 
@@ -1305,6 +1312,36 @@ Notes:
 // Errors {{{1
 == Errors
 
+=== 2018-03-12
+
+NOTE: Milestone: 0.14.0
+
+Fix:
+
+----
+: t s" 333 $$XXX$$ 666" evaluate 999 ;
+' t catch
+.s <2> -256 666
+----
+
+#-256 is fine, the exception code used by the interpreter, but 666
+should not be there?
+
+----
+s" 333 $$XXX$$ 666" ' evaluate catch
+.s <2> 333 24328 -256 666
+----
+
+Again, 666 should not be there.
+
+=== 2018-03-12
+
+NOTE: Milestone: 0.14.0
+
+Fix: Use standard exception code #-13 (undefined word) in
+`interpret-table` instead of more specific #-256 (not a word nor a
+number).
+
 === 2017-05-05
 
 Use term "throw code" instead of "exception code"?
@@ -1662,6 +1699,12 @@ does nothing, as expected.
 
 // Maths {{{1
 == Maths
+
+=== 2018-03-11
+
+NOTE: Milestone: 0.14.0
+
+Fix `d2/`.
 
 === 2017-12-14
 
@@ -2745,6 +2788,48 @@ Make the tape words return a standard _ior_.
 
 // Tests {{{1
 == Tests
+
+=== 2018-03-12
+
+Add the floating-point tests from the original Forth-2012 Test Suite.
+
+=== 2018-03-11
+
+Tests not passed:
+
+----
+T{ 0 (\?) ! [?DEF] ?DEFTEST1 (\?) @ -> -1 }T
+----
+
+Tests not passed because of `marker`:
+
+----
+T{ MA1 MA2 MA1 -> 222 111 }T
+T{ MA? MA0 MA? MA1 MA? MA2 -> TRUE TRUE FALSE }T
+T{ MA? MA0 MA? MA1 MA? MA2 -> FALSE FALSE FALSE }T
+----
+
+=== 2018-03-11
+
+The following tests are not passed:
+
+----
+t{ max-2int d2/ -> hi-2int }t
+t{ min-2int d2/ -> lo-2int }t
+----
+
+And so all tests using those constants.
+
+|===
+| Constant | Decimal     | Binary
+
+| max-2int |  2147483647 | 01111111111111111111111111111111
+| min-2int | -2147483648 | 10000000000000000000000000000000
+| hi-2int  |  1073741823 | 00111111111111111111111111111111
+| lo-2int  | -1073741824 | 11000000000000000000000000000000
+|===
+
+The reason is `d2/` is buggy.
 
 === 2018-03-10
 
