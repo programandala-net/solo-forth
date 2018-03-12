@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803121714
+  \ Last modified: 201803122210
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -316,9 +316,7 @@ AB 0A BASE ! 171 = ?~ Error #56: testing hex number
 
 CR .MSG( Results: ) CR
 CR .MSG( Pass messages #1 to #23 should be displayed above)
-CR .MSG( and no error messages) CR
-
--->
+CR .MSG( and no error messages) CR -->
 
 ( forth2012-pre-test )
 
@@ -460,9 +458,7 @@ T{ 2 1 RSHIFT -> 1 }T
 T{ 4 2 RSHIFT -> 1 }T
 T{ 8000 F RSHIFT -> 1 }T         \ BIGGEST
 T{ MSB 1 RSHIFT MSB AND -> 0 }T      \ RSHIFT ZERO FILLS MSBS
-T{ MSB 1 RSHIFT 2* -> MSB }T
-
--->
+T{ MSB 1 RSHIFT 2* -> MSB }T -->
 
 ( forth2012-core-test )
 
@@ -633,9 +629,7 @@ T{ : GR1 >R R> ; -> }T
 T{ : GR2 >R R@ R> DROP ; -> }T
 T{ 123 GR1 -> 123 }T
 T{ 123 GR2 -> 123 }T
-T{ 1S GR1 -> 1S }T   ( RETURN STACK HOLDS CELLS )
-
--->
+T{ 1S GR1 -> 1S }T ( Return stack holds cells ) -->
 
 ( forth2012-core-test )
 
@@ -669,9 +663,7 @@ T{ MID-UINT+1 1 - -> MID-UINT }T
 T{ 0 1+ -> 1 }T
 T{ -1 1+ -> 0 }T
 T{ 1 1+ -> 2 }T
-T{ MID-UINT 1+ -> MID-UINT+1 }T
-
--->
+T{ MID-UINT 1+ -> MID-UINT+1 }T -->
 
 ( forth2012-core-test )
 
@@ -689,9 +681,7 @@ T{ -2 NEGATE -> 2 }T
 T{ 0 ABS -> 0 }T
 T{ 1 ABS -> 1 }T
 T{ -1 ABS -> 1 }T
-T{ MIN-INT ABS -> MID-UINT+1 }T
-
--->
+T{ MIN-INT ABS -> MID-UINT+1 }T -->
 
 ( forth2012-core-test )
 
@@ -712,8 +702,7 @@ T{ 0 1 M* -> 0 S>D }T
 T{ 1 0 M* -> 0 S>D }T
 T{ 1 2 M* -> 2 S>D }T
 T{ 2 1 M* -> 2 S>D }T
-T{ 3 3 M* -> 9 S>D }T
--->
+T{ 3 3 M* -> 9 S>D }T -->
 
 ( forth2012-core-test )
 
@@ -728,8 +717,7 @@ T{ 1 MAX-INT M* -> MAX-INT S>D }T
 T{ 2 MAX-INT M* -> MAX-INT 1 LSHIFT 0 }T
 T{ MIN-INT MIN-INT M* -> 0 MSB 1 RSHIFT }T
 T{ MAX-INT MIN-INT M* -> MSB MSB 2/ }T
-T{ MAX-INT MAX-INT M* -> 1 MSB 2/ INVERT }T
--->
+T{ MAX-INT MAX-INT M* -> 1 MSB 2/ INVERT }T -->
 
 ( forth2012-core-test )
 
@@ -746,9 +734,7 @@ T{ -3 -3 * -> 9 }T
 
 T{ MID-UINT+1 1 RSHIFT 2 * -> MID-UINT+1 }T
 T{ MID-UINT+1 2 RSHIFT 4 * -> MID-UINT+1 }T
-T{ MID-UINT+1 1 RSHIFT MID-UINT+1 OR 2 * -> MID-UINT+1 }T
-
--->
+T{ MID-UINT+1 1 RSHIFT MID-UINT+1 OR 2 * -> MID-UINT+1 }T -->
 
 ( forth2012-core-test )
 
@@ -763,9 +749,7 @@ T{ MID-UINT+1 1 RSHIFT 2 UM* -> MID-UINT+1 0 }T
 T{ MID-UINT+1 2 UM* -> 0 1 }T
 T{ MID-UINT+1 4 UM* -> 0 2 }T
 T{ 1S 2 UM* -> 1S 1 LSHIFT 1 }T
-T{ MAX-UINT MAX-UINT UM* -> 1 1 INVERT }T
-
--->
+T{ MAX-UINT MAX-UINT UM* -> 1 1 INVERT }T -->
 
 ( forth2012-core-test )
 
@@ -785,8 +769,7 @@ T{ 1 S>D -1 FM/MOD -> 0 -1 }T
 T{ 2 S>D -1 FM/MOD -> 0 -2 }T
 T{ -1 S>D -1 FM/MOD -> 0 1 }T
 T{ -2 S>D -1 FM/MOD -> 0 2 }T
-T{ 2 S>D 2 FM/MOD -> 0 1 }T
--->
+T{ 2 S>D 2 FM/MOD -> 0 1 }T -->
 
 ( forth2012-core-test )
 
@@ -800,8 +783,7 @@ T{ MAX-INT S>D 1 FM/MOD -> 0 MAX-INT }T
 T{ MIN-INT S>D 1 FM/MOD -> 0 MIN-INT }T
 T{ MAX-INT S>D MAX-INT FM/MOD -> 0 1 }T
 T{ MIN-INT S>D MIN-INT FM/MOD -> 0 1 }T
-T{ 1S 1 4 FM/MOD -> 3 MAX-INT }T
--->
+T{ 1S 1 4 FM/MOD -> 3 MAX-INT }T -->
 
 ( forth2012-core-test )
 
@@ -816,9 +798,7 @@ T{ 2 MAX-INT M* MAX-INT FM/MOD -> 0 2 }T
 T{ MIN-INT MIN-INT M* MIN-INT FM/MOD -> 0 MIN-INT }T
 T{ MIN-INT MAX-INT M* MIN-INT FM/MOD -> 0 MAX-INT }T
 T{ MIN-INT MAX-INT M* MAX-INT FM/MOD -> 0 MIN-INT }T
-T{ MAX-INT MAX-INT M* MAX-INT FM/MOD -> 0 MAX-INT }T
-
--->
+T{ MAX-INT MAX-INT M* MAX-INT FM/MOD -> 0 MAX-INT }T -->
 
 ( forth2012-core-test )
 
@@ -835,8 +815,7 @@ T{ -2 S>D -1 SM/REM -> 0 2 }T
 T{ 2 S>D 2 SM/REM -> 0 1 }T
 T{ -1 S>D -1 SM/REM -> 0 1 }T
 T{ -2 S>D -2 SM/REM -> 0 1 }T
-T{  7 S>D  3 SM/REM -> 1 2 }T
--->
+T{  7 S>D  3 SM/REM -> 1 2 }T -->
 
 ( forth2012-core-test )
 
@@ -851,8 +830,7 @@ T{ 1S 1 4 SM/REM -> 3 MAX-INT }T
 T{ 2 MIN-INT M* 2 SM/REM -> 0 MIN-INT }T
 T{ 2 MIN-INT M* MIN-INT SM/REM -> 0 2 }T
 T{ 2 MAX-INT M* 2 SM/REM -> 0 MAX-INT }T
-T{ 2 MAX-INT M* MAX-INT SM/REM -> 0 2 }T
--->
+T{ 2 MAX-INT M* MAX-INT SM/REM -> 0 2 }T -->
 
 ( forth2012-core-test )
 
@@ -867,9 +845,7 @@ T{ 1 0 2 UM/MOD -> 1 0 }T
 T{ 3 0 2 UM/MOD -> 1 1 }T
 T{ MAX-UINT 2 UM* 2 UM/MOD -> 0 MAX-UINT }T
 T{ MAX-UINT 2 UM* MAX-UINT UM/MOD -> 0 2 }T
-T{ MAX-UINT MAX-UINT UM* MAX-UINT UM/MOD -> 0 MAX-UINT }T
-
--->
+T{ MAX-UINT MAX-UINT UM* MAX-UINT UM/MOD -> 0 MAX-UINT }T -->
 
 ( forth2012-core-test )
 
@@ -912,11 +888,10 @@ T{ 2 2 /MOD -> 2 2 T/MOD }T
 T{ -1 -1 /MOD -> -1 -1 T/MOD }T
 T{ -2 -2 /MOD -> -2 -2 T/MOD }T
 T{ 7 3 /MOD -> 7 3 T/MOD }T
--->
+T{ 7 -3 /MOD -> 7 -3 T/MOD }T -->
 
 ( forth2012-core-test )
 
-T{ 7 -3 /MOD -> 7 -3 T/MOD }T
 T{ -7 3 /MOD -> -7 3 T/MOD }T
 T{ -7 -3 /MOD -> -7 -3 T/MOD }T
 
@@ -931,12 +906,12 @@ T{ 2 1 / -> 2 1 T/ }T
 T{ -1 1 / -> -1 1 T/ }T
 T{ -2 1 / -> -2 1 T/ }T
 T{ 0 -1 / -> 0 -1 T/ }T
-T{ 1 -1 / -> 1 -1 T/ }T -->
+T{ 1 -1 / -> 1 -1 T/ }T
+T{ 2 -1 / -> 2 -1 T/ }T
+T{ -1 -1 / -> -1 -1 T/ }T -->
 
 ( forth2012-core-test )
 
-T{ 2 -1 / -> 2 -1 T/ }T
-T{ -1 -1 / -> -1 -1 T/ }T
 T{ -2 -1 / -> -2 -1 T/ }T
 T{ 2 2 / -> 2 2 T/ }T
 T{ -1 -1 / -> -1 -1 T/ }T
@@ -949,14 +924,12 @@ T{ MAX-INT 1 / -> MAX-INT 1 T/ }T
 T{ MIN-INT 1 / -> MIN-INT 1 T/ }T
 T{ MAX-INT MAX-INT / -> MAX-INT MAX-INT T/ }T
 T{ MIN-INT MIN-INT / -> MIN-INT MIN-INT T/ }T
-
--->
+T{ 0 1 MOD -> 0 1 TMOD }T
+T{ 1 1 MOD -> 1 1 TMOD }T
+T{ 2 1 MOD -> 2 1 TMOD }T -->
 
 ( forth2012-core-test )
 
-T{ 0 1 MOD -> 0 1 TMOD }T
-T{ 1 1 MOD -> 1 1 TMOD }T
-T{ 2 1 MOD -> 2 1 TMOD }T
 T{ -1 1 MOD -> -1 1 TMOD }T
 T{ -2 1 MOD -> -2 1 TMOD }T
 T{ 0 -1 MOD -> 0 -1 TMOD }T
@@ -967,15 +940,14 @@ T{ -2 -1 MOD -> -2 -1 TMOD }T
 T{ 2 2 MOD -> 2 2 TMOD }T
 T{ -1 -1 MOD -> -1 -1 TMOD }T
 T{ -2 -2 MOD -> -2 -2 TMOD }T
--->
-
-( forth2012-core-test )
-
 T{ 7 3 MOD -> 7 3 TMOD }T
 T{ 7 -3 MOD -> 7 -3 TMOD }T
 T{ -7 3 MOD -> -7 3 TMOD }T
 T{ -7 -3 MOD -> -7 -3 TMOD }T
-T{ MAX-INT 1 MOD -> MAX-INT 1 TMOD }T
+T{ MAX-INT 1 MOD -> MAX-INT 1 TMOD }T -->
+
+( forth2012-core-test )
+
 T{ MIN-INT 1 MOD -> MIN-INT 1 TMOD }T
 T{ MAX-INT MAX-INT MOD -> MAX-INT MAX-INT TMOD }T
 T{ MIN-INT MIN-INT MOD -> MIN-INT MIN-INT TMOD }T
@@ -985,29 +957,23 @@ T{ 1 2 1 */ -> 1 2 1 T*/ }T
 T{ 2 2 1 */ -> 2 2 1 T*/ }T
 T{ -1 2 1 */ -> -1 2 1 T*/ }T
 T{ -2 2 1 */ -> -2 2 1 T*/ }T
--->
-
-( forth2012-core-test )
-
 T{ 0 2 -1 */ -> 0 2 -1 T*/ }T
 T{ 1 2 -1 */ -> 1 2 -1 T*/ }T
 T{ 2 2 -1 */ -> 2 2 -1 T*/ }T
 T{ -1 2 -1 */ -> -1 2 -1 T*/ }T
 T{ -2 2 -1 */ -> -2 2 -1 T*/ }T
 T{ 2 2 2 */ -> 2 2 2 T*/ }T
-T{ -1 2 -1 */ -> -1 2 -1 T*/ }T
+T{ -1 2 -1 */ -> -1 2 -1 T*/ }T -->
+
+( forth2012-core-test )
+
 T{ -2 2 -2 */ -> -2 2 -2 T*/ }T
 T{ 7 2 3 */ -> 7 2 3 T*/ }T
 T{ 7 2 -3 */ -> 7 2 -3 T*/ }T
 T{ -7 2 3 */ -> -7 2 3 T*/ }T
 T{ -7 2 -3 */ -> -7 2 -3 T*/ }T
--->
-
-( forth2012-core-test )
-
 T{ MAX-INT 2 MAX-INT */ -> MAX-INT 2 MAX-INT T*/ }T
 T{ MIN-INT 2 MIN-INT */ -> MIN-INT 2 MIN-INT T*/ }T
-
 T{ 0 2 1 */MOD -> 0 2 1 T*/MOD }T
 T{ 1 2 1 */MOD -> 1 2 1 T*/MOD }T
 T{ 2 2 1 */MOD -> 2 2 1 T*/MOD }T
@@ -1015,14 +981,13 @@ T{ -1 2 1 */MOD -> -1 2 1 T*/MOD }T
 T{ -2 2 1 */MOD -> -2 2 1 T*/MOD }T
 T{ 0 2 -1 */MOD -> 0 2 -1 T*/MOD }T
 T{ 1 2 -1 */MOD -> 1 2 -1 T*/MOD }T
-T{ 2 2 -1 */MOD -> 2 2 -1 T*/MOD }T
-T{ -1 2 -1 */MOD -> -1 2 -1 T*/MOD }T
-T{ -2 2 -1 */MOD -> -2 2 -1 T*/MOD }T
-T{ 2 2 2 */MOD -> 2 2 2 T*/MOD }T
--->
+T{ 2 2 -1 */MOD -> 2 2 -1 T*/MOD }T -->
 
 ( forth2012-core-test )
 
+T{ -1 2 -1 */MOD -> -1 2 -1 T*/MOD }T
+T{ -2 2 -1 */MOD -> -2 2 -1 T*/MOD }T
+T{ 2 2 2 */MOD -> 2 2 2 T*/MOD }T
 T{ -1 2 -1 */MOD -> -1 2 -1 T*/MOD }T
 T{ -2 2 -2 */MOD -> -2 2 -2 T*/MOD }T
 T{ 7 2 3 */MOD -> 7 2 3 T*/MOD }T
@@ -1032,30 +997,23 @@ T{ -7 2 -3 */MOD -> -7 2 -3 T*/MOD }T
 T{ MAX-INT 2 MAX-INT */MOD -> MAX-INT 2 MAX-INT T*/MOD }T
 T{ MIN-INT 2 MIN-INT */MOD -> MIN-INT 2 MIN-INT T*/MOD }T
 
--->
-
-( forth2012-core-test )
-
   \ ===========================================================
 
 TESTING HERE , @ ! CELL+ CELLS C, C@ C! CHARS 2@ 2!
 
-HERE 1 ALLOT
-HERE
-CONSTANT 2NDA
-CONSTANT 1STA
-T{ 1STA 2NDA U< -> <TRUE> }T      \ HERE MUST GROW WITH ALLOT
-T{ 1STA 1+ -> 2NDA }T         \ ... BY ONE ADDRESS UNIT
-
--->
+HERE 1 ALLOT HERE CONSTANT 2NDA CONSTANT 1STA
+T{ 1STA 2NDA U< -> <TRUE> }T
+  \ `HERE` must grow with allot.
+T{ 1STA 1+ -> 2NDA }T -->
+  \ ...by one address unit.
 
 ( forth2012-core-test )
 
   \ MISSING TEST: NEGATIVE ALLOT
 
 HERE 1 , HERE 2 , CONSTANT 2ND CONSTANT 1ST
-T{ 1ST 2ND U< -> <TRUE> }T         \ HERE MUST GROW WITH ALLOT
-T{ 1ST CELL+ -> 2ND }T         \ ... BY ONE CELL
+T{ 1ST 2ND U< -> <TRUE> }T \ `HERE` must grow with allot
+T{ 1ST CELL+ -> 2ND }T \ ...by one cell
 T{ 1ST 1 CELLS + -> 2ND }T
 T{ 1ST @ 2ND @ -> 1 2 }T
 T{ 5 1ST ! -> }T
@@ -1065,15 +1023,16 @@ T{ 1ST @ 2ND @ -> 5 6 }T
 T{ 1ST 2@ -> 6 5 }T
 T{ 2 1 1ST 2! -> }T
 T{ 1ST 2@ -> 2 1 }T
-T{ 1S 1ST !  1ST @ -> 1S }T      \ CAN STORE CELL-WIDE VALUE
+T{ 1S 1ST !  1ST @ -> 1S }T \ can store cell-wide value
 
--->
+HERE 1 C, HERE 2 C, CONSTANT 2NDC CONSTANT 1STC
+
+T{ 1STC 2NDC U< -> <TRUE> }T -->
+  \ `HERE` must grow with allot.
 
 ( forth2012-core-test )
 
-HERE 1 C, HERE 2 C, CONSTANT 2NDC CONSTANT 1STC
-T{ 1STC 2NDC U< -> <TRUE> }T      \ HERE MUST GROW WITH ALLOT
-T{ 1STC CHAR+ -> 2NDC }T         \ ... BY ONE CHAR
+T{ 1STC CHAR+ -> 2NDC }T \ ...by one char
 T{ 1STC 1 CHARS + -> 2NDC }T
 T{ 1STC C@ 2NDC C@ -> 1 2 }T
 T{ 3 1STC C! -> }T
@@ -1088,28 +1047,23 @@ TESTING ALIGN ALIGNED +! ALLOT
 need align need aligned
 ALIGN 1 ALLOT HERE ALIGN HERE 3 CELLS ALLOT
 CONSTANT A-ADDR  CONSTANT UA-ADDR
--->
-
-( forth2012-core-test )
 
 T{ UA-ADDR ALIGNED -> A-ADDR }T
 T{    1 A-ADDR C!  A-ADDR C@ ->    1 }T
 T{ 1234 A-ADDR  !  A-ADDR  @ -> 1234 }T
-T{ 123 456 A-ADDR 2!  A-ADDR 2@ -> 123 456 }T
+T{ 123 456 A-ADDR 2!  A-ADDR 2@ -> 123 456 }T -->
+
+( forth2012-core-test )
+
 T{ 2 A-ADDR CHAR+ C!  A-ADDR CHAR+ C@ -> 2 }T
 T{ 3 A-ADDR CELL+ C!  A-ADDR CELL+ C@ -> 3 }T
 T{ 1234 A-ADDR CELL+ !  A-ADDR CELL+ @ -> 1234 }T
 T{ 123 456 A-ADDR CELL+ 2!  A-ADDR CELL+ 2@ -> 123 456 }T
 
-: BITS ( X -- U )
-   0 SWAP BEGIN  DUP
-          WHILE  DUP MSB AND IF >R 1+ R> THEN 2*
-          REPEAT DROP ;
+: BITS ( X -- U ) 0 SWAP BEGIN  DUP
+                         WHILE  DUP MSB AND IF >R 1+ R> THEN 2*
+                         REPEAT DROP ;
   \ CHARACTERS >= 1 AU, <= SIZE OF CELL, >= 8 BITS
-
--->
-
-( forth2012-core-test )
 
 T{ 1 CHARS 1 < -> <FALSE> }T
 T{ 1 CHARS 1 CELLS > -> <FALSE> }T
@@ -1123,12 +1077,11 @@ T{ 1S BITS 10 < -> <FALSE> }T
 
 T{ 0 1ST ! -> }T
 T{ 1 1ST +! -> }T
-T{ 1ST @ -> 1 }T
-T{ -1 1ST +! 1ST @ -> 0 }T
-
--->
+T{ 1ST @ -> 1 }T -->
 
 ( forth2012-core-test )
+
+T{ -1 1ST +! 1ST @ -> 0 }T
 
   \ ===========================================================
 
@@ -1147,9 +1100,7 @@ T{ : GC3 [ GC1 ] LITERAL ; -> }T
 T{ GC3 -> 58 }T
 T{ : GC4 S" XY" ; -> }T
 T{ GC4 SWAP DROP -> 2 }T
-T{ GC4 DROP DUP C@ SWAP CHAR+ C@ -> 58 59 }T
-
--->
+T{ GC4 DROP DUP C@ SWAP CHAR+ C@ -> 58 59 }T -->
 
 ( forth2012-core-test )
 
@@ -1172,12 +1123,11 @@ T{ : GT3 GT2 LITERAL ; -> }T
 T{ GT3 -> ' GT1 }T
 T{ GT1STRING COUNT -> GT1STRING CHAR+ 3 }T
 
--->
+T{ : GT4 POSTPONE GT1 ; IMMEDIATE -> }T
+T{ : GT5 GT4 ; -> }T -->
 
 ( forth2012-core-test )
 
-T{ : GT4 POSTPONE GT1 ; IMMEDIATE -> }T
-T{ : GT5 GT4 ; -> }T
 T{ GT5 -> 123 }T
 T{ : GT6 345 ; IMMEDIATE -> }T
 T{ : GT7 POSTPONE GT6 ; -> }T
@@ -1218,6 +1168,7 @@ T{ 6 GI3 -> 6 }T -->
 ( forth2012-core-test )
 
 T{ : GI4 BEGIN DUP 1+ DUP 5 > UNTIL ; -> }T
+
 T{ 3 GI4 -> 3 4 5 6 }T
 T{ 5 GI4 -> 5 6 }T
 T{ 6 GI4 -> 6 7 }T
@@ -1225,18 +1176,18 @@ T{ 6 GI4 -> 6 7 }T
 T{ : GI5 BEGIN DUP 2 >
          WHILE DUP 5 <
          WHILE DUP 1+ REPEAT 123 ELSE 345 THEN ; -> }T
+
 T{ 1 GI5 -> 1 345 }T
 T{ 2 GI5 -> 2 345 }T
 T{ 3 GI5 -> 3 4 5 123 }T
 T{ 4 GI5 -> 4 5 123 }T
-T{ 5 GI5 -> 5 123 }T
-
--->
+T{ 5 GI5 -> 5 123 }T -->
 
 ( forth2012-core-test )
 
 T{ : GI6 ( N -- 0,1,..N )
      DUP IF DUP >R 1- RECURSE R> THEN ; -> }T
+
 T{ 0 GI6 -> 0 }T
 T{ 1 GI6 -> 0 1 }T
 T{ 2 GI6 -> 0 1 2 }T
@@ -1254,7 +1205,8 @@ TESTING DO LOOP +LOOP I J UNLOOP LEAVE EXIT
 need do need j
 
 T{ : GD1 DO I LOOP ; -> }T
-T{ 4 1 GD1 -> 1 2 3 }T  T{ 2 -1 GD1 -> -1 0 1 }T
+T{ 4 1 GD1 -> 1 2 3 }T
+T{ 2 -1 GD1 -> -1 0 1 }T
 T{ MID-UINT+1 MID-UINT GD1 -> MID-UINT }T
 
 T{ : GD2 DO I -1 +LOOP ; -> }T
@@ -1266,10 +1218,11 @@ T{ : GD3 DO 1 0 DO J LOOP LOOP ; -> }T
 T{ 4 1 GD3 -> 1 2 3 }T
 T{ 2 -1 GD3 -> -1 0 1 }T
 T{ MID-UINT+1 MID-UINT GD3 -> MID-UINT }T
-T{ : GD4 DO 1 0 DO J LOOP -1 +LOOP ; -> }T
-T{ 1 4 GD4 -> 4 3 2 1 }T -->
+T{ : GD4 DO 1 0 DO J LOOP -1 +LOOP ; -> }T -->
 
 ( forth2012-core-test )
+
+T{ 1 4 GD4 -> 4 3 2 1 }T
 
 T{ -1 2 GD4 -> 2 1 0 -1 }T
 T{ MID-UINT MID-UINT+1 GD4 -> MID-UINT+1 MID-UINT }T
@@ -1329,9 +1282,7 @@ T{ : WEIRD: CREATE DOES> 1 + DOES> 2 + ; -> }T
 T{ WEIRD: W1 -> }T
 T{ ' W1 >BODY -> HERE }T
 T{ W1 -> HERE 1 + }T
-T{ W1 -> HERE 2 + }T
-
--->
+T{ W1 -> HERE 2 + }T -->
 
 ( forth2012-core-test )
 
@@ -1354,9 +1305,7 @@ T{ GE4 -> 345 }T
 T{ : GE6 GE1 GE5 ; -> }T \ TEST EVALUATE IN COMPILE STATE
 T{ GE6 -> 123 }T
 T{ : GE7 GE2 GE5 ; -> }T
-T{ GE7 -> 124 }T
-
--->
+T{ GE7 -> 124 }T -->
 
 ( forth2012-core-test )
 
@@ -1386,9 +1335,7 @@ T{ 2 SCANS !
 
 : GS2  5 SCANS ! S" 123 RESCAN?" EVALUATE ;
 
-T{ GS2 -> 123 123 123 123 123 }T
-
--->
+T{ GS2 -> 123 123 123 123 123 }T -->
 
 ( forth2012-core-test )
 
@@ -2413,13 +2360,8 @@ T{ ' TUF2-EB 2RND-TEST-BLOCKS TUF2 2SWAP 2DROP 2= -> TRUE }T
 
 TESTING >IN manipulation from a block source
 
-: TIN ( blk -- )
-    S" 1 8 >IN +!     2        3" WRITE-BLOCK ;
+: TIN ( blk -- ) S" 1 8 >IN +!     2        3" WRITE-BLOCK ;
 T{ RND-TEST-BLOCK DUP TIN LOAD -> 1 3 }T
-
--->
-
-( forth2012-block-test )
 
   \ ===========================================================
 
@@ -2438,8 +2380,7 @@ need save-input need restore-input
         [CHAR] | OVER C!       \ blk c-addr[i+1]
     LOOP DROP                  \ blk   blk:"\ | | | | ... |"
     UPDATE SAVE-BUFFERS FLUSH  \ blk
-    1024 SWAP LOAD ;           \ c/l
--->
+    1024 SWAP LOAD ; -->       \ c/l
 
 ( forth2012-block-test )
 
@@ -2453,20 +2394,15 @@ need save-input need restore-input
 [?THEN]
 
 : WRITE-BLOCK-LINE ( lin-addr[i] c-addr u -- lin-addr[i+1] )
-    2>R DUP C/L CHARS + SWAP 2R> ROT SWAP MOVE ;
-
--->
+    2>R DUP C/L CHARS + SWAP 2R> ROT SWAP MOVE ; -->
 
 ( forth2012-block-test )
 
   \ Discards to the end of the line
 : TCSIRIR1 ( blk -- )
-    BLANK-BUFFER
-    C/L 1024 U< IF
-        S" 2222 \ 3333" WRITE-BLOCK-LINE
-        S" 4444"        WRITE-BLOCK-LINE
-    THEN
-    DROP UPDATE SAVE-BUFFERS ;
+  BLANK-BUFFER C/L 1024 U< IF S" 2222 \ 3333" WRITE-BLOCK-LINE
+                              S" 4444"        WRITE-BLOCK-LINE
+  THEN DROP UPDATE SAVE-BUFFERS ;
 T{ RND-TEST-BLOCK DUP TCSIRIR1 LOAD -> 2222 4444 }T
 
 VARIABLE T-CNT 0 T-CNT !
@@ -2517,29 +2453,26 @@ T{ 2 RND-TEST-BLOCK-SEQ DUP TCSIRIR3 LOAD
   \ Remember that the string comes out backwards
 
 : TCSIRIR4 ( blks -- )
-    C/L 1024 U< IF
-        DUP BLANK-BUFFER
-        S" 0 T-CNT !"                   WRITE-BLOCK-LINE
-        S" <# MARK A SAVE-INPUT MARK B" WRITE-BLOCK-LINE
-        S" MARK C REFILL MARK D"        WRITE-BLOCK-LINE
--->
+  C/L 1024 U< IF
+    DUP BLANK-BUFFER
+    S" 0 T-CNT !"                   WRITE-BLOCK-LINE
+    S" <# MARK A SAVE-INPUT MARK B" WRITE-BLOCK-LINE
+    S" MARK C REFILL MARK D"        WRITE-BLOCK-LINE -->
 
 ( forth2012-block-test )
 
-        DROP UPDATE 1+ BLANK-BUFFER
-        S" MARK E ABS CHAR 0 + HOLD"    WRITE-BLOCK-LINE
-        S" 1 T-CNT +! MARK F ' RESTORE-INPUT "
-        S" T-CNT @ 2 < ?EXECUTE MARK G" s+
-                                        WRITE-BLOCK-LINE
-        S" MARK H 0 0 #>"               WRITE-BLOCK-LINE
-        DROP UPDATE SAVE-BUFFERS
-    ELSE
-        S" 0 TCSIRIR4-EXPECTED"         WRITE-BLOCK
-    THEN ;
+    DROP UPDATE 1+ BLANK-BUFFER
+    S" MARK E ABS CHAR 0 + HOLD"    WRITE-BLOCK-LINE
+    S" 1 T-CNT +! MARK F ' RESTORE-INPUT "
+    S" T-CNT @ 2 < ?EXECUTE MARK G" s+
+                                    WRITE-BLOCK-LINE
+    S" MARK H 0 0 #>"               WRITE-BLOCK-LINE
+    DROP UPDATE SAVE-BUFFERS
+  ELSE
+    S" 0 TCSIRIR4-EXPECTED"         WRITE-BLOCK
+  THEN ;
 T{ 2 RND-TEST-BLOCK-SEQ DUP TCSIRIR4 LOAD TCSIRIR4-EXPECTED S=
-   -> 0 TRUE }T
-
--->
+   -> 0 TRUE }T -->
 
 ( forth2012-block-test )
 
@@ -7188,8 +7121,8 @@ cr .( Forth-2012 tests completed ) cr cr
   \ tests. Adapt `\?` and `~` to blocks. Improve messages.
   \
   \ 2018-03-12: Try tests: core, coreplus, coreext, double,
-  \ exception, facility...  Fix or note errors. Start the
-  \ adaption of forth2012-prelim-test.  Compact the code,
-  \ saving 4 blocks. Try tests: string, tools, searchorder.
+  \ exception, facility, string, tools, searchorder. Fix or
+  \ note errors. Start the adaption of forth2012-prelim-test.
+  \ Compact the code, saving 8 blocks.
 
   \ vim: filetype=soloforth
