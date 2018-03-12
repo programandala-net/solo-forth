@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201803111947
+; Last modified: 201803121434
 
 include version.z80s
 
@@ -15723,15 +15723,15 @@ question_backslash.exit:
 ; }doc
 
   dw loading_question_ ; input stream from disk?
-  dw question_branch_,backslash.loading
+  dw zero_branch_,backslash.interpreting
 
-  ; Interpreting
-  dw hash_tib_,fetch_,to_in_,store_
-  dw exit_
-
-backslash.loading:
   ; Loading
   dw minus_to_in_slash_l_,parsed_
+  dw exit_
+
+backslash.interpreting:
+  ; Interpreting
+  dw hash_tib_,fetch_,to_in_,store_
   dw exit_
 
 ; ----------------------------------------------
