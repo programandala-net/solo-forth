@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803122316
+  \ Last modified: 201803130024
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -527,16 +527,35 @@ code m+ ( d1|ud1 n -- d2|ud2 )
 
 unneeding m*/ ?(
 
-: m*/ ( d1 n1 +n2 -- d2 )
-  >r s>d >r abs -rot s>d r> xor r> swap >r >r dabs
-  rot tuck um* 2swap um* swap
-  >r 0 d+ r> -rot i um/mod -rot r> um/mod -rot r>
-  if   if 1 0 d+ then dnegate
-  else drop then ; ?)
+
+  \ ............................................
+  \ XXX OLD:
+  \
+  \ : m*/ ( d1 n1 +n2 -- d2 )
+  \   >r s>d >r abs -rot s>d r> xor r> swap >r >r dabs
+  \   rot tuck um* 2swap um* swap
+  \   >r 0 d+ r> -rot i um/mod -rot r> um/mod -rot r>
+  \   if   if 1 0 d+ then dnegate
+  \   else drop then ; ?)
 
   \ Credit:
   \
   \ Code of `m*/` from Gforth 0.7.3.
+
+  \ XXX REMARK -- 2018-03-13. This version of `m*/` does not
+  \ pass the Forth-2012 Test Suite in Solo Forth, but it does
+  \ in Gforth.
+  \
+  \ ............................................
+
+: m*/ ( d1 n1 +n2 -- d2 )
+  abs >r 2dup xor swap abs >r -rot
+  dabs swap r@ um* rot r> um* rot 0 d+
+  r@ um/mod -rot r> um/mod nip swap rot 0< if dnegate then ;
+
+  \ Credit:
+  \
+  \ Code of `m*/` from DX-Forth 4.15 for CP/M.
 
   \ doc{
   \
@@ -644,6 +663,7 @@ need 2nip need cell-bits
   \
   \ 2018-03-07: Add words' pronunciaton.
   \
-  \ 2018-03-12: Fix `d2/`.
+  \ 2018-03-12: Fix `d2/`. Fix `m*/`: replace the Gforth's code
+  \ with the DZX-Forth's code.
 
   \ vim: filetype=soloforth
