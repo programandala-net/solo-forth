@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803112042
+  \ Last modified: 201803122353
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -132,7 +132,7 @@
 
 ( ttester )
 
-need environment? need [if] need do need blk-line
+need environment? need [if] need do need blk-line need s+
 
 BASE @ DECIMAL
 
@@ -244,40 +244,32 @@ HAS-FLOATING-STACK [IF]
       FDEPTH START-FDEPTH @ > IF
         FDEPTH START-FDEPTH @ - 0 DO
           ACTUAL-FRESULTS I FLOATS + F@ FCONF= INVERT
-          IF S" INCORRECT FP RESULT: " ERROR LEAVE THEN
+          IF S" incorrect FP result:" ERROR LEAVE THEN
         LOOP
       THEN
-    ELSE S" WRONG NUMBER OF FP RESULTS: " ERROR THEN ; -->
+    ELSE S" Wrong number of FP results:" ERROR THEN ; -->
 
 ( ttester )
 
   : F...}T ( -- )
     FCURSOR @ START-FDEPTH @ + ACTUAL-FDEPTH @ <> IF
-      \ S" NUMBER OF FLOAT RESULTS BEFORE '->' DOES NOT MATCH ...}T SPECIFICATION: " ERROR
-      \ XXX TMP --:
-      S" # OF FLOAT RESULTS BEFORE '->' DOESN'T MATCH ...}T:"
-      ERROR
+      S" Number of float results before '->' "
+      S" does not match '...}t' specification:" s+ ERROR
     ELSE FDEPTH START-FDEPTH @ = 0= IF
-      \ S" NUMBER OF FLOAT RESULTS BEFORE AND AFTER '->' DOES NOT MATCH: " ERROR
-      \ XXX TMP --:
-      S" # OF FLOAT RESULTS BEFORE&AFTER '->' DOESN'T MATCH:"
-      ERROR
-    THEN THEN ; -->
-
-( ttester )
+      S" Number of float results before and after '->'"
+      S" does not match:" s+ ERROR THEN THEN ;
 
   : FTESTER ( R -- )
     FDEPTH 0= ACTUAL-FDEPTH @
     FCURSOR @ START-FDEPTH @ + 1+ < OR IF
-      \ S" NUMBER OF FLOAT RESULTS AFTER '->' BELOW ...}T SPECIFICATION: " ERROR
-      \ XXX TMP --:
-      S" # OF FLOAT RESULTS AFTER '->' BELOW ...}T SPEC.:"
-      ERROR
+      S" Number of float results after '->' "
+      S" below '...}t' specification: " s+ ERROR
     ELSE ACTUAL-FRESULTS FCURSOR @ FLOATS + F@ FCONF= 0= IF
-      S" INCORRECT FP RESULT: " ERROR
-    THEN THEN 1 FCURSOR +! ;
+      S" Incorrect FP result:" ERROR THEN THEN 1 FCURSOR +! ;
 
-[ELSE]
+[ELSE] -->
+
+( ttester )
 
   : EMPTY-FSTACK ;  : F{ ;  : F-> ;  : F} ;  : F...}T ;
 
@@ -286,19 +278,15 @@ HAS-FLOATING-STACK [IF]
     : COMPUTE-CELLS-PER-FP ( -- U )
       DEPTH 0E DEPTH 1- >R FDROP R> SWAP - ;
 
-    COMPUTE-CELLS-PER-FP CONSTANT CELLS-PER-FP -->
-
-( ttester )
+    COMPUTE-CELLS-PER-FP CONSTANT CELLS-PER-FP
 
     : FTESTER ( R -- )
       DEPTH CELLS-PER-FP < ACTUAL-DEPTH @
       XCURSOR @ START-DEPTH @ + CELLS-PER-FP + < OR IF
-        \ S" NUMBER OF RESULTS AFTER '->' BELOW ...}T SPECIFICATION: " ERROR EXIT
-        \ XXX TMP --:
-        S" # OF RESULTS AFTER '->' BELOW ...}T SPECIFICATION: "
-        ERROR EXIT
+        S" Number of results after '->' "
+        S" below '...}t' specification:" s+ ERROR EXIT
       ELSE ACTUAL-RESULTS XCURSOR @ CELLS + F@ FCONF= 0= IF
-        S" INCORRECT FP RESULT: " ERROR
+        S" Incorrect FP result:" ERROR
       THEN THEN CELLS-PER-FP XCURSOR +! ;
 
   [THEN]
@@ -314,15 +302,19 @@ HAS-FLOATING-STACK [IF]
   IF DEPTH START-DEPTH @ DO DROP LOOP THEN EMPTY-FSTACK ;
   \ Empty stack; handles underflowed stack too.
 
-: ERROR1 ( ca len -- ) CR TYPE CR BLK-LINE TYPE CR
-                       EMPTY-STACK  #ERRORS @ 1 + #ERRORS ! ;
+VARIABLE ERROR-PAUSE ERROR-PAUSE ON
+
+: ERROR1 ( ca len -- )
+  CR TYPE CR BLK-LINE TYPE CR
+  ERROR-PAUSE @ IF   CR ." Press any key to continue" KEY DROP
+                THEN EMPTY-STACK  #ERRORS @ 1 + #ERRORS ! ;
   \ The default error manager. Display an error message
   \ followed by the line that had the error. Empty the stack
   \ and update the error count.
 
 ' ERROR1 ERROR-XT !
 
-: T{ ( -- ) DEPTH START-DEPTH ! 0 XCURSOR ! F{ ;
+: T{ ( -- ) DEPTH START-DEPTH ! 0 XCURSOR ! F{ ; -->
 
   \ doc{
   \
@@ -334,12 +326,14 @@ HAS-FLOATING-STACK [IF]
   \
   \ }doc
 
+( ttester )
+
 : -> ( i*x -- )
   DEPTH DUP ACTUAL-DEPTH ! START-DEPTH @ > IF
     \ There is something on the stack.
     DEPTH START-DEPTH @ - 0 DO ACTUAL-RESULTS I CELLS + ! LOOP
       \ Save it.
-  THEN F-> ; -->
+  THEN F-> ;
 
   \ doc{
   \
@@ -351,8 +345,6 @@ HAS-FLOATING-STACK [IF]
   \ See: `t{`, `}t`.
   \
   \ }doc
-
-( ttester )
 
 : }T ( i*x -- )
   DEPTH ACTUAL-DEPTH @ = IF \ depths match
@@ -382,25 +374,19 @@ HAS-FLOATING-STACK [IF]
 
 : ...}T ( -- )
   XCURSOR @ START-DEPTH @ + ACTUAL-DEPTH @ <> IF
-    \ S" NUMBER OF CELL RESULTS BEFORE '->' DOES NOT MATCH ...}T SPECIFICATION: " ERROR
-    \ XXX TMP --:
-    S" # OF CELL RESULTS BEFORE '->' DOESN'T MATCH ...}T SPEC."
-    ERROR
+    S" Number of cell results before '->' "
+    S" does not match '...}t' specification:" s+ ERROR
   ELSE DEPTH START-DEPTH @ = 0= IF
-    \ S" NUMBER OF CELL RESULTS BEFORE AND AFTER '->' DOES NOT MATCH: " ERROR
-    \ XXX TMP --:
-    S" # OF CELL RESULTS BEFORE AND AFTER '->' DOESN'T MATCH: "
-    ERROR
+    S" Number of cell results before and after '->' "
+    S" does not match:" s+ ERROR
   THEN THEN F...}T ;
 
 : XTESTER ( X -- )
   DEPTH 0= ACTUAL-DEPTH @ XCURSOR @ START-DEPTH @ + 1+ < OR IF
-    \ S" NUMBER OF CELL RESULTS AFTER '->' BELOW ...}T SPECIFICATION: " ERROR EXIT
-    \ XXX TMP --:
-    S" # OF CELL RESULTS AFTER '->' BELOW ...}T SPEC.: "
-    ERROR EXIT
+    S" Number of cell results after '->' "
+    S" below '...}t' specification:" s+ ERROR EXIT
   ELSE ACTUAL-RESULTS XCURSOR @ CELLS + @ <> IF
-    S" INCORRECT CELL RESULT: " ERROR
+    S" Incorrect cell result:" ERROR
   THEN THEN 1 XCURSOR +! ; -->
 
 ( ttester )
@@ -496,5 +482,9 @@ BASE !
   \ `blk-line`, `>in/l` and `->in/l` from `testing`. Modify
   \ `error1` to display the current block line. Remove trailing
   \ spaces from the `testing` messages.
+  \
+  \ 2018-03-12: Restore the original long messages and convert
+  \ them to lowercase. Add a pause to `error1`. Compact the
+  \ code, saving one block.
 
   \ vim: filetype=soloforth
