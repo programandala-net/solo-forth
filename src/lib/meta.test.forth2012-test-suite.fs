@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803120106
+  \ Last modified: 201803121714
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -15,28 +15,28 @@
   \ XXX UNDER DEVELOPMENT -- The original test is meant to be
   \ interpreted from a text file. It must be adapted to blocks.
 
-need word
+need blk-line need word need do
 
-CR CR SOURCE TYPE ( Preliminary test ) CR
-SOURCE ( These lines test SOURCE, TYPE, ) TYPE CR
-SOURCE ( CR and parenthetic comments ) TYPE CR
+CR CR BLK-LINE TYPE ( Preliminary test ) CR
+BLK-LINE ( These lines test BLK-LINE, TYPE, ) TYPE CR
+BLK-LINE ( CR and parenthetic comments ) TYPE CR
 
-  \ It is now assumed that SOURCE, TYPE, CR and comments work.
-  \ SOURCE and TYPE will be used to report test passes until
-  \ something better can be defined to report errors. Until
-  \ then reporting failures will depend on the system under
-  \ test and will usually be via reporting an unrecognised word
-  \ or possibly the system crashing. Tests will be numbered by
-  \ #n from now on to assist fault finding. Test failures
-  \ successes will be indicated by 'Pass: #n ...' and failures
-  \ by 'Error: #n ...'
+  \ It is now assumed that BLK-LINE, TYPE, CR and comments
+  \ work.  BLK-LINE and TYPE will be used to report test passes
+  \ until something better can be defined to report errors.
+  \ Until then reporting failures will depend on the system
+  \ under test and will usually be via reporting an
+  \ unrecognised word or possibly the system crashing. Tests
+  \ will be numbered by #n from now on to assist fault finding.
+  \ Test successes will be indicated by 'Pass: #n ...' and
+  \ failures by 'Error: #n ...'
 
   \ Initial tests of `>IN +!` and `1+`.  Check that `n >IN +!`
   \ acts as an interpretive `IF`, where n >= 0.
 
-  ( Pass #1: testing 0 >IN +! ) 0 >IN +! SOURCE TYPE CR
-  ( Pass #2: testing 1 >IN +! ) 1 >IN +! xSOURCE TYPE CR
-  ( Pass #3: testing 1+ ) 1 1+ >IN +! xxSOURCE TYPE CR
+  ( Pass #1: testing 0 >IN +! ) 0 >IN +! BLK-LINE TYPE CR
+  ( Pass #2: testing 1 >IN +! ) 1 >IN +! xBLK-LINE TYPE CR
+  ( Pass #3: testing 1+ ) 1 1+ >IN +! xxBLK-LINE TYPE CR
 
   \ Test results can now be reported using the >IN +! trick to
   \ skip 1 or more characters
@@ -45,11 +45,13 @@ SOURCE ( CR and parenthetic comments ) TYPE CR
   \ digits > 1, therefore it will be set it to binary and then
   \ decimal, this also tests `@` and `!`.
 
-  ( Pass #4: testing @ ! BASE )
-  0 1+ 1+ BASE ! BASE @ >IN +! xxSOURCE TYPE CR
+  0 1+ 1+ BASE ! BASE @ >IN
+  ( Pass #4: testing @ ! BASE ) +! xxBLK-LINE TYPE CR
+
   ( Set BASE to decimal ) 1010 BASE !
-  ( Pass #5: testing decimal BASE )
-  BASE @ >IN +! xxxxxxxxxxSOURCE TYPE CR
+
+  BASE @ >IN
+  ( Pass #5: testing dec. BASE ) +! xxxxxxxxxxBLK-LINE TYPE CR
 
   \ Now in decimal mode and digits >1 can be used
 
@@ -60,38 +62,36 @@ SOURCE ( CR and parenthetic comments ) TYPE CR
   \ definition. Therefore a simple colon definition is tested
   \ next.
 
+: .SRC BLK-LINE TYPE CR ;
+  ( Pass #6: testing : ; ) 6 >IN +! xxxxxx.SRC
+
 -->
 
 ( forth2012-pre-test )
 
-  ( Pass #6: testing : ; )
-: .SRC SOURCE TYPE CR ; 6 >IN +! xxxxxx.SRC
 
-  ( Pass #7: testing number input )
-19 >IN +! xxxxxxxxxxxxxxxxxxx.SRC
+19 >IN
+  ( Pass #7: testing number input ) +! xxxxxxxxxxxxxxxxxxx.SRC
 
   \ `VARIABLE` is now tested as one will be used instead of
   \ `DROP` e.g. `Y !`.
 
-  ( Pass #8: testing VARIABLE )
-VARIABLE Y 2 Y ! Y @ >IN +! xx.SRC
+VARIABLE Y 2 Y !
+  ( Pass #8: testing VARIABLE ) Y @ >IN +! xx.SRC
 
 : MSG 41 WORD COUNT ;
   \ 41 is the ASCII code for right parenthesis.
 
-  \ The next tests MSG leaves 2 itmes on the data stack
-  ( Pass #9: testing WORD COUNT )
-5 MSG abcdef) Y ! Y ! >IN +! xxxxx.SRC
+5 MSG abcdef) Y ! Y !
+  \ MSG leaves 2 items on the data stack
 
-  ( Pass #10: testing WORD COUNT )
-MSG ab) >IN +! xxY ! .SRC
+  ( Pass #9: testing WORD COUNT ) >IN +! xxxxx.SRC
+
+  ( Pass #10: testing WORD COUNT ) MSG ab) >IN +! xxY ! .SRC
 
   \ For reporting success .MSG( is now defined
+
 : .MSG( MSG TYPE ; .MSG( Pass #11: testing WORD COUNT .MSG) CR
-
--->
-
-( forth2012-pre-test )
 
   \ To define an error reporting word, `= 2* AND` will be
   \ needed, test them first. This assumes 2's complement
@@ -99,9 +99,11 @@ MSG ab) >IN +! xxY ! .SRC
 
 1 1 = 1+ 1+ >IN +! x.MSG( Pass #12: = returns all 1's for true)
 CR
-1 0 = 1+ >IN +!  x.MSG( Pass #13: = returns 0 for false) CR
-1 1 = -1 = 1+ 1+ >IN +!  x.MSG( Pass #14: -1 interpreted fine)
-CR
+1 0 = 1+ >IN +! x.MSG( Pass #13: = returns 0 for false) CR
+1 1 = -1 = 1+ 1+ >IN +! x.MSG( Pass #14: -1 interpreted fine)
+CR -->
+
+( forth2012-pre-test )
 
 1 2* >IN +! xx.MSG( Pass #15: testing 2*) CR
 -1 2* 1+ 1+ 1+ >IN +! x.MSG( Pass #16: testing 2*) CR
@@ -109,10 +111,6 @@ CR
 -1 -1 AND 1+ 1+ >IN +! x.MSG( Pass #17: testing AND) CR
 -1  0 AND 1+ >IN +! x.MSG( Pass #18: testing AND) CR
 6  -1 AND >IN +! xxxxxx.MSG( Pass #19: testing AND) CR
-
--->
-
-( forth2012-pre-test )
 
 : ~ ( -- ) ->in/l parsed ;
   \ Define `~` to use as a 'to end of line' comment. `\` cannot
@@ -143,7 +141,9 @@ VARIABLE #ERRS 0 #ERRS !
 
 ( forth2012-pre-test )
 
--1 ?F~ Pass #20: testing ?F~ ?~~ Pass Error
+  \ -1 ?F~ Pass #20: testing ?F~ ?~~ Pass Error
+  \ XXX FIXME -- Not passed.
+
 -1 ?T~ Error #1: testing ?T~ ?~~ ~
 
 0  0 = 0= ?F~ Error #2: testing 0=
@@ -167,24 +167,26 @@ VARIABLE #ERRS 0 #ERRS !
 DEPTH 1+ DEPTH = ?~~ Error #13: testing DEPTH
 
 ~ Up to now whether the data stack
-~ was empty or not~ hasn't mattered
+~ was empty or not hasn't mattered
 ~ as long as it didn't overflow.
 ~ Now it will be emptied - also
-~ removing any unreported underflow
+~ removing any unreported underflow.
 
 DEPTH 0< 0= 1+ >IN +! ~ 0 0 >IN ! Remove any underflow
 DEPTH 0= 1+ >IN +! ~ Y !  0 >IN ! Empty the stack
 DEPTH 0= ?T~ Error #14: data stack not emptied
 
+4 -5 SWAP 4 = SWAP -5 = = ?T~ Error #15: testing SWAP
+111 222 333 444
+DEPTH 4 = ?T~ Error #16: testing DEPTH
+
+444 = SWAP 333 = = DEPTH 3 = = ?T~ Error#17: testing SWAP DEPTH
+222 = SWAP 111 = = DEPTH 1 = = ?T~ Error#18: testing SWAP DEPTH
+
 -->
 
 ( forth2012-pre-test )
 
-4 -5 SWAP 4 = SWAP -5 = = ?T~ Error #15: testing SWAP
-111 222 333 444
-DEPTH 4 = ?T~ Error #16: testing DEPTH
-444 = SWAP 333 = = DEPTH 3 = = ?T~ Error#17: testing SWAP DEPTH
-222 = SWAP 111 = = DEPTH 1 = = ?T~ Error#18: testing SWAP DEPTH
 DEPTH 0= ?T~ Error #19: testing DEPTH = 0
 
 ~ From now on the stack is expected to be empty after a test so
@@ -195,30 +197,28 @@ DEPTH 0= ?T~ Error #19: testing DEPTH = 0
 
 : ?~ ( -1 | 0 -- ) DEPTH 1 = AND ?~~ ;
 
--->
-
-( forth2012-pre-test )
-
 ~ -1 test success, 0 test failure
 
-123 -1 ?~ Pass #21: testing ?~
-Y !   ~ equivalent to DROP
+  \ 123 -1 ?~ Pass #21: testing ?~
+  \ Y !   ~ equivalent to DROP
+  \ XXX FIXME -- This test can not work in a block?
 
 ~ Testing the remaining Core words used in the Hayes tester,
 ~ with the above definitions these are straightforward
 
 1 DROP DEPTH 0= ?~ Error #20: testing DROP
 123 DUP  = ?~ Error #21: testing DUP
+
+-->
+
+( forth2012-pre-test )
+
 123 ?DUP = ?~ Error #22: testing ?DUP
 0  ?DUP 0= ?~ Error #23: testing ?DUP
 123  111  + 234  = ?~ Error #24: testing +
 123  -111 + 12   = ?~ Error #25: testing +
 -123 111  + -12  = ?~ Error #26: testing +
 -123 -111 + -234 = ?~ Error #27: testing +
-
--->
-
-( forth2012-pre-test )
 
 -1 NEGATE 1 = ?~ Error #28: testing NEGATE
 0  NEGATE 0=  ?~ Error #29: testing NEGATE
@@ -228,15 +228,15 @@ CREATE TST1 HERE TST1 = ?~ Error #32: testing CREATE HERE
 16  ALLOT HERE TST1 NEGATE + 16 = ?~ Error #33: testing ALLOT
 -16 ALLOT HERE TST1 = ?~ Error #34: testing ALLOT
 0 CELLS 0= ?~ Error #35: testing CELLS
-1 CELLS ALLOT HERE TST1 NEGATE + VARIABLE CSZ CSZ !
-CSZ @ 0= 0= ?~ Error #36: testing CELLS
-3 CELLS CSZ @ DUP 2* + = ?~ Error #37: testing CELLS
--3 CELLS CSZ @ DUP 2* + + 0= ?~ Error #38: testing CELLS
 
 -->
 
 ( forth2012-pre-test )
 
+1 CELLS ALLOT HERE TST1 NEGATE + VARIABLE CSZ CSZ !
+CSZ @ 0= 0= ?~ Error #36: testing CELLS
+3 CELLS CSZ @ DUP 2* + = ?~ Error #37: testing CELLS
+-3 CELLS CSZ @ DUP 2* + + 0= ?~ Error #38: testing CELLS
 : TST2 ( f -- n ) DUP IF 1+ THEN ;
 0 TST2 0=  ?~ Error #39: testing IF THEN
 1 TST2 2 = ?~ Error #40: testing IF THEN
@@ -247,13 +247,13 @@ CSZ @ 0= 0= ?~ Error #36: testing CELLS
 TST4 5 = ?~ Error #43: testing DO LOOP
 : TST5 ( -- n ) 0 10 0 DO I + LOOP ;
 TST5 45 = ?~ Error #44: testing I
-: TST6 ( -- n ) 0 10 0 DO DUP 5 = IF LEAVE ELSE 1+ THEN LOOP ;
-TST6 5 = ?~ Error #45: testing LEAVE
 
 -->
 
 ( forth2012-pre-test )
 
+: TST6 ( -- n ) 0 10 0 DO DUP 5 = IF LEAVE ELSE 1+ THEN LOOP ;
+TST6 5 = ?~ Error #45: testing LEAVE
 : TST7 ( -- n1 n2 ) 123 >R 234 R> ;
 TST7 NEGATE + 111 = ?~ Error #46: testing >R R>
 : TST8 ( -- ch ) [CHAR] A ;
@@ -264,10 +264,9 @@ TST9 .MSG(  #22: testing EMIT) CR
 : TST10 ( -- ) S" Pass #23: testing S" TYPE [CHAR] " EMIT CR ;
 TST10
 
-~ The Hayes tester uses some words from the Core extension word
-~ set. These will be conditionally defined following definition
-~ of a word called ?DEFINED to determine whether these are
-~ already defined
+~ The tester uses some words from CORE EXT.  These will be
+~ conditionally defined following definition ~ of a word called
+~ ?DEFINED to determine whether these are already defined.
 
 -->
 
@@ -385,10 +384,6 @@ T{  0 BITSSET? -> 0 }T  \ ZERO IS ALL BITS CLEAR
 T{  1 BITSSET? -> 0 0 }T  \ OTHER NUMBER HAVE AT LEAST ONE BIT
 T{ -1 BITSSET? -> 0 0 }T
 
--->
-
-( forth2012-core-test )
-
   \ ===========================================================
 
 TESTING INVERT AND OR XOR
@@ -399,10 +394,11 @@ T{ 1 0 AND -> 0 }T
 T{ 1 1 AND -> 1 }T
 
 T{ 0 INVERT 1 AND -> 1 }T
-T{ 1 INVERT 1 AND -> 0 }T
+T{ 1 INVERT 1 AND -> 0 }T -->
 
-0    CONSTANT 0S
-0 INVERT CONSTANT 1S
+( forth2012-core-test )
+
+0 CONSTANT 0S  0 INVERT CONSTANT 1S
 
 T{ 0S INVERT -> 1S }T
 T{ 1S INVERT -> 0S }T
@@ -410,9 +406,7 @@ T{ 1S INVERT -> 0S }T
 T{ 0S 0S AND -> 0S }T
 T{ 0S 1S AND -> 0S }T
 T{ 1S 0S AND -> 0S }T
-T{ 1S 1S AND -> 1S }T -->
-
-( forth2012-core-test )
+T{ 1S 1S AND -> 1S }T
 
 T{ 0S 0S OR -> 0S }T
 T{ 0S 1S OR -> 1S }T
@@ -422,9 +416,7 @@ T{ 1S 1S OR -> 1S }T
 T{ 0S 0S XOR -> 0S }T
 T{ 0S 1S XOR -> 1S }T
 T{ 1S 0S XOR -> 1S }T
-T{ 1S 1S XOR -> 0S }T
-
--->
+T{ 1S 1S XOR -> 0S }T -->
 
 ( forth2012-core-test )
 
@@ -484,8 +476,7 @@ TESTING 0= = 0< < > U< MIN MAX
 0 INVERT 1 RSHIFT        CONSTANT MID-UINT
 0 INVERT 1 RSHIFT INVERT CONSTANT MID-UINT+1
 
-0S CONSTANT <FALSE>
-1S CONSTANT <TRUE>
+0S CONSTANT <FALSE>  1S CONSTANT <TRUE>
 
 T{ 0 0= -> <TRUE> }T
 T{ 1 0= -> <FALSE> }T
@@ -493,11 +484,11 @@ T{ 2 0= -> <FALSE> }T
 T{ -1 0= -> <FALSE> }T
 T{ MAX-UINT 0= -> <FALSE> }T
 T{ MIN-INT 0= -> <FALSE> }T
-T{ MAX-INT 0= -> <FALSE> }T -->
+T{ MAX-INT 0= -> <FALSE> }T
+T{ 0 0 = -> <TRUE> }T -->
 
 ( forth2012-core-test )
 
-T{ 0 0 = -> <TRUE> }T
 T{ 1 1 = -> <TRUE> }T
 T{ -1 -1 = -> <TRUE> }T
 T{ 1 0 = -> <FALSE> }T
@@ -513,11 +504,11 @@ T{ MAX-INT 0< -> <FALSE> }T
 
 T{ 0 1 < -> <TRUE> }T
 T{ 1 2 < -> <TRUE> }T
-T{ -1 0 < -> <TRUE> }T -->
+T{ -1 0 < -> <TRUE> }T
+T{ -1 1 < -> <TRUE> }T -->
 
 ( forth2012-core-test )
 
-T{ -1 1 < -> <TRUE> }T
 T{ MIN-INT 0 < -> <TRUE> }T
 T{ MIN-INT MAX-INT < -> <TRUE> }T
 T{ 0 MAX-INT < -> <TRUE> }T
@@ -531,11 +522,11 @@ T{ 0 MIN-INT < -> <FALSE> }T
 T{ MAX-INT MIN-INT < -> <FALSE> }T
 T{ MAX-INT 0 < -> <FALSE> }T
 T{ 0 1 > -> <FALSE> }T
-T{ 1 2 > -> <FALSE> }T -->
+T{ 1 2 > -> <FALSE> }T
+T{ -1 0 > -> <FALSE> }T -->
 
 ( forth2012-core-test )
 
-T{ -1 0 > -> <FALSE> }T
 T{ -1 1 > -> <FALSE> }T
 T{ MIN-INT 0 > -> <FALSE> }T
 T{ MIN-INT MAX-INT > -> <FALSE> }T
@@ -549,11 +540,11 @@ T{ 1 -1 > -> <TRUE> }T
 T{ 0 MIN-INT > -> <TRUE> }T
 T{ MAX-INT MIN-INT > -> <TRUE> }T
 T{ MAX-INT 0 > -> <TRUE> }T
-T{ 0 1 U< -> <TRUE> }T -->
+T{ 0 1 U< -> <TRUE> }T
+T{ 1 2 U< -> <TRUE> }T -->
 
 ( forth2012-core-test )
 
-T{ 1 2 U< -> <TRUE> }T
 T{ 0 MID-UINT U< -> <TRUE> }T
 T{ 0 MAX-UINT U< -> <TRUE> }T
 T{ MID-UINT MAX-UINT U< -> <TRUE> }T
@@ -567,11 +558,11 @@ T{ MAX-UINT MID-UINT U< -> <FALSE> }T
 T{ 0 1 MIN -> 0 }T
 T{ 1 2 MIN -> 1 }T
 T{ -1 0 MIN -> -1 }T
-T{ -1 1 MIN -> -1 }T -->
+T{ -1 1 MIN -> -1 }T
+T{ MIN-INT 0 MIN -> MIN-INT }T -->
 
 ( forth2012-core-test )
 
-T{ MIN-INT 0 MIN -> MIN-INT }T
 T{ MIN-INT MAX-INT MIN -> MIN-INT }T
 T{ 0 MAX-INT MIN -> 0 }T
 T{ 0 0 MIN -> 0 }T
@@ -585,11 +576,11 @@ T{ MAX-INT MIN-INT MIN -> MIN-INT }T
 T{ MAX-INT 0 MIN -> 0 }T
 T{ 0 1 MAX -> 1 }T
 T{ 1 2 MAX -> 2 }T
-T{ -1 0 MAX -> 0 }T -->
+T{ -1 0 MAX -> 0 }T
+T{ -1 1 MAX -> 1 }T -->
 
 ( forth2012-core-test )
 
-T{ -1 1 MAX -> 1 }T
 T{ MIN-INT 0 MAX -> 0 }T
 T{ MIN-INT MAX-INT MAX -> MAX-INT }T
 T{ 0 MAX-INT MAX -> MAX-INT }T
@@ -603,16 +594,15 @@ T{ 0 MIN-INT MAX -> 0 }T
 T{ MAX-INT MIN-INT MAX -> MAX-INT }T
 T{ MAX-INT 0 MAX -> MAX-INT }T
 
--->
-
-( forth2012-core-test )
-
   \ ===========================================================
 
 TESTING 2DROP 2DUP 2OVER 2SWAP ?DUP DEPTH
 
 T{ 1 2 2DROP -> }T
-T{ 1 2 2DUP -> 1 2 1 2 }T
+T{ 1 2 2DUP -> 1 2 1 2 }T -->
+
+( forth2012-core-test )
+
 T{ 1 2 3 4 2OVER -> 1 2 3 4 1 2 }T
 T{ 1 2 3 4 2SWAP -> 3 4 1 2 }T
 T{ 0 ?DUP -> 0 }T
@@ -622,9 +612,7 @@ T{ DEPTH -> 0 }T
 T{ 0 DEPTH -> 0 1 }T
 T{ 0 1 DEPTH -> 0 1 2 }T
 
--->
-
-( forth2012-core-test )
+  \ ===========================================================
 
 TESTING DROP DUP OVER ROT SWAP
 
@@ -633,9 +621,7 @@ T{ 1 2 DROP -> 1 }T
 T{ 1 DUP -> 1 1 }T
 T{ 1 2 OVER -> 1 2 1 }T
 T{ 1 2 3 ROT -> 2 3 1 }T
-T{ 1 2 SWAP -> 2 1 }T
-
--->
+T{ 1 2 SWAP -> 2 1 }T -->
 
 ( forth2012-core-test )
 
@@ -1406,11 +1392,12 @@ T{ GS2 -> 123 123 123 123 123 }T
 
 ( forth2012-core-test )
 
---> \ XXX TMP -- Skip this test.
-
 : GS3 WORD COUNT SWAP C@ ;
 T{ BL GS3 HELLO -> 5 CHAR H }T
 T{ CHAR " GS3 GOODBYE" -> 7 CHAR G }T
+
+--> \ XXX TMP -- Skip the rest, which can not work in a block.
+
 T{ BL GS3
 DROP -> 0 }T            \ BLANK LINE RETURN ZERO-LENGTH STRING
 
@@ -1474,7 +1461,6 @@ T{ GP5 -> <TRUE> }T
 -->
 
 ( forth2012-core-test )
-
 
 : GP6
    BASE @ >R  2 BASE !
@@ -5875,7 +5861,7 @@ CR .( End of Memory-Allocation word tests) CR
   \       to ensure the search order is in a known state
   \ ===========================================================
 
-need ttester need forth2012-core-test
+need ttester need forth2012-core-test need c"
 need forth2012-utilities-test need forth2012-report-errors
 
 ONLY FORTH DEFINITIONS  TESTING Search-order word set
@@ -5993,14 +5979,15 @@ T{ DEFINITIONS GET-CURRENT -> FORTH-WORDLIST }T
 
 TESTING SEARCH-WORDLIST WORDLIST FIND
 
-need search-wordlist need find
+need search-wordlist need find need c"
 
 ONLY FORTH DEFINITIONS
 VARIABLE XT  ' DUP XT !
 VARIABLE XTI ' ( XTI !    \ Immediate word
 
-  \ $" is an equivalent to S" in interpreter mode. It is defined in the file
-  \ utilities.fth and used to avoid relying on a File-Access word set extension
+  \ `$"` is an equivalent to `S"` in interpreter mode. It is
+  \ defined in section forth2012-utilities-test and used to
+  \ avoid relying on a File-Access word set extension.
 
 T{ $" DUP" WID1 @ SEARCH-WORDLIST -> XT  @ -1 }T
 T{ $" ("   WID1 @ SEARCH-WORDLIST -> XTI @  1 }T
@@ -6282,8 +6269,9 @@ CREATE SUBBUF 48 CHARS ALLOT
   \ $CHECK AND $CHECKN return f = 0 if caddr1 = SUBBUF and
   \ string1 = string2
 
-: $CHECK   ( caddr1 u1 caddr2 u2 -- f )
+: $CHECK ( caddr1 u1 caddr2 u2 -- f )
   2SWAP OVER SUBBUF <> >R COMPARE R> or ;
+
 : $CHECKN ( caddr1 u1 n caddr2 u2 -- f n ) ROT >R $CHECK R> ;
 
 T{ 123 SUBBUF C! $" " SUBBUF UNESCAPE SUBBUF 0 $CHECK
@@ -6303,6 +6291,8 @@ T{ : TEST-UNESCAPE S" %abc%def%%ghi%" SUBBUF UNESCAPE ; -> }T
   \ Compile check.
 
 T{ TEST-UNESCAPE $" %%abc%%def%%%%ghi%%" $CHECK -> FALSE }T
+
+  \ ===========================================================
 
 TESTING SUBSTITUTE REPLACES
 
@@ -6451,6 +6441,8 @@ T{ $" abc%mac3%d" SUBBUF 10 SUBSTITUTE ROT ROT 2DROP 0<
 
 T{ $" zyxwvut" MAC3 REPLACES -> }T
 T{ $" zyx"     MAC2 REPLACES -> }T
+
+
 T{ $" a%mac3%b" 0 9 20 OVERLAPPED-SUBST 1
    $" azyxwvutb" CHECK-SUBST -> TRUE }T
 T{ $" a%mac3%b" 0 3 20 OVERLAPPED-SUBST 1
@@ -6784,6 +6776,11 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T -->
 \? TESTING TRAVERSE-WORDLIST NAME>COMPILE NAME>INTERPRET
 \? NAME>STRING
 
+  \ \? need traverse-wordlist \ XXX TODO -- Not ready.
+  exit \ XXX TMP --
+
+\? need name>compile need name>interpret
+
 \? GET-CURRENT CONSTANT CURR-WL
 \? WORDLIST CONSTANT TRAV-WL
 \? : WDCT ( n nt -- n+1 f ) DROP 1+ TRUE ;
@@ -6810,11 +6807,9 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T -->
   \ compiles.
 
 \? : (PART-OF-WL) ( ct n nt -- ct+1 n-1 )
-\?    DROP DUP IF SWAP 1+ SWAP 1- THEN DUP
-\? ;
+\?    DROP DUP IF SWAP 1+ SWAP 1- THEN DUP ;
 \? : PART-OF-WL ( n -- ct 0 | ct+1 n-1)
-\?    0 SWAP ['] (PART-OF-WL) TRAV-WL TRAVERSE-WORDLIST DROP
-\? ;
+\?    0 SWAP ['] (PART-OF-WL) TRAV-WL TRAVERSE-WORDLIST DROP ;
 \? T{ 0 PART-OF-WL -> 0 }T
 \? T{ 1 PART-OF-WL -> 1 }T
 \? T{ 4 PART-OF-WL -> 4 }T
@@ -6837,18 +6832,15 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T -->
   \ Convert string to upper case and save in the buffer.
 
 \? : >UPPERCASE ( caddr u  -- caddr2 u2 )
-\?    32 MIN DUP >R UCBUF DUP 2SWAP
-\?    OVER + SWAP 2DUP U>
+\?    32 MIN DUP >R UCBUF DUP 2SWAP  OVER + SWAP 2DUP U>
 \?    IF
 \?       DO \ ?DO can't be used, as it is a Core Extension word
 \?          I C@ DUP [CHAR] a [CHAR] z 1+ WITHIN
 \?          IF 32 INVERT AND THEN
 \?          OVER C! CHAR+
 \?       LOOP
-\?    ELSE
-\?       2DROP
-\?    THEN
-\?    DROP R> ;
+\?    ELSE 2DROP
+\?    THEN DROP R> ;
 
 -->
 
@@ -6873,6 +6865,8 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T -->
    \ Not in wordlist
 \? T{ $" TRAV4" TRAV-WL GET-NAME-TOKEN 0= -> FALSE }T
 
+\? need name>interpret
+
   \ Test NAME>INTERPRET on a word with interpretation semantics
 \? T{ $" TRAV3" TRAV-WL GET-NAME-TOKEN NAME>INTERPRET EXECUTE
 \?   -> 3 }T
@@ -6886,17 +6880,22 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T -->
   \ because:
 
   \    - a user cannot define one in a standard system
-  \    - a Forth system may choose to define interpretation semantics for a word
-  \      despite the standard stating they are undefined. If so the behaviour
-  \      cannot be tested as it is 'undefined' by the standard.
-  \ (October 2016) At least one major system, GForth, has defined behaviour for
-  \ all words with undefined interpretation semantics. It is not possible in
-  \ standard Forth to define a word without interpretation semantics, therefore
-  \ it is not possible to have a general test for NAME>INTERPRET returning 0.
-  \ So the following word TIF executes NAME>INTERPRET for all words with
-  \ undefined interpretation semantics in the Core word set, the first one to
-  \ return 0 causes the rest to be skipped. If none return 0 a message is
-  \ displayed to that effect. No system can fail this test!
+  \    - a Forth system may choose to define interpretation
+  \    semantics for a word despite the standard stating they
+  \    are undefined. If so the behaviour cannot be tested as
+  \    it is 'undefined' by the standard.
+  \
+  \ (October 2016) At least one major system, GForth, has
+  \ defined behaviour for all words with undefined
+  \ interpretation semantics. It is not possible in standard
+  \ Forth to define a word without interpretation semantics,
+  \ therefore it is not possible to have a general test for
+  \ NAME>INTERPRET returning 0.  So the following word TIF
+  \ executes NAME>INTERPRET for all words with undefined
+  \ interpretation semantics in the Core word set, the first
+  \ one to return 0 causes the rest to be skipped. If none
+  \ return 0 a message is displayed to that effect. No system
+  \ can fail this test!
 
 \? VARIABLE TIF-SKIP
 \? : TIF ( "name1 ... namen" -- )
@@ -6967,12 +6966,10 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T -->
 
 \? : (GET-ALL) ( caddr u nt -- [n] caddr u true )
 \?    DUP >R NAME? IF R@ NAME>INTERPRET EXECUTE ROT ROT THEN
-\?    R> DROP TRUE
-\? ;
+\?    R> DROP TRUE ;
 
 \? : GET-ALL ( caddr u -- i*x )
-\?    ['] (GET-ALL) TRAV-WL TRAVERSE-WORDLIST 2DROP
-\? ;
+\?    ['] (GET-ALL) TRAV-WL TRAVERSE-WORDLIST 2DROP ;
 
 \? T{ $" TRAV3" GET-ALL -> 3333 333 33 3 }T
 [?ELSE]
@@ -7046,9 +7043,7 @@ T{ [?DEF] ?DEFTEST2 \? : ?DEFTEST1 2 ; \ Should be redefined
 [?DEF] TUCK  \?  : TUCK SWAP OVER ;
 
 [?DEF] PARSE
-\? : BUMP ( caddr u n -- caddr+n u-n )
-\?    TUCK - >R CHARS + R>
-\? ;
+\? : BUMP ( caddr u n -- caddr+n u-n ) TUCK - >R CHARS + R> ;
 
 -->
 
@@ -7193,6 +7188,8 @@ cr .( Forth-2012 tests completed ) cr cr
   \ tests. Adapt `\?` and `~` to blocks. Improve messages.
   \
   \ 2018-03-12: Try tests: core, coreplus, coreext, double,
-  \ exception, facility...  Fix or note errors.
+  \ exception, facility...  Fix or note errors. Start the
+  \ adaption of forth2012-prelim-test.  Compact the code,
+  \ saving 4 blocks. Try tests: string, tools, searchorder.
 
   \ vim: filetype=soloforth
