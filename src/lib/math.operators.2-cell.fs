@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803130024
+  \ Last modified: 201803130047
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -494,7 +494,7 @@ unneeding m+ ?( need assembler
 
 code m+ ( d1|ud1 n -- d2|ud2 )
   exx, b pop, d pop, h pop,
-  b addp, h push, c? rif d inc, rthen d push,
+  b addp, h push, c? rif d incp, rthen d push,
   exx, jpnext, end-code ?)
 
     \ exx,    \ save the Forth IP
@@ -502,7 +502,7 @@ code m+ ( d1|ud1 n -- d2|ud2 )
     \ d pop,  \ d1 hi cell
     \ h pop,  \ d1 lo cell
     \ b addp, h push,
-    \ c? rif  d inc, rthen  d push,
+    \ c? rif d incp, rthen d push,
     \ exx,    \ restore the Forth IP
     \ jpnext, end-code
 
@@ -664,6 +664,6 @@ need 2nip need cell-bits
   \ 2018-03-07: Add words' pronunciaton.
   \
   \ 2018-03-12: Fix `d2/`. Fix `m*/`: replace the Gforth's code
-  \ with the DZX-Forth's code.
+  \ with the DZX-Forth's code. Fix `m+`.
 
   \ vim: filetype=soloforth

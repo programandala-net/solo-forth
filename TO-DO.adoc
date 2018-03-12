@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-03-12
+:revdate: 2018-03-13
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1699,6 +1699,12 @@ does nothing, as expected.
 
 // Maths {{{1
 == Maths
+
+=== 2018-03-13
+
+NOTE: Milestone: 0.14.0
+
+Rewrite `m+` in Z80.
 
 === 2017-12-14
 
