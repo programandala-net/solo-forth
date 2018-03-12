@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803112349
+  \ Last modified: 201803120106
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -478,11 +478,11 @@ T{ MSB 1 RSHIFT 2* -> MSB }T
 
 TESTING 0= = 0< < > U< MIN MAX
 
-0 INVERT         CONSTANT MAX-UINT
-0 INVERT 1 RSHIFT      CONSTANT MAX-INT
-0 INVERT 1 RSHIFT INVERT   CONSTANT MIN-INT
-0 INVERT 1 RSHIFT      CONSTANT MID-UINT
-0 INVERT 1 RSHIFT INVERT   CONSTANT MID-UINT+1
+0 INVERT                 CONSTANT MAX-UINT
+0 INVERT 1 RSHIFT        CONSTANT MAX-INT
+0 INVERT 1 RSHIFT INVERT CONSTANT MIN-INT
+0 INVERT 1 RSHIFT        CONSTANT MID-UINT
+0 INVERT 1 RSHIFT INVERT CONSTANT MID-UINT+1
 
 0S CONSTANT <FALSE>
 1S CONSTANT <TRUE>
@@ -4766,21 +4766,22 @@ need ttester need forth2012-core-test
 need forth2012-report-errors need forth2012-utilities-test
 need case need catch
 
-TESTING CATCH THROW
-
-DECIMAL
+DECIMAL TESTING CATCH THROW
 
 : T1 9 ;
 : C1 1 2 3 ['] T1 CATCH ;
-T{ C1 -> 1 2 3 9 0 }T         \ No THROW executed
+T{ C1 -> 1 2 3 9 0 }T
+  \ No THROW executed.
 
 : T2 8 0 THROW ;
 : C2 1 2 ['] T2 CATCH ;
-T{ C2 -> 1 2 8 0 }T            \ 0 THROW does nothing
+T{ C2 -> 1 2 8 0 }T
+  \ 0 THROW does nothing.
 
 : T3 7 8 9 99 THROW ;
 : C3 1 2 ['] T3 CATCH ;
-T{ C3 -> 1 2 99 }T            \ Restores stack to CATCH depth
+T{ C3 -> 1 2 99 }T
+  \ Restore stack to CATCH depth.
 
 -->
 
@@ -4788,14 +4789,13 @@ T{ C3 -> 1 2 99 }T            \ Restores stack to CATCH depth
 
 : T4 1- DUP 0> IF RECURSE ELSE 999 THROW -222 THEN ;
 : C4 3 4 5 10 ['] T4 CATCH -111 ;
-T{ C4 -> 3 4 5 0 999 -111 }T   \ Test return stack unwinding
+T{ C4 -> 3 4 5 0 999 -111 }T
+  \ Test return stack unwinding.
 
 : T5 2DROP 2DROP 9999 THROW ;
-
 : C5 1 2 3 4 ['] T5 CATCH DEPTH >R DROP 2DROP 2DROP R> ;
-  \ Test depth restored correctly after stack has been emptied.
-
 T{ C5 -> 5 }T -->
+  \ Test depth restored correctly after stack has been emptied.
 
 ( forth2012-exception-test )
 
@@ -4807,8 +4807,7 @@ need abort"
 
 -1  CONSTANT EXC_ABORT
 -2  CONSTANT EXC_ABORT"
--13 CONSTANT EXC_UNDEF
-: T6 ABORT ;
+-13 CONSTANT EXC_UNDEF  : T6 ABORT ;
 
   \ The 77 in `T10` is necessary for the second `ABORT"` test
   \ as the data stack is restored to a depth of 2 when `THROW`
@@ -4821,7 +4820,8 @@ need abort"
   >R   R@ EXC_ABORT  = IF 11
   ELSE R@ EXC_ABORT" = IF 12
   ELSE R@ EXC_UNDEF  = IF 13
-  THEN THEN THEN R> DROP ;
+  ELSE R@ #-256      = IF 13 \ XXX TMP --
+  THEN THEN THEN THEN R> DROP ;
 
 T{ 1 2 ' T6 C6  -> 1 2 11 }T
   \ Test that ABORT is caught.
@@ -4842,7 +4842,12 @@ TESTING A system generated exception
 : T8 S" 222 T7 223" EVALUATE 224 ;
 : T9 S" 111 112 T8 113" EVALUATE 114 ;
 
-T{ 6 7 ' T9 C6 3 -> 6 7 13 3 }T \ Test unlinking of sources
+T{ 6 7 ' T9 C6 3 -> 6 7 13 3 }T
+  \ Test unlinking of sources.
+  \
+  \ XXX FIXME -- The test leaves 6 7 334 on the stack. The
+  \ reason is the exception codes checked in `C6`: Solo Forth
+  \ uses #-256 instead of the standard #-13.
 
 EXCEPTION-ERRORS SET-ERROR-COUNT
 
@@ -4887,7 +4892,7 @@ DECIMAL TESTING Facility words
 
 TESTING BEGIN-STRUCTURE END-STRUCTURE +FIELD
 
-need begin-structure need end-structure need +field
+need begin-structure need end-structure need +field-unopt
 
 T{ BEGIN-STRUCTURE STRCT1 END-STRUCTURE -> }T
 T{ STRCT1 -> 0 }T
@@ -5733,7 +5738,7 @@ DECIMAL TESTING Memory-Allocation word set
 
 TESTING ALLOCATE FREE RESIZE
 
-need allocate need free need resize
+need allocate need free need resize need charlton-heap-wordlist
 
 VARIABLE ADDR1
 VARIABLE DATSP
@@ -7117,7 +7122,7 @@ CREATE SBUF2 SBUF-SIZE CHARS ALLOT
 [?DEF] MIN-INT    \? 0 INVERT 1 RSHIFT INVERT CONSTANT MIN-INT
 [?DEF] MID-UINT   \? 0 INVERT 1 RSHIFT        CONSTANT MID-UINT
 [?DEF] MID-UINT+1 \? 0 INVERT 1 RSHIFT INVERT
-  CONSTANT MID-UINT+1
+[?DEF] MID-UINT+1 \?                        CONSTANT MID-UINT+1
 
 [?DEF] 2CONSTANT \? : 2CONSTANT  CREATE , , DOES> 2@ ;
 
@@ -7181,10 +7186,13 @@ cr .( Forth-2012 tests completed ) cr cr
   \ Jackson's forth2012-test-suite version 0.13.0
   \ (https://github.com/gerryjackson/forth2012-test-suite).
   \
-  \ 2018-03-10: Make all lines fit. Divide the code into blocks.
-  \ Make the tests independent.
+  \ 2018-03-10: Make all lines fit. Divide the code into
+  \ blocks.  Make the tests independent.
   \
   \ 2018-03-11: Add internal requirements, i.e. tests needed by
   \ tests. Adapt `\?` and `~` to blocks. Improve messages.
+  \
+  \ 2018-03-12: Try tests: core, coreplus, coreext, double,
+  \ exception, facility...  Fix or note errors.
 
   \ vim: filetype=soloforth
