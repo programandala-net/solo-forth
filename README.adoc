@@ -1,6 +1,6 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-03-10
+:revdate: 2018-03-11
 :toc:
 :linkattrs:
 
@@ -235,7 +235,9 @@ follows:
 - Disk 1 contains the library.
 - Disk 2 contains some little sample games, most of them under
   development, and two block editors.
-- Disk 3 contains tests and benchmarks used during the development.
+- Disk 3 contains tests and benchmarks. Most of them were used during
+  the development and their only documentation is the commented
+  source.
 
 WARNING: Disks 1, 2 and 3 are Forth block disks: They contain the
 source Forth blocks directly on the disk sectors, without any file
