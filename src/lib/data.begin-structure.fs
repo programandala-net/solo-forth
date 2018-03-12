@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091537
+  \ Last modified: 201803120105
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( +field field: 2field: cfield: begin-structure end-structure )
 
-unneeding +field ?\ defer +field ( n1 n2 "name" -- n3 ) exit
+unneeding +field ?\ defer +field ( n1 n2 "name" -- n3 )
 
   \ doc{
   \
@@ -59,6 +59,7 @@ unneeding +field ?\ defer +field ( n1 n2 "name" -- n3 ) exit
   \ }doc
 
 unneeding field: ?( need +field
+
 : field:   ( n1 "name" -- n2 ) cell +field ; ?)
 
   \ doc{
@@ -84,6 +85,7 @@ unneeding field: ?( need +field
   \ }doc
 
 unneeding 2field: ?( need +field
+
 : 2field: ( n1 "name" -- n2 ) [ 2 cells ] cliteral +field ; ?)
 
   \ doc{
@@ -107,6 +109,7 @@ unneeding 2field: ?( need +field
   \ }doc
 
 unneeding cfield: ?( need +field
+
 : cfield: ( n1 "name" -- n2 ) [ 1 chars ] cliteral +field ; ?)
 
   \ doc{
@@ -331,5 +334,7 @@ unneeding +field-opt-0124 ?( need case need +field
   \ 2018-03-07: Add words' pronunciaton.
   \
   \ 2018-03-09: Update notation "address units" to "bytes".
+  \
+  \ 2018-03-12: Update source layout.
 
   \ vim: filetype=soloforth
