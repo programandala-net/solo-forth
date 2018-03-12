@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072221
+  \ Last modified: 201803122316
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -454,11 +454,10 @@ unneeding d2* ?( code d2* ( xd1 -- xd2 )
 
 unneeding d2/ ?( code d2/ ( xd1 -- xd2 )
 
-  E1 c, D1 c, CB c, 2C c, CB c, 1C c, CB c, 1D c,
+  E1 c, D1 c, CB c, 2C c, CB c, 1D c,
     \ pop hl
     \ pop de
     \ sra h
-    \ rr h
     \ rr l
   CB c, 1A c, CB c, 1B c, D5 c, E5 c, jpnext, end-code ?)
     \ rr d
@@ -644,5 +643,7 @@ need 2nip need cell-bits
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-07: Add words' pronunciaton.
+  \
+  \ 2018-03-12: Fix `d2/`.
 
   \ vim: filetype=soloforth

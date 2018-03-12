@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-03-11
+:revdate: 2018-03-12
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1700,12 +1700,6 @@ does nothing, as expected.
 // Maths {{{1
 == Maths
 
-=== 2018-03-11
-
-NOTE: Milestone: 0.14.0
-
-Fix `d2/`.
-
 === 2017-12-14
 
 From CHForth's <MISCUTIL.FRT>:
@@ -2791,11 +2785,23 @@ Make the tape words return a standard _ior_.
 
 === 2018-03-12
 
+NOTE: Milestone: 0.14.0
+
+Fix:
+
+`m*/` does not passes the tests of Forth-2012 Test Suite.
+
+=== 2018-03-12
+
 Add the floating-point tests from the original Forth-2012 Test Suite.
 
 === 2018-03-11
 
-Tests not passed:
+NOTE: Milestone: 0.14.0
+
+Fix:
+
+Tests not passed from Forth-2012 Test Suite:
 
 ----
 T{ 0 (\?) ! [?DEF] ?DEFTEST1 (\?) @ -> -1 }T
@@ -2808,28 +2814,6 @@ T{ MA1 MA2 MA1 -> 222 111 }T
 T{ MA? MA0 MA? MA1 MA? MA2 -> TRUE TRUE FALSE }T
 T{ MA? MA0 MA? MA1 MA? MA2 -> FALSE FALSE FALSE }T
 ----
-
-=== 2018-03-11
-
-The following tests are not passed:
-
-----
-t{ max-2int d2/ -> hi-2int }t
-t{ min-2int d2/ -> lo-2int }t
-----
-
-And so all tests using those constants.
-
-|===
-| Constant | Decimal     | Binary
-
-| max-2int |  2147483647 | 01111111111111111111111111111111
-| min-2int | -2147483648 | 10000000000000000000000000000000
-| hi-2int  |  1073741823 | 00111111111111111111111111111111
-| lo-2int  | -1073741824 | 11000000000000000000000000000000
-|===
-
-The reason is `d2/` is buggy.
 
 === 2018-03-10
 
