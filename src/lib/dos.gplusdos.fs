@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803132329
+  \ Last modified: 201803140000
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -89,20 +89,7 @@ unneeding dos-out,
   \
   \ }doc
 
-( /ufia ufia1 ufia2 >ufiax >ufia1 >ufia2 )
-
-unneeding /ufia ?\ 24 cconstant /ufia
-
-  \ doc{
-  \
-  \ /ufia ( -- n ) "slash-u-f-i-a"
-  \
-  \ _n_ is the length of a UFIA (User File Information Area), a
-  \ 24-byte structure which describes a file.
-  \
-  \ See: `ufia`, `ufia1`, `ufia2`.
-  \
-  \ }doc
+( ufia1 ufia2 >ufiax >ufia1 >ufia2 )
 
 unneeding ufia1 ?\ $3E01 constant ufia1
 
@@ -185,6 +172,38 @@ unneeding >ufia2
   \
   \ }doc
 
+( /ufia )
+
+need +field-opt0 need +field need cfield: need field:
+
+0
+  cfield:      ~dstr1  \ drive: 1, 2 or '*'
+  cfield:      ~fstr1  \ file directory number
+  cfield:      ~sstr1  \ stream number
+  cfield:      ~device \ device: 'D' or 'd'
+  cfield:      ~nstr1  \ directory description
+  10 +field    ~nstr2  \ file name
+  cfield: 15 + ~hd00   \ file type
+  field:       ~hd0b   \ file length
+  field:       ~hd0d   \ file start address
+  field:       ~hd0f   \ BASIC length without variables
+  field:       ~hd11   \ BASIC autorun line
+cconstant /ufia
+
+  \ XXX TODO -- Remove `~device`. The distinction is useless in
+  \ Forth.
+
+  \ doc{
+  \
+  \ /ufia ( -- n ) "slash-u-f-i-a"
+  \
+  \ _n_ is the length of a UFIA (User File Information Area), a
+  \ 24-byte structure which describes a file.
+  \
+  \ See: `ufia`, `ufia1`, `ufia2`.
+  \
+  \ }doc
+
 ( ufia -ufia )
 
 need /ufia
@@ -244,18 +263,20 @@ create ufia /ufia allot
   \ Note: The original UFIA field names are used, except
   \ `device`, whose original name is "lstr1":
 
-ufia      constant dstr1   \ drive: 1, 2 or '*'
-ufia 1+   constant fstr1   \ file directory number
-ufia 2+   constant sstr1   \ stream number
-ufia 3 +  constant device  \ device: 'D' or 'd'
-  \ XXX TODO -- Remove `device`. The distinction is useless in Forth.
-ufia 4 +  constant nstr1   \ directory description
-ufia 5 +  constant nstr2   \ file name
-ufia 15 + constant hd00    \ file type
-ufia 16 + constant hd0b    \ file length
-ufia 18 + constant hd0d    \ file start address
-ufia 20 + constant hd0f    \ BASIC length without variables
-ufia 22 + constant hd11    \ BASIC autorun line
+ufia ~dstr1  constant dstr1  \ drive: 1, 2 or '*'
+ufia ~fstr1  constant fstr1  \ file directory number
+ufia ~sstr1  constant sstr1  \ stream number
+ufia ~device constant device \ device: 'D' or 'd'
+ufia ~nstr1  constant nstr1  \ directory description
+ufia ~nstr2  constant nstr2  \ file name
+ufia ~hd00   constant hd00   \ file type
+ufia ~hd0b   constant hd0b   \ file length
+ufia ~hd0d   constant hd0d   \ file start address
+ufia ~hd0f   constant hd0f   \ BASIC length w/out variables
+ufia ~hd11   constant hd11   \ BASIC autorun line
+
+  \ XXX TODO -- Remove `device`. The distinction is useless in
+  \ Forth.
 
 : -ufia ( -- ) ufia /ufia erase ;
 
@@ -1611,6 +1632,6 @@ code (create-file ( -- ior )
   \
   \ 2018-03-13: Compact the code, saving one block. Add
   \ `-ufia`. Draft `create-file`. Add `bin`, `r/o`, `w/o`,
-  \ `r/w`.
+  \ `r/w`. Create a data structure to access any UFIA.
 
   \ vim: filetype=soloforth
