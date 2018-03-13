@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803111931
+  \ Last modified: 201803132144
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -22,6 +22,34 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( file-test )
+
+need create-file need r/w need r/o need w/o need write-file
+need close-file need open-file need read-file need rename-file
+need delete-file need cat need 2variable
+
+variable fid  : buf s" XXXXXXXXXX" ;  : file$ s" ZX.ZX" ;
+
+-->
+
+( file-test )
+
+: file-test ( -- )
+
+    \ <------------------------------>
+cr ." Insert a formatted disk in drive"
+   ." 'A', then press any key. " key drop cr ." Go!"
+
+file$ w/o create-file throw fid ! ." file created" cr
+s" hola" fid @ write-file throw ." file written, part 1" cr
+s" y adios" fid @ write-file throw ." file written, part 2" cr
+fid @ close-file throw ." file closed" cr
+
+file$ r/o open-file throw fid ! ." file open" cr
+buf fid @ read-file throw . ." bytes read:" cr
+buf type cr  fid @ close-file throw  file$ delete-file
+throw ;
 
 ( testing-test )
 
@@ -1672,5 +1700,7 @@ blk @ 1+ blk @ 2+ thru
   \
   \ 2018-03-11: Add `testing-test`. (`testing` is part of
   \ `ttester`).
+  \
+  \ 2018-03-13. Add `file-test`.
 
   \ vim: filetype=soloforth

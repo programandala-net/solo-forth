@@ -1280,9 +1280,10 @@ Move the Z80-symbol constants to the assembler word list.
 // +3DOS {{{2
 === +3DOS ===
 
-==== 2018-02-14
+==== 2018-03-13
 
-Fix `cat`.
+Rewrite `read-file` in assembler. Or make the assembler conditional
+structures independent.
 
 ==== 2017-03-05
 

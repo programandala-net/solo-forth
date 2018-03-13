@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803131706
+  \ Last modified: 201803132141
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -129,7 +129,7 @@ unneeding rename-file ?( need >filename need (rename-file
   \
   \ Origin: Forth-94 (FILE EXT), Forth-2012 (FILE EXT).
   \
-  \ See: `(rename-file`.
+  \ See: `(rename-file`, `delete-file`.
   \
   \ }doc
 
@@ -281,7 +281,7 @@ unneeding delete-file ?( need >filename need (delete-file
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
-  \ See: `(delete-file`.
+  \ See: `(delete-file`, `rename-file`.
   \
   \ }doc
 
@@ -327,7 +327,6 @@ file-ids #file-ids erase
     i file-ids + dup c@ 0=
     if $FF swap c! i true unloop exit then drop
   loop false ;
-
 
   \ doc{
   \
@@ -426,10 +425,6 @@ code headed ( fam1 -- fam2 )
   \ pop hl
   \ set 7,l
   \ jp pushl
-  \
-  \ Equivalent code in Forth:
-  \
-  \ : headed ( fam1 -- fam2 ) 128 and ;
 
   \ doc{
   \
@@ -439,6 +434,13 @@ code headed ( fam1 -- fam2 )
   \ "headed", i.e., with an additional +3DOS header, file
   \ access method, giving file access method _fam2_.
   \
+  \ ``headed`` is written in Z80. Its equivalent code in Forth
+  \ is the following:
+
+  \ ----
+  \ : headed ( fam1 -- fam2 ) 128 and ;
+  \ ----
+
   \ See: `bin`, `r/o`, `w/o`, `r/w`, `s/r`,
   \ `create-file`, `open-file`.
   \
@@ -448,7 +450,7 @@ unneeding do-dos-open_ ?( need assembler
 
 create do-dos-open_ ( -- a ) asm
 
-  \ This oced is used by '(create-file' and `(open-file`
+  \ This word is used by '(create-file' and `(open-file`
   \
   \ Entry conditions:
   \   B = fid
@@ -1102,107 +1104,23 @@ code write-file ( ca len fid -- ior )
   \
   \ }doc
 
-( bank-read-file read-file )
+( read-file bank-read-file )
 
-  \ XXX UNDER DEVELOPMENT
-
-unneeding bank-read-file ?(
-
-code bank-read-file  ( ca len fid +n -- ior )
-  \ XXX TODO --
-
-  \ XXX FIXME
-  \
-  \ +3DOS causes EOF error when the desired length is beyond
-  \ the end of file (not counting the padding 0x1A at the end).
-  \ This makes it impossible to behave according to Forth-94.
-  \
-  \ Solution: check the file position at the start.
-
-  \   pop hl ; l = bank
-  \   ld a,l
-  \ page_read_file_.a:
-  \   call save_ip
-  \   ld c,a
-  \   pop hl
-  \   ld b,l  ; fid
-  \   pop de  ; len
-  \   pop hl  ; ca
-  \   push de ; len
-  \   ld ix,dos_read
-  \   call dos
-  \   pop hl ; len
-  \   call restore_ip
-  \   jr c,page_read_file_.no_error
-
-  \   ; error
-  \   ; hl = len
-  \   ; a = error code
-  \   ; de = number of bytes remaining unread
-
-  \   push af
-  \   call hl_minus_de_to_hl
-  \   ; hl = bytes actually read
-  \   pop af
-  \   cp 21 ; is it "bad parameter"? XXX TODO label
-  \   jr z, page_read_file_.no_error
-  \   push hl
-  \   jp back_from_dos.error
-
-  \ page_read_file_.no_error:
-  \   ; no error
-  \   ; hl = len
-  \   push hl
-  \   jp false_
-
-  end-code ?)
-
-  \
-  \ bank-read-file ( ca len fid +n -- ior )
-  \
-  \ Read _len_ consecutive  characters to  _ca_ from the
-  \ current position  of the  file identified by _fid_ with
-  \ bank _+n_ paged in address range $C000..$FFFF.
-  \
-  \ If _len1_ characters are read without an exception, _ior_
-  \ is zero and _len2_ is equal to _len1_.
-  \
-  \ If the end of the file is reached before _len1_ characters
-  \ are read, _ior_ is zero and _len2_ is the number of
-  \ characters actually read.
-  \
-  \ If the operation is initiated when the value returned by
-  \ `file-position` is equal to the value returned by
-  \ `file-size` for the file identified by fileid, _ior_ is
-  \ zero and _len2_ is zero.
-  \
-  \ If an exception occurs, _ior_ is the implementation-defined
-  \ I/O result code, and _len2_ is the number of characters
-  \ transferred to _ca_ without an exception.
-  \
-  \ An ambiguous condition exists if the operation is initiated
-  \ when the value returned by `file-position` is greater than
-  \ the value returned by `file-size` for the file identified
-  \ by fileid, or if the requested operation attempts to read
-  \ portions of the file not written.
-  \
-  \ At the conclusion of the operation, `file-position` returns
-  \ the next file position after the last character read.
-  \
-  \ See: `bank-read-file`, `open-file`, `write-file`.
-  \
-  \ XXX TODO -- Finish adapting the documentation.
+need assembler
 
 code read-file  ( ca len1 fid -- len2 ior )
-  3A c, 5B5C , E6 c, %111 c, ' bank-read-file 2+ jp,
+  3A c, 5B5C , E6 c, %111 c, 6F c, E5 c,
   end-code ?)
   \ ld a,(sys_bankm) ; $5B5C
   \ and %111 ; current page for 0xC000..0xFFFF
-  \ jp bank_write_file_.a
+  \ ld l,a
+  \ push hl
+  \ ; execution continues in `bank-read-file`
 
   \ Credit:
   \ Adapted from DZX-Forth.
 
+  \ doc{
   \
   \ read-file ( ca len1 fid -- len2 ior )
   \
@@ -1218,12 +1136,21 @@ code read-file  ( ca len1 fid -- len2 ior )
   \
   \ If the operation is initiated when the value returned by
   \ `file-position` is equal to the value returned by
-  \ `file-size` for the file identified by fileid, _ior_ is
+  \ `file-size` for the file identified by _fid, _ior_ is
   \ zero and _len2_ is zero.
   \
   \ If an exception occurs, _ior_ is the implementation-defined
   \ I/O result code, and _len2_ is the number of characters
   \ transferred to _ca_ without an exception.
+  \
+  \ At the conclusion of the operation, `file-position` returns
+  \ the next file position after the last character read.
+  \
+  \ See: `bank-read-file`, `open-file`, `write-file`.
+  \
+  \ }doc
+
+  \ XXX TODO -- Finish adapting the documentation.
   \
   \ An ambiguous condition exists if the operation is initiated
   \ when the value returned by `file-position` is greater than
@@ -1231,12 +1158,94 @@ code read-file  ( ca len1 fid -- len2 ior )
   \ by fileid, or if the requested operation attempts to read
   \ portions of the file not written.
   \
+
+code bank-read-file  ( ca len fid +n -- ior )
+
+  \ XXX FIXME
+  \
+  \ +3DOS causes EOF error when the desired length is beyond
+  \ the end of file (not counting the padding 0x1A at the end).
+  \ This makes it impossible to behave according to Forth-94.
+  \
+  \ Solution: check the file position at the start.
+
+  save-ip_ call,
+    \   call save_ip
+  C1 c, E1 c, 45 c, D1 c, E1 c, D5 c, DD c, 21 c, 0112 ,
+    \   pop bc  ; C = bank
+    \   pop hl
+    \   ld b,l  ; B = fid
+    \   pop de  ; DE = len
+    \   pop hl  ; HL = ca
+    \   push de ; save len for later
+    \   ld ix,dos_read ; $0112
+  dos-ix_ call, E1 c, restore-ip_ call, nc? rif
+    \   call dos
+    \   pop hl ; len
+    \   call restore_ip
+    \   jr c,page_read_file_.no_error
+
+    \   ; error
+    \   ; hl = len
+    \   ; a = error code
+    \   ; de = number of bytes remaining unread
+
+  a and, d sbcp, #21 cp#, nz? rif h push, pushdosior jp, rthen
+    \   and a
+    \   sbc hl,de ; hl = bytes actually read
+    \   cp 21 ; is it "bad parameter"? XXX TODO label
+    \   jr z, page_read_file_.no_error
+    \   push hl
+    \ jp push_dos_ior
+
+  rthen E5 c, ' false jp, end-code ?)
+    \ page_read_file_.no_error:
+    \   ; no error
+    \   ; hl = len
+    \   push hl
+    \   jp false_
+
+  \ Credit:
+  \ Adapted from DZX-Forth.
+
+  \ doc{
+  \
+  \ bank-read-file ( ca len1 fid +n -- len2 ior )
+  \
+  \ Read _len_ consecutive  characters to  _ca_ from the
+  \ current position  of the  file identified by _fid_ with
+  \ bank _+n_ paged in address range $C000..$FFFF.
+  \
+  \ If _len1_ characters are read without an exception, _ior_
+  \ is zero and _len2_ is equal to _len1_.
+  \
+  \ If the end of the file is reached before _len1_ characters
+  \ are read, _ior_ is zero and _len2_ is the number of
+  \ characters actually read.
+  \
+  \ If the operation is initiated when the value returned by
+  \ `file-position` is equal to the value returned by
+  \ `file-size` for the file identified by _fid, _ior_ is
+  \ zero and _len2_ is zero.
+  \
+  \ If an exception occurs, _ior_ is the implementation-defined
+  \ I/O result code, and _len2_ is the number of characters
+  \ transferred to _ca_ without an exception.
+  \
   \ At the conclusion of the operation, `file-position` returns
   \ the next file position after the last character read.
   \
   \ See: `bank-read-file`, `open-file`, `write-file`.
   \
+  \ }doc
+
   \ XXX TODO -- Finish adapting the documentation.
+  \
+  \ An ambiguous condition exists if the operation is initiated
+  \ when the value returned by `file-position` is greater than
+  \ the value returned by `file-size` for the file identified
+  \ by fileid, or if the requested operation attempts to read
+  \ portions of the file not written.
 
   \ ===========================================================
   \ Change log
@@ -1295,6 +1304,7 @@ code read-file  ( ca len1 fid -- len2 ior )
   \ 2018-03-11: Add `2-block-drives`.
   \
   \ 2018-03-13: Add `#file-ids`. Rename `file-id-table`
-  \ `file-ids`. Improve documentation.
+  \ `file-ids`. Improve documentation. Finish `read-file` and
+  \ `bank-read-file`.
 
   \ vim: filetype=soloforth
