@@ -1131,8 +1131,9 @@ endif
 ; drive, and the drive used by `transfer-sector` and
 ; `transfer-block`. The default drive is 'A'.
 ;
-; Does not access the drive, but merely checks that there is a
-; driver for it (which does not imply that the drive exists).
+; ``set-drive`` does not access the drive, but merely checks
+; that there is a driver for it (which does not imply that the
+; drive exists).
 ;
 ; See: `get-drive`.
 ;
@@ -1400,5 +1401,7 @@ endif ; defined plus3dos
 ; corresponding Forth constants `save-ip_` and `restore-ip_`.
 ;
 ; 2018-03-04: Add `default-1346`, factored from `cold`.
+;
+; 2018-03-13: Improve documentation.
 
 ; vim: filetype=z80:textwidth=64

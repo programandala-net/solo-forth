@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803112306
+  \ Last modified: 201803131655
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -102,7 +102,7 @@ fda $0F + constant fda-filetrack ?)
   \
   \ WARNING: The actual filename is a 9-character string formed
   \ by the filename stored at ``fda-filename`` and the
-  \ character stored ad `fda-filetype.`
+  \ character stored at `fda-filetype.`
   \
   \ See: `/filename`.
   \
@@ -1251,5 +1251,7 @@ need read-file-descriptor need write-file-descriptor
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-11: Add `2-block-drives`.
+  \
+  \ 2018-03-13: Fix typo.
 
   \ vim: filetype=soloforth
