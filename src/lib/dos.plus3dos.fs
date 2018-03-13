@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803112306
+  \ Last modified: 201803131706
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -285,20 +285,60 @@ unneeding delete-file ?( need >filename need (delete-file
   \
   \ }doc
 
-( max-file-id file-id-table file-id )
+( #file-ids file-ids file-id )
 
-15 cconstant max-file-id
+16 cconstant #file-ids
 
-create file-id-table max-file-id 1+ allot
-file-id-table max-file-id 1+ erase
-  \ XXX TODO rename?
-  \ XXX TODO -- use also to remember which files are headed, one bit
+  \ doc{
+  \
+  \ #file-ids ( -- n )
+  \
+  \ _n_ is the total number of file identifiers that can be
+  \ used.
+  \
+  \ See: `file-ids`, `file-id`.
+  \
+  \ }doc
+
+create file-ids #file-ids allot
+file-ids #file-ids erase
+
+  \ XXX TODO -- Use also to remember which files are headed,
+  \ one bit.
+
+  \ doc{
+  \
+  \ file-ids ( -- ca )
+  \
+  \ _ca_ is the address of a byte table containing the status
+  \ of the file identifiers:
+  \
+  \ |===
+  \ | $00 | Not used
+  \ | $FF | Used
+  \ |===
+  \
+  \ See: `#file-ids`, `file-id`.
+  \
+  \ }doc
 
 : file-id ( -- fid true | false )
-  max-file-id 1+ 0 ?do
-    i file-id-table + dup c@ 0=
+  #file-ids 0 ?do
+    i file-ids + dup c@ 0=
     if $FF swap c! i true unloop exit then drop
   loop false ;
+
+
+  \ doc{
+  \
+  \ file-id ( -- fid true | false )
+  \
+  \ If there is a file identifier not used yet, return it _fid_
+  \ and _true_; otherwise return _false_.
+  \
+  \ See: `#file-ids`, file-ids`.
+  \
+  \ }doc
 
 ( r/o w/o r/w s/r bin headed do-dos-open_ )
 
@@ -597,12 +637,12 @@ code (close-file ( fid -- ior )
   \
   \ ``(close-file`` is a factor of `close-file`.
   \ ``(close-file`` closes the file, but does not update
-  \ `file-id-table`.
+  \ `file-ids`.
   \
   \ }doc
 
 : close-file ( fid -- ior )
-  dup >r (close-file dup 0<> file-id-table r> + c! ;
+  dup >r (close-file dup 0<> file-ids r> + c! ;
 
   \ doc{
   \
@@ -1253,5 +1293,8 @@ code read-file  ( ca len1 fid -- len2 ior )
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-11: Add `2-block-drives`.
+  \
+  \ 2018-03-13: Add `#file-ids`. Rename `file-id-table`
+  \ `file-ids`. Improve documentation.
 
   \ vim: filetype=soloforth
