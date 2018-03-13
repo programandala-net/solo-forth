@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803120105
+  \ Last modified: 201803132359
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -29,7 +29,7 @@ unneeding +field ?\ defer +field ( n1 n2 "name" -- n3 )
 
   \ doc{
   \
-  \ +field ( n1 n2 "name -- n3 ) "plus-field"
+  \ +field ( n1 n2 "name" -- n3 ) "plus-field"
   \
   \ Create a definition for _name_ with the execution semantics
   \ defined below. Return _n3_ = _n1_ + _n2_ where _n1_ is the
@@ -40,13 +40,6 @@ unneeding +field ?\ defer +field ( n1 n2 "name" -- n3 )
   \ _name_ execution: ``( a1 -- a2 )``
   \
   \ Add _n1_ to _a1_ giving _a2_.
-  \
-  \ ``+field`` is not  required to  align items.  This is
-  \ deliberate and allows  the construction  of unaligned  data
-  \ structures for communication with external elements such as
-  \ a hardware register map or protocol packet.  Field
-  \ alignment has been left to the appropriate field
-  \ definition, e.g. `field:`, `2field:`, `cfield:`.
   \
   \ In Solo Forth, ``+field`` is an unitialized deferred word,
   \ for which three implementations are provided:
@@ -230,6 +223,9 @@ unneeding +field-unopt ?( need +field
   \ The advantage of this implementation is it uses only 22
   \ bytes of data space, so it could be useful in some cases.
   \
+  \ NOTE: Loading ``+field-unopt`` makes it the action of
+  \ `+field`.
+  \
   \ }doc
 
 unneeding +field-opt-0 ?( need +field
@@ -273,6 +269,9 @@ unneeding +field-opt-0 ?( need +field
   \
   \ ``+field-opt-0`` uses 31 bytes of data space.
   \
+  \ NOTE: Loading ``+field-opt-0`` makes it the action of
+  \ `+field`.
+  \
   \ }doc
 
 ( +field-opt-0124 )
@@ -299,6 +298,9 @@ unneeding +field-opt-0124 ?( need case need +field
   \ calculation of field offsets 0, 1, 2 and 4. Therefore it is
   \ more efficient than `+field-unopt` and `+field-opt-0`, but
   \ it uses 106 bytes of data space and needs `case`.
+  \
+  \ NOTE: Loading ``+field-opt-0124`` makes it the action of
+  \ `+field`.
   \
   \ }doc
 
@@ -336,5 +338,7 @@ unneeding +field-opt-0124 ?( need case need +field
   \ 2018-03-09: Update notation "address units" to "bytes".
   \
   \ 2018-03-12: Update source layout.
+  \
+  \ 2018-03-13: Improve documentation.
 
   \ vim: filetype=soloforth
