@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803132154
+  \ Last modified: 201803132326
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -185,11 +185,11 @@ unneeding >ufia2
   \
   \ }doc
 
-( ufia )
+( ufia -ufia )
 
 need /ufia
 
-create ufia  /ufia allot  ufia /ufia erase
+create ufia /ufia allot
 
   \ doc{
   \
@@ -257,7 +257,17 @@ ufia 18 + constant hd0d    \ file start address
 ufia 20 + constant hd0f    \ BASIC length without variables
 ufia 22 + constant hd11    \ BASIC autorun line
 
-'d' device c!  2 sstr1 c!  1 dstr1 c!
+: -ufia ( -- ) ufia /ufia erase ;
+
+  \ doc{
+  \
+  \ -ufia ( -- )
+  \
+  \ Erase the contents of `ufia`, replacing them with zeroes.
+  \
+  \ }doc
+
+ -ufia  'd' device c!  2 sstr1 c!  1 dstr1 c!
   \ Set default values of device, stream and drive
 
 ( --file-types-- )
@@ -1400,6 +1410,23 @@ code (rename-file ( -- ior )
   \
   \ }doc
 
+( create-file )
+
+  \ XXX UNDER DEVELOPMENT
+
+need assembler need ufia need -ufia need ofsm need cfsm
+need hook, need delete-file
+
+code (create-file ( -- ior )
+  b push, \ save Forth IP
+  ufia ix ldp#, ofsm hook, nc? rif cfsm hook, rthen
+  b pop, next ix ldp#, a push, ' dosior>ior jp, end-code
+
+: create-file ( ca len fam -- fid ior)
+  drop 2dup delete-file drop
+  -ufia set-filename 8 nstr1 c! (create-file ;
+  \ XXX TODO -- Return _fid_.
+
   \ ===========================================================
   \ Change log
 
@@ -1522,6 +1549,7 @@ code (rename-file ( -- ior )
   \
   \ 2018-03-11: Add `2-block-drives`.
   \
-  \ 2018-03-13: Compact the code, saving one block.
+  \ 2018-03-13: Compact the code, saving one block. Add
+  \ `-ufia`. Draft `create-file`.
 
   \ vim: filetype=soloforth
