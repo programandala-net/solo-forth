@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803122210
+  \ Last modified: 201803131610
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -265,7 +265,7 @@ TST9 .MSG(  #22: testing EMIT) CR
 TST10
 
 ~ The tester uses some words from CORE EXT.  These will be
-~ conditionally defined following definition ~ of a word called
+~ conditionally defined following definition of a word called
 ~ ?DEFINED to determine whether these are already defined.
 
 -->
@@ -5000,14 +5000,16 @@ need forth2012-utilities-test need forth2012-report-errors
 
 DECIMAL TESTING File Access word set
 
+cr .( Insert a formated disk)
+cr .( in the first drive,) cr .( then press any key.) key drop
+
   \ ===========================================================
 
-TESTING CREATE-FILE CLOSE-FILE
+CR TESTING CREATE-FILE CLOSE-FILE
 
 need create-file need close-file
 
-: FN1 S" fatest1.txt" ;
-VARIABLE FID1
+: FN1 S" fatest1.txt" ; VARIABLE FID1
 
 T{ FN1 R/W CREATE-FILE SWAP FID1 ! -> 0 }T
 T{ FID1 @ CLOSE-FILE -> 0 }T
@@ -5016,9 +5018,7 @@ T{ FID1 @ CLOSE-FILE -> 0 }T
 
 TESTING OPEN-FILE W/O WRITE-LINE
 
-need open-file need w/o need write-line
-
-: LINE1 S" Line 1" ;
+need open-file need w/o need write-line : LINE1 S" Line 1" ;
 
 T{ FN1 W/O OPEN-FILE SWAP FID1 ! -> 0 }T
 T{ LINE1 FID1 @ WRITE-LINE -> 0 }T
@@ -7124,5 +7124,8 @@ cr .( Forth-2012 tests completed ) cr cr
   \ exception, facility, string, tools, searchorder. Fix or
   \ note errors. Start the adaption of forth2012-prelim-test.
   \ Compact the code, saving 8 blocks.
+  \
+  \ 2018-03-13: Pass the double test. Add pause to the start of
+  \ the file test.
 
   \ vim: filetype=soloforth
