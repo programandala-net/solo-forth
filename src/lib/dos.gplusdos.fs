@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803112306
+  \ Last modified: 201803132154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1176,7 +1176,7 @@ create back-from-dos-error_ ( -- a ) asm
   \
   \ }doc
 
-( @dos c@dos  )
+( @dos c@dos  !dos c!dos )
 
 unneeding @dos ?(
 
@@ -1195,13 +1195,10 @@ code @dos ( a -- x )
   \
   \ }doc
 
-unneeding c@dos ?(
-
-need assembler need dos-in, need dos-out,
+unneeding c@dos ?( need assembler need dos-in, need dos-out,
 
 code c@dos ( ca -- b )
-  h pop, dos-in, m a ld,
-         dos-out, pusha jp, end-code ?)
+  h pop, dos-in, m a ld, dos-out, pusha jp, end-code ?)
 
   \ doc{
   \
@@ -1213,11 +1210,7 @@ code c@dos ( ca -- b )
   \
   \ }doc
 
-( !dos c!dos )
-
-unneeding !dos ?(
-
-need assembler need dos-in, need dos-out,
+unneeding !dos ?( need assembler need dos-in, need dos-out,
 
 code !dos ( x a -- )
   h pop, d pop, dos-in, e m ld, h incp, d m ld,
@@ -1232,13 +1225,10 @@ code !dos ( x a -- )
   \
   \ }doc
 
-unneeding c!dos ?(
-
-need assembler need dos-in, need dos-out,
+unneeding c!dos ?( need assembler need dos-in, need dos-out,
 
 code c!dos ( b ca -- )
-  h pop, d pop, dos-in, e m ld,
-                dos-out, jpnext, end-code ?)
+  h pop, d pop, dos-in, e m ld, dos-out, jpnext, end-code ?)
 
   \ doc{
   \
@@ -1249,7 +1239,6 @@ code c!dos ( b ca -- )
   \ See: `c@dos`, `!dos`.
   \
   \ }doc
-
 
 ( @dosvar c@dosvar )
 
@@ -1532,5 +1521,7 @@ code (rename-file ( -- ior )
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-11: Add `2-block-drives`.
+  \
+  \ 2018-03-13: Compact the code, saving one block.
 
   \ vim: filetype=soloforth
