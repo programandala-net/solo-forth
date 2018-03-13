@@ -1138,6 +1138,22 @@ their behaviour and names identical. Write the +3DOS version too.
 // G+DOS {{{2
 === G+DOS ===
 
+==== 2018-03-13
+
+Implement the file access word set. 
+
+It seems every action, e.g. `write-file`, must open the file, set its
+pointer, do the operation and close the file again... An indexed or
+linked list of UFIAs will be needed.
+
+Some ideas:
+
+Temporary method: Make `ufia` a constant that points to the UFIA used
+by the current file...
+
+Final method: Make `ufia` a data structure, in order to reuse its
+fields with additional UFIAs, which will be used as file identifiers.
+
 ==== 2018-03-03
 
 Improve `back-from-dos-error_`: Use G+DOS routine HOOK_RET at $22C8 to

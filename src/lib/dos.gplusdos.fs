@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803132326
+  \ Last modified: 201803132329
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -270,14 +270,74 @@ ufia 22 + constant hd11    \ BASIC autorun line
  -ufia  'd' device c!  2 sstr1 c!  1 dstr1 c!
   \ Set default values of device, stream and drive
 
-( --file-types-- )
+( --file-types-- r/o w/o r/w bin )
+
+unneeding --file-types-- ?(
 
 0 cconstant basic-filetype
 1 cconstant data-array-filetype
 2 cconstant string-array-filetype
 3 cconstant code-filetype
 
-: --file-types-- ;
+: --file-types-- ; ?)
+
+unneeding r/o ?\ 0 cconstant r/o
+
+  \ doc{
+  \
+  \ r/o ( -- fam ) "r-o"
+  \
+  \ Return the "read only" file access method _fam_.
+  \
+  \ See: `w/o`, `r/w`, `bin`, `create-file`.
+  \
+  \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
+  \
+  \ }doc
+
+unneeding w/o ?\ 0 cconstant w/o
+
+  \ doc{
+  \
+  \ w/o ( -- fam ) "w-o"
+  \
+  \ Return the "write only" file access method _fam_.
+  \
+  \ See: `r/o`, `r/w`, `bin`, `create-file`.
+  \
+  \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
+  \
+  \ }doc
+
+unneeding r/w ?\ 0 cconstant r/w
+
+  \ doc{
+  \
+  \ r/w ( -- fam ) "r-w"
+  \
+  \ Return the "read/write" file access method _fam_.
+  \
+  \ See: `r/o`, `w/o`, `bin`, `create-file`.
+  \
+  \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
+  \
+  \ }doc
+
+unneeding bin ?\ need alias ' noop alias bin immediate
+
+  \ doc{
+  \
+  \ bin ( fam1 -- fam2 )
+  \
+  \ Modify file access method _fam1_ to additionally select  a
+  \ "binary", i.e., not line oriented, file access method,
+  \ giving file access method _fam2_.
+  \
+  \ See: `r/o`, `w/o`, `r/w`, `create-file`.
+  \
+  \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
+  \
+  \ }doc
 
 ( hxfer ofsm hofile sbyte hsvbk cfsm pntp cops hgfile lbyte )
 
@@ -1550,6 +1610,7 @@ code (create-file ( -- ior )
   \ 2018-03-11: Add `2-block-drives`.
   \
   \ 2018-03-13: Compact the code, saving one block. Add
-  \ `-ufia`. Draft `create-file`.
+  \ `-ufia`. Draft `create-file`. Add `bin`, `r/o`, `w/o`,
+  \ `r/w`.
 
   \ vim: filetype=soloforth
