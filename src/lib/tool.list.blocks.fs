@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803111958
+  \ Last modified: 201803131646
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -143,7 +143,7 @@ unneeding .block# ?( need /block#
 
 : .block# ( n -- ) /block# .r ; ?)
 
-unneeding .index ?( need .line
+unneeding .index ?( need .line need .block#
 
 : .index ( u -- ) cr dup .block# space 0 swap .line ; ?)
 
@@ -508,5 +508,7 @@ need list-lines
   \
   \ 2018-03-11: Fix stack comment. Improve documentation. Move
   \ `blk-line` from the `ttester` module.
+  \
+  \ 2018-03-13: Fix requirement of `index`.
 
   \ vim: filetype=soloforth
