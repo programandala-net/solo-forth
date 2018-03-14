@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803132141
+  \ Last modified: 201803142127
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -515,6 +515,8 @@ code (create-file ( ca fam fid -- fid ior )
   \   ld e,a  ; E = open action
   \   jp do_dos_open
 
+  \ XXX TODO -- Document.
+
   \ ****************************
   \
   \ XXX FIXME
@@ -538,14 +540,15 @@ code (create-file ( ca fam fid -- fid ior )
 : create-file ( ca len fam -- fid ior )
   >r >filename r> file-id if (create-file exit then
                           drop #-288 ;
+
   \ doc{
   \
   \ create-file ( ca len fam -- fid ior )
   \
-  \  Create the file named in the character string specified by
-  \  _ca len_, and open it with file access method _fam_.  If a
-  \  file with the same name already exists, recreate it as an
-  \  empty file.
+  \ Create the file named in the character string specified by
+  \ _ca len_, and open it with file access method _fam_.  If a
+  \ file with the same name already exists, recreate it as an
+  \ empty file.
   \
   \ If the  file  was  successfully created  and  opened, _ior_
   \ is  zero,  _fid_,  is  its identifier, and the file has
@@ -1306,5 +1309,7 @@ code bank-read-file  ( ca len fid +n -- ior )
   \ 2018-03-13: Add `#file-ids`. Rename `file-id-table`
   \ `file-ids`. Improve documentation. Finish `read-file` and
   \ `bank-read-file`.
+  \
+  \ 2018-03-14: Fix documentation layout.
 
   \ vim: filetype=soloforth

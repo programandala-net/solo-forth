@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201705091637
+; Last modified: 201803140014
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -14,7 +14,7 @@
 ; ==============================================================
 ; Author
 
-; Marcos Cruz (programandala.net), 2015, 2016, 2017.
+; Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
 ; ==============================================================
 ; License
@@ -304,6 +304,8 @@ transfer_mode:
 ; successfully selected, _ior_ is zero. Otherwise it's an
 ; exception code.
 ;
+; See: `get-drive`, `set-block-drives,` `2-block-drives`.
+;
 ; }doc
 
   pop hl       ; L = drive
@@ -408,5 +410,7 @@ endif ; defined gplusdos
 ;
 ; 2017-05-09: Replace `_jp_pushhl` with `push hl` and
 ; `_jp_next`.
+;
+; 2018-03-14: Improve documentation.
 
 ; vim: filetype=z80:textwidth=64

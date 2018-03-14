@@ -1140,6 +1140,10 @@ their behaviour and names identical. Write the +3DOS version too.
 
 ==== 2018-03-14
 
+Adapt +3DOS `headed`.
+
+==== 2018-03-14
+
 Make `file-status` work also with files that don't have the 9-byte
 header.
 
