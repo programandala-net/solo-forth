@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-03-13
+:revdate: 2018-03-14
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1138,21 +1138,14 @@ their behaviour and names identical. Write the +3DOS version too.
 // G+DOS {{{2
 === G+DOS ===
 
+==== 2018-03-14
+
+Make `file-status` work also with files that don't have the 9-byte
+header.
+
 ==== 2018-03-13
 
 Implement the file access word set. 
-
-It seems every action, e.g. `write-file`, must open the file, set its
-pointer, do the operation and close the file again... An indexed or
-linked list of UFIAs will be needed.
-
-Some ideas:
-
-Temporary method: Make `ufia` a constant that points to the UFIA used
-by the current file...
-
-Final method: Make `ufia` a data structure, in order to reuse its
-fields with additional UFIAs, which will be used as file identifiers.
 
 ==== 2018-03-03
 
@@ -1200,7 +1193,7 @@ Fix: When the current disk is removed before doing `cat`, the
 corresponding exception is thrown. But the system does not recognize
 the disk when it's inserted back. The same code is thrown: #-1006
 (check disk in drive), even after `set-drive`. It seems something more
-is needed to make G+DOS be aware of the change.
+is needed to make G+DOS aware of the change.
 
 Update: Same problem in BASIC. It seems an issue of G+DOS or the Fuse
 emulator. The disk is recognized after doing a `cat` of the other
@@ -1255,6 +1248,8 @@ Use the 8 free sectors of the system track for 2 additional blocks.
 This requires changes in the fsb2-trd converter.
 
 ==== 2017-03-12
+
+NOTE: Milestone: 0.14.0
 
 Rename `read-file-descriptor` to `read-fda`.
 Rename `write-file-descriptor` to `write-fda`.

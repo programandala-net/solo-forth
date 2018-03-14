@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803140000
+  \ Last modified: 201803141239
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -89,7 +89,7 @@ unneeding dos-out,
   \
   \ }doc
 
-( ufia1 ufia2 >ufiax >ufia1 >ufia2 )
+( ufia1 ufia2 >ufiax >ufia1 >ufia2 default-ufia )
 
 unneeding ufia1 ?\ $3E01 constant ufia1
 
@@ -172,26 +172,48 @@ unneeding >ufia2
   \
   \ }doc
 
-( /ufia )
+unneeding default-ufia ?( need ufia0 need ufia need !>
 
-need +field-opt0 need +field need cfield: need field:
+: default-ufia ( -- ) ufia0 !> ufia ; ?)
 
-0
-  cfield:      ~dstr1  \ drive: 1, 2 or '*'
-  cfield:      ~fstr1  \ file directory number
-  cfield:      ~sstr1  \ stream number
-  cfield:      ~device \ device: 'D' or 'd'
-  cfield:      ~nstr1  \ directory description
-  10 +field    ~nstr2  \ file name
-  cfield: 15 + ~hd00   \ file type
-  field:       ~hd0b   \ file length
-  field:       ~hd0d   \ file start address
-  field:       ~hd0f   \ BASIC length without variables
-  field:       ~hd11   \ BASIC autorun line
-cconstant /ufia
+  \ doc{
+  \
+  \ default-ufia ( -- ) "default-u-f-i-a"
+  \
+  \ Set the default value of `ufia`, which is `ufia0`.
+  \
+  \ }doc
+
+( /ufia /fid )
+
+need +field-opt-0 need +field need cfield: need field:
+
+0 cfield:     ~dstr1  \ drive: 1, 2, '*' or zero
+  cfield:     ~fstr1  \ file directory number
+  cfield:     ~sstr1  \ stream number
+  cfield:     ~device \ device: 'D' or 'd'
+  cfield:     ~nstr1  \ directory description
+  10 +field   ~nstr2  \ file name
+  cfield:     ~hd00   \ file type
+  field:      ~hd0b   \ file length
+  field:      ~hd0d   \ file start address
+  field:      ~hd0f   \ BASIC length without variables
+  field:      ~hd11   \ BASIC autorun line
+dup cconstant /ufia
+  field:      ~fid-link \ address of previous fid structure
+cconstant /fid
 
   \ XXX TODO -- Remove `~device`. The distinction is useless in
   \ Forth.
+
+  \ doc{
+  \
+  \ ~fid-link ( a1 -- a2 ) "tilde-f-i-d-link"
+  \
+  \ See: `/fid`.
+  \
+  \ }doc
+  \ XXX TODO --
 
   \ doc{
   \
@@ -200,27 +222,55 @@ cconstant /ufia
   \ _n_ is the length of a UFIA (User File Information Area), a
   \ 24-byte structure which describes a file.
   \
-  \ See: `ufia`, `ufia1`, `ufia2`.
+  \ See: `ufia`, `ufia1`, `ufia2`, `/fid`.
   \
   \ }doc
 
-( ufia -ufia )
+  \ doc{
+  \
+  \ /fid ( -- n ) "slash-f-i-d"
+  \
+  \ _n_ is the length of a data structure pointed by an address
+  \ that is used as file identifier describing a file that is
+  \ open. The structure is identical to `ufia`, except field
+  \ `~fid-link` is added at the end.
+  \
+  \ See: `/ufia`.
+  \
+  \ }doc
 
-need /ufia
+( ufia0 ufia -ufia )
 
-create ufia /ufia allot
+need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
+
+  \ doc{
+  \
+  \ ufia0 ( -- a ) "u-f-i-a-zero"
+  \
+  \ Return address _a_ of a buffer used as UFIA (User File
+  \ Information Area), a 24-byte structure which describes a
+  \ file. ``ufia0`` is the default value of `ufia`. See `ufia`
+  \ for details.
+  \
+  \ See: `default-ufia`.
+  \
+  \ }doc
 
   \ doc{
   \
   \ ufia ( -- a ) "u-f-i-a"
   \
-  \ Return constant address _a_ of a buffer used as UFIA (User
+  \ Return address _a_ of a buffer currently used as UFIA (User
   \ File Information Area), a 24-byte structure which describes
   \ a file.
   \
   \ Solo Forth words use ``ufia`` for G+DOS calls.  G+DOS uses
   \ its own buffers `ufia1` and `ufia2` for internal
   \ operations.
+  \
+  \ ``ufia`` is a constant. Its default value is `ufia0`, and
+  \ can be set with `default-ufia`. The value is changed with
+  \ `!>` by some words.
 
   \ |===
   \ | Offset | Bytes | Meaning
@@ -238,7 +288,7 @@ create ufia /ufia allot
   \ |     22 |     2 | Autostart line of a BASIC program
   \ |===
 
-  \ See: `/ufia`, `ufia1`, `ufia2`, `>ufiax`.
+  \ See: `/ufia`, `>ufiax`.
   \
   \ }doc
 
@@ -263,17 +313,18 @@ create ufia /ufia allot
   \ Note: The original UFIA field names are used, except
   \ `device`, whose original name is "lstr1":
 
-ufia ~dstr1  constant dstr1  \ drive: 1, 2 or '*'
-ufia ~fstr1  constant fstr1  \ file directory number
-ufia ~sstr1  constant sstr1  \ stream number
-ufia ~device constant device \ device: 'D' or 'd'
-ufia ~nstr1  constant nstr1  \ directory description
-ufia ~nstr2  constant nstr2  \ file name
-ufia ~hd00   constant hd00   \ file type
-ufia ~hd0b   constant hd0b   \ file length
-ufia ~hd0d   constant hd0d   \ file start address
-ufia ~hd0f   constant hd0f   \ BASIC length w/out variables
-ufia ~hd11   constant hd11   \ BASIC autorun line
+: dstr1  ( -- a ) ufia ~dstr1  ; \ drive: 1, 2 or '*'
+: fstr1  ( -- a ) ufia ~fstr1  ; \ file directory number
+: sstr1  ( -- a ) ufia ~sstr1  ; \ stream number
+: device ( -- a ) ufia ~device ; \ device: 'D' or 'd'
+: nstr1  ( -- a ) ufia ~nstr1  ; \ directory description
+: nstr2  ( -- a ) ufia ~nstr2  ; \ file name
+: hd00   ( -- a ) ufia ~hd00   ; \ file type
+: hd0b   ( -- a ) ufia ~hd0b   ; \ file length
+: hd0d   ( -- a ) ufia ~hd0d   ; \ file start address
+: hd0f   ( -- a ) ufia ~hd0f   ; \ BASIC length w/out variables
+: hd11   ( -- a ) ufia ~hd11   ; \ BASIC autorun line
+  \ XXX TODO -- Document.
 
   \ XXX TODO -- Remove `device`. The distinction is useless in
   \ Forth.
@@ -284,12 +335,97 @@ ufia ~hd11   constant hd11   \ BASIC autorun line
   \
   \ -ufia ( -- )
   \
-  \ Erase the contents of `ufia`, replacing them with zeroes.
+  \ Erase the contents of `ufia` with zeroes,
+  \
+  \ See: `init-ufia`, `/ufia`.
   \
   \ }doc
 
- -ufia  'd' device c!  2 sstr1 c!  1 dstr1 c!
-  \ Set default values of device, stream and drive
+: init-ufia ( -- )
+  -ufia '*' dstr1 c! 'd' device c! 2 sstr1 c! ; init-ufia
+
+  \ doc{
+  \
+  \ init-ufia ( -- )
+  \
+  \ Init the contents of `ufia`, erasing them with zeroes, then
+  \ setting `device` to "d", `dstr1` to "*" (i.e., the default
+  \ drive) and `sstr1` to 2.
+  \
+  \ See: `-ufia`.
+  \
+  \ }doc
+
+( create-fid find-fid fid> fid )
+
+need /fid
+
+variable latest-fid  0 latest-fid !
+  \ Address of the latest file identifier created by
+  \ `create-fid`, or zero if no one was created yet.
+
+: create-fid ( -- fid )
+  latest-fid @ here /fid allot dup /fid erase dup latest-fid !
+               tuck ~fid-link ! ;
+  \ Create a new file identifier _fid_ and link its structure
+  \ to the previous one, pointed by `latest-fid`. Also update
+  \ `latest-fid`.
+
+: free-fid? ( fid -- f ) ~dstr1 c@ 0= ;
+  \ Is file identifier _fid_ free to be reused?
+
+: find-fid ( fid -- fid' )
+  begin dup free-fid? ?exit  ~fid-link @ ?dup 0=
+  until create-fid ;
+  \ Find an unused file identifier _fid'_ starting from _fid_.
+  \ If no unused file identifier is found, a new one is
+  \ created.
+
+: fid ( -- fid ) latest-fid @ ?dup if find-fid exit then
+                                   create-fid ;
+  \ Return a usable file identifier _fid_.
+
+( .ufia .fid )
+
+need /ufia need /fid need /filename
+
+: .ufia ( a -- )
+  cr dup ~dstr1  c@ ." Drive:       " .              cr
+     dup ~fstr1  c@ ." Dir. number: " .              cr
+     dup ~sstr1  c@ ." Stream:      " .              cr
+     dup ~device c@ ." Device:      " emit           cr
+     dup ~nstr1  c@ ." Dir. descr.: " .              cr
+     dup ~nstr2     ." Name:        " /filename type cr
+     dup ~hd00   c@ ." Type:        " .              cr
+     dup ~hd0b    @ ." Length:      " u.             cr
+     dup ~hd0d    @ ." Start:       " u.             cr
+     dup ~hd0f    @ ." BASIC length:" u.             cr
+         ~hd11    @ ." BASIC line:  " u.             cr ;
+
+  \ doc{
+  \
+  \ .ufia ( fid -- ) "dot-u-f-i-a"
+  \
+  \ Display the contents of the UFIA data structure pointed by
+  \ _a_.
+  \
+  \ See: `.fid`, `ufia`.
+  \
+  \ }doc
+
+: .fid ( fid -- )
+  dup .ufia ~fid-link @ ." Prev. fid:   " u. cr ;
+
+  \ doc{
+  \
+  \ .fid ( fid -- ) "dot-f-i-d"
+  \
+  \ Display the contents of the data structure pointed by file
+  \ identifier _fid_.
+  \
+  \ See: `.ufia`, `fid`.
+  \
+  \ }doc
 
 ( --file-types-- r/o w/o r/w bin )
 
@@ -464,7 +600,7 @@ unneeding 2-block-drives ?( need set-block-drives
   \
   \ Set all drives as block drives, in normal order: 1 and 2.
   \
-  \ Note: For convenience, when this word is loaded, it's also
+  \ NOTE: For convenience, when this word is loaded, it's also
   \ executed.
   \
   \ See: `set-block-drives`.
@@ -538,7 +674,7 @@ need ufia need get-drive
   \ }doc
 
 : set-filename ( ca len -- )
-  -filename /filename min nstr2 swap cmove get-drive dstr1 c! ;
+  -filename /filename min nstr2 swap cmove ;
 
   \ doc{
   \
@@ -1496,17 +1632,17 @@ code (rename-file ( -- ior )
   \ XXX UNDER DEVELOPMENT
 
 need assembler need ufia need -ufia need ofsm need cfsm
-need hook, need delete-file
+need hook, need delete-file need fid need default-ufia need !>
 
-code (create-file ( -- ior )
-  b push, \ save Forth IP
-  ufia ix ldp#, ofsm hook, nc? rif cfsm hook, rthen
+code (create-file ( ufia -- ior )
+  ix pop, b push,
+  ofsm hook, nc? rif cfsm hook, rthen
   b pop, next ix ldp#, a push, ' dosior>ior jp, end-code
 
 : create-file ( ca len fam -- fid ior)
   drop 2dup delete-file drop
-  -ufia set-filename 8 nstr1 c! (create-file ;
-  \ XXX TODO -- Return _fid_.
+  fid !> ufia init-ufia set-filename 8 nstr1 c!
+      latest-fid @ dup (create-file default-ufia ;
 
   \ ===========================================================
   \ Change log
@@ -1633,5 +1769,8 @@ code (create-file ( -- ior )
   \ 2018-03-13: Compact the code, saving one block. Add
   \ `-ufia`. Draft `create-file`. Add `bin`, `r/o`, `w/o`,
   \ `r/w`. Create a data structure to access any UFIA.
+  \
+  \ 2018-03-14: Add words to manage a linked list of reusable
+  \ UFIAs, used a file identifiers. Add `.ufia` and `.fid`.
 
   \ vim: filetype=soloforth
