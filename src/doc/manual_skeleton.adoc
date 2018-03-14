@@ -1,12 +1,12 @@
 = Solo Forth %VERSION% %DOS%
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-03-13
+:revdate: 2018-03-14
 :toc:
 :toclevels: 1
 :toc-placement!:
 :linkattrs:
 
-// Last modified 201803132133
+// Last modified 201803142130
 
 toc::[]
 
@@ -91,7 +91,7 @@ on each DOS.
 | `bin`             |       |        | YES   | Standard Forth
 | `cat`             | YES   | YES    | YES   | Detailed disk catalogue
 | `close-file`      |       |        | YES   | Standard Forth
-| `create-file`     |       |        | draft | Standard Forth
+| `create-file`     | YES   |        | draft | Standard Forth
 | `delete-file`     | YES   | YES    | YES   | Standard Forth
 | `file-dir#`       | YES   | YES    |       |
 | `file-dirdesc`    | YES   | n/a    |       |

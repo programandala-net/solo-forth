@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803141239
+  \ Last modified: 201803142127
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -674,7 +674,7 @@ need ufia need get-drive
   \ }doc
 
 : set-filename ( ca len -- )
-  -filename /filename min nstr2 swap cmove ;
+  -filename /filename min nstr2 swap cmove get-drive dstr1 c! ;
 
   \ doc{
   \
@@ -1631,7 +1631,7 @@ code (rename-file ( -- ior )
 
   \ XXX UNDER DEVELOPMENT
 
-need assembler need ufia need -ufia need ofsm need cfsm
+need assembler need ufia need init-ufia need ofsm need cfsm
 need hook, need delete-file need fid need default-ufia need !>
 
 code (create-file ( ufia -- ior )
@@ -1639,10 +1639,58 @@ code (create-file ( ufia -- ior )
   ofsm hook, nc? rif cfsm hook, rthen
   b pop, next ix ldp#, a push, ' dosior>ior jp, end-code
 
+  \ XXX TODO -- Document.
+  \
+  \ XXX TODO -- Confirm closing with `cfsm` is needed to make
+  \ the file later available to `write-file`, etc.
+
 : create-file ( ca len fam -- fid ior)
   drop 2dup delete-file drop
   fid !> ufia init-ufia set-filename 8 nstr1 c!
       latest-fid @ dup (create-file default-ufia ;
+
+  \ doc{
+  \
+  \ create-file ( ca len fam -- fid ior )
+  \
+  \ Create the file named in the character string specified by
+  \ _ca len_, and open it with file access method _fam_.  If a
+  \ file with the same name already exists, recreate it as an
+  \ empty file.
+  \
+  \ If the  file  was  successfully created  and  opened, _ior_
+  \ is  zero,  _fid_,  is  its identifier, and the file has
+  \ been positioned to the start of the file.
+  \
+  \ Otherwise, _ior_ is a G+DOS I/O result code and _fid_ is
+  \ undefined.
+  \
+  \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
+  \
+  \ See: `r/o`, `w/o`, `r/w`, `bin`.
+  \
+  \ }doc
+
+( write-file )
+
+  \ XXX UNDER DEVELOPMENT
+
+need assembler need ufia
+need hofile need hsvbk need cfsm need hook,
+
+code (write-file ( ca len ufia -- ior )
+
+  ix pop, b push,
+  hofile hook, \ open the file and create its header
+  nc? rif \ no error?
+    hd0d d ftp, hd0b b ftp,  \ DE=start, BC=length
+    hsvbk hook, \ save to file
+    nc? rif  cfsm hook,  rthen  \ close the file if no error
+  rthen  b pop, next ix ldp#,  \ restore the Forth registers
+  a push, ' dosior>ior jp, end-code
+
+: write-file ( ca len fid -- ior )
+  (write-file ;
 
   \ ===========================================================
   \ Change log
@@ -1772,5 +1820,6 @@ code (create-file ( ufia -- ior )
   \
   \ 2018-03-14: Add words to manage a linked list of reusable
   \ UFIAs, used a file identifiers. Add `.ufia` and `.fid`.
+  \ Finish create-file. Draft `write-file`.
 
   \ vim: filetype=soloforth
