@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803142127
+  \ Last modified: 201803142330
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -358,7 +358,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
 
 ( create-fid find-fid fid> fid )
 
-need /fid
+need /fid need coff
 
 variable latest-fid  0 latest-fid !
   \ Address of the latest file identifier created by
@@ -374,6 +374,10 @@ variable latest-fid  0 latest-fid !
 : free-fid? ( fid -- f ) ~dstr1 c@ 0= ;
   \ Is file identifier _fid_ free to be reused?
 
+: free-fid ( fid -- ) ~dstr1 coff ;
+  \ Make file identifier _fid_ free for reuse. The
+  \ corresponding file is supposed to be closed already.
+
 : find-fid ( fid -- fid' )
   begin dup free-fid? ?exit  ~fid-link @ ?dup 0=
   until create-fid ;
@@ -387,20 +391,20 @@ variable latest-fid  0 latest-fid !
 
 ( .ufia .fid )
 
-need /ufia need /fid need /filename
+need /ufia need /fid need /filename need type-ascii
 
 : .ufia ( a -- )
-  cr dup ~dstr1  c@ ." Drive:       " .              cr
-     dup ~fstr1  c@ ." Dir. number: " .              cr
-     dup ~sstr1  c@ ." Stream:      " .              cr
-     dup ~device c@ ." Device:      " emit           cr
-     dup ~nstr1  c@ ." Dir. descr.: " .              cr
-     dup ~nstr2     ." Name:        " /filename type cr
-     dup ~hd00   c@ ." Type:        " .              cr
-     dup ~hd0b    @ ." Length:      " u.             cr
-     dup ~hd0d    @ ." Start:       " u.             cr
-     dup ~hd0f    @ ." BASIC length:" u.             cr
-         ~hd11    @ ." BASIC line:  " u.             cr ;
+  cr dup ~dstr1  c@ ." Drive:       " .                    cr
+     dup ~fstr1  c@ ." Dir. number: " .                    cr
+     dup ~sstr1  c@ ." Stream:      " .                    cr
+     dup ~device c@ ." Device:      " emit                 cr
+     dup ~nstr1  c@ ." Dir. descr.: " .                    cr
+     dup ~nstr2     ." Name:        " /filename type-ascii cr
+     dup ~hd00   c@ ." Type:        " .                    cr
+     dup ~hd0b    @ ." Length:      " u.                   cr
+     dup ~hd0d    @ ." Start:       " u.                   cr
+     dup ~hd0f    @ ." BASIC length:" u.                   cr
+         ~hd11    @ ." BASIC line:  " u.                   cr ;
 
   \ doc{
   \
@@ -1639,8 +1643,6 @@ code (create-file ( ufia -- ior )
   ofsm hook, nc? rif cfsm hook, rthen
   b pop, next ix ldp#, a push, ' dosior>ior jp, end-code
 
-  \ XXX TODO -- Document.
-  \
   \ XXX TODO -- Confirm closing with `cfsm` is needed to make
   \ the file later available to `write-file`, etc.
 
@@ -1671,26 +1673,75 @@ code (create-file ( ufia -- ior )
   \
   \ }doc
 
+( open-file )
+
+  \ XXX UNDER DEVELOPMENT
+
+need assembler need ufia need init-ufia need ofsm
+need hook, need fid need default-ufia need !> need file-exists?
+
+code (open-file ( ufia -- ior )
+  ix pop, b push, ofsm hook,
+  b pop, next ix ldp#, a push, ' dosior>ior jp, end-code
+
+: OLD-open-file ( ca len fam -- fid ior)
+  drop fid !> ufia init-ufia set-filename
+  latest-fid @ file-exists? if   dup (open-file
+                            else #-1026 \ file not found
+                            then default-ufia ;
+
+: open-file ( ca len fam -- fid ior)
+  drop 2dup file-exists?
+  if   fid !> ufia init-ufia set-filename latest-fid @ 0
+  else drop #-1026 \ file not found
+  then default-ufia ;
+  \ XXX TMP --
+
+( close-file )
+
+  \ XXX UNDER DEVELOPMENT
+
+need assembler need ufia need init-ufia need cfsm need hook,
+need free-fid
+
+code (close-file ( fid -- ior )
+  ix pop, b push, cfsm hook,
+  b pop, next ix ldp#, a push, ' dosior>ior jp, end-code
+
+  \ XXX FIXME -- Crash! Tried with files created by
+  \ `create-file` with `cfsm` removed.
+
+: OLD-close-file ( fid -- ior ) dup (close-file swap free-fid ;
+
+: close-file ( fid -- ior ) free-fid 0 ;
+
 ( write-file )
 
   \ XXX UNDER DEVELOPMENT
 
-need assembler need ufia
-need hofile need hsvbk need cfsm need hook,
+need assembler need hsvbk need hook,
 
-code (write-file ( ca len ufia -- ior )
+code write-file ( ca len fid -- ior )
 
-  ix pop, b push,
-  hofile hook, \ open the file and create its header
-  nc? rif \ no error?
-    hd0d d ftp, hd0b b ftp,  \ DE=start, BC=length
+  ix pop, b push, ix push, \ save fid copy and Forth IP
+  ofsm hook, nc? rif
+    ix pop, h pop, b pop, d pop, h push,
+      \ restore fid; DE=start, BC=length; save Forth IP
     hsvbk hook, \ save to file
-    nc? rif  cfsm hook,  rthen  \ close the file if no error
-  rthen  b pop, next ix ldp#,  \ restore the Forth registers
+    b pop, \ restore Forth IP
+  relse h pop, b pop, h pop, h pop,
+        \ restore Forth IP, discard others
+  rthen next ix ldp#,  \ restore Forth IX
   a push, ' dosior>ior jp, end-code
 
-: write-file ( ca len fid -- ior )
-  (write-file ;
+  \ XXX FIXME -- Crash!
+
+( gfiles )
+
+  \ XXX TMP -- Loading block for testing.
+
+need where need create-file need open-file need close-file
+need write-file need .ufia
 
   \ ===========================================================
   \ Change log
@@ -1732,7 +1783,7 @@ code (write-file ( ca len ufia -- ior )
   \
   \ 2017-02-05: Fix needing of `set-drive`.
   \
-  \ 2017-02-07: Use `cconstant` for byte constants
+  \ 2017-02-07: Use `cconstant` for byte constants.
   \
   \ 2017-02-08: Update and complete the paging tests `g.100h`
   \ and `g.100i`. Make hook codes individually accessible to
@@ -1820,6 +1871,7 @@ code (write-file ( ca len ufia -- ior )
   \
   \ 2018-03-14: Add words to manage a linked list of reusable
   \ UFIAs, used a file identifiers. Add `.ufia` and `.fid`.
-  \ Finish create-file. Draft `write-file`.
+  \ Finish `create-file`. Draft `write-file`, `close-file`,
+  \ `open-file`.
 
   \ vim: filetype=soloforth
