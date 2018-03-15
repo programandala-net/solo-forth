@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201803140014
+; Last modified: 201803151832
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -327,7 +327,7 @@ transfer_mode:
   ; the end of the routine.
 
 ; ----------------------------------------------
-  _code_header paren_paren_cat_,'((cat'
+  _code_header paren_paren_cat_,'TMP((cat'
 
   ; 2018-03-04 XXX TMP -- Copy of the library code, for debugging,
 
@@ -338,13 +338,18 @@ if 1
   push bc
   rst 8
   defb $43 ; pcat command code
-  ; _z80_border_wait 2 ; this point is reached
+  ; _z80_border_wait 2 ; 2013-03-04 this point is reached
+  ; _z80_border_wait 2 ; 2018-03-15 crash before
   pop bc
   ld ix,next
   push af ; $0D28 = no error
   jp dosior_to_ior_
 
-  ; but exception #-5 (return stack overflow) is thrown
+  ; 2013-03-04: Exception #-5 (return stack overflow) is thrown.
+  ;
+  ; 2018-03-15: The system returns to BASIC after displaying the
+  ; catalogue. After returning to Forth, any command returns to
+  ; BASIC as well.
 
 else
 
@@ -360,7 +365,9 @@ else
   push af
   jp dosior_to_ior_
 
-  ; but exception #-5 (return stack overflow) is thrown
+  ; 2013-03-04: Exception #-5 (return stack overflow) is thrown.
+  ;
+  ; 2018-03-15: Crash!
 
 endif
 

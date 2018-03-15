@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803142330
+  \ Last modified: 201803151835
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -713,14 +713,14 @@ need hofile need hsvbk need cfsm need hook,
 
 code (>file) ( -- ior )
 
-  b push,  \ save the Forth IP
+  b push, \ save the Forth IP
   ufia ix ldp#,
   hofile hook, \ open the file and create its header
   nc? rif \ no error?
-    hd0d d ftp, hd0b b ftp,  \ DE=start, BC=length
-    hsvbk hook, \ save to file
-    nc? rif  cfsm hook,  rthen  \ close the file if no error
-  rthen  b pop, next ix ldp#,  \ restore the Forth registers
+    hd0d d ftp, hd0b b ftp, hsvbk hook,
+      \ save data: DE=start, BC=length
+    nc? rif cfsm hook, rthen \ close the file if no error
+  rthen b pop, next ix ldp#, \ restore the Forth registers
   a push, ' dosior>ior jp, end-code
 
   \ doc{
@@ -1203,16 +1203,18 @@ unneeding (cat ?( need pcat need ufia need hd00 need >ufia1
 
   \ XXX TMP -- 2018-03-04 Moved to the kernel, for debugging.
 
-  \ code ((cat ( -- ior )
-  \   \ C5 c, CF c, pcat c, C1 c, DD c, 21 c, next , F5 c,
-  \     \ push bc
-  \     \ rst $08
-  \     \ defb pcat
-  \     \ pop bc
-  \     \ ld ix,next
-  \     \ push af
-  \   \ ' dosior>ior jp, end-code
-  \     \ jp dosior_to_ior_
+  code ((cat ( -- ior )
+    DD c, 21 c, ufia , \ XXX REMARK -- This fixed the problem.
+      \ ld ix,ufia
+    C5 c, CF c, pcat c, C1 c, DD c, 21 c, next , F5 c,
+      \ push bc
+      \ rst $08
+      \ defb pcat
+      \ pop bc
+      \ ld ix,next
+      \ push af
+    ' dosior>ior jp, end-code
+      \ jp dosior_to_ior_
 
   \   \ XXX TMP -- Alternative, which also crashes at the end:
 
@@ -1240,8 +1242,7 @@ unneeding (cat ?( need pcat need ufia need hd00 need >ufia1
   \
   \ }doc
 
-: (cat ( b -- ) hd00 c! ufia >ufia1
-cr rp@ u.  \ RP = 24662
+: (cat ( b -- ) hd00 c! ufia >ufia1 \ cr rp@ u.  \ RP = 24662
 
            \ Note 24668 is the value of RP in the command
            \ line, before and after `cat`, so everything seems
@@ -1249,11 +1250,9 @@ cr rp@ u.  \ RP = 24662
            \ `interpret`, except `cold` resets the system after
            \ `cat` (actually `((cat`) has been used.
 
-1 border key drop  ((cat
-cr rp@ u. cr .s \ RP = 24662
-throw
-cr rp@ u. \ RP = 24662
-2 border key drop ; ?)
+  ( 1 border key drop  ) ((cat \ cr rp@ u. cr .s \ RP = 24662
+  throw \ cr rp@ u. ( 2 border key drop ) \ RP = 24662
+  ; ?)
 
   \ doc{
   \
@@ -1696,6 +1695,8 @@ code (open-file ( ufia -- ior )
   else drop #-1026 \ file not found
   then default-ufia ;
   \ XXX TMP --
+  \ XXX TODO -- Check if the file is already opened in the
+  \ current drive, searching the list of file identifiers.
 
 ( close-file )
 
@@ -1719,22 +1720,22 @@ code (close-file ( fid -- ior )
 
   \ XXX UNDER DEVELOPMENT
 
-need assembler need hsvbk need hook,
+need assembler need ofsm need hsvbk need cfsm need hook,
 
 code write-file ( ca len fid -- ior )
 
   ix pop, b push, ix push, \ save fid copy and Forth IP
   ofsm hook, nc? rif
-    ix pop, h pop, b pop, d pop, h push,
-      \ restore fid; DE=start, BC=length; save Forth IP
+    \ XXX FIXME -- No return from `ofsm`. Why?
+    ix pop, h pop, b pop, d pop, h push, ix push,
+      \ restore fid; DE=start, BC=length; save Forth IP, fid
     hsvbk hook, \ save to file
-    b pop, \ restore Forth IP
+    ix pop, nc? rif   cfsm hook, \ close the file
+                rthen b pop, \ restore Forth IP
   relse h pop, b pop, h pop, h pop,
         \ restore Forth IP, discard others
   rthen next ix ldp#,  \ restore Forth IX
   a push, ' dosior>ior jp, end-code
-
-  \ XXX FIXME -- Crash!
 
 ( gfiles )
 
@@ -1873,5 +1874,7 @@ need write-file need .ufia
   \ UFIAs, used a file identifiers. Add `.ufia` and `.fid`.
   \ Finish `create-file`. Draft `write-file`, `close-file`,
   \ `open-file`.
+  \
+  \ 2018-03-15: Redraft `write-file`; debug `((cat`.
 
   \ vim: filetype=soloforth
