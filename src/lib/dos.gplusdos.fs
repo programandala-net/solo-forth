@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803151847
+  \ Last modified: 201803152355
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -202,6 +202,9 @@ need +field-opt-0 need +field need cfield: need field:
 dup cconstant /ufia
   field:      ~fid-link \ address of previous fid structure
 cconstant /fid
+
+  \ XXX TODO -- Add a field for the current position of the
+  \ file.
 
   \ XXX TODO -- Remove `~device`. The distinction is useless in
   \ Forth.
@@ -1711,12 +1714,34 @@ code write-file ( ca len fid -- ior )
   rthen next ix ldp#,  \ restore Forth IX
   a push, ' dosior>ior jp, end-code
 
+( read-file )
+
+  \ XXX UNDER DEVELOPMENT
+
+need assembler need hgfile need hldbk need hook,
+
+code (read-file ( ca len fid -- ior )
+  ix pop, d pop, h pop, b push, h push, d push, ( ip ca len )
+  hgfile hook, \ open the file for reading
+  c? rif d pop, d pop,  \ error, so drop the parameters
+  relse  b pop, d pop, hldbk hook,
+  rthen  b pop, next ix ldp#, a push, ' dosior>ior jp, end-code
+  \
+  \ XXX TODO --  Preserve the file pointer in the file
+  \ identifier structure. Now the data is read always from the
+  \ start of the file.
+
+: read-file ( ca len1 fid -- len2 ior )
+  over >r (read-file r> swap ;
+  \
+  \ XXX TODO -- Calculate _len2_. Now it always equals _len1_.
+
 ( gfiles )
 
   \ XXX TMP -- Loading block for testing.
 
 need where need create-file need open-file need close-file
-need write-file need .ufia
+need write-file need read-file need .ufia
 
   \ ===========================================================
   \ Change log
@@ -1850,5 +1875,6 @@ need write-file need .ufia
   \ `open-file`.
   \
   \ 2018-03-15: Redraft `write-file`; debug and fix `((cat`.
+  \ Draft `read-file`.
 
   \ vim: filetype=soloforth

@@ -1094,6 +1094,22 @@ Change notation `"name"` to `_name_` in descriptions.
 // DOS {{{1
 == DOS
 
+== 2018-03-15
+
+NOTE: Milestone: 0.14.0
+
+Improve `transfer-block` to preserve the current drive. Now the
+current drive is changed by `(>drive-block`, which is activated by
+loading `block-drives`, needed by `set-block-drives`. Example on
+G+DOS:
+
+----
+1 set-drive \ an ordinary formatted file disk
+2 1 set-block-drives \ the library is in drive 2
+1 load \ ok
+get-drive . \ but now the current drive is number 2
+----
+
 === 2017-03-12, 2017-03-13
 
 Support block files?
@@ -1109,7 +1125,7 @@ compile a project (Solo Forth loader and binary, blocks, data files,
 graphics, sounds, etc) in one single disk.
 
 In practice, the problems to be solved are bigger than the possible
-benefit on a diskette-based system. Block files seems more useful on a
+benefit on a diskette-based system. Block files seem more useful on a
 hard drive, on IDEDOS or ResiDOS.
 
 === 2017-02-13
