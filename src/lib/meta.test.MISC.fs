@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803132144
+  \ Last modified: 201803151547
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,7 +27,7 @@
 
 need create-file need r/w need r/o need w/o need write-file
 need close-file need open-file need read-file need rename-file
-need delete-file need cat need 2variable
+need delete-file need cat
 
 variable fid  : buf s" XXXXXXXXXX" ;  : file$ s" ZX.ZX" ;
 
@@ -37,19 +37,20 @@ variable fid  : buf s" XXXXXXXXXX" ;  : file$ s" ZX.ZX" ;
 
 : file-test ( -- )
 
-    \ <------------------------------>
-cr ." Insert a formatted disk in drive"
-   ." 'A', then press any key. " key drop cr ." Go!"
+      \ <------------------------------>
+  cr ." Insert a formatted disk into the"
+     ." first drive, then press any key." key drop cr ." Go!"
 
-file$ w/o create-file throw fid ! ." file created" cr
-s" hola" fid @ write-file throw ." file written, part 1" cr
-s" y adios" fid @ write-file throw ." file written, part 2" cr
-fid @ close-file throw ." file closed" cr
+  file$ w/o create-file throw fid ! ." create-file" cr
+  s" hola" fid @ write-file throw ." write-file, part 1" cr
+  s" y adios" fid @ write-file throw ." write-file, part 2" cr
+  fid @ close-file throw ." close-file" cr
 
-file$ r/o open-file throw fid ! ." file open" cr
-buf fid @ read-file throw . ." bytes read:" cr
-buf type cr  fid @ close-file throw  file$ delete-file
-throw ;
+  file$ r/o open-file throw fid ! ." open-file" cr
+  buf fid @ read-file throw . ." bytes read:" cr
+  buf type cr
+  fid @ close-file throw ." close-file" cr
+  file$ delete-file throw ;
 
 ( testing-test )
 

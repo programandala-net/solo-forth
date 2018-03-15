@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201803121434
+; Last modified: 201803151546
 
 include version.z80s
 
@@ -13117,7 +13117,7 @@ endif
 ;
 ; ``>drive-block`` is a deferred word whose default action is
 ; `noop`.  Its action is set to `(>drive-block` when
-; `set-block-drives` is loaded.
+; `block-drives` is loaded.
 ;
 ; See: `defer`.
 ;

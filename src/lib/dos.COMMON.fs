@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803151456
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -160,7 +160,7 @@ unneeding not-block-drive ?\ $FF cconstant not-block-drive
   \ }doc
 
 unneeding -block-drives ?( need block-drives
-                            need not-block-drive
+                           need not-block-drive
 
 : -block-drives ( -- )
   block-drives max-drives not-block-drive fill ; ?)
@@ -254,9 +254,7 @@ need ?drives need -block-drives need block-drive!
   \
   \ }doc
 
-unneeding get-block-drives ?(
-
-need block-drive@
+unneeding get-block-drives ?( need block-drive@
 
 : get-block-drives ( -- c#n..c#1 n )
   #block-drives c@
@@ -285,7 +283,7 @@ need block-drive@
   \ 2017-02-08: Start. First version of `set-block-drives` and
   \ related words.
   \
-  \ 2017-02-09: Fix `(>block-drive`: `drive` is not needed,
+  \ 2017-02-09: Fix `(>drive-block`: `drive` is not needed,
   \ because `(block-drives` contains the actual identifiers,
   \ not the ordinal numbers. Fix and factor the check of drives
   \ number in `set-block-drives`.  Update `last-locatable` in
@@ -321,5 +319,7 @@ need block-drive@
   \ pronunciation to words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-15: Fix typo in the change log.
 
   \ vim: filetype=soloforth

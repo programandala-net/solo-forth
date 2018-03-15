@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803131610
+  \ Last modified: 201803142353
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -4992,7 +4992,7 @@ CR .( End of Facility word tests) CR
   \       deleted. If this is a problem ensure you set a suitable
   \       directory before running this test. There is no ANS standard
   \       way of doing this. Also be aware of the file names used below
-  \       which are:  fatest1.txt, fatest2.txt and fatest3.txt
+  \       which are:  tst1.txt, tst2.txt and tst3.txt
   \ ===========================================================
 
 need ttester need forth2012-core-test
@@ -5007,9 +5007,9 @@ cr .( in the first drive,) cr .( then press any key.) key drop
 
 CR TESTING CREATE-FILE CLOSE-FILE
 
-need create-file need close-file
+need r/w need create-file need close-file
 
-: FN1 S" fatest1.txt" ; VARIABLE FID1
+: FN1 S" tst1.txt" ; VARIABLE FID1
 
 T{ FN1 R/W CREATE-FILE SWAP FID1 ! -> 0 }T
 T{ FID1 @ CLOSE-FILE -> 0 }T
@@ -5018,7 +5018,7 @@ T{ FID1 @ CLOSE-FILE -> 0 }T
 
 TESTING OPEN-FILE W/O WRITE-LINE
 
-need open-file need w/o need write-line : LINE1 S" Line 1" ;
+need w/o need open-file need write-line : LINE1 S" Line 1" ;
 
 T{ FN1 W/O OPEN-FILE SWAP FID1 ! -> 0 }T
 T{ LINE1 FID1 @ WRITE-LINE -> 0 }T
@@ -5131,7 +5131,7 @@ TESTING BIN READ-FILE FILE-SIZE
 
 need bin need read-file need file-size
 
-: CBUF BUF BSIZE 0 FILL ;  : FN2 S" FATEST2.TXT" ;
+: CBUF BUF BSIZE 0 FILL ;  : FN2 S" tst2.txt" ;
 VARIABLE FID2
 : SETPAD PAD 50 0 DO I OVER C! CHAR+ LOOP DROP ;
 
@@ -5218,7 +5218,7 @@ TESTING RENAME-FILE FILE-STATUS FLUSH-FILE
 
 need rename-file need file-status need flush-file
 
-: FN3 S" fatest3.txt" ;
+: FN3 S" tst3.txt" ;
 : >END FID1 @ FILE-SIZE DROP FID1 @ REPOSITION-FILE ;
 
 
@@ -7127,5 +7127,7 @@ cr .( Forth-2012 tests completed ) cr cr
   \
   \ 2018-03-13: Pass the double test. Add pause to the start of
   \ the file test.
+  \
+  \ 2018-03-14: Review the file test.
 
   \ vim: filetype=soloforth
