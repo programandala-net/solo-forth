@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803151835
+  \ Last modified: 201803151847
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1201,58 +1201,32 @@ code cd0 ( -- ior )
 
 unneeding (cat ?( need pcat need ufia need hd00 need >ufia1
 
-  \ XXX TMP -- 2018-03-04 Moved to the kernel, for debugging.
-
-  code ((cat ( -- ior )
-    DD c, 21 c, ufia , \ XXX REMARK -- This fixed the problem.
-      \ ld ix,ufia
-    C5 c, CF c, pcat c, C1 c, DD c, 21 c, next , F5 c,
+  code ((cat ( ufia -- ior )
+    DD c, E1 c, C5 c, CF c, pcat c,
+      \ pop ix
       \ push bc
       \ rst $08
       \ defb pcat
+    C1 c, DD c, 21 c, next , F5 c, ' dosior>ior jp, end-code
       \ pop bc
       \ ld ix,next
       \ push af
-    ' dosior>ior jp, end-code
       \ jp dosior_to_ior_
-
-  \   \ XXX TMP -- Alternative, which also crashes at the end:
-
-  \   C5 c, dos-in, 3154 call, dos-out,
-  \   C1 c, DD c, 21 c, next , F5 c,
-  \     \ push bc
-  \     \ _dos_in
-  \     \ call $3154
-  \     \ _dos_out
-  \     \ pop bc
-  \     \ ld ix,next
-  \     \ push af
-  \   ' dosior>ior jp, end-code
-  \     \ jp dosior_to_ior_
 
   \ doc{
   \
-  \ ((cat ( -- ior ) "paren-paren-cat"
+  \ ((cat ( a -- ior ) "paren-paren-cat"
   \
   \ Show a disk catalogue of the current drive, calling the
   \ corresponding G+DOS hook command, which uses the data in
-  \ `ufia1`. Return error result _ior_.
+  \ UFIA at _a_, which was already copied into `ufia1`. Return
+  \ error result _ior_.
   \
   \ ``((cat`` is a low-level factor of `(cat`.
   \
   \ }doc
 
-: (cat ( b -- ) hd00 c! ufia >ufia1 \ cr rp@ u.  \ RP = 24662
-
-           \ Note 24668 is the value of RP in the command
-           \ line, before and after `cat`, so everything seems
-           \ ok, provided `?rstack` is removed from
-           \ `interpret`, except `cold` resets the system after
-           \ `cat` (actually `((cat`) has been used.
-
-  ( 1 border key drop  ) ((cat \ cr rp@ u. cr .s \ RP = 24662
-  throw \ cr rp@ u. ( 2 border key drop ) \ RP = 24662
-  ; ?)
+: (cat ( b -- ) hd00 c! ufia >ufia1 ufia ((cat throw ; ?)
 
   \ doc{
   \
@@ -1875,6 +1849,6 @@ need write-file need .ufia
   \ Finish `create-file`. Draft `write-file`, `close-file`,
   \ `open-file`.
   \
-  \ 2018-03-15: Redraft `write-file`; debug `((cat`.
+  \ 2018-03-15: Redraft `write-file`; debug and fix `((cat`.
 
   \ vim: filetype=soloforth

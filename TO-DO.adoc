@@ -1138,6 +1138,13 @@ their behaviour and names identical. Write the +3DOS version too.
 // G+DOS {{{2
 === G+DOS ===
 
+==== 2018-03-15
+
+NOTE: Milestone: 0.14.0
+
+Transfer `ufia` to `ufia1` in `((cat` using hook `xfer`, instead of
+doing it in `(cat` using `>ufia1`. It seems safer.
+
 ==== 2018-03-14
 
 Adapt +3DOS `headed`.
@@ -1173,12 +1180,6 @@ Integrate printing out of `cat` and friends with the `printing` flag:
   \
   \   3 sstr1 c! s" forth?.*" wcat 2 sstr1 c!
 ....
-
-==== 2017-12-05, 2018-03-03
-
-Fix: `cat` crashes the system. The problem seems to be the return from
-`((acat`, but everything looks right. All this worked some time ago
-and nothing was touched.
 
 ==== 2017-02-13
 
