@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803211446
+  \ Last modified: 201803212330
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -89,7 +89,20 @@ unneeding dos-out,
   \
   \ }doc
 
-( ufia1 ufia2 >ufiax >ufia1 >ufia2 default-ufia )
+( dfca ufia1 ufia2 >ufiax >ufia1 >ufia2 default-ufia )
+
+unneeding dfca1 ?\ $3AC3 constant dfca
+
+  \ doc{
+  \
+  \ dfca ( -- a ) "d-f-c-a"
+  \
+  \ _a_ is the address of G+DOS DFCA (Disk File Channel Area)
+  \ in the Plus D memory.
+  \
+  \ See: `ufia1`, `ufia2`.
+  \
+  \ }doc
 
 unneeding ufia1 ?\ $3E01 constant ufia1
 
@@ -102,7 +115,7 @@ unneeding ufia1 ?\ $3E01 constant ufia1
   \ which describes a file.  See `ufia` for a detailed
   \ description.
   \
-  \ See: `/ufia`.
+  \ See: `/ufia`, `ufia2`, `dfca`.
   \
   \ }doc
 
@@ -117,7 +130,7 @@ unneeding ufia2 ?\ $3E1A constant ufia2
   \ which describes a file.  See `ufia` for a detailed
   \ description.
   \
-  \ See: `/ufia`.
+  \ See: `/ufia`, `ufia1`, `dfca`.
   \
   \ }doc
 
@@ -445,7 +458,9 @@ unneeding --file-types-- ?(
 
 : --file-types-- ; ?)
 
-unneeding r/o ?\ 0 cconstant r/o
+unneeding r/o ?\ $BF cconstant r/o
+
+  \ Note: $BF is the token of BASIC keyword `IN`.
 
   \ doc{
   \
@@ -459,7 +474,9 @@ unneeding r/o ?\ 0 cconstant r/o
   \
   \ }doc
 
-unneeding w/o ?\ 0 cconstant w/o
+unneeding w/o ?\ $DF cconstant w/o
+
+  \ Note: $DF is the token of BASIC keyword `OUT`.
 
   \ doc{
   \
@@ -474,6 +491,8 @@ unneeding w/o ?\ 0 cconstant w/o
   \ }doc
 
 unneeding r/w ?\ 0 cconstant r/w
+
+  \ XXX TODO --
 
   \ doc{
   \
@@ -1737,6 +1756,47 @@ code (read-file ( ca len fid -- ior )
   \
   \ XXX TODO -- Calculate _len2_. Now it always equals _len1_.
 
+( create-ot-file open-ot-file close-ot-file -ot- )
+
+  \ XXX UNDER DEVELOPMENT -- opentype files, an alternative to
+  \ implement the file access word set
+
+need assembler need otfoc need hook, need --dir-descriptions--
+need ufia need init-ufia need set-filename need >ufia1
+need delete-file need r/o need w/o need .ufia need dfca
+
+code (ot-file ( x -- ior )
+  a pop, b push, dfca ix ldp#, otfoc hook, next ix ldp#,
+  b pop, a push, ' dosior>ior jp, end-code
+  \ If the high byte of _x_ is zero, open the stream given in
+  \ the DFCA; otherwise close it.
+
+: set-ot-file ( ca len fam -- )
+  init-ufia fstr1 c! 4 sstr1 c!
+  set-filename opentype-file-dir nstr1 c! ufia >ufia1 ;
+  \ Set `ufia` and `ufia1` for an opentype file _ca len_ with
+  \ file access method _fam_ on channel 4.
+
+: close-ot-file ( ca len fam -- fid ior )
+  set-ot-file $100 (ot-file ;
+
+: open-ot-file ( ca len fam -- fid ior )
+  set-ot-file 0 (ot-file ;
+  \
+  \ XXX TODO -- check "out of memory": 787 bytes below BASIC
+  \ are needed for an output channel.
+
+: create-ot-file ( ca len fam -- fid ior )
+  >r 2dup delete-file drop r> open-ot-file ; -->
+
+( write-ot-file )
+
+  \ XXX UNDER DEVELOPMENT
+
+: write-ot-file ( ca len1 n -- len2 ior )
+  current-channel c@ >r channel tuck type 0
+                     r> channel ;
+
 ( gfiles )
 
   \ XXX TMP -- Loading block for testing.
@@ -1879,6 +1939,7 @@ need write-file need read-file need .ufia
   \ Draft `read-file`.
   \
   \ 2018-03-21: Fix and improve needing of directory
-  \ descriptions: Use `--dir-descriptions`.
+  \ descriptions: Use `--dir-descriptions`.  Add `dfca`. Draft
+  \ creating, opening, writing and closing opentype files.
 
   \ vim: filetype=soloforth

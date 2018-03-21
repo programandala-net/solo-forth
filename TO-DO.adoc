@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-03-15
+:revdate: 2018-03-21
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -2294,6 +2294,12 @@ Study the way v.Forth manages the interrupts and adapt it.
 
 // Library {{{1
 == Library
+
+==== 2018-03-21
+
+Make G+DOS directory descriptions independent. Con: some blocks will
+be wasted, until `need` is improved to accept index lines longer than
+one block line.
 
 === 2018-03-11
 

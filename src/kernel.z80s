@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201803151832
+; Last modified: 201803212324
 
 include version.z80s
 
@@ -156,7 +156,17 @@ if trdos
 
 else
 
+if gplusdos
+
+  ; XXX TMP -- G+DOS needs 787 bytes for every output channel.
+
+  origin:                         equ default_origin+2*787
+
+else
+
   origin:                         equ default_origin
+
+endif
 
 endif
 
@@ -4082,24 +4092,36 @@ skip.end:
   _jp_next
 
 ; ----------------------------------------------
+  _variable_header current_channel_,'current-channel'
+
+  db 2
+
+; doc{
+;
+; current-channel ( -- ca )
+;
+; A character variable. _ca_ is the address of a byte containing
+; the number of the latest output channel set by `channel`.
+;
+; }doc
+
+; ----------------------------------------------
   _code_header channel_,'channel'
 
 ; doc{
 ;
 ; channel ( n -- )
 ;
-; Open channel _n_ for output.
+; Open channel _n_ for output. Store _n_ into `current-channel`.
 ;
 ; See: `terminal`, `printer`, `printing`.
 ;
 ; }doc
-;
-  ; Credit:
-  ; Code from Spectrum Forth-83.
 
   pop hl
   push bc
   ld a,l
+  ld (current_channel_dfa),a
   call rom_chan_open
   pop bc
   _jp_next
@@ -4316,9 +4338,6 @@ emit_udg.address:
 ; See: `printer`, `printing`, `page`.
 ;
 ; }doc
-
-  ; XXX TODO -- Rename, because "display" is used as a generic
-  ; term, device-independent.
 
   _literal 2
   dw channel_
