@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803212334
+  \ Last modified: 201803212353
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -552,24 +552,11 @@ unneeding hrsad ?\ $44 cconstant hrsad
 unneeding hwsad ?\ $45 cconstant hwsad
 unneeding otfoc ?\ $46 cconstant otfoc
 
-( patch --dir-descriptions-- dos-vars )
+( patch dos-vars basic-file-dir data-array-dir )
 
   \ Hook codes (continued)
 
 unneeding patch ?\ $47 cconstant patch
-
-  \ Directory descriptions
-
-unneeding --dir-descriptions-- ?(
-
-01 cconstant basic-file-dir    02 cconstant data-array-dir
-03 cconstant string-array-dir  04 cconstant code-file-dir
-05 cconstant snapshot-48k-dir  06 cconstant microdrive-file-dir
-07 cconstant screens$-file-dir 08 cconstant special-file-dir
-09 cconstant snapshot-128k-dir 10 cconstant opentype-file-dir
-11 cconstant execute-file-dir
-
-: --dir-descriptions-- ; ?)
 
 unneeding dos-vars ?\ 8192 constant dos-vars
 
@@ -582,6 +569,36 @@ unneeding dos-vars ?\ 8192 constant dos-vars
   \ See: `@dosvar`, `c@dosvar`, `!dosvar`, `c!dosvar`.
   \
   \ }doc
+
+unneeding basic-file-dir ?\ 01 cconstant basic-file-dir
+
+unneeding data-array-dir ?\ 02 cconstant data-array-dir
+
+( string-array-dir code-file-dir snapshot-48k-dir )
+
+unneeding string-array-dir ?\ 03 cconstant string-array-dir
+
+unneeding code-file-dir ?\ 04 cconstant code-file-dir
+
+unneeding snapshot-48k-dir ?\ 05 cconstant snapshot-48k-dir
+
+( microdrive-file-dir screen$-file-dir special-file-dir )
+
+unneeding microdrive-file-dir
+
+?\ 06 cconstant microdrive-file-dir
+
+unneeding screens$-file-dir ?\ 07 cconstant screens$-file-dir
+
+unneeding special-file-dir ?\ 08 cconstant special-file-dir
+
+( snapshot-128k-dir opentype-file-dir execute-file-dir )
+
+unneeding snapshot-128k-dir ?\ 09 cconstant snapshot-128k-dir
+
+unneeding opentype-file-dir ?\ 10 cconstant opentype-file-dir
+
+unneeding execute-file-dir ?\ 11 cconstant execute-file-dir
 
 ( get-drive 2-block-drives )
 
@@ -1759,7 +1776,7 @@ code (read-file ( ca len fid -- ior )
   \ XXX UNDER DEVELOPMENT -- opentype files, an alternative to
   \ implement the file access word set
 
-need assembler need otfoc need hook, need --dir-descriptions--
+need assembler need otfoc need hook, need opentype-file-dir
 need ufia need init-ufia need set-filename need >ufia1
 need delete-file need r/o need w/o need .ufia need dfca
 
@@ -1936,8 +1953,8 @@ need write-file need read-file need .ufia
   \ 2018-03-15: Redraft `write-file`; debug and fix `((cat`.
   \ Draft `read-file`.
   \
-  \ 2018-03-21: Fix and improve needing of directory
-  \ descriptions: Use `--dir-descriptions`.  Add `dfca`. Draft
-  \ creating, opening, writing and closing opentype files.
+  \ 2018-03-21: Add `dfca`. Draft creating, opening, writing
+  \ and closing opentype files.  Make directory descriptions
+  \ independent to `need`.
 
   \ vim: filetype=soloforth

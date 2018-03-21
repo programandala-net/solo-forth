@@ -2297,9 +2297,8 @@ Study the way v.Forth manages the interrupts and adapt it.
 
 ==== 2018-03-21
 
-Make G+DOS directory descriptions independent. Con: some blocks will
-be wasted, until `need` is improved to accept index lines longer than
-one block line.
+Improve needing of G+DOS directory descriptions no save blocks.
+First improve `need` to accept index lines longer than one block line.
 
 === 2018-03-11
 
