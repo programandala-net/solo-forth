@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803212330
+  \ Last modified: 201803212334
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1646,7 +1646,6 @@ code (create-file ( ufia -- ior )
   fid !> ufia init-ufia set-filename 8 nstr1 c!
       latest-fid @ dup (create-file default-ufia ;
 
-  \ doc{
   \
   \ create-file ( ca len fam -- fid ior )
   \
@@ -1666,7 +1665,6 @@ code (create-file ( ufia -- ior )
   \
   \ See: `r/o`, `w/o`, `r/w`, `bin`.
   \
-  \ }doc
 
 ( open-file )
 
