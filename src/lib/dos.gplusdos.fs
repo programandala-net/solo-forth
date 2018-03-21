@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803152355
+  \ Last modified: 201803211446
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -533,7 +533,7 @@ unneeding hrsad ?\ $44 cconstant hrsad
 unneeding hwsad ?\ $45 cconstant hwsad
 unneeding otfoc ?\ $46 cconstant otfoc
 
-( patch --directory-descriptions-- dos-vars )
+( patch --dir-descriptions-- dos-vars )
 
   \ Hook codes (continued)
 
@@ -541,7 +541,7 @@ unneeding patch ?\ $47 cconstant patch
 
   \ Directory descriptions
 
-unneeding --directory-descriptions ?(
+unneeding --dir-descriptions-- ?(
 
 01 cconstant basic-file-dir    02 cconstant data-array-dir
 03 cconstant string-array-dir  04 cconstant code-file-dir
@@ -550,7 +550,7 @@ unneeding --directory-descriptions ?(
 09 cconstant snapshot-128k-dir 10 cconstant opentype-file-dir
 11 cconstant execute-file-dir
 
-: --directory-descriptions-- ; ?)
+: --dir-descriptions-- ; ?)
 
 unneeding dos-vars ?\ 8192 constant dos-vars
 
@@ -1711,7 +1711,7 @@ code write-file ( ca len fid -- ior )
                 rthen b pop, \ restore Forth IP
   relse h pop, b pop, h pop, h pop,
         \ restore Forth IP, discard others
-  rthen next ix ldp#,  \ restore Forth IX
+  rthen next ix ldp#, \ restore Forth IX
   a push, ' dosior>ior jp, end-code
 
 ( read-file )
@@ -1723,9 +1723,10 @@ need assembler need hgfile need hldbk need hook,
 code (read-file ( ca len fid -- ior )
   ix pop, d pop, h pop, b push, h push, d push, ( ip ca len )
   hgfile hook, \ open the file for reading
-  c? rif d pop, d pop,  \ error, so drop the parameters
-  relse  b pop, d pop, hldbk hook,
-  rthen  b pop, next ix ldp#, a push, ' dosior>ior jp, end-code
+  c? rif   h pop, h pop,  \ error, so drop the parameters
+     relse b pop, d pop, hldbk hook, \ read the data
+     rthen b pop, next ix ldp#, a push, ' dosior>ior jp,
+  end-code
   \
   \ XXX TODO --  Preserve the file pointer in the file
   \ identifier structure. Now the data is read always from the
@@ -1876,5 +1877,8 @@ need write-file need read-file need .ufia
   \
   \ 2018-03-15: Redraft `write-file`; debug and fix `((cat`.
   \ Draft `read-file`.
+  \
+  \ 2018-03-21: Fix and improve needing of directory
+  \ descriptions: Use `--dir-descriptions`.
 
   \ vim: filetype=soloforth
