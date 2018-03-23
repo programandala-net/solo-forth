@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803231815
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -36,7 +36,7 @@ unneeding ascii-char? ?\ : ascii-char? ( c -- f ) 127 < ;
   \ Is character _c_ an ASCII character, i.e. in the range
   \ 0..126?
   \
-  \ See: `printable-ascii-char?`, `control-char?`.
+  \ See: `graphic-ascii-char?`, `control-char?`.
   \
   \ }doc
 
@@ -53,51 +53,50 @@ unneeding control-char? ?\ : control-char? ( c -- f ) bl < ;
   \
   \ }doc
 
-( printable-ascii-char? >printable-ascii-char )
+( graphic-ascii-char? >graphic-ascii-char )
 
-unneeding printable-ascii-char? ?(  need within
+unneeding graphic-ascii-char? ?( need within
 
-: printable-ascii-char? ( c -- f ) bl 127 within ; ?)
+: graphic-ascii-char? ( c -- f ) bl 127 within ; ?)
 
   \ doc{
   \
-  \ printable-ascii-char? ( c -- f ) "printable-ascii-char-question"
+  \ graphic-ascii-char? ( c -- f ) "graphic-ascii-char-question"
   \
   \ Is _c_ a printable ASCII character, i.e. in the range
   \ 32..126?
   \
-  \ See: `ascii-char?`, `>printable-ascii-char`.
+  \ See: `ascii-char?`, `>graphic-ascii-char`.
   \
   \ }doc
 
-unneeding >printable-ascii-char ?(
+unneeding >graphic-ascii-char ?( need graphic-ascii-char?
 
-need printable-ascii-char?
-
-'.' cconstant default-printable-ascii-char
+'.' cconstant default-graphic-ascii-char
 
   \ doc{
   \
-  \ default-printable-ascii-char ( -- c )
+  \ default-graphic-ascii-char ( -- c )
   \
-  \ Return the default ASCII character _c_ used by
-  \ `>printable-ascii-char`.
+  \ A character constant. _c_ is the default ASCII graphic
+  \ character used by `>graphic-ascii-char`. The value can
+  \ be changed with `c!>`.
   \
   \ }doc
 
-: >printable-ascii-char ( c1 -- c1 | c2 )
-  dup printable-ascii-char? ?exit
-  drop default-printable-ascii-char ; ?)
+: >graphic-ascii-char ( c1 -- c1 | c2 )
+  dup graphic-ascii-char? ?exit
+  drop default-graphic-ascii-char ; ?)
 
   \ doc{
   \
-  \ >printable-ascii-char ( c1 -- c1 | c2 )
+  \ >graphic-ascii-char ( c1 -- c1 | c2 )
   \
   \ If character _c1_ is a printable ASCII character, return
   \ it, else return the character returned by
-  \ `default-printable-ascii-char`.
+  \ `default-graphic-ascii-char`.
   \
-  \ See: `printable-ascii-char?`.
+  \ See: `graphic-ascii-char?`.
   \
   \ }doc
 
@@ -126,5 +125,10 @@ need printable-ascii-char?
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-23: Rename "printable-ascii-char" words
+  \ "graphic-ascii-char", after the standard notation.  Old
+  \ words affected: `printable-ascii-char?`
+  \ `default-printable-ascii-char?`, `>printable-ascii-char`.
 
   \ vim: filetype=soloforth

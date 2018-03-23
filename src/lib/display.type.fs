@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803231805
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -40,10 +40,10 @@ unneeding fartype
   \
   \ }doc
 
-unneeding type-ascii ?( need >printable-ascii-char
+unneeding type-ascii ?( need >graphic-ascii-char
 
 : type-ascii ( ca len -- )
-  bounds ?do  i c@ >printable-ascii-char emit  loop ; ?)
+  bounds ?do  i c@ >graphic-ascii-char emit  loop ; ?)
 
   \ doc{
   \
@@ -54,10 +54,10 @@ unneeding type-ascii ?( need >printable-ascii-char
   \
   \ }doc
 
-unneeding fartype-ascii ?( need >printable-ascii-char
+unneeding fartype-ascii ?( need >graphic-ascii-char
 
 : fartype-ascii ( ca len -- )
-  bounds ?do  i farc@ >printable-ascii-char emit  loop ; ?)
+  bounds ?do  i farc@ >graphic-ascii-char emit  loop ; ?)
 
   \ doc{
   \
@@ -273,5 +273,8 @@ constant type-center-field-cases
   \ 2017-05-07: Improve documentation.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-23: Update: Rename `>printable-ascii-char`
+  \ `>graphic-ascii-char`.
 
   \ vim: filetype=soloforth
