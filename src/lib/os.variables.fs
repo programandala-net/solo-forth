@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803231944
+  \ Last modified: 201803232259
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -147,7 +147,7 @@ unneeding os-udg ?\ #23675 constant os-udg
   \
   \ }doc
 
-( os-coords os-coordx os-coordy os-strms )
+( os-coords os-coordx os-coordy os-strms os-prog )
 
 unneeding os-coords ?\ #23677 constant os-coords
 
@@ -220,6 +220,19 @@ unneeding os-coordy ?\ #23678 constant os-coordy
   \ last point plotted.
   \
   \ See: `set-pixel`, `plot`, `os-coords`, `os-coordx`.
+  \
+  \ }doc
+
+unneeding os-prog ?\ #23635 constant os-prog
+
+  \ doc{
+  \
+  \ os-prog ( -- a ) "o-s-prog"
+  \
+  \ A constant that returns the address _a_ of 2-byte system
+  \ variable PROG which holds the address of the BASIC program.
+  \
+  \ See: `os-chans`.
   \
   \ }doc
 
@@ -325,5 +338,6 @@ unneeding os-p-flag ?\ #23697 constant os-mask-t
   \
   \ 2018-03-23: Add `os-strms`. Improve documentation of
   \ `os-chans`. Fix and update documentation. Rename the file.
+  \ Add `os-prog`.
 
   \ vim: filetype=soloforth
