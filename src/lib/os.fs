@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803232134
+  \ Last modified: 201803232320
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,7 +23,44 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( first-stream last-stream stream> stream? )
+( os-used os-unused first-stream last-stream stream> stream? )
+
+unneeding os-used unneeding os-unused and ?(
+
+code os-used ( -- u )
+  C5 c, 1F1A call, E1 c, C5 c, 44 c, 4D c, jpnext, end-code
+  \ push bc ; save Forth IP
+  \ call $1F1A ; BC = OS unused memory
+  \ pop hl ; preserve Forth IP
+  \ push bc ; push result
+  \ ld b,h
+  \ ld c,l ; restore Forth IP
+  \ _jp_next
+
+  \ doc{
+  \
+  \ os-used ( -- u ) "o-s-used"
+  \
+  \ _u_ is the amount of the 64-KiB space, including ROM, video
+  \ memory, system variables and reserved zones, that can not
+  \ used by the OS and the BASIC interpreter.
+  \
+  \ See: `os-unused`.
+  \
+  \ }doc
+
+: os-unused ( -- u ) $FFFF os-used - 1+ ; ?)
+
+  \ doc{
+  \
+  \ os-unused ( -- u ) "o-s-unused"
+  \
+  \ _u_ is the amount of unused space by the OS and the BASIC
+  \ interpreter.
+  \
+  \ See: `unused`, `os-used`.
+  \
+  \ }doc
 
 unneeding first-stream ?\ -3 constant first-stream
 
@@ -172,6 +209,6 @@ need os-chans need >graphic-ascii-char need nuf?
   \ Change log
 
   \ 2018-03-23: Start. Add `.os-strms`, `.os-chans`, `chan>`,
-  \ `chan>id`, `stream>`, `stream?`.
+  \ `chan>id`, `stream>`, `stream?`, `os-used`, `os-unused`.
 
   \ vim: filetype=soloforth

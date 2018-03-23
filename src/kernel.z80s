@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201803212324
+; Last modified: 201803232325
 
 include version.z80s
 
@@ -14891,7 +14891,7 @@ system_stack_pointer:
 
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See: `limit`, `farunused`, `fyi`, `greeting`.
+; See: `limit`, `farunused`, `os-unused`, `fyi`, `greeting`.
 ;
 ; }doc
 
@@ -14914,7 +14914,7 @@ system_stack_pointer:
 ; : farunused ( -- u ) farlimit @ np @ - ;
 ; ----
 
-; See: `farlimit`, `unused`, `fyi`, `greeting`.
+; See: `farlimit`, `unused`, `os-unused`, `fyi`, `greeting`.
 ;
 ; }doc
 
