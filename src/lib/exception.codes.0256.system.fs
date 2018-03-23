@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703212102
+  \ Last modified: 201803232335
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -67,7 +67,7 @@
 #-288 \ too many files open
 #-289 \ input source exhausted
 #-290 \ invalid UDG scan
-#-291 \
+#-291 \ out of OS memory
 #-292 \
 #-293 \
 #-294 \
@@ -102,5 +102,9 @@
   \ Add code #-290, needed by `udg-scan>number`.
   \
   \ 2017-03-21: Improve text of #-285.
+  \
+  \ 2018-03-23: Add code #-295, needed by an experimental
+  \ implementation of the file word set on G+DOS, using
+  \ opentype files.
 
   \ vim: filetype=soloforth
