@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803212353
+  \ Last modified: 201803212356
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -627,7 +627,7 @@ code get-drive ( -- n ) dos-in, 3A c, 3ACE , dos-out, pusha jp,
   \ : get-drive ( -- n ) dos-in $3ACE c@ dos-out ;
   \ ----
   \
-  \ See: `set-drive`.
+  \ See: `set-drive`, `dos-in`, `dos-out`.
   \
   \ }doc
 
@@ -1955,6 +1955,6 @@ need write-file need read-file need .ufia
   \
   \ 2018-03-21: Add `dfca`. Draft creating, opening, writing
   \ and closing opentype files.  Make directory descriptions
-  \ independent to `need`.
+  \ independent to `need`. Improve documentation.
 
   \ vim: filetype=soloforth
