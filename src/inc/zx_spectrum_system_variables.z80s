@@ -2,7 +2,7 @@
 
 ; By Marcos Cruz (programandala.net)
 
-; Last modified: 201803090015
+; Last modified: 201803231837
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -180,6 +180,7 @@ sys_k_data:      equ 23565 ; (nl) Stores 2nd byte of colour controls
 sys_tvdata:      equ 23566 ; (n2) Stores bytes of colour, AT and TAB controls
                            ; going to television.
 sys_tvdata2:     equ 23567
+sys_tvdata.high: equ 23567
 sys_strms:       equ 23568 ; (x38) Addresses of channels attached to streams.
 sys_chars:       equ 23606 ; (2) 256 less than address of character set
 sys_rasp:        equ 23608 ; (1) Length of warning buzz.
@@ -304,3 +305,5 @@ sys_p_ramt.high: equ 23733
 ; by TR-DOS 5.03.
 ;
 ; 2018-03-09: Add `sys_printer_buffer`.
+;
+; 2018-03-23: Add `sys_tvdata.high`.
