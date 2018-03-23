@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803212356
+  \ Last modified: 201803232208
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1771,7 +1771,7 @@ code (read-file ( ca len fid -- ior )
   \
   \ XXX TODO -- Calculate _len2_. Now it always equals _len1_.
 
-( create-ot-file open-ot-file close-ot-file -ot- )
+( ot-gfiles )
 
   \ XXX UNDER DEVELOPMENT -- opentype files, an alternative to
   \ implement the file access word set
@@ -1779,6 +1779,7 @@ code (read-file ( ca len fid -- ior )
 need assembler need otfoc need hook, need opentype-file-dir
 need ufia need init-ufia need set-filename need >ufia1
 need delete-file need r/o need w/o need .ufia need dfca
+need .os-chans need .os-strms need stream?
 
 code (ot-file ( x -- ior )
   a pop, b push, dfca ix ldp#, otfoc hook, next ix ldp#,
@@ -1786,14 +1787,24 @@ code (ot-file ( x -- ior )
   \ If the high byte of _x_ is zero, open the stream given in
   \ the DFCA; otherwise close it.
 
-: set-ot-file ( ca len fam -- )
-  init-ufia fstr1 c! 4 sstr1 c!
-  set-filename opentype-file-dir nstr1 c! ufia >ufia1 ;
+: set-ot-file ( ca len fam -- fid )
+  init-ufia fstr1 c! set-filename opentype-file-dir nstr1 c!
+  stream? 0= #-291 ?throw dup >r sstr1 c! ufia >ufia1 r> ;
   \ Set `ufia` and `ufia1` for an opentype file _ca len_ with
-  \ file access method _fam_ on channel 4.
+  \ file access method _fam_.
+
+-->
+
+( ot-gfiles )
+
+  \ XXX UNDER DEVELOPMENT
 
 : close-ot-file ( ca len fam -- fid ior )
   set-ot-file $100 (ot-file ;
+  \
+  \ XXX TODO -- Use standard parameters.
+  \
+  \ XXX FIXME -- Close the stream.
 
 : open-ot-file ( ca len fam -- fid ior )
   set-ot-file 0 (ot-file ;
@@ -1802,11 +1813,7 @@ code (ot-file ( x -- ior )
   \ are needed for an output channel.
 
 : create-ot-file ( ca len fam -- fid ior )
-  >r 2dup delete-file drop r> open-ot-file ; -->
-
-( write-ot-file )
-
-  \ XXX UNDER DEVELOPMENT
+  >r 2dup delete-file drop r> open-ot-file ;
 
 : write-ot-file ( ca len1 n -- len2 ior )
   current-channel c@ >r channel tuck type 0
@@ -1956,5 +1963,8 @@ need write-file need read-file need .ufia
   \ 2018-03-21: Add `dfca`. Draft creating, opening, writing
   \ and closing opentype files.  Make directory descriptions
   \ independent to `need`. Improve documentation.
+  \
+  \ 2018-03-23: Make `set-ot-file` choose an unused stream and
+  \ return it as a file identifier.
 
   \ vim: filetype=soloforth
