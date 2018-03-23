@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803231401
+  \ Last modified: 201803231820
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -60,7 +60,7 @@ need os-chans need os-strms
 
 ( .os-chans )
 
-need os-chans need char+
+need os-chans need >graphic-ascii-char need nuf?
 
 : .os-chans ( -- )
   os-chans @
@@ -68,8 +68,13 @@ need os-chans need char+
   while                dup u.
          ." Out:"      dup @ u.
          ." In:" cell+ dup @ u.
-         ." Id:" cell+ dup c@ emit cr char+
+         ." Id:" cell+ dup c@ >graphic-ascii-char emit 1+ cr
+         nuf? if drop exit then
   repeat drop ;
+  \
+  \ XXX TODO -- The 128 check, used by G+DOS,  does not work
+  \ after a disk channel has been added. Find out how to detect
+  \ the end of the table.
 
   \ doc{
   \

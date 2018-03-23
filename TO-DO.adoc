@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-03-21
+:revdate: 2018-03-23
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -2941,6 +2941,12 @@ Update the date with interrupts.
 
 // Tools {{{1
 == Tools
+
+=== 2018-03-23
+
+Improve `.os-chans`: The 128 check, used by G+DOS,  does not work
+after a disk channel has been added. Find out how to detect the end of
+the table.
 
 === 2018-01-04
 
