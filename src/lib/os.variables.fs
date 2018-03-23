@@ -1,15 +1,15 @@
-  \ system_variables.fs
+  \ os.variables.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803231402
+  \ Last modified: 201803231944
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ Constants for the system variables.
+  \ Constants for the OS variables.
 
   \ ===========================================================
   \ Author
@@ -324,6 +324,6 @@ unneeding os-p-flag ?\ #23697 constant os-mask-t
   \ 2018-03-09: Add words' pronunciaton.
   \
   \ 2018-03-23: Add `os-strms`. Improve documentation of
-  \ `os-chans`. Fix and update documentation.
+  \ `os-chans`. Fix and update documentation. Rename the file.
 
   \ vim: filetype=soloforth

@@ -1,4 +1,4 @@
-  \ tool.dump.system_variables.fs
+  \ os.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
@@ -9,7 +9,7 @@
   \ ===========================================================
   \ Description
 
-  \ Tools to dump the contents of system variables.
+  \ Words related to the OS.
 
   \ ===========================================================
   \ Author
