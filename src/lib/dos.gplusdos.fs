@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803232208
+  \ Last modified: 201803240029
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -499,6 +499,8 @@ unneeding r/w ?\ 0 cconstant r/w
   \ r/w ( -- fam ) "r-w"
   \
   \ Return the "read/write" file access method _fam_.
+  \
+  \ WARNING: ``r/w`` is not supported on G+DOS.
   \
   \ See: `r/o`, `w/o`, `bin`, `create-file`.
   \
@@ -1779,7 +1781,8 @@ code (read-file ( ca len fid -- ior )
 need assembler need otfoc need hook, need opentype-file-dir
 need ufia need init-ufia need set-filename need >ufia1
 need delete-file need r/o need w/o need .ufia need dfca
-need .os-chans need .os-strms need stream?
+need .os-chans need .os-strms need stream? need case
+need ?os-unused
 
 code (ot-file ( x -- ior )
   a pop, b push, dfca ix ldp#, otfoc hook, next ix ldp#,
@@ -1793,12 +1796,6 @@ code (ot-file ( x -- ior )
   \ Set `ufia` and `ufia1` for an opentype file _ca len_ with
   \ file access method _fam_.
 
--->
-
-( ot-gfiles )
-
-  \ XXX UNDER DEVELOPMENT
-
 : close-ot-file ( ca len fam -- fid ior )
   set-ot-file $100 (ot-file ;
   \
@@ -1806,8 +1803,31 @@ code (ot-file ( x -- ior )
   \
   \ XXX FIXME -- Close the stream.
 
+-->
+
+( ot-gfiles )
+
+  \ XXX UNDER DEVELOPMENT
+
+787 constant /w/o
+  \ OS memory needed in the channel data table in order to open
+  \ a file using file access method `w/o`.
+
+551 constant /r/o
+  \ OS memory needed in the channel data table in order to open
+  \ a file using file access method `r/o`.
+
+: ?fam ( fam -- ) case w/o of /w/o endof
+                       r/o of /r/o endof
+                       #-292 throw
+                  endcase ?os-unused ;
+  \ If file access method _fam_ is not valid or there's not
+  \ enough OS unused memory to open a new file, throw the
+  \ corresponding exception.
+
+
 : open-ot-file ( ca len fam -- fid ior )
-  set-ot-file 0 (ot-file ;
+  dup ?fam set-ot-file 0 (ot-file ;
   \
   \ XXX TODO -- check "out of memory": 787 bytes below BASIC
   \ are needed for an output channel.
@@ -1815,9 +1835,11 @@ code (ot-file ( x -- ior )
 : create-ot-file ( ca len fam -- fid ior )
   >r 2dup delete-file drop r> open-ot-file ;
 
-: write-ot-file ( ca len1 n -- len2 ior )
+: write-ot-file ( ca len1 fid -- len2 ior )
   current-channel c@ >r channel tuck type 0
                      r> channel ;
+  \
+  \ XXX FIXME -- Crash!
 
 ( gfiles )
 
@@ -1966,5 +1988,8 @@ need write-file need read-file need .ufia
   \
   \ 2018-03-23: Make `set-ot-file` choose an unused stream and
   \ return it as a file identifier.
+  \
+  \ 2018-03-24: Add `/w/o`, `/r/o`, `?fam`. Make `set-ot-file`
+  \ check if there's enough OS memory to open the file.
 
   \ vim: filetype=soloforth
