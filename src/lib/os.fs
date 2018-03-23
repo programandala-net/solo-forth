@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803231820
+  \ Last modified: 201803232134
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,30 +23,112 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( .os-strms )
+( first-stream last-stream stream> stream? )
 
-need os-chans need os-strms
+unneeding first-stream ?\ -3 constant first-stream
 
-: chan> ( n -- a ) 1- os-chans @ + ;
-  \ Convert channel offset _n_ in `os-chans`, fetched from an
-  \ element of `os-strms`, to its address _a_.
+  \ doc{
+  \
+  \ first-stream ( -- n )
+  \
+  \ _n_ is the number of the first stream.
+  \
+  \ See: `last-stream`, `os-strms`, `stream>`, `stream?`.
+  \
+  \ }doc
 
-: chan>id ( n -- c ) chan> 4 + c@ ;
-  \ Convert channel offset _n_ in `os-chans`, fetched from an
-  \ element of `os-strms`, to its character identifier _c_.
+unneeding last-stream ?\ 15 cconstant last-stream
 
-: strm#> ( n -- a ) 3 + cells os-strms + ;
+  \ doc{
+  \
+  \ last-stream ( -- n )
+  \
+  \ _n_ is the number of the last stream.
+  \
+  \ See: `first-stream`, `os-strms`, `stream>`, `stream?`.
+  \
+  \ }doc
+
+unneeding stream> ?( need first-stream need os-strms
+
+: stream> ( n -- a )
+  [ first-stream negate ] xliteral + cells os-strms + ; ?)
+
+  \ doc{
+  \
+  \ stream> ( n -- a )
+  \
   \ Convert stream number _n_ to address _a_ of its
   \ corresponding element in `os-strms`.
+  \
+  \ See: `first-stream`, `last-stream`, `stream?`.
+  \
+  \ }doc
+
+unneeding stream? ?( need first-stream need last-stream
+                     need stream>
+
+: stream? ( -- false | n true )
+  last-stream first-stream ?do
+    i stream> @ 0= if i true unloop exit then
+  loop false ; ?)
+
+  \ doc{
+  \
+  \ stream? ( -- false | n true )
+  \
+  \ If there's a closed stream, return its number _n_ and
+  \ _true_; otherwise return _false_.
+  \
+  \ See: `os-strms`, `.os-strms`, `first-stream`,
+  \ `last-stream`, `stream>`.
+  \
+  \ }doc
+
+( chan> chan>id .os-strms )
+
+unneeding chan> ?( need os-chans
+
+: chan> ( n -- a ) 1- os-chans @ + ; ?)
+
+  \ doc{
+  \
+  \ chan> ( n -- a ) "chan-to"
+  \
+  \ Convert channel offset _n_ in `os-chans`, fetched from an
+  \ element of `os-strms`, to its address _a_.
+  \
+  \ See: `chan>id`, `os-chans`.
+  \
+  \ }doc
+
+unneeding chan>id ?( need chan>
+
+: chan>id ( n -- c ) chan> 4 + c@ ; ?)
+
+  \ doc{
+  \
+  \ chan>id ( n -- c ) "chan-to-id"
+  \
+  \ Convert channel offset _n_ in `os-chans`, fetched from an
+  \ element of `os-strms`, to its character identifier _c_.
+  \
+  \ See: `chan>`, `os-chans`.
+  \
+  \ }doc
+
+unneeding .os-strms ?( need os-chans need os-strms need stream>
+                       need first-stream need last-stream
+                       need chan> need chan>id
 
 : .os-strms ( -- )
-  16 -3 ?do
-    '#' emit i .  i strm#> @ ?dup
+  last-stream first-stream ?do
+    '#' emit i .  i stream> @ ?dup
     if   dup u.
          dup chan>id ." -- channel '" emit ." ' at " chan> u.
     else ." Not attached"
     then cr
-  loop ;
+  loop ; ?)
 
   \ doc{
   \
@@ -54,7 +136,7 @@ need os-chans need os-strms
   \
   \ Display the contents of `os-strms`.
   \
-  \ See: `.os-chans`.
+  \ See: `.os-chans`, `first-stream`, `last-stream`, `stream?`.
   \
   \ }doc
 
@@ -89,6 +171,7 @@ need os-chans need >graphic-ascii-char need nuf?
   \ ===========================================================
   \ Change log
 
-  \ 2018-03-23: Start. Add `.os-strms` and `.os-chans`.
+  \ 2018-03-23: Start. Add `.os-strms`, `.os-chans`, `chan>`,
+  \ `chan>id`, `stream>`, `stream?`.
 
   \ vim: filetype=soloforth
