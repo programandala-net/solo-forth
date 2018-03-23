@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091543
+  \ Last modified: 201803231229
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,18 +23,18 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( dump )
+( dump wdump )
 
-need 16hex. need type-ascii need backspace need ?leave
+unneeding dump ?( need 16hex. need type-ascii need backspace
+                  need ?leave
 
 : dump ( ca len -- )
   8 max 8 2dup mod - + 8 / 1- 0
-  ?do
-    cr dup 16hex.
-    8 0 ?do  i over + @ flip 16hex.  cell +loop
-    dup backspace 8 type-ascii
-    break-key? ?leave
-  8 + loop  drop ;
+  ?do cr dup 16hex.
+      8 0 ?do i over + @ flip 16hex. cell +loop
+      dup backspace 8 type-ascii
+      break-key? ?leave
+  8 + loop drop ; ?)
 
   \ doc{
   \
@@ -44,17 +44,13 @@ need 16hex. need type-ascii need backspace need ?leave
   \
   \ }doc
 
-( wdump )
-
-need 16hex. need ?leave
+unneeding wdump ?( need 16hex. need ?leave
 
 : wdump ( a len -- )
-  0
-  ?do
-    i 4 mod 0= if  cr dup 16hex. space  then  \ show address
-    dup @ 16hex. cell+
-    break-key? ?leave
-  loop  drop ;
+  0 ?do i 4 mod 0= if cr dup 16hex. space then \ show address
+        dup @ 16hex. cell+
+        break-key? ?leave
+    loop drop ; ?)
 
   \ doc{
   \
@@ -89,5 +85,7 @@ need 16hex. need ?leave
   \
   \ 2018-03-09: Add words' pronunciaton.  Update notation
   \ "address units" to "bytes".
+  \
+  \ 2018-03-23: Compact the code, saving one block.
 
   \ vim: filetype=soloforth
