@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803231222
+  \ Last modified: 201803231402
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -83,6 +83,8 @@ unneeding os-chans ?\ #23631 constant os-chans
   \ from `os-strms` by 1-indexed byte offsets, i.e. $0001
   \ points to the first element of the channel data table,
   \ channel 'K'.
+  \
+  \ See: `.os-chans`.
   \
   \ }doc
 
@@ -203,6 +205,8 @@ unneeding os-strms ?\ #23568 constant os-strms
   \ `os-chans`.  When the content of a stream cell is zero, the
   \ stream is not attached to a channel.
   \
+  \ See: `.os-strms`.
+  \
   \ }doc
 
 unneeding os-coordy ?\ #23678 constant os-coordy
@@ -320,6 +324,6 @@ unneeding os-p-flag ?\ #23697 constant os-mask-t
   \ 2018-03-09: Add words' pronunciaton.
   \
   \ 2018-03-23: Add `os-strms`. Improve documentation of
-  \ `os-chans`. Fix documentation.
+  \ `os-chans`. Fix and update documentation.
 
   \ vim: filetype=soloforth
