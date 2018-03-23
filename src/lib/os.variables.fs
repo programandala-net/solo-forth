@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803232259
+  \ Last modified: 201803232354
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -147,7 +147,7 @@ unneeding os-udg ?\ #23675 constant os-udg
   \
   \ }doc
 
-( os-coords os-coordx os-coordy os-strms os-prog )
+( os-coords os-coordx os-coordy os-strms os-prog os-ramtop )
 
 unneeding os-coords ?\ #23677 constant os-coords
 
@@ -232,11 +232,25 @@ unneeding os-prog ?\ #23635 constant os-prog
   \ A constant that returns the address _a_ of 2-byte system
   \ variable PROG which holds the address of the BASIC program.
   \
-  \ See: `os-chans`.
+  \ See: `os-stkend`, `os-ramtop`, `os-chans`.
   \
   \ }doc
 
-( os-attr-p os-mask-p os-attr-t os-mask-t os-p-flag )
+unneeding os-ramtop ?\ #23730 constant os-ramtop
+
+  \ doc{
+  \
+  \ os-ramtop ( -- a ) "o-s-ram-top"
+  \
+  \ A constant that returns the address _a_ of 2-byte system
+  \ variable RAMTOP which holds the address of the last byte of
+  \ BASIC system area.
+  \
+  \ See: `os-stkend`, `os-prog`, `os-chans`.
+  \
+  \ }doc
+
+( os-attr-p os-mask-p os-attr-t os-mask-t os-p-flag os-stkend )
 
 unneeding os-attr-p ?\ #23693 constant os-attr-p
 
@@ -298,7 +312,6 @@ unneeding os-mask-t ?\ #23696 constant os-mask-t
   \
   \ }doc
 
-
 unneeding os-p-flag ?\ #23697 constant os-mask-t
 
   \ doc{
@@ -308,6 +321,20 @@ unneeding os-p-flag ?\ #23697 constant os-mask-t
   \ A constant that returns the address _ca_ of 1-byte system
   \ variable P_FLAG, which holds some flags related to
   \ printing.
+  \
+  \ }doc
+
+unneeding os-stkend ?\ #23653 constant os-stkend
+
+  \ doc{
+  \
+  \ os-stkend ( -- a ) "o-s-stack-end"
+  \
+  \ A constant that returns the address _a_ of 2-byte system
+  \ variable STKEND which holds the address of the start of
+  \ spare space of BASIC system area.
+  \
+  \ See: `os-prog`, `os-chans`.
   \
   \ }doc
 
@@ -338,6 +365,6 @@ unneeding os-p-flag ?\ #23697 constant os-mask-t
   \
   \ 2018-03-23: Add `os-strms`. Improve documentation of
   \ `os-chans`. Fix and update documentation. Rename the file.
-  \ Add `os-prog`.
+  \ Add `os-prog`, `os-ramtop`, `os-stkend`.
 
   \ vim: filetype=soloforth
