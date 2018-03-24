@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803240029
+  \ Last modified: 201803242257
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1776,13 +1776,13 @@ code (read-file ( ca len fid -- ior )
 ( ot-gfiles )
 
   \ XXX UNDER DEVELOPMENT -- opentype files, an alternative to
-  \ implement the file access word set
+  \ implement the file-access word set
 
 need assembler need otfoc need hook, need opentype-file-dir
 need ufia need init-ufia need set-filename need >ufia1
 need delete-file need r/o need w/o need .ufia need dfca
 need .os-chans need .os-strms need stream? need case
-need ?os-unused
+need ?os-unused need chan>
 
 code (ot-file ( x -- ior )
   a pop, b push, dfca ix ldp#, otfoc hook, next ix ldp#,
@@ -1808,6 +1808,46 @@ code (ot-file ( x -- ior )
 ( ot-gfiles )
 
   \ XXX UNDER DEVELOPMENT
+
+code (do-close-ot-file ( a -- )
+  DD c, E1 c, C5 c, dos-in, 2C57 call, dos-out,
+  C1 c, DD c, 21 c, next ,
+  jpnext, end-code
+  \ pop ix
+  \ push bc
+  \ _dos_in
+  \ call $2C57
+  \ _dos_out
+  \ pop bc
+  \ ld ix,next
+  \ _jp_next
+
+: do-close-ot-file ( fid -- ior )
+  chan> (do-close-ot-file false ;
+  \
+  \ XXX FIXME -- Crash!
+
+code close-stream ( n -- )
+  E1 c, 7D c, C5 c, dos-in, 2E5E call, dos-out,
+  C1 c, DD c, 21 c, next ,
+  jpnext, end-code
+  \ pop hl
+  \ ld a,l
+  \ push bc
+  \ _dos_in
+  \ call $2E5E
+  \ _dos_out
+  \ pop bc
+  \ ld ix,next
+  \ _jp_next
+  \
+  \ XXX FIXME -- This does nothing: the stream and channel
+  \ created by `create-ot-file` are not removed, and the file
+  \ does not appear.
+
+-->
+
+( ot-gfiles )
 
 787 constant /w/o
   \ OS memory needed in the channel data table in order to open
@@ -1990,6 +2030,7 @@ need write-file need read-file need .ufia
   \ return it as a file identifier.
   \
   \ 2018-03-24: Add `/w/o`, `/r/o`, `?fam`. Make `set-ot-file`
-  \ check if there's enough OS memory to open the file.
+  \ check if there's enough OS memory to open the file. Draft
+  \ `do-close-ot-file` and `close-stream`.
 
   \ vim: filetype=soloforth
