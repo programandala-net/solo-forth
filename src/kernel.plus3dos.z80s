@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201803041725
+; Last modified: 201803260027
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -147,6 +147,38 @@ dos.ix.preserve_ip:
   ret
 
 ; ------------------------------
+; DOS call (routine in IX)
+; Push EHL and DOS ior and continue at `next`
+
+dos.ix_ehl:
+
+  ; Address of an entry point to the Forth inner interpreter.
+  ; This entry point is jumped to at the end of a code word, in
+  ; order to execute first the +3DOS command hold in the IX
+  ; register, which returns a double-cell result in registers E
+  ; and HL.
+
+  ; Input:
+  ;   B    = file number
+  ;   IX   = DOS routine
+  ;   (SP) = Forth IP
+  ; Output:
+  ;   BC   = Forth IP
+  ;   IX   = Forth `next`
+  ; Output stack:
+  ;   ( d ior )
+  ;   Where _d_ is the content of registers EHL.
+
+  call dos.ix
+  pop bc ; restore the Forth IP
+  ; EHL = result
+  push hl ; low part
+  ld d,0
+  push de ; high part
+
+  ; Execution continues at `push_dos_ior`:
+
+; ------------------------------
 ; Push DOS ior and continue at `next`
 
 push_dos_ior:
@@ -279,6 +311,43 @@ endif
   dw dos.ix
 
 ; ----------------------------------------------
+  _constant_header dos_ix_ehl_underscore_,'dos-ix-ehl_'
+
+; doc{
+;
+; dos-ix-ehl_ ( -- a )
+;
+; Address of an entry point to the Forth inner interpreter.
+; This entry point is jumped to at the end of a code word, in
+; order to execute first the +3DOS command hold in the IX
+; register, which returns a double-cell result in registers E
+; and HL.
+
+; ....
+; Input:
+;   B    = file number
+;   IX   = address of the +3DOS routine
+;   (SP) = Forth IP
+; Output:
+;   BC   = Forth IP
+;   IX   = Forth `next`
+; Output stack:
+;   ( d ior )
+;   Where _d_ is the content of registers EHL.
+; ....
+
+; The stack must be somewhere in central 32K (conforming to
+; +3DOS requirements).
+;
+; See: `dos-ix_`, `dos-ix-preserve-ip_`, `dos-tos_`.
+;
+; }doc
+
+  ; XXX TODO -- Move to the assembler word list.
+
+  dw dos.ix_ehl
+
+; ----------------------------------------------
   _constant_header dos_tos_underscore_,'dos-tos_'
 
 ; doc{
@@ -390,8 +459,8 @@ endif
 ; pushdosior ( -- a )
 ;
 ; Address of an entry point to the Forth inner interpreter.
-; This entry point is jumped to at the end of a code word, in order
-; to convert a _dosior_ into a _ior_ and push it.
+; This entry point is jumped to at the end of a code word, in
+; order to convert a _dosior_ into a _ior_ and push it.
 
 ; ....
 ; Input:
@@ -1403,5 +1472,7 @@ endif ; defined plus3dos
 ; 2018-03-04: Add `default-1346`, factored from `cold`.
 ;
 ; 2018-03-13: Improve documentation.
+;
+; 2018-03-26: Add `dos-ix-ehl_`.
 
 ; vim: filetype=z80:textwidth=64

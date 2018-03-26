@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803142127
+  \ Last modified: 201803260031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -237,7 +237,7 @@ unneeding 2-block-drives ?( need set-block-drives
   \
   \ }doc
 
-( (delete-file delete-file )
+( (delete-file delete-file file-id )
 
 unneeding (delete-file ?(
 
@@ -285,7 +285,7 @@ unneeding delete-file ?( need >filename need (delete-file
   \
   \ }doc
 
-( #file-ids file-ids file-id )
+unneeding file-id ?(
 
 16 cconstant #file-ids
 
@@ -300,8 +300,7 @@ unneeding delete-file ?( need >filename need (delete-file
   \
   \ }doc
 
-create file-ids #file-ids allot
-file-ids #file-ids erase
+create file-ids #file-ids allot  file-ids #file-ids erase
 
   \ XXX TODO -- Use also to remember which files are headed,
   \ one bit.
@@ -326,7 +325,7 @@ file-ids #file-ids erase
   #file-ids 0 ?do
     i file-ids + dup c@ 0=
     if $FF swap c! i true unloop exit then drop
-  loop false ;
+  loop false ; ?)
 
   \ doc{
   \
@@ -563,11 +562,13 @@ code (create-file ( ca fam fid -- fid ior )
   \
   \ }doc
 
-( open-file )
+( open-file close-file )
 
   \ Credit:
   \
   \ Adapted from DZX-Forth.
+
+unneeding open-file ?(
 
 need assembler need >filename need file-id need do-dos-open_
 
@@ -599,6 +600,8 @@ code (open-file ( ca fam fid -- fid ior )
 : open-file ( ca len fam -- fid ior )
   >r >filename r> file-id if (open-file exit then drop #-288 ;
 
+?)
+
   \ doc{
   \
   \ open-file ( ca len fam -- fid ior )
@@ -620,7 +623,7 @@ code (open-file ( ca fam fid -- fid ior )
   \
   \ }doc
 
-( close-file )
+unneeding close-file ?(
 
 code (close-file ( fid -- ior )
   E1 c, C5 c, 45 c, dd c, 21 c, 0109 , dos-ix_ call, C1 c,
@@ -647,7 +650,7 @@ code (close-file ( fid -- ior )
   \ }doc
 
 : close-file ( fid -- ior )
-  dup >r (close-file dup 0<> file-ids r> + c! ;
+  dup >r (close-file dup 0<> file-ids r> + c! ; ?)
 
   \ doc{
   \
@@ -660,7 +663,7 @@ code (close-file ( fid -- ior )
   \
   \ }doc
 
-( file-position reposition-file )
+( file-position reposition-file file-size )
 
 unneeding file-position ?(
 
@@ -687,7 +690,8 @@ code file-position ( fid -- ud ior )
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
-  \ See: `reposition-file`, `open-file`, `create-file`.
+  \ See: `reposition-file`, `file-size`, `open-file`,
+  \ `create-file`.
   \
   \ }doc
 
@@ -719,6 +723,42 @@ code reposition-file ( ud fid -- ior )
   \ See: `file-position`, `open-file`, `create-file`.
   \
   \ }doc
+
+unneeding file-size ?(
+
+code file-size ( fid -- d )
+  E1 c, C5 c, 45 c, DD c, 21 c, 0139 , dos-ix-ehl_ jp,
+  end-code ?)
+  \ pop hl
+  \ push bc ; save the Forth IP
+  \ ld b,l ; fid
+  \ ld ix, $0139 ; GET EOF
+  \ jp dos_ehl
+
+  \ doc{
+  \
+  \ file-size ( fid - ud ior )
+  \
+  \ _ud_ is  the  size, in  bytes,  of  the file  identified by
+  \ _fid_.  _ior_  is  error result.  This operation does not
+  \ affect the  value returned by `FILE-POSITION`.  _ud_ is
+  \ undefined if _ior_ is non-zero.
+  \
+  \ WARNING: ``file-size`` returns unpredictable results on the
+  \ ZX Spectrum +3, because of a bug in the +3DOS ROM: _ud_ may
+  \ be correct, or rounded to 128-byte blocks, or correspond to
+  \ the previously checked file.  The bug was fixed in the
+  \ improved ROM of the ZX Spectrum +3e.
+  \
+  \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
+  \
+  \ See: `file-position`, `open-file`.
+  \
+  \ }doc
+
+  \ XXX TODO write 'flush-disk' and try it before every
+  \ 'file-size', in order to make this work on the ZX Spectrum
+  \ +3e.
 
 ( (cat )
 
@@ -1311,5 +1351,9 @@ code bank-read-file  ( ca len fid +n -- ior )
   \ `bank-read-file`.
   \
   \ 2018-03-14: Fix documentation layout.
+  \
+  \ 2018-03-25: Compact the code, saving 2 blocks.
+  \
+  \ 2018-03-26: Add `file-size`.
 
   \ vim: filetype=soloforth
