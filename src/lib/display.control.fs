@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803262353
+  \ Last modified: 201803270003
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -39,21 +39,20 @@ unneeding printer ?\ : printer ( -- ) 3 channel printing on ;
 
 unneeding tabulate ?( need column
 
-variable /tabulate  8 /tabulate !
+create /tabulate 8 c,
 
   \ doc{
   \
-  \ /tabulate ( -- a ) "slash-tabulate"
+  \ /tabulate ( -- ca ) "slash-tabulate"
   \
-  \ A variable. _a_ is the address of a cell containing the
-  \ number of spaces that `tabulate` counts for. Its default
-  \ value is 8.
+  \ _ca_ is the address of a byte containing the number of
+  \ spaces that `tabulate` counts for.  Its default value is 8.
   \
   \ See `tabulate`.
   \
   \ }doc
 
-: tabulate ( -- ) column 1+ /tabulate @ tuck mod - spaces ; ?)
+: tabulate ( -- ) column 1+ /tabulate c@ tuck mod - spaces ; ?)
 
   \ doc{
   \
@@ -271,5 +270,7 @@ unneeding eol? ?\ need 'cr' : eol? ( c -- f ) 'cr? = ;
   \ 2018-03-08: Add words' pronunciaton.
   \
   \ 2018-03-26: Add `eol?`, `newline>`, `/newline`, `newline`.
+  \
+  \ 2018-03-27: Make `/tabulate` a byte variable.
 
   \ vim: filetype=soloforth

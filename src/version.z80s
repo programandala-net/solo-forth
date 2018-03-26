@@ -12,7 +12,7 @@ version_patch:                equ 0
 version_prerelease_id:        equ 'p'
   ; 'd' for "dev", 'p' for "pre", 'r' for "rc", zero if none
 
-version_prerelease:           equ 543
+version_prerelease:           equ 544
 
 version_build_high_part:      equ $0133
-version_build_low_part:       equ $ED66  ; build 20180326
+version_build_low_part:       equ $ED67  ; build 20180327
