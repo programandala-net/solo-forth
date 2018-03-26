@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803270003
+  \ Last modified: 201803270012
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -221,7 +221,7 @@ unneeding backspaces
   \
   \ }doc
 
-unneeding eol? ?\ need 'cr' : eol? ( c -- f ) 'cr? = ;
+unneeding eol? ?\ need 'cr' : eol? ( c -- f ) 'cr' = ;
 
   \ doc{
   \
@@ -271,6 +271,6 @@ unneeding eol? ?\ need 'cr' : eol? ( c -- f ) 'cr? = ;
   \
   \ 2018-03-26: Add `eol?`, `newline>`, `/newline`, `newline`.
   \
-  \ 2018-03-27: Make `/tabulate` a byte variable.
+  \ 2018-03-27: Make `/tabulate` a byte variable. Fix `eol?`.
 
   \ vim: filetype=soloforth
