@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803082249
+  \ Last modified: 201803262353
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,10 +23,9 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( printer tabulate )
+( printer tabulate newline )
 
-unneeding printer
-?\ : printer ( -- ) 3 channel printing on ;
+unneeding printer ?\ : printer ( -- ) 3 channel printing on ;
 
   \ doc{
   \
@@ -38,11 +37,10 @@ unneeding printer
   \
   \ }doc
 
-unneeding tabulate ?(
-
-need column
+unneeding tabulate ?( need column
 
 variable /tabulate  8 /tabulate !
+
   \ doc{
   \
   \ /tabulate ( -- a ) "slash-tabulate"
@@ -55,9 +53,7 @@ variable /tabulate  8 /tabulate !
   \
   \ }doc
 
-: tabulate ( -- ) column 1+ /tabulate @ tuck mod - spaces ;
-
-?)
+: tabulate ( -- ) column 1+ /tabulate @ tuck mod - spaces ; ?)
 
   \ doc{
   \
@@ -76,7 +72,50 @@ variable /tabulate  8 /tabulate !
   \
   \ }doc
 
-( 'cr' 'tab' 'bs' crs tab tabs backspace backspaces )
+unneeding newline ?( need 'cr'
+
+create newline> 'cr' c, 0 c,
+
+  \ doc{
+  \
+  \ newline> ( -- ca ) "new-line-to"
+  \
+  \ _ca_ is the address where the characters of the string
+  \ returned by `newline` are stored (maximum 2).
+  \
+  \ See: `/newline`.
+  \
+  \ }doc
+
+create /newline 1 c,
+
+  \ doc{
+  \
+  \ /newline ( -- ca ) "slash-new-line"
+  \
+  \ _ca_ is the address of a byte containing the length of the
+  \ string returned by `newline`.
+  \
+  \ See: `newline>`.
+  \
+  \ }doc
+
+: newline ( -- ca len ) newline> /newline c@ ; ?)
+
+  \ doc{
+  \
+  \ newline ( -- ca len )
+  \
+  \ _ca len_ is a character string containing the character(s)
+  \ used to mark the start of a new line of text. By default
+  \ it's a 1-character string containing `'cr'`. The string can
+  \ be configured by modifying `newline>` and `/newline`.
+  \
+  \ Origin: Gforth.
+  \
+  \ }doc
+
+( 'cr' 'tab' 'bs' crs tab tabs backspace backspaces eol? )
 
 unneeding 'tab' ?\ 6 cconstant 'tab'  exit
 
@@ -113,12 +152,11 @@ unneeding 'cr' ?\ 13 cconstant 'cr'  exit
   \ A character constant that returns the caracter code used as
   \ carriage return (13).
   \
-  \ See: `cr`, `crs`.
+  \ See: `cr`, `crs`, `newline`.
   \
   \ }doc
 
-unneeding tab
-?\ need 'tab'  : tab ( -- ) 'tab' emit ;
+unneeding tab ?\ need 'tab'  : tab ( -- ) 'tab' emit ;
 
   \ doc{
   \
@@ -133,6 +171,7 @@ unneeding tab
   \ }doc
 
 unneeding backspace
+
 ?\ need 'bs'  : backspace ( -- ) 'bs'  emit ;
 
   \ doc{
@@ -145,8 +184,7 @@ unneeding backspace
   \
   \ }doc
 
-unneeding crs
-?\ need 'cr'  : crs   ( n -- ) 'cr'  emits ;
+unneeding crs ?\ need 'cr'  : crs   ( n -- ) 'cr'  emits ;
 
   \ doc{
   \
@@ -158,8 +196,7 @@ unneeding crs
   \
   \ }doc
 
-unneeding tabs
-?\ need 'tab'  : tabs ( n -- ) 'tab' emits ;
+unneeding tabs ?\ need 'tab'  : tabs ( n -- ) 'tab' emits ;
 
   \ doc{
   \
@@ -172,6 +209,7 @@ unneeding tabs
   \ }doc
 
 unneeding backspaces
+
 ?\ need 'bs'  : backspaces    ( n -- ) 'bs'  emits ;
 
   \ doc{
@@ -181,6 +219,17 @@ unneeding backspaces
   \ Emit _n_ number of backspace characters (character code 8).
   \
   \ See: `backspace`, `'bs'`.
+  \
+  \ }doc
+
+unneeding eol? ?\ need 'cr' : eol? ( c -- f ) 'cr? = ;
+
+  \ doc{
+  \
+  \ eol? ( c -- f ) "e-o-l-question"
+  \
+  \ If _c_ is the end of line character, which is returned by
+  \ `'cr'`, return _true_; otherwise return _false_.
   \
   \ }doc
 
@@ -220,5 +269,7 @@ unneeding backspaces
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-08: Add words' pronunciaton.
+  \
+  \ 2018-03-26: Add `eol?`, `newline>`, `/newline`, `newline`.
 
   \ vim: filetype=soloforth
