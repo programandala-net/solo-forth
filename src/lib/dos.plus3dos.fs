@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803270032
+  \ Last modified: 201803272345
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -681,11 +681,11 @@ code (close-file ( fid -- ior )
 unneeding file-position ?(
 
 code file-position ( fid -- ud ior )
-  E1 c, C5 c, 45 c, DD c, 21 c, 0139 , dos-ix_ call,
+  E1 c, C5 c, 45 c, DD c, 21 c, 0133 , dos-ix_ call,
   \   pop hl ; L = fid
   \   push bc ; save Forth IP
   \   ld b,l ; fid
-  \   ld ix,dos_get_eof
+  \   ld ix,dos_get_position
   \   call dos.ix
   C1 c, E5 c, D5 c, pushdosior jp, end-code ?)
   \   pop bc ; restore Forth IP
@@ -1458,6 +1458,7 @@ need r/o need w/o need r/w need file-size need cat
   \ 2018-03-26: Add `file-size`. Draft `read-line` and
   \ `write-line`
   \
-  \ 2018-03-27: Fix compilation of `reposition-file`.
+  \ 2018-03-27: Fix compilation of `reposition-file`. Fix
+  \ `file-position`.
 
   \ vim: filetype=soloforth
