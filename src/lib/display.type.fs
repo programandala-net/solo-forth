@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803231805
+  \ Last modified: 201803272315
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,11 +23,11 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( fartype type-ascii fartype-ascii )
+( fartype emit-ascii type-ascii fartype-ascii )
 
 unneeding fartype
 
-?\ : fartype ( ca len -- ) bounds ?do  i farc@ emit  loop ;
+?\ : fartype ( ca len -- ) bounds ?do i farc@ emit loop ;
 
   \ doc{
   \
@@ -36,36 +36,53 @@ unneeding fartype
   \ If _len_ is greater than zero, display the character string
   \ _ca len_, which is stored in the far memory.
   \
-  \ See: `far-banks`, `type`.
+  \ See: `far-banks`, `type`, `fartype-ascii`.
   \
   \ }doc
 
-unneeding type-ascii ?( need >graphic-ascii-char
+unneeding emit-ascii ?( need >graphic-ascii-char
 
-: type-ascii ( ca len -- )
-  bounds ?do  i c@ >graphic-ascii-char emit  loop ; ?)
+: emit-ascii ( c -- ) >graphic-ascii-char emit ; ?)
+
+  \ doc{
+  \
+  \ emit-ascii ( c -- )
+  \
+  \ Convert character _c_ with `>graphic-ascii-char`, then
+  \ `emit` it.
+  \
+  \ See: `type-ascii`, `fartype-ascii`.
+  \
+  \ }doc
+
+unneeding type-ascii ?( need emit-ascii
+
+: type-ascii ( ca len -- ) bounds ?do i c@ emit-ascii loop ; ?)
 
   \ doc{
   \
   \ type-ascii ( ca len -- )
   \
   \ If _len_ is greater than zero, display the string _ca len_,
-  \ replacing non-ASCII and control chars with a dot.
+  \ using `emit-ascii` to make sure the characters are graphic
+  \ ASCII characters.
+  \
+  \ See: `type`, `fartype-ascii`.
   \
   \ }doc
 
-unneeding fartype-ascii ?( need >graphic-ascii-char
+unneeding fartype-ascii ?( need emit-ascii
 
 : fartype-ascii ( ca len -- )
-  bounds ?do  i farc@ >graphic-ascii-char emit  loop ; ?)
+  bounds ?do i farc@ emit-ascii loop ; ?)
 
   \ doc{
   \
   \ fartype-ascii ( ca len -- )
   \
   \ If _len_ is greater than zero, display the string _ca len_,
-  \ which is stored in far memory, replacing non-ASCII and
-  \ control chars with a dot.
+  \ which is stored in far memory, using `emit-ascii` to make
+  \ sure the characters are graphic ASCII characters.
   \
   \ See: `fartype`, `type-ascii`.
   \
@@ -87,6 +104,7 @@ unneeding drop-type ?\ : drop-type ( ca len x -- ) drop type ;
   \ }doc
 
 unneeding padding-spaces
+
 ?\ : padding-spaces ( len1 len2 -- ) swap - 0 max spaces ;
 
   \ doc{
@@ -276,5 +294,7 @@ constant type-center-field-cases
   \
   \ 2018-03-23: Update: Rename `>printable-ascii-char`
   \ `>graphic-ascii-char`.
+  \
+  \ 2018-03-27: Add `emit-ascii`. Improve documentation.
 
   \ vim: filetype=soloforth
