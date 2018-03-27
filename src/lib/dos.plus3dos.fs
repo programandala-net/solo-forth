@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803272345
+  \ Last modified: 201803272347
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1132,7 +1132,8 @@ code bank-write-file ( ca len fid +n -- ior )
   \ memory bank _+n_ is paged in addresses $C000..$FFFF.
   \ Return input/output result _ior_.
   \
-  \ See: `write-file`, `bank`, `create-file`, `open-file`.
+  \ See: `write-file`, `write-byte`, `bank`, `create-file`,
+  \ `open-file`.
   \
   \ }doc
 
@@ -1156,7 +1157,8 @@ code write-file ( ca len fid -- ior )
   \ identified by _fid_ starting at its current position.
   \ Return input/output result _ior_.
   \
-  \ See: `bank-write-file`, `create-file`, `open-file`.
+  \ See: `bank-write-file`, `write-byte`, `create-file`,
+  \ `open-file`.
   \
   \ }doc
 
@@ -1192,8 +1194,8 @@ code read-file  ( ca len1 fid -- len2 ior )
   \
   \ If the operation is initiated when the value returned by
   \ `file-position` is equal to the value returned by
-  \ `file-size` for the file identified by _fid, _ior_ is
-  \ zero and _len2_ is zero.
+  \ `file-size` for the file identified by _fid, _ior_ is zero
+  \ and _len2_ is zero.
   \
   \ If an exception occurs, _ior_ is the implementation-defined
   \ I/O result code, and _len2_ is the number of characters
@@ -1202,7 +1204,8 @@ code read-file  ( ca len1 fid -- len2 ior )
   \ At the conclusion of the operation, `file-position` returns
   \ the next file position after the last character read.
   \
-  \ See: `bank-read-file`, `open-file`, `write-file`.
+  \ See: `bank-read-file`, `read-byte`, `open-file`,
+  \ `write-file`.
   \
   \ }doc
 
@@ -1281,8 +1284,8 @@ code bank-read-file  ( ca len fid +n -- ior )
   \
   \ If the operation is initiated when the value returned by
   \ `file-position` is equal to the value returned by
-  \ `file-size` for the file identified by _fid, _ior_ is
-  \ zero and _len2_ is zero.
+  \ `file-size` for the file identified by _fid, _ior_ is zero
+  \ and _len2_ is zero.
   \
   \ If an exception occurs, _ior_ is the implementation-defined
   \ I/O result code, and _len2_ is the number of characters
@@ -1291,7 +1294,8 @@ code bank-read-file  ( ca len fid +n -- ior )
   \ At the conclusion of the operation, `file-position` returns
   \ the next file position after the last character read.
   \
-  \ See: `bank-read-file`, `open-file`, `write-file`.
+  \ See: `bank-read-file`, `read-byte`, `open-file`,
+  \ `write-file`.
   \
   \ }doc
 
@@ -1302,6 +1306,59 @@ code bank-read-file  ( ca len fid +n -- ior )
   \ the value returned by `file-size` for the file identified
   \ by fileid, or if the requested operation attempts to read
   \ portions of the file not written.
+
+( write-byte read-byte )
+
+unneeding read-byte ?( need assembler
+
+code read-byte ( fid -- c ior )
+  h pop, b push, l b ld,
+  0118 ix ldp#, dos-ix_ call,
+  0 h ld#, c l ld, b pop, h push, pushdosior jp, end-code ?)
+
+  \ XXX TODO -- Rewrite in Z80 opcodes.
+
+  \ doc{
+  \
+  \ read-byte ( fid -- c ior )
+  \
+  \ Read byte _c_ from file _fid_, returning error resul _ior_.
+  \ If _ior_ is non-zero, _c_ is undetermined.
+  \
+  \ See: `write-byte`, `reposition-file`, `file-position`.
+  \
+  \ }doc
+
+unneeding write-byte ?( need assembler
+
+code write-byte ( c fid -- ior )
+  h pop, d pop, b push, l b ld, e c ld,
+  011B ix ldp#, dos-ix_ call,
+  b pop, pushdosior jp, end-code ?)
+
+  \ XXX TODO -- Rewrite in Z80 opcodes.
+
+  \ doc{
+  \
+  \ write-byte ( c fid -- ior )
+  \
+  \ Write byte _c_ to file _fid_, returning error resul _ior_.
+  \
+  \ See: `read-byte`, `reposition-file`, `file-position`.
+  \
+  \ }doc
+
+( read-bytes )
+
+  \ XXX TMP -- For testing `read-byte`.
+
+need emit-ascii
+
+: read-bytes ( len fid -- ior )
+  swap 0 ?do
+    dup read-byte ?dup if nip unloop exit then emit-ascii
+    key bl <> if unloop #-28 exit then
+  loop drop 0 ;
 
 ( write-line read-line )
 
@@ -1379,6 +1436,8 @@ create read-line-fid 0 c,
 
   \ XXX FIXME -- Reading the second and last line throws #-1025
   \ (end of file).
+  \
+  \ XXX TODO -- Rewrite with `read-byte` and `file-size`.
 
   \ Credit:
   \ Adapted from DZX-Forth.
@@ -1390,6 +1449,7 @@ create read-line-fid 0 c,
 need where need create-file need open-file need close-file
 need write-file need read-file need write-line need read-line
 need r/o need w/o need r/w need file-size need cat
+need read-byte need write-byte need read-bytes
 
   \ ===========================================================
   \ Change log
@@ -1459,6 +1519,6 @@ need r/o need w/o need r/w need file-size need cat
   \ `write-line`
   \
   \ 2018-03-27: Fix compilation of `reposition-file`. Fix
-  \ `file-position`.
+  \ `file-position`.  Add `write-byte` and `read-byte`.
 
   \ vim: filetype=soloforth

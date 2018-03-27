@@ -1,12 +1,12 @@
 = Solo Forth %VERSION% %DOS%
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-03-26
+:revdate: 2018-03-27
 :toc:
 :toclevels: 1
 :toc-placement!:
 :linkattrs:
 
-// Last modified 201803260105
+// Last modified 201803280010
 
 toc::[]
 
@@ -88,6 +88,8 @@ on each DOS.
 
 | `>file`           | YES   | YES    |       | Save memory zone to a file
 | `acat`            | YES   | YES    | YES   | Abbreviated disk catalogue
+| `bank-read-file`  |       |        | YES   |
+| `bank-write-file` |       |        | YES   |
 | `bin`             |       |        | YES   | Standard Forth
 | `cat`             | YES   | YES    | YES   | Detailed disk catalogue
 | `close-file`      |       |        | YES   | Standard Forth
@@ -115,6 +117,7 @@ on each DOS.
 | `open-file`       |       |        | draft | Standard Forth
 | `r/o`             |       |        | YES   | Standard Forth
 | `r/w`             |       |        | YES   | Standard Forth
+| `read-byte`       |       |        | YES   |
 | `read-file`       |       |        | YES   | Standard Forth
 | `read-line`       |       |        |       | Standard Forth
 | `rename-file`     | YES   | YES    | YES   | Standard Forth
@@ -127,7 +130,7 @@ on each DOS.
 | `w/o`             |       |        | YES   | Standard Forth
 | `wacat`           | YES   |        | YES   | Abbreviated disk catalogue with wildcards
 | `wcat`            | YES   |        | YES   | Detailed disk catalogue with wildcards
-| `bank-write-file` |       |        | YES   |
+| `write-byte`      |       |        | YES   |
 | `write-file`      |       |        | YES   | Standard Forth
 | `write-line`      |       |        |       | Standard Forth
 
