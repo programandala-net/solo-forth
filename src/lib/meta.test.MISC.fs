@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803281825
+  \ Last modified: 201803282307
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -504,16 +504,27 @@ run
 
 ( local-test )
 
-need local
+need local need clocal need 2local need cvariable need rnd
+need c? need 2?
 
-variable tmp  tmp off cr .( original value of tmp = ) tmp ?
+variable tmp cvariable ctmp 2variable 2tmp
 
-: run ( -- ) tmp local
-  1001 tmp ! cr ." temporary value of tmp = " tmp ? cr ;
+: .tmp ( -- ) cr ." tmp  = "  tmp  ? cr
+                 ." ctmp = " ctmp c? cr
+                 ." 2tmp = " 2tmp 2? cr ;
 
-run
+: set-tmp ( -- ) rnd tmp ! rnd ctmp c! rnd rnd 2tmp 2! ;
 
-cr .( restored value of tmp = ) tmp ?
+: (local-test ( -- )
+  tmp local ctmp clocal 2tmp 2local
+  1001 tmp ! 101 ctmp c! 100001. 2tmp 2!
+  cr ." Local values:" .tmp ;
+
+: local-test ( -- ) set-tmp
+                    cr ." Current values:"  .tmp (local-test
+                    cr ." Restored values:" .tmp ;
+
+  \ local-test
 
 ( anon-test )
 
@@ -1715,5 +1726,6 @@ blk @ 1+ blk @ 2+ thru
   \ 2018-03-13: Add `file-test`.
   \
   \ 2018-03-28: Move `read-byte-test` from the +3DOS module.
+  \ Add `clocal` and `2local` to `local-test` and improve it.
 
   \ vim: filetype=soloforth
