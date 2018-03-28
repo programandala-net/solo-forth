@@ -1,6 +1,6 @@
 = Solo Forth %VERSION% %DOS%
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-03-27
+:revdate: 2018-03-28
 :toc:
 :toclevels: 1
 :toc-placement!:
@@ -74,8 +74,7 @@ include::../README.adoc[tags=plus3dos_support_summary]
 ==== Rationale
 
 +3DOS uses 16 KiB of banked memory, but their features and API are
-excellent and very well documented. Besides, it's the door to support
-the more advanced IDEDOS and ResiDOS in the future.
+excellent and very well documented.
 
 === Comparative of DOS support
 
@@ -114,12 +113,12 @@ on each DOS.
 | `include-file`    |       |        |       | Standard Forth
 | `include`         |       |        |       | Standard Forth
 | `included`        |       |        |       | Standard Forth
-| `open-file`       |       |        | draft | Standard Forth
+| `open-file`       |       |        | YES   | Standard Forth
 | `r/o`             |       |        | YES   | Standard Forth
 | `r/w`             |       |        | YES   | Standard Forth
 | `read-byte`       |       |        | YES   |
 | `read-file`       |       |        | YES   | Standard Forth
-| `read-line`       |       |        |       | Standard Forth
+| `read-line`       |       |        | YES   | Standard Forth
 | `rename-file`     | YES   | YES    | YES   | Standard Forth
 | `reposition-file` |       |        | YES   | Standard Forth
 | `require`         |       |        |       | Standard Forth
@@ -132,7 +131,7 @@ on each DOS.
 | `wcat`            | YES   |        | YES   | Detailed disk catalogue with wildcards
 | `write-byte`      |       |        | YES   |
 | `write-file`      |       |        | YES   | Standard Forth
-| `write-line`      |       |        |       | Standard Forth
+| `write-line`      |       |        | YES   | Standard Forth
 
 |===
 

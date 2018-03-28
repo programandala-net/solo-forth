@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803272347
+  \ Last modified: 201803281820
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1360,25 +1360,147 @@ need emit-ascii
     key bl <> if unloop #-28 exit then
   loop drop 0 ;
 
-( write-line read-line )
-
-  \ XXX UNDER DEVELOPMENT
+( write-line )
 
 unneeding write-line ?( need newline
 
 : write-line ( ca len fid -- ior )
-  dup >r write-file ?dup if r> rdrop exit then
+      dup >r write-file ?dup if rdrop exit then
   newline r> write-file ; ?)
 
   \ Credit:
   \ Adapted from DZX-Forth.
 
-unneeding read-line ?( need 'ctrl-z' need eol? need file-size
-                       need file-position need reposition-file
+  \ doc{
+  \
+  \ write-line ( ca len fid -- ior )
+  \
+  \ Write  _len_  characters  from  _ca_  followed  by  the
+  \ line terminator returned by `newline` to the file
+  \ identified by _fid_ starting at its current position.
+  \ _ior_ is the corresponding I/O result code.
+  \
+  \ At the conclusion of the operation,  `file-position`
+  \ returns the next file  position after the  last character
+  \ written to  the  file, and  `file-size` returns  a  value
+  \ greater than or equal to the value returned by
+  \ `file-position`.
+  \
+  \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
+  \
+  \ See: `write-file`, `write-byte`, `read-line`,
+  \ `create-file`, `open-file`.
+  \
+  \ }doc
+
+( read-line )
+
+need read-byte need eol? need char+
 
 create read-line-fid 0 c,
+  \ XXX TMP -- Use a local instead.
 
-: read-line ( ca1 len1 fid -- len2 flag ior )
+variable read-line-max-len
+  \ XXX TMP -- Use a local instead.
+
+variable read-line-len
+  \ XXX TMP -- Use a local instead.
+
+: read-line ( ca1 len1 fid -- len2 f ior )
+  read-line-fid c! read-line-max-len ! read-line-len off
+  begin
+    read-line-fid c@ read-byte
+    ?dup      if  drop read-line-len @ false rot exit then
+     dup eol? if 2drop read-line-len @ true  0   exit then
+    over c! char+ 1 read-line-len +!
+    read-line-len @ read-line-max-len @ < while
+  repeat drop read-line-len @ true 0 ;
+
+  \ doc{
+  \
+  \ read-line ( ca1 len1 fid -- len2 f ior )
+  \
+  \ Read the next  line from  the file  specified by _fid_ into
+  \ memory  at the  address _ca1_.  At  most  _len1_ characters
+  \ are  read.  One line-terminating character, defined in
+  \ `newline>`,  may be read into memory  at the end of the
+  \ line, but  is not included in the count _len2_.  The line
+  \ buffer provided by _ca1_ should be at least _len1_+1
+  \ characters long.
+  \
+  \ If the operation succeeded, _f_  is true and _ior_ is zero.
+  \ If a line terminator  was received before _len1_ characters
+  \ were read, then _len2_ is the number of characters, not
+  \ including the line terminator, actually read (0 <= _len2_
+  \ <= _len1_). When _len1_ =  _len2_ the line terminator has
+  \ yet to be reached.
+  \
+  \ If the operation is initiated when the value returned by
+  \ `file-position` is equal to the value returned by
+  \ `file-size` for the file identified by _fid_, _f_ is false,
+  \ _ior_ is zero, and _len2_ is zero. If  _ior_ is non-zero,
+  \ an exception occurred during  the operation and _ior_ is
+  \ the corresponding error result code.
+  \
+  \ An ambiguous condition exists if the  operation is
+  \ initiated when the value  returned by `file-position` is
+  \ greater than the  value returned by `file-size` for the
+  \ file identified by _fid_, or if the requested operation
+  \ attempts to read portions of  the file not written.
+  \
+  \ At the conclusion of the operation,  `file-position`
+  \ returns the next file  position after the last character
+  \ read.
+  \
+  \ NOTE: This implementation of ``read-line`` is not fully
+  \ standard, because 2-character line terminators are not
+  \ supported.
+  \
+  \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
+  \
+  \ See: `read-file`, `read-byte`, `write-line`, `create-file`,
+  \ `open-file`.
+  \
+  \ }doc
+
+  \ XXX TODO -- Support 2-character line terminators.
+
+( read-line )
+
+  \ XXX OLD -- Wrong design.
+
+need read-byte need eol? need 0leave
+
+create read-line-fid 0 c,
+  \ XXX TMP -- Use a local instead.
+
+variable read-line-max-len
+  \ XXX TMP -- Use a local instead.
+
+variable read-line-len
+  \ XXX TMP -- Use a local instead.
+
+: read-line ( ca1 len1 fid -- len2 f ior )
+  read-line-fid c! dup read-line-max-len ! read-line-len off
+  bounds ?do
+    read-line-fid c@ read-byte ?dup
+    if nip read-line-len @ false rot unloop exit then
+    dup eol? if drop leave then
+    i c! 1 read-line-len +!
+    read-line-max-len @ read-line-len @ < 0leave
+  loop read-line-len @ true 0 ;
+
+( dzx-read-line )
+
+  \ XXX OLD -- `read-line` adapted from DZX-Forth.
+
+need 'ctrl-z' need eol? need file-size
+need file-position need reposition-file
+
+create dzx-read-line-fid 0 c,
+  \ XXX TMP -- Use a local instead.
+
+: dzx-read-line ( ca1 len1 fid -- len2 flag ior )
 
   \ ca1   = address of the first char
   \ ca1'  = address of the currently examined char, in the loop
@@ -1392,18 +1514,18 @@ create read-line-fid 0 c,
   \ n     = offset from the current file position to the start of
   \         the next line
 
-  dup read-line-fid c!  >r over swap r> ( ca1 ca1 len1 fid )
+  dup dzx-read-line-fid c!  2>r dup 2r> ( ca1 ca1 len1 fid )
   read-file ( ca1 len1' ior ) ?dup ?exit ( ca1 len1' )
   2dup bounds ?do ( ca1 len1' )
 
   -->
 
-( read-line )
+( dzx-read-line )
 
     i dup c@ 'ctrl-z' = if \ CTRL-Z found ( ca1 len1' ca1' )
-      rot - ( len1' len2 ) read-line-fid c@ file-size drop
+      rot - ( len1' len2 ) dzx-read-line-fid c@ file-size drop
         \ XXX TODO manage the ior
-      read-line-fid c@ reposition-file drop \ XXX
+      dzx-read-line-fid c@ reposition-file drop \ XXX
         \ XXX TODO faster with 'dup' and 'rot'?:
         \ XXX TODO manage the ior
       ( len1' len2 ) leave
@@ -1423,21 +1545,19 @@ create read-line-fid 0 c,
       \ +32766     -32770
 
       \ Update the file position to the start of the next line
-      read-line-fid c@ file-position drop d+
+      dzx-read-line-fid c@ file-position drop d+
         \ XXX TODO manage the ior
-      read-line-fid c@ reposition-file drop ( ca1 )
+      dzx-read-line-fid c@ reposition-file drop ( ca1 )
         \ XXX TODO manage the ior
 
       i swap - ( len2 ) true 0 unloop exit
 
     then
 
-  loop ( ca1 len2 | len1' len2 ) nip dup 0<> 0 ; ?)
+  loop ( ca1 len2 | len1' len2 ) nip dup 0<> 0 ;
 
   \ XXX FIXME -- Reading the second and last line throws #-1025
   \ (end of file).
-  \
-  \ XXX TODO -- Rewrite with `read-byte` and `file-size`.
 
   \ Credit:
   \ Adapted from DZX-Forth.
@@ -1450,6 +1570,7 @@ need where need create-file need open-file need close-file
 need write-file need read-file need write-line need read-line
 need r/o need w/o need r/w need file-size need cat
 need read-byte need write-byte need read-bytes
+need reposition-file need file-position
 
   \ ===========================================================
   \ Change log
@@ -1520,5 +1641,7 @@ need read-byte need write-byte need read-bytes
   \
   \ 2018-03-27: Fix compilation of `reposition-file`. Fix
   \ `file-position`.  Add `write-byte` and `read-byte`.
+  \
+  \ 2018-03-28: Finish `write-line` and `read-line`.
 
   \ vim: filetype=soloforth

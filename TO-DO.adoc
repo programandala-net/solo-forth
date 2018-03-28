@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-03-23
+:revdate: 2018-03-28
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1312,6 +1312,15 @@ Move the Z80-symbol constants to the assembler word list.
 // +3DOS {{{2
 === +3DOS ===
 
+==== 2018-03-28
+
+NOTE: Milestone: 0.14.0
+
+Improve `read-line` with 2-character line terminators.
+
+Replace temporary variables from `read-line`. Use locals or the stack
+instead.
+
 ==== 2018-03-15
 
 Fix: `2-block-drives` does not work. Blocks in the second drive can
@@ -2438,7 +2447,7 @@ Problem: this would force changes in fsb and fsb2.
 // Local variables {{{1
 == Local variables
 
-Examples from Forth Dimensions:
+=== Examples from Forth Dimensions
 
 |===
 | Title                                    | Vo  | N  | Pag | Note
@@ -2456,6 +2465,13 @@ Examples from Forth Dimensions:
 | Local Variables - Another Technique      | 11  | 1  | 018 | Seen
 | Prefix Frame Operators                   | 11  | 1  | 023 |
 |===
+
+=== 2018-03-28
+
+Split <locals.arguments.fs>: default usage, like variables, and
+`toarg` usage, like values. The problem now is the behaviour is
+changed by loading `toarg`, and that could be confusing if `arguments`
+is used in several words.
 
 // Forth modules {{{1
 == Forth modules
@@ -2683,6 +2699,17 @@ Finish the conversion of 128K sound explosions. More details in the source.
 
 // Strings {{{1
 == Strings
+
+=== 2018-03-28
+
+NOTE: Milestone: 0.14.0
+
+Don't use `pad`. Leave it alone for the application.
+
+=== 2018-03-28
+
+Make `chars>string` return an empty string in the `stringer` instead
+of the `pad`. That is safer and more coherent.
 
 === 2018-02-05
 
