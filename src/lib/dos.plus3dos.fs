@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803281820
+  \ Last modified: 201803281831
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -489,8 +489,6 @@ unneeding 'ctrl-z' ?\ $1A cconstant 'ctrl-z'
   \
   \ _c_ is the character used by +3DOS for padding the files,
   \ which is $1A.
-  \
-  \ ``ctrl-z`` is used by `read-line`.
   \
   \ }doc
 
@@ -1307,7 +1305,7 @@ code bank-read-file  ( ca len fid +n -- ior )
   \ by fileid, or if the requested operation attempts to read
   \ portions of the file not written.
 
-( write-byte read-byte )
+( write-byte read-byte write-line )
 
 unneeding read-byte ?( need assembler
 
@@ -1347,20 +1345,6 @@ code write-byte ( c fid -- ior )
   \ See: `read-byte`, `reposition-file`, `file-position`.
   \
   \ }doc
-
-( read-bytes )
-
-  \ XXX TMP -- For testing `read-byte`.
-
-need emit-ascii
-
-: read-bytes ( len fid -- ior )
-  swap 0 ?do
-    dup read-byte ?dup if nip unloop exit then emit-ascii
-    key bl <> if unloop #-28 exit then
-  loop drop 0 ;
-
-( write-line )
 
 unneeding write-line ?( need newline
 
@@ -1465,103 +1449,6 @@ variable read-line-len
 
   \ XXX TODO -- Support 2-character line terminators.
 
-( read-line )
-
-  \ XXX OLD -- Wrong design.
-
-need read-byte need eol? need 0leave
-
-create read-line-fid 0 c,
-  \ XXX TMP -- Use a local instead.
-
-variable read-line-max-len
-  \ XXX TMP -- Use a local instead.
-
-variable read-line-len
-  \ XXX TMP -- Use a local instead.
-
-: read-line ( ca1 len1 fid -- len2 f ior )
-  read-line-fid c! dup read-line-max-len ! read-line-len off
-  bounds ?do
-    read-line-fid c@ read-byte ?dup
-    if nip read-line-len @ false rot unloop exit then
-    dup eol? if drop leave then
-    i c! 1 read-line-len +!
-    read-line-max-len @ read-line-len @ < 0leave
-  loop read-line-len @ true 0 ;
-
-( dzx-read-line )
-
-  \ XXX OLD -- `read-line` adapted from DZX-Forth.
-
-need 'ctrl-z' need eol? need file-size
-need file-position need reposition-file
-
-create dzx-read-line-fid 0 c,
-  \ XXX TMP -- Use a local instead.
-
-: dzx-read-line ( ca1 len1 fid -- len2 flag ior )
-
-  \ ca1   = address of the first char
-  \ ca1'  = address of the currently examined char, in the loop
-  \ ca2   = ca1'+eol = address after the end of line
-  \ ca3   = ca1+len1' = address after the last char actually read
-  \ eol   = type of EOL char (1=LF, 2=CR)
-  \ flag  = succesful?
-  \ ior   = input/output report
-  \ len1' = number of chars actually read
-  \ len2  = number of chars actually read, without line terminators
-  \ n     = offset from the current file position to the start of
-  \         the next line
-
-  dup dzx-read-line-fid c!  2>r dup 2r> ( ca1 ca1 len1 fid )
-  read-file ( ca1 len1' ior ) ?dup ?exit ( ca1 len1' )
-  2dup bounds ?do ( ca1 len1' )
-
-  -->
-
-( dzx-read-line )
-
-    i dup c@ 'ctrl-z' = if \ CTRL-Z found ( ca1 len1' ca1' )
-      rot - ( len1' len2 ) dzx-read-line-fid c@ file-size drop
-        \ XXX TODO manage the ior
-      dzx-read-line-fid c@ reposition-file drop \ XXX
-        \ XXX TODO faster with 'dup' and 'rot'?:
-        \ XXX TODO manage the ior
-      ( len1' len2 ) leave
-    then ( ca1 len1' ca1' )
-    c@ eol? ?dup if \ EOL found ( ca1 len1' f )
-      abs i + >r over + r> ( ca1 ca3 ca2 ) swap - ( ca1 n )
-      dup 0<> ( ca1 d )
-
-      \ When the text file and line buffer are both >32 KiB,
-      \ _n_ can overflow the negative number range.  'dup 0<>'
-      \ above adjusts for this i.e.:
-
-      \ n          d
-      \ -32767     -32767
-      \ -32768     -32768
-      \ +32767     -32769
-      \ +32766     -32770
-
-      \ Update the file position to the start of the next line
-      dzx-read-line-fid c@ file-position drop d+
-        \ XXX TODO manage the ior
-      dzx-read-line-fid c@ reposition-file drop ( ca1 )
-        \ XXX TODO manage the ior
-
-      i swap - ( len2 ) true 0 unloop exit
-
-    then
-
-  loop ( ca1 len2 | len1' len2 ) nip dup 0<> 0 ;
-
-  \ XXX FIXME -- Reading the second and last line throws #-1025
-  \ (end of file).
-
-  \ Credit:
-  \ Adapted from DZX-Forth.
-
 ( pfiles )
 
   \ XXX TMP -- Loading block for testing.
@@ -1642,6 +1529,8 @@ need reposition-file need file-position
   \ 2018-03-27: Fix compilation of `reposition-file`. Fix
   \ `file-position`.  Add `write-byte` and `read-byte`.
   \
-  \ 2018-03-28: Finish `write-line` and `read-line`.
+  \ 2018-03-28: Finish `write-line` and `read-line`; remove
+  \ their old drafts. Move the test of `read-byte` to the tests
+  \ module.
 
   \ vim: filetype=soloforth

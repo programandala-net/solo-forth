@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803151547
+  \ Last modified: 201803281825
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -22,6 +22,16 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( read-byte-test )
+
+need read-byte need emit-ascii
+
+: read-byte-test ( len fid -- ior )
+  swap 0 ?do
+    dup read-byte ?dup if nip unloop exit then emit-ascii
+    key bl <> if unloop #-28 exit then
+  loop drop 0 ;
 
 ( file-test )
 
@@ -1702,6 +1712,8 @@ blk @ 1+ blk @ 2+ thru
   \ 2018-03-11: Add `testing-test`. (`testing` is part of
   \ `ttester`).
   \
-  \ 2018-03-13. Add `file-test`.
+  \ 2018-03-13: Add `file-test`.
+  \
+  \ 2018-03-28: Move `read-byte-test` from the +3DOS module.
 
   \ vim: filetype=soloforth
