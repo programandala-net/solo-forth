@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803270012
+  \ Last modified: 201803281346
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -82,7 +82,7 @@ create newline> 'cr' c, 0 c,
   \ _ca_ is the address where the characters of the string
   \ returned by `newline` are stored (maximum 2).
   \
-  \ See: `/newline`.
+  \ See: `/newline`, `'cr'`, `'lf'`.
   \
   \ }doc
 
@@ -112,9 +112,11 @@ create /newline 1 c,
   \
   \ Origin: Gforth.
   \
+  \ See: `'lf'`.
+  \
   \ }doc
 
-( 'cr' 'tab' 'bs' crs tab tabs backspace backspaces eol? )
+( 'cr' 'lf' 'tab' 'bs' crs tab tabs backspace backspaces eol? )
 
 unneeding 'tab' ?\ 6 cconstant 'tab'  exit
 
@@ -151,7 +153,25 @@ unneeding 'cr' ?\ 13 cconstant 'cr'  exit
   \ A character constant that returns the caracter code used as
   \ carriage return (13).
   \
-  \ See: `cr`, `crs`, `newline`.
+  \ See: `cr`, `crs`, `newline`, `'lf'`.
+  \
+  \ }doc
+
+unneeding 'lf' ?\ 10 cconstant 'lf'  exit
+
+  \ doc{
+  \
+  \ 'lf' ( -- c ) "tick-l-f"
+  \
+  \ A character constant that returns the caracter code used as
+  \ line feed (10).
+  \
+  \ NOTE: In the ZX Spectrum's character set, control character
+  \ code 10 is not called "line feed" but "cursor down", which
+  \ is analogous. ``lf`` is provided for making `read-line` and
+  \ other words clearer.
+  \
+  \ See: `cr`, `newline`.
   \
   \ }doc
 
@@ -272,5 +292,7 @@ unneeding eol? ?\ need 'cr' : eol? ( c -- f ) 'cr' = ;
   \ 2018-03-26: Add `eol?`, `newline>`, `/newline`, `newline`.
   \
   \ 2018-03-27: Make `/tabulate` a byte variable. Fix `eol?`.
+  \
+  \ 2018-03-28: Add `'lf'`. Improve documentation.
 
   \ vim: filetype=soloforth
