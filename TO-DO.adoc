@@ -1100,6 +1100,11 @@ Change notation `"name"` to `_name_` in descriptions.
 // DOS {{{1
 == DOS
 
+== 2018-03-28
+
++3DOS' `eof?` can be moved to the common module, after implementing
+`file-position` and `file-size` in G+DOS and TR-DOS`.
+
 == 2018-03-15
 
 NOTE: Milestone: 0.14.0

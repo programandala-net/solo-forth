@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803281906
+  \ Last modified: 201803282324
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -674,7 +674,7 @@ code (close-file ( fid -- ior )
   \
   \ }doc
 
-( file-position reposition-file file-size )
+( file-position reposition-file file-size eof? )
 
 unneeding file-position ?(
 
@@ -770,6 +770,27 @@ code file-size ( fid -- d )
   \ XXX TODO write 'flush-disk' and try it before every
   \ 'file-size', in order to make this work on the ZX Spectrum
   \ +3e.
+
+unneeding eof? ?( need file-size need file-position need d=
+
+: eof? ( fid -- f )
+  dup file-size throw rot file-position d= ; ?)
+
+  \ Credit:
+  \ Copied from DZX-Forth.
+
+  \ doc{
+  \
+  \ eof? ( fid -- f )
+  \
+  \ Is the file position of file referenced to by _fid_ at the
+  \ end of the file, i.e. does its file position equals its
+  \ file size?
+  \
+  \ See: `file-size`, `file-position`, `create-file`,
+  \ `open-file`.
+  \
+  \ }doc
 
 ( (cat )
 
@@ -1581,6 +1602,6 @@ need reposition-file need file-position
   \
   \ 2018-03-28: Finish `write-line` and `read-line`; remove
   \ their old drafts. Move the test of `read-byte` to the tests
-  \ module. Add `flush-drive`, `drive-unused`.
+  \ module. Add `flush-drive`, `drive-unused`, `eof?`.
 
   \ vim: filetype=soloforth
