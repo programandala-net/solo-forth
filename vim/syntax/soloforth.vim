@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2018-01-03
+" Updated:  2018-03-28
 "
 " See change log at the end of the file.
 
@@ -245,6 +245,7 @@ syn keyword soloforthFlow -if
 syn keyword soloforthFlow -until
 syn keyword soloforthFlow -while
 syn keyword soloforthFlow 0branch
+syn keyword soloforthFlow 0leave
 syn keyword soloforthFlow ?branch
 syn keyword soloforthFlow ?do
 syn keyword soloforthFlow ?exit
@@ -1203,6 +1204,8 @@ let b:current_syntax = "soloforth"
 " 2018-01-01: Add `empty-stack`.
 "
 " 2018-01-03: Update `1literal` to `xliteral`, `]1l` to `]xl`.
+"
+" 2018-03-28: Add `0leave`.
 
 " --------------------------------------------------------------
 

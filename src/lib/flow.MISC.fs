@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803281647
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -318,7 +318,7 @@ unneeding ?? ?(
   \
   \ }doc
 
-( retry ?retry ?leave )
+( retry ?retry ?leave 0leave )
 
   \ Description:
   \
@@ -390,7 +390,31 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ immediately following the innermost syntactically enclosing
   \ `loop` or `+loop`.
   \
-  \ See: `leave`, `unloop`, `do`, `?do`.
+  \ See: `0leave`, `leave`, `unloop`, `do`, `?do`.
+  \
+  \ }doc
+
+unneeding 0leave ?(
+
+code 0leave ( f -- ) ( R: loop-sys -- | loop-sys )
+  E1 c, 78 04 + c, B0 05 + c, CA c, ' leave , jpnext,
+  \ pop hl
+  \ ld a,h
+  \ or l
+  \ jp z,leave_
+  \ _jp_next
+  end-code ?)
+
+  \ doc{
+  \
+  \ 0leave ( f -- ) ( R: loop-sys -- | loop-sys ) "question-leave"
+  \
+  \ If _f_ is zero, discard the loop-control parameters for
+  \ the current nesting level and continue execution
+  \ immediately following the innermost syntactically enclosing
+  \ `loop` or `+loop`.
+  \
+  \ See: `?leave`, `leave`, `unloop`, `do`, `?do`.
   \
   \ }doc
 
@@ -659,5 +683,7 @@ unneeding orif ?(
   \ `0repeat`.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-28: Add `0leave`.
 
   \ vim: filetype=soloforth
