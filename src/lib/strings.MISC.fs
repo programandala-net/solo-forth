@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201803281453
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -727,7 +727,7 @@ unneeding s' ?\ : s' ''' parse-string ; immediate
   \
   \ }doc
 
-( counted>stringer resize-stringer )
+( counted>stringer resize-stringer string-char? )
 
 unneeding counted>stringer ?(
 
@@ -742,6 +742,21 @@ unneeding counted>stringer ?(
   \ string and return it as _ca2_.
   \
   \ See: `>stringer`, `allocate-stringer`.
+  \
+  \ }doc
+
+unneeding string-char? ?( need char-in-string?
+
+: string-char? ( ca len c -- f ) -rot char-in-string? ; ?)
+
+  \ doc{
+  \
+  \ string-char? ( ca len c -- f ) "string-char-question"
+  \
+  \ Is char _c_ in string _ca len_?
+  \
+  \ See: `char-in-string?`, `char-position?`, `contains`,
+  \ `compare`, `#chars`.
   \
   \ }doc
 
@@ -778,24 +793,25 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \
   \ }doc
 
-unneeding char-in-string? ?( need -rot
+unneeding char-in-string? ?(
 
-: char-in-string? ( ca len c -- f )
-  -rot bounds ?do  dup i c@ = if drop true unloop exit then
-              loop drop false ; ?)
+: char-in-string? ( c ca len -- f )
+  bounds ?do  dup i c@ = if drop true unloop exit then
+         loop drop false ; ?)
 
   \ doc{
   \
-  \ char-in-string? ( ca len c -- f ) "char-in-string-question"
+  \ char-in-string? ( c ca len -- f ) "char-in-string-question"
   \
-  \ Is char _c_ in string _ca len_?
+  \ Is char _c_ in string _ca len_? ``char-in-string?`` is a
+  \ factor of `string-char?`: Its only difference is the order
+  \ of the input parameters.
   \
-  \ See: `char-position?`, `contains`, `compare`,
-  \ `#chars`.
+  \ See: `char-position?`, `contains`, `compare`, `#chars`.
   \
   \ }doc
 
-unneeding char-position? ?( need -rot
+unneeding char-position? ?(
 
 : char-position? ( ca len c -- +n true | false )
   -rot 0 ?do  2dup i + c@ = if 2drop i true unloop exit then
@@ -1044,5 +1060,9 @@ unneeding unescape ?(
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-03-28: Remove needing of `-rot`, which is in the
+  \ kernel. Change the order of parameters of `char-in-string?`
+  \ and factor `string-char?` from it.
 
   \ vim: filetype=soloforth
