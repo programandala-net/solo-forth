@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803282014
+  \ Last modified: 201803282015
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1075,7 +1075,8 @@ unneeding tracks/cat ?\ 4 cconstant tracks/cat
   \
   \ _n_ is the number of tracks used by the disk catalogue.
   \
-  \ See `tracks/disk`, `b/sector`.
+  \ See `tracks/disk`, `b/sector`, `sectors-used`,
+  \ `drive-unused`.
   \
   \ }doc
 
@@ -1090,7 +1091,64 @@ unneeding tracks/disk ?\ 80 cconstant tracks/disk
   \ WARNING: This is a constant. Solo Forth on G+DOS works only
   \ with 80-track double-side disks.
   \
-  \ See only: `tracks/cat`, `b/sector`.
+  \ See only: `tracks/cat`, `b/sector`, `sectors-used`,
+  \ `drive-unused`.
+  \
+  \ }doc
+
+( sectors-used drive-used drive-unused )
+
+  \ XXX UNDER DEVELOPMENT
+
+unneeding sectors-used ?( need dos-in need dos-out
+
+: sectors-used ( -- n ) dos-in $3DD8 @ dos-out ; ?)
+
+  \ doc{
+  \
+  \ sectors-used ( -- n )
+  \
+  \ _n_ is the number of sectors used in the current drive, not
+  \ including the tracks used by the disk catalogue.
+  \
+  \ See: `set-drive`, `drive-unused`, `tracks/cat`.
+  \
+  \ }doc
+
+  \ XXX FIXME -- This can not work, because G+DOS only updates
+  \ its internal variable $3DD8 when a catalogue is displayed.
+  \ Routine `scan_cat` should be copied and modified here to
+  \ calculate the number of sectors used.
+
+unneeding drive-used ?( need get-drive need sectors-used
+
+: drive-used ( c -- n ior )
+  get-drive >r set-drive ?dup if rdrop dup exit then
+  sectors-used b/sector * 1024 / r> set-drive ; ?)
+
+  \ doc{
+  \
+  \ drive-used ( c -- n ior )
+  \
+  \ Return used kibibytes _n_ in drive _c_, and the I/O result
+  \ code _ior_.
+  \
+  \ See: `drive-unused`, `unused`, `farunused`.
+  \
+  \ }doc
+
+unneeding drive-unused ?( need drive-used
+
+: drive-unused ( c -- n ior ) 1440 swap drive-used >r - r> ; ?)
+
+  \ doc{
+  \
+  \ drive-unused ( c -- n ior )
+  \
+  \ Return unused kibibytes _n_ in drive _c_, and the I/O
+  \ result code _ior_.
+  \
+  \ See: `drive-used`, `unused`, `farunused`.
   \
   \ }doc
 
@@ -2061,5 +2119,6 @@ need write-file need read-file need .ufia
   \ `do-close-ot-file` and `close-stream`.
   \
   \ 2018-03-28: Add `tracks/disk`, `tracks/cat`.
+  \ Draft `sectors-used`, `drive-used`, `drive-unused`.
 
   \ vim: filetype=soloforth
