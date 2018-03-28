@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803281504
+  \ Last modified: 201803281508
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -236,14 +236,16 @@ unneeding backspaces
   \
   \ }doc
 
-unneeding eol? ?\ need 'cr' : eol? ( c -- f ) 'cr' = ;
+unneeding eol? ?( need newline need char-in-string?
+
+: eol? ( c -- f ) newline char-in-string? ; ?)
 
   \ doc{
   \
   \ eol? ( c -- f ) "e-o-l-question"
   \
-  \ If _c_ is the end of line character, which is returned by
-  \ `'cr'`, return _true_; otherwise return _false_.
+  \ If _c_ is one of the characters of `newline`
+  \ return _true_; otherwise return _false_.
   \
   \ }doc
 
@@ -290,6 +292,6 @@ unneeding eol? ?\ need 'cr' : eol? ( c -- f ) 'cr' = ;
   \
   \ 2018-03-28: Add `'lf'`. Improve documentation. Remove
   \ `/newline`, making `newline>` the address of a counted
-  \ string.
+  \ string. Make `eol?` check `newline`.
 
   \ vim: filetype=soloforth
