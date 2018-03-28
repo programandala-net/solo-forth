@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091540
+  \ Last modified: 201803282257
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -506,7 +506,7 @@ unneeding reset-bit? ?( need bit>mask
   \
   \ }doc
 
-( c@and ctoggle coff con )
+( c@and ctoggle coff con c? 2? )
 
   \ Credit:
   \
@@ -641,7 +641,20 @@ unneeding c? ?\ : c? ( ca -- ) c@ . ;
   \ Display the 1-byte unsigned integer stored at _ca_, using
   \ the format of `.`.
   \
-  \ See: `?`, `c@`.
+  \ See: `?`, `2?`, `c@`.
+  \
+  \ }doc
+
+unneeding 2? ?\ : 2? ( a -- ) 2@ d. ;
+
+  \ doc{
+  \
+  \ 2? ( ca -- ) "two-question"
+  \
+  \ Display the double-cell signed integer stored at _a_, using
+  \ the format of `d.`.
+  \
+  \ See: `?`, `c?`, `2@`.
   \
   \ }doc
 
@@ -943,5 +956,7 @@ code cexchange ( ca1 ca2 -- )
   \ 2018-03-07: Add words' pronunciaton.
   \
   \ 2018-03-09: Update notation "address units" to "bytes".
+  \
+  \ 2018-03-28: Fix needing of `c?`. Add `2?`.
 
   \ vim: filetype=soloforth

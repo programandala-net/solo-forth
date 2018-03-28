@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201803281648
+; Last modified: 201803282256
 
 include version.z80s
 
@@ -14457,7 +14457,7 @@ hash_s.begin:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-94
 ; (TOOLS), Forth-2012 (TOOLS).
 ;
-; See: `c?`, `@`.
+; See: `c?`, `2?`, `@`.
 ;
 ; }doc
 
