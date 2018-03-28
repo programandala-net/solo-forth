@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803281346
+  \ Last modified: 201803281504
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -73,46 +73,41 @@ create /tabulate 8 c,
 
 unneeding newline ?( need 'cr'
 
-create newline> 'cr' c, 0 c,
+create newline> 1 c, 'cr' c, 0 c,
 
   \ doc{
   \
   \ newline> ( -- ca ) "new-line-to"
   \
-  \ _ca_ is the address where the characters of the string
-  \ returned by `newline` are stored (maximum 2).
+  \ _ca_ is the address of a counted string containing the
+  \ character(s) (maximum 2) used to mark the start of a new
+  \ line of text in file operations.
   \
-  \ See: `/newline`, `'cr'`, `'lf'`.
+  \ The string can be configured by the application. By default
+  \ it contains only  the character `'cr'`.
   \
-  \ }doc
-
-create /newline 1 c,
-
-  \ doc{
+  \ The string is returned by `newline`.
   \
-  \ /newline ( -- ca ) "slash-new-line"
-  \
-  \ _ca_ is the address of a byte containing the length of the
-  \ string returned by `newline`.
-  \
-  \ See: `newline>`.
+  \ See: `'lf'`.
   \
   \ }doc
 
-: newline ( -- ca len ) newline> /newline c@ ; ?)
+: newline ( -- ca len ) newline> count ; ?)
 
   \ doc{
   \
   \ newline ( -- ca len )
   \
   \ _ca len_ is a character string containing the character(s)
-  \ used to mark the start of a new line of text. By default
-  \ it's a 1-character string containing `'cr'`. The string can
-  \ be configured by modifying `newline>` and `/newline`.
+  \ used to mark the start of a new line of text in file
+  \ operations.
+  \
+  \ The string is stored at `newline>` as a counted string,
+  \ which can be configured by the application.
   \
   \ Origin: Gforth.
   \
-  \ See: `'lf'`.
+  \ See: `'cr'`, `'lf'`.
   \
   \ }doc
 
@@ -293,6 +288,8 @@ unneeding eol? ?\ need 'cr' : eol? ( c -- f ) 'cr' = ;
   \
   \ 2018-03-27: Make `/tabulate` a byte variable. Fix `eol?`.
   \
-  \ 2018-03-28: Add `'lf'`. Improve documentation.
+  \ 2018-03-28: Add `'lf'`. Improve documentation. Remove
+  \ `/newline`, making `newline>` the address of a counted
+  \ string.
 
   \ vim: filetype=soloforth
