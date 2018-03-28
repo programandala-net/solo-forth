@@ -19,7 +19,8 @@
   \ Original code by Henning Hanseng, published on Forth
   \ Dimensions (volume 9, number 5, page 6, 1988-01).
   \
-  \ Adapted by Marcos Cruz (programandala.net), 2015, 2016.
+  \ Adapted by Marcos Cruz (programandala.net), 2015, 2016,
+  \ 2017.
 
   \ ===========================================================
   \ License

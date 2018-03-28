@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803281453
+  \ Last modified: 201803281518
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -172,6 +172,7 @@ unneeding n>str
 ( char>string chars>string >bstring c>bstring 2>bstring )
 
 unneeding char>string ?(
+
 : char>string ( c -- ca len )
   1 allocate-stringer tuck c! 1 ; ?)
 
@@ -191,18 +192,20 @@ unneeding char>string ?(
   \ }doc
 
 unneeding chars>string ?(
-: chars>string ( c1..cn n -- ca len )
-  dup if   dup allocate-stringer swap 2dup 2>r ( c1..cn ca n )
+
+: chars>string ( c#1..c#n n -- ca len )
+  dup if   dup allocate-stringer swap 2dup 2>r
+           \ ( c#1..c#n ca n )
            bounds ?do i c! loop 2r>
       else pad swap then ; ?)
 
   \ doc{
   \
-  \ chars>string ( c1..cn n -- ca len ) "chars-to-string"
+  \ chars>string ( c#1..c#n n -- ca len ) "chars-to-string"
   \
   \ Convert _n_ chars to a string _ca len_ in the `stringer`.
   \
-  \ c1..cn :: chars to make the string with (_c1_ is the last one)
+  \ c#1..c#n :: chars to make the string with (_c1_ is the last one)
   \ n :: number of chars
   \
   \ See: `ruler`, `s+`.
@@ -210,6 +213,7 @@ unneeding chars>string ?(
   \ }doc
 
 unneeding >bstring
+
 ?\ : >bstring ( u -- ca len ) pad ! pad cell ;
 
   \ doc{
@@ -224,6 +228,7 @@ unneeding >bstring
   \ }doc
 
 unneeding c>bstring
+
 ?\ : c>bstring ( c -- ca len ) pad c! pad 1 ;
 
   \ doc{
@@ -238,6 +243,7 @@ unneeding c>bstring
   \ }doc
 
 unneeding 2>bstring ?(
+
 : 2>bstring ( xd -- ca len )
   pad 2! pad [ 2 cells ] literal ; ?)
 
@@ -412,6 +418,7 @@ code uppers ( ca len -- )
   \ }doc
 
 unneeding uppers1
+
 ?\ need uppers : uppers1 ( ca len -- ) drop 1 uppers ;
 
   \ doc{
@@ -480,6 +487,7 @@ unneeding #spaces ?( need under+
   \ }doc
 
 unneeding #chars ?( need under+
+
 : #chars ( ca len c -- +n )
   0 2swap 0 ?do
     ( c count ca ) count over = under+ loop 2drop abs ; ?)
@@ -1063,6 +1071,7 @@ unneeding unescape ?(
   \
   \ 2018-03-28: Remove needing of `-rot`, which is in the
   \ kernel. Change the order of parameters of `char-in-string?`
-  \ and factor `string-char?` from it.
+  \ and factor `string-char?` from it. Update layout of
+  \ `unneeding` lines. Update notation of stack comments.
 
   \ vim: filetype=soloforth
