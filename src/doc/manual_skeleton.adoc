@@ -94,6 +94,7 @@ on each DOS.
 | `close-file`      |       |        | YES   | Standard Forth
 | `create-file`     |       |        | YES   | Standard Forth
 | `delete-file`     | YES   | YES    | YES   | Standard Forth
+| `drive-unused`    |       |        | YES   |
 | `file-dir#`       | YES   | YES    |       |
 | `file-dirdesc`    | YES   | n/a    |       |
 | `file-exists?`    | YES   | YES    |       |

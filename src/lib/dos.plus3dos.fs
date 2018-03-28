@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803281838
+  \ Last modified: 201803281906
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1449,7 +1449,7 @@ variable read-line-len
 
   \ XXX TODO -- Support 2-character line terminators.
 
-( flush-drive )
+( flush-drive drive-unused )
 
 unneeding flush-drive ?(
 
@@ -1473,6 +1473,29 @@ code flush-drive ( c -- ior )
   \ called at any time, even when files are open.
   \
   \ See: `set-drive`, `close-file`.
+  \
+  \ }doc
+
+unneeding drive-unused ?(
+
+code drive-unused ( c -- n ior )
+  E1 c, 7D c, DD c, 21 c, 0121 , dos-ix-preserve-ip_ call,
+  \ pop hl
+  \ ld a,l
+  \ ld ix,dos_free_space
+  \ call dos.ix.preserve_ip
+  E5 c, pushdosior jp, end-code ?)
+  \ push hl
+  \ jp push_dos_ior
+
+  \ doc{
+  \
+  \ drive-unused ( c -- n ior )
+  \
+  \ Return unused kibibytes _n_ in drive _c_,
+  \ and the I/O result code _ior_.
+  \
+  \ See: `unused`, `farunused`.
   \
   \ }doc
 
@@ -1558,6 +1581,6 @@ need reposition-file need file-position
   \
   \ 2018-03-28: Finish `write-line` and `read-line`; remove
   \ their old drafts. Move the test of `read-byte` to the tests
-  \ module. Add `flush-drive`.
+  \ module. Add `flush-drive`, `drive-unused`.
 
   \ vim: filetype=soloforth
