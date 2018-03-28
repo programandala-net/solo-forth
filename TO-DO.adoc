@@ -867,6 +867,12 @@ Improve tab control.
 // Documentation {{{1
 == Documentation
 
+=== 2018-03-28
+
+NOTE: Milestone: 0.14.0
+
+Homogenize description of _ior_.
+
 === 2018-03-11
 
 NOTE: Milestone: 0.14.0

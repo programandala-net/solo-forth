@@ -108,6 +108,7 @@ on each DOS.
 | `file-type`       | YES   | YES    |       |
 | `file>`           | YES   | YES    |       | Load file contents to memory zone
 | `find-file`       | YES   | YES    |       |
+| `flush-drive`     |       |        | YES   |
 | `flush-file`      |       |        |       | Standard Forth
 | `get-drive`       | YES   | YES    | draft |
 | `include-file`    |       |        |       | Standard Forth
