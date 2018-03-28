@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803242257
+  \ Last modified: 201803282014
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1022,7 +1022,7 @@ unneeding find-file  ?( need file-status
   \
   \ }doc
 
-( file-dir# file-dirdesc )
+( file-dir# file-dirdesc tracks/cat tracks/disk )
 
 unneeding file-dir#  ?( need file-status need ufia
 
@@ -1064,6 +1064,33 @@ unneeding file-dirdesc  ?( need file-status need ufia
   \ and _n_ is undefined.
   \
   \ See: `file-status`.
+  \
+  \ }doc
+
+unneeding tracks/cat ?\ 4 cconstant tracks/cat
+
+  \ doc{
+  \
+  \ tracks/cat ( -- n ) "tracks-slash-cat"
+  \
+  \ _n_ is the number of tracks used by the disk catalogue.
+  \
+  \ See `tracks/disk`, `b/sector`.
+  \
+  \ }doc
+
+unneeding tracks/disk ?\ 80 cconstant tracks/disk
+
+  \ doc{
+  \
+  \ tracks/disk ( -- n ) "tracks-slash-disk"
+  \
+  \ _n_ is the number of tracks of a disk.
+  \
+  \ WARNING: This is a constant. Solo Forth on G+DOS works only
+  \ with 80-track double-side disks.
+  \
+  \ See only: `tracks/cat`, `b/sector`.
   \
   \ }doc
 
@@ -2032,5 +2059,7 @@ need write-file need read-file need .ufia
   \ 2018-03-24: Add `/w/o`, `/r/o`, `?fam`. Make `set-ot-file`
   \ check if there's enough OS memory to open the file. Draft
   \ `do-close-ot-file` and `close-stream`.
+  \
+  \ 2018-03-28: Add `tracks/disk`, `tracks/cat`.
 
   \ vim: filetype=soloforth
