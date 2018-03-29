@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201803260027
+; Last modified: 201803292144
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -1040,7 +1040,7 @@ endif
 ; the drive implied by all filenames that do not specify a
 ; drive. The default drive is intially 'A'.
 ;
-; See: `set-drive`.
+; See: `set-drive`, `get-user`.
 ;
 ; }doc
 
@@ -1204,7 +1204,7 @@ endif
 ; that there is a driver for it (which does not imply that the
 ; drive exists).
 ;
-; See: `get-drive`.
+; See: `get-drive`, `set-user`.
 ;
 ; }doc
 
@@ -1474,5 +1474,7 @@ endif ; defined plus3dos
 ; 2018-03-13: Improve documentation.
 ;
 ; 2018-03-26: Add `dos-ix-ehl_`.
+;
+; 2018-03-29: Update documentation.
 
 ; vim: filetype=z80:textwidth=64

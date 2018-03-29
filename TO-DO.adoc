@@ -8,6 +8,14 @@
 // Assembler {{{1
 == Assembler
 
+=== 2018-03-28
+
+Idea from DX-Forth: a set of Forth variables analogous to Z80
+registers, which `doscall` fetchs before doing the call, and updates
+afterwards. This way, machine code routines are easier to integrate
+into Forth words, no need to factor the code part into a different
+word, or manipulate the parameters in assembler.
+
 === 2017-12-14, 2017-12-15, 2018-01-02
 
 Adapt `inline` from Richard W.M. Jones' Jonesforth
