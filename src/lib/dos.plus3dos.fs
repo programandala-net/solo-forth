@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803282324
+  \ Last modified: 201803292124
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1520,6 +1520,54 @@ code drive-unused ( c -- n ior )
   \
   \ }doc
 
+( get-user set-user )
+
+unneeding get-user ?(
+
+code get-user ( -- n ior )
+  3E c, FF c, DD c, 21 c, 0130 , dos-ix-preserve-ip_ call,
+  \ ld a,$FF ; don't set the default user, but get it
+  \ ld ix,dos_set_user
+  \ call dos.ix.preserve_ip
+  26 c, 00 c, 68 07 + c, E5 c, pushdosior jp, end-code ?)
+  \ ld h,0
+  \ ld l,a
+  \ push hl ; return default user
+  \ jp push_dos_ior
+
+  \ doc{
+  \
+  \ get-user ( -- n ior )
+  \
+  \ Get the current user area _n_, i.e. the user area
+  \ implied by all filenames that do not specify a user number.
+  \
+  \ See: `set-user`, `get-drive`.
+  \
+  \ }doc
+
+unneeding set-user ?(
+
+code set-user ( n -- ior )
+  E1 c, 78 05 + c, DD c, 21 c, 0130 , dos-ix-preserve-ip_ call,
+  \ pop hl
+  \ ld a,l ; default user
+  \ ld ix,dos_set_user
+  \ call dos.ix.preserve_ip
+  pushdosior jp, end-code ?)
+  \ jp push_dos_ior
+
+  \ doc{
+  \
+  \ set-user ( n -- ior )
+  \
+  \ Set the current user area _n_, i.e. the user area
+  \ implied by all filenames that do not specify a user number.
+  \
+  \ See: `get-user`, `set-drive`.
+  \
+  \ }doc
+
 ( pfiles )
 
   \ XXX TMP -- Loading block for testing.
@@ -1527,7 +1575,7 @@ code drive-unused ( c -- n ior )
 need where need create-file need open-file need close-file
 need write-file need read-file need write-line need read-line
 need r/o need w/o need r/w need file-size need cat
-need read-byte need write-byte need read-bytes
+need read-byte need write-byte
 need reposition-file need file-position
 
   \ ===========================================================
@@ -1603,5 +1651,7 @@ need reposition-file need file-position
   \ 2018-03-28: Finish `write-line` and `read-line`; remove
   \ their old drafts. Move the test of `read-byte` to the tests
   \ module. Add `flush-drive`, `drive-unused`, `eof?`.
+  \
+  \ 2018-03-29: Add `get-user` and `set-user`.
 
   \ vim: filetype=soloforth
