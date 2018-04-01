@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803281518
+  \ Last modified: 201804012049
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,9 +23,10 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( str< str> trim +place hunt )
+( str< str> str<> trim +place hunt )
 
 unneeding str<
+
 ?\ : str< ( ca1 len1 ca2 len2 -- f ) compare 0< ;
 
   \ doc{
@@ -35,11 +36,12 @@ unneeding str<
   \ Is string _ca1 len1_ lexicographically smaller than string
   \ _ca2 len2_?
   \
-  \ See: `str=`, `str>`, `compare`.
+  \ See: `str>`, `str=`, `str<>`, `compare`.
   \
   \ }doc
 
 unneeding str>
+
 ?\ : str> ( ca1 len1 ca2 len2 -- f ) compare 0> ;
 
   \ doc{
@@ -49,11 +51,27 @@ unneeding str>
   \ Is string _ca1 len1_ lexicographically larger than string
   \ _ca2 len2_?
   \
-  \ See: `str<`, `str=`, `compare`.
+  \ See: `str<`, `str=`, `str<>`, `compare`.
+  \
+  \ }doc
+
+unneeding str<>
+
+?\ : str<> ( ca1 len1 ca2 len2 -- f ) str= 0= ;
+
+  \ doc{
+  \
+  \ str<> ( ca1 len1 ca2 len2 -- f ) "s-t-r-not-equals"
+  \
+  \ Is string _ca1 len1_ lexicographically not equal to string
+  \ _ca2 len2_?
+  \
+  \ See: `str=`, `str<`, `str>`, `compare`.
   \
   \ }doc
 
 unneeding trim
+
 ?\ : trim ( ca1 len1 -- ca2 len2 ) -leading -trailing ;
 
   \ doc{
@@ -68,6 +86,7 @@ unneeding trim
   \ }doc
 
 unneeding +place ?( need c+!
+
 : +place ( ca1 len1 ca2 -- )
   2dup 2>r count + smove 2r> c+! ; ?)
 
@@ -83,6 +102,7 @@ unneeding +place ?( need c+!
   \ }doc
 
 unneeding hunt ?(
+
 : hunt ( ca1 len1 ca2 len2 -- ca3 len3 )
   search 0= if chars + 0 then ; ?)
 
@@ -109,8 +129,7 @@ unneeding hunt ?(
 
 ( ud>str u>str d>str n>str )
 
-unneeding ud>str
-?\ : ud>str ( ud -- ca len ) <# #s #> ;
+unneeding ud>str ?\ : ud>str ( ud -- ca len ) <# #s #> ;
 
   \ Credit:
   \
@@ -127,6 +146,7 @@ unneeding ud>str
   \ }doc
 
 unneeding u>str
+
 ?\ need ud>str : u>str ( u -- ca len ) s>d ud>str ;
 
   \ doc{
@@ -139,8 +159,9 @@ unneeding u>str
   \
   \ }doc
 
-unneeding d>str ?(
-: d>str ( d -- ca len ) tuck dabs <# #s rot sign #> ; ?)
+unneeding d>str
+
+?\ : d>str ( d -- ca len ) tuck dabs <# #s rot sign #> ;
 
   \ Credit:
   \
@@ -157,6 +178,7 @@ unneeding d>str ?(
   \ }doc
 
 unneeding n>str
+
 ?\ need d>str : n>str ( n -- ca len ) s>d d>str ;
 
   \ doc{
@@ -1073,5 +1095,7 @@ unneeding unescape ?(
   \ kernel. Change the order of parameters of `char-in-string?`
   \ and factor `string-char?` from it. Update layout of
   \ `unneeding` lines. Update notation of stack comments.
+  \
+  \ 2018-04-01: Add `str<>`.
 
   \ vim: filetype=soloforth
