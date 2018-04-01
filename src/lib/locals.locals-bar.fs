@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804011546
+  \ Last modified: 201804012032
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -44,51 +44,29 @@
 
 \ locals| (local) \
 
-DECIMAL
+need user
 
-10 CONSTANT [W32F?] IMMEDIATE
+: lstackfix ( n1 -- -n2 ) cells negate ;
+  \ return stack builds down
 
-: DELIMIT ( 'name< >' -- a u ) BL WORD COUNT ;
+  \ : lstackfix ( n1 -- n2 ) 1- cells ;
+  \ return stack builds up
 
-[W32F?] [IF]
+user lp ( -- a ) \ locals pointer
 
-  \ Win32Forth version
+  \ Locals runtime
+  \ XXX TODO -- All these need to be in code.
 
-: LSTACKFIX ( n -- -n ) CELLS NEGATE ;
-  \ w32f return stack builds down
-  \ ABS>REL is defined
-  \ LP is defined as the Local Pointer
+: l@ ( -- x ) r@ @ lp @ + @ r> cell+ >r ;
 
-[ELSE]
+: l! ( x -- ) r@ @ lp @ + ! r> cell+ >r ;
 
-  \ bForth version === must be re-defined for other systems ===
-
-: ABS>REL ( a -- a ) ; IMMEDIATE ( bForth )
-
-  : LSTACKFIX ( n -- n ) 1- CELLS ;
-  \ bForth return stack builds up
-
-  \ 40 USER LP ( -- a ) ( locals pointer ) ( bForth )
-  \ XXX TODO -- multitasking?
-
-[THEN]
-
--->
-
-\ locals| (local) \
-
-  \ locals runtime, all these need to be in code
-
-: L@ ( -- x ) R@  ABS>REL  @ LP @ + @  R> CELL+ >R ;
-
-: L! ( -- x ) R@  ABS>REL  @ LP @ + !  R> CELL+ >R ;
-
-: L{ ( i*x -- ) ( R: -- a i*x )
-  R>  LP @ >R  RP@ LP !  DUP  ABS>REL  @
-  BEGIN ?DUP WHILE ROT >R 1- REPEAT  CELL+ >R ;
+: l{ ( i*x -- ) ( r: -- a i*x )
+  r>  lp @ >r  rp@ lp !  dup @
+  begin ?dup while rot >r 1- repeat cell+ >r ;
   \ Build locals frame.
 
-: }L ( -- ) ( R: a i*x -- ) R> LP @ RP! R> LP ! >R ;
+: }l ( -- ) ( r: a i*x -- ) r> lp @ rp! r> lp ! >r ;
   \ Remove locals frame.
 
 -->
@@ -97,165 +75,170 @@ DECIMAL
 
   \ locals compiler internals
 
-8 CONSTANT #LOCALS
+8 constant #locals
 
-CREATE LV$ ( -- a ) \ ???smaller
-  31 1 + CHARS #LOCALS * ALLOT ( room for counted strings )
+create lv$ ( -- a ) 31 1 + chars #locals * allot
+  \ Room for counted strings.
+  \ XXX TODO -- smaller?
 
-: LV? ( a u -- index | 0 ) ( find requested locals index )
-  LV$  1 >R ( init index )
-  BEGIN COUNT ?DUP
-  WHILE 2OVER 2OVER COMPARE 0= ( *** case sensative *** )
-    IF 2DROP 2DROP  R> EXIT THEN +  R> 1+ >R
-  REPEAT R> 2DROP  2DROP  0 ; ( not a local )
+: lv? ( ca len -- index | 0 )
+  lv$  1 >r ( init index )
+  begin count ?dup
+  while 2over 2over str=
+    if 2drop 2drop  r> exit then +  r> 1+ >r
+  repeat r> 2drop  2drop  0 ; \ not a local
+  \ Find requested locals index.
 
-VARIABLE LCHAR
-VARIABLE LOCALS?
+create lchar 0 c,
 
-: LVREV ( n i -- i ) ( reverse args for { } form )
-  NIP LCHAR @ '}' = IF LOCALS? @ 1+ SWAP - THEN LSTACKFIX ;
+variable locals?
 
--->
-
-\ locals| (local) \
-
-: LVFIND ( a -- a 0 | xt -1 ) ( patch for compiler FIND )
-  DUP COUNT LV? ?DUP ( try locals first )
-  IF LVREV POSTPONE L@ -1 EXIT \ pass index to be 'compiled'
-    \ ???problem
-  THEN CAPS-FIND ;
-
-: SETLVFIND ( -- ) ['] LVFIND IS FIND ;
-
-: (LOCAL) ( a u -- ) ( save counted string )
-  LOCALS? @  OVER 1+ LOCALS? +!  2DUP C! CHAR+ SWAP MOVE ;
-
-: XLOCALS| ( c '<spaces>i*name<spaces"c">' -- )
-  >R  LOCALS? @ DUP ABORT" LOCALS| only once"  LV$ LOCALS? !
-  BEGIN DELIMIT  OVER C@ R@ -  OVER 1-  OR
-  WHILE (LOCAL) 1+  #LOCALS OVER U< ABORT" too many locals"
-  REPEAT 2DROP  0 DUP (LOCAL) ( add null string )
-  R> LCHAR !  DUP LOCALS? !  ?DUP IF POSTPONE L{ , THEN ;
+: lvrev ( n i -- i )
+  nip lchar c@ '}' = if locals? @ 1+ swap - then lstackfix ;
+  \ Reverse args for `{ }` form.
 
 -->
 
 \ locals| (local) \
 
-: ?LOCALS ( -- ) LOCALS? @ IF  POSTPONE }L  THEN ;
+: lvfind ( ca -- ca 0 | xt -1 )
+  dup count lv? ?dup \ try locals first
+  if lvrev postpone l@ -1 exit \ pass index to be 'compiled'
+    \ XXX TODO -- Problem?
+  then ;
+  \ Patch for compiler `find`.
 
-: : ( 'name' -- ) 0  DUP LOCALS? !  LV$ !  :  ;
+: setlvfind ( -- ) ['] lvfind is find ;
+  \ XXX FIXME -- `find` is not used, and not deferred
 
-: EXIT ( -- ) ?LOCALS  POSTPONE EXIT  ; IMMEDIATE
+: (local) ( ca len -- )
+  locals? @  over 1+ locals? +!  2dup c! char+ swap move ;
+  \ Save counted string.
 
-: ; ( -- ) ?LOCALS  POSTPONE ;  ; IMMEDIATE
+: xlocals| ( c '<spaces>i*name<spaces"c">' -- )
+  >r locals? @ dup abort" second locals|"  lv$ locals? !
+  begin parse-name  over c@ r@ -  over 1-  or
+  while (local) 1+  #locals over u< abort" too many locals"
+  repeat 2drop  0 dup (local) \ add null string
+  r> lchar c!  dup locals? !  ?dup if postpone l{ , then ;
 
-SETLVFIND
+-->
 
-  \ locals user interface
+\ locals| (local) \
 
-: LOCALS| ( '<spaces>i*name<spaces|spaces>' -- )
-  '|' XLOCALS| ; IMMEDIATE
+: ?locals ( -- ) locals? @ if  postpone }l  then ;
 
-: { ( '<spaces>i*name<spaces}>' -- ) '}' XLOCALS| ; IMMEDIATE
+: : ( 'name' -- ) 0  dup locals? !  lv$ !  :  ;
 
-: TO ( 'local' -- )
-  >IN @  DELIMIT LV? ?DUP ( try locals first )
-  IF LVREV  POSTPONE L! , EXIT
-  THEN >IN !  POSTPONE TO ( chain for VALUEs )
-  ; IMMEDIATE
+: exit ( -- ) ?locals postpone exit ; immediate
+
+: ; ( -- ) ?locals postpone ; ; immediate
+
+setlvfind
+
+  \ Locals user interface:
+
+: locals| ( '<spaces>i*name<spaces|spaces>' -- )
+  '|' xlocals| ; immediate
+
+: { ( '<spaces>i*name<spaces}>' -- ) '}' xlocals| ; immediate
+
+: to ( "name" -- )
+  >in @ parse-name lv? ?dup \ try locals first
+  if lvrev  postpone l! , exit
+  then >in !  postpone to \ chain for values
+  ; immediate
 
 ( locals|-test )
 
-: J1 ( n n -- ) LOCALS| GREEN RED | RED . GREEN . ;
-: J2 ( n n -- ) LOCALS| RED GREEN | RED . GREEN . ;
-: J3 ( n n -- ) LOCALS|         | . . ;
+: j1 ( n n -- ) locals| green red | red . green . ;
+: j2 ( n n -- ) locals| red green | red . green . ;
+: j3 ( n n -- ) locals|         | . . ;
 
-: J4 ( n n n -- )
-  LOCALS| RED GREEN SPOT | RED . GREEN . SPOT . ;
+: j4 ( n n n -- )
+  locals| red green spot | red . green . spot . ;
 
-: J5 ( -- ) LOCALS| A B C D  E F G H | ;
+: j5 ( -- ) locals| a b c d  e f g h | ;
 
-: J6 ( -- )
-  LOCALS| A B C D  E F G H | A . B . C . D .  E . F . G . H . ;
+: j6 ( -- ) locals| a b c d  e f g h |
+            a . b . c . d .  e . f . g . h . ;
 
-: J7 ( -- ) LOCALS| A B C D  E F G H  J | ;
-  \ FAILS, to many locals
+: j7 ( -- ) locals| a b c d  e f g h  j | ;
+  \ XXX REMARK -- Fails: to many locals.
 
 -->
 
 ( locals|-test )
 
-: K1 ( -- ) LOCALS| A | A . ;
-: K2 ( -- ) LOCALS| A B | A . B . ;
-: K3 ( -- ) LOCALS| A B C | A . B . C . ;
-: K4 ( -- ) LOCALS| A B C D | A . B . C . D . ;
-: K5 ( -- ) LOCALS| A B C D  E | A . B . C . D .  E . ;
-: K6 ( -- ) LOCALS| A B C D  E F | A . B . C . D .  E . F . ;
+: k1 ( -- ) locals| a | a . ;
+: k2 ( -- ) locals| a b | a . b . ;
+: k3 ( -- ) locals| a b c | a . b . c . ;
+: k4 ( -- ) locals| a b c d | a . b . c . d . ;
+: k5 ( -- ) locals| a b c d  e | a . b . c . d .  e . ;
+: k6 ( -- ) locals| a b c d  e f | a . b . c . d .  e . f . ;
 
-: K7 ( -- )
-  LOCALS| A B C D  E F G | A . B . C . D .  E . F . G . ;
+: k7 ( -- )
+  locals| a b c d  e f g | a . b . c . d .  e . f . g . ;
 
-: K8 ( -- )
-  LOCALS| A B C D  E F G H | A . B . C . D .  E . F . G . H . ;
+: k8 ( -- )
+  locals| a b c d  e f g h | a . b . c . d .  e . f . g . h . ;
 
-: KK ( -- 1 2 3 4 5 6 7 8 9 ) 1 2 3 4 5 6 7 8 9 ;
+: kk ( -- 1 2 3 4 5 6 7 8 9 ) 1 2 3 4 5 6 7 8 9 ;
 
-: K9 ( -- )
-  { A B C D  E F G H } A . B . C . D .  E . F . G . H . ;
-
--->
-
-( locals|-test )
-
-: QQ ( -- ) ( display the local names )
-  CR LV$ BEGIN  COUNT ?DUP
-         WHILE  2DUP TYPE + 2 SPACES
-         REPEAT DROP ;
-
-: Q1 ( -- ) LOCALS| A B PEACH GREEN C D | ; QQ
-: Q2 ( -- ) LOCALS| PEACH GREEN C D SPOT | ; QQ
+: k9 ( -- )
+  { a b c d  e f g h } a . b . c . d .  e . f . g . h . ;
 
 -->
 
 ( locals|-test )
 
-0 VALUE V0
-: T1 ( -- )
-  ." should display 60 50 10" CR
-  10 20 30 LOCALS| RED GREEN SPOT |
-  0 IF RED DROP EXIT THEN \ test EXIT
-  RED GREEN +  DUP TO GREEN
-  SPOT + TO RED
-  RED . GREEN . SPOT TO V0  V0 . ;
+: qq ( -- )
+  cr lv$ begin  count ?dup
+         while  2dup type + 2 spaces
+         repeat drop ;
+  \ Display the local names.
 
-VARIABLE X  0 X !
+: q1 ( -- ) locals| a b peach green c d | ; QQ
+: q2 ( -- ) locals| peach green c d spot | ; QQ
 
-: T2 ( -- 444 )
-  444 555 666 LOCALS| RED GREEN |
-  CR RED . RP@ . X @ THROW ; \ restore LP
+0 value v0
 
--->
+: t1 ( -- )
+  ." should display 60 50 10" cr
+  10 20 30 locals| red green spot |
+  0 if red drop exit then \ test `exit`
+  red green +  dup to green
+  spot + to red
+  red . green . spot to v0  v0 . ;
+
+variable x  0 x !  -->
 
 ( locals|-test )
 
-: T3 ( -- 111 )
-  111 222 333 LOCALS| RED GREEN |
-  CR RED . RP@ . LP @ >R [ ' T2 ] LITERAL CATCH \ save LP
-  IF R> LP ! CR ." error " RP@ .
-  ELSE R> DROP CR ." ok red " RP@ .
-  THEN RED . ;
+: t2 ( -- 444 ) 444 555 666 locals| red green |
+                cr red . rp@ . x @ throw ; \ restore `lp`
 
-: T6 ( n n n -- n )
-  LOCALS| RED GREEN |  RED GREEN + >R  RED GREEN -  R> . . . ;
-  \ XXX REMARK -- ANS considered a violation, but works.
+: t3 ( -- 111 )
+  111 222 333 locals| red green |
+  cr red . rp@ . lp @ >r [ ' t2 ] literal catch \ save `lp`
+  if r> lp ! cr ." error " rp@ .
+  else r> drop cr ." ok red " rp@ .
+  then red . ;
 
-: T7 ( -- ) 1 2 7 T6 ;
+: t6 ( n n n -- n )
+  locals| red green |  red green + >r  red green -  r> . . . ;
+  \ XXX REMARK -- This is considered a violation in Forth-94,
+  \ but it works.
 
-: T8 ( u GREEN RED -- ) ( DO-LOOP works )
-  LOCALS| RED GREEN |  0 ?DO CR RED . GREEN . LOOP ;
+: t7 ( -- ) 1 2 7 t6 ;
 
-: T9 ( n n n -- n ) ( this is a VIOLATION, and it FAILS )
-  >R  LOCALS| RED GREEN |  RED GREEN +  RED GREEN -  R> . . . ;
+: t8 ( u green red -- )
+  locals| red green | 0 ?do cr red . green . loop ;
+  \ `DO` works.
+
+: t9 ( n n n -- n )
+  >r  locals| red green |  red green +  red green -  r> . . . ;
+  \ XXX REMARK -- This is a violation, and it fails.
 
   \ ===========================================================
   \ Change log
@@ -263,4 +246,8 @@ VARIABLE X  0 X !
   \ 2018-03-31: Start adaption of the original code: Make it
   \ fit in blocks.
   \
-  \ 2018-04-01: Fix index lines.
+  \ 2018-04-01: Fix index lines. Compact the code, saving two
+  \ blocks. Update the layout and the source style; convert
+  \ code to lowercase. Make `lchar` a byte variable.
+
+  \ vim: filetype=soloforth
