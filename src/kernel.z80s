@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201803311921
+; Last modified: 201804011731
 
 include version.z80s
 
@@ -9956,7 +9956,7 @@ parse.end:
 ; header ( "name" | -- )
 ;
 ; A deferred word that creates a dictionary header.  Its default
-; action is `stream-name-header`, and it's set by
+; action is `input-stream-header`, and it's set by
 ; `default-header`. Its alternative temporary action is
 ; `nextname-header`.
 ;
