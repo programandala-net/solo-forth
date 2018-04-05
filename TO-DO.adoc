@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-03-28
+:revdate: 2018-04-05
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1281,6 +1281,10 @@ Study what the unused RAM of the Plus D can be useful for.
 
 // TR-DOS {{{2
 === TR-DOS ===
+
+==== 2018-04-05
+
+Split the library into 2 disks.
 
 ==== 2017-03-13
 
