@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803131655
+  \ Last modified: 201804051202
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -326,7 +326,7 @@ unneeding filename>filetype
   \
   \ }doc
 
-( get-drive 2-block-drives (acat acat )
+( get-drive (acat acat )
 
 unneeding get-drive
 
@@ -349,26 +349,6 @@ unneeding get-drive
   \ ----
 
   \ See: `set-drive`.
-  \
-  \ }doc
-
-unneeding 2-block-drives ?( need set-block-drives
-
-: 2-block-drives ( -- ) 1 0 2 set-block-drives ;
-
-2-block-drives ?)
-
-  \ doc{
-  \
-  \ 2-block-drives ( -- )
-  \
-  \ Set all drives as block drives, in normal order: 0, 1, 2
-  \ and 3.
-  \
-  \ Note: For convenience, when this word is loaded, it's also
-  \ executed.
-  \
-  \ See: `set-block-drives`.
   \
   \ }doc
 
@@ -404,6 +384,69 @@ unneeding acat ?\ need (acat : acat ( -- ) (acat throw ;
   \ Display an abbreviated catalogue of the current disk.
   \
   \ See: `set-drive`, `(acat`.
+  \
+  \ }doc
+
+( 2-block-drives 3-block-drives 4-block-drives )
+
+unneeding 2-block-drives ?( need set-block-drives
+
+: 2-block-drives ( -- ) 1 0 2 set-block-drives ;
+
+2-block-drives ?)
+
+  \ doc{
+  \
+  \ 2-block-drives ( -- )
+  \
+  \ Set the first two drives as block drives, in normal order.
+  \
+  \ Note: For convenience, when this word is loaded, it's also
+  \ executed.
+  \
+  \ See: `3-block-drives`, `4-block-drives`,
+  \ `set-block-drives`.
+  \
+  \ }doc
+
+unneeding 3-block-drives ?( need set-block-drives
+
+: 3-block-drives ( -- ) 2 1 0 3 set-block-drives ;
+
+3-block-drives ?)
+
+  \ doc{
+  \
+  \ 3-block-drives ( -- )
+  \
+  \ Set the first three drives as block drives, in normal
+  \ order.
+  \
+  \ Note: For convenience, when this word is loaded, it's also
+  \ executed.
+  \
+  \ See: `2-block-drives`, `4-block-drives`,
+  \ `set-block-drives`.
+  \
+  \ }doc
+
+unneeding 4-block-drives ?( need set-block-drives
+
+: 4-block-drives ( -- ) 4 3 1 0 4 set-block-drives ;
+
+4-block-drives ?)
+
+  \ doc{
+  \
+  \ 4-block-drives ( -- )
+  \
+  \ Set all 4 drives as block drives, in normal order.
+  \
+  \ Note: For convenience, when this word is loaded, it's also
+  \ executed.
+  \
+  \ See: `2-block-drives`, `3-block-drives`,
+  \ `set-block-drives`.
   \
   \ }doc
 
@@ -1253,5 +1296,8 @@ need read-file-descriptor need write-file-descriptor
   \ 2018-03-11: Add `2-block-drives`.
   \
   \ 2018-03-13: Fix typo.
+  \
+  \ 2018-04-05: Fix documentation of `2-block-drives`. Add
+  \ `3-block-drives` and `4-block-drives`.
 
   \ vim: filetype=soloforth
