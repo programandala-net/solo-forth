@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201803101409
+# Last modified: 201804051308
 # See change loge at the end of the file.
 
 # ==============================================================
@@ -87,14 +87,6 @@ MAKEFLAGS = --no-print-directory
 
 .PHONY: all
 all: gplusdos trdos plus3dos
-
-# XXX REMARK -- 2017-02-09: Before the implementation of
-# `set-block-drives` in Solo Forth 0.14.0, the additional disk
-# images (for sample games, benchmarks and tests) had to
-# include also the library. They are not built anymore, but
-# their rules are kept because they could be useful in some
-# cases, for example for systems with only one disk drive.
-# Search this file for the titles "Old additional disks".
 
 .PHONY: g
 g: gplusdos
@@ -574,48 +566,6 @@ disks/gplusdos/disk_3_workbench.mgt: tmp/workbench.fs
 # 	fsb2-mgt $< ;\
 # 	mv $(basename $<).mgt $@
 
-# ------------------------------
-# Old additional disks, with the library included
-
-tmp/library.gplusdos_and_games.fs: $(gplusdos_core_lib_files) $(game_lib_files)
-	cat $(gplusdos_core_lib_files) $(game_lib_files) > $@
-
-disks/gplusdos/disk_2_library_and_games.mgt: tmp/library.gplusdos_and_games.fs
-	fsb2-mgt $< ;\
-	mv $(basename $<).mgt $@
-
-tmp/library.gplusdos_and_misc_benchmarks.fs: $(gplusdos_core_lib_files) $(meta_benchmark_misc_lib_files)
-	cat $^ > $@
-
-disks/gplusdos/disk_3_library_and_misc_benchmarks.mgt: tmp/library.gplusdos_and_misc_benchmarks.fs
-	fsb2-mgt $< ;\
-	mv $(basename $<).mgt $@
-
-tmp/library.gplusdos_and_rng_benchmarks.fs: $(gplusdos_core_lib_files) $(meta_benchmark_rng_lib_files)
-	cat $^ > $@
-
-disks/gplusdos/disk_4_library_and_rng_benchmarks.mgt: tmp/library.gplusdos_and_rng_benchmarks.fs
-	fsb2-mgt $< ;\
-	mv $(basename $<).mgt $@
-
-tmp/library.gplusdos_and_flow_benchmarks.fs: $(gplusdos_core_lib_files) $(meta_benchmark_flow_lib_files)
-	cat $^ > $@
-
-disks/gplusdos/disk_5_library_and_flow_benchmarks.mgt: tmp/library.gplusdos_and_flow_benchmarks.fs
-	fsb2-mgt $< ;\
-	mv $(basename $<).mgt $@
-
-tmp/library.gplusdos_and_tests.fs: $(gplusdos_core_lib_files) $(meta_test_lib_files)
-	cat $^ > $@
-
-disks/gplusdos/disk_6_library_and_tests.mgt: tmp/library.gplusdos_and_tests.fs
-	fsb2-mgt $< ;\
-	mv $(basename $<).mgt $@
-
-disks/gplusdos/disk_9_library_without_dos.mgt: tmp/library_without_dos.fs
-	fsb2-mgt $< ;\
-	mv $(basename $<).mgt $@
-
 # ----------------------------------------------
 # +3DOS block disks
 
@@ -644,48 +594,6 @@ disks/plus3dos/disk_3_workbench.dsk: tmp/workbench.fs
 # 	fsb2-dsk $< ;\
 # 	mv $(basename $<).dsk $@
 
-# ------------------------------
-# Old additional disks, with the library included
-
-tmp/library.plus3dos_and_games.fs: $(plus3dos_core_lib_files) $(game_lib_files)
-	cat $(plus3dos_core_lib_files) $(game_lib_files) > $@
-
-disks/plus3dos/disk_2_library_and_games.dsk: tmp/library.plus3dos_and_games.fs
-	fsb2-dsk $< ;\
-	mv $(basename $<).dsk $@
-
-tmp/library.plus3dos_and_misc_benchmarks.fs: $(plus3dos_core_lib_files) $(meta_benchmark_misc_lib_files)
-	cat $^ > $@
-
-disks/plus3dos/disk_3_library_and_misc_benchmarks.dsk: tmp/library.plus3dos_and_misc_benchmarks.fs
-	fsb2-dsk $< ;\
-	mv $(basename $<).dsk $@
-
-tmp/library.plus3dos_and_rng_benchmarks.fs: $(plus3dos_core_lib_files) $(meta_benchmark_rng_lib_files)
-	cat $^ > $@
-
-disks/plus3dos/disk_4_library_and_rng_benchmarks.dsk: tmp/library.plus3dos_and_rng_benchmarks.fs
-	fsb2-dsk $< ;\
-	mv $(basename $<).dsk $@
-
-tmp/library.plus3dos_and_flow_benchmarks.fs: $(plus3dos_core_lib_files) $(meta_benchmark_flow_lib_files)
-	cat $^ > $@
-
-disks/plus3dos/disk_5_library_and_flow_benchmarks.dsk: tmp/library.plus3dos_and_flow_benchmarks.fs
-	fsb2-dsk $< ;\
-	mv $(basename $<).dsk $@
-
-tmp/library.plus3dos_and_tests.fs: $(plus3dos_core_lib_files) $(meta_test_lib_files)
-	cat $^ > $@
-
-disks/plus3dos/disk_6_library_and_tests.dsk: tmp/library.plus3dos_and_tests.fs
-	fsb2-dsk $< ;\
-	mv $(basename $<).dsk $@
-
-disks/plus3dos/disk_9_library_without_dos.dsk: tmp/library_without_dos.fs
-	fsb2-dsk $< ;\
-	mv $(basename $<).dsk $@
-
 # ----------------------------------------------
 # TR-DOS block disks
 
@@ -696,7 +604,7 @@ tmp/library.trdos.fs: $(trdos_core_lib_files)
 	cat $(trdos_core_lib_files) > $@
 
 disks/trdos/disk_1_library.trd: tmp/library.trdos.fs
-	fsb2-trd $< SoloFh1 ; \
+	fsb2-trd $< SoloFth1 ; \
 	mv $(basename $<).trd $@
 
 # ------------------------------
@@ -713,49 +621,6 @@ disks/trdos/disk_3_workbench.trd: tmp/workbench.fs
 # disks/trdos/disk_4_editors.trd: tmp/editors.fs
 # 	fsb2-trd $< SoloFth4 ; \
 # 	mv $(basename $<).trd $@
-
-# ------------------------------
-# Old additional disks, with the library included
-
-tmp/library.trdos_and_games.fs: \
-	$(trdos_core_lib_files) $(game_lib_files)
-	cat $(trdos_core_lib_files) $(game_lib_files) > $@
-
-disks/trdos/disk_2_library_and_games.trd: tmp/library.trdos_and_games.fs
-	fsb2-trd $< SoloFth2 ; \
-	mv $(basename $<).trd $@
-
-tmp/library.trdos_and_misc_benchmarks.fs: $(trdos_core_lib_files) $(meta_benchmark_misc_lib_files)
-	cat $^ > $@
-
-disks/trdos/disk_3_library_and_misc_benchmarks.trd: tmp/library.trdos_and_misc_benchmarks.fs
-	fsb2-trd $< SoloFth3 ;\
-	mv $(basename $<).trd $@
-
-tmp/library.trdos_and_rng_benchmarks.fs: $(trdos_core_lib_files) $(meta_benchmark_rng_lib_files)
-	cat $^ > $@
-
-disks/trdos/disk_4_library_and_rng_benchmarks.trd: tmp/library.trdos_and_rng_benchmarks.fs
-	fsb2-trd $< SoloFth4 ;\
-	mv $(basename $<).trd $@
-
-tmp/library.trdos_and_flow_benchmarks.fs: $(trdos_core_lib_files) $(meta_benchmark_flow_lib_files)
-	cat $^ > $@
-
-disks/trdos/disk_5_library_and_flow_benchmarks.trd: tmp/library.trdos_and_flow_benchmarks.fs
-	fsb2-trd $< SoloFth5 ;\
-	mv $(basename $<).trd $@
-
-tmp/library.trdos_and_tests.fs: $(trdos_core_lib_files) $(meta_test_lib_files)
-	cat $^ > $@
-
-disks/trdos/disk_6_library_and_tests.trd: tmp/library.trdos_and_tests.fs
-	fsb2-trd $< SoloFth6 ; \
-	mv $(basename $<).trd $@
-
-disks/trdos/disk_9_library_without_dos.trd: tmp/library_without_dos.fs
-	fsb2-trd $< SoloFth9 ; \
-	mv $(basename $<).trd $@
 
 # ==============================================================
 # Background images
@@ -1187,3 +1052,6 @@ oldbackup:
 # development. Needed for
 # <src/lib/meta.test.forth2012-test-suite.fs>, which is being
 # adapted.
+#
+# 2018-04-05: Remove the old code that made the disks
+# containing also the library. Fix name of TR-DOS disk 1.
