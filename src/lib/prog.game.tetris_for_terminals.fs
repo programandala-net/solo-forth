@@ -1,4 +1,4 @@
-  \ game.tetris_for_terminals.fs
+  \ prog.game.tetris_for_terminals.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html

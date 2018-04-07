@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201804051308
+# Last modified: 201804072027
 # See change loge at the end of the file.
 
 # ==============================================================
@@ -451,8 +451,7 @@ not_ready =
 
 lib_files = $(sort $(wildcard src/lib/*.fs))
 dos_lib_files = $(sort $(wildcard src/lib/dos.*.fs))
-editor_lib_files = $(sort $(wildcard src/lib/editor.*.fs))
-game_lib_files = $(sort $(wildcard src/lib/game.*.fs))
+prog_lib_files = $(sort $(wildcard src/lib/prog.*.fs))
 
 meta_lib_files = $(filter-out $(not_ready),$(sort $(wildcard src/lib/meta.*.fs)))
 
@@ -465,7 +464,7 @@ meta_test_lib_files = $(filter-out $(not_ready),$(sort $(wildcard src/lib/meta.t
 
 core_lib_files = \
 	$(filter-out \
-			$(not_ready) $(editor_lib_files) $(game_lib_files) $(meta_lib_files), \
+			$(not_ready) $(prog_lib_files) $(meta_lib_files), \
 			$(lib_files))
 no_dos_core_lib_files = \
 	$(filter-out $(dos_lib_files), $(core_lib_files))
@@ -526,16 +525,10 @@ tmp/library.plus3dos.tap: tmp/library.plus3dos.fb
 tmp/library_without_dos.fs: $(no_dos_core_lib_files)
 	cat $^ > $@
 
-tmp/games.fs: $(game_lib_files)
-	cat $(game_lib_files) > $@
-
 tmp/workbench.fs: $(meta_lib_files)
 	cat $^ > $@
 
-tmp/editors.fs: $(editor_lib_files)
-	cat $(editor_lib_files) > $@
-
-tmp/programs.fs: tmp/games.fs tmp/editors.fs
+tmp/programs.fs: $(prog_lib_files)
 	cat $^ > $@
 
 # ----------------------------------------------
@@ -562,10 +555,6 @@ disks/gplusdos/disk_3_workbench.mgt: tmp/workbench.fs
 	fsb2-mgt $< ;\
 	mv $(basename $<).mgt $@
 
-# disks/gplusdos/disk_4_editors.mgt: tmp/editors.fs
-# 	fsb2-mgt $< ;\
-# 	mv $(basename $<).mgt $@
-
 # ----------------------------------------------
 # +3DOS block disks
 
@@ -590,10 +579,6 @@ disks/plus3dos/disk_3_workbench.dsk: tmp/workbench.fs
 	fsb2-dsk $< ;\
 	mv $(basename $<).dsk $@
 
-# disks/plus3dos/disk_4_editors.dsk: tmp/editors.fs
-# 	fsb2-dsk $< ;\
-# 	mv $(basename $<).dsk $@
-
 # ----------------------------------------------
 # TR-DOS block disks
 
@@ -617,10 +602,6 @@ disks/trdos/disk_2_programs.trd: tmp/programs.fs
 disks/trdos/disk_3_workbench.trd: tmp/workbench.fs
 	fsb2-trd $< SoloFth3 ; \
 	mv $(basename $<).trd $@
-
-# disks/trdos/disk_4_editors.trd: tmp/editors.fs
-# 	fsb2-trd $< SoloFth4 ; \
-# 	mv $(basename $<).trd $@
 
 # ==============================================================
 # Background images
@@ -1055,3 +1036,6 @@ oldbackup:
 #
 # 2018-04-05: Remove the old code that made the disks
 # containing also the library. Fix name of TR-DOS disk 1.
+#
+# 2018-04-07: Update after the renaming of program modules
+# (games, block editors and `edit-sound`).

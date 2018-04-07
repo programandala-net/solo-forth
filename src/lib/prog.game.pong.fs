@@ -1,4 +1,4 @@
-  \ game.pong.fs
+  \ prog.game.pong.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html

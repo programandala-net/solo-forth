@@ -1,4 +1,4 @@
-  \ editor.COMMON.fs
+  \ prog.editor.COMMON.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html

@@ -1,4 +1,4 @@
-  \ game.siderator_2.fs
+  \ prog.game.siderator_2.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html

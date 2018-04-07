@@ -1,4 +1,4 @@
-  \ game.towers_of_hanoi.fs
+  \ prog.game.towers_of_hanoi.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
