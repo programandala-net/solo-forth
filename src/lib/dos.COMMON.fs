@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803151456
+  \ Last modified: 201804072114
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -49,7 +49,7 @@ unneeding drive ?\ : drive ( c1 -- c2 ) first-drive + ;
   \ 1 drive set-drive \ on any DOS -- portable code
   \ ----
 
-  \ See: `first-drive`, `max-drives`.
+  \ See: `set-drive`, `first-drive`, `max-drives`.
   \
   \ }doc
 
@@ -321,5 +321,7 @@ unneeding get-block-drives ?( need block-drive@
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-15: Fix typo in the change log.
+  \
+  \ 2018-04-07: Improve documentation.
 
   \ vim: filetype=soloforth

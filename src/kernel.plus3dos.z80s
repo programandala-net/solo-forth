@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201803292144
+; Last modified: 201804072114
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -1204,7 +1204,8 @@ endif
 ; that there is a driver for it (which does not imply that the
 ; drive exists).
 ;
-; See: `get-drive`, `set-user`.
+; See: `get-drive`, `drive`, `set-block-drives`,
+; `2-block-drives`, `set-user`.
 ;
 ; }doc
 
@@ -1476,5 +1477,7 @@ endif ; defined plus3dos
 ; 2018-03-26: Add `dos-ix-ehl_`.
 ;
 ; 2018-03-29: Update documentation.
+;
+; 2018-04-07: Improve documentation.
 
 ; vim: filetype=z80:textwidth=64
