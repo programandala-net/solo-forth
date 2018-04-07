@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803282015
+  \ Last modified: 201804072345
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -91,7 +91,7 @@ unneeding dos-out,
 
 ( dfca ufia1 ufia2 >ufiax >ufia1 >ufia2 default-ufia )
 
-unneeding dfca1 ?\ $3AC3 constant dfca
+unneeding dfca ?\ $3AC3 constant dfca
 
   \ doc{
   \
@@ -2120,5 +2120,7 @@ need write-file need read-file need .ufia
   \
   \ 2018-03-28: Add `tracks/disk`, `tracks/cat`.
   \ Draft `sectors-used`, `drive-used`, `drive-unused`.
+  \
+  \ 2018-04-07: Fix needing of `dfca`.
 
   \ vim: filetype=soloforth
