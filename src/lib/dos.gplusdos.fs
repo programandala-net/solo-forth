@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804072345
+  \ Last modified: 201804091625
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -606,11 +606,16 @@ unneeding execute-file-dir ?\ 11 cconstant execute-file-dir
 
 unneeding get-drive ?( need dos-in, need dos-out,
 
-code get-drive ( -- n ) dos-in, 3A c, 3ACE , dos-out, pusha jp,
+code get-drive ( -- n ior )
+  dos-in, 3A c, 3ACE , 26 c, 00 c, 6F c, E5 c,
     \ in a,(231)
     \ ld a,($3ACE)
+    \ ld h,0
+    \ ld l,a
+    \ push hl
+  dos-out, ' false jp,
     \ out (231),a
-    \ jp push_a
+    \ jp false_
   end-code ?)
 
   \ XXX TODO -- Check this method:
@@ -618,17 +623,19 @@ code get-drive ( -- n ) dos-in, 3A c, 3ACE , dos-out, pusha jp,
 
   \ doc{
   \
-  \ get-drive ( -- n )
+  \ get-drive ( -- n ior )
   \
-  \ Get the current drive _n_ (1 or 2).
+  \ Get the current default drive _n_ (1 or 2), i.e. the drive
+  \ implied by all file and block operations.  The default
+  \ drive is initially 1.  Return also an error result _ior_.
   \
   \ ``get-drive`` is written in Z80.  Its equivalent definition
   \ in Forth is the following:
-  \
+
   \ ----
-  \ : get-drive ( -- n ) dos-in $3ACE c@ dos-out ;
+  \ : get-drive ( -- n ior ) dos-in $3ACE c@ dos-out false ;
   \ ----
-  \
+
   \ See: `set-drive`, `dos-in`, `dos-out`.
   \
   \ }doc
@@ -2118,9 +2125,12 @@ need write-file need read-file need .ufia
   \ check if there's enough OS memory to open the file. Draft
   \ `do-close-ot-file` and `close-stream`.
   \
-  \ 2018-03-28: Add `tracks/disk`, `tracks/cat`.
-  \ Draft `sectors-used`, `drive-used`, `drive-unused`.
+  \ 2018-03-28: Add `tracks/disk`, `tracks/cat`.  Draft
+  \ `sectors-used`, `drive-used`, `drive-unused`.
   \
   \ 2018-04-07: Fix needing of `dfca`.
+  \
+  \ 2018-04-09: Make `get-drive` return a fake _ior_, after
+  \ +3DOS, which returns an actual one. Improve documentation.
 
   \ vim: filetype=soloforth
