@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201804091607
+; Last modified: 201804091708
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -695,22 +695,56 @@ transfer_mode:
   ; XXX REMARK -- 2017-02-05: This operation is required to set
   ; the current disk drive (see `set-drive`). It was very hard
   ; to find out, with the help of a TR-DOS disassembly under
-  ; development, and also studying the the following book:
-  ; _TR-DOS для профессионалов и любителей_ (TR-DOS for
-  ; professionals and amateurs, by Yu Pomortsev, Moscow, 1994).
-  ; PDF version by Deny (Denisenko DA), 2007. It can be
-  ; downloaded from Virtual TR-DOS: http://vtrdos.ru.
+  ; development, and also studying the following book: _TR-DOS
+  ; для профессионалов и любителей_ (TR-DOS for professionals
+  ; and amateurs, by Yu Pomortsev, Moscow, 1994).  PDF version
+  ; by Deny (Denisenko DA), 2007. It can be downloaded from
+  ; Virtual TR-DOS: http://vtrdos.ru.
 
   ; XXX FIXME -- 2017-02-05: When there's no disk in the drive,
   ; TR-DOS throws "Disc Error. Retry,Abort,Ignore?". "Retry" is
   ; useless; "Abort" exits to BASIC with "Tape loading error";
   ; "Ignore" crashes the system. There must be a way to avoid
   ; this and return an ior.
+  ;
+  ; XXX FIXME -- 2018-04-09: When there's no disk, the system
+  ; returns to BASIC with error "Tape loading error".
 
   ld a,trdos_command.read_system_track
   ex af,af'
   call dos.alt_a.preserve_ip
   jp push_dos_ior
+
+; ----------------------------------------------
+  _code_header get_drive_,'get-drive'
+
+; doc{
+;
+; get-drive ( -- n ior )
+;
+; Get the current default drive _c_ (0..3), i.e.  the drive
+; implied by all filenames that do not specify a drive, and the
+; drive used by block operations. The default drive is initially
+; 0.  Return also an error result _ior_.
+;
+; ``get-drive`` is written in Z80.  Its equivalent definition in
+; Forth is the following:
+
+; ----
+; : get-drive ( -- n ior ) 23833 c@ false ;
+; ----
+
+; See: `set-drive`.
+;
+; }doc
+
+  ; XXX TODO -- Move to the library.
+
+  ld a,(trdos_variable.default_drive)
+  ld h,0
+  ld l,a
+  push hl
+  jp false_
 
 ; ----------------------------------------------
   _colon_header set_drive_,'set-drive'
@@ -1130,6 +1164,6 @@ endif ; defined trdos
 ; 2018-04-07: Improve documentation.
 ;
 ; 2018-04-09: Update documentation with reference to
-; `?set-drive`.
+; `?set-drive`. Add `get-drive`.
 
 ; vim: filetype=z80:textwidth=64
