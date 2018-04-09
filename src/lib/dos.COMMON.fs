@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804072114
+  \ Last modified: 201804091341
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,7 +23,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( drive ?drive# ?block-drive block-drives )
+( drive ?drive# ?block-drive ?set-drive )
 
 unneeding drive ?\ : drive ( c1 -- c2 ) first-drive + ;
 
@@ -86,6 +86,31 @@ unneeding ?block-drive
   \
   \ }doc
 
+unneeding ?set-drive ?( need 0exit
+
+: ?set-drive ( c -- ior )
+  dup get-drive ?dup if nip nip nip exit then
+  <> and dup 0exit set-drive ; ?)
+
+  \ doc{
+  \
+  \ ?set-drive ( c -- ior )
+  \
+  \ If drive _c_ is not equal to the current default drive,
+  \ returned by `get-drive`, use `set-drive` to make _c_ the
+  \ current default drive.
+  \
+  \ ``?set-drive`` is used by `(>drive-block`, in order to
+  \ update the current default drive only when needed, i.e.
+  \ when the desired block is not in the currend default drive.
+  \ This is especially useful on +3DOS, whose `set-drive` is
+  \ slow because it has to do additional operations in order to
+  \ make `transfer-sector` use the current default drive.
+  \
+  \ }doc
+
+( block-drives )
+
 unneeding block-drives ?( need not-block-drive
 
 create block-drives ( -- ca ) max-drives allot
@@ -123,10 +148,11 @@ create block-drives ( -- ca ) max-drives allot
   \ }doc
 
 need ?drive# need block-drive@ need ?block-drive
+need ?set-drive
 
 : (>drive-block ( u1 -- u2 )
   blocks/disk /mod ( block drive ) dup ?drive#
-  block-drive@ dup ?block-drive set-drive throw ;
+  block-drive@ dup ?block-drive ?set-drive throw ;
 
   \ doc{
   \
@@ -323,5 +349,10 @@ unneeding get-block-drives ?( need block-drive@
   \ 2018-03-15: Fix typo in the change log.
   \
   \ 2018-04-07: Improve documentation.
+  \
+  \ 2018-04-08: Add `?set-drive` in order to improve
+  \ `(>drive-block`.
+  \
+  \ 2018-04-09: Improve documentation.
 
   \ vim: filetype=soloforth
