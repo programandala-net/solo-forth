@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804091341
+  \ Last modified: 201804091739
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -86,7 +86,7 @@ unneeding ?block-drive
   \
   \ }doc
 
-unneeding ?set-drive ?( need 0exit
+unneeding ?set-drive ?( need get-drive need 0exit
 
 : ?set-drive ( c -- ior )
   dup get-drive ?dup if nip nip nip exit then
@@ -353,6 +353,7 @@ unneeding get-block-drives ?( need block-drive@
   \ 2018-04-08: Add `?set-drive` in order to improve
   \ `(>drive-block`.
   \
-  \ 2018-04-09: Improve documentation.
+  \ 2018-04-09: Improve documentation. Fix requirement of
+  \ `?set-drive`.
 
   \ vim: filetype=soloforth
