@@ -1289,6 +1289,15 @@ Study what the unused RAM of the Plus D can be useful for.
 // TR-DOS {{{2
 === TR-DOS ===
 
+=== 2018-04-09
+
+Fix: When `(>drive-block` is executed and the second
+drive is set as the current drive, the current drive is not changed
+back when a block of the first drive is accessed. G+DOS and +3DOS work
+fine.
+
+Maybe the problem is the calculation: the first TR-DOS drive is zero...
+
 ==== 2018-04-09
 
 Fix/rewrite `read-system-track`: When there's no disk in the drive, it
@@ -1303,12 +1312,6 @@ Use drive letters A..D, as used in filenames.
 Write `drive>#` and `drive#>` for converting.
 
 Update `first-drive`.
-
-==== 2018-04-09
-
-NOTE: Milestone: 0.14.0
-
-Add `get-drive`.
 
 ==== 2018-04-05
 
