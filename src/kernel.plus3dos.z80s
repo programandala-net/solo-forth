@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201804091352
+; Last modified: 201804091607
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -803,7 +803,6 @@ endif
 ;
 ; }doc
 
-  ; XXX TODO -- Also default drive for blocks.
   ; XXX TODO -- Move to the library.
 
   ld a,255

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803082313
+  \ Last modified: 201804091605
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -55,10 +55,10 @@ unneeding ms ?( need assembler
 
 code ms ( u -- )
   d pop, d tstp, nz? rif
-    rbegin  #171 a ld#,  rbegin  nop, a dec,  z? runtil
-           d decp,  d tstp,
+    rbegin #171 a ld#, rbegin nop, a dec, z? runtil
+           d decp, d tstp,
     z? runtil
-  rthen  jpnext, end-code ?)
+  rthen jpnext, end-code ?)
 
   \ Credit:
   \ Code adapted from v.Forth.
@@ -309,7 +309,7 @@ unneeding delapsed ?( need dticks
   \
   \ }doc
 
-unneeding timer ?\ need elapsed : timer ( n -- ) elapsed u. ;
+unneeding timer ?\ need elapsed : timer ( u -- ) elapsed u. ;
 
   \ doc{
   \
@@ -484,7 +484,7 @@ unneeding ticks-pause ?( need ticks
 
   \ code ticks-pause ( u -- )
   \   d pop, b push,
-  \   rbegin  halt, d decp, d tstp,  z? runtil
+  \   rbegin halt, d decp, d tstp, z? runtil
   \   b pop, jpnext, end-code ?)
   \ XXX FIXME -- `0 ticks-pause` does `$FFFF ticks-pause`
 
@@ -520,9 +520,9 @@ unneeding basic-pause ?( need ?ticks-pause need new-key
 unneeding leapy-year? ?(
 
 : leapy-year? ( n -- f )
-  dup 400 mod 0= if  drop true   exit  then
-  dup 100 mod 0= if  drop false  exit  then
-        4 mod 0= if       false  exit  then  false ; ?)
+  dup 400 mod 0= if drop true  exit then
+  dup 100 mod 0= if drop false exit then
+        4 mod 0= if      false exit then false ; ?)
 
   \ Credit:
   \
@@ -544,12 +544,12 @@ unneeding leapy-year? ?(
   \ need thiscase
 
   \ : leapy-year? ( n -- f )
-  \   thiscase 400 mod 0= ifcase  true   exitcase
-  \   thiscase 100 mod 0= ifcase  false  exitcase
-  \   thiscase   4 mod 0= ifcase  true   exitcase
+  \   thiscase 400 mod 0= ifcase true  exitcase
+  \   thiscase 100 mod 0= ifcase false exitcase
+  \   thiscase   4 mod 0= ifcase true  exitcase
   \   othercase false ;
 
-unneeding date ?\ create date  1 c,  1 c,  2016 ,
+unneeding date ?\ create date 1 c, 1 c, 2016 ,
 
   \ doc{
   \
@@ -608,9 +608,9 @@ unneeding set-date ?(
 unneeding get-time ?( need ticks need ticks/second
 
 : get-time ( -- second minute hour )
-  ticks ticks/second um/mod nip s>d   ( sec . )
-                  60 um/mod s>d       ( sec min . )
-                  60 um/mod           ( sec min hour ) ; ?)
+  ticks ticks/second um/mod nip s>d ( sec . )
+                  60 um/mod s>d     ( sec min . )
+                  60 um/mod         ( sec min hour ) ; ?)
 
   \ doc{
   \
@@ -900,5 +900,8 @@ need reset-dticks need dticks need dticks>cs
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-08: Add words' pronunciaton.
+  \
+  \ 2018-04-09: Fix stack comment. Update source layout (remove
+  \ double spaces).
 
   \ vim: filetype=soloforth

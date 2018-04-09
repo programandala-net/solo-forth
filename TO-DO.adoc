@@ -1293,6 +1293,16 @@ Study what the unused RAM of the Plus D can be useful for.
 
 NOTE: Milestone: 0.14.0
 
+Use drive letters A..D, as used in filenames.
+
+Write `drive>#` and `drive#>` for converting.
+
+Update `first-drive`.
+
+==== 2018-04-09
+
+NOTE: Milestone: 0.14.0
+
 Add `get-drive`.
 
 ==== 2018-04-05

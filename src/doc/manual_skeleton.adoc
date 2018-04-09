@@ -1,12 +1,12 @@
 = Solo Forth %VERSION% %DOS%
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-03-28
+:revdate: 2018-04-09
 :toc:
 :toclevels: 1
 :toc-placement!:
 :linkattrs:
 
-// Last modified 201803280010
+// Last modified 201804091515
 
 toc::[]
 
@@ -85,6 +85,9 @@ on each DOS.
 |===
 | Word              | G+DOS | TR-DOS | +3DOS | Comment
 
+| `2-block-drives`  | YES   | YES    | YES   | Use the first two drives as block drives
+| `3-block-drives`  | n/a   | YES    | n/a   | Use the first three drives as block drives
+| `4-block-drives`  | n/a   | YES    | n/a   | Use the first four drives as block drives
 | `>file`           | YES   | YES    |       | Save memory zone to a file
 | `acat`            | YES   | YES    | YES   | Abbreviated disk catalogue
 | `bank-read-file`  |       |        | YES   |
@@ -111,7 +114,7 @@ on each DOS.
 | `find-file`       | YES   | YES    |       |
 | `flush-drive`     |       |        | YES   |
 | `flush-file`      |       |        |       | Standard Forth
-| `get-drive`       | YES   | YES    | draft |
+| `get-drive`       | YES   |        | YES   |
 | `include-file`    |       |        |       | Standard Forth
 | `include`         |       |        |       | Standard Forth
 | `included`        |       |        |       | Standard Forth
@@ -126,7 +129,8 @@ on each DOS.
 | `require`         |       |        |       | Standard Forth
 | `required`        |       |        |       | Standard Forth
 | `resize-file`     |       |        |       | Standard Forth
-| `set-drive`       | YES   | YES    | draft |
+| `set-block-drives`| YES   | YES    | YES   | Set the drives used as block drives
+| `set-drive`       | YES   | YES    | YES   |
 | `undelete-file`   |       | YES    |       |
 | `w/o`             |       |        | YES   | Standard Forth
 | `wacat`           | YES   |        | YES   | Abbreviated disk catalogue with wildcards
