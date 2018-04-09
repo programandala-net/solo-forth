@@ -1108,12 +1108,21 @@ Change notation `"name"` to `_name_` in descriptions.
 // DOS {{{1
 == DOS
 
-== 2018-03-28
+=== 2018-04-09
+
+NOTE: Milestone: 0.15.0
+
+Remove _ior_ from `get-drive`. Only +3DOS returns an actual _ior_. But
+is it really actual? In which cases could the operation fail? If +3DOS
+returns always a no-error, it would be simpler to drop it, and then
+remove the fake ones from G+DOS and TR-DOS.
+
+=== 2018-03-28
 
 +3DOS' `eof?` can be moved to the common module, after implementing
 `file-position` and `file-size` in G+DOS and TR-DOS`.
 
-== 2018-03-15
+=== 2018-03-15
 
 NOTE: Milestone: 0.14.0
 
@@ -1288,15 +1297,6 @@ Study what the unused RAM of the Plus D can be useful for.
 
 // TR-DOS {{{2
 === TR-DOS ===
-
-=== 2018-04-09
-
-Fix: When `(>drive-block` is executed and the second
-drive is set as the current drive, the current drive is not changed
-back when a block of the first drive is accessed. G+DOS and +3DOS work
-fine.
-
-Maybe the problem is the calculation: the first TR-DOS drive is zero...
 
 ==== 2018-04-09
 
