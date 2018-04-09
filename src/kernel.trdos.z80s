@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201804072114
+; Last modified: 201804091328
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -721,7 +721,7 @@ transfer_mode:
 ;
 ; Set drive _n_ (0..3) as the current one.
 ;
-; See: `init-drive`, `drive`, `set-block-drives`,
+; See: `?set-drive`, `init-drive`, `drive`, `set-block-drives`,
 ; `2-block-drives`, `read-system-track`.
 ;
 ; }doc
@@ -1125,5 +1125,8 @@ endif ; defined trdos
 ; 2017-09-09: Update notation "pfa" to the standard "dfa".
 ;
 ; 2018-04-07: Improve documentation.
+;
+; 2018-04-09: Update documentation with reference to
+; `?set-drive`.
 
 ; vim: filetype=z80:textwidth=64

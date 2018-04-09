@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072307
+  \ Last modified: 201804091330
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -117,8 +117,8 @@ defer unlocated ( block -- )
   \ ----------------------------
   \ : (located) 2dup type space
   \ : (located) cr 2dup type space .s
-  \ : (located) cr 2dup type get-current dup u. 0= if  quit  then
-  \ : (located) cr 2dup type space .s depth 2 > if  key drop  then
+  \ : (located) cr 2dup type get-current dup u. 0= if quit then
+  \ : (located) cr 2dup type space .s depth 2 > if key drop then
   \ : (located) cr 2dup type space rp@ rp0 @ - -2 / . np@ u. cr .s
   \ : (located) cr 2dup type space rp@ rp0 @ - -2 / . .s
   \ : (located) cr 2dup type space rp@ rp0 @ - -2 / . .s .info
@@ -132,9 +132,9 @@ defer unlocated ( block -- )
   ?dup 0= #-32 ?throw
   delimited last-locatable @ 1+  first-locatable @
   default-first-locatable @  first-locatable !
-  ?do  0 i line>string 2over contains \ i home . \ XXX INFORMER
-       if  2drop i unloop exit  then  break-key? #-28 ?throw
-       i unlocated  loop  2drop 0 ;
+  ?do 0 i line>string 2over contains \ i home . \ XXX INFORMER
+      if 2drop i unloop exit then break-key? #-28 ?throw
+      i unlocated loop 2drop 0 ;
   \ Note:
   \ Error #-32 is "invalid name argument".
   \ Error #-28 is "user interrupt".
@@ -183,7 +183,7 @@ defer located ( ca len -- block | false ) -->
 
 : ?located ( n -- ) \ cr ." ?located " dup .
                       \ XXX INFORMER
-  dup ?exit  needed-word 2@ parsed-name 2! #-268 throw ;
+  dup ?exit needed-word 2@ parsed-name 2! #-268 throw ;
 
   \ doc{
   \
@@ -315,7 +315,7 @@ defer reneed ( "name" -- )  defer needed ( ca len -- )
   \ cr ." LN<" 2dup type ." >"  \ XXX INFORMER
   \ rp@ rp0 @ - -2 / ." rdepth=" .  \ XXX INFORMER
   needed-word 2@ 2>r new-needed-word  2dup undefined?
-  if  locate-reneeded  else  2drop  then  2r> needed-word 2! ;
+  if locate-reneeded else 2drop then 2r> needed-word 2! ;
 
   \ doc{
   \
@@ -555,7 +555,7 @@ unneeding need-here ?(
   \ need get-drive
 
   \ : (.info ( -- ) get-drive dup ." Drive " .
-  \                 1 = if  ." CHANGED!" quit  then ;
+  \                 1 = if ." CHANGED!" quit then ;
 
   \ ' (.info ' .info defer!
 
@@ -707,5 +707,7 @@ unneeding need-here ?(
   \ `[needed]` `needing`; make both words non-immediate.
   \
   \ 2018-03-07: Add words' pronunciaton.
+  \
+  \ 2018-04-09: Update source style (remove double spaces).
 
   \ vim: filetype=soloforth
