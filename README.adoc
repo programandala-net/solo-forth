@@ -66,8 +66,8 @@ very beginning.  Besides, there's a
 http://programandala.net/en.program.solo_forth.history.html[development
 history until v0.12.0 (2016-12-31)].
 
-As of 2017-12-07 Solo Forth is under active development. It's very
-stable, and it's being used to develop two projects in Forth:
+At the time of writing, Solo Forth is under active development. It's
+very stable, and it's being used to develop two projects in Forth:
 http://programandala.net/en.program.nuclear_waste_invaders.html[Nuclear
 Waste Invaders] and
 http://programandala.net/en.program.black_flag.html[Black Flag].
@@ -166,37 +166,92 @@ NOTE: Only double-sided 80-track disks (i.e. 780 KiB) are supported.
 // tag::tree[]
 
 [id=_tree]
-== Directory tree
+== Project directories
 
-The project directory has the following structure:
+// XXX FIXME -- This tree was created by `tree`. The UTF-8 graphic
+// characters are ruined  by `htmldoc` in the PDF.
 
-....
-.
-├── backgrounds       Version background images
-├── bin               Binary files needed to build disk 0
-│   ├── fonts         Fonts for the supported screen modes
-│   ├── addons        Code that is loaded from disk
-│   │                 because it's not assembled in the library yet
-│   └── dos           DOS files
-├── disks             Disk images
-│   ├── gplusdos      G+DOS disk images
-│   ├── plus3dos      +3DOS disk images
-│   └── trdos         TR-DOS disk images
-├── doc               Documentation
-├── make              Files used by `make` to build the system
-├── screenshots       Version screenshots
-├── src               Sources
-│   ├── inc           Z80 symbols files
-│   ├── lib           Library
-│   ├── loader        BASIC loader for disk 0
-│   ├── addons        Code that is loaded from disk
-│   └── doc           Files used to build the documentation
-├── tmp               Temporary files created by `make`
-├── tools             Development and user tools
-└── vim               Vim files
-    ├── ftplugin      Filetype plugin
-    └── syntax        Syntax highlighting
-....
+// ....
+// .
+// ├── backgrounds       Version background images
+// ├── bin               Binary files needed to build disk 0
+// │   ├── fonts         Fonts for the supported screen modes
+// │   ├── addons        Code that is loaded from disk
+// │   │                 because it's not assembled in the library yet
+// │   └── dos           DOS files
+// ├── disks             Disk images
+// │   ├── gplusdos      G+DOS disk images
+// │   ├── plus3dos      +3DOS disk images
+// │   └── trdos         TR-DOS disk images
+// ├── doc               Documentation
+// ├── make              Files used by `make` to build the system
+// ├── screenshots       Version screenshots
+// ├── src               Sources
+// │   ├── inc           Z80 symbols files
+// │   ├── lib           Library
+// │   ├── loader        BASIC loader for disk 0
+// │   ├── addons        Code that is loaded from disk
+// │   └── doc           Files used to build the documentation
+// ├── tmp               Temporary files created by `make`
+// ├── tools             Development and user tools
+// └── vim               Vim files
+//     ├── ftplugin      Filetype plugin
+//     └── syntax        Syntax highlighting
+// ....
+
+// XXX OLD -- A table version is not legible enough.
+
+// |===
+// | Directory      | Description
+
+// | backgrounds    | Version background images
+// | bin            | Binary files needed to build disk 0
+// | bin/addons     | Code loaded from disk, not assembled in the library yet
+// | bin/dos        | DOS files
+// | bin/fonts      | Fonts for the supported screen modes
+// | disks          | Disk images
+// | disks/gplusdos | G+DOS disk images
+// | disks/plus3dos | +3DOS disk images
+// | disks/trdos    | TR-DOS disk images
+// | doc            | Documentation
+// | make           | Files used by `make` to build the system
+// | screenshots    | Version screenshots
+// | src            | Sources
+// | src/addons     | Code that is loaded from disk
+// | src/doc        | Files used to build the documentation
+// | src/inc        | Z80 symbols
+// | src/lib        | Library
+// | src/loader     | BASIC loader for disk 0
+// | tmp            | Temporary files created by `make`
+// | tools          | Development and user tools
+// | vim            | Vim files
+// | vim/ftplugin   | Filetype plugin
+// | vim/syntax     | Syntax highlighting
+// |===
+
+* *backgrounds* :  Version background images
+* *bins* : Binary files needed to build disk 0
+  - *addons* : Code loaded from disk, not assembled in the library yet
+  - *dos* : DOS files
+  - *fonts* : Fonts for the supported screen modes
+* *disks* : Disk images
+  - *gplusdos* : G+DOS disk images
+  - *plus3dos* : +3DOS disk images
+  - *trdos* : TR-DOS disk images
+* *docs* : Documentation
+* *makes* : Files used by `make` to build the system
+* *screenshots* : Version screenshots
+* *srcs* : Sources
+  - *addons* : Code that is loaded from disk
+  - *doc* : Files used to build the documentation
+  - *inc* : Z80 symbols
+  - *lib* : Library
+  - *loader* : BASIC loader for disk 0
+* *tmp* : Temporary files created by `make`
+* *tools* : Development and user tools
+* *vims* : Vim files
+  - *ftplugin* : Filetype plugin
+  - *syntax* : Syntax highlighting
 
 // end::tree[]
 

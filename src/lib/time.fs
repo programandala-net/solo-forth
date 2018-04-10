@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804091605
+  \ Last modified: 201804100014
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -304,7 +304,7 @@ unneeding delapsed ?( need dticks
   \ For the time _d1_ in `dticks` return the elapsed time _d2_
   \ since then, also in `dticks`.
   \
-  \ See: `timer`, `delapsed`, `dticks>seconds`, `dticks>cs`,
+  \ See: `dtimer`, `elapsed`, `dticks>seconds`, `dticks>cs`,
   \ `dticks>ms`.
   \
   \ }doc
@@ -315,12 +315,13 @@ unneeding timer ?\ need elapsed : timer ( u -- ) elapsed u. ;
   \
   \ timer ( u -- )
   \
-  \ For the time _u_ in `ticks` display the elapsed time
-  \ since then, also in `ticks`.
+  \ For the time _u_ in `ticks` display the elapsed time since
+  \ then, also in `ticks`.
   \
   \ Origin: Comus.
   \
-  \ See: `dtimer`, `elapsed`.
+  \ See: `dtimer`, `elapsed`, `ticks>seconds`, `ticks>cs`,
+  \ `ticks>ms`.
   \
   \ }doc
 
@@ -902,6 +903,6 @@ need reset-dticks need dticks need dticks>cs
   \ 2018-03-08: Add words' pronunciaton.
   \
   \ 2018-04-09: Fix stack comment. Update source layout (remove
-  \ double spaces).
+  \ double spaces). Fix and improve documentation.
 
   \ vim: filetype=soloforth
