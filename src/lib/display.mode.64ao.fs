@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802041810
+  \ Last modified: 201804101821
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -496,7 +496,7 @@ need mode-32 need (at-xy need set-mode-output need >form
   \ The control characters recognized are 8 (left), 13
   \ (carriage return) and 22 (at).
   \
-  \ WARNING: the "at" control character is followed by column
+  \ WARNING: The "at" control character is followed by column
   \ and row, i.e. the order of the coordinates is inverted
   \ compared to the Sinclair BASIC convention and `mode-32`.
   \ This will be changed in a later version of the code.
@@ -567,5 +567,7 @@ need mode-32 need (at-xy need set-mode-output need >form
   \
   \ 2018-02-04: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-04-10: Fix typo in documentation.
 
   \ vim: filetype=soloforth

@@ -230,7 +230,7 @@ NOTE: Only double-sided 80-track disks (i.e. 780 KiB) are supported.
 // |===
 
 * *backgrounds* :  Version background images
-* *bins* : Binary files needed to build disk 0
+* *bin* : Binary files needed to build disk 0
   - *addons* : Code loaded from disk, not assembled in the library yet
   - *dos* : DOS files
   - *fonts* : Fonts for the supported screen modes
@@ -238,10 +238,10 @@ NOTE: Only double-sided 80-track disks (i.e. 780 KiB) are supported.
   - *gplusdos* : G+DOS disk images
   - *plus3dos* : +3DOS disk images
   - *trdos* : TR-DOS disk images
-* *docs* : Documentation
-* *makes* : Files used by `make` to build the system
+* *doc* : Documentation
+* *make* : Files used by `make` to build the system
 * *screenshots* : Version screenshots
-* *srcs* : Sources
+* *src* : Sources
   - *addons* : Code that is loaded from disk
   - *doc* : Files used to build the documentation
   - *inc* : Z80 symbols
@@ -249,7 +249,7 @@ NOTE: Only double-sided 80-track disks (i.e. 780 KiB) are supported.
   - *loader* : BASIC loader for disk 0
 * *tmp* : Temporary files created by `make`
 * *tools* : Development and user tools
-* *vims* : Vim files
+* *vim* : Vim files
   - *ftplugin* : Filetype plugin
   - *syntax* : Syntax highlighting
 
