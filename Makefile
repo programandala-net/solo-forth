@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201804072027
+# Last modified: 201804102045
 # See change loge at the end of the file.
 
 # ==============================================================
@@ -21,8 +21,11 @@
 # ==============================================================
 # Requirements
 
-# Asciidoctor (by Dan Allen)
+# Asciidoctor (by Dan Allen, Sarah White et al.)
 # 	http://asciidoctor.org
+
+# Asciidoctor PDF (by Dan Allen and Sarah White)
+#   http://github.com/asciidoctor/asciidoctor-pdf
 
 # bin2code (by Metalbrain)
 # 	http://metalbrain.speccy.org/link-eng.htm
@@ -46,9 +49,6 @@
 
 # head (from the GNU coreutils)
 
-# htmldoc (by Michael Sweet)
-# 	http://www.htmldoc.org
-
 # mkmgt (by Marcos Cruz)
 # 	http://programandala.net/en.program.mkmgt.html
 
@@ -62,16 +62,6 @@
 
 # zx7 (by Einar Saukas)
 # http://www.worldofspectrum.org/infoseekid.cgi?id=0027996
-
-# ==============================================================
-# Notes
-
-# $@ = the name of the target of the rule
-# $< = the name of the first prerequisite
-# $? = the names of all the prerequisites that are newer than the target
-# $^ = the names of all the prerequisites
-
-# `%` works only at the start of the filter pattern
 
 # ==============================================================
 # Config
@@ -632,16 +622,8 @@ backgrounds/current.scr: backgrounds/current.pbm
 # ----------------------------------------------
 # Common rules
 
-%.pdf: %.html
-	htmldoc \
-		--book \
-		--no-toc \
-		--linkcolor blue \
-		--linkstyle plain \
-		--header " t " \
-		--footer "  1" \
-		--format pdf14 \
-		$< > $@
+%.pdf: %.adoc
+	asciidoctor-pdf $<
 
 %.html: %.adoc
 	asciidoctor --out-file=$@ $<
@@ -672,6 +654,17 @@ backgrounds/current.scr: backgrounds/current.pbm
 
 # ----------------------------------------------
 # Documentation for G+DOS
+
+doc/gplusdos_solo_forth_manual.pdf.zip: doc/gplusdos_solo_forth_manual.pdf
+	zip -9 $@ $<
+
+doc/gplusdos_solo_forth_manual.pdf.gz: doc/gplusdos_solo_forth_manual.pdf
+	gzip $<
+
+doc/gplusdos_solo_forth_manual.pdf: \
+	tmp/doc.gplusdos.manual.adoc \
+	README.adoc
+	asciidoctor-pdf --out-file=$@ $<
 
 doc/gplusdos_solo_forth_manual.html: \
 	tmp/doc.gplusdos.manual.adoc \
@@ -717,7 +710,7 @@ tmp/doc.gplusdos.manual.adoc: \
 .PHONY: gplusdosdoc
 gplusdosdoc: \
 	doc/gplusdos_solo_forth_manual.html \
-	doc/gplusdos_solo_forth_manual.pdf
+	doc/gplusdos_solo_forth_manual.pdf.gz
 
 # XXX TMP -- Experimental:
 .PHONY: epub
@@ -727,6 +720,17 @@ epub: \
 
 # ----------------------------------------------
 # Documentation for +3DOS
+
+doc/plus3dos_solo_forth_manual.pdf.zip: doc/plus3dos_solo_forth_manual.pdf
+	zip -9 $@ $<
+
+doc/plus3dos_solo_forth_manual.pdf.gz: doc/plus3dos_solo_forth_manual.pdf
+	gzip $<
+
+doc/plus3dos_solo_forth_manual.pdf: \
+	tmp/doc.plus3dos.manual.adoc \
+	README.adoc
+	asciidoctor-pdf --out-file=$@ $<
 
 doc/plus3dos_solo_forth_manual.html: \
 	tmp/doc.plus3dos.manual.adoc \
@@ -753,10 +757,25 @@ tmp/doc.plus3dos.manual.adoc: \
 	cat $^ > $@
 
 .PHONY: plus3dosdoc
-plus3dosdoc: doc/plus3dos_solo_forth_manual.html doc/plus3dos_solo_forth_manual.pdf
+plus3dosdoc: \
+	doc/plus3dos_solo_forth_manual.html \
+	doc/plus3dos_solo_forth_manual.pdf.gz
 
 # ----------------------------------------------
 # Documentation for TR-DOS
+
+doc/trdos_solo_forth_manual.pdf.zip: doc/trdos_solo_forth_manual.pdf
+	zip -9 $@ $<
+
+doc/trdos_solo_forth_manual.pdf.gz: doc/trdos_solo_forth_manual.pdf
+	gzip $<
+
+doc/trdos_solo_forth_manual.pdf: \
+	tmp/doc.trdos.manual.adoc \
+	README.adoc
+	asciidoctor-pdf --out-file=$@ $<
+
+#	asciidoctor --require=asciidoctor-pdf --backend=pdf --out-file=$@ $<
 
 doc/trdos_solo_forth_manual.html: \
 	tmp/doc.trdos.manual.adoc \
@@ -783,7 +802,9 @@ tmp/doc.trdos.manual.adoc: \
 	cat $^ > $@
 
 .PHONY: trdosdoc
-trdosdoc: doc/trdos_solo_forth_manual.html doc/trdos_solo_forth_manual.pdf
+trdosdoc: \
+	doc/trdos_solo_forth_manual.html \
+	doc/trdos_solo_forth_manual.pdf.gz
 
 # ==============================================================
 # Backup
@@ -820,6 +841,16 @@ oldbackup:
 		*.dsk \
 		*.sh \
 		*.txt
+
+# ==============================================================
+# Makefile variables cheat sheet 
+
+# $@ = the name of the target of the rule
+# $< = the name of the first prerequisite
+# $? = the names of all the prerequisites that are newer than the target
+# $^ = the names of all the prerequisites
+
+# `%` works only at the start of the filter pattern
 
 # ==============================================================
 # History
@@ -1039,3 +1070,6 @@ oldbackup:
 #
 # 2018-04-07: Update after the renaming of program modules
 # (games, block editors and `edit-sound`).
+#
+# 2018-04-10: Replace `htmldoc` with `asciidoctor-pdf` for
+# making the PDF versions of the manual.

@@ -875,13 +875,6 @@ Improve tab control.
 // Documentation {{{1
 == Documentation
 
-=== 2018-04-10
-
-NOTE: Milestone: 0.14.0
-
-The links of the PDF manual are ruined by `htmldoc`, which makes them
-absolute.
-
 === 2018-03-28
 
 NOTE: Milestone: 0.14.0
