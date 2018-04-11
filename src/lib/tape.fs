@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803082317
+  \ Last modified: 201804111951
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -224,8 +224,7 @@ tape-header 13 + constant tape-start ( -- a )
   \ }doc
 
 : ?set-tape-filename ( ca len -- )
-  dup if    set-tape-filename
-      else  2drop any-tape-filename  then ;
+  dup if set-tape-filename else 2drop any-tape-filename then ;
 
   \ doc{
   \
@@ -401,7 +400,7 @@ last-tape-header 11 + constant last-tape-length ( -- a )
 
   \ doc{
   \
-  \ tape-length ( -- a )
+  \ last-tape-length ( -- a )
   \
   \ Address of the file length in `last-tape-header`.
   \
@@ -413,7 +412,7 @@ last-tape-header 13 + constant last-tape-start ( -- a ) ?)
 
   \ doc{
   \
-  \ tape-start ( -- a )
+  \ last-tape-start ( -- a )
   \
   \ Address of the file start in `last-tape-header`.
   \
@@ -489,5 +488,7 @@ unneeding tape-file>display ?( need tape-file>
   \
   \ 2018-03-08: Add words' pronunciaton. Fix and improve
   \ documentation.
+  \
+  \ 2018-04-11: Fix documentation.
 
   \ vim: filetype=soloforth

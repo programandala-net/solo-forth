@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201804111802
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -205,18 +205,6 @@ unneeding wemit ?( need char>string need wtype
   \ Display character _c_ in the `current-window`.
   \
   \ See: `wtype`, `wspace`, `emit`.
-  \
-  \ }doc
-
-unneeding wspace ?\ need wemit : wspace ( -- ) bl wemit ;
-
-  \ doc{
-  \
-  \ wspace ( c -- ) "w-emit"
-  \
-  \ Display one space in the `current-window`.
-  \
-  \ See: `wemit`, `space`.
   \
   \ }doc
 
@@ -605,5 +593,7 @@ unneeding wltype ?( need wtyped need wfreecolumns
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-04-11: Remove duplicated definition.
 
   \ vim: filetype=soloforth

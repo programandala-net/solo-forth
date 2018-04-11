@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091539
+  \ Last modified: 201804111757
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -287,7 +287,7 @@ unneeding return-stack-cells
   \
   \ _n_ is the maximum size of the return stack, in cells.
   \
-  \ See: `return-stack-cells`, `environment?`.
+  \ See: `stack-cells`, `environment?`.
   \
   \ }doc
 
@@ -297,11 +297,11 @@ unneeding stack-cells
 
   \ doc{
   \
-  \ return-stack-cells ( -- n )
+  \ stack-cells ( -- n )
   \
   \ _n_ is the maximum size of the data stack, in cells.
   \
-  \ See: `stack-cells`, `environment?`.
+  \ See: `return-stack-cells`, `environment?`.
   \
   \ }doc
 
@@ -348,5 +348,7 @@ unneeding stack-cells
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-09: Update notation "address units" to "bytes".
+  \
+  \ 2018-04-11: Fix documentation.
 
   \ vim: filetype=soloforth

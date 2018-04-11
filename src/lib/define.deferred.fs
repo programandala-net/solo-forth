@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803082244
+  \ Last modified: 201804111740
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -152,21 +152,87 @@ unneeding action-of ?( need defer@
 
 unneeding <is> ?\ : <is> ( xt "name" -- ) ' defer! ;
 
-  \ XXX TODO -- Documentation.
+  \ doc{
+  \
+  \ <is> ( xt "name" -- ) "less-is"
+
+  \ Set _name_, which was defined by `defer`, to execute _xt_.
+  \
+  \ ``<is>`` is a factor of `is`.
+  \
+  \ Origin: Gforth.
+  \
+  \ See: `[is]`.
+  \
+  \ }doc
+
 
 unneeding [is] ?(
 
-: [is] ( xt "name" -- )
+: [is]
+  \ Compilation: ( "name" -- )
+  \ Run-time: ( xt -- )
   postpone ['] postpone defer! ; immediate compile-only ?)
 
-  \ XXX TODO -- Documentation.
+  \ doc{
+  \
+  \ [is] "bracket-is"
+  \   Compilation: ( xt "name" -- )
+  \   Run-time:    ( xt -- )
+
+  \ Compilation: ( "name" -- )
+  \
+  \ Append  the  run-time semantics given below to the current
+  \ definition.
+  \
+  \ Run-time: ( xt -- )
+  \
+  \ Set _name_, which was defined by `defer`, to execute _xt_.
+  \
+  \ ``[is]`` is an `immediate` and `compile-only` factor of
+  \ `is`.
+  \
+  \ Origin: Gforth.
+  \
+  \ See: `<is>`.
+  \
+  \ }doc
 
 unneeding is ?( need [is] need <is>
 
-: is ( xt "name" -- )
+: is
+  \ Interpretation: ( xt "name" -- )
+  \ Compilation: ( "name" -- )
+  \ Run-time: ( xt -- )
   compiling? if postpone [is] else <is> then ; immediate ?)
 
-  \ XXX TODO -- Documentation.
+  \ doc{
+  \
+  \ is
+  \   Interpretation: ( xt "name" -- )
+  \   Compilation:    ( "name" -- )
+  \   Run-time:       ( xt -- )
+
+  \ Interpretation: ( xt "name" -- )
+  \
+  \ Set _name_, which was defined by `defer`, to execute _xt_.
+  \
+  \ Compilation: ( "name" -- )
+  \
+  \ Append  the  run-time semantics given below to the current
+  \ definition.
+  \
+  \ Run-time: ( xt -- )
+  \
+  \ Set _name_, which was defined by `defer`, to execute _xt_.
+  \
+  \ WARNING: ``is`` is a state-smart word.
+  \
+  \ Origin: Forth-2012 (CORE EXT).
+  \
+  \ See: `[is]`, `<is>`, `state`.
+  \
+  \ }doc
 
   \ ===========================================================
   \ Change log
@@ -193,5 +259,7 @@ unneeding is ?( need [is] need <is>
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-08: Add words' pronunciaton.
+  \
+  \ 2018-04-11: Document `is`, `[is]`, and `<is>`.
 
   \ vim: filetype=soloforth

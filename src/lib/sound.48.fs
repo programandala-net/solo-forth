@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803082308
+  \ Last modified: 201804112020
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -326,11 +326,12 @@ unneeding -beep>note ?( need /octave
   \
   \ -beep>note ( -n1 -- -n2 +n3 ) "minus-beep-to-note"
   \
-  \ Convert a negative pitch _-n1_ of Sinclair BASIC's ``BEEP``
-  \ to its corresponding note _+n3_ (0..11) in octave _-n2_,
-  \ being zero the middle octave.
+  \ Convert a negative pitch _-n1_ of `beep` to its
+  \ corresponding note _+n3_ (0..11) in octave _-n2_, being
+  \ zero the middle octave.
   \
-  \ See: `beep>note`, `+beep>note`, `/octave`.
+  \ See: `beep>note`, `+beep>note`, `/octave`, `beep>dhz`,
+  \ `beep>dhz`.
   \
   \ }doc
 
@@ -342,29 +343,29 @@ unneeding +beep>note ?( need /octave
   \
   \ +beep>note ( +n1 -- +n2 +n3 ) "plus-beet-to-note"
   \
-  \ Convert a positive pitch _+n1_ of Sinclair BASIC's
-  \ ``BEEP`` to its corresponding note _+n3_ (0..11) in octave
-  \ _+n2_, being zero the middle octave.
+  \ Convert a positive pitch _+n1_ of `beep` to its
+  \ corresponding note _+n3_ (0..11) in octave _+n2_, being
+  \ zero the middle octave.
   \
-  \ See: `beep>note`, `-beep>note`, `/octave`.
+  \ See: `beep>note`, `-beep>note`, `/octave`, `beep>dhz`,
+  \ `beep>bleep`.
   \
   \ }doc
 
 unneeding beep>note ?( need -beep>note need +beep>note
 
-: beep>note ( n1 -- n2 +n3 )
-  dup 0< if  -beep>note exit  then  +beep>note ; ?)
+: beep>note ( n1 -- n2 +n3 ) dup 0< if   -beep>note exit
+                                    then +beep>note ; ?)
 
   \ doc{
   \
   \ beep>note ( n1 -- n2 +n3 ) "beep-to-note"
   \
-  \ Convert a pitch _n1_ of Sinclair BASIC's ``BEEP`` to its
-  \ corresponding note _+n3_ (0..11) in octave _n2_, being zero
-  \ the middle octave.
+  \ Convert a pitch _n1_ of `beep` to its corresponding note
+  \ _+n3_ (0..11) in octave _n2_, being zero the middle octave.
   \
-  \ See: `-beep>note`, `+beep>note`, `beep>dhz`,
-  \ `beep>bleep`, `beep`, `/octave`.
+  \ See: `-beep>note`, `+beep>note`, `beep>dhz`, `beep>bleep`,
+  \ `/octave`.
   \
   \ }doc
 
@@ -385,10 +386,10 @@ need beep>note need note>dhz need change-octave
   \
   \ beep>dhz ( n -- u ) "beep-to-decihertz"
   \
-  \ Convert a pitch _n_ of Sinclair BASIC's ``BEEP`` to its
-  \ corresponding frequency in dHz (tenths of hertzs) _u_.
+  \ Convert a pitch _n_ of `beep` to its corresponding
+  \ frequency in dHz (tenths of hertzs) _u_.
   \
-  \ See: `beep>note`, `beep>bleep`, `beep`.
+  \ See: `beep>note`, `beep>bleep`.
   \
   \ }doc
 
@@ -402,35 +403,21 @@ need beep>dhz need dhz>bleep
   \ doc{
   \
   \ beep>bleep ( duration1 pitch1 -- pitch2 duration2 ) "beep-to-bleep"
+
   \
-  \ Convert _duration1_ and _pitch1_, which are equivalent to
-  \ the parameters used by Sinclar BASIC's ``BEEP`` command, to
-  \ _pitch2_ and _duration2_, which are the parameters required
-  \ by `bleep`.
+  \ Convert _duration1_ and _pitch1_ of `beep`, which are
+  \ equivalent to the parameters used by Sinclar BASIC's
+  \ ``BEEP`` command, to _pitch2_ and _duration2_, which are
+  \ the parameters required by `bleep`.
   \
-  \ _duration1_ is in miliseconds (instead of seconds used by
-  \ Sinclair BASIC).
+  \ NOTE: _duration1_ is in miliseconds (instead of seconds
+  \ used by Sinclair BASIC).
   \
   \ _pitch1_ is identical to the Sinclair BASIC parameter:
   \ number of semitones from middle C (positive number for
   \ notes above, negative number for notes below).
   \
-  \ Here is a diagram to show the pitch values of all the notes
-  \ in one octave on the piano (extracted from the manual of
-  \ the ZX Spectrum +3 transcripted by Russell et al.):
-
-  \ ....
-  \   |   | | | C#| D#| | | F#| G#| A#| | |   |   |
-  \   |   | | | Db| Eb| | | Gb| Ab| Bb| | |   |   |
-  \   |-2 | | | 1 | 3 | | | 6 | 8 |10 | | |13 |15 |
-  \ __|___| | |___|___| | |___|___|___| | |___|___|
-  \     |   |   |   |   |   |   |   |   |   |   |
-  \  -3 |-1 | 0 | 2 | 4 | 5 | 7 | 9 |11 |12 |14 |16
-  \ ____|___|___|___|___|___|___|___|___|___|___|____
-  \           C   D   E   F   G   A   B   C
-  \ ....
-
-  \ See: `beep>dhz`, `beep>note`, `dhz>bleep`.
+  \ See: `beep>dhz`, `beep>note`.
   \
   \ }doc
 
@@ -481,18 +468,19 @@ unneeding beep ?( need beep>bleep need bleep
 
   \ ----
   \ create scale
-  \ 0 c, 2 c, 4 c, 5 c, 7 c, 9 c, 11 c, 12 c,
+  \   0 c, 2 c, 4 c, 5 c, 7 c, 9 c, 11 c, 12 c,
   \
   \ 8 constant /scale
   \
-  \ : play-scale ( -- )
-  \   /scale 0 ?do  500 scale i + c@ beep  loop ;
+  \ : play-scale ( -- ) /scale 0 ?do
+  \                       500 scale i + c@ beep
+  \                     loop ;
   \
   \ play-scale
   \ ----
 
   \
-  \ See: `beep>bleep`, `bleep`.
+  \ See: `beep>bleep`, `bleep`, `beep>dhz`.
   \
   \ }doc
 
@@ -644,5 +632,8 @@ code white-noise ( u -- )
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-08: Add words' pronunciaton.
+  \
+  \ 2018-04-11: Improve documentation of `beep`, `bleep` and
+  \ friends.
 
   \ vim: filetype=soloforth
