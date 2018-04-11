@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091410
+  \ Last modified: 201804111434
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -157,9 +157,9 @@ create ~~resume-key bl c,
   \
   \ ~~xy-backup ( -- a ) "tilde-tilde-x-y-backup"
   \
-  \ A double variable that holds cursor coordinates saved and
-  \ restored by the default actions of `~~save` and
-  \ `~~restore`.
+  \ A double-cell variable. _a_ is the address of a double cell
+  \ that holds cursor coordinates saved and restored by the
+  \ default actions of `~~save` and `~~restore`.
   \
   \ ``~~xy-backup`` is part of the `~~` tool.
   \
@@ -321,5 +321,8 @@ defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
   \ 2017-12-09: Improve documentation.
   \
   \ 2018-03-09: Add words' pronunciaton.
+  \
+  \ 2018-04-11: Update notation "double variable" to
+  \ "double-cell variable".
 
   \ vim: filetype=soloforth

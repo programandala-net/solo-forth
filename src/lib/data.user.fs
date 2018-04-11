@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091538
+  \ Last modified: 201804111432
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -103,10 +103,10 @@ unneeding 2user ?( need ucreate need uallot
   \
   \ 2user ( "name" -- ) "two-user"
   \
-  \ Parse _name_. Create a user double variable _name_ in the
-  \ first available offset within the user area.  When _name_
-  \ is later executed, its absolute user area storage address
-  \ is placed on the stack.
+  \ Parse _name_. Create a user double-cell variable _name_ in
+  \ the first available offset within the user area.  When
+  \ _name_ is later executed, its absolute user area storage
+  \ address is placed on the stack.
   \
   \ See: `user`, `ucreate`, `uallot`, `?user`.
   \
@@ -137,5 +137,8 @@ unneeding 2user ?( need ucreate need uallot
   \ 2018-03-07: Add words' pronunciaton.
   \
   \ 2018-03-09: Update notation "address units" to "bytes".
+  \
+  \ 2018-04-11: Update notation "double variable" to
+  \ "double-cell variable".
 
   \ vim: filetype=soloforth

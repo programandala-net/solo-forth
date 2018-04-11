@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803082245
+  \ Last modified: 201804111433
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -72,7 +72,7 @@ unneeding nextname ?( 2variable nextname-string
   \
   \ nextname-string ( -- a )
   \
-  \ A double variable. _a_ is the address of a double-cell
+  \ A double-cell variable. _a_ is the address of a double-cell
   \ containing the address and length of a name to be used by
   \ the next defining word.  This variable is set by
   \ `nextname`.
@@ -174,5 +174,8 @@ unneeding nextname ?( 2variable nextname-string
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-08: Add words' pronunciaton.
+  \
+  \ 2018-04-11: Update notation "double variable" to
+  \ "double-cell variable".
 
   \ vim: filetype=soloforth

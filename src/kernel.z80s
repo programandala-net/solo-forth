@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201804012045
+; Last modified: 201804111430
 
 include version.z80s
 
@@ -7311,7 +7311,7 @@ endif
 ;
 ; input-buffer ( -- a )
 ;
-; A double variable. _a_ is the address of a double cell
+; A double-cell variable. _a_ is the address of a double cell
 ; containing the address and length of the current input buffer.
 ;
 ; See: `source`, `set-source`.
@@ -10280,7 +10280,7 @@ far_place.copy_char:
 ;
 ; error-pos ( -- a )
 ;
-; A double variable. _a_ is the address of a double cell
+; A double-cell variable. _a_ is the address of a double cell
 ; containing the position of the last error issued by `error`,
 ; as follows:
 
@@ -10390,7 +10390,7 @@ error.message:
 ;
 ; abort-message ( -- a )
 ;
-; A double variable. _a_ is the address of a cell pair
+; A double-cell variable. _a_ is the address of a cell pair
 ; containing the address and length of the `abort"` message.
 ;
 ; }doc

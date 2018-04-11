@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803111851
+  \ Last modified: 201804111433
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1896,16 +1896,17 @@ defer num?
   \                                               40510
   \                                               40554
 
-  \ (1) First method: `next-name` is a double variable that may
-  \ hold a string to be used as name by the next defining word.
-  \ `header` always checks this string and, if it's not empty,
-  \ uses it instead of parsing and then empties it.
+  \ (1) First method: `next-name` is a double-cell variable
+  \ that may hold a string to be used as name by the next
+  \ defining word.  `header` always checks this string and, if
+  \ it's not empty, uses it instead of parsing and then empties
+  \ it.
   \
   \ (2) Second method (written after Gforth): `nextname` stores
-  \ a string into the double variable `nextname-string`, and
-  \ sets the deferred word `header` to `nextname-header`, which
-  \ creates the header with the string name and restores the
-  \ default action of `header`: `input-stream-header`. This
+  \ a string into the double-cell variable `nextname-string`,
+  \ and sets the deferred word `header` to `nextname-header`,
+  \ which creates the header with the string name and restores
+  \ the default action of `header`: `input-stream-header`. This
   \ method is more versatile and, beside, words with emtpy
   \ names can be created.
 
@@ -1937,16 +1938,17 @@ need bench{ need }bench. bench{ : w ; : w ; : w ; : w ;
   \            `nextname` (2)        32781        491 (9 s)
   \            `nextname` (3)        32765        494 (9 s)
 
-  \ (1) First method: `next-name` is a double variable that may
-  \ hold a string to be used as name by the next defining word.
-  \ `header` always checks this string and, if it's not empty,
-  \ uses it instead of parsing and then emptis it.
+  \ (1) First method: `next-name` is a double-cell variable
+  \ that may hold a string to be used as name by the next
+  \ defining word.  `header` always checks this string and, if
+  \ it's not empty, uses it instead of parsing and then emptis
+  \ it.
   \
   \ (2) Second method (written after Gforth): `nextname` stores
-  \ a string into the double variable `nextname-string`, and
-  \ sets the deferred word `header` to `nextname-header`, which
-  \ creates the header with the string name and restores the
-  \ default action of `header`: `input-stream-header`. This
+  \ a string into the double-cell variable `nextname-string`,
+  \ and sets the deferred word `header` to `nextname-header`,
+  \ which creates the header with the string name and restores
+  \ the default action of `header`: `input-stream-header`. This
   \ method is more versatile and, beside, words with emtpy
   \ names can be created.
   \
@@ -1985,16 +1987,17 @@ b load b load b load b load b load b load b load b load }bench.
   \                                               40510
   \                                               40554
 
-  \ (1) First method: `next-name` is a double variable that may
-  \ hold a string to be used as name by the next defining word.
-  \ `header` always checks this string and, if it's not empty,
-  \ uses it instead of parsing and then emptis it.
+  \ (1) First method: `next-name` is a double-cell variable
+  \ that may hold a string to be used as name by the next
+  \ defining word.  `header` always checks this string and, if
+  \ it's not empty, uses it instead of parsing and then emptis
+  \ it.
   \
   \ (2) Second method (written after Gforth): `nextname` stores
-  \ a string into the double variable `nextname-string`, and
-  \ sets the deferred word `header` to `nextname-header`, which
-  \ creates the header with the string name and restores the
-  \ default action of `header`: `input-stream-header`. This
+  \ a string into the double-cell variable `nextname-string`,
+  \ and sets the deferred word `header` to `nextname-header`,
+  \ which creates the header with the string name and restores
+  \ the default action of `header`: `input-stream-header`. This
   \ method is more versatile and, beside, words with emtpy
   \ names can be created.
 
@@ -3234,5 +3237,8 @@ need bench{ need }bench.
   \ 2018-03-09: Update stack notation "x y" to "col row".
   \
   \ 2018-03-11: Add `>in-bench`.
+  \
+  \ 2018-04-11: Update notation "double variable" to
+  \ "double-cell variable".
 
   \ vim: filetype=soloforth
