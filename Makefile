@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201804102045
+# Last modified: 201804110124
 # See change loge at the end of the file.
 
 # ==============================================================
@@ -178,7 +178,7 @@ cleantmp:
 
 .PHONY: cleandoc
 cleandoc:
-	-rm -f doc/*.html doc/*.pdf doc/*.docbook doc/*.epub tmp/doc.* 
+	-rm -f doc/*.html doc/*.pdf doc/*.pdf.* doc/*.docbook doc/*.epub tmp/doc.* 
 
 .PHONY: doc
 doc: gplusdosdoc plus3dosdoc trdosdoc
@@ -659,7 +659,7 @@ doc/gplusdos_solo_forth_manual.pdf.zip: doc/gplusdos_solo_forth_manual.pdf
 	zip -9 $@ $<
 
 doc/gplusdos_solo_forth_manual.pdf.gz: doc/gplusdos_solo_forth_manual.pdf
-	gzip $<
+	gzip --force $<
 
 doc/gplusdos_solo_forth_manual.pdf: \
 	tmp/doc.gplusdos.manual.adoc \
@@ -725,7 +725,7 @@ doc/plus3dos_solo_forth_manual.pdf.zip: doc/plus3dos_solo_forth_manual.pdf
 	zip -9 $@ $<
 
 doc/plus3dos_solo_forth_manual.pdf.gz: doc/plus3dos_solo_forth_manual.pdf
-	gzip $<
+	gzip --force $<
 
 doc/plus3dos_solo_forth_manual.pdf: \
 	tmp/doc.plus3dos.manual.adoc \
@@ -768,7 +768,7 @@ doc/trdos_solo_forth_manual.pdf.zip: doc/trdos_solo_forth_manual.pdf
 	zip -9 $@ $<
 
 doc/trdos_solo_forth_manual.pdf.gz: doc/trdos_solo_forth_manual.pdf
-	gzip $<
+	gzip --force $<
 
 doc/trdos_solo_forth_manual.pdf: \
 	tmp/doc.trdos.manual.adoc \
@@ -1073,3 +1073,5 @@ oldbackup:
 #
 # 2018-04-10: Replace `htmldoc` with `asciidoctor-pdf` for
 # making the PDF versions of the manual.
+#
+# 2018-04-11: Create gzipped PDF.
