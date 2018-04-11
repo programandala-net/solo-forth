@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201803091618
+  \ Last modified: 201804111438
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -79,7 +79,9 @@ code sync ( -- ) 78 c,  jpnext, end-code  -->
 
 ( pong )
 
-  \ Key constant are defined with double constants this way:
+  \ Key constant are defined with double-cell constants
+  \ this way:
+  \
   \ high part = bitmask
   \ low part = port of the keyboard row
 
@@ -532,5 +534,8 @@ run-message
   \ 2017-12-09: Need `8*` instead of redefining it.
   \
   \ 2018-03-09: Update stack notation "x y" to "col row".
+  \
+  \ 2018-04-11: Update notation "double constant" to
+  \ "double-cell constant".
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091344
+  \ Last modified: 201804111437
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -50,7 +50,7 @@ dup >order set-current case-sensitive @ case-sensitive on
   \ ----
 
   \ Most of the escaped characters are translated to one
-  \ character, so they are defined as double constants.
+  \ character, so they are defined as double-cell constants.
   \
   \ Conversion rules:
 
@@ -529,5 +529,8 @@ need parse-char need char>string
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-09: Add words' pronunciaton.
+  \
+  \ 2018-04-11: Update notation "double constant" to
+  \ "double-cell constant".
 
   \ vim: filetype=soloforth
