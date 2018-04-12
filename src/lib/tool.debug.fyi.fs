@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091353
+  \ Last modified: 201804120048
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -50,7 +50,7 @@ need u.r
   \ system.
   \
   \ See: `#words`, `here`, `latest-wordlist`, `limit`,
-  \ `unused`. `np@`, latest`, current-latest`, `farlimit`,
+  \ `unused`. `np@`, `latest`, `current-latest`, `farlimit`,
   \ `farunused`, `greeting`.
   \
   \ }doc
@@ -70,6 +70,8 @@ need u.r
   \ 2017-05-07: Improve documentation.
   \
   \ 2018-03-09: Add words' pronunciaton. Improve documentation.
+  \
+  \ 2018-04-12: Fix links in documentation.
 
   \ vim: filetype=soloforth
 

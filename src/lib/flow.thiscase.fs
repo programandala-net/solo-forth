@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802151535
+  \ Last modified: 201804121307
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -91,7 +91,7 @@ need alias
   \
   \ thiscase ( x -- x x )
   \
-  \ Part of a ``thiscase` structure.
+  \ Part of a `thiscase` structure.
   \
   \ Usage example:
 
@@ -145,5 +145,7 @@ need alias
   \ 2017-04-26: Fix typo.
   \
   \ 2018-02-15: Improve documentation.
+  \
+  \ 2018-04-12: Fix documentation markup.
 
   \ vim: filetype=soloforth

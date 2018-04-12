@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804111437
+  \ Last modified: 201804121401
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -415,7 +415,7 @@ need get-esc-order need set-esc-order
   \ See: `set-esc-order`, `get-esc-order`,
   \ `esc-standard-chars-wordlist`,
   \ `esc-block-chars-wordlist`,
-  \ `esc-udg-chars-ẁordlist`.
+  \ `esc-udg-chars-wordlist`.
   \
   \ }doc
 
@@ -532,5 +532,7 @@ need parse-char need char>string
   \
   \ 2018-04-11: Update notation "double constant" to
   \ "double-cell constant".
+  \
+  \ 2018-04-12: Fix link in documentation.
 
   \ vim: filetype=soloforth

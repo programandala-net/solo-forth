@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802051659
+  \ Last modified: 201804121308
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -44,7 +44,7 @@ need evaluate need catch need use-default-located
   \
   \ Search the index word list for word _ca len_. If found,
   \ load the block it's associated to.  If not found, throw an
-  \ exception -277 ("needed, but not indexed").
+  \ exception #-277 ("needed, but not indexed").
   \
   \ This is an alternative action of the deferred word
   \ `reneeded`.
@@ -60,7 +60,7 @@ need evaluate need catch need use-default-located
   \
   \ Search the index word list for word "name". If found,
   \ execute it, causing its associated block be loaded.  If not
-  \ found, throw an exception -277 ("needed, but not
+  \ found, throw an exception #-277 ("needed, but not
   \ indexed").
   \
   \ This is an alternative action of the deferred word
@@ -80,7 +80,7 @@ need evaluate need catch need use-default-located
   \ If word _ca len_ is found in the current search order, do
   \ nothing. Otherwise search the index word list for it. If
   \ found, execute it, causing its associated block be loaded.
-  \ If not found, throw an exception -277 ("needed, but not
+  \ If not found, throw an exception #-277 ("needed, but not
   \ indexed").
   \
   \ This is an alternative action of the deferred word
@@ -98,11 +98,10 @@ need evaluate need catch need use-default-located
   \ If word "name" is found in the current search order, do
   \ nothing. Otherwise search the index word list for it. If
   \ found, execute it, causing its associated block be loaded.
-  \ If not found, throw an exception -277 ("needed, but not
+  \ If not found, throw an exception #-277 ("needed, but not
   \ indexed").
   \
-  \ This is an alternative action of the deferred word
-  \ `need`.
+  \ This is an alternative action of the deferred word `need`.
   \
   \ }doc
 
@@ -236,5 +235,7 @@ need evaluate need catch need use-default-located
   \
   \ 2018-02-05: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-04-12: Fix notation or error codes.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201804111945
+; Last modified: 201804121256
 
 include version.z80s
 
@@ -11418,7 +11418,8 @@ endif
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See: `immediate?`,  `compile-only`.
+; See: `immediate-mask`, `latest`, `lex!`, `immediate?`,
+; `compile-only`.
 ;
 ; }doc
 
@@ -11504,7 +11505,7 @@ endif
 ; ----
 
 ; See: `compile-only?`, `compile-only-mask`, `?compiling`,
-; `lex!`, `immediate`.
+; `lex!`, `latest`, `immediate`.
 ;
 ; }doc
 
@@ -12260,7 +12261,8 @@ warm_start:
 ; cold ( -- )
 ;
 ; Restore the Forth system to its default status, i.e. as if it
-; were just booted the first time.
+; were just booted the first time, except the background picture
+; is not displayed.
 ;
 ; Origin: fig-Forth.
 ;
@@ -13490,8 +13492,8 @@ block.end:
 ;   dup 0= #-259 ?throw nest-source (load) unnest-source ;
 ; ----
 
-; See: `(load)`, `nest-source`, `unnest-source`,
-; `lineload`, `+load`, `thru`, `blk`.
+; See: `(load)`, `nest-source`, `unnest-source`, `lineload`,
+; `+load`, `thru`, `blk`.
 ;
 ; }doc
 

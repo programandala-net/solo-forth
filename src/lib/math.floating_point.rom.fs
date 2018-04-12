@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201803091540
+  \ Last modified: 201804120050
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -305,6 +305,8 @@ need fsgn
   \
   \ Origin: Gforth.
   \
+  \ See: `f~rel`, `f~relabs`.
+  \
   \ }doc
 
 : f~rel ( -- f ) ( F: r1 r2 r3 -- )
@@ -316,11 +318,13 @@ need fsgn
   \ f~rel ( -- f ) ( F: r1 r2 r3 -- ) "f-tilde-rel"
   \
   \ Approximate equality with relative error:
-  \ `|r1-r2|<r3*|r1+r2|`.
+  \ ``|r1-r2|<r3*|r1+r2|``.
   \
   \ Flag _f_ is true if the absolute value of _r1-r2_ is less
   \ than the value of _r3_ times the sum of the absolute values
   \ of _r1_ and _r2_.
+  \
+  \ See: `f~abs`, `f~relabs`.
   \
   \ }doc
 
@@ -333,11 +337,13 @@ need fsgn
   \ f~relabs ( -- f ) ( F: r1 r2 r3 -- ) "f-tilde-rel-abs"
   \
   \ Approximate equality with relative error:
-  \ `|r1-r2|<|r3|*|r1+r2|`.
+  \ ``|r1-r2|<|r3|*|r1+r2|``.
   \
   \ Flag _f_ is true if the absolute value of _r1-r2_ is less
   \ than the absolute value of _r3_ times the sum of the
   \ absolute values of _r1_ and _r2_.
+  \
+  \ See: `f~rel`, `f~abs`.
   \
   \ }doc
 
@@ -352,6 +358,8 @@ need fsgn
   \
   \ Are _r1_ and _r2_ exactly identical? Flag _f_ is true if
   \ the bitwise comparison of _r1_ and _r2_ is succesful.
+  \
+  \ See: `f~`.
   \
   \ }doc
 
@@ -1102,5 +1110,7 @@ unneeding dfaligned
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-09: Update notation "address units" to "bytes".
+  \
+  \ 2018-04-12: Fix and improve documentation.
 
   \ vim: filetype=soloforth

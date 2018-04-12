@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091542
+  \ Last modified: 201804121303
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -55,8 +55,8 @@ unneeding far-hl_ ?\ ' far 2+ @ constant far-hl_
   \ HL register to its actual equivalent ($C000..$FFFF) and
   \ pages in the corresponding memory bank.
   \
-  \ This is the routine called by `far`. `far-hl_` is
-  \ used in `code` words.
+  \ This is the routine called by `far`. ``far-hl_`` is used in
+  \ `code` words.
   \
 
   \ Input:
@@ -540,5 +540,7 @@ code c@bank ( ca n -- c ) D1 c, e-bank_ call,
   \ 2018-03-07: Add words' pronunciaton.
   \
   \ 2018-03-09: Update notation "address units" to "bytes".
+  \
+  \ 2018-04-12: Fix markup in documentation.
 
   \ vim: filetype=soloforth

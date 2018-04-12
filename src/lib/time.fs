@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804100014
+  \ Last modified: 201804121315
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -47,7 +47,7 @@ unneeding ?seconds ?( need ?ticks-pause need ticks/second
   \
   \ Wait at least _u_ seconds or until a key is pressed.
   \
-  \ See: `seconds`, `ms`, `?ticks`.
+  \ See: `seconds`, `ms`, `?ticks-pause`.
   \
   \ }doc
 
@@ -92,7 +92,7 @@ unneeding ticks ?( need os-frames
   \ Return the current count of clock ticks _n_, which is
   \ updated by the OS.
   \
-  \ NOTE: ``ticks``returns the low 16 bits of the OS frames
+  \ NOTE: ``ticks`` returns the low 16 bits of the OS frames
   \ counter, which is increased by the OS interrupts routine
   \ every 20th ms. The counter is actually a 24-bit value,
   \ which can be fetched by `dticks`.
@@ -904,5 +904,7 @@ need reset-dticks need dticks need dticks>cs
   \
   \ 2018-04-09: Fix stack comment. Update source layout (remove
   \ double spaces). Fix and improve documentation.
+  \
+  \ 2018-04-12: Fix link in documentation.
 
   \ vim: filetype=soloforth
