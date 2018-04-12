@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-04-10
+:revdate: 2018-04-12
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -874,6 +874,42 @@ Improve tab control.
 
 // Documentation {{{1
 == Documentation
+
+=== 2018-04-12
+
+NOTE: Milestone: 0.14.0
+
+- Code "``#``" in `#` is missing in the PDF.  Possible solution:
+  Escape ++"#"++ in Glosara.
+- Link to `#` in `#s` is rendered as "[entry23]" in the PDF.  Possible
+  solution: Escape ++"#"++ in Glosara.
+- Links to `"y"` and `"n"` in the PDF loose the quotes.  Possible
+  solution: Escape double quote in Glosara.
+- Link to `\` in `(` is ruined in the PDF.
+- Link to `*/-` in `*/_` is ruined in the PDF.  Possible solution:
+  Escape ++"*"++ in Glosara.
+- "See:" links to `"y"` and `"n"` have a ';' at the end.
+- "See:" links of `|>=` are ruined in the PDF. Solution: Escape ++<++
+  in Glosara.
+- Link to `f==` in `f~` is ruined in the PDF.
+
+=== 2018-04-12
+
+NOTE: Milestone: 0.14.0
+
+Glosara converts this glossary entry line:
+
+----
+  \ See: `name>>`, `>>link`, `>name`.
+----
+
+Into this Asciidoctor code:
+
+----
+See: `<<entry6E616D653E3E, name&#62;&#62;>>`;>`<<entry3E3E6C696E6B, &#62;&#62;link>>`, `<<entry3E6E616D65, &#62;name>>`.
+----
+
+Why ";>" instead instead of ", "?
 
 === 2018-03-28
 
