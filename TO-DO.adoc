@@ -888,33 +888,13 @@ NOTE: Milestone: 0.14.0
 
 Errors in the PDF:
 
-- Link to `\` in `(` is ruined.
-- Link to `*/-` in `*/_` is ruined.  Possible solution: Escape ++"*"++
-  in Glosara.
-- Link to `*/_` in `*/` is ruined.  Possible solution: Escape ++"/"++
-  in Glosara.
-- "See:" links to `"y"` and `"n"` have a ';' at the end.  This looks a
-  Gforth issue with string manipulation.
-- "See:" link to `f~abs` in `f~` has a ';' at the end. This looks a
-  Gforth issue with string manipulation.
-- "See:" link to `|**` in `|sqrt` has a ';' at the end. This looks a
-  Gforth issue with string manipulation.
-- "See:" links of `|>=` are ruined. Solution: Escape ++<++ in Glosara.
-- Link to `f==` in `f~` is ruined.
 - The link in the code example of `stringer` is converted by Glosara,
   but not rendered later by Asciidoctor. A `subs` markup is needed.
-- Link to `>resolve` in `then` has a 'v' at the end. This looks a
+- Links with trailing or leading characters in `"y"`, `"n"`, `f~`,
+  `then`, `<=`, `0<=`, `>=`, `u<=`, "|" prefix words.  This looks a
   Gforth issue with string manipulation.
-- Link to `ms>ticks` in `ticks` is ruined.
-- "See:" links in `u<=` are ruined.
-- "See:" links in `<=` are ruined.
-- "See:" links in `<=>` are ruined.
-- "See:" links in `<>` are ruined.
-- "See:" links in `>=` are ruined.
-- Some "See:" links in `>name` are ruined.
-- Some "See:" links in `>oldest-name/fast` are ruined.
-- Some "See:" links in `>oldest-name/order` are ruined.
-- Some "See:" links in `?(` are ruined.
+- Links corrupted in `(`, `*/_`, `*/`, `f~`, `ticks`, `?(`, `>name`,
+  `>oldest-name/fast` `>oldest-name/order`.
 
 === 2018-04-12
 
@@ -2627,6 +2607,12 @@ for the end user.
 
 // Names {{{1
 == Names
+
+=== 2018-04-12
+
+NOTE: Milestone: 0.14.0
+
+Rename `udg-at-xy-display` and `at-xy-display-udg`. "display"?
 
 === 2018-03-09
 
