@@ -879,19 +879,35 @@ Improve tab control.
 
 NOTE: Milestone: 0.14.0
 
-- Code "``#``" in `#` is missing in the PDF.  Possible solution:
-  Escape ++"#"++ in Glosara.
-- Link to `#` in `#s` is rendered as "[entry23]" in the PDF.  Possible
-  solution: Escape ++"#"++ in Glosara.
-- Links to `"y"` and `"n"` in the PDF loose the quotes.  Possible
-  solution: Escape double quote in Glosara.
-- Link to `\` in `(` is ruined in the PDF.
-- Link to `*/-` in `*/_` is ruined in the PDF.  Possible solution:
-  Escape ++"*"++ in Glosara.
-- "See:" links to `"y"` and `"n"` have a ';' at the end.
-- "See:" links of `|>=` are ruined in the PDF. Solution: Escape ++<++
+Homogenize the position of the pronunciation in words that have
+several stack comments.
+
+=== 2018-04-12
+
+NOTE: Milestone: 0.14.0
+
+Errors in the PDF:
+
+- Link to `\` in `(` is ruined.
+- Link to `*/-` in `*/_` is ruined.  Possible solution: Escape ++"*"++
   in Glosara.
-- Link to `f==` in `f~` is ruined in the PDF.
+- Link to `*/_` in `*/` is ruined.  Possible solution: Escape ++"/"++
+  in Glosara.
+- "See:" links to `"y"` and `"n"` have a ';' at the end.  This looks a
+  Gforth issue with string manipulation.
+- "See:" link to `f~abs` in `f~` has a ';' at the end. This looks a
+  Gforth issue with string manipulation.
+- "See:" link to `|**` in `|sqrt` has a ';' at the end. This looks a
+  Gforth issue with string manipulation.
+- "See:" links of `|>=` are ruined. Solution: Escape ++<++ in Glosara.
+- Link to `f==` in `f~` is ruined.
+- The link in the code example of `stringer` is converted by Glosara,
+  but not rendered later by Asciidoctor. A `subs` markup is needed.
+- Link to `>resolve` in `then` has a 'v' at the end. This looks a
+  Gforth issue with string manipulation.
+- Link to `ms>ticks` in `ticks` is ruined.
+- Link to `ms>ticks` in `ticks/seconds` is ruined.
+- "See:" links in `u<=` are ruined.
 
 === 2018-04-12
 
