@@ -906,8 +906,15 @@ Errors in the PDF:
 - Link to `>resolve` in `then` has a 'v' at the end. This looks a
   Gforth issue with string manipulation.
 - Link to `ms>ticks` in `ticks` is ruined.
-- Link to `ms>ticks` in `ticks/seconds` is ruined.
 - "See:" links in `u<=` are ruined.
+- "See:" links in `<=` are ruined.
+- "See:" links in `<=>` are ruined.
+- "See:" links in `<>` are ruined.
+- "See:" links in `>=` are ruined.
+- Some "See:" links in `>name` are ruined.
+- Some "See:" links in `>oldest-name/fast` are ruined.
+- Some "See:" links in `>oldest-name/order` are ruined.
+- Some "See:" links in `?(` are ruined.
 
 === 2018-04-12
 
