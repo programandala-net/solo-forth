@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-04-12
+:revdate: 2018-04-13
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -879,6 +879,13 @@ Improve tab control.
 
 NOTE: Milestone: 0.14.0
 
+Homogenize notation `..` for intervals and notation `...` for
+ellipsis.
+
+=== 2018-04-12
+
+NOTE: Milestone: 0.14.0
+
 Homogenize the position of the pronunciation in words that have
 several stack comments.
 
@@ -894,25 +901,7 @@ Errors in the PDF:
   `then`, `<=`, `0<=`, `>=`, `u<=`, "|" prefix words.  This looks a
   Gforth issue with string manipulation.
 - Links corrupted in `(`, `*/_`, `*/`, `f~`, `ticks`, `?(`, `>name`,
-  `>oldest-name/fast` `>oldest-name/order`.
-
-=== 2018-04-12
-
-NOTE: Milestone: 0.14.0
-
-Glosara converts this glossary entry line:
-
-----
-  \ See: `name>>`, `>>link`, `>name`.
-----
-
-Into this Asciidoctor code:
-
-----
-See: `<<entry6E616D653E3E, name&#62;&#62;>>`;>`<<entry3E3E6C696E6B, &#62;&#62;link>>`, `<<entry3E6E616D65, &#62;name>>`.
-----
-
-Why ";>" instead instead of ", "?
+  `>oldest-name/fast` `>oldest-name/order`, `#kk`...
 
 === 2018-03-28
 
@@ -1886,6 +1875,8 @@ Convert `base.` into a complete definer, in order to make it more
 versatile. Then document it.
 
 === 2017-05-05
+
+NOTE: Milestone: 0.14.0
 
 Finish `crshift`.
 
