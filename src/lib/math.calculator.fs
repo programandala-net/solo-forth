@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201802171732
+  \ Last modified: 201804142325
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -107,7 +107,7 @@ get-current  calculator-wordlist set-current
   \ instructions to exit the ROM calculator:
 
   \ ----
-  \ db $38 ; `end-calc` ROM calculator command
+  \ db $38 ; ``end-calc`` ROM calculator command
   \ pop bc ; restore the Forth IP
   \ ----
 
@@ -905,5 +905,7 @@ set-current  previous
   \
   \ 2018-02-17: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-04-14. Fix markup in documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804121401
+  \ Last modified: 201804142326
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -76,7 +76,7 @@ dup >order set-current case-sensitive @ case-sensitive on
 
   \ See: `parse-esc-string`, `set-esc-order`,
   \ `esc-standard-chars-wordlist`, `esc-block-chars-wordlist`,
-  \ `esc-udg-chars-ẁordlist`.
+  \ `esc-udg-chars-wordlist`.
   \
   \ }doc
 
@@ -370,7 +370,7 @@ need ?esc-order need #esc-order need esc-context
   \
   \ See: `esc-get-order`, `>esc-order`,
   \ `esc-standard-chars-wordlist`, `esc-block-chars-wordlist`,
-  \ `esc-udg-chars-ẁordlist`.
+  \ `esc-udg-chars-wordlist`.
   \
   \ }doc
 
@@ -534,5 +534,7 @@ need parse-char need char>string
   \ "double-cell constant".
   \
   \ 2018-04-12: Fix link in documentation.
+  \
+  \ 2018-04-14. Fix typos in documentation.
 
   \ vim: filetype=soloforth

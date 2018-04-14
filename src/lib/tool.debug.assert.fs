@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091351
+  \ Last modified: 201804142313
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -161,7 +161,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \ Origin: Gforth.
   \
   \ See: `assert-level`, `assert(`, `assert0(`, `assert1(`,
-  \ assert3(`, `)`.
+  \ `assert3(`, `)`.
   \
   \ }doc
 
@@ -241,5 +241,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-09: Add words' pronunciaton.
+  \
+  \ 2018-04-14. Fix markup in documentation.
 
   \ vim: filetype=soloforth

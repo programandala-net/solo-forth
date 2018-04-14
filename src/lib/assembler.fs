@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072310
+  \ Last modified: 201804142336
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -231,7 +231,7 @@ F2 cconstant p?   FA cconstant m?
   \ Return the opcode _op_ of the Z80 instruction ``jp z``,
   \ to be used as condition and consumed by
   \ `?ret,`, `?jp,`, `?call`, `?jr`, `aif`, `rif`, `awhile`,
-  \ `rwhile`, `auntil, or `runtil`.
+  \ `rwhile`, `auntil` or `runtil`.
   \
   \ See: `nz?`, `c?`, `nc?`, `po?`, `pe?`, `p?`, `m?`.
   \
@@ -244,7 +244,7 @@ F2 cconstant p?   FA cconstant m?
   \ Return the opcode _op_ of the Z80 instruction ``jp nz``,
   \ to be used as condition and consumed by
   \ `?ret,`, `?jp,`, `?call`, `?jr`, `aif`, `rif`, `awhile`,
-  \ `rwhile`, `auntil, or `runtil`.
+  \ `rwhile`, `auntil` or `runtil`.
   \
   \ See: `z?`, `c?`, `nc?`, `po?`, `pe?`, `p?`, `m?`,
   \ `?ret,`, `?jp,`, `?jr`, `?call`, `rif`, `rwhile`, `runtil`,
@@ -259,7 +259,7 @@ F2 cconstant p?   FA cconstant m?
   \ Return the opcode _op_ of the Z80 instruction ``jp c``,
   \ to be used as condition and consumed by
   \ `?ret,`, `?jp,`, `?call`, `?jr`, `aif`, `rif`, `awhile`,
-  \ `rwhile`, `auntil, or `runtil`.
+  \ `rwhile`, `auntil` or `runtil`.
   \
   \ See: `z?`, `nz?`, `nc?`, `po?`, `pe?`, `p?`, `m?`.
   \
@@ -272,7 +272,7 @@ F2 cconstant p?   FA cconstant m?
   \ Return the opcode _op_ of the Z80 instruction ``jp nc``,
   \ to be used as condition and consumed by
   \ `?ret,`, `?jp,`, `?call`, `?jr`, `aif`, `rif`, `awhile`,
-  \ `rwhile`, `auntil, or `runtil`.
+  \ `rwhile`, `auntil` or `runtil`.
   \
   \ See: `z?`, `nz?`, `c?`, `po?`, `pe?`, `p?`, `m?`.
   \
@@ -769,5 +769,7 @@ set-current
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-07: Add words' pronunciaton.
+  \
+  \ 2018-04-14. Fix markup in documentation.
 
   \ vim: filetype=soloforth

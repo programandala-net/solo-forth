@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712092329
+  \ Last modified: 201804142327
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -162,7 +162,7 @@ wordlist dup constant esc-udg-chars-wordlist set-current
   \ identified by ``esc-udg-chars-wordlist`` returns the
   \ correspondent UDG character (144..164) and a 1.
   \
-  \ In order to make `s\", `.\"` and their common factor
+  \ In order to make `s\"`, `.\"` and their common factor
   \ `parse-esc-string` recognize the escaped UDG characters,
   \ `esc-udg-chars-wordlist` must be pushed on the escaped
   \ strings search order.  Example:
@@ -213,5 +213,7 @@ set-current
   \ 2017-03-13: Improve documentation.
   \
   \ 2017-12-09: Improve documentation.
+  \
+  \ 2018-04-14. Fix markup in documentation.
 
   \ vim: filetype=soloforth

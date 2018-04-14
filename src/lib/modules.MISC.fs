@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072250
+  \ Last modified: 201804142339
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -66,8 +66,8 @@ unneeding seclusion ?(
   \ ----
 
   \ A copy of _wid2_ may be kept by the application in order to
-  \ access private words later, e.g.  ``seclusion dup constant
-  \ my-module`.
+  \ access private words later, e.g.
+  \ ``seclusion dup constant my-module``.
   \
   \ See: `internal`, `isolate`, `module`, `package`,
   \ `privatize`.
@@ -145,6 +145,8 @@ unneeding isolate
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-07: Add words' pronunciaton.
+  \
+  \ 2018-04-14. Fix markup in documentation.
 
   \ vim: filetype=soloforth
 

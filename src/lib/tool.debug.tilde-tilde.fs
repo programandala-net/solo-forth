@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804111434
+  \ Last modified: 201804142342
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -112,7 +112,7 @@ create ~~resume-key bl c,
   \
   \ Is there any key to be checked by `~~control`?
   \
-  \ ``~~control??`` is part of the `~~` tool.
+  \ ``~~control?`` is part of the `~~` tool.
   \
   \ }doc
 
@@ -324,5 +324,7 @@ defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
   \
   \ 2018-04-11: Update notation "double variable" to
   \ "double-cell variable".
+  \
+  \ 2018-04-14. Fix documentation.
 
   \ vim: filetype=soloforth

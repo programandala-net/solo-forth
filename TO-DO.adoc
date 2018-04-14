@@ -879,6 +879,17 @@ Improve tab control.
 
 NOTE: Milestone: 0.14.0
 
+Link `user`, `variable`, `constant` and others in the descriptions of
+the corresponding instances. Example:
+
+....
+; A variable. _a_ is the address of a cell containing...
+....
+
+=== 2018-04-14
+
+NOTE: Milestone: 0.14.0
+
 Deactivate documentation of `system` and friends.
 
 === 2018-04-14
@@ -887,12 +898,14 @@ NOTE: Milestone: 0.14.0
 
 Improve the width of table columns.
 
-=== 2018-04-12
+=== 2018-04-12, 2018-04-14
 
 NOTE: Milestone: 0.14.0
 
 Homogenize notation `..` for intervals and notation `...` for
 ellipsis.
+
+Some structures lack any; see `default-option`.
 
 === 2018-04-12
 
@@ -3124,7 +3137,7 @@ in _A multi-tasking wordset for Standard Forth`, EuroForth 2017.
 === 2016-11-27
 
 Update the user variables that are initialized (`warnings` has been removed,
-but its place is used by `lastblk`, which does not need initialization).
+but its is used by `lastblk`, which does not need initialization).
 
 === 2016-11-18
 

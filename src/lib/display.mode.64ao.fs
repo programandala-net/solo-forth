@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804101821
+  \ Last modified: 201804142243
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -416,7 +416,7 @@ also assembler max-labels c! previous
   \ register. The Forth IP is not preserved.
   \
   \ ``mode-64ao-output_`` is called by `mode-64ao-output_` and
-  \ `mode-64ao-emit``.
+  \ `mode-64ao-emit`.
   \
   \ }doc
 
@@ -449,8 +449,8 @@ code mode-64ao-emit ( c -- )
   \ Display character _c_ in `mode-64ao`, by calling
   \ `(mode-64ao-output_`.
   \
-  \ ``mode-64ao-emit`` is configured by `mode-64ao` as the action
-  \ of `emit`.
+  \ ``mode-64ao-emit`` is configured by `mode-64ao` as the
+  \ action of `emit`.
   \
   \ }doc
 
@@ -569,5 +569,7 @@ need mode-32 need (at-xy need set-mode-output need >form
   \ words that need it.
   \
   \ 2018-04-10: Fix typo in documentation.
+  \
+  \ 2018-04-14: Fix markup in documentation.
 
   \ vim: filetype=soloforth

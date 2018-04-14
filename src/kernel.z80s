@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201804141542
+; Last modified: 201804142306
 
 include version.z80s
 
@@ -13015,7 +13015,7 @@ endif
 ; Display the number of `throw` code _n_, as a decimal number,
 ; prefixed with a '#' and followed by a space.
 ;
-; ``.throw#` is the default action of `.throw`.
+; ``.throw#`` is the default action of `.throw`.
 ;
 ; }doc
 
@@ -13034,7 +13034,7 @@ endif
 ; Display a message giving information about the condition
 ; associated with the `throw` code _n_.
 ;
-; ``.throw` is a deferred word whose default action is
+; ``.throw`` is a deferred word whose default action is
 ; `.throw#`.
 ;
 ; See: `defer`.

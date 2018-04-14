@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803082302
+  \ Last modified: 201804142247
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -96,7 +96,7 @@ h pop, os-chars h stp, b pop, ret, end-asm
   \ As a result, the ROM routine treats character ranges
   \ 128..223 and 224..255 as 32..127 and 32..63 respectively.
   \
-  \ ``mode-32iso-output_`` is called by `mode-32iso-emit``.
+  \ ``mode-32iso-output_`` is called by `mode-32iso-emit`.
   \
   \ ``mode-32iso-output_`` is activated by `mode-32iso`, i.e.
   \ it's set as the output routine of the current channel.
@@ -201,6 +201,8 @@ variable mode-32iso-font  rom-font bl 8 * + mode-32iso-font !
   \ with `set-mode-output`.
   \
   \ 2018-03-08: Add words' pronunciaton.
+  \
+  \ 2018-04-14. Fix markup in documentation.
 
   \ vim: filetype=soloforth
 

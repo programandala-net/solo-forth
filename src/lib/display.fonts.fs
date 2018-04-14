@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201804142247
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -149,7 +149,7 @@ code outlet-autochars ( a -- )
   \ activate the new font by modifing the contents of
   \ `os-chars`.
   \
-  \ The code word of `outlet-autochars`` has been adapted from
+  \ The code word of ``outlet-autochars`` has been adapted from
   \ the Autochars routine used by the Outlet magazine,
   \ published in its issue #1 (1987-09).
   \
@@ -245,5 +245,7 @@ code outlet-autochars ( a -- )
   \ 2017-12-09: Improve documentation.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-04-14. Fix markup in documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804091625
+  \ Last modified: 201804142244
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1714,7 +1714,7 @@ code (rename-file ( -- ior )
   \ the filename stored in `ufia2`.  and return error result
   \ _ior_.
   \
-  \ ``(rename-file`` is a factor of ``rename-file`.
+  \ ``(rename-file`` is a factor of `rename-file`.
   \
   \ }doc
 
@@ -2132,5 +2132,7 @@ need write-file need read-file need .ufia
   \
   \ 2018-04-09: Make `get-drive` return a fake _ior_, after
   \ +3DOS, which returns an actual one. Improve documentation.
+  \
+  \ 2018-04-14. Fix markup in documentation.
 
   \ vim: filetype=soloforth
