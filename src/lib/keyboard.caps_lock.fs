@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201804132007
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -50,7 +50,7 @@ need os-flags2 need ctoggle need cset need creset
   \ Toggle capslock.
   \
   \ See: `set-capslock`, `unset-capslock`, `capslock?`,
-  \ `capslock`.
+  \ `capslock`, `ctoogle`.
   \
   \ }doc
 
@@ -63,7 +63,7 @@ need os-flags2 need ctoggle need cset need creset
   \ Set capslock.
   \
   \ See: `unset-capslock`, `capslock?`, `toggle-capslock`,
-  \ `capslock`.
+  \ `capslock`, `cset`.
   \
   \ }doc
 
@@ -76,7 +76,7 @@ need os-flags2 need ctoggle need cset need creset
   \ Unset capslock.
   \
   \ See: `set-capslock`, `capslock?`, `toggle-capslock`,
-  \ `capslock`.
+  \ `capslock`, `creset`.
   \
   \ }doc
 
@@ -89,7 +89,7 @@ need os-flags2 need ctoggle need cset need creset
   \ Is capslock set?
   \
   \ See: `set-capslock`, `unset-capslock`, `toggle-capslock`,
-  \ `capslock`.
+  \ `capslock`, `c@and?`.
   \
   \ }doc
 
@@ -104,5 +104,7 @@ need os-flags2 need ctoggle need cset need creset
   \ 2017-01-10: Document all words.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2018-04-13: Improve documentation.
 
   \ vim: filetype=soloforth

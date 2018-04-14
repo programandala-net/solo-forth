@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201804141424
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -299,7 +299,7 @@ unneeding swap-current ?(
   \ swap-current ( wid1 -- wid2 )
   \
   \ Exchange the contents of the current compilation word list,
-  \ which is idenfified by _wid2_, with the word list
+  \ which is identified by _wid2_, with the word list
   \ identified by `wid1`.
   \
   \ Origin: lpForth.
@@ -382,5 +382,7 @@ unneeding search-wordlist ?(
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-04-14: Fix typo.
 
   \ vim: filetype=soloforth

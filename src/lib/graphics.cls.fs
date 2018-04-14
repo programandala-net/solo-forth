@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802151537
+  \ Last modified: 201804121531
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -55,7 +55,6 @@ code cls-chars0 ( -- )
 
   \ XXX FIXME -- 2017-01-02: it does nothing
 
-  \ doc{
   \
   \ cls-chars0 ( -- ) "c-l-s-chars-zero"
   \
@@ -63,7 +62,6 @@ code cls-chars0 ( -- )
   \
   \ See: `cls-chars1`.
   \
-  \ }doc
 
 ( cls-chars1 )
 
@@ -99,8 +97,6 @@ code cls-chars1 ( -- )
   \ cls-chars1 ( -- ) "c-l-s-chars-one"
   \
   \ Clear the screen by rotating all bytes of the bitmap.
-  \
-  \ See: `cls-chars0`.
   \
   \ }doc
 
@@ -194,5 +190,7 @@ code vertical-curtain ( b -- )
   \
   \ 2018-02-15: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-04-12: Deactivate documentation of `cls-chars0`.
 
   \ vim: filetype=soloforth

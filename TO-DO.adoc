@@ -2601,6 +2601,12 @@ for the end user.
 // Names {{{1
 == Names
 
+=== 2018-04-14
+
+NOTE: Milestone: 0.14.0
+
+Rename `cls-chars0` and `cls-chars1`.
+
 === 2018-04-12
 
 NOTE: Milestone: 0.14.0
