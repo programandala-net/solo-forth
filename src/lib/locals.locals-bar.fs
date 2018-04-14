@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804012032
+  \ Last modified: 201804130056
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -57,16 +57,20 @@ user lp ( -- a ) \ locals pointer
   \ Locals runtime
   \ XXX TODO -- All these need to be in code.
 
-: l@ ( -- x ) r@ @ lp @ + @ r> cell+ >r ;
+: l@ ( -- x ) ( R: a -- ) r@ @ lp @ + @ r> cell+ >r ;
+  \ Fetch _x_ from the local variable whose index was compiled
+  \ inline at _a_.
 
-: l! ( x -- ) r@ @ lp @ + ! r> cell+ >r ;
+: l! ( x -- ) ( R: a -- ) r@ @ lp @ + ! r> cell+ >r ;
+  \ Store _x_ into the local variable whose index was compiled
+  \ inline at _a_.
 
-: l{ ( i*x -- ) ( r: -- a i*x )
+: l{ ( i*x -- ) ( R: -- a i*x )
   r>  lp @ >r  rp@ lp !  dup @
   begin ?dup while rot >r 1- repeat cell+ >r ;
   \ Build locals frame.
 
-: }l ( -- ) ( r: a i*x -- ) r> lp @ rp! r> lp ! >r ;
+: }l ( -- ) ( R: a i*x -- ) r> lp @ rp! r> lp ! >r ;
   \ Remove locals frame.
 
 -->
@@ -82,11 +86,11 @@ create lv$ ( -- a ) 31 1 + chars #locals * allot
   \ XXX TODO -- smaller?
 
 : lv? ( ca len -- index | 0 )
-  lv$  1 >r ( init index )
-  begin count ?dup
-  while 2over 2over str=
-    if 2drop 2drop  r> exit then +  r> 1+ >r
-  repeat r> 2drop  2drop  0 ; \ not a local
+  lv$ 1 >r ( init index )
+  begin  count ?dup
+  while  2over 2over str= if   2drop 2drop r> exit
+                          then + r> 1+ >r
+  repeat r> 2drop 2drop 0 ;
   \ Find requested locals index.
 
 create lchar 0 c,
@@ -103,17 +107,33 @@ variable locals?
 
 : lvfind ( ca -- ca 0 | xt -1 )
   dup count lv? ?dup \ try locals first
-  if lvrev postpone l@ -1 exit \ pass index to be 'compiled'
+  if lvrev postpone l@ -1 exit then ;
+    \ pass index to be 'compiled'
     \ XXX TODO -- Problem?
-  then ;
+  \ XXX OLD
   \ Patch for compiler `find`.
 
-: setlvfind ( -- ) ['] lvfind is find ;
+: lvfind-name ( ca len -- nt | 0 )
+  2dup lv? ?dup \ try locals first
+  if lvrev postpone l@ -1 exit \ pass index to be 'compiled'
+  then find-name ;
+  \ XXX OLD
+  \ Patch for compiler `find-name`.
+
+\ : setlvfind ( -- ) ['] lvfind is find ;
+  \ XXX OLD
   \ XXX FIXME -- `find` is not used, and not deferred
+
+: setlvfind ( -- ) ['] lvfind is find-name ;
+  \ XXX FIXME -- `find-name` is not deferred
 
 : (local) ( ca len -- )
   locals? @  over 1+ locals? +!  2dup c! char+ swap move ;
   \ Save counted string.
+
+-->
+
+\ locals| (local) \
 
 : xlocals| ( c '<spaces>i*name<spaces"c">' -- )
   >r locals? @ dup abort" second locals|"  lv$ locals? !
@@ -164,7 +184,7 @@ setlvfind
             a . b . c . d .  e . f . g . h . ;
 
 : j7 ( -- ) locals| a b c d  e f g h  j | ;
-  \ XXX REMARK -- Fails: to many locals.
+  \ XXX REMARK -- Fails: too many locals.
 
 -->
 

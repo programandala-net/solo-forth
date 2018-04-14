@@ -2558,6 +2558,10 @@ Problem: this would force changes in fsb and fsb2.
 | Prefix Frame Operators                   | 11  | 1  | 023 |
 |===
 
+=== 2018-04-14
+
+Finish implementation of `(local)`, `locals|` and `{:`.
+
 === 2018-03-28
 
 Split <locals.arguments.fs>: default usage, like variables, and

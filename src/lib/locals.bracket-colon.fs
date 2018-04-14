@@ -15,10 +15,19 @@
   \ from the Forth-2012 documentation.
 
   \ ===========================================================
-  \ Authors
+  \ Author
 
+  \ Unknown.
+  \
   \ Marcos Cruz (programandala.net) adapted the code to Solo
   \ Forth, 2018.
+
+  \ ===========================================================
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
 
 ( {: )
 
@@ -30,11 +39,11 @@ need str<> need (local)
   2 pick 0= >r str= r> or ;
 
 : scan-args
-  \ 0 ca1 len1 -- ca1 len1 ... c-addrn un n c-addrn+1 un+1
-  begin 2dup s" |"  match-or-end? 0= while
-        2dup s" --" match-or-end? 0= while
-        2dup s" :}" match-or-end? 0= while
-        rot 1+ parse-name
+  \ ( 0 ca1 len1 -- ca1 len1 ... ca@n len#n n ca#n+1 len#n+1 )
+  begin 2dup s" |"  match-or-end? 0=
+  while 2dup s" --" match-or-end? 0=
+  while 2dup s" :}" match-or-end? 0=
+  while rot 1+ parse-name
   again then then then ;
 
 -->
