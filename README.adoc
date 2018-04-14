@@ -1,11 +1,13 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-03-11
+:revdate: 2018-04-11
 :toc:
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
+
+// Last modified: 201804110013
 
 // tag::description[]
 
@@ -13,21 +15,13 @@
 
 Solo Forth is a modern http://forth-standard.org[standard
 Forth,role="external"] system under development for the ZX Spectrum
-128 and compatible computers.
+128 and compatible computers, with disk drives.
 
-Solo Forth is focused on cross development of Forth programs for ZX
-Spectrum 128 using a ZX Spectrum emulator on a GNU/Linux operating
-system (in theory, other kind of operating system could be used as
-well).
-
-Solo Forth is a complete Forth system. Therefore it can be used as a
-stand-alone Forth system on a ZX Spectrum emulator or the real
-computer, without any limitation, but that's not its goal. Its goal is
-to be used as the last step of the development process, i.e. to
-compile and debug a Forth program on a ZX Spectrum emulator. The
-sources of the Forth program are edited on the host operating system
-and converted to Forth block disk images by tools that run on the host
-operating system.
+Solo Forth can be used as a stand-alone Forth system on a ZX Spectrum
+emulator or the real computer. Nevertheless, its goal is the cross
+development of Forth programs using a ZX Spectrum emulator on a
+GNU/Linux operating system (in theory, other type of operating system
+could be used as well).
 
 == Main features
 
@@ -115,20 +109,33 @@ some library code to benefit from their specific features.
 
 Supporting a more powerful and modern DOS like
 http://www.worldofspectrum.org/zxplus3e/technical.html[IDEDOS,role="external"],
-http://www.worldofspectrum.org/residos/[ResiDOS,role="external"], and
-http://esxdos.org[esxDOS,role="external"] would require more effort,
-but would let Solo Forth use hard drives, flash cards, and a lot of
-memory, beside many other new features.
+http://www.worldofspectrum.org/residos/[ResiDOS,role="external"],
+http://esxdos.org[esxDOS,role="external"] and
+http://specnext.com[NextOS] would not be trivial, but would let Solo
+Forth use hard drives, flash cards, and a lot of memory, beside many
+other new features.
 
 Porting the G+DOS version of Solo Forth to http://worldofsam.org[SAM
 Coupé,role="external"] (the powerful quite compatible cousin of ZX
 Spectrum) would not be a trivial task, because of the quite different
 OS and memory bank switching, but feasible.
 
-At the time of writing the only planned port is for
-http://specnext.com[ZX Spectrum Next].
+At the time of writing the *planned ports are IDEDOS and NextOS*.
 
 === Summary of the DOS support
+
+==== +3DOS
+
+// tag::plus3dos_support_summary[]
+
+Block disks are fully supported, but most file-management words are
+not implemented yet, though standard Forth words are better supported
+than on G+DOS or TR-DOS.
+
+NOTE: Only double-sided 80-track disk drives (i.e. 780-KiB disks) are
+supported.
+
+// end::plus3dos_support_summary[]
 
 ==== G+DOS
 
@@ -146,22 +153,11 @@ not implemented yet, especially the standard Forth words.
 Block disks are fully supported, but many file-management words are
 not implemented yet, especially the standard Forth words.
 
-NOTE: Only double-sided 80-track disks (i.e. 640 KiB) are supported
-for Forth blocks. Other formats can be used for files.
+NOTE: Only double-sided 80-track disk drives (i.e. 640-KiB disks) are
+supported for Forth blocks. Other formats can be used, but only for
+files.
 
 // end::trdos_support_summary[]
-
-==== +3DOS
-
-// tag::plus3dos_support_summary[]
-
-Block disks are fully supported, but most file-management words are
-not implemented yet, though standard Forth words are better supported
-than on G+DOS or TR-DOS.
-
-NOTE: Only double-sided 80-track disks (i.e. 780 KiB) are supported.
-
-// end::plus3dos_support_summary[]
 
 // tag::tree[]
 
@@ -268,15 +264,16 @@ disks/*/disk_2_programs.*
 disks/*/disk_3_workbench.*
 ....
 
-The subdirectory and the filename extension depend on the DOS, as
-follows:
+The subdirectory and the filename extension of every DOS are the
+following:
 
+.DOS subdirectories and disk image filename extensions
 |===
 | DOS    | Subdirectory | Filename extension
 
+| +3DOS  | plus3dos     | dsk
 | G+DOS  | gplusdos     | mgt
 | TR-DOS | trdos        | trd
-| +3DOS  | plus3dos     | dsk
 |===
 
 
@@ -288,8 +285,8 @@ follows:
   contain all the executables, and the right one will be selected
   automatically).
 - Disk 1 contains the library.
-- Disk 2 contains some little sample games, most of them under
-  development, and two block editors.
+- Disk 2 contains some programs: little sample games, most of them
+  under development, two block editors and one sound editor.
 - Disk 3 contains tests and benchmarks. Most of them were used during
   the development and their only documentation is the commented
   source.
@@ -313,7 +310,14 @@ DOS commands.
 2. "Insert" the disk image file <disks/trdos/disk_0_boot.trd> as disk
    'A'.
 3. Choose "TR DOS" from the computer start menu. This will enter the
-   TR-DOS command linefootnoteref:[trdoscli].
+   TR-DOS command linefootnoteref:[trdoscli,The TR-DOS command line
+   uses keyboard tokens, like the ZX Spectrum 48, but commands typed
+   in 'L' cursor mode will be recognized as well, as on the ZX
+   Spectrum 128 editor.  In order to get the 'L' cursor mode you can
+   type a quote (Symbol Shift + 'P') or press 'E' to get keyword
+   `REM`. When the DOS command is typed in full, the quote or the
+   `REM` must be removed from the start of the line before pressing
+   'Enter'.].
 4. Press the `R` key to get the `RUN` command and press the Enter key.
    Solo Forth will be loaded from disk.
 
@@ -356,36 +360,6 @@ DOS commands.
 3. Choose "128 TR DOS" from the computer start menu.  Solo Forth will
    be loaded from disk.
 
-=== ZX Spectrum 128/+2 with the Plus D interface
-
-1. Run a ZX Spectrum emulator and select a ZX Spectrum 128 (or ZX
-   Spectrum +2) with the Plus D disk interface.
-2. "Insert" the disk image file <disks/gplusdos/disk_0_boot.mgt> as
-   disk 1 of the Plus D disk interface.
-3. Choose "128 BASIC" from the computer start menu.
-4. Type `run` in BASIC. G+DOS will be loaded from disk, and Solo Forth
-   as well.
-
-=== ZX Spectrum 128/+2 with the Beta 128 interface
-
-1. Run a ZX Spectrum emulator and select a ZX Spectrum 128 (or ZX
-   Spectrum +2) with the Beta 128 interface.  Make sure the disk
-   drives configuration is double-sided 80-track disks.
-2. "Insert" the disk image file <disks/trdos/disk_0_boot.trd> as disk
-   A of the Beta 128 interface.
-3. Choose "128 BASIC" from the computer start menu.
-4. Type `randomize usr 15616` in BASIC (or just `run usr15360` to save
-   seven keystrokes). This will enter the TR-DOS command
-   linefootnoteref:[trdoscli,The TR-DOS command line uses keyboard
-   tokens, like the ZX Spectrum 48, but commands typed in 'L' cursor
-   mode will be recognized as well, as on the ZX Spectrum 128 editor.
-   In order to get the 'L' cursor mode you can type a quote (Symbol
-   Shift + 'P') or press 'E' to get keyword `REM`. When the DOS
-   command is typed in full, the quote or the `REM` must be removed
-   from the start of the line before pressing 'Enter'.].
-5. Press the `R` key to get the `RUN` command and press the Enter key.
-   Solo Forth will be loaded from disk.
-
 === ZX Spectrum +3/+3e
 
 // XXX REMARK -- A problem with Asciidoctor makes the rendering of the
@@ -404,6 +378,30 @@ DOS commands.
    of the drive) as disk 'A'.
 3. Choose "Loader" from the computer start menu. Solo Forth will be
    loaded from disk.
+
+=== ZX Spectrum 128/+2 with the Beta 128 interface
+
+1. Run a ZX Spectrum emulator and select a ZX Spectrum 128 (or ZX
+   Spectrum +2) with the Beta 128 interface.  Make sure the disk
+   drives configuration is double-sided 80-track disks.
+2. "Insert" the disk image file <disks/trdos/disk_0_boot.trd> as disk
+   A of the Beta 128 interface.
+3. Choose "128 BASIC" from the computer start menu.
+4. Type `randomize usr 15616` in BASIC (or just `run usr15360` to save
+   seven keystrokes). This will enter the TR-DOS command
+   linefootnoteref:[trdoscli].
+5. Press the `R` key to get the `RUN` command and press the Enter key.
+   Solo Forth will be loaded from disk.
+
+=== ZX Spectrum 128/+2 with the Plus D interface
+
+1. Run a ZX Spectrum emulator and select a ZX Spectrum 128 (or ZX
+   Spectrum +2) with the Plus D disk interface.
+2. "Insert" the disk image file <disks/gplusdos/disk_0_boot.mgt> as
+   disk 1 of the Plus D disk interface.
+3. Choose "128 BASIC" from the computer start menu.
+4. Type `run` in BASIC. G+DOS will be loaded from disk, and Solo Forth
+   as well.
 
 // end::run[]
 
@@ -443,26 +441,21 @@ the library, follow these steps:
 
 == Documentation
 
-An HTML manual is included in the <doc> directory (actually, there are
-three versions of the manual, one for each supported DOS, but at the
-moment the only difference is the glossary).  The manual is
-automatically built from the source files, which are almost fully
-documented, and from secondary files as well, like this README file,
-which in fact is an extract from the manual.
+The <doc> directory contains one version of the manual for every DOS
+supported, in HTML and PDF formats.
 
-The manual is a work in progress. At the moment it contains only the
-basic information required to use the Forth system and an almost
-complete glossary with cross references.
+The manual, which is automatically built from the library and other
+files, is a work in progress. At the moment it contains only a short
+description of the Forth system, the basic information required to use
+it and a complete glossary with cross references.
 
-The following sections are planned for a future version:
+The following improvements are planned for a future version:
 
 - A reference guide by subject, e.g. graphics, sound, blocks, files,
   control flow structures, etc.
 - A description of the library modules.
-
-Beside, in a next version of the manual, all Forth words will be links
-to the glossary entries. At the moment, only Forth words mentioned in
-the glossary are cross references.
+- Make all Forth words links to the glossary entries.  Currently only
+  Forth words mentioned in the glossary are cross references.
 
 NOTE: Glossary cross references to Forth words that contain a
 backslash, or that are included in code examples, are corrupted. This
