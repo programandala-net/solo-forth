@@ -879,6 +879,12 @@ Improve tab control.
 
 NOTE: Milestone: 0.14.0
 
+Deactivate documentation of `system` and friends.
+
+=== 2018-04-14
+
+NOTE: Milestone: 0.14.0
+
 Improve the width of table columns.
 
 === 2018-04-12
@@ -901,9 +907,7 @@ NOTE: Milestone: 0.14.0
 
 Errors in the PDF:
 
-- The link in the code example of `stringer` is converted by Glosara,
-  but not rendered later by Asciidoctor. A `subs` markup is needed.
-- Links corrupted in `*/_`, `*/`.
+- Names modified in `-->`, `->in/l`.
 
 === 2018-03-28
 
@@ -2606,6 +2610,7 @@ for the end user.
 NOTE: Milestone: 0.14.0
 
 Rename `cls-chars0` and `cls-chars1`.
+Rename `(load-program` to `load-program>`?
 
 === 2018-04-12
 
