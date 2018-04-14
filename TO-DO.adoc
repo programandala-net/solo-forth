@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-04-13
+:revdate: 2018-04-14
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -875,6 +875,12 @@ Improve tab control.
 // Documentation {{{1
 == Documentation
 
+=== 2018-04-14
+
+NOTE: Milestone: 0.14.0
+
+Improve the width of table columns.
+
 === 2018-04-12
 
 NOTE: Milestone: 0.14.0
@@ -897,11 +903,7 @@ Errors in the PDF:
 
 - The link in the code example of `stringer` is converted by Glosara,
   but not rendered later by Asciidoctor. A `subs` markup is needed.
-- Links with trailing or leading characters in `"y"`, `"n"`, `f~`,
-  `then`, `<=`, `0<=`, `>=`, `u<=`, "|" prefix words.  This looks a
-  Gforth issue with string manipulation.
-- Links corrupted in `(`, `*/_`, `*/`, `f~`, `ticks`, `?(`, `>name`,
-  `>oldest-name/fast` `>oldest-name/order`, `#kk`...
+- Links corrupted in `*/_`, `*/`.
 
 === 2018-03-28
 
