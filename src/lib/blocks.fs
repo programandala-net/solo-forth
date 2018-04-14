@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201804141517
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -280,11 +280,12 @@ variable loading-program
   \
   \ (load-program ( u -- ) "paren-load-program"
   \
-  \ Load a program, i.e. a set of blocks that are loaded as a
-  \ whole. The blocks of a program don't have block headers.
-  \ Therefore programs can not have internal requisites, i.e.
-  \ they use `need` only to load from the library, which must
-  \ be before the blocks of the program on the disk or disks.
+  \ Load a program from block _u_, i.e. a set of blocks that
+  \ are loaded as a whole. The blocks of a program don't have
+  \ block headers.  Therefore programs can not have internal
+  \ requisites, i.e.  they use `need` only to load from the
+  \ library, which must be before the blocks of the program on
+  \ the disk or disks.
   \
   \ Programs don't need `-->` or any similar word to control
   \ the loading of blocks.  The loading starts from block _u_
@@ -378,5 +379,7 @@ variable loading-program
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-04-14: Improve documentation.
 
   \ vim: filetype=soloforth

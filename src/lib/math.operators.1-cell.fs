@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072219
+  \ Last modified: 201804141539
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -972,7 +972,7 @@ unneeding */ ?\ : */ ( n1 n2 n3 -- n4 ) */mod nip ;
   \ Origin: fig-Forth, Forth-79 (Required Word Set), Forth-94
   \ (CORE), Forth-2012 (CORE).
   \
-  \ See: `*/mod`, `m*/`, `*`, `/`, '*/_`, `*/-`.
+  \ See: `*/mod`, `m*/`, `*`, `/`, `*/_`, `*/-`.
   \
   \ }doc
 
@@ -1039,7 +1039,7 @@ unneeding */_mod ?( need fm/mod
   \ _d_.  Divide _d_ by _n3_ (doing a floored division), giving
   \ the remainder _n4_ and the floored quotient _n5_.
   \
-  \ See: `*/mod`, `*/-rem`, `fm/mod`.
+  \ See: `*/mod`, `*/_`, `*/-rem`, `fm/mod`.
   \
   \ }doc
 
@@ -1344,5 +1344,7 @@ code join ( b1 b2 -- x )
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-07: Add words' pronunciaton.
+  \
+  \ 2018-04-14: Fix and improve documentation.
 
   \ vim: filetype=soloforth
