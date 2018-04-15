@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091538
+  \ Last modified: 201804152155
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -203,14 +203,14 @@ unneeding xdup ?( need x@ need >x
 
 unneeding xpick ?( need xp
 
-: xpick ( u -- x'u ) ( X: x'u ... x'0 -- x'u ... x'0 )
+: xpick ( u -- x#u ) ( X: x#u...x#0 -- x#u...x#0 )
   xp @ swap cells - @ ; ?)
 
   \ doc{
   \
-  \ xpick ( u -- x'u ) ( X: x'u ... x'0 -- x'u ... x'0 ) "x-pick"
+  \ xpick ( u -- x#u ) ( X: x#u...x#0 -- x#u...x#0 ) "x-pick"
   \
-  \ Remove _u_. Copy _x'u_ from the current `xstack` to the
+  \ Remove _u_. Copy _x#u_ from the current `xstack` to the
   \ data stack.
   \
   \ }doc
@@ -412,5 +412,7 @@ need xp0 need xlen need xdepth need .depth
   \ 2018-03-07: Add words' pronunciaton.
   \
   \ 2018-03-09: Update notation "address units" to "bytes".
+  \
+  \ 2018-04-15: Update notation ".." to "...".
 
   \ vim: filetype=soloforth

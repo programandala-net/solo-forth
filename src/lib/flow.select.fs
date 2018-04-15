@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712111822
+  \ Last modified: 201804152330
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -63,7 +63,7 @@ need cs-mark need cond need thens
 
   \ ----
   \  x1    equal ( test if x0 and x1 are equal )
-  \  x1 x2 range ( test if x0 is in the range x1..x2 )
+  \  x1 x2 range ( test if x0 is in the range x1 ... x2 )
   \ ----
 
   \ _<test>_ can be any code that leaves x0 and a flag (0|<>0).
@@ -111,14 +111,14 @@ need cs-mark need cond need thens
   \ }doc
 
 : endselect
-  \ Compilation: ( C: cs-mark a#1 .. a#n -- )
+  \ Compilation: ( C: cs-mark a#1 ... a#n -- )
   \ Run-time:    ( x0 -- )
   postpone drop postpone thens ; immediate compile-only
 
 
   \
   \ endselect
-  \   Compilation: ( C: cs-mark a#1 .. a#n -- )
+  \   Compilation: ( C: cs-mark a#1 ... a#n -- )
   \   Run-time:    ( x0 -- )
   \
   \ Terminate a `select` structure.
@@ -126,7 +126,7 @@ need cs-mark need cond need thens
   \ }doc
 
 : when
-  \ Compilation: ( C: cs-mark orig#1 .. orig#n -- )
+  \ Compilation: ( C: cs-mark orig#1 ... orig#n -- )
   \ Run-time:    ( xxx )
   postpone else >r >r >r postpone thens r> r> r>
   postpone drop ; immediate compile-only
@@ -135,7 +135,7 @@ need cs-mark need cond need thens
 
   \
   \ when
-  \   Compilation: ( C: cs-mark orig#1 .. orig#n -- )
+  \   Compilation: ( C: cs-mark orig#1 ... orig#n -- )
   \   Run-time:    ( xxx ) \ XXX TODO --
   \
   \ See: `select`.
@@ -217,5 +217,7 @@ need cs-mark need cond need thens
   \
   \ 2017-12-11: Use `cs-mark`. Update layout. Improve
   \ documentation. Fix usage of `thens`.
+  \
+  \ 2018-04-15: Update notation ".." to "...".
 
   \ vim: filetype=soloforth

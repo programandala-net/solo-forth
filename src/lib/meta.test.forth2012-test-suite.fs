@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803142353
+  \ Last modified: 201804152332
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -1185,7 +1185,7 @@ T{ 5 GI5 -> 5 123 }T -->
 
 ( forth2012-core-test )
 
-T{ : GI6 ( N -- 0,1,..N )
+T{ : GI6 ( n -- 0 1 ... n )
      DUP IF DUP >R 1- RECURSE R> THEN ; -> }T
 
 T{ 0 GI6 -> 0 }T
@@ -1388,7 +1388,7 @@ T{ GP3 -> <TRUE> }T
 : GP4  <# 1 0 #S #> S" 1" S= ;
 T{ GP4 -> <TRUE> }T
 
-24 CONSTANT MAX-BASE         \ BASE 2 .. 36
+24 CONSTANT MAX-BASE         \ BASE 2 ... 36
 : COUNT-BITS
    0 0 INVERT BEGIN DUP WHILE >R 1+ R> 2* REPEAT DROP ;
 COUNT-BITS 2* CONSTANT #BITS-UD      \ NUMBER OF BITS IN UD
@@ -3133,12 +3133,13 @@ VARIABLE NN2
 T{ NN1 @ EXECUTE -> 1234 }T
 T{ NN2 @ EXECUTE -> 9876 }T
 
-T{ :NONAME ( n -- 0,1,..n ) DUP IF DUP >R 1- RECURSE R> THEN ;
+T{ :NONAME ( n -- 0 1 ... n )
+   DUP IF DUP >R 1- RECURSE R> THEN ;
    CONSTANT RN1 -> }T
-T{ 0 RN1 EXECUTE -> 0 }T
-T{ 4 RN1 EXECUTE -> 0 1 2 3 4 }T
 
--->
+T{ 0 RN1 EXECUTE -> 0 }T
+
+T{ 4 RN1 EXECUTE -> 0 1 2 3 4 }T -->
 
 ( forth2012-coreext-test )
 
@@ -3901,7 +3902,7 @@ T{ : nmp  #8327 $-2cbe %011010111 ''' ;
   \ ===========================================================
 
 TESTING Definition names
-  \ should support {1..31} graphical characters
+  \ should support {1...31} graphical characters
 
 : !"#$%&'()*+,-./0123456789:;<=>? 1 ;
 T{ !"#$%&'()*+,-./0123456789:;<=>? -> 1 }T
@@ -7129,5 +7130,7 @@ cr .( Forth-2012 tests completed ) cr cr
   \ the file test.
   \
   \ 2018-03-14: Review the file test.
+  \
+  \ 2018-04-15: Update notation ".." to "...".
 
   \ vim: filetype=soloforth

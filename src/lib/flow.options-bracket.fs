@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802071853
+  \ Last modified: 201804152337
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -48,8 +48,9 @@ variable #options
   \
   \ default-option ( "name" -- )
   \
-  \ Set the default option "name" of an `options[ ]options`
-  \ structure.  It can be anywhere inside the structure.
+  \ Set the default option "name" of an ``options[ ...
+  \ ]options`` structure.  It can be anywhere inside the
+  \ structure.
   \
   \ See `options[` for a usage example.
   \
@@ -109,17 +110,18 @@ variable #options
   \
   \ Compilation: ( -- a1 a2 a3 )
   \
-  \ Start an `options[ ]options` structure.
+  \ Start an ``options[ ... ]options`` structure.
   \
   \ The addresses left on the stack will be resolved by
   \ `]options`:
-  \
+
   \ - a1 = address of exit point
   \ - a2 = address of the xt of the default option
   \ - a3 = address of number of options
   \
+
   \ Usage example:
-  \
+
   \ ----
   \ : say10      ." dek" ;
   \ : say100     ." cent" ;
@@ -136,7 +138,7 @@ variable #options
   \
   \ 10 say  100 say  1000 say  1001 say
   \ ----
-  \
+
   \ ``options[`` is an `immediate` and `compile-only` word.
   \
   \ }doc
@@ -148,8 +150,8 @@ variable #options
   \
   \ option ( x "name" -- )
   \
-  \ Compile the action "name" of an option _x_ in an `options[
-  \ ]options` control structure.
+  \ Compile the action "name" of an option _x_ in an ``options[
+  \ ... ]options`` control structure.
   \
   \ See `options[` for a usage example.
   \
@@ -168,12 +170,13 @@ variable #options
   \
   \ ]options ( a1 a2 a3 -- ) "right-bracket-options"
   \
-  \ End a `options[ ]options` structure. Resolve the addresses
-  \ left by `options[`:
-  \
+  \ End a ``options[ ... ]options`` structure. Resolve the
+  \ addresses left by `options[`:
+
   \ - a1 = address of exit point
   \ - a2 = address of default option xt
   \ - a3 = address of number of options
+
   \
   \ See `options[` for a usage example.
   \
@@ -196,5 +199,7 @@ variable #options
   \
   \ 2018-02-07: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-04-15: Update documentation markup and notation.
 
   \ vim: filetype=soloforth

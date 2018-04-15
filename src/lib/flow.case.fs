@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201804152328
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -44,7 +44,7 @@ cs-mark cconstant case immediate compile-only
   \   Run-time:    ( -- )
 
   \
-  \ Compilation: Mark the start of a ``case`` .. `endcase`
+  \ Compilation: Mark the start of a ``case`` ... `endcase`
   \ structure.
   \
   \ Run-time: Continue execution.
@@ -121,14 +121,14 @@ cs-mark cconstant case immediate compile-only
   \ }doc
 
 : endcase
-  \ Compilation: ( C: 0 orig#1 .. orig#n -- )
+  \ Compilation: ( C: 0 orig#1 ... orig#n -- )
   \ Run-time: ( x -- )
   postpone drop postpone thens ; immediate compile-only
 
   \ doc{
   \
   \ endcase
-  \   Compilation: ( C: 0 orig#1 .. orig#n -- )
+  \   Compilation: ( C: 0 orig#1 ... orig#n -- )
   \   Run-time:    ( x -- )
   \
   \ ``endcase`` is an `immediate` and `compile-only` word.
@@ -297,7 +297,7 @@ unneeding greater-of ?( need nup
   \   case
   \     10 of         ." ten!"            endof
   \     15 greater-of ." greater than 15" endof
-  \     ." less than 10 or 11 .. 15"
+  \     ." less than 10 or 11 ... 15"
   \   endcase ;
   \ ----
 
@@ -309,28 +309,28 @@ unneeding greater-of ?( need nup
 
 unneeding any-of ?( need any? need pick
 
-: (any-of) ( x#0 x#1 .. x#n n -- x#0 x#0 | x#0 0 )
+: (any-of) ( x#0 x#1 ... x#n n -- x#0 x#0 | x#0 0 )
   dup 1+ pick >r any? r> tuck and ;
 
   \ doc{
   \
-  \ (any-of) ( x#0 x#1 .. x#n n -- x#0 x#0 | x#0 0 ) "paren-any-of"
+  \ (any-of) ( x#0 x#1 ... x#n n -- x#0 x#0 | x#0 0 ) "paren-any-of"
   \
   \ The run-time factor of `any-of`.  If _x#0_ equals any of
-  \ _x#1 .. x#n_, return _x#0 x#0_; else return _x#0 0_.
+  \ _x#1 ... x#n_, return _x#0 x#0_; else return _x#0 0_.
   \
   \ }doc
 
 : any-of
   \ Compilation: ( C: -- of-sys )
-  \ Run-time: ( x#0 x#1 .. x#n n -- | x#0 )
+  \ Run-time: ( x#0 x#1 ... x#n n -- | x#0 )
   postpone (any-of) postpone of ; immediate compile-only ?)
 
   \ doc{
   \
   \ any-of
   \   Compilation: ( C: -- of-sys )
-  \   Run-time:    ( x#0 x#1 .. x#n n -- | x#0 )
+  \   Run-time:    ( x#0 x#1 ... x#n n -- | x#0 )
 
   \ A variant of `of`.
   \
@@ -343,8 +343,8 @@ unneeding any-of ?( need any? need pick
   \
   \ Run-time:
   \
-  \ If _x#0_ equals any of _x#1 .. x#n_, discard _x#1 .. x#n n_
-  \ and continue execution at the location specified by the
+  \ If _x#0_ equals any of _x#1 ... x#n_, discard _x#1 ... x#n
+  \ n_ and continue execution at the location specified by the
   \ consumer of _of-sys_, e.g., following the next `endof`.
   \ Otherwise, consume also _x0_ and continue execution in
   \ line.
@@ -580,5 +580,7 @@ unneeding within-of ?( need within
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-04-15: Update notation ".." to "...".
 
   \ vim: filetype=soloforth

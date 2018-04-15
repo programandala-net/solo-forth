@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804151833
+  \ Last modified: 201804152328
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -447,7 +447,7 @@ unneeding cond ?( need cs-mark need thens
   \   Run-time:    ( -- )
 
   \
-  \ Compilation: Mark the start of a ``cond`` .. `thens`
+  \ Compilation: Mark the start of a ``cond`` ... `thens`
   \ structure.  Leave _cs-mark_ on the control-flow stack, to
   \ be checked by `thens`.
   \
@@ -488,7 +488,7 @@ unneeding cond ?( need cs-mark need thens
 unneeding thens ?( need cs-test
 
 : thens
-  \ Compilation: ( C: cs-mark orig#1 .. orig#n -- )
+  \ Compilation: ( C: cs-mark orig#1 ... orig#n -- )
   \ Run-time:    ( -- )
   begin cs-test while postpone then repeat drop
   ; immediate compile-only ?)
@@ -496,22 +496,22 @@ unneeding thens ?( need cs-test
   \ doc{
   \
   \ thens
-  \   Compilation: ( C: cs-mark orig#1 .. orig#n -- )
+  \   Compilation: ( C: cs-mark orig#1 ... orig#n -- )
   \   Run-time:    ( -- )
 
   \
-  \ Compilation: Resolve all forward references _orig#1 ..
-  \ orign#n_ with `then` until _0_ is found.
+  \ Compilation: Resolve all forward references
+  \ _orig#1 ... orig#n_ with `then` until `cs-mark` is found.
   \
   \ Run-time: Continue execution.
   \
   \ ``thens`` is an `immediate` and `compile-only` word.
   \
   \ ``thens`` is a factor of `endcase` and other control
-  \ structures, but it's also the end of the `cond` ..
+  \ structures, but it's also the end of the `cond` ...
   \ ``thens`` structure. See `cond` for an usage example.
   \
-  \ See: `cs-mark`, `cs-test`, `andif`, `orif`.
+  \ See: `cs-test`, `andif`, `orif`.
   \
   \ }doc
 
@@ -688,6 +688,7 @@ unneeding orif ?(
   \
   \ 2018-04-14: Fix markup in documentation.
   \
-  \ 2018-04-15: Fix markup in documentation.
+  \ 2018-04-15: Fix markup in documentation.  Update notation
+  \ ".." to "...". Fix and Improve documentation.
 
   \ vim: filetype=soloforth

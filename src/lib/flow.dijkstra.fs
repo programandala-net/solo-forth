@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052055
+  \ Last modified: 201804152155
 
   \ ===========================================================
   \ Description
@@ -61,7 +61,7 @@ need cs-swap need cs-mark need thens
 
 : |if|
   \ ( -- )
-  \ ( C: orig ... orig1 -- orig ... orig2 )
+  \ ( C: orig...orig1 -- orig...orig2 )
   postpone ahead        \ new _orig2_
   cs-swap postpone then \ resolve old _orig1_
   ; immediate compile-only
@@ -70,14 +70,14 @@ need cs-swap need cs-mark need thens
   \
   \ |if| "bar-if-bar"
   \   Compilation: ( count -- count )
-  \                ( C: orig .. orig1 -- orig .. orig2 )
+  \                ( C: orig...orig1 -- orig...orig2 )
   \
   \ Part of the `{if` control structure.
   \
   \ }doc
 
 : if}
-  \ Compilation: ( -- ) ( C: cs-mark orig#1 .. orig#n -- )
+  \ Compilation: ( -- ) ( C: cs-mark orig#1...orig#n -- )
   postpone ahead
   cs-swap postpone then \ resolve old _orig_
   #-22 postpone literal postpone throw
@@ -88,7 +88,7 @@ need cs-swap need cs-mark need thens
   \
   \ if} "if-curly-bracket"
   \   Compilation: ( count -- )
-  \                ( C: orig#1 .. orig#n -- )
+  \                ( C: orig#...orig#n -- )
   \
   \ Terminate  a `{if` control structure.
   \
@@ -174,5 +174,7 @@ need cs-swap need cs-dup
   \
   \ 2018-03-05: Finish the improved version of `{if`, which
   \ uses `cs-mark` and `thens` instead of a counter.
+  \
+  \ 2018-04-15: Update notation ".." to "...".
 
   \ vim: filetype=soloforth

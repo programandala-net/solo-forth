@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091543
+  \ Last modified: 201804152333
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -12,8 +12,8 @@
   \ This program tests the core words of an ANS Forth system.
   \
   \ The test assumes a two's complement implementation where
-  \ the range of signed numbers is -2^(n-1)..2^(n-1)-1 and the
-  \ range of unsigned numbers is 0..2^(n)-1.
+  \ the range of signed numbers is -2^(n-1) ... 2^(n-1)-1 and
+  \ the range of unsigned numbers is 0 ... 2^(n)-1.
   \
   \ Some words are not tested: `key`, `quit`, `abort`, `abort"`
   \ `environment?`...
@@ -539,7 +539,7 @@ testing( begin while repeat until recurse)
 
 testing( recurse) need recurse
 
-{ : gi6 ( n -- 0,1,..n ) dup if dup >r 1- recurse r> then ;
+{ : gi6 ( n -- 0 1 ... n ) dup if dup >r 1- recurse r> then ;
 -> }
 
 { 0 gi6 -> 0 } { 1 gi6 -> 0 1 } { 2 gi6 -> 0 1 2 }
@@ -714,7 +714,7 @@ testing( <# # #s #> hold sign base >number hex decimal)
 
 ( hayes-test )
 
-24 constant max-base  \ base 2 .. 36
+24 constant max-base  \ base 2 ... 36
 : count-bits
   0 0 invert begin dup while >r 1+ r> 2* repeat drop ;
 
@@ -877,8 +877,8 @@ decimal cr .( Test passed) cr
   \ tests the core words of an ANS Forth system.
   \
   \ The test assumes a two's complement implementation where
-  \ the range of signed numbers is -2^(n-1)..2^(n-1)-1 and the
-  \ range of unsigned numbers is 0..2^(n)-1.
+  \ the range of signed numbers is -2^(n-1) ... 2^(n-1)-1 and
+  \ the range of unsigned numbers is 0 ... 2^(n)-1.
   \
   \ Some words are not tested: `key`, `quit`, `abort`, `abort"`
   \ `environment?`...
@@ -910,5 +910,7 @@ decimal cr .( Test passed) cr
   \
   \ 2018-03-09: Update notation "address units" to "bytes".
   \ Improve documentation.
+  \
+  \ 2018-04-15: Update notation ".." to "...".
 
   \ vim: filetype=soloforth

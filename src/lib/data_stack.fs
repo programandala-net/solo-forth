@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072314
+  \ Last modified: 201804152155
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -48,7 +48,7 @@ unneeding 2nip ?( code 2nip ( x1 x2 x3 x4 -- x3 x4 )
   \ }doc
 
 unneeding pick ?(
-code pick ( x#u .. x#1 x#0 u -- x#u .. x#1 x#0 x#u )
+code pick ( x#u...x#1 x#0 u -- x#u...x#1 x#0 x#u )
   E1 c,  29 c,  39 c,  C3 c, fetchhl , end-code ?)
     \ pop hl
     \ add hl,hl
@@ -57,7 +57,7 @@ code pick ( x#u .. x#1 x#0 u -- x#u .. x#1 x#0 x#u )
 
   \ doc{
   \
-  \ pick ( x#u .. x#1 x#0 u -- x#u .. x#1 x#0 x#u )
+  \ pick ( x#u...x#1 x#0 u -- x#u...x#1 x#0 x#u )
   \
   \ Remove _u_ copy the _x#u_ to the top of the stack.  ``0
   \ pick`` is equivalent to `dup` and ``1 pick`` is equivalent
@@ -74,7 +74,7 @@ unneeding unpick ?\ : unpick ( x u -- ) 2+ cells sp@ + ! ;
 
   \ doc{
   \
-  \ unpick ( x#u .. x#1 x#0 x u -- x .. x#1 x#0 )
+  \ unpick ( x#u...x#1 x#0 x u -- x...x#1 x#0 )
   \
   \ Remove _x_ and _u_. Replace _x#u_ with _x_.  ``0 unpick``
   \ is equivalent to `nip` (but much slower).
@@ -87,7 +87,7 @@ unneeding unpick ?\ : unpick ( x u -- ) 2+ cells sp@ + ! ;
 
 unneeding roll ?( need assembler need unresolved need >amark
 
-code roll ( x#u x#u-1 .. x#0 u -- x#u-1 .. x#0 x#u )
+code roll ( x#u x#u-1...x#0 u -- x#u-1...x#0 x#u )
 
   h pop, h addp, h d ldp, sp addp,
     \ pop hl
@@ -129,7 +129,7 @@ code roll ( x#u x#u-1 .. x#0 u -- x#u-1 .. x#0 x#u )
 
   \ doc{
   \
-  \ roll ( x#u x#u-1 .. x#0 u -- x#u-1 .. x#0 x#u )
+  \ roll ( x#u x#u-1...x#0 u -- x#u-1...x#0 x#u )
   \
   \ See: `pick`, `rot`.
   \
@@ -406,7 +406,7 @@ unneeding -dup ?( code -dup ( x -- x | x x )
 
 unneeding ndrop ?(
 
-code ndrop ( x1..xn n -- )
+code ndrop ( x1...xn n -- )
   E1 c, 29 c, EB c, 21 c, 0000 , 39 c, 19 c, F9 c,
     \ pop hl
     \ add hl,hl
@@ -419,7 +419,7 @@ code ndrop ( x1..xn n -- )
 
   \ doc{
   \
-  \ ndrop ( x1..xn n -- ) "n-drop"
+  \ ndrop ( x1...xn n -- ) "n-drop"
   \
   \ Drop _n_ cell items from the stack.
   \
@@ -429,7 +429,7 @@ code ndrop ( x1..xn n -- )
 
 unneeding 2ndrop ?(
 
-code 2ndrop ( dx1..dxn n -- )
+code 2ndrop ( dx1...dxn n -- )
 
   E1 c, 29 c, 29 c, EB c, 21 c, 0000 , 29 c, 19 c, F9 c,
     \ pop hl
@@ -444,7 +444,7 @@ code 2ndrop ( dx1..dxn n -- )
 
   \ doc{
   \
-  \ 2ndrop ( dx1..dxn n -- ) "two-n-drop"
+  \ 2ndrop ( dx1...dxn n -- ) "two-n-drop"
   \
   \ Drop _n_ double cell items from the stack.
   \
@@ -582,5 +582,7 @@ code >false ( x -- false ) E1 c, ' false jp, end-code ?)
   \ `4dup`.
   \
   \ 2018-03-07: Add words' pronunciaton.
+  \
+  \ 2018-04-15: Update notation ".." to "...".
 
   \ vim: filetype=soloforth

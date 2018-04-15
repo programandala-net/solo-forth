@@ -892,15 +892,6 @@ NOTE: Milestone: 0.14.0
 
 Improve the width of table columns.
 
-=== 2018-04-12, 2018-04-14
-
-NOTE: Milestone: 0.14.0
-
-Homogenize notation `..` for intervals and notation `...` for
-ellipsis.
-
-Some structures lack any; see `default-option`.
-
 === 2018-04-12
 
 NOTE: Milestone: 0.14.0

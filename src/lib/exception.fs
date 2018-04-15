@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201804152155
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -152,12 +152,12 @@ unneeding warning?( ?( need string-parameter
       [ 1000 300 - 256 91 - + ] literal - ;
   \ Legend:
   \   -90 = lowest error defined
-  \         in the standard range (-255..-1)
+  \         in the standard range (-255...-1)
   \  -300 = lowest error reserved for the Forth system
   \         (not including the DOS)
-  \         in the standard range (-4095..-256)
+  \         in the standard range (-4095...-256)
   \ -1000 = first (highest) error reserved for the DOS
-  \         in the standard range (-4095..-256)
+  \         in the standard range (-4095...-256)
 
   \ doc{
   \
@@ -167,10 +167,10 @@ unneeding warning?( ?( need string-parameter
   \ the library.
 
   \ ----
-  \ -n1 =    -90 ..   -1 \ Standard error codes
-  \         -300 .. -256 \ Solo Forth error codes
-  \        -1024 ..-1000 \ G+DOS error codes
-  \ +n2 =      1 ..  146
+  \ -n1 =    -90 ...    -1 \ Standard error codes
+  \         -300 ...  -256 \ Solo Forth error codes
+  \        -1024 ... -1000 \ G+DOS error codes
+  \ +n2 =      1 ...   146
   \ ----
 
   \ See: `error>line`.
@@ -325,6 +325,8 @@ s" Standard error codes" located errors-block !
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-04-15: Update notation ".." to "...".
 
   \ vim: filetype=soloforth
 

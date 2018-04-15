@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201804152329
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -52,7 +52,7 @@ code j ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
 unneeding k ?(
 
 code k ( -- n|u )
-  ( R: loop-sys1 .. loop-sys3 -- loop-sys1 .. loop-sys3 )
+  ( R: loop-sys1 ... loop-sys3 -- loop-sys1 ... loop-sys3 )
   2A c, rp ,  11 c, 6 cells ,  19 c,  C3 c, ' i 3 + , end-code
     \ ld hl,(return_stack_pointer)
     \ ld de,6*cell
@@ -63,7 +63,7 @@ code k ( -- n|u )
 
   \ doc{
   \
-  \ k ( -- n|u ) ( R: loop-sys1 .. loop-sys3 -- loop-sys1 .. loop-sys3 )
+  \ k ( -- n|u ) ( R: loop-sys1 ... loop-sys3 -- loop-sys1 ... loop-sys3 )
   \
   \ Return a copy _n|u_ of the second outer `loop` index.
   \
@@ -145,7 +145,7 @@ code k' ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
 
   \ doc{
   \
-  \ k' ( -- n|u ) ( R: loop-sys1 .. loop-sys3 -- loop-sys1 ..  loop-sys3 ) "k-tick"
+  \ k' ( -- n|u ) ( R: loop-sys1 ... loop-sys3 -- loop-sys1 ...  loop-sys3 ) "k-tick"
   \
   \ Return a copy _n|u_ of the limit of the second outer `loop`
   \ index.
@@ -179,5 +179,7 @@ code k' ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-04-15: Update notation ".." to "...".
 
   \ vim: filetype=soloforth

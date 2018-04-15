@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712172225
+  \ Last modified: 201804152330
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -77,12 +77,12 @@ variable anon> ( -- a )
   \
   \ }doc
 
-: set-anon ( x#n .. x#1 n -- )
+: set-anon ( x#n ... x#1 n -- )
   cells anon> @ swap bounds ?do i ! cell +loop ;
 
   \ doc{
   \
-  \ set-anon ( x#n .. x#1 n -- )
+  \ set-anon ( x#n ... x#1 n -- )
   \
   \ Store the given _n_ cells into the buffer pointed by
   \ `anon>`, which will be accessed by `anon`.
@@ -137,5 +137,7 @@ variable anon> ( -- a )
   \ 2017-12-16: Improve documentation.
   \
   \ 2017-12-17: Improve documentation.
+  \
+  \ 2018-04-15: Update notation ".." to "...".
 
   \ vim: filetype=soloforth
