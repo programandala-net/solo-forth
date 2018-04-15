@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201803091401
+  \ Last modified: 201804152140
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -48,7 +48,6 @@
     \ `latest-wordlist` init value
   \ XXX TODO -- update
 
-  \ doc{
   \
   \ extend ( -- )
   \
@@ -59,23 +58,20 @@
   \
   \ See: `system`.
   \
-  \ }doc
 
 : size ( -- u ) here 0 +origin - ;
 
-  \ doc{
   \
   \ size ( -- u )
   \
-  \ Size of the system.
+  \ _u_ is the size of the system, in bytes, i.e. the size of
+  \ data/code space.
   \
   \ See: `here`, `+origin`.
   \
-  \ }doc
 
 : system ( -- a len ) extend  0 +origin size 10 + ;
 
-  \ doc{
   \
   \ system ( -- a len )
   \
@@ -87,11 +83,9 @@
   \
   \ See: `extend`, `+origin`, `size`.
   \
-  \ }doc
 
 : turnkey ( xt -- a len ) boot defer! system ;
 
-  \ doc{
   \
   \ turnkey ( xt -- a len )
   \
@@ -104,7 +98,6 @@
   \
   \ See: `boot`, `system`.
   \
-  \ }doc
 
   \ ===========================================================
   \ Change log
@@ -118,5 +111,8 @@
   \ in the kernel.
   \
   \ 2018-03-09: Improve documentation.
+  \
+  \ 2018-04-15: Improve documentation of `size`. Deactivate the
+  \ documentation.
 
   \ vim: filetype=soloforth

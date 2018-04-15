@@ -890,12 +890,6 @@ the corresponding instances. Example:
 
 NOTE: Milestone: 0.14.0
 
-Deactivate documentation of `system` and friends.
-
-=== 2018-04-14
-
-NOTE: Milestone: 0.14.0
-
 Improve the width of table columns.
 
 === 2018-04-12, 2018-04-14
@@ -2740,6 +2734,13 @@ Options to make it easier to share code with other systems:
 
 // Project tree {{{1
 == Project tree
+
+// System {{{1
+== System
+
+=== 2018-04-15
+
+Finish `turnkey` and friends, or remove them.
 
 // Stacks {{{1
 == Stacks
