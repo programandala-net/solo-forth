@@ -246,6 +246,6 @@ code outlet-autochars ( a -- )
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
-  \ 2018-04-14. Fix markup in documentation.
+  \ 2018-04-14: Fix markup in documentation.
 
   \ vim: filetype=soloforth

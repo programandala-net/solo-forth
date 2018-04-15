@@ -1,13 +1,13 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-04-11
+:revdate: 2018-04-15
 :toc:
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 201804110013
+// Last modified: 201804151842
 
 // tag::description[]
 
@@ -387,7 +387,7 @@ DOS commands.
 2. "Insert" the disk image file <disks/trdos/disk_0_boot.trd> as disk
    A of the Beta 128 interface.
 3. Choose "128 BASIC" from the computer start menu.
-4. Type `randomize usr 15616` in BASIC (or just `run usr15360` to save
+4. Type `randomize usr 15616` in BASIC (or just `run usr15616` to save
    seven keystrokes). This will enter the TR-DOS command
    linefootnoteref:[trdoscli].
 5. Press the `R` key to get the `RUN` command and press the Enter key.

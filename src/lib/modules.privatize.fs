@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072253
+  \ Last modified: 201804152102
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -79,7 +79,7 @@ variable private-start  variable private-stop
   \ ----
   \ private{
   \
-  \ \ Everything between `private{` and `}private`
+  \ \ Everything between ``private{`` and ``}private``
   \ \ will become private.
   \
   \ : foo ;
@@ -87,8 +87,8 @@ variable private-start  variable private-stop
   \
   \ }private
   \
-  \ : goo   foo moo ;  \ can use `foo` and `moo`
-  \ privatize          \ hide `foo` and `moo`
+  \ : goo   foo moo ;  \ can use ``foo`` and ``moo``
+  \ privatize          \ hide ``foo`` and ``moo``
   \ ' foo              \ will fail
   \ ----
 
@@ -115,5 +115,7 @@ variable private-start  variable private-stop
   \ 2017-03-14: Improve documentation.
   \
   \ 2018-03-07: Add words' pronunciaton.
+  \
+  \ 2018-04-15: Fix markup in documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201804152056
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -138,8 +138,8 @@ unneeding ;and ?( need doer
   \ doer flashes
   \ cls \ does nothing
   \ : activate ( -- ) make cls page ;and ." cls is ready" ;
-  \ activate \ reconfigure `cls` and displays "cls is ready"
-  \ cls \ does `page`
+  \ activate \ reconfigure ``cls`` and display "cls is ready"
+  \ cls \ do ``page``
   \ ----
 
   \ ``;and`` is an `immediate` word.
@@ -184,5 +184,7 @@ unneeding undo ?( need doer
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-04-15: Fix markup in documentation.
 
   \ vim: filetype=soloforth

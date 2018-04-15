@@ -906,6 +906,6 @@ set-current  previous
   \ 2018-02-17: Improve documentation: add pronunciation to
   \ words that need it.
   \
-  \ 2018-04-14. Fix markup in documentation.
+  \ 2018-04-14: Fix markup in documentation.
 
   \ vim: filetype=soloforth

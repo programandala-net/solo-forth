@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201804142306
+; Last modified: 201804152103
 
 include version.z80s
 
@@ -10049,7 +10049,7 @@ endif
 ;   dup >r   -leading     ( ca1 len1 ) ( R: len0 )
 ;   over >r  bl scan      ( ca2 len2 ) ( R: len0 ca1 )
 ;   dup if  char-  then   \ skip trailing delimiter
-;   r> r> rot -  parsed   \ update `>in`
+;   r> r> rot -  parsed   \ update ``>in``
 ;   tuck -                ( ca len )
 ;   2dup parsed-name 2! ;
 ; ----
@@ -10057,7 +10057,8 @@ endif
 ; Origin: Forth-2012 (CORE EXT).
 ;
 ; See: `parse`, `parse-name-thru`, `parse-char`, `word`,
-; `parse-string`, `stream`, `scan`, `parsed`, `parsed-name`.
+; `parse-string`, `stream`, `scan`, `parsed`, `parsed-name`,
+; `>in`, `-leading`.
 ;
 ; }doc
 
@@ -15500,13 +15501,13 @@ execute_hl:
 ; : throw ( k*x n -- k*x | i*x n )
 ;   ?dup if
 ;     catcher @ ?dup 0=   \ no catcher?
-;     if error then       \ `error` does not return
+;     if error then       \ ``error`` does not return
 ;     rp!                 \ restore previous return stack
 ;     r> catcher !        ( n ) \ restore previous catcher
 ;     r> swap >r          ( saved-SP ) ( R: n )
 ;     sp! drop r>         ( n ) \ restore stack
-;     \ Return to the caller of `catch` because return stack is
-;     \ restored to the state that existed when `catch` began
+;     \ Return to the caller of ``catch`` because return stack is
+;     \ restored to the state that existed when ``catch`` began
 ;     \ execution.
 ;   then ;
 ; ----

@@ -202,7 +202,7 @@ variable mode-32iso-font  rom-font bl 8 * + mode-32iso-font !
   \
   \ 2018-03-08: Add words' pronunciaton.
   \
-  \ 2018-04-14. Fix markup in documentation.
+  \ 2018-04-14: Fix markup in documentation.
 
   \ vim: filetype=soloforth
 

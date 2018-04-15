@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804142244
+  \ Last modified: 201804152057
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1496,7 +1496,7 @@ create back-from-dos-error_ ( -- a ) asm
   \
   \ back-from-dos-error_ h ldp#, h push, 2066 sp stp,
   \   \ Set G+DOS D_ERR_SP ($2066) so an error will go to
-  \   \   `back-from-dos-error_` instead of returning to BASIC.
+  \   \   ``back-from-dos-error_`` instead of returning to BASIC.
   \   \   This is needed because we are using direct calls to the
   \   \   G+DOS ROM instead of hook codes.
   \
@@ -1504,11 +1504,11 @@ create back-from-dos-error_ ( -- a ) asm
   \
   \ dos-out, h pop, b pop, next ix ldp#, ' false jp, end-code
   \   \ Page out the G+DOS memory.
-  \   \ Consume the address of `back-from-dos-error_`
+  \   \ Consume the address of ``back-from-dos-error_``
   \   \   that was pushed at the start.
   \   \ Restore the Forth IP.
   \   \ Restore the Forth IX.
-  \   \ Return `false` _ior_ (no error).
+  \   \ Return ``false`` _ior_ (no error).
   \ ----
   \
   \ }doc
@@ -2133,6 +2133,8 @@ need write-file need read-file need .ufia
   \ 2018-04-09: Make `get-drive` return a fake _ior_, after
   \ +3DOS, which returns an actual one. Improve documentation.
   \
-  \ 2018-04-14. Fix markup in documentation.
+  \ 2018-04-14: Fix markup in documentation.
+  \
+  \ 2018-04-15: Fix markup in documentation.
 
   \ vim: filetype=soloforth

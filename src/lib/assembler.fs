@@ -770,6 +770,6 @@ set-current
   \
   \ 2018-03-07: Add words' pronunciaton.
   \
-  \ 2018-04-14. Fix markup in documentation.
+  \ 2018-04-14: Fix markup in documentation.
 
   \ vim: filetype=soloforth

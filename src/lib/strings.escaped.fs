@@ -535,6 +535,6 @@ need parse-char need char>string
   \
   \ 2018-04-12: Fix link in documentation.
   \
-  \ 2018-04-14. Fix typos in documentation.
+  \ 2018-04-14: Fix typos in documentation.
 
   \ vim: filetype=soloforth

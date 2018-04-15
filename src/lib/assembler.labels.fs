@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804142311
+  \ Last modified: 201804152059
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -192,8 +192,8 @@ variable labels  variable l-refs
   \               all bits are 0
   \            used reference:
   \               label number:        bits 0..5
-  \               relative reference?: bit 6 = 1 (mask `rl-id`)
-  \               absolute reference?: bit 7 = 1 (mask `al-id`)
+  \               relative reference?: bit 6 = 1 (mask ``rl-id``)
+  \               absolute reference?: bit 7 = 1 (mask ``al-id``)
   \ +1 = cell: label address
   \ ....
 
@@ -509,5 +509,7 @@ previous
   \ words that need it.
   \
   \ 2018-04-14: Fix documentation of `al-id`.
+  \
+  \ 2018-04-15: Fix markup in documentation.
 
   \ vim: filetype=soloforth

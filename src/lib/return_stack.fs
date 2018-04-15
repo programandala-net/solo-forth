@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091342
+  \ Last modified: 201804152051
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -150,7 +150,7 @@ code 2rdrop ( R: x1 x2 -- )
   \
   \ Remove _x1 x2_ from the return stack.
   \
-  \ See: `rdrop`,`2drop`.
+  \ See: `rdrop`, `2drop`.
   \
   \ }doc
 
@@ -224,5 +224,7 @@ code dup>r ( x -- x ) ( R: -- x )
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-09: Add words' pronunciaton.
+  \
+  \ 2018-04-15: Fix markup in documentation.
 
   \ vim: filetype=soloforth

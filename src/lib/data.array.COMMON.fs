@@ -177,7 +177,7 @@ code 2array< ( a1 n -- a2 )
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
-  \ 2018-04-14. Fix markup in documentation.
+  \ 2018-04-14: Fix markup in documentation.
 
   \ vim: filetype=soloforth
 

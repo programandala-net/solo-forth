@@ -214,6 +214,6 @@ set-current
   \
   \ 2017-12-09: Improve documentation.
   \
-  \ 2018-04-14. Fix markup in documentation.
+  \ 2018-04-14: Fix markup in documentation.
 
   \ vim: filetype=soloforth

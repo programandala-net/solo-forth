@@ -242,6 +242,6 @@ variable assert-level ( -- a ) 1 assert-level !
   \
   \ 2018-03-09: Add words' pronunciaton.
   \
-  \ 2018-04-14. Fix markup in documentation.
+  \ 2018-04-14: Fix markup in documentation.
 
   \ vim: filetype=soloforth

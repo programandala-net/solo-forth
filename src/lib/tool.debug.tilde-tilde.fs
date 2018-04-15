@@ -325,6 +325,6 @@ defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
   \ 2018-04-11: Update notation "double variable" to
   \ "double-cell variable".
   \
-  \ 2018-04-14. Fix documentation.
+  \ 2018-04-14: Fix documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201707031728
+  \ Last modified: 201804152100
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -151,7 +151,7 @@ need latest>wordlist need +order need -order need nextname
   \ ----
   \ package some-package
   \
-  \ \ This package's code relies on `place` appending a nul byte.
+  \ \ This package's code relies on ``place`` appending a nul byte.
   \
   \ : place ( ca1 len1 ca2 -- ) 2dup + 0 swap c!  place ;
   \
@@ -236,5 +236,7 @@ need latest>wordlist need +order need -order need nextname
   \ inline code that is not a cross reference.
   \
   \ 2017-03-14: Improve documentation.
+  \
+  \ 2018-04-15: Fix markup in documentation.
 
   \ vim: filetype=soloforth

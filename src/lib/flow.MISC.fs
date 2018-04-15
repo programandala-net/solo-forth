@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804142250
+  \ Last modified: 201804151833
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -209,11 +209,11 @@ unneeding 0repeat ?( need cs-dup
   \ : test ( -- )
   \     begin
   \       ...
-  \     flag 0repeat  \ Go back to `begin` if flag is zero
+  \     flag 0repeat  \ Go back to ``begin`` if flag is zero
   \       ...
-  \     flag ?repeat  \ Go back to `begin` if flag is non-zero
+  \     flag ?repeat  \ Go back to ``begin`` if flag is non-zero
   \       ...
-  \     flag until    \ Go back to `begin` if flag is false
+  \     flag until    \ Go back to ``begin`` if flag is false
   \     ...
   \   ;
   \ ----
@@ -686,6 +686,8 @@ unneeding orif ?(
   \
   \ 2018-03-28: Add `0leave`.
   \
-  \ 2018-04-14. Fix markup in documentation.
+  \ 2018-04-14: Fix markup in documentation.
+  \
+  \ 2018-04-15: Fix markup in documentation.
 
   \ vim: filetype=soloforth
