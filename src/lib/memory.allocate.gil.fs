@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201803091542
+  \ Last modified: 201804162001
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -143,8 +143,9 @@ wordlist dup constant gil-heap-wordlist dup set-current >order
     2dup = if  drop swap 0 unloop exit  then
   loop  2drop drop #-59 ;
   \ Locate _n1_ consecutive free chunks in the current heap.
-  \ If succesful, _n2_ is the first chunk of the group;
-  \ else return _ior_ #-59, the error code for `allocate`.
+  \ If the operation succeeds, _n2_ is the first chunk of the
+  \ group. If the operation fails, return I/O result code _ior_
+  \ #-59, the `throw` code for `allocate`.
 
 : chunk>address ( n1 -- a ) /chunk * heap-data + ;
 
@@ -191,7 +192,8 @@ wordlist dup constant gil-heap-wordlist dup set-current >order
   \ address of the allocated space and _ior_ is zero.
   \
   \ If the operation fails, _a_ does not represent a valid
-  \ address and _ior_ is #-59.
+  \ address and _ior_ is the I/O result code #-59, the `throw`
+  \ code for `allocate`.
   \
   \ ``gil-allocate`` is the action of `allocate` in the `heap`
   \ implementation based on written code written by Javier Gil,
@@ -287,6 +289,8 @@ previous ?)
   \ 2018-03-07: Add words' pronunciaton.
   \
   \ 2018-03-09: Update notation "address units" to "bytes".
+  \
+  \ 2018-04-16: Improve description of _ior_ notation.
 
   \ vim: filetype=soloforth
 

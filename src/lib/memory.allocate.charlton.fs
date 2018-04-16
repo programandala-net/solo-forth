@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091542
+  \ Last modified: 201804162002
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -339,7 +339,8 @@ variable nextnode
   \ address of the allocated space and _ior_ is zero.
   \
   \ If the operation fails, _a_ does not represent a valid
-  \ address and _ior_ is #-59.
+  \ address and the I/O resul code _ior_ is #-59, the `throw`
+  \ code for `allocate`.
   \
   \ ``charlton-allocate`` is the action of `allocate` in the
   \ memory `heap` implementation adapted from code written by
@@ -627,7 +628,8 @@ variable stash
   \ system according to the operation of `free`.
   \
   \ If the operation fails, _a2_ equals _a1_, the region of
-  \ memory at _a1_ is unaffected, and  _ior_ is #-61.
+  \ memory at _a1_ is unaffected, and  the I/O result code
+  \ _ior_ is #-61, the `throw` code for `resize`.
   \
   \ ``charlton-resize`` is the action of `resize` in the memory
   \ `heap` implementation adapted from code written by Gordon
@@ -688,5 +690,7 @@ set-current set-order
   \ 2017-04-16: Improve documentation.
   \
   \ 2018-03-09: Update notation "address units" to "bytes".
+  \
+  \ 2018-04-16: Improve description of _ior_ notation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804051202
+  \ Last modified: 201804161954
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -368,7 +368,7 @@ code (acat ( -- ior )
   \ (acat ( -- ior ) "paren-a-cat"
   \
   \ Display an abbreviated catalogue of the current disk and
-  \ return error result _ior_.  ``(acat`` is a factor of
+  \ return the I/O result code _ior_.  ``(acat`` is a factor of
   \ `acat`.
   \
   \ See: `set-drive`.
@@ -508,7 +508,7 @@ code (file>) ( ca len -- ior )
   \ destination address, else use the original address of the
   \ file.
   \
-  \ Return error result _ior_.
+  \ Return I/O result code _ior_.
   \
   \ ``(file>)`` is a factor of `file>`.
   \
@@ -535,7 +535,7 @@ code (file>) ( ca len -- ior )
   \ and then check also _ca2_: If _ca2_ is zero, use the
   \ original file address instead.
   \
-  \ Return error result _ior_.
+  \ Return I/O result code _ior_.
   \
   \ Example:
   \
@@ -633,9 +633,9 @@ code fda-filestatus ( -- a ior )
   \ fda-filestatus ( -- a ior ) "f-d-a-file-status"
   \
   \ Return the status of the file whose filename is stored at
-  \ `fda` If the file exists, _ior_ is zero and _a_ is `fda`,
-  \ the TR-DOS File Descriptor Area; otherwise _ior_ is the
-  \ corresponding result code and _a_ is useless.
+  \ `fda`. If the file exists, _ior_ is zero and _a_ is `fda`,
+  \ the TR-DOS File Descriptor Area. Otherwise _ior_ is the I/O
+  \ result code and _a_ is undefined.
   \
   \ See: `file-status`.
   \
@@ -652,8 +652,8 @@ unneeding file-status ?( need fda-filestatus need set-filename
   \
   \ Return the status of the file identified by the character
   \ string _ca len_. If the file exists, _ior_ is zero and _a_
-  \ is `fda`, the TR-DOS File Descriptor Area; otherwise _ior_
-  \ is the corresponding result code and _a_ is useless.
+  \ is `fda`, the TR-DOS File Descriptor Area.  Otherwise _ior_
+  \ is the I/O result code and _a_ is undefined.
   \
   \ Origin: Forth-94 (FILE-EXT), Forth-2012 (FILE-EXT).
   \
@@ -692,7 +692,7 @@ unneeding file-start  ?( need file-status need fda
   \ Return the file start address of the file named in the
   \ character string _ca1 len1_. If the file was successfully
   \ found, _ior_ is zero and _ca2_ is the start address.
-  \ Otherwise _ior_ is an exception code and _ca2_ is
+  \ Otherwise _ior_ is the I/O result code.  and _ca2_ is
   \ undefined.
   \
   \ See: `file-status`, `fda-filestart`.
@@ -711,7 +711,7 @@ unneeding file-len  ?( need file-status need fda
   \ Return the file length of the file named in the character
   \ string _ca1 len1_. If the file was successfully found,
   \ _ior_ is zero and _len2_ is the file length.  Otherwise
-  \ _ior_ is an exception code and _len2_ is undefined.
+  \ _len2_ is undefined and _ior_ is the I/O result code.
   \
   \ See: `file-status`, `fda-filelength`.
   \
@@ -728,8 +728,8 @@ unneeding file-type  ?( need file-status need fda
   \
   \ Return the TR-DOS file-type indentifier of the file named
   \ in the character string _ca len_. If the file was
-  \ successfully found, _ior_ is zero and _n_ is the file-type
-  \ identifier.  Otherwise _ior_ is an exception code and _n_
+  \ successfully found, _ior_ is zero and _c_ is its file-type
+  \ identifier.  Otherwise _ior_ is the I/O result code and _c_
   \ is undefined.
   \
   \ Note: In TR-DOS the file type is the 9th character of the
@@ -779,8 +779,8 @@ code fda-filedir# ( -- n ior )
   \ Return the file directory number of the file whose filename
   \ is stored at `fda` (File Descriptor Area). If the file was
   \ successfully found, _ior_ is zero and _n_ is the file
-  \ directory number.  Otherwise _ior_ is an exception code and
-  \ _n_ is undefined.
+  \ directory number.  Otherwise _ior_ is the I/O result code
+  \ and _n_ is undefined.
   \
   \ See: `file-dir#`, `fda-filestatus`.
   \
@@ -797,7 +797,8 @@ unneeding file-dir# ?( need fda-filedir# need set-filename
   \ Return the file directory number of the file named in the
   \ character string _ca len_. If the file was successfully
   \ found, _ior_ is zero and _n_ is the file directory number.
-  \ Otherwise _ior_ is an exception code and _n_ is undefined.
+  \ Otherwise _ior_ is the I/O result code and _n_ is
+  \ undefined.
   \
   \ See: `file-status`, `fda-filedir#`.
   \
@@ -817,7 +818,8 @@ unneeding file-sectors  ?( need file-status need fda
   \ Return the sectors occupied by the file named in the
   \ character string _ca len_. If the file was successfully
   \ found, _ior_ is zero and _n_ is the length in sectors.
-  \ Otherwise _ior_ is an exception code and _n_ is undefined.
+  \ Otherwise _ior_ is the I/O result code and _n_ is
+  \ undefined.
   \
   \ See: `file-status`, `fda-filesectors`.
   \
@@ -835,7 +837,8 @@ unneeding file-sector  ?( need file-status need fda
   \ Return the first sector of the first track of the file
   \ named in the character string _ca len_. If the file was
   \ successfully found, _ior_ is zero and _n_ is the sector.
-  \ Otherwise _ior_ is an exception code and _n_ is undefined.
+  \ Otherwise _ior_ is the I/O result code and _n_ is
+  \ undefined.
   \
   \ See: `file-status`, `fda-filesector`.
   \
@@ -852,8 +855,8 @@ unneeding file-track  ?( need file-status need fda
   \
   \ Return the first track of the file named in the character
   \ string _ca len_. If the file was successfully found, _ior_
-  \ is zero and _n_ is the track.  Otherwise _ior_ is an
-  \ exception code and _n_ is undefined.
+  \ is zero and _n_ is the track.  Otherwise _ior_ is the I/O
+  \ result code and _n_ is undefined.
   \
   \ See: `file-status`, `fda-filetrack`.
   \
@@ -876,8 +879,8 @@ code (delete-file) ( -- ior )
   \
   \ (delete-file) ( -- ior ) "paren-delete-file"
   \
-  \ Delete a disk file using the data hold in `dfa`.
-  \ Return an error result _ior_.
+  \ Delete a disk file using the data hold in `dfa`, returning
+  \ the I/O result code _ior_.
   \
   \ ``(delete-file)`` is a factor of `delete-file`.
   \
@@ -889,8 +892,8 @@ code (delete-file) ( -- ior )
   \
   \ delete-file ( ca len -- ior )
   \
-  \ Delete the disk file named in the string _ca len_ and
-  \ return an error result _ior_.
+  \ Delete the disk file named in the string _ca len_,
+  \ returning the I/O result code _ior_.
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
@@ -979,8 +982,8 @@ create tmp-filename /filename allot
   \
   \ undelete-file ( ca len -- ior )
   \
-  \ Undelete the disk file named in the string _ca len_ and
-  \ return an error result _ior_.
+  \ Undelete the disk file named in the string _ca len_,
+  \ returning the I/O result code _ior_.
   \
   \ TR-DOS deletes a file replacing its first character with
   \ byte 1.  ``undelete-file`` replaces the first character in
@@ -1163,10 +1166,10 @@ need read-file-descriptor need write-file-descriptor
     \ Get the complete version of _ca2 len2_ (with filetype),
     \ which was stored by `file-dir#` at `fda`, and preserve it.
   file-dir# ?dup if nip nip nip exit then
-    \ If _ca1 len1_ does not exists, exit with corresponding ior.
+    \ If _ca1 len1_ does not exists, exit with _ior_.
   dup >r read-file-descriptor ?dup if rdrop 2drop exit then
     \ Read file descriptor of _ca1 len1_, to complete the data at `fda`.
-    \ If read error, exit with whatever ior is left.
+    \ If read error, exit with whatever _ior_ is left.
   set-filename r> write-file-descriptor ;
     \ Patch the new filename and write `fda` to disk.
 
@@ -1175,8 +1178,8 @@ need read-file-descriptor need write-file-descriptor
   \ rename-file ( ca1 len1 ca2 len2 -- ior )
   \
   \ Rename the file named by the character string _ca1 len1_ to
-  \ the name in the character string _ca2 len2_ and return
-  \ error result _ior_.
+  \ the name in the character string _ca2 len2_, returning the
+  \ I/O result code _ior_.
   \
   \ WARNING: TR-DOS uses the 9th character of filenames as the
   \ filetype identifier.  When the filetype is not specified in
@@ -1299,5 +1302,8 @@ need read-file-descriptor need write-file-descriptor
   \
   \ 2018-04-05: Fix documentation of `2-block-drives`. Add
   \ `3-block-drives` and `4-block-drives`.
+  \
+  \ 2018-04-16: Improve description of _ior_ notation. Fix
+  \ documentation.
 
   \ vim: filetype=soloforth

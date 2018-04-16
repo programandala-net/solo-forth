@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804152057
+  \ Last modified: 201804161942
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -627,7 +627,8 @@ code get-drive ( -- n ior )
   \
   \ Get the current default drive _n_ (1 or 2), i.e. the drive
   \ implied by all file and block operations.  The default
-  \ drive is initially 1.  Return also an error result _ior_.
+  \ drive is initially 1.  Return also the I/O result code
+  \ _ior_.
   \
   \ ``get-drive`` is written in Z80.  Its equivalent definition
   \ in Forth is the following:
@@ -675,7 +676,7 @@ code (delete-file) ( -- ior )
   \ (delete-file) ( -- ior ) "paren-delete-file"
   \
   \ Delete a disk file using the data hold in `ufia`.
-  \ Return an error result _ior_.
+  \ Return the I/O result code _ior_.
   \
   \ ``(delete-file)`` is a factor of `delete-file`.
   \
@@ -688,7 +689,7 @@ code (delete-file) ( -- ior )
   \ delete-file ( ca len -- ior )
   \
   \ Delete the disk file named in the string _ca len_ and
-  \ return an error result _ior_.
+  \ return the I/O result code _ior_.
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
@@ -776,7 +777,7 @@ code (>file) ( -- ior )
   \ (>file) ( -- ior ) "paren-to-file"
   \
   \ Save a file to disk using the data hold in `ufia` and
-  \ return error result _ior_.
+  \ return the I/O result code _ior_.
   \
   \ ``(>file)`` is a factor of `>file`.
   \
@@ -789,7 +790,7 @@ code (>file) ( -- ior )
   \ >file ( ca1 len1 ca2 len2 -- ior ) "to-file"
   \
   \ Save memory region _ca1 len1_ to a file named by the string
-  \ _ca2 len2_, and return error result _ior_.
+  \ _ca2 len2_, and return the I/O result code _ior_.
   \
   \ See: `file>`, `(>file)`.
   \
@@ -831,7 +832,7 @@ code (file>) ( ca len -- ior )
   \ zero, use it as destination address, else use the file
   \ address stored in the file header instead.
   \
-  \ Return error result _ior_.
+  \ Return the I/O result code _ior_.
   \
   \ ``(file>)`` is a factor of `file>`.
   \
@@ -858,7 +859,7 @@ code (file>) ( ca len -- ior )
   \ and then check also _ca2_: If _ca2_ is zero, use the
   \ original file address instead.
   \
-  \ Return error result _ior_.
+  \ Return the I/O result code _ior_.
   \
   \ Example:
   \
@@ -913,10 +914,10 @@ code (file-status) ( -- a ior )
   \ (file-status) ( -- a ior ) "paren-file-status"
   \
   \ Return the status of the file whose name is hold in `ufia`.
-  \ If the file exists, its file header is read into `ufia`,
-  \ _a_ is the address returned by `ufia`, and _ior_ is zero.
-  \ If the file does not exists, _a_ is useless and _ior_ is
-  \ the corresponding error code.
+  \ If the file exists, _ior_ is zero and the file header is
+  \ read into _a_, which is the address returned by `ufia`,
+  \ Otherwise _ior_ is the I/O result code.  and _a_ is
+  \ undefined.
   \
   \ ``(file-status)`` is a low-level factor of `file-status`.
   \
@@ -931,7 +932,7 @@ code (file-status) ( -- a ior )
   \ Return the status of the file identified by the character
   \ string _ca len_. If the file exists, _ior_ is zero and _a_
   \ is the address returned by `ufia`.  Otherwise _ior_ is the
-  \ corresponding I/O result code and _a_ is useless.
+  \ I/O result code ond _a_ is undefined.
   \
   \ Origin: Forth-94 (FILE-EXT), Forth-2012 (FILE-EXT).
   \
@@ -970,7 +971,7 @@ unneeding file-start  ?( need file-status need ufia
   \ Return the file start address of the file named in the
   \ character string _ca1 len1_. If the file was successfully
   \ found, _ior_ is zero and _ca2_ is the start address.
-  \ Otherwise _ior_ is an exception code and _ca2_ is
+  \ Otherwise _ior_ is the I/O result code and _ca2_ is
   \ undefined.
   \
   \ See: `file-status`.
@@ -989,7 +990,7 @@ unneeding file-length  ?( need file-status need ufia
   \ Return the file length of the file named in the character
   \ string _ca1 len1_. If the file was successfully found,
   \ _ior_ is zero and _len2_ is the file length.  Otherwise
-  \ _ior_ is an exception code and _len2_ is undefined.
+  \ _ior_ is the I/O result code and _len2_ is undefined.
   \
   \ See: `file-status`.
   \
@@ -1007,7 +1008,8 @@ unneeding file-type  ?( need file-status need ufia
   \ Return the G+DOS file-type indentifier of the file named in
   \ the character string _ca len_. If the file was successfully
   \ found, _ior_ is zero and _n_ is the file-type identifier.
-  \ Otherwise _ior_ is an exception code and _n_ is undefined.
+  \ Otherwise _ior_ is the I/O result code and _n_ is
+  \ undefined.
   \
   \ See: `file-status`.
   \
@@ -1046,7 +1048,8 @@ unneeding file-dir#  ?( need file-status need ufia
   \ Return the file directory number of the file named in the
   \ character string _ca len_. If the file was successfully
   \ found, _ior_ is zero and _n_ is the file directory number.
-  \ Otherwise _ior_ is an exception code and _n_ is undefined.
+  \ Otherwise _ior_ is the I/O result code and _n_ is
+  \ undefined.
   \
   \ See: `file-status`.
   \
@@ -1067,8 +1070,8 @@ unneeding file-dirdesc  ?( need file-status need ufia
   \ Return the G+DOS file directory identifier of the file
   \ named in the character string _ca len_. If the file was
   \ successfully found, _ior_ is zero and _n_ is the file
-  \ directory identifier. Otherwise _ior_ is an exception code
-  \ and _n_ is undefined.
+  \ directory identifier.  Otherwise _ior_ is the I/O result
+  \ code and _n_ is undefined.
   \
   \ See: `file-status`.
   \
@@ -1196,7 +1199,7 @@ code (file>screen) ( -- ior )
 : file>screen ( ca len -- ior )
   0 0 2swap set-code-file (file>screen) ;
   \ Copy a file _ca len_ to the screen, line by line,
-  \ and return error result _ior_.
+  \ and return I/O result code _ior_.
 
 ( g.100h g.100i )
 
@@ -1353,7 +1356,7 @@ unneeding (cat ?( need pcat need ufia need hd00 need >ufia1
   \ Show a disk catalogue of the current drive, calling the
   \ corresponding G+DOS hook command, which uses the data in
   \ UFIA at _a_, which was already copied into `ufia1`. Return
-  \ error result _ior_.
+  \ I/O result code _ior_.
   \
   \ ``((cat`` is a low-level factor of `(cat`.
   \
@@ -1711,7 +1714,7 @@ code (rename-file ( -- ior )
   \ (rename-file ( -- ior ) "paren-rename-file"
   \
   \ Rename the file named by the filename stored in `ufia1` to
-  \ the filename stored in `ufia2`.  and return error result
+  \ the filename stored in `ufia2`.  and return I/O result code
   \ _ior_.
   \
   \ ``(rename-file`` is a factor of `rename-file`.
@@ -1731,7 +1734,7 @@ code (rename-file ( -- ior )
   \
   \ Rename the file named by the character string _ca1 len1_ to
   \ the name in the character string _ca2 len2_ and return
-  \ error result _ior_.
+  \ I/O result code _ior_.
   \
   \ Origin: Forth-94 (FILE EXT), Forth-2012 (FILE EXT).
   \
@@ -1766,11 +1769,9 @@ code (create-file ( ufia -- ior )
   \ empty file.
   \
   \ If the  file  was  successfully created  and  opened, _ior_
-  \ is  zero,  _fid_,  is  its identifier, and the file has
-  \ been positioned to the start of the file.
-  \
-  \ Otherwise, _ior_ is a G+DOS I/O result code and _fid_ is
-  \ undefined.
+  \ is  zero, _fid_ is  the file identifier and the file has
+  \ been positioned to the start of the file.  Otherwise, _ior_
+  \ is the I/O result code and _fid_ is undefined.
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
@@ -2136,5 +2137,9 @@ need write-file need read-file need .ufia
   \ 2018-04-14: Fix markup in documentation.
   \
   \ 2018-04-15: Fix markup in documentation.
+  \
+  \ 2018-04-14. Fix markup in documentation.
+  \
+  \ 2018-04-16: Improve description of _ior_ notation.
 
   \ vim: filetype=soloforth

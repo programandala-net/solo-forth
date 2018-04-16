@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804092114
+  \ Last modified: 201804161751
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -98,7 +98,8 @@ unneeding ?set-drive ?( need get-drive
   \
   \ If drive _c_ is not equal to the current default drive,
   \ returned by `get-drive`, use `set-drive` to make _c_ the
-  \ current default drive.
+  \ current default drive, returning I/O result code _ior_.
+  \ Otherwise do nothing, and _ior_ is zero.
   \
   \ ``?set-drive`` is used by `(>drive-block`, in order to
   \ update the current default drive only when needed, i.e.
@@ -356,5 +357,7 @@ unneeding get-block-drives ?( need block-drive@
   \ 2018-04-09: Improve documentation. Fix requirement of
   \ `?set-drive`. Fix `?set-drive`: replace the calculation,
   \ which failed with TR-DOS' drive 0, with an `if` structure.
+  \
+  \ 2018-04-16: Improve description of _ior_ notation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091541
+  \ Last modified: 201804161956
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -120,7 +120,7 @@ defer allocate ( u -- a ior )
   \ address of the allocated space and _ior_ is zero.
   \
   \ If the operation fails, _a_ does not represent a valid
-  \ address and _ior_ is an exception code.
+  \ address and _ior_ is the I/O result code.
   \
   \ ``allocate`` is a deferred word whose action can be
   \ `charlton-allocate` or `gil-allocate`, depending on the
@@ -156,8 +156,8 @@ defer resize ( a1 -- a2 ior )
   \ system according to the operation of `free`.
   \
   \ If the operation fails, _a2_ equals _a1_, the region of
-  \ memory at _a1_ is unaffected, and  ior is the
-  \ implementation-defined I/O result code.
+  \ memory at _a1_ is unaffected, and  ior is the I/O result
+  \ code.
   \
   \ ``resize`` is a deferred word whose action can be
   \ `charlton-resize`, depending on the `heap` implementation
@@ -181,7 +181,7 @@ defer free ( a -- ior )
   \ `allocate` or `resize`.
   \
   \ If the operation succeeds, _ior_ is zero. If the operation
-  \ fails, _ior_ is an exception code.
+  \ fails, _ior_ is the I/O result code.
   \
   \ ``free`` is a deferred word whose action can be
   \ `charlton-free` or `gil-free`, depending on the `heap`
@@ -354,5 +354,7 @@ unneeding set-heap
   \ 2018-03-07: Add words' pronunciaton.
   \
   \ 2018-03-09: Update notation "address units" to "bytes".
+  \
+  \ 2018-04-16: Improve description of _ior_ notation.
 
   \ vim: filetype=soloforth

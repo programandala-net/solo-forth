@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803292124
+  \ Last modified: 201804161949
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -103,8 +103,8 @@ code (rename-file ( ca1 ca2 -- ior )
   \ (rename-file ( ca1 ca2 -- ior ) "paren-rename-file"
   \
   \ Rename filename _ca1_ (a $FF-terminated string) to filename
-  \ _ca2_ (a $FF-terminated string) and return error result
-  \ _ior_.
+  \ _ca2_ (a $FF-terminated string) and return the I/O result
+  \ code _ior_.
   \
   \ ``(rename-file`` is a factor of `rename-file`.
   \
@@ -124,8 +124,8 @@ unneeding rename-file ?( need >filename need (rename-file
   \ rename-file ( ca1 len1 ca2 len2 -- ior )
   \
   \ Rename the file named by the character string _ca1 len1_ to
-  \ the name in the character string _ca2 len2_ and return
-  \ error result _ior_.
+  \ the name in the character string _ca2 len2_ and return the
+  \ I/O error code _ior_.
   \
   \ Origin: Forth-94 (FILE EXT), Forth-2012 (FILE EXT).
   \
@@ -258,7 +258,7 @@ code (delete-file ( ca -- ior )
   \ (delete-file ( ca -- ior ) "paren-delete-file"
   \
   \ Delete the disk file named in the $FF-terminated string
-  \ _ca_ and return an error result _ior_.
+  \ _ca_ and return the I/O result code _ior_.
   \
   \ ``(delete-file`` is a factor of `delete-file`.
   \
@@ -277,7 +277,7 @@ unneeding delete-file ?( need >filename need (delete-file
   \ delete-file ( ca len -- ior )
   \
   \ Delete the disk file named in the string _ca len_ and
-  \ return an error result _ior_.
+  \ return the I/O result code _ior_.
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
@@ -561,11 +561,9 @@ code (create-file ( ca fam fid -- fid ior )
   \ empty file.
   \
   \ If the  file  was  successfully created  and  opened, _ior_
-  \ is  zero,  _fid_,  is  its identifier, and the file has
-  \ been positioned to the start of the file.
-  \
-  \ Otherwise, _ior_ is a +3DOS I/O result code and _fid_ is
-  \ undefined.
+  \ is  zero, _fid_ is the file identifier and the file has
+  \ been positioned to the start of the file.  Otherwise _ior_
+  \ is the I/O result code and _fid_ is undefined.
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
@@ -621,11 +619,9 @@ code (open-file ( ca fam fid -- fid ior )
   \  _ca len_, and open it with file access method _fam_.
   \
   \ If the  file  was  successfully and  opened, _ior_ is zero,
-  \ _fid_,  is  its identifier, and the file has been
-  \ positioned to the start of the file.
-  \
-  \ Otherwise, _ior_ is a +3DOS I/O result code and _fid_ is
-  \ undefined.
+  \ _fid_  is  the file identifier and the file has been
+  \ positioned to the start of the file.  Otherwise _ior_ is
+  \ the I/O result code and _fid_ is undefined.
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
@@ -651,8 +647,8 @@ code (close-file ( fid -- ior )
   \
   \ (close-file ( fid -- ior ) "paren-close-file"
   \
-  \ Close the file identified by _fid_ and return error result
-  \ _ior_.
+  \ Close the file identified by _fid_ and return the I/O
+  \ result code _ior_.
   \
   \ ``(close-file`` is a factor of `close-file`.
   \ ``(close-file`` closes the file, but does not update
@@ -667,8 +663,8 @@ code (close-file ( fid -- ior )
   \
   \ close-file ( fid -- ior )
   \
-  \ Close the file identified by _fid_ and return error result
-  \ _ior_.
+  \ Close the file identified by _fid_ and return the I/O
+  \ result code _ior_.
   \
   \ See: `open-file`, `create-file`, `(close-file`.
   \
@@ -696,8 +692,8 @@ code file-position ( fid -- ud ior )
   \ file-position ( fid -- ud ior )
   \
   \ Return the the current file position _ud_ for the file
-  \ identified by _fid_, and error result _ior_. If _ior_ is
-  \ non-zero, _ud_ is undefined.
+  \ identified by _fid_, and the I/O result code _ior_. If
+  \ _ior_ is non-zero, _ud_ is undefined.
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
@@ -727,7 +723,7 @@ code reposition-file ( ud fid -- ior )
   \ reposition-file ( ud fid -- ior )
   \
   \ Reposition the file identified by _fid_ to _ud_ and return
-  \ error result _ior_.
+  \ the I/O result code _ior_.
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
@@ -751,15 +747,15 @@ code file-size ( fid -- d )
   \ file-size ( fid - ud ior )
   \
   \ _ud_ is  the  size, in  bytes,  of  the file  identified by
-  \ _fid_.  _ior_  is  error result.  This operation does not
-  \ affect the  value returned by `FILE-POSITION`.  _ud_ is
-  \ undefined if _ior_ is non-zero.
+  \ _fid_.  _ior_  is  the I/O result code.  This operation
+  \ does not affect the  value returned by `FILE-POSITION`.  If
+  \ _ior_ is non-zero, _ud_ is undefined.
   \
   \ WARNING: ``file-size`` returns unpredictable results on the
-  \ ZX Spectrum +3, because of a bug in the +3DOS ROM: _ud_ may
-  \ be correct, or rounded to 128-byte blocks, or correspond to
-  \ the previously checked file.  The bug was fixed in the
-  \ improved ROM of the ZX Spectrum +3e.
+  \ ZX Spectrum +2A/+2B/+3, because of a bug in the +3DOS ROM:
+  \ _ud_ may be correct, or rounded to 128-byte blocks, or
+  \ correspond to the previously checked file.  The bug was
+  \ fixed in the improved ROM of the ZX Spectrum +3e.
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
@@ -980,7 +976,7 @@ code (cat ( ca1 ca2 x -- n ior )
   \ _x_ (low byte) :: bit 0 set if system files are included
   \ _x_ (high byte) :: size of the buffer in entries, plus one (>=2)
   \ _n_ :: number of completed entries in buffer (if non-zero, there may be more to come)
-  \ _ior_ :: result error (if non-zero, _n_ is undefined)
+  \ _ior_ :: I/O result code (if non-zero, _n_ is undefined)
 
   \
   \ ``(cat`` is a factor of `wcat` and a direct interface to
@@ -1149,7 +1145,7 @@ code bank-write-file ( ca len fid +n -- ior )
   \ Write _len_ characters from address _ca_ to the file
   \ identified by _fid_ starting at its current position, while
   \ memory bank _+n_ is paged in addresses $C000..$FFFF.
-  \ Return input/output result _ior_.
+  \ Return I/O result code _ior_.
   \
   \ See: `write-file`, `write-byte`, `bank`, `create-file`,
   \ `open-file`.
@@ -1174,7 +1170,7 @@ code write-file ( ca len fid -- ior )
   \
   \ Write _len_ characters from address _ca_ to the file
   \ identified by _fid_ starting at its current position.
-  \ Return input/output result _ior_.
+  \ Return I/O result code _ior_.
   \
   \ See: `bank-write-file`, `write-byte`, `create-file`,
   \ `open-file`.
@@ -1213,12 +1209,12 @@ code read-file  ( ca len1 fid -- len2 ior )
   \
   \ If the operation is initiated when the value returned by
   \ `file-position` is equal to the value returned by
-  \ `file-size` for the file identified by _fid, _ior_ is zero
-  \ and _len2_ is zero.
+  \ `file-size` for the file identified by _fid, _len2_ is zero
+  \ and _ior_ is zero.
   \
-  \ If an exception occurs, _ior_ is the implementation-defined
-  \ I/O result code, and _len2_ is the number of characters
-  \ transferred to _ca_ without an exception.
+  \ If an exception occurs, _ior_ is the I/O result code and
+  \ _len2_ is the number of characters transferred to _ca_
+  \ without an exception.
   \
   \ At the conclusion of the operation, `file-position` returns
   \ the next file position after the last character read.
@@ -1306,9 +1302,9 @@ code bank-read-file  ( ca len fid +n -- ior )
   \ `file-size` for the file identified by _fid, _ior_ is zero
   \ and _len2_ is zero.
   \
-  \ If an exception occurs, _ior_ is the implementation-defined
-  \ I/O result code, and _len2_ is the number of characters
-  \ transferred to _ca_ without an exception.
+  \ If an exception occurs _ior_ is the I/O result code and
+  \ _len2_ is the number of characters transferred to _ca_
+  \ without an exception.
   \
   \ At the conclusion of the operation, `file-position` returns
   \ the next file position after the last character read.
@@ -1341,8 +1337,8 @@ code read-byte ( fid -- c ior )
   \
   \ read-byte ( fid -- c ior )
   \
-  \ Read byte _c_ from file _fid_, returning error resul _ior_.
-  \ If _ior_ is non-zero, _c_ is undetermined.
+  \ Read byte _c_ from file _fid_, returning I/O result code
+  \ _ior_.  If _ior_ is non-zero, _c_ is undetermined.
   \
   \ See: `write-byte`, `reposition-file`, `file-position`.
   \
@@ -1361,7 +1357,8 @@ code write-byte ( c fid -- ior )
   \
   \ write-byte ( c fid -- ior )
   \
-  \ Write byte _c_ to file _fid_, returning error resul _ior_.
+  \ Write byte _c_ to file _fid_, returning I/O result code
+  \ _ior_.
   \
   \ See: `read-byte`, `reposition-file`, `file-position`.
   \
@@ -1383,7 +1380,7 @@ unneeding write-line ?( need newline
   \ Write  _len_  characters  from  _ca_  followed  by  the
   \ line terminator returned by `newline` to the file
   \ identified by _fid_ starting at its current position.
-  \ _ior_ is the corresponding I/O result code.
+  \ _ior_ is the I/O result code.
   \
   \ At the conclusion of the operation,  `file-position`
   \ returns the next file  position after the  last character
@@ -1445,7 +1442,7 @@ variable read-line-len
   \ `file-size` for the file identified by _fid_, _f_ is false,
   \ _ior_ is zero, and _len2_ is zero. If  _ior_ is non-zero,
   \ an exception occurred during  the operation and _ior_ is
-  \ the corresponding error result code.
+  \ the I/O result code.
   \
   \ An ambiguous condition exists if the  operation is
   \ initiated when the value  returned by `file-position` is
@@ -1513,8 +1510,8 @@ code drive-unused ( c -- n ior )
   \
   \ drive-unused ( c -- n ior )
   \
-  \ Return unused kibibytes _n_ in drive _c_,
-  \ and the I/O result code _ior_.
+  \ Return unused kibibytes _n_ in drive _c_, and the I/O
+  \ result code _ior_.
   \
   \ See: `unused`, `farunused`.
   \
@@ -1539,8 +1536,9 @@ code get-user ( -- n ior )
   \
   \ get-user ( -- n ior )
   \
-  \ Get the current user area _n_, i.e. the user area
-  \ implied by all filenames that do not specify a user number.
+  \ Get the current user area _n_, i.e. the user area implied
+  \ by all filenames that do not specify a user number.  _ior_
+  \ is the I/O result code.
   \
   \ See: `set-user`, `get-drive`.
   \
@@ -1561,8 +1559,9 @@ code set-user ( n -- ior )
   \
   \ set-user ( n -- ior )
   \
-  \ Set the current user area _n_, i.e. the user area
-  \ implied by all filenames that do not specify a user number.
+  \ Set the current user area _n_, i.e. the user area implied
+  \ by all filenames that do not specify a user number.  _ior_
+  \ is the I/O result code.
   \
   \ See: `get-user`, `set-drive`.
   \
@@ -1653,5 +1652,7 @@ need reposition-file need file-position
   \ module. Add `flush-drive`, `drive-unused`, `eof?`.
   \
   \ 2018-03-29: Add `get-user` and `set-user`.
+  \
+  \ 2018-04-16: Update description of _ior_ stack notation.
 
   \ vim: filetype=soloforth
