@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804152330
+  \ Last modified: 201804162004
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,8 +27,8 @@
 
 unneeding cs-pick ?( need pick
 
-: cs-pick ( u -- ) ( C: x#u ... x#1 x#0 -- x#u ... x#1 x#0 x#u )
-  pick ; compile-only ?)
+: cs-pick pick ; compile-only ?)
+  \ ( u -- ) ( C: x#u ... x#1 x#0 -- x#u ... x#1 x#0 x#u )
 
   \ doc{
   \
@@ -181,5 +181,7 @@ unneeding cs-test ?( need cs-mark
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-04-15: Update notation ".." to "...".
+  \
+  \ 2018-04-16: Fix line too long.
 
   \ vim: filetype=soloforth
