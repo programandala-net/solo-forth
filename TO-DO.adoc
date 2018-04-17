@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-04-16
+:revdate: 2018-04-17
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1008,9 +1008,9 @@ corresponding library modules.
 Update the manual: RAM banks used as far memory, the RAM disk, the
 different configuration in +3DOS...
 
-=== 2017-02-28
+=== 2017-02-28, 2018-04-17
 
-The HTML manual is >1.2 MiB.  Build it also in several linked parts.
+The HTML manual is >2 MiB.  Build it also in several linked parts.
 
 === 2017-02-28
 
@@ -1048,11 +1048,6 @@ Update "Warning:" and "Note:" to Asciidoctor markup "WARNING:" and
 Make one single manual, not one for each DOS. The issue about cross
 references of homonymous words has been be solved, but all such links
 need to be updated with the filename.
-
-=== 2017-02-20
-
-Improve Glosara with a link-only mode, in order to convert words
-mentioned in the main manual to cross references.
 
 === 2017-02-17
 

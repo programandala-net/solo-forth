@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201804110124
+# Last modified: 201804171840
 # See change loge at the end of the file.
 
 # ==============================================================
@@ -631,6 +631,18 @@ backgrounds/current.scr: backgrounds/current.pbm
 %.glossary.adoc: %.files.txt
 	glosara --level=3 --input=$< > $@
 
+%.linked.adoc: %.adoc
+	glosara --annex $< > $@
+
+tmp/doc.stack_notation.linked.adoc: src/doc/stack_notation.adoc
+	glosara --annex $< > $@
+
+tmp/doc.z80_flags_notation.linked.adoc: src/doc/z80_flags_notation.adoc
+	glosara --annex $< > $@
+
+tmp/doc.README.linked.adoc: README.adoc
+	glosara --annex $< > $@
+
 %.docbook: %.adoc
 	asciidoctor --backend=docbook --out-file=$@ $<
 
@@ -679,7 +691,8 @@ tmp/doc.gplusdos.files.txt: \
 
 tmp/doc.gplusdos.manual_skeleton.adoc: \
 	src/doc/manual_skeleton.adoc \
-	src/version.z80s
+	src/version.z80s \
+	tmp/doc.README.linked.adoc
 	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
 	sed -e "s/%DOS%/G+DOS/" -e "s/%VERSION%/$${version}/" $< > $@
 
@@ -690,9 +703,9 @@ doc/gplusdos_solo_forth_manual.docbook: tmp/doc.gplusdos.manual.docbook
 	sed -e "s/<literal><link/<link/g" -e "s/<\/link><\/literal>/<\/link>/g" $< > $@
 
 tmp/doc.gplusdos.manual.adoc: \
-	tmp/doc.gplusdos.manual_skeleton.adoc \
-	src/doc/stack_notation.adoc \
-	src/doc/z80_flags_notation.adoc \
+	tmp/doc.gplusdos.manual_skeleton.linked.adoc \
+	tmp/doc.stack_notation.linked.adoc \
+	tmp/doc.z80_flags_notation.linked.adoc \
 	src/doc/glossary_heading.adoc \
 	tmp/doc.gplusdos.glossary.adoc
 	cat $^ > $@
@@ -745,13 +758,15 @@ tmp/doc.plus3dos.files.txt: \
 
 tmp/doc.plus3dos.manual_skeleton.adoc: \
 	src/doc/manual_skeleton.adoc \
-	src/version.z80s
+	src/version.z80s \
+	tmp/doc.README.linked.adoc
 	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
 	sed -e "s/%DOS%/+3DOS/" -e "s/%VERSION%/$${version}/" $< > $@
 
 tmp/doc.plus3dos.manual.adoc: \
-	tmp/doc.plus3dos.manual_skeleton.adoc \
-	src/doc/stack_notation.adoc \
+	tmp/doc.plus3dos.manual_skeleton.linked.adoc \
+	tmp/doc.stack_notation.linked.adoc \
+	tmp/doc.z80_flags_notation.linked.adoc \
 	src/doc/glossary_heading.adoc \
 	tmp/doc.plus3dos.glossary.adoc
 	cat $^ > $@
@@ -790,13 +805,15 @@ tmp/doc.trdos.files.txt: \
 
 tmp/doc.trdos.manual_skeleton.adoc: \
 	src/doc/manual_skeleton.adoc \
-	src/version.z80s
+	src/version.z80s \
+	tmp/doc.README.linked.adoc
 	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
 	sed -e "s/%DOS%/TR-DOS/" -e "s/%VERSION%/$${version}/" $< > $@
 
 tmp/doc.trdos.manual.adoc: \
-	tmp/doc.trdos.manual_skeleton.adoc \
-	src/doc/stack_notation.adoc \
+	tmp/doc.trdos.manual_skeleton.linked.adoc \
+	tmp/doc.stack_notation.linked.adoc \
+	tmp/doc.z80_flags_notation.linked.adoc \
 	src/doc/glossary_heading.adoc \
 	tmp/doc.trdos.glossary.adoc
 	cat $^ > $@
@@ -1075,3 +1092,8 @@ oldbackup:
 # making the PDF versions of the manual.
 #
 # 2018-04-11: Create gzipped PDF.
+#
+# 2018-04-17: Link the Forth words of the manual to the
+# glossary, using the new `--annex` option of Glosara. Fix:
+# make the +3DOS and TR-DOS manuals depend also on the Z80
+# flags notation document.

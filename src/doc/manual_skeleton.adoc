@@ -1,6 +1,6 @@
 = Solo Forth %VERSION% %DOS%
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-04-12
+:revdate: 2018-04-17
 :toc:
 :toclevels: 1
 :toc-placement!:
@@ -9,7 +9,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201804110013
+// Last modified 201804171820
 
 toc::[]
 
@@ -17,15 +17,15 @@ toc::[]
 
 // == Description
 
-include::../README.adoc[tags=description]
+include::doc.README.linked.adoc[tags=description]
 
 // == History and current status
 
-include::../README.adoc[tags=history]
+include::doc.README.linked.adoc[tags=history]
 
 // == Supported computers and disk operating systems
 
-include::../README.adoc[tags=computers]
+include::doc.README.linked.adoc[tags=computers]
 
 == DOS support
 
@@ -33,7 +33,7 @@ include::../README.adoc[tags=computers]
 
 ==== Summary
 
-include::../README.adoc[tags=plus3dos_support_summary]
+include::doc.README.linked.adoc[tags=plus3dos_support_summary]
 
 ==== Rationale
 
@@ -44,7 +44,7 @@ excellent and very well documented.
 
 ==== Summary
 
-include::../README.adoc[tags=gplusdos_support_summary]
+include::doc.README.linked.adoc[tags=gplusdos_support_summary]
 
 ==== Rationale
 
@@ -60,7 +60,7 @@ projects in Solo Forth, because of its excellent features:
 
 ==== Summary
 
-include::../README.adoc[tags=trdos_support_summary]
+include::doc.README.linked.adoc[tags=trdos_support_summary]
 
 ==== Rationale
 
@@ -74,7 +74,7 @@ Forth blocks or files), but it haves some interesting features:
   drive, using the library on the second drive during the process, and
   also reading or manipulating the files on the first drive (for
   example, graphics); or just to use a total of 2544 Forth blocks
-  (`636 4 *`).
+  (``636 4 *``).
 - TR-DOS is used by Pentagon and Scorpion, the powerful Russian clones
   of ZX Spectrum.
 
@@ -240,11 +240,11 @@ Solo Forth can be downloaded from two sites:
 
 // == Directory tree
 
-include::../README.adoc[tags=tree]
+include::doc.README.linked.adoc[tags=tree]
 
 // == Disks
 
-include::../README.adoc[tags=disks]
+include::doc.README.linked.adoc[tags=disks]
 
 === About the disk image formats
 
@@ -290,11 +290,11 @@ disk (block 0) will be shown as block 4.
 
 // == How to run
 
-include::../README.adoc[tags=run]
+include::doc.README.linked.adoc[tags=run]
 
 // == Library
 
-include::../README.adoc[tags=library]
+include::doc.README.linked.adoc[tags=library]
 
 === Library index
 
@@ -315,7 +315,7 @@ interactively.
 
 How to use the library index:
 
-1. Load the indexer with `need make-thru-index`.
+1. Load the indexer with ``need make-thru-index``.
 2. Make the index and activate it with `make-thru-index`.
 3. The default behaviour (no index) can be restored with
    `use-no-index`.  The index can be reactivated with
@@ -323,9 +323,9 @@ How to use the library index:
 
 The indexer creates an index (actually, a Forth word list whose
 definitions use no code or data space) and changes the default
-behaviour of `need` and related words to use it. Then `need name` will
-automatically start loading the first block where the word "name" is
-defined.
+behaviour of `need` and related words to use it. Then ``need name``
+will automatically start loading the first block where the word "name"
+is defined.
 
 :indexnote: Test done on Solo Forth 0.12.0 on ZX Spectrum 128.
 
@@ -354,11 +354,11 @@ sources for a regular expression: <tools/search_library>,
 <tools/search_kernel> and <tools/search_source> (to search all files
 in the <src> directory).
 
-The scripts use `ack`. In order to use the more common `grep`, edit
-the files.  `ack` and `grep` are compatible.
+The scripts use ``ack``. In order to use the more common ``grep``,
+edit the files.  ``ack`` and ``grep`` are compatible.
 
 Their first parameter is the regular expression. An optional second
-parameter is passed to `ack`.
+parameter is passed to ``ack``.
 
 Usage examples:
 
@@ -371,7 +371,7 @@ tools/search_library "\-bank"
 tools/search_library "code\s+\S+\s+\("
 ----
 
-== How to use more than one block disks
+== How to use more than one block disk
 
 The programs included in disk 2, and the tests and benchmarks included
 in disk 3, need to load words from the library, which is in disk 1.
@@ -385,19 +385,19 @@ disk 1:
 . <<_run,Run Solo Forth>>.
 . Insert the library disk image (disk 1) into the first drive.
 . Insert the programs disk image (disk 2) into the second drive.
-. Execute command `1 load` in order to load the `need` utility from
+. Execute command ``1 load`` in order to load the `need` utility from
   the library disk.
-. Execute command `need 2-block-drives`, which loads `2-block-drives`
-  from the library disk and executes it, setting the first and the
-  second drives as block drives.
-. Execute command `need tt`, which locates the first block of the game
-  (in disk 2) and loads it, loading its requirements from the library
-  (disk 1) as needed.
+. Execute the command `need 2-block-drives`, which loads
+  `2-block-drives` from the library disk and executes it, setting the
+  first and the second drives as block drives.
+. Execute the command ``need tt``, which locates the first block of
+  the game (in disk 2) and loads it, loading its requirements from the
+  library (disk 1) as needed.
 . Follow the instructions.
 
 When `2-block-drives` is executed, the blocks of the first two disk
-drives are seen as one single set, i.e. `200 list` will list block 200
-from the first disk, but `750 list` will list the block from the
+drives are seen as one single set, i.e. ``200 list`` will list block
+200 from the first disk, but ``750 list`` will list the block from the
 second disk:
 
 .Range of blocks per drive in normal order
@@ -416,13 +416,13 @@ Since TR-DOS can handle four disk drives, `3-block-drives` and
 configure any number of block drives in any order. Examples:
 
 ----
-    2 1 2 set-block-drives \ identical to `2-block-drives` on G+DOS
-'b' 'a' 2 set-block-drives \ identical to `2-block-drives` on +3DOS
-    1 0 2 set-block-drives \ identical to `2-block-drives` on TR-DOS
+    2 1 2 set-block-drives \ identical to ``2-block-drives`` on G+DOS
+'b' 'a' 2 set-block-drives \ identical to ``2-block-drives`` on +3DOS
+    1 0 2 set-block-drives \ identical to ``2-block-drives`` on TR-DOS
     1 2 2 set-block-drives \ use both drives in reverse order on G+DOS
   2 3 1 3 set-block-drives \ use three drives in special order on TR-DOS
-  2 1 0 3 set-block-drives \ identical to `3-block-drives` on TR-DOS
-3 2 1 0 4 set-block-drives \ identical to `4-block-drives` on TR-DOS
+  2 1 0 3 set-block-drives \ identical to ``3-block-drives`` on TR-DOS
+3 2 1 0 4 set-block-drives \ identical to ``4-block-drives`` on TR-DOS
 ----
 
 [id=_test]
@@ -443,29 +443,29 @@ First, in order to access disk image number 3, follow these steps:
   <<_disks,actual subdirectory and filename>> depend on your DOS) into
   the second disk drive of your emulated machine, if it's not already
   "inserted".
-. Enter command `1 load` to load the `need` tool.
-. Enter command `need 2-block-drives` to set the first two disk drives
+. Enter command ``1 load`` to load the ``need`` tool.
+. Enter command ``need 2-block-drives`` to set the first two disk drives
   as block drives, in their normal order.
 
 Now the first two disk drives are used as block drives, and `need`
 will search both of them in the normal order: first the first one (the
 library), then the second one (the benchmarks and tests).
 
-Note `need 2-block-drives` not only loads the word `2-block-drives`,
+Note ``need 2-block-drives`` not only loads the word `2-block-drives`,
 but also executes it. This is equivalent to the following commands:
 
-- On G+DOS: `need set-block-drives 2 1 2 set-block-drives`
-- On TR-DOS: `need set-block-drives 1 0 2 set-block-drives`
-- On +3DOS: `need set-block-drives 'B' 'A' 2 set-block-drives`
+- On G+DOS: ``need set-block-drives 2 1 2 set-block-drives``
+- On TR-DOS: ``need set-block-drives 1 0 2 set-block-drives``
+- On +3DOS: ``need set-block-drives 'B' 'A' 2 set-block-drives``
 
 Second, depending on the code you want to run, enter the corresponding
 command:
 
-. `need hayes-test`
-. `need byte-magazine-benchmark`
-. `need interface-age-benchmark`
-. `need vector-loop-benchmark`
-. `need all-benchmarks` to run all the three benchmarks above
+. ``need hayes-test``
+. ``need byte-magazine-benchmark``
+. ``need interface-age-benchmark``
+. ``need vector-loop-benchmark``
+. ``need all-benchmarks`` to run all the three benchmarks above
 
 [id=_write]
 == How to write Forth programs
@@ -496,9 +496,9 @@ needed, and the library modules included in disk 1 (the library disk),
 which usually also contains the source of the program.  If the program
 does not need to use the disk at run-time, you can simply copy the
 default disk 0, and boot it to load your program from block 1 of your
-customized disk 1, with a simple `1 load`. When the loading finishes,
-you can save a system snapshot, in SZX format, using the corresponding
-option of your ZX Spectrum emulator.
+customized disk 1, with a simple ``1 load``. When the loading
+finishes, you can save a system snapshot, in SZX format, using the
+corresponding option of your ZX Spectrum emulator.
 
 Some games are provided as examples, in <<_disks,disk 2>>.  In order
 to try, improve and fix the Forth system during its development, two
@@ -538,15 +538,15 @@ images or the manual for your DOS of choice:
 
 .Commands to rebuild Solo Forth
 |===
-| DOS    | Computers         | Disk images                 | Documentation
+| DOS    | Computers         | Disk images                     | Documentation
 
-| All    | All               | `make all` or `make`        | `make doc`
-| +3DOS  | All               | `make plus3dos` or `make p` | `make plus3dosdoc` or `make pdoc`
-| G+DOS  | All               | `make gplusdos` or `make g` | `make gplusdosdoc` or `make gdoc`
-| TR-DOS | 128-KiB models    | `make t128`                 |
-| TR-DOS | All               | `make trdos` or `make t`    | `make trdosdoc` or `make tdoc`
-| TR-DOS | Pentagon 512/1024 | `make pentagon`             |
-| TR-DOS | Scorpion ZS 256   | `make scorpion`             |
+| All    | All               | ``make all`` or ``make``        | ``make doc``
+| +3DOS  | All               | ``make plus3dos`` or ``make p`` | ``make plus3dosdoc`` or ``make pdoc``
+| G+DOS  | All               | ``make gplusdos`` or ``make g`` | ``make gplusdosdoc`` or ``make gdoc``
+| TR-DOS | 128-KiB models    | ``make t128``                   |
+| TR-DOS | All               | ``make trdos`` or ``make t``    | ``make trdosdoc`` or ``make tdoc``
+| TR-DOS | Pentagon 512/1024 | ``make pentagon``               |
+| TR-DOS | Scorpion ZS 256   | ``make scorpion``               |
 |===
 
 The disk images will be created in the <disks> directory. The manual
