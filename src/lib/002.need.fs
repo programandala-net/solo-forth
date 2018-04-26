@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804091330
+  \ Last modified: 201804261301
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -183,14 +183,14 @@ defer located ( ca len -- block | false ) -->
 
 : ?located ( n -- ) \ cr ." ?located " dup .
                       \ XXX INFORMER
-  dup ?exit needed-word 2@ parsed-name 2! #-268 throw ;
+  ?exit needed-word 2@ parsed-name 2! #-268 throw ;
 
   \ doc{
   \
   \ ?located ( n -- ) "question-located"
   \
   \ If _n_ is zero, throw an exception #-268 ("needed, but
-  \ not located").
+  \ not located"). Otherwise do nothing.
   \
   \ }doc
 
@@ -211,14 +211,14 @@ defer reneeded ( ca len -- )
   \
   \ }doc
 
-: locate-reneeded ( ca len -- ) located ?located load ;
+: locate-reneeded ( ca len -- ) located dup ?located load ;
 
   \ doc{
   \
   \ locate-reneeded ( ca len -- )
   \
   \ Locate the first block whose header contains the string _ca
-  \ len_ (surrounded by spaces), and load it. If not found,
+  \ len_ (surrounded by spaces), and `load` it. If not found,
   \ throw an exception #-268 ("needed, but not located").
   \
   \ This is the default action of the deferred word
@@ -468,6 +468,7 @@ need use-default-need need  use-default-located
   \ }doc
 
 unneeding locate ?(
+
 : locate ( "name" -- block | false )
   parse-name >stringer located ; ?)
 
@@ -487,8 +488,9 @@ unneeding locate ?(
   \ }doc
 
 unneeding need-from ?( need locate
+
 : need-from ( "name" -- )
-  locate ?located first-locatable ! ; ?)
+  locate dup ?located first-locatable ! ; ?)
 
   \ doc{
   \
@@ -709,5 +711,8 @@ unneeding need-here ?(
   \ 2018-03-07: Add words' pronunciaton.
   \
   \ 2018-04-09: Update source style (remove double spaces).
+  \
+  \ 2018-04-26: Make `?located` consume its argument (its stack
+  \ comment was wrong, anyway). Improve documentation.
 
   \ vim: filetype=soloforth
