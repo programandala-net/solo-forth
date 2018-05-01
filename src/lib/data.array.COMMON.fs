@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804142246
+  \ Last modified: 201805011545
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -138,7 +138,7 @@ code 2array< ( a1 n -- a2 )
   \ Forth is the following:
 
   \ ----
-  \ : 2array> ( a1 n -- a2 ) [ 2 cells ] literal * + ;
+  \ : 2array< ( a1 n -- a2 ) [ 2 cells ] literal * + ;
   \ ----
 
   \ See: `2array>, `array<`.
@@ -178,6 +178,8 @@ code 2array< ( a1 n -- a2 )
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-04-14: Fix markup in documentation.
+  \
+  \ 2018-05-01: Fix typo in documentation.
 
   \ vim: filetype=soloforth
 

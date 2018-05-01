@@ -1,9 +1,9 @@
-  \ data.begin-stringtable.fsb
+  \ data.begin-stringtable.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802071851
+  \ Last modified: 201805011546
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -106,5 +106,7 @@ need array>
   \
   \ 2018-02-07: Improve documentation. Add the GNU Lesser
   \ General Public License v3.0.
+  \
+  \ 2018-05-01: Fix filename in the file header.
 
   \ vim: filetype=soloforth
