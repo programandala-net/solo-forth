@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803281508
+  \ Last modified: 201805131337
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -117,7 +117,7 @@ unneeding 'tab' ?\ 6 cconstant 'tab'  exit
 
   \ doc{
   \
-  \ 'tab' ( -- c ) "tick-tab"
+  \ 'tab' ( -- c ) "tick-tab-tick"
   \
   \ A character constant that returns the caracter code used as
   \ tabulator (6).
@@ -130,7 +130,7 @@ unneeding 'bs' ?\ 8 cconstant 'bs'  exit
 
   \ doc{
   \
-  \ 'bs' ( -- c ) "tick-b-s"
+  \ 'bs' ( -- c ) "tick-b-s-tick"
   \
   \ A character constant that returns the caracter code used as
   \ backspace (8).
@@ -143,7 +143,7 @@ unneeding 'cr' ?\ 13 cconstant 'cr'  exit
 
   \ doc{
   \
-  \ 'cr' ( -- c ) "tick-c-r"
+  \ 'cr' ( -- c ) "tick-c-r-tick"
   \
   \ A character constant that returns the caracter code used as
   \ carriage return (13).
@@ -156,7 +156,7 @@ unneeding 'lf' ?\ 10 cconstant 'lf'  exit
 
   \ doc{
   \
-  \ 'lf' ( -- c ) "tick-l-f"
+  \ 'lf' ( -- c ) "tick-l-f-tick"
   \
   \ A character constant that returns the caracter code used as
   \ line feed (10).
@@ -293,5 +293,7 @@ unneeding eol? ?( need newline need char-in-string?
   \ 2018-03-28: Add `'lf'`. Improve documentation. Remove
   \ `/newline`, making `newline>` the address of a counted
   \ string. Make `eol?` check `newline`.
+  \
+  \ 2018-05-13: Update pronunciation.
 
   \ vim: filetype=soloforth
