@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-04-17
+:revdate: 2018-05-31
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -570,6 +570,13 @@ Write far-memory versions of `avalue`, `2avalue` and `cavalue`.
 === 2016-12-30
 
 Add `aconstant`, an array of constants, after `avalue` and `avariable`.
+
+// Definers {{{1
+== Definers
+
+=== 2018-05-31
+
+Factor Gforth's `set-does>` from `(;code)`.
 
 // Dictionary {{{1
 == Dictionary
