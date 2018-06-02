@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806021850
+  \ Last modified: 201806022057
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -32,7 +32,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( delimited located needed-word )
+( delimited located )
 
 false constant [multiline-block-header] immediate
   \ Flag: compile the new version of `need`, which uses its own
@@ -43,44 +43,36 @@ false constant [multiline-block-header] immediate
 
   \ XXX UNDER DEVELOPMENT
 
-get-current wordlist dup constant need-wordlist set-current
-
-  \ doc{
-  \
-  \ need-wordlist ( -- wid )
-  \
-  \ A constant. _wid_ is the identifier of a word list used by
-  \ the `need` tool.
-  \
-  \ }doc
-
-: ( ( ca len "ccc" -- f )
+: in-blk-header? ( ca len -- f )
   begin 2dup parse-name
-        2dup type space \ XXX INFORMER
-        2dup s" )"
-        str= if 2drop 2drop 2drop b/buf >in ! false exit then
-        str= if 2drop             b/buf >in ! true  exit then
-  again ; set-current ?) -->
+        2dup s" )" str= if 2drop 2drop 2drop false exit then
+                   str= if 2drop             true  exit then
+  again ;
 
-  \ doc{
+  \ in-blk-header? ( ca len -- f )
   \
-  \ ( ( ca len "ccc" -- f )
+  \ Is name _ca len_ in the header of the current block, which
+  \ is a paren comment?
   \
-  \ Parse space-delimited words from the parse area, which is
-  \ supposed to be a block, searching for string _ca len_.  If
-  \ the word ")" is found, _f_ is false.  If the word _ca len_
-  \ is found, _f_ is true, and the parse area is discarded
-  \ until ")" is found.
+  \ See: `blk`, `in-block-header?`.
+
+: in-block-header? ( ca len u -- f )
+  nest-source block>source in-blk-header? unnest-source ;
+
+?) -->
+
+  \ in-block-header? ( ca len u -- f )
   \
-  \ This alternative definition of standard `(` is used by the
-  \ `need` tool in order to support multiline block headers.
-  \ It's defined in `need-wordlist`.
+  \ Is name _ca len_ in the header of block _u_, which is a
+  \ paren comment?
   \
-  \ }doc
+  \ See: `in-blk-header?`.
 
 ( ... )
 
-: contains ( ca1 len1 ca2 len2 -- f ) search nip nip ;
+[multiline-block-header]
+
+?\ : contains ( ca1 len1 ca2 len2 -- f ) search nip nip ;
   \ Does string _ca1 len1_ contain string _ca2 len2_?
   \
   \ ``contains`` is defined also in <strings.misc.fsb>, because
@@ -130,9 +122,11 @@ variable last-locatable  blocks/disk 1- last-locatable !
   \
   \ }doc
 
+[multiline-block-header] ?(
+
 : delimited ( ca1 len1 -- ca2 len2 )
   dup 2+ dup allocate-stringer swap ( ca1 len1 ca2 len2 )
-  2dup blank  2dup 2>r drop char+ smove 2r> ;
+  2dup blank  2dup 2>r drop char+ smove 2r> ; ?)
 
   \ doc{
   \
@@ -179,6 +173,10 @@ defer unlocated ( block -- )
   \ ----------------------------
     \ XXX INFORMER -- alternative options for debugging
 
+  home 2dup ." needed: " type space
+  cr ." latest: " latest .name space
+    \ XXX INFORMER
+
   ?dup 0= #-32 ?throw
   [multiline-block-header] ?\ delimited \ XXX OLD
   last-locatable @ 1+  first-locatable @
@@ -190,21 +188,22 @@ defer unlocated ( block -- )
 
   [multiline-block-header] ?( \ XXX OLD
 
-  ?do 0 i line>string 2over contains \ i home . \ XXX INFORMER
+  ?do 0 i line>string 2over contains
+      \ i home . \ cr ." block #" i . \ XXX INFORMER
       if 2drop i unloop exit then break-key? #-28 ?throw
       i unlocated loop 2drop 0 ?)
 
   [multiline-block-header] [ 0= ] ?( \ XXX NEW
 
-  \ XXX UNDER DEVELOPMENT
+    \ XXX UNDER DEVELOPMENT
 
-  need-wordlist >order
-  ?do cr ." Searching BLOCK #" i . ." for '" 2dup type
-      ." ' "
+  ?do 2dup i in-block-header?
+      0 2 at-xy i .
+      \ depth .  rp@ rp0 @ - [ cell negate ] literal / .
+      \ cr ." block #" i .
         \ XXX INFORMER
-      2dup i load if   2drop i previous unloop exit
-                  then break-key? #-28 ?throw
-      i unlocated loop 2drop 0 previous ?) ; -->
+      if 2drop i unloop exit then break-key? #-28 ?throw
+      i unlocated loop 2drop 0 ?) ; -->
   \ Note:
   \ Error #-32 is "invalid name argument".
   \ Error #-28 is "user interrupt".
@@ -250,6 +249,16 @@ defer located ( ca len -- block | false )
   \ }doc
 
 2variable needed-word  0. needed-word 2!
+
+  \ doc{
+  \
+  \ needed-word ( -- a )
+  \
+  \ A double-cell variable containing the address and length of
+  \ the string containing the word currently needed by `need`
+  \ and friends.
+  \
+  \ }doc
 
 : ?located ( n -- ) \ cr ." ?located " dup .
                       \ XXX INFORMER
@@ -785,8 +794,8 @@ unneeding need-here ?(
   \ 2018-04-26: Make `?located` consume its argument (its stack
   \ comment was wrong, anyway). Improve documentation.
   \
-  \ 2018-06-02: Draft new method, using `load` and a custom `(`
-  \ to parse the block header, in order to support multiline
-  \ block headers. Fix needing of `use-no-index`.
+  \ 2018-06-02: Draft an alternative `(located)` in order to
+  \ support multiline block headers. Fix needing of
+  \ `use-no-index`.  Document `needed-word`.
 
   \ vim: filetype=soloforth
