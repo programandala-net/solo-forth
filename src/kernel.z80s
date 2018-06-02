@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201804162133
+; Last modified: 201806021845
 
 include version.z80s
 
@@ -6759,7 +6759,7 @@ do_user:
 ; A constant.  _n_ is the number of bytes per `block` `buffer`:
 ; 1024.
 ;
-; Origin: fig-Forthfootnote[In fig-Forth the size of each disk
+; Origin: fig-Forthfootnote:[In fig-Forth the size of each disk
 ; buffer was the size of a disk sector, usually 128 bytes by the
 ; time.], Forth-79 (Reference Word Set), Forth-83 (Uncontrolled
 ; Reference Words).

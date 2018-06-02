@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804261301
+  \ Last modified: 201806021850
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,6 +33,52 @@
   \ this license.  There is no warranty.
 
 ( delimited located needed-word )
+
+false constant [multiline-block-header] immediate
+  \ Flag: compile the new version of `need`, which uses its own
+  \ variants of `(` and `)` to allow multiline block headers.
+  \ XXX TMP --
+
+[multiline-block-header] 0= ?(
+
+  \ XXX UNDER DEVELOPMENT
+
+get-current wordlist dup constant need-wordlist set-current
+
+  \ doc{
+  \
+  \ need-wordlist ( -- wid )
+  \
+  \ A constant. _wid_ is the identifier of a word list used by
+  \ the `need` tool.
+  \
+  \ }doc
+
+: ( ( ca len "ccc" -- f )
+  begin 2dup parse-name
+        2dup type space \ XXX INFORMER
+        2dup s" )"
+        str= if 2drop 2drop 2drop b/buf >in ! false exit then
+        str= if 2drop             b/buf >in ! true  exit then
+  again ; set-current ?) -->
+
+  \ doc{
+  \
+  \ ( ( ca len "ccc" -- f )
+  \
+  \ Parse space-delimited words from the parse area, which is
+  \ supposed to be a block, searching for string _ca len_.  If
+  \ the word ")" is found, _f_ is false.  If the word _ca len_
+  \ is found, _f_ is true, and the parse area is discarded
+  \ until ")" is found.
+  \
+  \ This alternative definition of standard `(` is used by the
+  \ `need` tool in order to support multiline block headers.
+  \ It's defined in `need-wordlist`.
+  \
+  \ }doc
+
+( ... )
 
 : contains ( ca1 len1 ca2 len2 -- f ) search nip nip ;
   \ Does string _ca1 len1_ contain string _ca2 len2_?
@@ -112,6 +158,10 @@ defer unlocated ( block -- )
 
   \ defer .info ( -- ) ' noop ' .info defer!
 
+-->
+
+( ... )
+
 : (located) ( ca len -- block | false )
 
   \ ----------------------------
@@ -130,11 +180,31 @@ defer unlocated ( block -- )
     \ XXX INFORMER -- alternative options for debugging
 
   ?dup 0= #-32 ?throw
-  delimited last-locatable @ 1+  first-locatable @
+  [multiline-block-header] ?\ delimited \ XXX OLD
+  last-locatable @ 1+  first-locatable @
   default-first-locatable @  first-locatable !
+
+-->
+
+( ... )
+
+  [multiline-block-header] ?( \ XXX OLD
+
   ?do 0 i line>string 2over contains \ i home . \ XXX INFORMER
       if 2drop i unloop exit then break-key? #-28 ?throw
-      i unlocated loop 2drop 0 ;
+      i unlocated loop 2drop 0 ?)
+
+  [multiline-block-header] [ 0= ] ?( \ XXX NEW
+
+  \ XXX UNDER DEVELOPMENT
+
+  need-wordlist >order
+  ?do cr ." Searching BLOCK #" i . ." for '" 2dup type
+      ." ' "
+        \ XXX INFORMER
+      2dup i load if   2drop i previous unloop exit
+                  then break-key? #-28 ?throw
+      i unlocated loop 2drop 0 previous ?) ; -->
   \ Note:
   \ Error #-32 is "invalid name argument".
   \ Error #-28 is "user interrupt".
@@ -157,7 +227,9 @@ defer unlocated ( block -- )
   \
   \ }doc
 
-defer located ( ca len -- block | false ) -->
+( located ?located reneeded reneed needed-word unneeding )
+
+defer located ( ca len -- block | false )
 
   \ doc{
   \
@@ -176,8 +248,6 @@ defer located ( ca len -- block | false ) -->
   \ See: `need-from`.
   \
   \ }doc
-
-( ?located reneeded reneed needed-word unneeding )
 
 2variable needed-word  0. needed-word 2!
 
@@ -428,7 +498,7 @@ unneeding use-default-located ?(
   \
   \ }doc
 
-unneeding use-default-located ?(
+unneeding use-no-index ?(
 
 need use-default-need need  use-default-located
 
@@ -714,5 +784,9 @@ unneeding need-here ?(
   \
   \ 2018-04-26: Make `?located` consume its argument (its stack
   \ comment was wrong, anyway). Improve documentation.
+  \
+  \ 2018-06-02: Draft new method, using `load` and a custom `(`
+  \ to parse the block header, in order to support multiline
+  \ block headers. Fix needing of `use-no-index`.
 
   \ vim: filetype=soloforth
