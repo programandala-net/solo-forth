@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806022057
+  \ Last modified: 201806032012
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -34,51 +34,55 @@
 
 ( delimited located )
 
-false constant [multiline-block-header] immediate
-  \ Flag: compile the new version of `need`, which uses its own
-  \ variants of `(` and `)` to allow multiline block headers.
-  \ XXX TMP --
-
-[multiline-block-header] 0= ?(
-
   \ XXX UNDER DEVELOPMENT
 
-: in-blk-header? ( ca len -- f )
+: (in-blk-header)? ( ca len -- f )
+  \ 0 3 at-xy 64 spaces 0 3 at-xy \ XXX INFORMER
   begin 2dup parse-name
+        \ 2dup type \ XXX INFORMER
         2dup s" )" str= if 2drop 2drop 2drop false exit then
                    str= if 2drop             true  exit then
   again ;
 
+  \ (in-blk-header)? ( ca len -- f )
+  \
+  \ Is name _ca len_ in the current block, from the current
+  \ value of `>in` to the first space-delimited ")"?
+  \
+  \ ``(in-blk-header)?`` is a factor of `in-blk-header?` and
+  \ `in-block-header?`.
+
+: in-blk-header? ( ca len -- f )
+  >in @ >r >in off (in-blk-header)? r> >in ! ;
+
   \ in-blk-header? ( ca len -- f )
   \
   \ Is name _ca len_ in the header of the current block, which
-  \ is a paren comment?
+  \ is a paren comment closed by a space-delimited ")"?
   \
-  \ See: `blk`, `in-block-header?`.
+  \ See: `blk`, `(in-blk-header)?`, `in-block-header?`.
 
 : in-block-header? ( ca len u -- f )
-  nest-source block>source in-blk-header? unnest-source ;
-
-?) -->
+  nest-source block>source (in-blk-header)? unnest-source ; -->
 
   \ in-block-header? ( ca len u -- f )
   \
   \ Is name _ca len_ in the header of block _u_, which is a
   \ paren comment?
   \
-  \ See: `in-blk-header?`.
+  \ See: `in-blk-header?`, `block>source`.
 
 ( ... )
 
-[multiline-block-header]
-
-?\ : contains ( ca1 len1 ca2 len2 -- f ) search nip nip ;
+: contains ( ca1 len1 ca2 len2 -- f ) search nip nip ;
   \ Does string _ca1 len1_ contain string _ca2 len2_?
   \
   \ ``contains`` is defined also in <strings.misc.fsb>, because
   \ it can not be loaded by the applications from this block
   \ (because `unneeding` is not defined at this point).
   \ That's why `contains` is not included in the block header.
+  \
+  \ XXX TODO -- Not needed with multiline block headers.
 
 variable default-first-locatable  variable first-locatable
 variable last-locatable  blocks/disk 1- last-locatable !
@@ -122,11 +126,10 @@ variable last-locatable  blocks/disk 1- last-locatable !
   \
   \ }doc
 
-[multiline-block-header] ?(
-
 : delimited ( ca1 len1 -- ca2 len2 )
   dup 2+ dup allocate-stringer swap ( ca1 len1 ca2 len2 )
-  2dup blank  2dup 2>r drop char+ smove 2r> ; ?)
+  2dup blank  2dup 2>r drop char+ smove 2r> ;
+  \ XXX TODO -- Not needed with multiline block headers.
 
   \ doc{
   \
@@ -156,57 +159,111 @@ defer unlocated ( block -- )
 
 ( ... )
 
-: (located) ( ca len -- block | false )
+: 1-line-(located) ( ca len -- block | false )
 
   \ ----------------------------
-  \ : (located) 2dup type space
-  \ : (located) cr 2dup type space .s
-  \ : (located) cr 2dup type get-current dup u. 0= if quit then
-  \ : (located) cr 2dup type space .s depth 2 > if key drop then
-  \ : (located) cr 2dup type space rp@ rp0 @ - -2 / . np@ u. cr .s
-  \ : (located) cr 2dup type space rp@ rp0 @ - -2 / . .s
-  \ : (located) cr 2dup type space rp@ rp0 @ - -2 / . .s .info
-  \ : (located) cr ." (located)<" 2dup type ." >"
-  \ : (located) cr ."  base: #" base @ dup decimal . base !
-  \ : (located) cr ."  rdepth: " rp@ rp0 @ - -2 / .
-  \ : (located) cr ."  unused-stringer: " unused-stringer .
+  \ 2dup type space
+  \ cr 2dup type space .s
+  \ cr 2dup type get-current dup u. 0= if quit then
+  \ cr 2dup type space .s depth 2 > if key drop then
+  \ cr 2dup type space rp@ rp0 @ - -2 / . np@ u. cr .s
+  \ cr 2dup type space rp@ rp0 @ - -2 / . .s
+  \ cr 2dup type space rp@ rp0 @ - -2 / . .s .info
+  \ cr ." (located)<" 2dup type ." >"
+  \ cr ."  base: #" base @ dup decimal . base !
+  \ cr ."  rdepth: " rp@ rp0 @ - -2 / .
+  \ cr ."  unused-stringer: " unused-stringer .
   \ ----------------------------
-    \ XXX INFORMER -- alternative options for debugging
+    \ XXX INFORMER -- options for debugging
+
+  ?dup 0= #-32 ?throw
+  delimited
+  last-locatable @ 1+  first-locatable @
+  default-first-locatable @  first-locatable !
+
+  ?do 0 i line>string 2over contains
+      if 2drop i unloop exit then break-key? #-28 ?throw
+      i unlocated loop 2drop 0 ;
+
+  \ Note:
+  \ Error #-32 is "invalid name argument".
+  \ Error #-28 is "user interrupt".
+
+  \ doc{
+  \
+  \ 1-line-(located) ( ca len -- block | 0 ) "one-line-paren-located"
+  \
+  \ Locate the first block whose single-line header contains
+  \ the string _ca len_ (surrounded by spaces), and return its
+  \ number. If not found, return zero.  The search is
+  \ case-sensitive.
+  \
+  \ Only the blocks delimited by `first-locatable` and
+  \ `last-locatable` are searched.
+  \
+  \ `1-line-(located)` is an alternative, deprecated action of
+  \ `(located)`.
+  \
+  \ }doc
+
+-->
+
+( ... )
+
+: multiline-(located) ( ca len -- block | false )
+
+  \ ----------------------------
+  \ 2dup type space
+  \ cr 2dup type space .s
+  \ cr 2dup type get-current dup u. 0= if quit then
+  \ cr 2dup type space .s depth 2 > if key drop then
+  \ cr 2dup type space rp@ rp0 @ - -2 / . np@ u. cr .s
+  \ cr 2dup type space rp@ rp0 @ - -2 / . .s
+  \ cr 2dup type space rp@ rp0 @ - -2 / . .s .info
+  \ cr ." (located)<" 2dup type ." >"
+  \ cr ."  base: #" base @ dup decimal . base !
+  \ cr ."  rdepth: " rp@ rp0 @ - -2 / .
+  \ cr ."  unused-stringer: " unused-stringer .
+  \ ----------------------------
+    \ XXX INFORMER -- options for debugging
 
   home 2dup ." needed: " type space
   cr ." latest: " latest .name space
     \ XXX INFORMER
 
   ?dup 0= #-32 ?throw
-  [multiline-block-header] ?\ delimited \ XXX OLD
   last-locatable @ 1+  first-locatable @
   default-first-locatable @  first-locatable !
 
--->
-
-( ... )
-
-  [multiline-block-header] ?( \ XXX OLD
-
-  ?do 0 i line>string 2over contains
-      \ i home . \ cr ." block #" i . \ XXX INFORMER
-      if 2drop i unloop exit then break-key? #-28 ?throw
-      i unlocated loop 2drop 0 ?)
-
-  [multiline-block-header] [ 0= ] ?( \ XXX NEW
-
-    \ XXX UNDER DEVELOPMENT
-
-  ?do 2dup i in-block-header?
-      0 2 at-xy i .
+  ?do
+      0 2 at-xy i . \ XXX INFORMER
+      2dup i in-block-header?
       \ depth .  rp@ rp0 @ - [ cell negate ] literal / .
       \ cr ." block #" i .
         \ XXX INFORMER
       if 2drop i unloop exit then break-key? #-28 ?throw
-      i unlocated loop 2drop 0 ?) ; -->
+      i unlocated loop 2drop 0 ;
   \ Note:
   \ Error #-32 is "invalid name argument".
   \ Error #-28 is "user interrupt".
+
+  \ doc{
+  \
+  \ multiline-(located) ( ca len -- block | 0 ) "multiline-paren-located"
+  \
+  \ Locate the first block whose multiline-header header
+  \ contains the string _ca len_ (surrounded by spaces), and
+  \ return its number. If not found, return zero.  The search
+  \ is case-sensitive.
+  \
+  \ Only the blocks delimited by `first-locatable` and
+  \ `last-locatable` are searched.
+  \
+  \ `multiline-(located)` is the default action of `(located)`.
+  \
+  \ }doc
+
+defer (located) ' multiline-(located) ' (located) defer!
 
   \ doc{
   \
@@ -219,12 +276,18 @@ defer unlocated ( block -- )
   \ Only the blocks delimited by `first-locatable` and
   \ `last-locatable` are searched.
   \
-  \ This is the default action of `located`, which is
+  \ ``(located)`` is a deferred word. Its default value is
+  \ `multiline-(located)`, which is under development; its
+  \ alternative old value is `1-line-(located`.
+  \
+  \ ``(located)`` is the default action of `located`, which is
   \ changed by `use-fly-index`.
   \
   \ See: `default-first-locatable`.
   \
   \ }doc
+
+-->
 
 ( located ?located reneeded reneed needed-word unneeding )
 
@@ -797,5 +860,8 @@ unneeding need-here ?(
   \ 2018-06-02: Draft an alternative `(located)` in order to
   \ support multiline block headers. Fix needing of
   \ `use-no-index`.  Document `needed-word`.
+  \
+  \ 2018-06-03: Make `(located)` deferred, for testing. Factor
+  \ `in-blk-header?`.
 
   \ vim: filetype=soloforth
