@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806032012
+  \ Last modified: 201806032149
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -34,9 +34,7 @@
 
 ( delimited located )
 
-  \ XXX UNDER DEVELOPMENT
-
-: (in-blk-header)? ( ca len -- f )
+: ((in-block-header? ( ca len -- f )
   \ 0 3 at-xy 64 spaces 0 3 at-xy \ XXX INFORMER
   begin 2dup parse-name
         \ 2dup type \ XXX INFORMER
@@ -44,33 +42,26 @@
                    str= if 2drop             true  exit then
   again ;
 
-  \ (in-blk-header)? ( ca len -- f )
-  \
-  \ Is name _ca len_ in the current block, from the current
-  \ value of `>in` to the first space-delimited ")"?
-  \
-  \ ``(in-blk-header)?`` is a factor of `in-blk-header?` and
-  \ `in-block-header?`.
+: (in-block-header? ( ca len u -- f )
+  block>source parse-name s" (" str= if   ((in-block-header?
+                                     else 2drop false then ;
 
-: in-blk-header? ( ca len -- f )
-  >in @ >r >in off (in-blk-header)? r> >in ! ;
-
-  \ in-blk-header? ( ca len -- f )
+  \ (in-block-header? ( ca len u -- f )
   \
-  \ Is name _ca len_ in the header of the current block, which
-  \ is a paren comment closed by a space-delimited ")"?
+  \ Is name _ca len_ in the header of block _u_? The current
+  \ source is not preserved.
   \
-  \ See: `blk`, `(in-blk-header)?`, `in-block-header?`.
+  \ ``(in-block-header?`` is a factor of `in-block-header?`.
 
 : in-block-header? ( ca len u -- f )
-  nest-source block>source (in-blk-header)? unnest-source ; -->
+  nest-source (in-block-header? unnest-source ; -->
 
   \ in-block-header? ( ca len u -- f )
   \
-  \ Is name _ca len_ in the header of block _u_, which is a
-  \ paren comment?
+  \ Is name _ca len_ in the header of block _u_? The current
+  \ source is preserved with `nest-source` and `unnest-source`.
   \
-  \ See: `in-blk-header?`, `block>source`.
+  \ See: `(in-block-header?`.
 
 ( ... )
 
@@ -227,22 +218,21 @@ defer unlocated ( block -- )
   \ ----------------------------
     \ XXX INFORMER -- options for debugging
 
-  home 2dup ." needed: " type space
-  cr ." latest: " latest .name space
+  \ home 2dup ." needed: " type space
+  \ cr ." latest: " latest .name space
     \ XXX INFORMER
 
   ?dup 0= #-32 ?throw
-  last-locatable @ 1+  first-locatable @
-  default-first-locatable @  first-locatable !
-
+  nest-source last-locatable @ 1+  first-locatable @
+              default-first-locatable @  first-locatable !
   ?do
-      0 2 at-xy i . \ XXX INFORMER
-      2dup i in-block-header?
-      \ depth .  rp@ rp0 @ - [ cell negate ] literal / .
-      \ cr ." block #" i .
-        \ XXX INFORMER
-      if 2drop i unloop exit then break-key? #-28 ?throw
-      i unlocated loop 2drop 0 ;
+      \ 0 2 at-xy i . \ XXX INFORMER
+      \ depth .  \ XXX INFORMER
+      \ rp@ rp0 @ - [ cell negate ] literal / .  \ XXX INFORMER
+      2dup i (in-block-header?
+      if   2drop i unloop unnest-source exit
+      then break-key? #-28 ?throw
+      i unlocated loop 2drop 0 unnest-source ;
   \ Note:
   \ Error #-32 is "invalid name argument".
   \ Error #-28 is "user interrupt".
@@ -263,7 +253,7 @@ defer unlocated ( block -- )
   \
   \ }doc
 
-defer (located) ' multiline-(located) ' (located) defer!
+defer (located) ' 1-line-(located) ' (located) defer!  -->
 
   \ doc{
   \
@@ -286,8 +276,6 @@ defer (located) ' multiline-(located) ' (located) defer!
   \ See: `default-first-locatable`.
   \
   \ }doc
-
--->
 
 ( located ?located reneeded reneed needed-word unneeding )
 
@@ -327,12 +315,20 @@ defer located ( ca len -- block | false )
                       \ XXX INFORMER
   ?exit needed-word 2@ parsed-name 2! #-268 throw ;
 
+  \ XXX FIXME -- When multiline block headers are active,
+  \ command `need zxzx` (i.e. any unexistent word) makes the
+  \ system freeze after this `throw`, while `need zxzx ` (note
+  \ the trailing space) does not. This problem has to do with
+  \ un/nesting the sources.
+
   \ doc{
   \
   \ ?located ( n -- ) "question-located"
   \
-  \ If _n_ is zero, throw an exception #-268 ("needed, but
-  \ not located"). Otherwise do nothing.
+  \ If _n_ is zero, store `needed-word` into `parsed-name` (in
+  \ order to make `needed-word` displayed) and `throw` an
+  \ exception #-268 ("needed, but not located").  Otherwise do
+  \ nothing.
   \
   \ }doc
 
@@ -861,7 +857,7 @@ unneeding need-here ?(
   \ support multiline block headers. Fix needing of
   \ `use-no-index`.  Document `needed-word`.
   \
-  \ 2018-06-03: Make `(located)` deferred, for testing. Factor
-  \ `in-blk-header?`.
+  \ 2018-06-03: Make `(located)` deferred, for testing. Fix,
+  \ rewrite and factor `in-block-header?`.
 
   \ vim: filetype=soloforth

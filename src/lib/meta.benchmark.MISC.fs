@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806021937
+  \ Last modified: 201806032137
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -30,68 +30,25 @@
 
 ( located-bench )
 
-defined delimited ?(
-
-: delimited ( ca1 len1 -- ca2 len2 )
-  dup 2+ dup allocate-stringer swap ( ca1 len1 ca2 len2 )
-  2dup blank  2dup 2>r drop char+ smove 2r> ; ?)
-
-defined contains
-
-?\ : contains ( ca1 len1 ca2 len2 -- f ) search nip nip ;
-
-: old-(located) ( ca len -- block | false )
-  ?dup 0= #-32 ?throw
-  delimited  last-locatable @ 1+  first-locatable @
-  default-first-locatable @  first-locatable !
-  ?do 0 i line>string 2over contains
-      if 2drop i unloop exit then break-key? #-28 ?throw
-      i unlocated loop 2drop 0 ;
-
--->
-
-( located-bench )
-
-defined in-block-header? ?(
-
-: in-blk-header? ( ca len -- f )
-  begin 2dup parse-name
-        2dup s" )" str= if 2drop 2drop 2drop false exit then
-                   str= if 2drop             true  exit then
-  again ;
-
-: in-block-header? ( ca len u -- f )
-  nest-source block>source in-blk-header? unnest-source ; ?)
-
-: new-(located) ( ca len -- block | false )
-  ?dup 0= #-32 ?throw
-  last-locatable @ 1+  first-locatable @
-  default-first-locatable @  first-locatable !
-  ?do 2dup i in-block-header? if   2drop i unloop exit
-                              then break-key? #-28 ?throw
-      i unlocated loop 2drop 0 ; -->
-
-( located-bench )
-
 need ticks need timer
 
-: missing$ ( -- ca len ) 0 256 ;
-  \ A fake word that does not exist: the first 256 B of the
+0 32 2constant missing$ ( -- ca len )
+  \ A fake word that does not exist: the first 32 B of the
   \ ROM...
 
 : run ( n -- )
-  >r cr ." old-(located) "
-     ticks r@ 0 ?do missing$ old-(located) drop loop timer
-     cr ." new-(located) "
-     ticks r@ 0 ?do missing$ new-(located) drop loop timer
+  >r
+  cr ." 1-line-(located)    "
+  ticks r@ 0 ?do missing$ 1-line-(located)    drop loop timer
+  cr ." multiline-(located) "
+  ticks r@ 0 ?do missing$ multiline-(located) drop loop timer
   r> drop ;
 
-  \ 2018-06-02:
-
-  \        Ticks
-  \        ---------------------------
-  \ Times  old    new
-  \ -----  -----  -----
+  \                   Ticks
+  \                   -------------------
+  \ Date       Times  1-line    multiline Note
+  \ ---------- -----  --------  --------- -------------------
+  \ 2018-06-03     1      1716          ? Multiline freezes
 
 ( >in-bench )
 
@@ -3307,5 +3264,8 @@ need bench{ need }bench.
   \ "double-cell variable".
   \
   \ 2018-06-02: Add `located-bench`.
+  \
+  \ 2018-06-03: Simplify `located-bench`: use the code already
+  \ defined in the `need` tool.
 
   \ vim: filetype=soloforth
