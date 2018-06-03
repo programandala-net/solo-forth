@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201806021845
+; Last modified: 201806032044
 
 include version.z80s
 
@@ -9949,7 +9949,9 @@ parse.end:
 ;
 ; A variable. _a_ is the address of a double cell containing the
 ; address and length of the most recently name parsed by
-; `parse-name`.
+; `parse-name`. It is displayed by `.error-word`.
+;
+; As a special case, ``parsed-name`` is set also by `?located`.
 ;
 ; }doc
 

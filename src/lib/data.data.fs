@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091537
+  \ Last modified: 201806032146
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -37,7 +37,7 @@
   \
   \ Create a definition for _name_, in order to compile data
   \ items of _n_ bytes each, finished by `end-data`.  Leave _n_
-  \ and _orig_ to be consumeb by `end-cdata`.  When _name_ is
+  \ and _orig_ to be consumed by `end-cdata`.  When _name_ is
   \ executed, it will leave the start address of the data and
   \ the number of items, which depends on _n_.
   \
@@ -45,7 +45,7 @@
 
   \ ----
   \ cell data my-cells ( -- a u )
-  \   1 c 2 c 3 c 4 c 5 c  end-data
+  \   1 , 2 , 3 , 4 , 5 ,  end-data
   \
   \ 2 cells data my-double-cells ( -- a u )
   \   0. 2, 1. 2, 2. 2,  end-data
@@ -89,5 +89,7 @@
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
   \
   \ 2018-03-09: Update notation "address units" to "bytes".
+  \
+  \ 2018-06-03: Fix typos in documentation.
 
   \ vim: filetype=soloforth
