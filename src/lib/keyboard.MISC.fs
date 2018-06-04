@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201806041126
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -162,7 +162,7 @@ noop noop noop noop noop noop noop noop noop noop noop noop [
 
 ( acceptx )
 
-: (acceptx) ( ca len -- len' ) 2dup init-accept
+: (acceptx ( ca len -- len' ) 2dup init-accept
 
   over + over ( bot eot cur )
   begin  key dup 13 <> \ not carriage return?
@@ -178,7 +178,7 @@ noop noop noop noop noop noop noop noop noop noop noop noop [
   repeat  drop nip swap - ;
 
 : acceptx ( ca len -- len' )
-  span off ?dup 0= if drop 0 else (acceptx) then ;
+  span off ?dup 0= if drop 0 else (acceptx then ;
 
   \ XXX TMP -- for debugging:
 
@@ -1753,5 +1753,8 @@ unneeding key-caps-lock ?\ 6 cconstant key-caps-lock
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

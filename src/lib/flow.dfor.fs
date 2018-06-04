@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802042004
+  \ Last modified: 201806041131
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( dfor dstep di )
 
-: (dstep) ( R: x ud -- x ud' )
+: (dstep ( R: x ud -- x ud' )
   r>  \ save the return address
   2r> 2dup or  \ is the index zero?
   if    -1. d+ 2>r
@@ -37,7 +37,7 @@
 
   \ doc{
   \
-  \ (dstep) ( R: x ud -- x ud' | x ) "paren-d-step"
+  \ (dstep ( R: x ud -- x ud' | x ) "paren-d-step"
   \
   \ The run-time procedure compiled by `dstep`.
   \
@@ -69,7 +69,7 @@
   \ }doc
 
 : dstep ( -- )
-  postpone (dstep) postpone branch <resolve
+  postpone (dstep postpone branch <resolve
   ; immediate compile-only
 
   \ doc{
@@ -130,5 +130,8 @@ need alias
   \
   \ 2018-02-04: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

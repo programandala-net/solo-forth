@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not finished
 
-  \ Last modified: 201712121440
+  \ Last modified: 201806041110
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -31,7 +31,7 @@
 
 ( benschop-multitasker )
 
-need >name  need user  user (wait)  ' noop (wait) !
+need >name  need user  user (wait  ' noop (wait !
 
 code switch
   rptr ldhl h push d push h clr sp addp exde uptr
@@ -81,12 +81,12 @@ task-link @ first-task @ !  -->
 
 ( benschop-multitasker )
 
-code (start)
-  ' switch h ldp# (wait) sthl first-task @ 5 +
+code (start
+  ' switch h ldp# (wait sthl first-task @ 5 +
   h ldp# uptr sthl h dec m d ld h dec m e ld exde ldsp d pop
   h pop rptr sthl jpix end-code
 
-: startup ( -- ) main-task (start) ;
+: startup ( -- ) main-task (start ;
 
 : tasks ( -- )
   uptr @ dup 27039 = cr if  ." multitasking not active"  else
@@ -109,5 +109,8 @@ code (start)
   \
   \ 2017-12-12: Need `>name`, which has been moved to the
   \ library.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

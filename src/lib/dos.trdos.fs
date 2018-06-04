@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804161954
+  \ Last modified: 201806041135
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -454,7 +454,7 @@ unneeding 4-block-drives ?( need set-block-drives
 
 need assembler need --dos-commands-- need fda need set-filename
 
-code (file>) ( ca len -- ior )
+code (file> ( ca len -- ior )
 
   d pop, h pop, b push, h push, d push, ( ip ca len )
 
@@ -493,7 +493,7 @@ code (file>) ( ca len -- ior )
 
   \ doc{
   \
-  \ (file>) ( ca len -- ior ) "paren-file-from"
+  \ (file> ( ca len -- ior ) "paren-file-from"
   \
   \ Search the disk for the file whose filename is stored at
   \ `fda` and read its metadata into `fda`. Then read the file
@@ -510,14 +510,14 @@ code (file>) ( ca len -- ior )
   \
   \ Return I/O result code _ior_.
   \
-  \ ``(file>)`` is a factor of `file>`.
+  \ ``(file>`` is a factor of `file>`.
   \
   \ See: `fda-filestart`, `fda-filelength`.
   \
   \ }doc
 
 : file> ( ca1 len1 ca2 len2 -- ior )
-  2swap set-filename (file>) ;
+  2swap set-filename (file> ;
 
   \ doc{
   \
@@ -566,7 +566,7 @@ code (file>) ( ca len -- ior )
 need assembler also assembler need l: previous
 need --dos-commands-- need fda need set-filename
 
-code (>file) ( -- ior )
+code (>file ( -- ior )
 
   b push, dos-read-system-track c ld#, dos-c_ call,
   0 rl# nz? ?jr,
@@ -610,7 +610,7 @@ code (>file) ( -- ior )
   \   jp push_dos_ior
 
 : >file ( ca1 len1 ca2 len2 -- ior )
-  set-filename fda-filelength ! fda-filestart ! (>file) ;
+  set-filename fda-filelength ! fda-filestart ! (>file ;
 
 ( fda-filestatus file-status )
 
@@ -867,7 +867,7 @@ unneeding file-track  ?( need file-status need fda
 need assembler need --dos-commands--
 need fda need set-filename
 
-code (delete-file) ( -- ior )
+code (delete-file ( -- ior )
   b push,
   dos-find-file c ld#, dos-c_ call,
   \ C = directory entry of the file, or $FF if not found
@@ -877,16 +877,16 @@ code (delete-file) ( -- ior )
 
   \ doc{
   \
-  \ (delete-file) ( -- ior ) "paren-delete-file"
+  \ (delete-file ( -- ior ) "paren-delete-file"
   \
   \ Delete a disk file using the data hold in `dfa`, returning
   \ the I/O result code _ior_.
   \
-  \ ``(delete-file)`` is a factor of `delete-file`.
+  \ ``(delete-file`` is a factor of `delete-file`.
   \
   \ }doc
 
-: delete-file ( ca len -- ior ) set-filename (delete-file) ;
+: delete-file ( ca len -- ior ) set-filename (delete-file ;
 
   \ doc{
   \
@@ -1305,5 +1305,8 @@ need read-file-descriptor need write-file-descriptor
   \
   \ 2018-04-16: Improve description of _ior_ notation. Fix
   \ documentation.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804111951
+  \ Last modified: 201806041105
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -252,7 +252,7 @@ tape-header 13 + constant tape-start ( -- a )
 
 unneeding tape-file> ?( need tape-header
 
-code (tape-file>) ( -- )
+code (tape-file> ( -- )
   C5 c,  DD c, 21 c, tape-header ,  2A c, tape-start ,
     \ push bc ; save Forth IP
     \ ld ix,tape_header
@@ -267,16 +267,16 @@ code (tape-file>) ( -- )
 
   \ doc{
   \
-  \ (tape-file>) ( -- ) "paren-tape-file-from"
+  \ (tape-file> ( -- ) "paren-tape-file-from"
   \
   \ Read a tape file using the data stored at `tape-header`.
   \
-  \ ``(tape-file>)`` is a factor of `tape-file>`.
+  \ ``(tape-file>`` is a factor of `tape-file>`.
   \
   \ }doc
 
 : tape-file> ( ca1 len1 ca2 len2 -- )
-  set-tape-memory ?set-tape-filename (tape-file>) ; ?)
+  set-tape-memory ?set-tape-filename (tape-file> ; ?)
 
   \ doc{
   \
@@ -296,13 +296,13 @@ code (tape-file>) ( -- )
   \ message. This will be avoided in a future version of Solo
   \ Forth.
   \
-  \ See: `>tape-file`, `(tape-file>)`, `>file`.
+  \ See: `>tape-file`, `(tape-file>`, `>file`.
   \
   \ }doc
 
 unneeding >tape-file ?( need tape-header
 
-code (>tape-file) ( -- )
+code (>tape-file ( -- )
   C5 c,  DD c, 21 c, tape-header , A8 07 + c,  32 c, 5C74 ,
     \ push bc               ; save Forth IP
     \ ld ix,tape_header
@@ -326,16 +326,16 @@ code (>tape-file) ( -- )
 
   \ doc{
   \
-  \ (>tape-file) ( -- ) "paren-to-tape-file"
+  \ (>tape-file ( -- ) "paren-to-tape-file"
   \
   \ Write a tape file using the data stored at `tape-header`.
   \
-  \ ``(>tape-file)`` is a factor of `>tape-file`.
+  \ ``(>tape-file`` is a factor of `>tape-file`.
   \
   \ }doc
 
 : >tape-file ( ca1 len1 ca2 len2 -- )
-  set-tape-filename set-tape-memory (>tape-file) ; ?)
+  set-tape-filename set-tape-memory (>tape-file ; ?)
 
   \ doc{
   \
@@ -344,7 +344,7 @@ code (>tape-file) ( -- )
   \ Write a memory region _ca1 len1_ into a tape file _ca2
   \ len2_.
   \
-  \ See: `tape-file>`, `(>tape-file)`, `>file`.
+  \ See: `tape-file>`, `(>tape-file`, `>file`.
   \
   \ }doc
 
@@ -490,5 +490,8 @@ unneeding tape-file>display ?( need tape-file>
   \ documentation.
   \
   \ 2018-04-11: Fix documentation.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

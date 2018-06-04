@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712090125
+  \ Last modified: 201806041108
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -186,10 +186,10 @@ rows 2 / constant craft-y
 
 : blast-delay ( -- ) 32 0  ?do  loop ;
 
-: (blast) ( -- )
+: (blast ( -- )
   .craft blast-delay at-craft star0-udg emit-udg blast-delay ;
 
-: blast ( -- ) 256 0  ?do  (blast)  loop ;
+: blast ( -- ) 256 0  ?do  (blast  loop ;
 
 : halt ( -- )
   32 0  ?do  24 0 ?do
@@ -298,5 +298,8 @@ run-message
   \
   \ 2017-12-09: Update with `need */`, since `*/` was moved to
   \ the library.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

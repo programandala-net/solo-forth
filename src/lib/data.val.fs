@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072324
+  \ Last modified: 201806041142
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -35,9 +35,9 @@
 
 ( val 2val cval )
 
-unneeding val ?(  variable (val)
+unneeding val ?(  variable (val
 
-: init-val ( -- ) ['] @ (val) ! ; init-val
+: init-val ( -- ) ['] @ (val ! ; init-val
 
   \ doc{
   \
@@ -51,7 +51,7 @@ unneeding val ?(  variable (val)
   \ }doc
 
 : val ( x "name" -- )
-  create , does> ( -- ) ( dfa ) (val) perform init-val ;
+  create , does> ( -- ) ( dfa ) (val perform init-val ;
 
   \ doc{
   \
@@ -67,7 +67,7 @@ unneeding val ?(  variable (val)
   \
   \ }doc
 
-: toval ( -- ) ['] ! (val) ! ; ?)
+: toval ( -- ) ['] ! (val ! ; ?)
 
   \ doc{
   \
@@ -84,9 +84,9 @@ unneeding val ?(  variable (val)
   \
   \ }doc
 
-unneeding 2val ?(  variable (2val)
+unneeding 2val ?(  variable (2val
 
-: init-2val ( -- ) ['] 2@ (2val) ! ; init-2val
+: init-2val ( -- ) ['] 2@ (2val ! ; init-2val
 
   \ doc{
   \
@@ -100,7 +100,7 @@ unneeding 2val ?(  variable (2val)
   \ }doc
 
 : 2val ( xd "name" -- )
-  create 2, does> ( -- ) ( dfa ) (2val) perform init-2val ;
+  create 2, does> ( -- ) ( dfa ) (2val perform init-2val ;
 
   \ doc{
   \
@@ -116,7 +116,7 @@ unneeding 2val ?(  variable (2val)
   \
   \ }doc
 
-: 2toval ( -- ) ['] 2! (2val) ! ; ?)
+: 2toval ( -- ) ['] 2! (2val ! ; ?)
 
   \ doc{
   \
@@ -133,9 +133,9 @@ unneeding 2val ?(  variable (2val)
   \
   \ }doc
 
-unneeding cval ?(  variable (cval)
+unneeding cval ?(  variable (cval
 
-: init-cval ( -- ) ['] c@ (cval) ! ; init-cval
+: init-cval ( -- ) ['] c@ (cval ! ; init-cval
 
   \ doc{
   \
@@ -149,7 +149,7 @@ unneeding cval ?(  variable (cval)
   \ }doc
 
 : cval ( xd "name" -- )
-  create c, does> ( -- ) ( dfa ) (cval) perform init-cval ;
+  create c, does> ( -- ) ( dfa ) (cval perform init-cval ;
 
   \ doc{
   \
@@ -163,7 +163,7 @@ unneeding cval ?(  variable (cval)
   \
   \ }doc
 
-: ctoval ( -- ) ['] c! (cval) ! ; ?)
+: ctoval ( -- ) ['] c! (cval ! ; ?)
 
   \ doc{
   \
@@ -198,5 +198,8 @@ unneeding cval ?(  variable (cval)
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-07: Add words' pronunciaton.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

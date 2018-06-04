@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703071237
+  \ Last modified: 201806041056
 
   \ ===========================================================
   \ Description
@@ -43,7 +43,7 @@
   \ need write-tape-file
   \ : savescr 16384 6912 s" screen" write-tape-file ;
   \ : savetxt s" TEXT" s" txt" write-tape-file ;
-  \ hex  ' (write-tape-file) u.
+  \ hex  ' (write-tape-file u.
 
   \ XXX TMP --
 

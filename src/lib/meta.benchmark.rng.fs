@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801231606
+  \ Last modified: 201806041116
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -206,7 +206,7 @@ defer .cycles ( -- )
 : ?cycles ( len -- len | len-1 ) cycles @ 1 = + ;
   \ If the contents of `cycles` is not zero, decrement _len_.
 
-: (.cycles) ( -- ) cycles ?  s" cycles" ?cycles type ;
+: (.cycles ( -- ) cycles ?  s" cycles" ?cycles type ;
   \ Display the number of cycles.
 
 : .time ( d -- ) dticks>ms ud. ." ms per cycle" cr ; -->
@@ -230,7 +230,7 @@ defer random-coords ( -- gx gy )
   \ Change the border color according to the current count
   \ of cycles, just to show that the benchmark is running.
 
-: (rnd-px-bench) ( -- d )
+: (rnd-px-bench ( -- d )
   1 cycles +!  signal  dticks fill-screen delapsed ;
   \ Do one cycle of the benchmark and return its result.
 
@@ -258,8 +258,8 @@ defer rng-px-bench ( ca len xt -- )
   \ Do a RNG benchmark for the `random` word _xt_ with title
   \ _ca len_.
 
-: (multi-cycle-rnd-px-bench) ( ca len -- )
-  0 begin   (rnd-px-bench) 2>r
+: (multi-cycle-rnd-px-bench ( ca len -- )
+  0 begin   (rnd-px-bench 2>r
             finish? dup 0= if  2rdrop  then
   until     drop 2r> finish ;
   \ Do a multi-cycle RNG benchmark with title _ca len_:
@@ -270,7 +270,7 @@ defer multi-cycle ( -- )
   \ Set `rng-px-bench` to multi-cycle mode, either 16-bit or
   \ 8-bit.
 
-: (.cycle) ( -- ) ." First cycle only" ;
+: (.cycle ( -- ) ." First cycle only" ;
 
 defer single-cycle ( -- )
   \ Set `rng-px-bench` to single-cycle mode, either 16-bit or
@@ -313,7 +313,7 @@ defer single-cycle ( -- )
   \ +1             xt2, `random`
   \ +2             xt1, `random` init
 
-: (does-rng-px-bench) ( a -- )
+: (does-rng-px-bench ( a -- )
   dup main-rng-px-bench secondary-rng-px-bench ;
   \ Run-time action of a RNG pixel benchmark, whose
   \ data is stored at _a_.
@@ -334,12 +334,12 @@ need rng-px-bench
   \ Random graphic coordinates for 16-bit `rnd`.
 
 : 16b-single-cycle-rng-px-bench ( ca len xt -- )
-  ['] (.cycle) init (rnd-px-bench) finish ;
+  ['] (.cycle init (rnd-px-bench finish ;
   \ Do a one-cycle 16-bit RNG benchmark for `random` word _xt_
   \ with title _ca len_: 49152 random pixels.
 
 : 16b-multi-cycle-rng-px-bench ( ca len xt -- )
-  ['] (.cycles) init (multi-cycle-rnd-px-bench) ;
+  ['] (.cycles init (multi-cycle-rnd-px-bench ;
   \ Do a 16-bit multi-cycle RNG benchmark for the `random` word
   \ _xt_ with title _ca len_: complete as many cycles (49152
   \ random pixels) as required until the number of pixels
@@ -365,7 +365,7 @@ need rng-px-bench
 : 16b-rng-px-bench ( xt1 xt2 xt3 "name" -- )
   create-rng-px-bench
   does> ( -- ) ( dfa )
-        set-16b-rng-px-bench (does-rng-px-bench) ;
+        set-16b-rng-px-bench (does-rng-px-bench ;
   \ Create a 16-bit RNG pixel benchmark _name_ for the `random`
   \ word _xt2_, with initialization _xt1_ and title string
   \ returned by _x3_.
@@ -380,12 +380,12 @@ need rng-px-bench
   \ Random graphic coordinates for 8-bit `rnd`.
 
 : 8b-single-cycle-rng-px-bench ( ca len xt -- )
-  ['] (.cycle) init (rnd-px-bench) finish ;
+  ['] (.cycle init (rnd-px-bench finish ;
   \ Do a one-cycle 8-bit RNG benchmark for `random` word _xt_
   \ with title _ca len_: 49152 random pixels.
 
 : 8b-multi-cycle-rng-px-bench ( ca len xt -- )
-  ['] (.cycles) init (multi-cycle-rnd-px-bench) ;
+  ['] (.cycles init (multi-cycle-rnd-px-bench ;
   \ Do an 8-bit multi-cycle RNG benchmark for the `random` word
   \ _xt_ with title _ca len_: complete as many cycles (49152
   \ random pixels) as required until the number of pixels
@@ -412,7 +412,7 @@ need rng-px-bench
 : 8b-rng-px-bench ( xt1 xt2 xt3 "name" -- )
   create-rng-px-bench
   does> ( -- ) ( dfa )
-        set-8b-rng-px-bench (does-rng-px-bench) ;
+        set-8b-rng-px-bench (does-rng-px-bench ;
   \ Create an 8-bit RNG pixel benchmark _name_ for the `random`
   \ word _xt2_, with initialization _xt1_ and title string
   \ returned by _x3_.
@@ -1811,5 +1811,8 @@ need 8b-rng-px-bench need :noname
   \
   \ 2018-01-23: Add `crandom-bench`. Fix `mb1-random` and
   \ `mb2-random`.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

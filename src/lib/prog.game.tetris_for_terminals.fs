@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712092236
+  \ Last modified: 201806041108
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -272,7 +272,7 @@ end-stringtable
 
 ( tt )
 
-: (show-help) ( -- )
+: (show-help ( -- )
   0 0 at-xy
   \  <------------------------------>
   ." TT (Tetris for Terminals)" cr cr
@@ -285,7 +285,7 @@ end-stringtable
 
 : show-help ( -- )
   page
-  begin  (show-help) cr cr
+  begin  (show-help cr cr
           \  <------------------------------>
          ." Press Space to change the keys" cr
          ." or any other key to start."
@@ -631,5 +631,8 @@ only forth definitions
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
   \
   \ 2017-11-28: Update: replace `frames@` with `ticks`.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

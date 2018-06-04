@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201806041143
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -122,11 +122,11 @@ unneeding cavalue ?( need align
 
 unneeding ato ?( need >body
 
-: (ato) ( x n xt -- ) >body array> ! ;
+: (ato ( x n xt -- ) >body array> ! ;
 
   \ doc{
   \
-  \ (ato) ( x n xt -- ) "paren-a-to"
+  \ (ato ( x n xt -- ) "paren-a-to"
   \
   \ Store _x_ into element _n_ of 1-dimension single-cell
   \ values array _xt_.
@@ -136,8 +136,8 @@ unneeding ato ?( need >body
   \ }doc
 
 : ato ( x n "name" -- )
-  compiling?  if    postpone ['] postpone (ato)
-              else  ' (ato)  then ; immediate ?)
+  compiling?  if    postpone ['] postpone (ato
+              else  ' (ato  then ; immediate ?)
 
   \ doc{
   \
@@ -148,17 +148,17 @@ unneeding ato ?( need >body
   \
   \ ``ato`` is an `immediate` word.
   \
-  \ See: `array`, `(ato)`.
+  \ See: `array`, `(ato`.
   \
   \ }doc
 
 unneeding +ato ?( need >body
 
-: (+ato) ( n1 n2 xt -- ) >body array> +! ;
+: (+ato ( n1 n2 xt -- ) >body array> +! ;
 
   \ doc{
   \
-  \ (+ato) ( n1 n2 xt -- ) "paren-plus-a-to"
+  \ (+ato ( n1 n2 xt -- ) "paren-plus-a-to"
   \
   \ Add _n1_ to element _n2_ of 1-dimension single-cell
   \ values array _xt_.
@@ -168,8 +168,8 @@ unneeding +ato ?( need >body
   \ }doc
 
 : +ato ( n1 n2 "name" -- )
-  compiling? if    postpone ['] postpone (+ato)
-             else  ' (+ato)  then ; immediate ?)
+  compiling? if    postpone ['] postpone (+ato
+             else  ' (+ato  then ; immediate ?)
 
   \ doc{
   \
@@ -180,17 +180,17 @@ unneeding +ato ?( need >body
   \
   \ ``+ato`` is an `immediate` word.
   \
-  \ See: `avalue`, `(+ato)`.
+  \ See: `avalue`, `(+ato`.
   \
   \ }doc
 
 unneeding 2ato ?( need >body
 
-: (2ato) ( xd n xt -- ) >body 2array> 2! ;
+: (2ato ( xd n xt -- ) >body 2array> 2! ;
 
   \ doc{
   \
-  \ (2ato) ( xd n xt -- ) "paren-two-a-to"
+  \ (2ato ( xd n xt -- ) "paren-two-a-to"
   \
   \ Store _xd_ into element _n_ of 1-dimension double-cell
   \ values array _xt_.
@@ -200,8 +200,8 @@ unneeding 2ato ?( need >body
   \ }doc
 
 : 2ato ( xd n "name" -- )
-  compiling?  if    postpone ['] postpone (2ato)
-              else  ' (2ato)  then ; immediate ?)
+  compiling?  if    postpone ['] postpone (2ato
+              else  ' (2ato  then ; immediate ?)
 
   \ doc{
   \
@@ -212,7 +212,7 @@ unneeding 2ato ?( need >body
   \
   \ ``2ato`` is an `immediate` word.
   \
-  \ See: `2avalue`, `(2ato)`.
+  \ See: `2avalue`, `(2ato`.
   \
   \ }doc
 
@@ -220,11 +220,11 @@ unneeding 2ato ?( need >body
 
 unneeding cato ?( need >body
 
-: (cato) ( c n xt -- ) >body + c! ;
+: (cato ( c n xt -- ) >body + c! ;
 
   \ doc{
   \
-  \ (cato) ( c n xt -- ) "paren-c-a-to"
+  \ (cato ( c n xt -- ) "paren-c-a-to"
   \
   \ Store _c_ into element _n_ of 1-dimension character
   \ values array _xt_.
@@ -234,8 +234,8 @@ unneeding cato ?( need >body
   \ }doc
 
 : cato ( x n "name" -- )
-  compiling?  if    postpone ['] postpone (cato)
-              else  ' (cato)  then ; immediate ?)
+  compiling?  if    postpone ['] postpone (cato
+              else  ' (cato  then ; immediate ?)
 
   \ doc{
   \
@@ -246,17 +246,17 @@ unneeding cato ?( need >body
   \
   \ ``cato`` is an `immediate` word.
   \
-  \ See: `cavalue`, `(cato)`.
+  \ See: `cavalue`, `(cato`.
   \
   \ }doc
 
 unneeding +cato ?(
 
-: (+cato) ( c n xt -- ) >body + c+! ;
+: (+cato ( c n xt -- ) >body + c+! ;
 
   \ doc{
   \
-  \ (+cato) ( c n xt -- ) "paren-plus-c-a-to"
+  \ (+cato ( c n xt -- ) "paren-plus-c-a-to"
   \
   \ Add _c_ to element _n_ of 1-dimension character values
   \ array _xt_.
@@ -266,8 +266,8 @@ unneeding +cato ?(
   \ }doc
 
 : +cato ( n1 n2 "name" -- )
-  compiling? if    postpone ['] postpone (+cato)
-             else  ' (+cato)  then ; immediate ?)
+  compiling? if    postpone ['] postpone (+cato
+             else  ' (+cato  then ; immediate ?)
 
   \ doc{
   \
@@ -278,7 +278,7 @@ unneeding +cato ?(
   \
   \ ``+cato`` is an `immediate` word.
   \
-  \ See: `cavalue`, `(+cato)`.
+  \ See: `cavalue`, `(+cato`.
   \
   \ }doc
 
@@ -318,5 +318,8 @@ unneeding +cato ?(
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

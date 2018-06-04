@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201804120050
+  \ Last modified: 201806041125
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -371,10 +371,10 @@ need f~abs need f== need f~relabs
 here ' f== ,
      ' f~relabs ,
 
-      constant (f~) \ execution table of `f~`
+      constant (f~ \ execution table of `f~`
 
 : f~ ( -- f ) ( F: r1 r2 r3 -- )
-  fdup fsgn f>s cells (f~) + perform ;
+  fdup fsgn f>s cells (f~ + perform ;
 
   \ doc{
   \
@@ -1112,5 +1112,8 @@ unneeding dfaligned
   \ 2018-03-09: Update notation "address units" to "bytes".
   \
   \ 2018-04-12: Fix and improve documentation.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

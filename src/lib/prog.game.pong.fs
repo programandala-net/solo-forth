@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201804111438
+  \ Last modified: 201806041108
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -198,20 +198,20 @@ variable ball-frame  first-ball-frame ball-frame !
 
 ( pong )
 
-: (border) ( a -- )
+: (border ( a -- )
   columns [ white papery ] literal sync fill ;
 
-: top-border ( -- ) top-line-attr (border) ;
+: top-border ( -- ) top-line-attr (border ;
 
-: bottom-border ( -- ) bottom-line-attr (border) ;
+: bottom-border ( -- ) bottom-line-attr (border ;
 
 : show-racket ( a -- ) racket-size racket-color sync fill ;
 
 : show-racket1 ( -- )
-  top-line-attr dup (border) racket1-x @ + show-racket ;
+  top-line-attr dup (border racket1-x @ + show-racket ;
 
 : show-racket2 ( -- )
-  bottom-line-attr dup (border) racket2-x @ + show-racket ;
+  bottom-line-attr dup (border racket2-x @ + show-racket ;
 
 : show-rackets ( -- ) show-racket1 show-racket2 ;
 
@@ -237,17 +237,17 @@ variable ball-frame  first-ball-frame ball-frame !
   bottom-line-attr racket2-x erase-racket ;
   \ Erase racket of player 2.
 
-: (.points) ( n y -- )
+: (.points ( n y -- )
   0 swap at-xy s>d <# # # # #>
   black set-ink sync type white set-ink ;
   \ Display the points of a player.
 
 : .points1 ( -- )
-  points1 @ racket1-y (.points) show-racket1 ;
+  points1 @ racket1-y (.points show-racket1 ;
   \ Display the points of player 1.
 
 : .points2 ( -- )
-  points2 @ racket2-y (.points) show-racket2 ;
+  points2 @ racket2-y (.points show-racket2 ;
   \ Display the points of player 2.
 
 : .points ( -- ) .points1 .points2 ;
@@ -375,7 +375,7 @@ variable racket2-delay
   -1 racket1-delay +!  racket1-delay @ if  unnest exit  then
   racket-delay0 racket1-delay ! ;
 
-: (move-racket1) ( 1|-1 -- ) racket1-x +!  show-racket1 ;
+: (move-racket1 ( 1|-1 -- ) racket1-x +!  show-racket1 ;
 
 -->
 
@@ -384,18 +384,18 @@ variable racket2-delay
 : move-racket1-left ( -- )
   ?move-racket1
   racket1-x @ 0= ?exit
-  -1 (move-racket1) ;
+  -1 (move-racket1 ;
 
 : move-racket1-right ( -- )
   ?move-racket1
   racket1-x @ racket-size + columns = ?exit
-  1 (move-racket1) ;
+  1 (move-racket1 ;
 
 : ?move-racket2 ( -- )
   -1 racket2-delay +!  racket2-delay @ if  unnest exit  then
   racket-delay0 racket2-delay ! ;
 
-: (move-racket2) ( 1|-1 -- ) racket2-x +!  show-racket2 ;
+: (move-racket2 ( 1|-1 -- ) racket2-x +!  show-racket2 ;
 
 -->
 
@@ -404,12 +404,12 @@ variable racket2-delay
 : move-racket2-left ( -- )
   ?move-racket2
   racket2-x @ 0= ?exit
-  -1 (move-racket2) ;
+  -1 (move-racket2 ;
 
 : move-racket2-right ( -- )
   ?move-racket2
   racket2-x @ racket-size + columns = ?exit
-  1 (move-racket2) ;
+  1 (move-racket2 ;
 
 : reset-points ( -- ) points1 off  points2 off ;
 
@@ -537,5 +537,8 @@ run-message
   \
   \ 2018-04-11: Update notation "double constant" to
   \ "double-cell constant".
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802071851
+  \ Last modified: 201806041130
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -34,11 +34,11 @@
   \ Code adapted from Z88 CamelForth. Modified to do the check
   \ before decrementing the index.
 
-code (step) ( R: u -- u' )
+code (step ( R: u -- u' )
 
   \ doc{
   \
-  \ (step) ( R: u -- u' ) "paren-step"
+  \ (step ( R: u -- u' ) "paren-step"
   \
   \ The run-time procedure compiled by `step`.
   \
@@ -100,7 +100,7 @@ code (step) ( R: u -- u' )
   \ }doc
 
 : step ( -- )
-  postpone (step) <resolve ; immediate compile-only
+  postpone (step <resolve ; immediate compile-only
 
   \ doc{
   \
@@ -169,5 +169,8 @@ need alias
   \
   \ 2018-02-07: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

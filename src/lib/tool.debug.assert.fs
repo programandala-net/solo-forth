@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804142313
+  \ Last modified: 201806041104
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -202,9 +202,9 @@ variable assert-level ( -- a ) 1 assert-level !
   \
   \ }doc
 
-: (endassert) ( f -- ) 0= #-262 ?throw ;
+: (endassert ( f -- ) 0= #-262 ?throw ;
 
-: ) ( f -- ) postpone (endassert) ; immediate
+: ) ( f -- ) postpone (endassert ; immediate
 
   \ doc{
   \
@@ -243,5 +243,8 @@ variable assert-level ( -- a ) 1 assert-level !
   \ 2018-03-09: Add words' pronunciaton.
   \
   \ 2018-04-14: Fix markup in documentation.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

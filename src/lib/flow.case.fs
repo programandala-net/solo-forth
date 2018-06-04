@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804152328
+  \ Last modified: 201806041132
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -147,12 +147,12 @@ cs-mark cconstant case immediate compile-only
 
 need between
 
-: (between-of) ( x1 x2 x3 -- x1 x1 | x1 x4 )
+: (between-of ( x1 x2 x3 -- x1 x1 | x1 x4 )
   2>r dup dup 2r> between 0= if invert then ;
 
   \ doc{
   \
-  \ (between-of) ( x1 x2 x3 -- x1 x1 | x1 x4 ) "paren-between-of"
+  \ (between-of ( x1 x2 x3 -- x1 x1 | x1 x4 ) "paren-between-of"
   \
   \ The run-time factor of `between-of`.  If _x1_ is in range
   \ _x2 x3_, as calculated by `between`, return _x1 x1_;
@@ -163,7 +163,7 @@ need between
 : between-of
   \ Compilation: ( C: -- of-sys )
   \ Run-time: ( x1 x2 x3 -- | x1 )
-  postpone (between-of) postpone of ;  immediate compile-only
+  postpone (between-of postpone of ;  immediate compile-only
 
   \ doc{
   \
@@ -201,7 +201,7 @@ need between
   \   endcase ;
   \ ----
 
-  \ See: `case`, `within-of`, `(between-of)`.
+  \ See: `case`, `within-of`, `(between-of`.
   \
   \ }doc
 
@@ -213,26 +213,26 @@ need between
 
 unneeding less-of ?( need nup
 
-: (less-of) ( n1 n2 -- n1 n1 | n1 n3 )
+: (less-of ( n1 n2 -- n1 n1 | n1 n3 )
   nup nup >= if invert then ;
 
   \ doc{
   \
-  \ (less-of) ( n1 n2 -- n1 n1 | n1 n3 ) "paren-less-of"
+  \ (less-of ( n1 n2 -- n1 n1 | n1 n3 ) "paren-less-of"
   \
   \ The run-time factor of `less-of`.
   \
   \ If _n1_ is less than _n2_, leave _n1 n1_; otherwise leave
   \ _n1 n3_, being _n3_ not equal to _n1_.
   \
-  \ See: `(greater-of)`.
+  \ See: `(greater-of`.
   \
   \ }doc
 
 : less-of
   \ Compilation: ( C: -- of-sys )
   \ Run-time: ( x1 x2 -- | x1 )
-  postpone (less-of) postpone of ; immediate compile-only ?)
+  postpone (less-of postpone of ; immediate compile-only ?)
 
   \ doc{
   \
@@ -254,32 +254,32 @@ unneeding less-of ?( need nup
   \   endcase ;
   \ ----
 
-  \ See: `case`, `greater-of`, `(less-of)`.
+  \ See: `case`, `greater-of`, `(less-of`.
   \
   \ }doc
 
 unneeding greater-of ?( need nup
 
-: (greater-of) ( n1 n2 -- n1 n1 | n1 n3 )
+: (greater-of ( n1 n2 -- n1 n1 | n1 n3 )
   nup nup <= if invert then ;
 
   \ doc{
   \
-  \ (greater-of) ( n1 n2 -- n1 n1 | n1 n3 ) "paren-greater-of"
+  \ (greater-of ( n1 n2 -- n1 n1 | n1 n3 ) "paren-greater-of"
   \
   \ The run-time factor of `greater-of`.
   \
   \ If _n1_ is greater than _n2_, leave _n1 n1_; otherwise
   \ leave _n1 n3_, being _n3_ not equal to _n1_.
   \
-  \ See: `(less-of)`.
+  \ See: `(less-of`.
   \
   \ }doc
 
 : greater-of
   \ Compilation: ( C: -- of-sys )
   \ Run-time: ( x1 x2 -- | x1 )
-  postpone (greater-of) postpone of ; immediate compile-only ?)
+  postpone (greater-of postpone of ; immediate compile-only ?)
 
   \ doc{
   \
@@ -301,7 +301,7 @@ unneeding greater-of ?( need nup
   \   endcase ;
   \ ----
 
-  \ See: `case`, `less-of`, `(greater-of)`.
+  \ See: `case`, `less-of`, `(greater-of`.
   \
   \ }doc
 
@@ -309,12 +309,12 @@ unneeding greater-of ?( need nup
 
 unneeding any-of ?( need any? need pick
 
-: (any-of) ( x#0 x#1 ... x#n n -- x#0 x#0 | x#0 0 )
+: (any-of ( x#0 x#1 ... x#n n -- x#0 x#0 | x#0 0 )
   dup 1+ pick >r any? r> tuck and ;
 
   \ doc{
   \
-  \ (any-of) ( x#0 x#1 ... x#n n -- x#0 x#0 | x#0 0 ) "paren-any-of"
+  \ (any-of ( x#0 x#1 ... x#n n -- x#0 x#0 | x#0 0 ) "paren-any-of"
   \
   \ The run-time factor of `any-of`.  If _x#0_ equals any of
   \ _x#1 ... x#n_, return _x#0 x#0_; else return _x#0 0_.
@@ -324,7 +324,7 @@ unneeding any-of ?( need any? need pick
 : any-of
   \ Compilation: ( C: -- of-sys )
   \ Run-time: ( x#0 x#1 ... x#n n -- | x#0 )
-  postpone (any-of) postpone of ; immediate compile-only ?)
+  postpone (any-of postpone of ; immediate compile-only ?)
 
   \ doc{
   \
@@ -362,7 +362,7 @@ unneeding any-of ?( need any? need pick
   \   endcase ;
   \ ----
 
-  \ See: `case`, `or-of`, `(any-of)`.
+  \ See: `case`, `or-of`, `(any-of`.
   \
   \ }doc
 
@@ -421,12 +421,12 @@ unneeding any-of ?( need any? need pick
 
 unneeding within-of ?( need within
 
-: (within-of) ( x1 x2 x3 -- x1 x1 | x1 x4 )
+: (within-of ( x1 x2 x3 -- x1 x1 | x1 x4 )
   2>r dup dup 2r> within 0= if invert then ;
 
   \ doc{
   \
-  \ (within-of) ( x1 x2 x3 -- x1 x1 | x1 x4 ) "paren-within-of"
+  \ (within-of ( x1 x2 x3 -- x1 x1 | x1 x4 ) "paren-within-of"
   \
   \ The run-time factor of `within-of`.  If _x1_ is in range
   \ _x2 x3_, as calculated by `within`, return _x1 x1_;
@@ -437,7 +437,7 @@ unneeding within-of ?( need within
 : within-of
   \ Compilation: ( C: -- of-sys )
   \ Run-time: ( x1 x2 x3 -- | x1 )
-  postpone (within-of) postpone of ; immediate compile-only ?)
+  postpone (within-of postpone of ; immediate compile-only ?)
 
   \ doc{
   \
@@ -475,7 +475,7 @@ unneeding within-of ?( need within
   \   endcase ;
   \ ----
 
-  \ See: `case`, `between-of`, `(within-of)`.
+  \ See: `case`, `between-of`, `(within-of`.
   \
   \ }doc
 
@@ -483,12 +483,12 @@ unneeding within-of ?( need within
   \
   \ Code from Galope.
 
-: (or-of) ( x1 x2 x3 -- x1 x1 | x1 x4 )
+: (or-of ( x1 x2 x3 -- x1 x1 | x1 x4 )
   2>r dup dup dup r> = swap r> = or 0= if invert then ;
 
   \ doc{
   \
-  \ (or-of) ( x1 x2 x3 -- x1 x1 | x1 x4 ) "paren-or-of"
+  \ (or-of ( x1 x2 x3 -- x1 x1 | x1 x4 ) "paren-or-of"
   \
   \ The run-time factor of `less-of`.
   \
@@ -497,7 +497,7 @@ unneeding within-of ?( need within
 : or-of
   \ Compilation: ( C: -- of-sys )
   \ Run-time: ( x1 x2 x3 -- | x1 )
-  postpone (or-of) postpone of ; immediate compile-only
+  postpone (or-of postpone of ; immediate compile-only
 
   \ doc{
   \
@@ -535,7 +535,7 @@ unneeding within-of ?( need within
   \   endcase ;
   \ ----
 
-  \ See: `case`, `any-of`, `(or-of)`.
+  \ See: `case`, `any-of`, `(or-of`.
   \
   \ }doc
 
@@ -582,5 +582,8 @@ unneeding within-of ?( need within
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-04-15: Update notation ".." to "...".
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

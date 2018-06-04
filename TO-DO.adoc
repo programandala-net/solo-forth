@@ -2488,9 +2488,9 @@ need( word1 word2 word3 word4
 ----
 
 ----
-: need(  ( "name#1" ... "name#n" "<paren>" -- )
-  begin  parse-name 2dup s" )" str= 0=
-  while  needed  repeat  2drop  ;
+: need( ( "name#1" ... "name#n" "<paren>" -- )
+  begin parse-name 2dup s" )" str= 0=
+  while needed repeat 2drop ;
 ----
 
 `need\` is clearer than `needs` to parse the current line, but `need(`
@@ -2663,18 +2663,6 @@ Find better names for `0.r` and `0d.r`.
 Rename `c!exchange` to `c!@`?
 
 Rename `!exchange` to `!@`?
-
-=== 2016-12-31, 2017-01-05, 2017-03-15
-
-NOTE: Milestone: 0.15.0
-
-Use parens after a convention: `(name)` for words not useful for the
-user, not accessible in the library; `(name` for internal words that
-may be useful for the user and are accessible in the library.  Or use
-only the opening paren in all cases.
-
-Anyway, this avoids the need to use backslash-delimited index block
-lines in the library.
 
 // Optimizations {{{1
 == Optimizations

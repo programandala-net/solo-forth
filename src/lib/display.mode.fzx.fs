@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201712101210
+  \ Last modified: 201806041137
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -83,7 +83,7 @@ need assembler need unresolved need >amark need scroll-1px-up
   \ XXX TODO -- implement backspace -- the width of the latest
   \ character must be stored.
 
-create (fzx-emit) ( -- )
+create (fzx-emit ( -- )
 
   asm
 
@@ -249,7 +249,7 @@ create (fzx-emit) ( -- )
 
   \ XXX TODO -- adapt this call to the Forth word
   22AA 2+ call, exaf,
-    \ call (PIXEL-ADDr) + 2 to calculate screen address
+    \ call (PIXEL-ADDR) + 2 to calculate screen address
     \ now A' = (col % 8)
   here jr, >rmark 5 unresolved !  \ jr CHK_LOOP
 
@@ -345,7 +345,7 @@ create (fzx-emit) ( -- )
 
 code fzx-emit ( c -- )
 
-  h pop, b push, l a ld, ' (fzx-emit) call,
+  h pop, b push, l a ld, ' (fzx-emit call,
   b pop, next ix ldp#, jpnext,
 
   end-code
@@ -381,5 +381,8 @@ code fzx-emit ( c -- )
   \
   \ 2017-12-10: Update to `a push,` and `a pop,`, after the
   \ change in the assembler.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

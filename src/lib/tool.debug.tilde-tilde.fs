@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804142342
+  \ Last modified: 201806041104
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -239,13 +239,13 @@ defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
   \ }doc
 
 
-: (~~) ( nt line block -- )
+: (~~ ( nt line block -- )
   ~~? @ if    ~~save ~~app-info ~~info ~~control ~~restore
         else  2drop drop  then ;
 
   \ doc{
   \
-  \ (~~) ( nt n u -- ) "paren-tilde-tilde"
+  \ (~~ ( nt n u -- ) "paren-tilde-tilde"
   \
   \ If the content of `~~?` is not zero, execute the debugging
   \ code that was compiled by `~~` during the definition of
@@ -259,7 +259,7 @@ defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
   latest      ( nt )    postpone literal
   >in @ c/l / ( line )  postpone literal
   blk @       ( block ) postpone literal
-                        postpone (~~) ; immediate compile-only
+                        postpone (~~ ; immediate compile-only
 
   \ doc{
   \
@@ -271,7 +271,7 @@ defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
   \
   \ Origin: Gforth.
   \
-  \ See: `(~~)`, `~~?`, `~~y`, `~~quit-key`, `~~resume-key`,
+  \ See: `(~~`, `~~?`, `~~y`, `~~quit-key`, `~~resume-key`,
   \ `~~info`, `~~app-info`, `~~control` `~~save`, `~~restore`.
   \
   \ }doc
@@ -326,5 +326,8 @@ defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
   \ "double-cell variable".
   \
   \ 2018-04-14: Fix documentation.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

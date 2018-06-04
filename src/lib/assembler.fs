@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804142336
+  \ Last modified: 201806041145
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -123,11 +123,11 @@ DD cconstant ix-op  FD cconstant iy-op
 : m8 ( 16b "name" -- ) create , does> ( -- ) ( dfa ) @ , ;
   \ 2-byte opcodes.
 
-: (jr,) ( a op -- ) c, here 1+ - dup ?rel c, ;
+: (jr, ( a op -- ) c, here 1+ - dup ?rel c, ;
   \ Compile a relative jump _op_ to absolute address _a_.
   \ XXX TODO -- use `<rresolve`
 
-: m9 ( 8b "name" -- ) (c does> ( a -- ) ( a dfa ) c@ (jr,) ;
+: m9 ( 8b "name" -- ) (c does> ( a -- ) ( a dfa ) c@ (jr, ;
   \ Relative jumps.
 
 : ma ( 8b "name" -- )
@@ -378,7 +378,7 @@ F2 cconstant p?   FA cconstant m?
   \
   \ }doc
 
-: ?jr, ( a op -- ) jp>jr (jr,) ;
+: ?jr, ( a op -- ) jp>jr (jr, ;
 
   \ doc{
   \
@@ -418,28 +418,28 @@ F2 cconstant p?   FA cconstant m?
   \
   \ Note: $18 is the Z80 opcode for `jr`.
 
-: (rif) ( op -- orig cs-id ) , >rmark 0A ;
+: (rif ( op -- orig cs-id ) , >rmark 0A ;
 
-: rif ( op -- orig cs-id ) jp>jr inverse-cond (rif) ;
+: rif ( op -- orig cs-id ) jp>jr inverse-cond (rif ;
 
 : rthen ( orig cs-id -- ) 0A ?pairs >rresolve ;
 
 : relse ( orig cs-id -- orig cs-id )
-  0A ?pairs 18 (rif) rot swap rthen 0A ;
+  0A ?pairs 18 (rif rot swap rthen 0A ;
   \ Note: $18 is the opcode of `jr`.
 
 : rbegin ( -- dest cs-id ) <mark 0B ;
 
 : rwhile ( op -- orig cs-id ) rif 2+ ;
 
-: (runtil) ( dest cs-id op -- ) , 0B ?pairs <rresolve ;
-  \ Compile a relative conditional jump.  ``(runtil)`` is
+: (runtil ( dest cs-id op -- ) , 0B ?pairs <rresolve ;
+  \ Compile a relative conditional jump.  ``(runtil`` is
   \ common factor of `runtil`, `ragain` and `rstep`.
 
-: runtil ( dest cs-id op -- ) jp>jr inverse-cond (runtil) ;
+: runtil ( dest cs-id op -- ) jp>jr inverse-cond (runtil ;
   \ End a `rbegin runtil` loop.
 
-: ragain ( dest cs-id -- ) 18 (runtil) ;
+: ragain ( dest cs-id -- ) 18 (runtil ;
   \ End a `rbegin ragain` loop by compiling a `jr` to _dest_.
   \
   \ Note: $18 is the opcode of `jr`.
@@ -447,7 +447,7 @@ F2 cconstant p?   FA cconstant m?
 : rrepeat ( dest cs-id1 orig cs-id2 --) 2swap ragain 2- rthen ;
   \ End a `rbegin rrepeat` loop.
 
-: rstep ( dest cs-id -- ) 10 (runtil) ;
+: rstep ( dest cs-id -- ) 10 (runtil ;
   \ End a `rbegin rstep` loop by compiling `djnz`.
   \
   \ Note: $10 is the Z80 opcode for `djnz`.
@@ -462,28 +462,28 @@ get-order get-current
 only forth-wordlist set-current         need ?pairs
 assembler-wordlist >order set-current   need inverse-cond
 
-: (aif) ( op -- orig cs-id ) c, >mark $08 ;
+: (aif ( op -- orig cs-id ) c, >mark $08 ;
 
-: aif ( op -- orig cs-id ) inverse-cond (aif) ;
+: aif ( op -- orig cs-id ) inverse-cond (aif ;
 
 : athen ( orig cs-id -- ) $08 ?pairs >resolve ;
 
 : aelse ( orig cs-id -- orig cs-id )
-  $08 ?pairs $C3 (aif) rot swap athen $08 ;
+  $08 ?pairs $C3 (aif rot swap athen $08 ;
   \ Note: $C3 is the opcode of `jp`.
 
 : abegin ( -- dest cs-id ) <mark $09 ;
 
 : awhile ( op -- orig cs-id ) aif 2+ ;
 
-: (auntil) ( dest cs-id op ) c, $09 ?pairs <resolve ;
-  \ Compile an absolute conditional jump.  ``(auntil)`` is
+: (auntil ( dest cs-id op ) c, $09 ?pairs <resolve ;
+  \ Compile an absolute conditional jump.  ``(auntil`` is
   \ common factor of `auntil` and `aagain`.
 
-: auntil ( dest cs-id op -- ) inverse-cond (auntil) ;
+: auntil ( dest cs-id op -- ) inverse-cond (auntil ;
   \ End a `abegin auntil` loop.
 
-: aagain ( dest cs-id -- ) $C3 (auntil) ;
+: aagain ( dest cs-id -- ) $C3 (auntil ;
   \ End a `abegin aagain` loop by compiling a `jp` to _dest_.
   \
   \ Note: $C3 is the opcode of `jp`
@@ -771,5 +771,8 @@ set-current
   \ 2018-03-07: Add words' pronunciaton.
   \
   \ 2018-04-14: Fix markup in documentation.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

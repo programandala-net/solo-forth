@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not usable yet
 
-  \ Last modified: 201802051659
+  \ Last modified: 201806041144
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -79,7 +79,7 @@ blocks/disk bit-array indexed-blocks
 
 : index-block ( block -- )
   get-current get-order set-index-order
-  ['] (index-block) catch  dup #-278 <> swap ?throw
+  ['] (index-block catch  dup #-278 <> swap ?throw
   set-order set-current block-indexed ;
   \ Index block _block_.
 
@@ -110,7 +110,7 @@ blocks/disk bit-array indexed-blocks
 
 : fly-located ( ca len -- block | false ) ~~
   2dup indexed-name? if  ~~ nip nip load exit
-  then  ~~ (located) ;
+  then  ~~ (located ;
 
   \ doc{
   \
@@ -170,5 +170,8 @@ blocks/disk bit-array indexed-blocks
   \
   \ 2018-02-05: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

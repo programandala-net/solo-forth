@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804152155
+  \ Last modified: 201806041141
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -349,20 +349,20 @@ unneeding .xs ?(
 
 need xp0 need xlen need xdepth need .depth
 
-: (.xs) ( -- ) xp0 cell+ xlen bounds ?do  i @ . cell +loop ;
+: (.xs ( -- ) xp0 cell+ xlen bounds ?do  i @ . cell +loop ;
 
   \ doc{
   \
-  \ (.xs) ( -- ) "paren-dot-x-s"
+  \ (.xs ( -- ) "paren-dot-x-s"
   \
   \ Display a list of the items in the current `xstack`; TOS is
   \ the right-most item.
   \
-  \ ``(.xs)`` is a factor of `.xs`.
+  \ ``(.xs`` is a factor of `.xs`.
   \
   \ }doc
 
-: .xs ( -- ) xdepth dup .depth if  (.xs)  then ; ?)
+: .xs ( -- ) xdepth dup .depth if (.xs then ; ?)
 
   \ doc{
   \
@@ -371,7 +371,7 @@ need xp0 need xlen need xdepth need .depth
   \ Display the number of items on the current `xstack`, followed
   \ by a list of the items, if any; TOS is the right-most item.
   \
-  \ See: `xdepth` ,`(.xs)`.
+  \ See: `xdepth` ,`(.xs`.
   \
   \ }doc
 
@@ -414,5 +414,8 @@ need xp0 need xlen need xdepth need .depth
   \ 2018-03-09: Update notation "address units" to "bytes".
   \
   \ 2018-04-15: Update notation ".." to "...".
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

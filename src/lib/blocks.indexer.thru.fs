@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804121308
+  \ Last modified: 201806041144
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -129,21 +129,21 @@ need evaluate need catch need use-default-located
   \
   \ }doc
 
-: (make-thru-index) ( -- )
+: (make-thru-index ( -- )
   last-locatable @ 1+ first-locatable @
-  ?do i (index-block) loop ;
+  ?do i (index-block loop ;
 
   \ XXX TODO -- factor `last-locatable @ 1+ first-locatable @`,
-  \ to `need-bounds`; see `(located)`.
+  \ to `need-bounds`; see `(located`.
 
   \ doc{
   \
-  \ (make-thru-index) ( -- ) "paren-make-thru-index"
+  \ (make-thru-index ( -- ) "paren-make-thru-index"
   \
   \ Create the blocks index, from `first-locatable` to
   \ `last-locatable`.
   \
-  \ ``(make-thru-index)`` is a factor of `make-thru-index`.
+  \ ``(make-thru-index`` is a factor of `make-thru-index`.
   \
   \ See: `use-thru-index`.
   \
@@ -151,7 +151,7 @@ need evaluate need catch need use-default-located
 
 : make-thru-index ( -- )
   get-current get-order set-index-order
-  ['] (make-thru-index) catch  dup #-278 <> swap ?throw
+  ['] (make-thru-index catch  dup #-278 <> swap ?throw
   set-order set-current use-thru-index ;
 
   \ XXX TODO -- #-278 \ empty block found: quit indexing
@@ -237,5 +237,8 @@ need evaluate need catch need use-default-located
   \ words that need it.
   \
   \ 2018-04-12: Fix notation or error codes.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

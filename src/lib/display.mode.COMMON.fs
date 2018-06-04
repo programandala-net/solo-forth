@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091618
+  \ Last modified: 201806041137
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -150,23 +150,23 @@ unneeding set-mode-output ?( need os-chans
 
 need set-mode-output need >body
 
-0 constant (output_)
+0 constant (output_
 
-code (banked-mode-output) ( -- )
+code (banked-mode-output ( -- )
   C5 c,  CD c, 0 ,
     \ push bc ; save Forth IP
     \ call output_routine ; to be patched
-  here cell- ' (output_) >body !
+  here cell- ' (output_ >body !
     \ Store the address where the address of the output routine
-    \ must be stored, into the constant `(output_)`.
+    \ must be stored, into the constant `(output_`.
   C1 c,  DD c, 21 c, next ,  jpnext, end-code
     \ pop bc ; restore Forth IP
     \ ld ix,next ; restore IX, just in case
     \ _jp_next
 
 : set-banked-mode-output ( a -- )
-  (output_) !  \ patch `(banked-mode-output)`
-  ['] (banked-mode-output) set-mode-output ;
+  (output_ !  \ patch `(banked-mode-output`
+  ['] (banked-mode-output set-mode-output ;
   \ Associate the output routine at _a_ (which is in the code
   \ bank) to the system channels "K", "S" and "P", using and
   \ intermediate routine to page the code bank in and out.
@@ -222,5 +222,8 @@ code (banked-mode-output) ( -- )
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-09: Update stack notation "x y" to "col row".
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

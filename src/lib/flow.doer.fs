@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804152056
+  \ Last modified: 201806041130
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -60,7 +60,7 @@ unneeding doer ?(
   \
   \ }doc
 
-: (make) ( -- ) ( R: a1 -- | a4 )
+: (make ( -- ) ( R: a1 -- | a4 )
   r> dup cell+ dup cell+ ( a1 a2 a3 )
   swap @ >body !      \ store _a3_ into dfa of _a2_
   @ ?dup if >r then ; \ manage _a1_, continuation after `;and`
@@ -80,7 +80,7 @@ variable >;and ( -- a )
 : make
   \ Interpretation: ( "name" -- )
   \ Compilation:    ( -- )
-  compiling? if   postpone (make) here >;and ! 0 ,
+  compiling? if   postpone (make here >;and ! 0 ,
              else here ' >body ! ] then ; immediate ?)
 
   \ doc{
@@ -186,5 +186,8 @@ unneeding undo ?( need doer
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-04-15: Fix markup in documentation.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

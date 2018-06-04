@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804111432
+  \ Last modified: 201806041142
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
 
 ( ucreate ?user uallot user 2user )
 
-unneeding ucreate ?\ : ucreate ( "name" -- ) udp @ (user) ;
+unneeding ucreate ?\ : ucreate ( "name" -- ) udp @ (user ;
 
   \ doc{
   \
@@ -140,5 +140,8 @@ unneeding 2user ?( need ucreate need uallot
   \
   \ 2018-04-11: Update notation "double variable" to
   \ "double-cell variable".
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803130047
+  \ Last modified: 201806041124
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -589,7 +589,7 @@ need 2nip need cell-bits
   \
   \ It works in Gforth
 
-: (dsqrt) ( d1 -- d2 d3 )
+: (dsqrt ( d1 -- d2 d3 )
   0. 0.  ( radicand . remainder . root . )
   [ cell-bits ] cliteral 0 do
     \ cr .s  key drop  \ XXX INFORMER
@@ -602,7 +602,7 @@ need 2nip need cell-bits
     then
   loop 2rot 2drop ;
 
-: dsqrt ( d1 -- d2 ) (dsqrt) 2nip ;
+: dsqrt ( d1 -- d2 ) (dsqrt 2nip ;
 
   \ dsqrt ( d1 -- d2 )
   \
@@ -665,5 +665,8 @@ need 2nip need cell-bits
   \
   \ 2018-03-12: Fix `d2/`. Fix `m*/`: replace the Gforth's code
   \ with the DZX-Forth's code. Fix `m+`.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

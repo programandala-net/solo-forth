@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705090155
+  \ Last modified: 201806041116
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -42,7 +42,7 @@
 
 need bench{ need 2/ need do
 
-: (interface-age-benchmark) ( n -- )
+: (interface-age-benchmark ( n -- )
   dup 2/ 1+ swap cr
   1 ?do
     dup i 1 rot 2 do
@@ -62,7 +62,7 @@ need bench{ need 2/ need do
 : interface-age-benchmark ( n -- )
   cr ." Interface Age Benchmark:" cr
   dup u. ." iterations..." cr
-  bench{ (interface-age-benchmark) }bench. ;
+  bench{ (interface-age-benchmark }bench. ;
 
   cr
   \  <------------------------------>
@@ -138,5 +138,8 @@ need bench{ need 2/ need do
   \
   \ 2017-05-09: Run the benchmark to test moving/copying the
   \ code of `next` in the kernel and note the results.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

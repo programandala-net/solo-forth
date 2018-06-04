@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201806041145
 
   \ ===========================================================
   \ Description
@@ -123,7 +123,7 @@ unneeding ;code ?(
 : ;code
   \ Compilation: ( -- )
   \ Run-time:    ( -- ) ( R: nest-sys -- )
-  postpone (;code)
+  postpone (;code
   $E1 c, \ Z80 opcode for "pop hl"
   finish-code asm ; immediate compile-only ?)
 
@@ -210,7 +210,7 @@ unneeding ;code ?(
   \ (Assembler Extension Word Set), Forth-94 (TOOLS EXT),
   \ Forth-2012 (TOOLS EXT).
   \
-  \ See: `(;code)`, `does>`, `asm`, `create`.
+  \ See: `(;code`, `does>`, `asm`, `create`.
   \
   \ }doc
 
@@ -235,5 +235,8 @@ unneeding ;code ?(
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

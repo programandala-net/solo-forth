@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806032149
+  \ Last modified: 201806041058
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -150,7 +150,7 @@ defer unlocated ( block -- )
 
 ( ... )
 
-: 1-line-(located) ( ca len -- block | false )
+: 1-line-(located ( ca len -- block | false )
 
   \ ----------------------------
   \ 2dup type space
@@ -160,7 +160,7 @@ defer unlocated ( block -- )
   \ cr 2dup type space rp@ rp0 @ - -2 / . np@ u. cr .s
   \ cr 2dup type space rp@ rp0 @ - -2 / . .s
   \ cr 2dup type space rp@ rp0 @ - -2 / . .s .info
-  \ cr ." (located)<" 2dup type ." >"
+  \ cr ." (located<" 2dup type ." >"
   \ cr ."  base: #" base @ dup decimal . base !
   \ cr ."  rdepth: " rp@ rp0 @ - -2 / .
   \ cr ."  unused-stringer: " unused-stringer .
@@ -182,7 +182,7 @@ defer unlocated ( block -- )
 
   \ doc{
   \
-  \ 1-line-(located) ( ca len -- block | 0 ) "one-line-paren-located"
+  \ 1-line-(located ( ca len -- block | 0 ) "one-line-paren-located"
   \
   \ Locate the first block whose single-line header contains
   \ the string _ca len_ (surrounded by spaces), and return its
@@ -192,8 +192,8 @@ defer unlocated ( block -- )
   \ Only the blocks delimited by `first-locatable` and
   \ `last-locatable` are searched.
   \
-  \ `1-line-(located)` is an alternative, deprecated action of
-  \ `(located)`.
+  \ `1-line-(located` is an alternative, deprecated action of
+  \ `(located`.
   \
   \ }doc
 
@@ -201,7 +201,7 @@ defer unlocated ( block -- )
 
 ( ... )
 
-: multiline-(located) ( ca len -- block | false )
+: multiline-(located ( ca len -- block | false )
 
   \ ----------------------------
   \ 2dup type space
@@ -211,7 +211,7 @@ defer unlocated ( block -- )
   \ cr 2dup type space rp@ rp0 @ - -2 / . np@ u. cr .s
   \ cr 2dup type space rp@ rp0 @ - -2 / . .s
   \ cr 2dup type space rp@ rp0 @ - -2 / . .s .info
-  \ cr ." (located)<" 2dup type ." >"
+  \ cr ." (located<" 2dup type ." >"
   \ cr ."  base: #" base @ dup decimal . base !
   \ cr ."  rdepth: " rp@ rp0 @ - -2 / .
   \ cr ."  unused-stringer: " unused-stringer .
@@ -239,7 +239,7 @@ defer unlocated ( block -- )
 
   \ doc{
   \
-  \ multiline-(located) ( ca len -- block | 0 ) "multiline-paren-located"
+  \ multiline-(located ( ca len -- block | 0 ) "multiline-paren-located"
   \
   \ Locate the first block whose multiline-header header
   \ contains the string _ca len_ (surrounded by spaces), and
@@ -249,15 +249,15 @@ defer unlocated ( block -- )
   \ Only the blocks delimited by `first-locatable` and
   \ `last-locatable` are searched.
   \
-  \ `multiline-(located)` is the default action of `(located)`.
+  \ `multiline-(located` is the default action of `(located`.
   \
   \ }doc
 
-defer (located) ' 1-line-(located) ' (located) defer!  -->
+defer (located ' 1-line-(located ' (located defer!  -->
 
   \ doc{
   \
-  \ (located) ( ca len -- block | 0 ) "paren-located"
+  \ (located ( ca len -- block | 0 ) "paren-located"
   \
   \ Locate the first block whose header contains the string _ca
   \ len_ (surrounded by spaces), and return its number. If not
@@ -266,11 +266,11 @@ defer (located) ' 1-line-(located) ' (located) defer!  -->
   \ Only the blocks delimited by `first-locatable` and
   \ `last-locatable` are searched.
   \
-  \ ``(located)`` is a deferred word. Its default value is
-  \ `multiline-(located)`, which is under development; its
+  \ ``(located`` is a deferred word. Its default value is
+  \ `multiline-(located`, which is under development; its
   \ alternative old value is `1-line-(located`.
   \
-  \ ``(located)`` is the default action of `located`, which is
+  \ ``(located`` is the default action of `located`, which is
   \ changed by `use-fly-index`.
   \
   \ See: `default-first-locatable`.
@@ -293,7 +293,7 @@ defer located ( ca len -- block | false )
   \ `last-locatable` are searched`.
   \
   \ This is a deferred word whose default action is
-  \ `(located)`.
+  \ `(located`.
   \
   \ See: `need-from`.
   \
@@ -516,7 +516,7 @@ defer need ( "name" -- )
   \ Note: This initialization is done also by
   \ `use-default-need`, which is an optional word.
 
-' (located)        ' located    defer!
+' (located        ' located    defer!
 ' drop             ' unlocated  defer!
   \ Set the default action of `located` and `unlocated`:
   \ Search the blocks.
@@ -551,7 +551,7 @@ unneeding use-default-need ?(
 
 unneeding use-default-located ?(
 
-: use-default-located ( -- ) ['] (located) ['] located defer!
+: use-default-located ( -- ) ['] (located ['] located defer!
                              ['] drop ['] unlocated defer! ; ?)
 
   \ doc{
@@ -859,5 +859,8 @@ unneeding need-here ?(
   \
   \ 2018-06-03: Make `(located)` deferred, for testing. Fix,
   \ rewrite and factor `in-block-header?`.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201806041117
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -35,11 +35,11 @@ need bench{
 
 32767 constant iterations
 
-defer (case-bench) ( -- )
+defer (case-bench ( -- )
 
 : case-bench ( n xt -- )
-  cr ." ..."  ['] (case-bench) defer!
-  bench{ iterations 0 ?do  i %11 and (case-bench)  loop
+  cr ." ..."  ['] (case-bench defer!
+  bench{ iterations 0 ?do  i %11 and (case-bench  loop
   }bench. ;
 
 cr .( default)  unused need case .used  unused
@@ -237,6 +237,9 @@ need bench{
   \
   \ 2017-02-19: Replace `do`, which has been moved to the
   \ library, with `?do`.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth
 

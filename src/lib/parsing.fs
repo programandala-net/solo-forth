@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803112245
+  \ Last modified: 201806041109
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -93,7 +93,7 @@ unneeding parse-all ?( : parse-all ( "ccc" -- ca len )
 unneeding string>source ?(
 
 : string>source ( ca len -- )
-  blk off (source-id) on set-source ; ?)
+  blk off (source-id on set-source ; ?)
 
   \ doc{
   \
@@ -101,7 +101,7 @@ unneeding string>source ?(
   \
   \ Set the string _ca len_ as the current source.
   \
-  \ See: `set-source`, `(source-id)`.
+  \ See: `set-source`, `(source-id`.
   \
   \ }doc
 
@@ -320,5 +320,8 @@ unneeding word ?(
   \ 2018-03-08: Documente `defined?` and `parse-char`.
   \
   \ 2018-03-11: Fix requirement of `[char]`.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

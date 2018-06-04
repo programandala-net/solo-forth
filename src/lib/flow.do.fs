@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803082309
+  \ Last modified: 201806041130
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -28,7 +28,7 @@
 unneeding do ?(
 
 : do ( -- do-sys )
-  postpone (do) >mark ; immediate compile-only ?)
+  postpone (do >mark ; immediate compile-only ?)
 
   \ Credit:
   \ Code adapted from Spectrum Forth-83.
@@ -39,7 +39,7 @@ unneeding do ?(
   \   Compilation: ( -- do-sys )
   \
 
-  \ Compile `(do)` and leave _do-sys_ to be consumed by `loop`
+  \ Compile `(do` and leave _do-sys_ to be consumed by `loop`
   \ or `+loop`.
   \
   \ ``do`` is an `immediate` and `compile-only` word.
@@ -52,7 +52,7 @@ unneeding do ?(
 
 unneeding -do ?(
 
-code (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
+code (-do ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
   D1 c, E1 c, A7 c, ED c, 52 c, D2 c, ' branch , 19 c, EB c,
   \ pop de              ; init
   \ pop hl              ; limit
@@ -61,7 +61,7 @@ code (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
   \ jp nc,branch_       ; if not, jump
   \ add hl,de           ; reverse the substraction
   \ ex de,hl            ; HL=init, DE=limit
-  13 c, C3 c, ' (do) 2+ , end-code
+  13 c, C3 c, ' (do 2+ , end-code
   \ inc de              ; increment the limit
   \ jp paren_do.de_hl
 
@@ -73,7 +73,7 @@ code (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
 
   \ doc{
   \
-  \ (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys | ) "paren-minus-do"
+  \ (-do ( n1|u1 n2|u2 -- ) ( R: -- loop-sys | ) "paren-minus-do"
   \
   \ If _n1|u1_ is not less than _n2|u2_, discard both
   \ parameters and continue execution at the location given by
@@ -84,12 +84,12 @@ code (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
   \ return stack becomes unavailable until the loop control
   \ parameters _loop_sys_ are discarded.
   \
-  \ ``(-do)`` is compiled by `-do`.
+  \ ``(-do`` is compiled by `-do`.
   \
   \ }doc
 
 : -do ( -- do-sys )
-  postpone (-do) >mark ; immediate compile-only ?)
+  postpone (-do >mark ; immediate compile-only ?)
 
   \ doc{
   \
@@ -98,7 +98,7 @@ code (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
   \ "minus-do"
   \
 
-  \ Compile `(-do)` and leave _do-sys_ to be consumed by `loop`
+  \ Compile `(-do` and leave _do-sys_ to be consumed by `loop`
   \ or `+loop`.  ``-do`` is an alternative to `do` and `?do`,
   \ to create count-down loops with `+loop`.
   \
@@ -181,5 +181,8 @@ unneeding #do ?(
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-08: Add words' pronunciaton.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

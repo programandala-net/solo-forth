@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804152332
+  \ Last modified: 201806041113
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -3246,7 +3246,7 @@ MIN-INT 71 73 */ CONSTANT LI2
 
 LI1 0 <# #S #> NIP CONSTANT LENLI1
 
-: (.R&U.R) ( u1 u2 -- )
+: (.R&U.R ( u1 u2 -- )
   \ u1 <= string length, u2 is required indentation
   TUCK + >R
   LI1 OVER SPACES  . CR R@    LI1 SWAP  .R CR
@@ -3259,10 +3259,10 @@ LI1 0 <# #S #> NIP CONSTANT LENLI1
 
 : .R&U.R ( -- )
   CR ." You should see lines duplicated:" CR
-  ." indented by 0 spaces" CR 0      0 (.R&U.R) CR
-  ." indented by 0 spaces" CR LENLI1 0 (.R&U.R) CR
+  ." indented by 0 spaces" CR 0      0 (.R&U.R CR
+  ." indented by 0 spaces" CR LENLI1 0 (.R&U.R CR
     \ Just fits required width
-  ." indented by 5 spaces" CR LENLI1 5 (.R&U.R) CR ;
+  ." indented by 5 spaces" CR LENLI1 5 (.R&U.R CR ;
 
 CR CR .( Output from .R and U.R)
 T{ .R&U.R -> }T
@@ -3687,9 +3687,9 @@ TESTING DO +LOOP with maximum and minimum increments
 
 need do
 
-: (-MI)
+: (-MI
   MAX-INT DUP NEGATE + 0= IF MAX-INT NEGATE ELSE -32767 THEN ;
-(-MI) CONSTANT -MAX-INT
+(-MI CONSTANT -MAX-INT
 
 T{ 0 1 0 MAX-INT GD8  -> 1 }T
 T{ 0 -MAX-INT NEGATE -MAX-INT OVER GD8  -> 2 }T
@@ -6740,10 +6740,10 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T -->
   \ Terminate `TRAVERSE-WORDLIST` after n words & check it
   \ compiles.
 
-\? : (PART-OF-WL) ( ct n nt -- ct+1 n-1 )
+\? : (PART-OF-WL ( ct n nt -- ct+1 n-1 )
 \?    DROP DUP IF SWAP 1+ SWAP 1- THEN DUP ;
 \? : PART-OF-WL ( n -- ct 0 | ct+1 n-1)
-\?    0 SWAP ['] (PART-OF-WL) TRAV-WL TRAVERSE-WORDLIST DROP ;
+\?    0 SWAP ['] (PART-OF-WL TRAV-WL TRAVERSE-WORDLIST DROP ;
 \? T{ 0 PART-OF-WL -> 0 }T
 \? T{ 1 PART-OF-WL -> 1 }T
 \? T{ 4 PART-OF-WL -> 4 }T
@@ -6898,12 +6898,12 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T -->
 
 ( forth2012-tools-test )
 
-\? : (GET-ALL) ( caddr u nt -- [n] caddr u true )
+\? : (GET-ALL ( caddr u nt -- [n] caddr u true )
 \?    DUP >R NAME? IF R@ NAME>INTERPRET EXECUTE ROT ROT THEN
 \?    R> DROP TRUE ;
 
 \? : GET-ALL ( caddr u -- i*x )
-\?    ['] (GET-ALL) TRAV-WL TRAVERSE-WORDLIST 2DROP ;
+\?    ['] (GET-ALL TRAV-WL TRAVERSE-WORDLIST 2DROP ;
 
 \? T{ $" TRAV3" GET-ALL -> 3333 333 33 3 }T
 [?ELSE]
@@ -6935,25 +6935,25 @@ DECIMAL
   \ Note that `[DEFINED]`, `[IF]`, `[ELSE]` and `[THEN]` are in
   \ the optional Programming Tools word set.
 
-VARIABLE (\?) 0 (\?) !
+VARIABLE (\? 0 (\? !
   \ Flag: Word defined = 0 | word undefined = -1
 
   \ `[?DEF]` followed by `[?IF]` cannot be used again until
   \ after `[THEN]`.
 
-: [?DEF] ( "name" -- ) BL WORD FIND SWAP DROP 0= (\?) ! ;
+: [?DEF] ( "name" -- ) BL WORD FIND SWAP DROP 0= (\? ! ;
 
   \ Test [?DEF]
-T{ 0 (\?) ! [?DEF] ?DEFTEST1 (\?) @ -> -1 }T
+T{ 0 (\? ! [?DEF] ?DEFTEST1 (\? @ -> -1 }T
 : ?DEFTEST1 1 ;
-T{ -1 (\?) ! [?DEF] ?DEFTEST1 (\?) @ -> 0 }T
+T{ -1 (\? ! [?DEF] ?DEFTEST1 (\? @ -> 0 }T
 
-: [?UNDEF] [?DEF] (\?) @ 0= (\?) ! ;
+: [?UNDEF] [?DEF] (\? @ 0= (\? ! ;
 
   \ Equivalents of [IF] [ELSE] [THEN], these must not be nested
-: [?IF] ( f -- ) (\?) ! ; IMMEDIATE
-: [?ELSE] ( -- ) (\?) @ 0= (\?) ! ; IMMEDIATE
-: [?THEN] ( -- ) 0 (\?) ! ; IMMEDIATE -->
+: [?IF] ( f -- ) (\? ! ; IMMEDIATE
+: [?ELSE] ( -- ) (\? @ 0= (\? ! ; IMMEDIATE
+: [?THEN] ( -- ) 0 (\? ! ; IMMEDIATE -->
 
 ( forth2012-utilities-test )
 
@@ -6962,7 +6962,7 @@ T{ -1 (\?) ! [?DEF] ?DEFTEST1 (\?) @ -> 0 }T
   \ If needed in the blocks test program they will need to be
   \ modified here or redefined there.
 
-: \? ( "..." -- ) (\?) @ ?EXIT POSTPONE \ ; IMMEDIATE
+: \? ( "..." -- ) (\? @ ?EXIT POSTPONE \ ; IMMEDIATE
   \ \? is a conditional comment
 
   \ Test \?
@@ -7028,14 +7028,14 @@ T{ [?DEF] ?DEFTEST2 \? : ?DEFTEST1 2 ; \ Should be redefined
 CREATE SBUF1 SBUF-SIZE CHARS ALLOT
 CREATE SBUF2 SBUF-SIZE CHARS ALLOT
 
-  \ ($") saves a counted string at (caddr)
-: ($") ( caddr "ccc" -- caddr' u )
+  \ ($" saves a counted string at (caddr
+: ($" ( caddr "ccc" -- caddr' u )
   [CHAR] " PARSE ROT 2DUP C!       ( -- ca2 u2 ca)
   CHAR+ SWAP 2DUP 2>R CHARS MOVE   ( -- ) ( R: -- ca' u2 )
   2R> ;
 
-: $" ( "ccc" -- caddr u ) SBUF1 ($") ;
-: $2" ( "ccc" -- caddr u ) SBUF2 ($") ;
+: $" ( "ccc" -- caddr u ) SBUF1 ($" ;
+: $2" ( "ccc" -- caddr u ) SBUF2 ($" ;
 : $CLEAR ( caddr -- ) SBUF-SIZE BL FILL ;
 : CLEAR-SBUFS ( -- ) SBUF1 $CLEAR SBUF2 $CLEAR ;
 
@@ -7132,5 +7132,8 @@ cr .( Forth-2012 tests completed ) cr cr
   \ 2018-03-14: Review the file test.
   \
   \ 2018-04-15: Update notation ".." to "...".
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

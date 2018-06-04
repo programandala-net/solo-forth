@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804152337
+  \ Last modified: 201806041129
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -36,13 +36,13 @@
 
   \ Data space used: 166 bytes.
 
-variable (default-option)
+variable (default-option
   \ Execution token of the default option.
 
 variable #options
   \ Number of compiled options.
 
-: default-option ( "name" -- ) ' (default-option) ! ;
+: default-option ( "name" -- ) ' (default-option ! ;
 
   \ doc{
   \
@@ -56,7 +56,7 @@ variable #options
   \
   \ }doc
 
-: (options) ( i*x x -- j*x )
+: (options ( i*x x -- j*x )
 
   \ x = option to search for
 
@@ -79,7 +79,7 @@ variable #options
 
   \ doc{
   \
-  \ (options) ( i*x x -- j*x ) "paren-options"
+  \ (options ( i*x x -- j*x ) "paren-options"
   \
   \ Run-time procedure compiled by `options[`.
   \
@@ -97,11 +97,11 @@ variable #options
   \ a2 = address of the xt of the default option
   \ a3 = address of number of options
 
-  (default-option) off        \ assume no default option
-  #options off                \ init number of options
-  postpone (options)          \ compile run-time handler
-  >mark >mark >mark           ( a1 a2 a3 )
-  postpone [                  \ start interpreting options
+  (default-option off        \ assume no default option
+  #options off               \ init number of options
+  postpone (options          \ compile run-time handler
+  >mark >mark >mark          ( a1 a2 a3 )
+  postpone [                 \ start interpreting options
   ; immediate compile-only
 
   \ doc{
@@ -161,9 +161,9 @@ variable #options
   \ a1 = address of exit point
   \ a2 = address of default option xt
   \ a3 = address of number of options
-  #options @ swap !           \ store number of options
-  (default-option) @ swap !   \ store default option xt
-  >resolve                    \ store exit point
+  #options @ swap !          \ store number of options
+  (default-option @ swap !   \ store default option xt
+  >resolve                   \ store exit point
   ] ;
 
   \ doc{
@@ -201,5 +201,8 @@ variable #options
   \ words that need it.
   \
   \ 2018-04-15: Update documentation markup and notation.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

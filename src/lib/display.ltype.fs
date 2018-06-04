@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091531
+  \ Last modified: 201806041139
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -133,15 +133,15 @@ variable #ltyped
   \
   \ }doc
 
-defer (lcr) ( -- ) ' cr ' (lcr) defer! -->
+defer (lcr ( -- ) ' cr ' (lcr defer! -->
 
   \ doc{
   \
-  \ (lcr) ( -- ) "paren-l-c-r"
+  \ (lcr ( -- ) "paren-l-c-r"
   \
   \ A deferred word whose default action is `cr`.  This is the
   \ actual carriage return done by `lcr`, before updating the
-  \ data of the left-justified displaying system.  ``(lcr)`` is
+  \ data of the left-justified displaying system.  ``(lcr`` is
   \ a hook for the application, for special cases.
   \
   \ See: `ltype`.
@@ -150,7 +150,7 @@ defer (lcr) ( -- ) ' cr ' (lcr) defer! -->
 
 ( ltype )
 
-: lcr ( -- ) lcr? if (lcr) then no-ltyped ;
+: lcr ( -- ) lcr? if (lcr then no-ltyped ;
 
   \ doc{
   \
@@ -160,7 +160,7 @@ defer (lcr) ( -- ) ' cr ' (lcr) defer! -->
   \ start of a line, move it to the next row. ``lcr`` is part
   \ of the left-justified displaying system. 
   \
-  \ See: `lcr?`, `(lcr)`, `ltype`.
+  \ See: `lcr?`, `(lcr`, `ltype`.
   \
   \ }doc
 
@@ -260,5 +260,8 @@ need n>str
   \ 2018-03-08: Add words' pronunciaton.
   \
   \ 2018-03-09: Make `lwidth` a byte variable. Fix `unfit?`.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

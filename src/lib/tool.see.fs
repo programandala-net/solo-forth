@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091402
+  \ Last modified: 201806041101
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -82,18 +82,18 @@ variable see-address
     ['] branch  of see-branch   endof
     ['] 0branch of see-branch   endof
     ['] ?branch of see-branch   endof
-    ['] (do)    of see-branch   endof
-    ['] (?do)   of see-branch   endof
-    ['] (.")    of see-sliteral endof -->
+    ['] (do     of see-branch   endof
+    ['] (?do    of see-branch   endof
+    ['] (."     of see-sliteral endof -->
 
 ( see )
 
-    [undefined] cslit    ?\ ['] cslit    of see-sliteral endof
-    [undefined] (abort") ?\ ['] (abort") of see-sliteral endof
-    [undefined] -branch  ?\ ['] -branch  of see-branch   endof
+    [undefined] cslit   ?\ ['] cslit   of see-sliteral endof
+    [undefined] (abort" ?\ ['] (abort" of see-sliteral endof
+    [undefined] -branch ?\ ['] -branch of see-branch   endof
   endcase ;
 
-: colon-end? ( xt -- f ) dup ['] exit = swap ['] (;code) = or ;
+: colon-end? ( xt -- f ) dup ['] exit = swap ['] (;code = or ;
   \ Is _xt_ the end of colon definition?
 
 : see-usage ( -- ) cr ." SPACE=more Q=quit other=deeper" cr ;
@@ -161,12 +161,12 @@ variable manual-see manual-see on
   \ }doc
 
 : ucreate-cf? ( c a -- )
-  $CD [ ' (user) >body 2 cells + ] literal d= ;
+  $CD [ ' (user >body 2 cells + ] literal d= ;
   \ Is _c a_ the code field of a word created by `ucreate`,
-  \ `user`, `2user` or `(user)`?
+  \ `user`, `2user` or `(user`?
   \
   \ WARNING: the code address is calculated from the code field
-  \ address of `(user)`, after its current code.
+  \ address of `(user`, after its current code.
 
 : colon-cf? ( c a -- ) $CD docolon d= ;
   \ Is _c a_ the code field of a word created by `:`?
@@ -391,5 +391,8 @@ need see
   \ 2018-01-07: Finish implementation of `manual-see`.
   \
   \ 2018-03-09: Add words' pronunciaton.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

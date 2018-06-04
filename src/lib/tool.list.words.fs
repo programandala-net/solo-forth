@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091403
+  \ Last modified: 201806041102
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,7 +33,7 @@ unneeding .word ?( need tab  defer .word ( nt -- )
   \
   \ .word ( nt -- ) "dot-word"
   \
-  \ A deferred word whose default action is `(.word)`. This
+  \ A deferred word whose default action is `(.word`. This
   \ word is used by `words`, `words-like` and `wordlist-words`,
   \ therefore their output can be changed by the user in
   \ special cases, for example when more details are needed for
@@ -189,5 +189,10 @@ unneeding words# ?( need trail need name<name
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-09: Add words' pronunciaton.
+  \
+  \ 2018-06-04: Fix documentation.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

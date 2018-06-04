@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201806041102
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -29,11 +29,11 @@ unneeding .depth ?\ : .depth ( n -- ) ." <" 0 .r ." > " ;
 
 unneeding .s ?( need .depth
 
-defer (.s) ( x -- ) ' . ' (.s) defer!
+defer (.s ( x -- ) ' . ' (.s defer!
 
 : .s   ( -- )
   depth dup .depth 0> if
-    sp@ sp0 @ cell- ?do i @ (.s)  [ cell negate ] literal +loop
+    sp@ sp0 @ cell- ?do i @ (.s  [ cell negate ] literal +loop
   then ; ?)
 
   \ Credit:
@@ -42,7 +42,7 @@ defer (.s) ( x -- ) ' . ' (.s) defer!
 unneeding u.s ?( need .s
 
 : u.s   ( -- )
-  ['] u. ['] (.s) defer!  .s  ['] . ['] (.s) defer! ; ?)
+  ['] u. ['] (.s defer!  .s  ['] . ['] (.s defer! ; ?)
 
   \ ===========================================================
   \ Change log
@@ -70,5 +70,8 @@ unneeding u.s ?( need .s
   \ library, with `?do`.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

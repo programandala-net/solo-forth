@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804152328
+  \ Last modified: 201806041132
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -107,8 +107,8 @@ unneeding don't ?(
   \ Usage example:
 
   \ ----
-  \ : (.range) ( n1 n2 -- ) don't do i . loop ;
-  \ : .range ( n1 n2 -- ) (.range) ;
+  \ : (.range ( n1 n2 -- ) don't do i . loop ;
+  \ : .range ( n1 n2 -- ) (.range ;
   \ ----
 
   \ ``don't`` is superseded by the standard word `?do`.
@@ -690,5 +690,11 @@ unneeding orif ?(
   \
   \ 2018-04-15: Fix markup in documentation.  Update notation
   \ ".." to "...". Fix and Improve documentation.
+  \
+  \ 2018-06-04: Update documentation after the renaming of
+  \ paren words.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201804162001
+  \ Last modified: 201806041122
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -100,12 +100,12 @@ wordlist dup constant gil-heap-wordlist dup set-current >order
 : heap-data ( -- a ) heap-map /heap-map + ;
   \ Address of the current heap's data space.
 
-: (mapbit) ( n1 -- n2 ca ) address-unit-bits /mod heap-map + ;
+: (mapbit ( n1 -- n2 ca ) address-unit-bits /mod heap-map + ;
   \ n1 = number of bit in the bitmap
   \ n2 = number of bit in the byte at _a2_
   \ ca = address of the bitmap that holds bit _n2_
 
-: mapbit ( n1 -- a2 b n2 ) (mapbit) dup @ rot ; -->
+: mapbit ( n1 -- a2 b n2 ) (mapbit dup @ rot ; -->
   \ n1 = number of bit in the bitmap
   \ a2 = address of the corresponding byte
   \ b =  corresponding byte
@@ -113,7 +113,7 @@ wordlist dup constant gil-heap-wordlist dup set-current >order
 
 ( gil-heap-wordlist )
 
-: used-chunk? ( n -- f ) (mapbit) @ swap bit? ;
+: used-chunk? ( n -- f ) (mapbit @ swap bit? ;
   \ Is chunk _n_ used?
 
 : use-chunk ( n -- ) mapbit set-bit swap ! ;
@@ -149,7 +149,7 @@ wordlist dup constant gil-heap-wordlist dup set-current >order
 
 : chunk>address ( n1 -- a ) /chunk * heap-data + ;
 
-: (allocate) ( n1 n2 -- a ) dup chunk>address >r swap bounds
+: (allocate ( n1 n2 -- a ) dup chunk>address >r swap bounds
                             ?do i use-chunk loop r> ; -->
   \ Allocate _n1_ chunks of the current heap, starting from
   \ chunk _n2_; return the address _a_ of the allocated space.
@@ -177,7 +177,7 @@ wordlist dup constant gil-heap-wordlist dup set-current >order
   \ }doc
 
 : gil-allocate ( u -- u ior )
-  heap-in bytes>chunks locate-chunks ?dup ?exit (allocate) 0
+  heap-in bytes>chunks locate-chunks ?dup ?exit (allocate 0
   heap-out ;
 
   \ doc{
@@ -291,6 +291,9 @@ previous ?)
   \ 2018-03-09: Update notation "address units" to "bytes".
   \
   \ 2018-04-16: Improve description of _ior_ notation.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth
 

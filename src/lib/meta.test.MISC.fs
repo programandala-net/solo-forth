@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803282307
+  \ Last modified: 201806041114
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -638,12 +638,12 @@ $FFFF constant test-addr
 : b? ( n -- ) bank test-addr c@ . ;
   \ Show the test value stored in bank _n_, which must be _n_.
 
-: (prepare-bank) ( n -- )
+: (prepare-bank ( n -- )
   dup . dup bank banks 1- and test-addr c! ;
   \ Prepare bank _n_, saving the test value to it.
 
 : prepare-bank ( n -- )
-  dup 5 = if drop else (prepare-bank) then ;
+  dup 5 = if drop else (prepare-bank then ;
   \ If _n_ is not 5, prepare bank _n_, saving the test value to
   \ it.  Bank 5 is ommited because it is paged also at $4000.
 
@@ -726,7 +726,7 @@ font fzx-font !
 : zxtype ( ca len -- ) bounds ?do  i c@ fzx-emit  loop ;
 
 cr .( fzx-emit is ready ) cr
-' (fzx-emit)
+' (fzx-emit
 cr .( Code start:   ) dup u.
 cr .( Code length:  ) ' fzx-emit swap - u.
 cr
@@ -1213,18 +1213,18 @@ synonym2 if-s2 if
      \ 10                -7       3               -1
      \ -10               -7      -3                1
 
-defer (/) ( d n1 -- n2 n3 )
+defer (/ ( d n1 -- n2 n3 )
 
-: ((/-test)) ( dividend divisor -- )
-  >r s>d r> (/) swap . . space ;
+: ((/-test ( dividend divisor -- )
+  >r s>d r> (/ swap . . space ;
 
-: (/-test) ( -- )
-  cr  10  7 ((/-test)) -10  7 ((/-test))
-      10 -7 ((/-test)) -10 -7 ((/-test)) ;
+: (/-test ( -- )
+  cr  10  7 ((/-test -10  7 ((/-test
+      10 -7 ((/-test -10 -7 ((/-test ;
 
 : /-test ( -- )
-  dup ['] m/     ['] (/) defer! (/-test)
-      ['] sm/rem ['] (/) defer! (/-test) ;
+  dup ['] m/     ['] (/ defer! (/-test
+      ['] sm/rem ['] (/ defer! (/-test ;
 
 ( exception-test )
 
@@ -1727,5 +1727,8 @@ blk @ 1+ blk @ 2+ thru
   \
   \ 2018-03-28: Move `read-byte-test` from the +3DOS module.
   \ Add `clocal` and `2local` to `local-test` and improve it.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

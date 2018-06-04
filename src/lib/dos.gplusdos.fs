@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804161942
+  \ Last modified: 201806041136
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -665,7 +665,7 @@ unneeding 2-block-drives ?( need set-block-drives
 need assembler need ufia need heraz need set-filename
 need hook,
 
-code (delete-file) ( -- ior )
+code (delete-file ( -- ior )
   b push,  \ save the Forth IP
   ufia ix ldp#, heraz hook,  \ delete the file
   b pop, next ix ldp#, \ restore the Forth registers
@@ -673,16 +673,16 @@ code (delete-file) ( -- ior )
 
   \ doc{
   \
-  \ (delete-file) ( -- ior ) "paren-delete-file"
+  \ (delete-file ( -- ior ) "paren-delete-file"
   \
   \ Delete a disk file using the data hold in `ufia`.
   \ Return the I/O result code _ior_.
   \
-  \ ``(delete-file)`` is a factor of `delete-file`.
+  \ ``(delete-file`` is a factor of `delete-file`.
   \
   \ }doc
 
-: delete-file ( ca len -- ior ) set-filename (delete-file) ;
+: delete-file ( ca len -- ior ) set-filename (delete-file ;
 
   \ doc{
   \
@@ -693,7 +693,7 @@ code (delete-file) ( -- ior )
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
-  \ See: `(delete-file)`.
+  \ See: `(delete-file`.
   \
   \ }doc
 
@@ -760,7 +760,7 @@ need ufia need get-drive
 need assembler need ufia need set-code-file
 need hofile need hsvbk need cfsm need hook,
 
-code (>file) ( -- ior )
+code (>file ( -- ior )
 
   b push, \ save the Forth IP
   ufia ix ldp#,
@@ -774,16 +774,16 @@ code (>file) ( -- ior )
 
   \ doc{
   \
-  \ (>file) ( -- ior ) "paren-to-file"
+  \ (>file ( -- ior ) "paren-to-file"
   \
   \ Save a file to disk using the data hold in `ufia` and
   \ return the I/O result code _ior_.
   \
-  \ ``(>file)`` is a factor of `>file`.
+  \ ``(>file`` is a factor of `>file`.
   \
   \ }doc
 
-: >file ( ca1 len1 ca2 len2 -- ior ) set-code-file (>file) ;
+: >file ( ca1 len1 ca2 len2 -- ior ) set-code-file (>file ;
 
   \ doc{
   \
@@ -792,7 +792,7 @@ code (>file) ( -- ior )
   \ Save memory region _ca1 len1_ to a file named by the string
   \ _ca2 len2_, and return the I/O result code _ior_.
   \
-  \ See: `file>`, `(>file)`.
+  \ See: `file>`, `(>file`.
   \
   \ }doc
 
@@ -801,7 +801,7 @@ code (>file) ( -- ior )
 need assembler need ufia need set-code-file
 need hgfile need lbyte need hldbk need hook,
 
-code (file>) ( ca len -- ior )
+code (file> ( ca len -- ior )
 
   d pop, h pop, b push, h push, d push, ( ip ca len )
 
@@ -817,7 +817,7 @@ code (file>) ( ca len -- ior )
 
   \ doc{
   \
-  \ (file>) ( ca len -- ior ) "paren-file-from"
+  \ (file> ( ca len -- ior ) "paren-file-from"
   \
   \ Read a file from disk, using the data hold in `ufia` and
   \ the alternative destination zone _ca len_, following the
@@ -834,14 +834,14 @@ code (file>) ( ca len -- ior )
   \
   \ Return the I/O result code _ior_.
   \
-  \ ``(file>)`` is a factor of `file>`.
+  \ ``(file>`` is a factor of `file>`.
   \
   \ See: `file-address`, `file-length`.
   \
   \ }doc
 
 : file> ( ca1 len1 ca2 len2 -- ior)
-  2dup 2>r 2swap set-code-file 2r> (file>) ;
+  2dup 2>r 2swap set-code-file 2r> (file> ;
 
   \ doc{
   \
@@ -885,7 +885,7 @@ code (file>) ( ca len -- ior )
   \ | `s" pic.scr" 32768  256 file>` | Load only 256 bytes to address 32768
   \ |===
 
-  \ See: `>file`, `(file>)`.
+  \ See: `>file`, `(file>`.
   \
   \ }doc
 
@@ -894,7 +894,7 @@ code (file>) ( ca len -- ior )
 need assembler need ufia need set-filename
 need hgfile need lbyte need hook,
 
-code (file-status) ( -- a ior )
+code (file-status ( -- a ior )
   ufia ix ldp#, ix push,
   b push,  \ save the Forth IP
   hgfile hook,  \ get the file
@@ -911,7 +911,7 @@ code (file-status) ( -- a ior )
 
   \ doc{
   \
-  \ (file-status) ( -- a ior ) "paren-file-status"
+  \ (file-status ( -- a ior ) "paren-file-status"
   \
   \ Return the status of the file whose name is hold in `ufia`.
   \ If the file exists, _ior_ is zero and the file header is
@@ -919,11 +919,11 @@ code (file-status) ( -- a ior )
   \ Otherwise _ior_ is the I/O result code.  and _a_ is
   \ undefined.
   \
-  \ ``(file-status)`` is a low-level factor of `file-status`.
+  \ ``(file-status`` is a low-level factor of `file-status`.
   \
   \ }doc
 
-: file-status ( ca len -- a ior) set-filename (file-status) ;
+: file-status ( ca len -- a ior) set-filename (file-status ;
 
   \ doc{
   \
@@ -1170,7 +1170,7 @@ unneeding drive-unused ?( need drive-used
 need assembler need ufia need set-code-file
 need hgfile need lbyte need dos-in, need dos-out, need hook,
 
-code (file>screen) ( -- ior )
+code (file>screen ( -- ior )
 
   b push,  \ save the Forth IP
 
@@ -1197,7 +1197,7 @@ code (file>screen) ( -- ior )
   \ using the data hold in UFIA.
 
 : file>screen ( ca len -- ior )
-  0 0 2swap set-code-file (file>screen) ;
+  0 0 2swap set-code-file (file>screen ;
   \ Copy a file _ca len_ to the screen, line by line,
   \ and return I/O result code _ior_.
 
@@ -2141,5 +2141,8 @@ need write-file need read-file need .ufia
   \ 2018-04-14. Fix markup in documentation.
   \
   \ 2018-04-16: Improve description of _ior_ notation.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

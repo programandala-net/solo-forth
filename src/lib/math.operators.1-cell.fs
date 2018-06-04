@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804141539
+  \ Last modified: 201806041124
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1061,11 +1061,11 @@ unneeding */_ ?( need */_mod
 
 ( any? either neither ifelse )
 
-unneeding any? ?( need roll  variable (any?)
+unneeding any? ?( need roll  variable (any?
 
 : any? ( x[0] x[1]..x[n] n -- f )
-  dup 1+ roll (any?) !
-  0 swap 0 ?do  swap (any?) @ = or  loop ; ?)
+  dup 1+ roll (any? !
+  0 swap 0 ?do  swap (any? @ = or  loop ; ?)
 
   \ Credit:
   \
@@ -1346,5 +1346,8 @@ code join ( b1 b2 -- x )
   \ 2018-03-07: Add words' pronunciaton.
   \
   \ 2018-04-14: Fix and improve documentation.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

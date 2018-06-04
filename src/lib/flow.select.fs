@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804152330
+  \ Last modified: 201806041129
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -174,11 +174,11 @@ need cs-mark need cond need thens
   \
   \ }doc
 
-: (range) ( x0 x1 x2 -- x0 f ) 2>r dup 2r> over - -rot - u< ;
+: (range ( x0 x1 x2 -- x0 f ) 2>r dup 2r> over - -rot - u< ;
 
 
   \
-  \ (range) ( x0 x1 x2 -- x0 f )
+  \ (range ( x0 x1 x2 -- x0 f )
   \
   \ The run-time procedure compiled by `range`.
   \
@@ -189,7 +189,7 @@ need cs-mark need cond need thens
 : range
   \ Compilation: ( C: -- orig )
   \ Run-time:    ( x0 x1 x2 -- x0 f )
-  postpone (range) postpone if ; immediate compile-only
+  postpone (range postpone if ; immediate compile-only
 
 
   \
@@ -219,5 +219,8 @@ need cs-mark need cond need thens
   \ documentation. Fix usage of `thens`.
   \
   \ 2018-04-15: Update notation ".." to "...".
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

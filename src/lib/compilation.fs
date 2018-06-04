@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803100023
+  \ Last modified: 201806041143
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -633,12 +633,12 @@ unneeding name>interpret ?(
 
 unneeding name>compile ?(
 
-: (comp') ( nt -- xt )
+: (comp' ( nt -- xt )
   immediate? if ['] execute else ['] compile, then ;
 
   \ doc{
   \
-  \ (comp') ( nt -- xt ) "paren-comp-tick"
+  \ (comp' ( nt -- xt ) "paren-comp-tick"
   \
   \ A factor of `name>compile`. If _nt_ is an `immediate` word,
   \ return the _xt_ of `execute`, else return the _xt_ of
@@ -648,7 +648,7 @@ unneeding name>compile ?(
   \
   \ }doc
 
-: name>compile ( nt -- x xt ) dup name> swap (comp') ; ?)
+: name>compile ( nt -- x xt ) dup name> swap (comp' ; ?)
 
   \ doc{
   \
@@ -662,7 +662,7 @@ unneeding name>compile ?(
   \
   \ Origin: Forth-2012 (TOOLS EXT).
   \
-  \ See: `name>interpret`, `comp'`, `(comp')`, `name>`.
+  \ See: `name>interpret`, `comp'`, `(comp'`, `name>`.
   \
   \ }doc
 
@@ -1466,5 +1466,8 @@ unneeding warn-throw ?( need ?warn
   \
   \ 2018-03-10: Make the string comparisons of `[if] [else]
   \ [then]` case-insensitive.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

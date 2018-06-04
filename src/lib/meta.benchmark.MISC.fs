@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806032137
+  \ Last modified: 201806041121
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -38,10 +38,10 @@ need ticks need timer
 
 : run ( n -- )
   >r
-  cr ." 1-line-(located)    "
-  ticks r@ 0 ?do missing$ 1-line-(located)    drop loop timer
-  cr ." multiline-(located) "
-  ticks r@ 0 ?do missing$ multiline-(located) drop loop timer
+  cr ." 1-line-(located    "
+  ticks r@ 0 ?do missing$ 1-line-(located    drop loop timer
+  cr ." multiline-(located "
+  ticks r@ 0 ?do missing$ multiline-(located drop loop timer
   r> drop ;
 
   \                   Ticks
@@ -541,18 +541,18 @@ need bench{ need }bench.
 need circle
 need colored-circle-pixel need uncolored-circle-pixel
 
-defer (number-base)
+defer (number-base
 
-: (run) ( u -- )
+: (run ( u -- )
   bench{ 0 ?do  127 95 95 circle  loop }bench. ;
 
 : run ( u -- )
   cr ." Bench of circle "
   cr ." Results for " dup u. ." iterations"
   dup cr ." With colored-circle-pixel :" cr space
-      colored-circle-pixel set-circle-pixel (run)
+      colored-circle-pixel set-circle-pixel (run
       cr ." With uncolored-circle-pixel :" cr space
-      uncolored-circle-pixel set-circle-pixel (run) ;
+      uncolored-circle-pixel set-circle-pixel (run ;
 
   \ 2017-01-30:
 
@@ -1276,18 +1276,18 @@ need bench{ need }bench.
   dup '%' = if  drop 1 /string  2  exit  then
       '#' = if  1 /string 10  exit  then  base @ ;
 
-need ticks need reset-ticks  defer (number-base)
+need ticks need reset-ticks  defer (number-base
 
-: (number-base-bench) ( n xt -- )
-  ['] (number-base) defer!
-  reset-ticks  0 ?do  s" 000" (number-base) drop 2drop  loop
+: (number-base-bench ( n xt -- )
+  ['] (number-base defer!
+  reset-ticks  0 ?do  s" 000" (number-base drop 2drop  loop
   ticks d. cr ;
 
 : number-base-bench ( u -- )
-  dup ['] number-base-1 (number-base-bench)
-  dup ['] number-base-2 (number-base-bench)
-  dup ['] number-base-3 (number-base-bench)
-      ['] number-base-4 (number-base-bench) ;
+  dup ['] number-base-1 (number-base-bench
+  dup ['] number-base-2 (number-base-bench
+  dup ['] number-base-3 (number-base-bench
+      ['] number-base-4 (number-base-bench ;
 
   \ 2015-10-09
   \
@@ -1309,24 +1309,24 @@ need ticks need reset-ticks  defer (number-base)
 
 need ticks need reset-ticks need rnd
 
-defer (fill)
+defer (fill
 
-: (fill-bench) ( n xt -- )
-  ['] (fill) defer!
+: (fill-bench ( n xt -- )
+  ['] (fill defer!
   reset-ticks  0
-  ?do  16384 6144 rnd (fill)  loop
-  \ ?do  16384 1 rnd (fill)  loop
-  \ ?do  16384 0 rnd (fill)  loop
-  \ ?do  16384 2048 rnd (fill)  loop
+  ?do  16384 6144 rnd (fill loop
+  \ ?do  16384 1 rnd (fill loop
+  \ ?do  16384 0 rnd (fill loop
+  \ ?do  16384 2048 rnd (fill loop
   ticks cr d.
   key drop ;
 
 : fill-bench ( u -- )
-  dup ['] fill (fill-bench)
-  dup ['] fill2 (fill-bench)
-      ['] fill88 (fill-bench) ;
+  dup ['] fill (fill-bench
+  dup ['] fill2 (fill-bench
+      ['] fill88 (fill-bench ;
 
-  \ Kernel code: `16384 6144 rnd (fill)`
+  \ Kernel code: `16384 6144 rnd (fill`
   \
   \ Times Ticks (20 ms)
   \ ----- -----------------
@@ -1336,7 +1336,7 @@ defer (fill)
   \ 00100  491   522    252
   \ 01000 4909  5218   2524
 
-  \ Kernel code: `16384 1 rnd (fill)`
+  \ Kernel code: `16384 1 rnd (fill`
   \
   \ Times Ticks (20 ms)
   \ ----- -----------------
@@ -1348,7 +1348,7 @@ defer (fill)
   \ 05000  425   423    422
   \ 10000  850   846    845
 
-  \ Kernel code: `16384 0 rnd (fill)`
+  \ Kernel code: `16384 0 rnd (fill`
   \
   \ Times Ticks (20 ms)
   \ ----- -----------------
@@ -1360,7 +1360,7 @@ defer (fill)
   \ 05000  421   418    421
   \ 10000  842   837    842
 
-  \ Kernel code: `16384 2048 rnd (fill)`
+  \ Kernel code: `16384 2048 rnd (fill`
   \
   \ Times Ticks (20 ms)
   \ ----- ------------------
@@ -1634,15 +1634,15 @@ need ticks need reset-ticks need rnd
 
 : drnd ( -- d ) rnd rnd ;
 
-defer (/) ( d n1 -- n2 n3 )
+defer (/ ( d n1 -- n2 n3 )
 
-: (/-bench) ( n -- )
+: (/-bench ( n -- )
   reset-ticks
-  1+ 1 ?do  drnd i (/) 2drop  loop  ticks cr d. ;
+  1+ 1 ?do  drnd i (/ 2drop  loop  ticks cr d. ;
 
 : /-bench ( u -- )
-  dup ['] m/ ['] (/) defer! (/-bench)
-      ['] sm/rem ['] (/) defer! (/-bench) ;
+  dup ['] m/ ['] (/ defer! (/-bench
+      ['] sm/rem ['] (/ defer! (/-bench ;
 
   \ Times Ticks (20 ms)
   \ ----- -------------
@@ -2548,12 +2548,12 @@ unused - cr .( m3forth ) . .( bytes)  \ 29
 
 ( du<-bench )
 
-defer (u<)
+defer (u<
 
 : du<-bench ( u xt -- )
-  ['] (u<) defer!
+  ['] (u< defer!
   bench{
-    dup 0 ?do  0 ?do  i s>d j s>d (u<) drop  loop  loop
+    dup 0 ?do  0 ?do  i s>d j s>d (u< drop  loop  loop
   }bench. ;
 
 : run ( u -- )
@@ -2618,12 +2618,12 @@ unused - cr .( with requirements) . .( bytes)  \ 185 bytes
 
 need bench{
 
-defer (m*/)
+defer (m*/
 
 : m*/-bench ( u xt -- )
-  ['] (m*/) defer!
+  ['] (m*/ defer!
   bench{
-    1+ 1 ?do  i s>d i i (m*/) 2drop  loop
+    1+ 1 ?do  i s>d i i (m*/ 2drop  loop
     \ XXX FIXME -- use better range of numbers
   }bench. ;
 
@@ -2648,16 +2648,16 @@ defer (m*/)
 
 need bench{ need j
 
-defer (u<)
+defer (u<
 
 variable times
 
 : u<-bench ( u xt -- )
-  ['] (u<) defer!  times !
+  ['] (u< defer!  times !
   bench{
     times @ 0 ?do  times @ 0 ?do  i j
     \ 2dup . . key drop  \ XXX INFORMER
-    (u<) drop  loop  loop
+    (u< drop  loop  loop
   }bench. ;
 
 : run ( u -- )
@@ -2682,11 +2682,11 @@ variable times
 
 need alias need alias! need j need bench{ need }bench.
 
-: 0(u<=) ( u1 u2 -- f ) u> 0= ;
-: 1(u<=) ( u1 u2 -- f ) 1+ u< ;
+: 0(u<= ( u1 u2 -- f ) u> 0= ;
+: 1(u<= ( u1 u2 -- f ) 1+ u< ;
 
-: 0(u>=) ( u1 u2 -- f ) u< 0= ;
-: 1(u>=) ( u1 u2 -- f ) 1- u> ;
+: 0(u>= ( u1 u2 -- f ) u< 0= ;
+: 1(u>= ( u1 u2 -- f ) 1- u> ;
 
 ' drop alias operator
 latest constant operator-nt
@@ -2705,11 +2705,11 @@ variable times
 
 : run ( u -- )
       cr ." Implementation of U<="
-  dup cr ."   u> 0= ..." ['] 0(u<=) operator-bench
-  dup cr ."   1+ u< ..." ['] 1(u<=) operator-bench
+  dup cr ."   u> 0= ..." ['] 0(u<= operator-bench
+  dup cr ."   1+ u< ..." ['] 1(u<= operator-bench
       cr ." Implementation of U>="
-  dup cr ."   u< 0= ..." ['] 0(u>=) operator-bench
-      cr ."   1- u< ..." ['] 1(u>=) operator-bench ;
+  dup cr ."   u< 0= ..." ['] 0(u>= operator-bench
+      cr ."   1- u< ..." ['] 1(u>= operator-bench ;
 
   \ Times   Ticks (20 ms)
   \ -----   ----------------------------
@@ -2788,15 +2788,15 @@ defer do-search
 
 need bench{ need j
 
-defer (<)
+defer (<
 
 variable times
 
 : <-bench ( u xt -- )
-  ['] (<) defer!  times !
+  ['] (< defer!  times !
   bench{
     times @ 0 ?do  times @ 0 ?do  i j
-    (<) drop  loop  loop
+    (< drop  loop  loop
   }bench. ;
 
 : run ( u -- )
@@ -2821,14 +2821,14 @@ variable times
 
 need bench{
 
-defer (=)
+defer (=
 
 variable times
 
 : =-bench ( u xt -- )
-  ['] (=) defer!  times !
+  ['] (= defer!  times !
   bench{
-    times @ 0 ?do  2 2 (=) 1 0 (=) 2drop  loop
+    times @ 0 ?do  2 2 (= 1 0 (= 2drop  loop
   }bench. ;
 
 : run ( u -- )
@@ -2878,15 +2878,15 @@ variable times
 
 need bench{ need j
 
-defer (<)
+defer (<
 
 variable times
 
 : <-bench ( u xt -- )
-  ['] (<) defer!  times !
+  ['] (< defer!  times !
   bench{
     times @ 0 ?do  times @ 0 ?do  i j
-    (<) drop  loop  loop
+    (< drop  loop  loop
   }bench. ;
 
 : run ( u -- )
@@ -3079,13 +3079,13 @@ code c2-d0= ( d -- f )
 
 need bench{ need }bench.
 
-: d<>(2) ( xd1 xd2 -- f ) rot <> if 2drop true exit then <> ;
-: d=(2n) ( xd1 xd2 -- f ) d<>(2) 0= ;
-: d=(2) ( xd1 xd2 -- f ) rot <> if 2drop false exit then = ;
+: d<>(2 ( xd1 xd2 -- f ) rot <> if 2drop true exit then <> ;
+: d=(2n ( xd1 xd2 -- f ) d<>(2 0= ;
+: d=(2 ( xd1 xd2 -- f ) rot <> if 2drop false exit then = ;
 
-: d=(1)   ( xd1 xd2 -- f ) rot = >r = r> and ;
-: d<>(1n) ( xd1 xd2 -- f ) d=(1) 0= ;
-: d<>(1) ( xd1 xd2 -- f ) rot <> >r <> r> or ;
+: d=(1   ( xd1 xd2 -- f ) rot = >r = r> and ;
+: d<>(1n ( xd1 xd2 -- f ) d=(1 0= ;
+: d<>(1 ( xd1 xd2 -- f ) rot <> >r <> r> or ;
 
 -->
 
@@ -3093,30 +3093,30 @@ need bench{ need }bench.
 
 : run ( -- )
   cr ." d= benchmark" cr  65535
-  dup cr ." d=(1)  :"
-  bench{ 0 ?do 0. 0. d=(1)  0. 1. d=(1)  2drop loop }bench.
-  dup cr ." d=(2n) :"
-  bench{ 0 ?do 0. 0. d=(2n)  0. 1. d=(2n)  2drop loop }bench.
-  dup cr ." d=(2)  :"
-  bench{ 0 ?do 0. 0. d=(2) 0. 1. d=(2) 2drop loop }bench.
-  dup cr ." d<>(1n):"
-  bench{ 0 ?do 0. 0. d<>(1n) 0. 1. d<>(1n) 2drop loop }bench.
-  dup cr ." d<>(2) :"
-  bench{ 0 ?do 0. 0. d<>(2) 0. 1. d<>(2) 2drop loop }bench.
-      cr ." d<>(1) :"
-  bench{ 0 ?do 0. 0. d<>(1) 0. 1. d<>(1) 2drop loop }bench. ;
+  dup cr ." d=(1  :"
+  bench{ 0 ?do 0. 0. d=(1  0. 1. d=(1  2drop loop }bench.
+  dup cr ." d=(2n :"
+  bench{ 0 ?do 0. 0. d=(2n  0. 1. d=(2n  2drop loop }bench.
+  dup cr ." d=(2  :"
+  bench{ 0 ?do 0. 0. d=(2 0. 1. d=(2 2drop loop }bench.
+  dup cr ." d<>(1n:"
+  bench{ 0 ?do 0. 0. d<>(1n 0. 1. d<>(1n 2drop loop }bench.
+  dup cr ." d<>(2 :"
+  bench{ 0 ?do 0. 0. d<>(2 0. 1. d<>(2 2drop loop }bench.
+      cr ." d<>(1 :"
+  bench{ 0 ?do 0. 0. d<>(1 0. 1. d<>(1 2drop loop }bench. ;
 
   \ 2017-05-08:
   \
   \ Benchmark results in ticks (20 ms).
 
-  \ d=(1) d=(2n) d=(2) d<>(1n) d<>(2) d<>(1)
+  \ d=(1 d=(2n d=(2 d<>(1n d<>(2 d<>(1
   \ ----- ------ ----- ------- ------ ------
   \  2967   3159  2426    3703   2442   2980
   \
   \ Combinations:
-  \ d=(1) + d<>(1n) = 2967 + 3703 = 6670
-  \ d=(2n) + d<>(2) = 3159 + 2442 = 5601
+  \ d=(1 + d<>(1n = 2967 + 3703 = 6670
+  \ d=(2n + d<>(2 = 3159 + 2442 = 5601
 
   \ ===========================================================
   \ Change log
@@ -3267,5 +3267,8 @@ need bench{ need }bench.
   \
   \ 2018-06-03: Simplify `located-bench`: use the code already
   \ defined in the `need` tool.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

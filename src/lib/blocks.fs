@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804141517
+  \ Last modified: 201806041144
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -97,7 +97,7 @@ unneeding thru
 
 ( continued ?load reload loads +load +thru loader )
 
-unneeding continued ?\ : continued ( u -- ) ?loading (load) ;
+unneeding continued ?\ : continued ( u -- ) ?loading (load ;
 
   \ doc{
   \
@@ -273,7 +273,7 @@ variable loading-program
 : (load-program ( u -- )
   blk !  loading-program on
   begin  loading-program @  blk @ blocks/disk <  and
-  while  blk @ (load) 1 blk +!
+  while  blk @ (load 1 blk +!
   repeat end-program ; ?)
 
   \ doc{
@@ -381,5 +381,8 @@ variable loading-program
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-04-14: Improve documentation.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

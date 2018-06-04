@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802271733
+  \ Last modified: 201806041109
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -429,13 +429,13 @@ need r# need top
   \
   \ }doc
 
-: (c) ( ca len -- )
+: (c ( ca len -- )
   #lag rot over min >r r@ r# +! r@ - >r dup here r@ cmove
   here #lead + r> cmove r> cmove 0 m update ;
 
   \ doc{
   \
-  \ (c) ( ca len -- ) "paren-c"
+  \ (c ( ca len -- ) "paren-c"
   \
   \ Copy the string _ca len_ to the cursor line at the cursor
   \ position.
@@ -443,7 +443,7 @@ need r# need top
   \ }doc
 
 : c ( "ccc<eol>" -- )
-  text pad count dup if (c) else 2drop then ;
+  text pad count dup if (c else 2drop then ;
 
   \ doc{
   \
@@ -500,5 +500,8 @@ only forth definitions
   \ words that need it.
   \
   \ 2018-02-27: Update source style (remove double spaces).
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

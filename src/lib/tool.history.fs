@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201703121646
+  \ Last modified: 201806041103
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -141,7 +141,7 @@ variable browsed-history
   r> 1+ allot-history  r> hp @ far!  cell allot-history ;
   \ Add a string to the command line history.
 
-: (>history) ( ca len -- )
+: (>history ( ca len -- )
   dup 0= if  2drop exit  then
   2dup duplicated-history? if  2drop exit  then
   dup longer-history? if  dup allocate-history throw  then
@@ -162,9 +162,9 @@ variable browsed-history
 
 : get-history   ( -- ca ) browsed-history$ set-accept ;
 
-: (history-up)    ( -- ca )
+: (history-up    ( -- ca )
   get-history browse-older-history ;
-: (history-down) ( -- ca )
+: (history-down ( -- ca )
   get-history browse-newer-history ;
 
 -->
@@ -182,9 +182,9 @@ variable history
   \ Turn command line history off.
 
 : history-on ( -- )
-  ['] (>history) ['] >history defer!
-  ['] (history-up)   ['] history-up   defer!
-  ['] (history-down) ['] history-down defer!  history on ;
+  ['] (>history ['] >history defer!
+  ['] (history-up   ['] history-up   defer!
+  ['] (history-down ['] history-down defer!  history on ;
   \ Turn command line history on.
 
 -->
@@ -301,7 +301,7 @@ init-history  -->
   \ Return the latest string in the command line history,
   \ copied to the `stringer`.
 
-: (history>) ( -- ca len )
+: (history> ( -- ca len )
   browsed-history  dup 0= ?exit
                    dup 1+ negate allot-history
   history-empty? if  init-hp0  then ;  -->
@@ -317,7 +317,7 @@ init-history  -->
 
 : too-long-for-history? ( len -- f ) 1+ unused-history > ;
 
-: (>history) ( ca len -- )
+: (>history ( ca len -- )
   dup 0= if  2drop exit  then
     \ If string is empty, do nothing.
   history-empty? if  dup hp0 farc!  then
@@ -336,8 +336,8 @@ init-history  -->
 ( history-xxx-old )
 
 : get-history   ( -- ca ) browsed-history set-accept ;
-: (history-up)    ( -- ca ) get-history older-history ;
-: (history-down) ( -- ca ) get-history newer-history ;
+: (history-up    ( -- ca ) get-history older-history ;
+: (history-down ( -- ca ) get-history newer-history ;
 
 variable history
   \ A variable holding the current status of the command line
@@ -354,11 +354,11 @@ variable history
 
 : history-on ( -- )
   \ XXX OLD
-  \ ['] (>history) ['] >history defer!
-  \ ['] (history>) ['] history> defer!  history on ;
+  \ ['] (>history ['] >history defer!
+  \ ['] (history> ['] history> defer!  history on ;
   \ XXX NEW
-  ['] (history-up)   ['] history-up   defer!
-  ['] (history-down) ['] history-down defer!  history on ;
+  ['] (history-up   ['] history-up   defer!
+  ['] (history-down ['] history-down defer!  history on ;
   \ Turn command line history on.
 
 : .history ( -- )
@@ -378,5 +378,8 @@ variable history
   \
   \ 2017-03-12: Update the names of `stringer` words and
   \ mentions to it.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

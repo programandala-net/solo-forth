@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804152155
+  \ Last modified: 201806041134
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -63,17 +63,17 @@ unneeding abort" ?(
   \
   \ The code of `abort"` was adapted from DZX-Forth.
 
-: (abort") ( x -- ) r> count rot if   abort-message 2! -2 throw
-                                 then + >r ;
+: (abort" ( x -- ) r> count rot if   abort-message 2! -2 throw
+                                then + >r ;
 
   \ doc{
   \
-  \ (abort")  ( x -- ) "paren-abort-quote"
+  \ (abort"  ( x -- ) "paren-abort-quote"
   \
   \ If _x_ is not zero, perform the function of ``-2 throw``,
   \ displaying the string that was compiled inline by `abort"`.
   \
-  \ ``(abort")`` is the run-time procedure compiled by
+  \ ``(abort"`` is the run-time procedure compiled by
   \ `abort"`.
   \
   \ See: `throw`.
@@ -83,7 +83,7 @@ unneeding abort" ?(
 : abort"
   \ Compilation: ( "ccc<quote>" -- )
   \ Run-time:    ( x -- )
-  postpone (abort") ," ; immediate compile-only ?)
+  postpone (abort" ," ; immediate compile-only ?)
 
   \ doc{
   \
@@ -91,7 +91,7 @@ unneeding abort" ?(
   \   Compilation: ( "ccc<quote>" -- )
   \   Run-time:    ( x -- )
   \
-  \ Compile `(abort")`, parse _ccc_ delimited by a double
+  \ Compile `(abort"`, parse _ccc_ delimited by a double
   \ quote and compile it.
   \
   \ ``abort"`` is an `immediate` and `compile-only` word.
@@ -106,17 +106,17 @@ unneeding abort" ?(
 
 unneeding warning?( ?( need string-parameter
 
-: (warning") ( f -- ) string-parameter rot if   type
-                                           else 2drop then ;
+: (warning" ( f -- ) string-parameter rot if   type
+                                          else 2drop then ;
 
   \ doc{
   \
-  \ (warning") ( f -- ) "paren-warning-quote"
+  \ (warning" ( f -- ) "paren-warning-quote"
   \
   \ If _f_ is not zero, display the in-line string; else do
   \ nothing.
   \
-  \ ``(warning")`` is the inner procedure compiled by
+  \ ``(warning"`` is the inner procedure compiled by
   \ `warning"`.
   \
   \ }doc
@@ -124,7 +124,7 @@ unneeding warning?( ?( need string-parameter
 : warning"
   \ Compilation: ( "ccc<quote>" -- )
   \ Execution:   ( f -- )
-  postpone (warning") ," ; immediate compile-only ?)
+  postpone (warning" ," ; immediate compile-only ?)
 
   \ doc{
   \
@@ -327,6 +327,9 @@ s" Standard error codes" located errors-block !
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-04-15: Update notation ".." to "...".
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth
 

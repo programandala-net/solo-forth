@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802042000
+  \ Last modified: 201806041131
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -59,12 +59,12 @@ need alias need char-position?
   \
   \ }doc
 
-: (?ccase) ( c ca len -- )
+: (?ccase ( c ca len -- )
   rot char-position? if  2+ cells r@ + perform  then ;
 
   \ doc{
   \
-  \ (?ccase) ( c ca len -- ) "paren-question-c-case"
+  \ (?ccase ( c ca len -- ) "paren-question-c-case"
   \
   \ Run-time procedure compiled by `?ccase`.  If _c_ is in the
   \ string _ca len_, execute the n-th word compiled after
@@ -76,7 +76,7 @@ need alias need char-position?
 : ?ccase
   \ Compilation: ( C: -- orig )
   \ Run-time: ( c ca len -- )
-  postpone (?ccase) postpone ahead ; immediate compile-only
+  postpone (?ccase postpone ahead ; immediate compile-only
 
   \ doc{
   \
@@ -129,7 +129,7 @@ need alias need char-position?
   \
   \ }doc
 
-: (ccase0) ( c ca len -- )
+: (ccase0 ( c ca len -- )
   rot char-position? if    ( +n ) 3 +
                            \ character found:
                            \ calculate the cells offset to the option
@@ -140,7 +140,7 @@ need alias need char-position?
 
   \ doc{
   \
-  \ (ccase0) ( c ca len -- ) "paren-c-case-zero"
+  \ (ccase0 ( c ca len -- ) "paren-c-case-zero"
   \
   \ Run-time procedure compiled by `ccase0`.  If _c_ is in the
   \ string _ca len_, execute the n-th word compiled after
@@ -153,7 +153,7 @@ need alias need char-position?
 : ccase0
   \ Compilation: ( C: -- orig )
   \ Run-time: ( c ca len -- )
-  postpone (ccase0) postpone ahead ; immediate compile-only
+  postpone (ccase0 postpone ahead ; immediate compile-only
 
   \ doc{
   \
@@ -216,7 +216,7 @@ need char-position?
   \
   \ }doc
 
-: (ccase) ( c ca len -- )
+: (ccase ( c ca len -- )
   rot char-position? if    ( +n ) 3 + cells r@ +
                            \ character found:
                            \ calculate address of the option
@@ -227,7 +227,7 @@ need char-position?
 
   \ doc{
   \
-  \ (ccase) ( c ca len -- ) "paren-c-case"
+  \ (ccase ( c ca len -- ) "paren-c-case"
   \
   \ Run-time procedure compiled by `ccase`.  If _c_ is in the
   \ string _ca len_, execute the n-th word compiled after
@@ -240,7 +240,7 @@ need char-position?
 : ccase
   \ Compilation: ( C: -- orig1 orig2 )
   \ Run-time: ( c ca len -- )
-  postpone (ccase)  postpone ahead  >mark
+  postpone (ccase  postpone ahead  >mark
   ; immediate compile-only
 
   \ doc{
@@ -288,5 +288,8 @@ need char-position?
   \
   \ 2018-02-04: Fix documentation layout. Improve
   \ documentation: add pronunciation to words that need it.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth

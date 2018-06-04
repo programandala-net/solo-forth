@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804142326
+  \ Last modified: 201806041106
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -99,10 +99,10 @@ dup >order set-current case-sensitive @ case-sensitive on
 : m ( -- c1 c2 2 ) 10 13 2 ;
   \ \m = carriage return and line feed
 
-: (x) ( "c" -- n ) parse-char 16 digit? 0= #-260 ?throw ;
+: (x ( "c" -- n ) parse-char 16 digit? 0= #-260 ?throw ;
   \ Parse an hex digit and convert it to a number.
 
-: x ( "<hexdigit><hexdigit>" -- c 1 ) (x) 16 * (x) + 1 ;
+: x ( "<hexdigit><hexdigit>" -- c 1 ) (x 16 * (x + 1 ;
   \ \x = hex character code
   \ Parse the 8-bit hex number of a character code.
 
@@ -117,7 +117,7 @@ case-sensitive ! set-current previous
 need parse-esc-char>chars need chars>string need s+
 need get-esc-order need catch
 
-: (parse-esc-string) ( ca len "ccc<quote>"  -- ca' len' )
+: (parse-esc-string ( ca len "ccc<quote>"  -- ca' len' )
   begin   parse-char dup '"' <>  \ not finished?
   while   dup '\' =  \ maybe escaped?
           if    drop parse-esc-char>chars
@@ -126,14 +126,14 @@ need get-esc-order need catch
 
   \ doc{
   \
-  \ (parse-esc-string) ( ca len "ccc<quote>"  -- ca' len' ) "paren-parse-esc-string"
+  \ (parse-esc-string ( ca len "ccc<quote>"  -- ca' len' ) "paren-parse-esc-string"
   \
   \ Parse a text string delimited by a double quote,
   \ translating some configurable characters that are escaped
   \ with a backslash.  Add the translated string to _ca len_,
   \ returning a new string _ca' len'_ in the `stringer`.
   \
-  \ ``(parse-esc-string)`` is a factor of `parse-esc-string`.
+  \ ``(parse-esc-string`` is a factor of `parse-esc-string`.
   \
   \ See: `set-esc-order`.
   \
@@ -177,7 +177,7 @@ variable case-sensitive-esc-chars  case-sensitive-esc-chars on
 : parse-esc-string ( "ccc<quote>"  -- ca len )
   get-order get-esc-order set-order
   case-sensitive @ case-sensitive-esc-chars @ case-sensitive !
-  0 0 ['] (parse-esc-string) catch >r
+  0 0 ['] (parse-esc-string catch >r
   2>r case-sensitive ! set-order 2r> r> throw ;
 
   \ doc{
@@ -197,7 +197,7 @@ variable case-sensitive-esc-chars  case-sensitive-esc-chars on
   \
   \ ``parse-esc-string`` is a common factor of `s\"` and `.\"`.
   \
-  \ See: `(parse-esc-string)`.
+  \ See: `(parse-esc-string`.
   \
   \ }doc
 
@@ -250,7 +250,7 @@ need set-esc-order  esc-standard-chars-wordlist 1 set-esc-order
 : .\"
   \ Compilation: ( "ccc<quote>" -- )
   \ Run-time:    ( -- ca len )
-  compile (.") parse-esc-string s, ; immediate compile-only ?)
+  compile (." parse-esc-string s, ; immediate compile-only ?)
 
   \ XXX TODO documentation
 
@@ -536,5 +536,8 @@ need parse-char need char>string
   \ 2018-04-12: Fix link in documentation.
   \
   \ 2018-04-14: Fix typos in documentation.
+  \
+  \ 2018-06-04: Update: remove trailing closing paren from
+  \ word names.
 
   \ vim: filetype=soloforth
