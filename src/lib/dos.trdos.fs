@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041135
+  \ Last modified: 201806041239
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -379,7 +379,7 @@ unneeding acat ?\ need (acat : acat ( -- ) (acat throw ;
 
   \ doc{
   \
-  \ acat ( -- ior ) "a-cat"
+  \ acat ( -- ) "a-cat"
   \
   \ Display an abbreviated catalogue of the current disk.
   \
@@ -862,10 +862,10 @@ unneeding file-track  ?( need file-status need fda
   \
   \ }doc
 
-( delete-file )
+( delete-file read-system-track )
 
-need assembler need --dos-commands--
-need fda need set-filename
+unneeding delete-file ?( need assembler need --dos-commands--
+                         need fda need set-filename
 
 code (delete-file ( -- ior )
   b push,
@@ -886,7 +886,7 @@ code (delete-file ( -- ior )
   \
   \ }doc
 
-: delete-file ( ca len -- ior ) set-filename (delete-file ;
+: delete-file ( ca len -- ior ) set-filename (delete-file ; ?)
 
   \ doc{
   \
@@ -902,13 +902,12 @@ code (delete-file ( -- ior )
   \
   \ }doc
 
-( read-system-track )
-
-need assembler need --dos-commands--
+unneeding read-system-track ?( need assembler
+                               need --dos-commands--
 
 code read-system-track ( -- ior )
   dos-read-system-track a ld#, exaf,
-  dos-alt-a-preserve-ip_ call, pushdosior jp, end-code
+  dos-alt-a-preserve-ip_ call, pushdosior jp, end-code ?)
 
   \ doc{
   \
@@ -1138,8 +1137,7 @@ need fda-basic? need fda-empty? need fda-deleted?
 : cat ( -- )
   read-system-track throw  cr
   files/disk 0 ?do i read-file-descriptor throw
-                   fda-empty? if leave then i ?cat-fda
-               loop ;
+                   fda-empty? if leave then i ?cat-fda loop ;
 
   \ XXX TODO -- Improve: `read-file-descriptor` reads the
   \ system track every time. Explore the sector buffer instead.
@@ -1307,6 +1305,7 @@ need read-file-descriptor need write-file-descriptor
   \ documentation.
   \
   \ 2018-06-04: Update: remove trailing closing paren from
-  \ word names.
+  \ word names. Compact the code, saving one block. Fix
+  \ documentation of `acat`.
 
   \ vim: filetype=soloforth
