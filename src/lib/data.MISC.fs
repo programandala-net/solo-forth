@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091536
+  \ Last modified: 201806041308
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,10 +33,10 @@ unneeding buffer:
   \ buffer: ( u "name" -- ) "buffer-colon"
   \
   \ Define a named uninitialized buffer as follows: Reserve _u_
-  \ bytes of data space at an aligned address.  Create a
-  \ definition for _name_ that will return the address of the
-  \ space reserved by ``buffer:`` when it defined _name_.  The
-  \ program is responsible for initializing the contents.
+  \ bytes of data space.  Create a definition for _name_ that
+  \ will return the address of the space reserved by
+  \ ``buffer:`` when it defined _name_.  The program is
+  \ responsible for initializing the contents.
   \
   \ Origin: Forth-2012 (CORE EXT).
   \
@@ -215,5 +215,8 @@ need alias ' @ alias link@ ( node1 -- node2 )
   \ 2018-03-07: Add words' pronunciaton.
   \
   \ 2018-03-09: Update notation "address units" to "bytes".
+  \
+  \ 2018-06-04: Update documentation: remove mentions of
+  \ aligned addresses.
 
   \ vim: filetype=soloforth

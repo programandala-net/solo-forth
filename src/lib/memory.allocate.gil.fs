@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201806041122
+  \ Last modified: 201806041306
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -188,7 +188,7 @@ wordlist dup constant gil-heap-wordlist dup set-current >order
   \ pointer is unaffected by this operation. The initial
   \ content of the allocated space is undefined.
   \
-  \ If the allocation succeeds, _a_ is the aligned starting
+  \ If the allocation succeeds, _a_ is the starting
   \ address of the allocated space and _ior_ is zero.
   \
   \ If the operation fails, _a_ does not represent a valid
@@ -294,6 +294,9 @@ previous ?)
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2018-06-04: Update documentation: remove mentions of
+  \ aligned addresses.
 
   \ vim: filetype=soloforth
 

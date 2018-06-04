@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804162002
+  \ Last modified: 201806041305
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -335,7 +335,7 @@ variable nextnode
   \ pointer is unaffected by this operation. The initial
   \ content of the allocated space is undefined.
   \
-  \ If the allocation succeeds, _a_ is the aligned starting
+  \ If the allocation succeeds, _a_ is the starting
   \ address of the allocated space and _ior_ is zero.
   \
   \ If the operation fails, _a_ does not represent a valid
@@ -616,7 +616,7 @@ variable stash
   \ of the region. The data-space pointer is unaffected by this
   \ operation.
   \
-  \ If the operation succeeds, _a2_ is  the aligned starting
+  \ If the operation succeeds, _a2_ is  the starting
   \ address of  _u_ bytes of allocated  memory and _ior_ is
   \ zero.  _a2_ may be,  but need not be,  the same as _a1_.
   \ If they are  not the same,  the values contained in the
@@ -692,5 +692,8 @@ set-current set-order
   \ 2018-03-09: Update notation "address units" to "bytes".
   \
   \ 2018-04-16: Improve description of _ior_ notation.
+  \
+  \ 2018-06-04: Update documentation: remove mentions of
+  \ aligned addresses.
 
   \ vim: filetype=soloforth

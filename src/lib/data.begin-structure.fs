@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803132359
+  \ Last modified: 201806041302
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -57,7 +57,7 @@ unneeding field: ?( need +field
 
   \ doc{
   \
-  \ field: ( n1 "name" -- n2 ) "fiel-colon"
+  \ field: ( n1 "name" -- n2 ) "field-colon"
   \
   \ Parse _name_.  _offset_  is the first cell aligned
   \ value greater than or equal to _n1_. _n2_ = _offset_ + 1
@@ -340,5 +340,7 @@ unneeding +field-opt-0124 ?( need case need +field
   \ 2018-03-12: Update source layout.
   \
   \ 2018-03-13: Improve documentation.
+  \
+  \ 2018-06-04: Fix typo in documentation.
 
   \ vim: filetype=soloforth

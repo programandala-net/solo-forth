@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803282257
+  \ Last modified: 201806041307
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -744,8 +744,7 @@ unneeding align ?\ need alias ' noop alias align immediate
   \ space to align it.
   \
   \ In Solo Forth, ``align`` does nothing (it's an `immediate`
-  \ alias of `noop`), because the Z80 processor does not need
-  \ addresses be cell-aligned.
+  \ alias of `noop`).
   \
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
   \
@@ -763,8 +762,7 @@ unneeding aligned ?\ need alias ' noop alias aligned immediate
   \ _a1_.
   \
   \ In Solo Forth, ``aligned`` does nothing (it's an
-  \ `immediate` alias of `noop`), because the Z80 processor
-  \ does not need addresses be cell-aligned.
+  \ `immediate` alias of `noop`).
   \
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
   \
@@ -958,5 +956,7 @@ code cexchange ( ca1 ca2 -- )
   \ 2018-03-09: Update notation "address units" to "bytes".
   \
   \ 2018-03-28: Fix needing of `c?`. Add `2?`.
+  \
+  \ 2018-06-04: Simplify documentation about aligned addresses.
 
   \ vim: filetype=soloforth
