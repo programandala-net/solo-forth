@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072223
+  \ Last modifed: 201806041324
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -41,7 +41,7 @@ unneeding a ?( variable a
   \
   \ a ( -- a )
   \
-  \ A variable. _a_ is the address of a cell containing the
+  \ A `variable`. _a_ is the address of a cell containing the
   \ address register.
   \
   \ See: `a!`, `a@`, `!a`, `@a`, `c!a`, `c@a`, `!a+`, `@a+`,
@@ -293,5 +293,7 @@ code c@a+ ( -- c ) 2A c, a , 5E c, 23 c, 16 c, 00 c,
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-07: Add words' pronunciaton.
+  \
+  \ 2018-06-04:  Link `variable` in documentation.
 
   \ vim: filetype=soloforth

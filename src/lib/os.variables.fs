@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803232354
+  \ Last modified: 201806041338
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -31,7 +31,7 @@ unneeding os-chars ?\ #23606 constant os-chars
   \
   \ os-chars ( -- a ) "o-s-chars"
   \
-  \ A constant that returns the address of system variable
+  \ A `constant` that returns the address of system variable
   \ CHARS, which holds the bitmap address of character 0 of the
   \ current font (actual characters 32..127). By default this
   \ system variables holds ROM address 15360 ($3C00).
@@ -46,7 +46,7 @@ unneeding os-chans ?\ #23631 constant os-chans
   \
   \ os-chans ( -- a ) "o-s-chans"
   \
-  \ A constant that returns the address _a_ of the system
+  \ A `constant` that returns the address _a_ of the system
   \ variable CHANS, which holds the address of the channel data
   \ table. Each element of the table has the following
   \ structure:
@@ -94,7 +94,7 @@ unneeding os-flags2 ?\ #23658 constant os-flags2
   \
   \ os-flags2 ( -- ca ) "o-s-flags-two"
   \
-  \ A constant that returns the address _ca_ of 1-byte system
+  \ A `constant` that returns the address _ca_ of 1-byte system
   \ variable FLAGS2, which holds several flags.
   \
   \ See: `capslock`.
@@ -107,7 +107,7 @@ unneeding os-seed ?\ #23670 constant os-seed
   \
   \ os-seed ( -- a ) "o-s-seed"
   \
-  \ A constant that returns the address _a_ of system variable
+  \ A `constant` that returns the address _a_ of system variable
   \ SEED, which holds the seed of the BASIC random number
   \ generator.
   \
@@ -119,7 +119,7 @@ unneeding os-frames ?\ #23672 constant os-frames
   \
   \ os-frames ( -- a ) "o-s-frames"
   \
-  \ A constant that returns the address _a_ of the 24-bit
+  \ A `constant` that returns the address _a_ of the 24-bit
   \ system variable FRAMES (least significant byte first),
   \ containing the counter of frames, which is incremented
   \ every 20 ms by the interrupt routine of the OS. This
@@ -137,7 +137,7 @@ unneeding os-udg ?\ #23675 constant os-udg
   \
   \ os-udg ( -- a ) "o-s-u-d-g"
   \
-  \ A constant that returns the address _a_ of system variable
+  \ A `constant` that returns the address _a_ of system variable
   \ UDG, which holds the address of the first character bitmap
   \ of the current User Defined Graphics set (characters
   \ 128..255 or 0..255, depending on the words used to access
@@ -155,7 +155,7 @@ unneeding os-coords ?\ #23677 constant os-coords
   \
   \ os-coords ( -- a ) "o-s-coords"
   \
-  \ A constant that returns the address _a_ of 2-byte system
+  \ A `constant` that returns the address _a_ of 2-byte system
   \ variable COORDS which holds the graphic coordinates of the
   \ last point plotted.
   \
@@ -169,7 +169,7 @@ unneeding os-coordx ?\ #23677 constant os-coordx
   \
   \ os-coordx ( -- ca ) "o-s-coord-x"
   \
-  \ A constant that returns the address _ca_ of 1-byte system
+  \ A `constant` that returns the address _ca_ of 1-byte system
   \ variable COORDX which holds the graphic x coordinate of the
   \ last point plotted.
   \
@@ -183,7 +183,7 @@ unneeding os-strms ?\ #23568 constant os-strms
   \
   \ os-strms ( -- a ) "o-s-streams"
   \
-  \ A constant that returns the address _a_ of a 38-byte
+  \ A `constant` that returns the address _a_ of a 38-byte
   \ (19-cell) system variable STRMS which holds one cell per
   \ stream, containing the address of the channel attached to
   \ it, as follows:
@@ -215,7 +215,7 @@ unneeding os-coordy ?\ #23678 constant os-coordy
   \
   \ os-coordy ( -- ca ) "o-s-coord-y"
   \
-  \ A constant that returns the address _ca_ of 1-byte system
+  \ A `constant` that returns the address _ca_ of 1-byte system
   \ variable COORDY which holds the graphic y coordinate of the
   \ last point plotted.
   \
@@ -229,7 +229,7 @@ unneeding os-prog ?\ #23635 constant os-prog
   \
   \ os-prog ( -- a ) "o-s-prog"
   \
-  \ A constant that returns the address _a_ of 2-byte system
+  \ A `constant` that returns the address _a_ of 2-byte system
   \ variable PROG which holds the address of the BASIC program.
   \
   \ See: `os-stkend`, `os-ramtop`, `os-chans`.
@@ -242,7 +242,7 @@ unneeding os-ramtop ?\ #23730 constant os-ramtop
   \
   \ os-ramtop ( -- a ) "o-s-ram-top"
   \
-  \ A constant that returns the address _a_ of 2-byte system
+  \ A `constant` that returns the address _a_ of 2-byte system
   \ variable RAMTOP which holds the address of the last byte of
   \ BASIC system area.
   \
@@ -258,7 +258,7 @@ unneeding os-attr-p ?\ #23693 constant os-attr-p
   \
   \ os-attr-p ( -- ca ) "o-s-attribute-p"
   \
-  \ A constant that returns the address _ca_ of 1-byte system
+  \ A `constant` that returns the address _ca_ of 1-byte system
   \ variable ATTR_P, which holds the current permanent color
   \ attribute, as set up by color statements.
   \
@@ -272,7 +272,7 @@ unneeding os-mask-p ?\ #23694 constant os-mask-p
   \
   \ os-mask-p ( -- ca ) "o-s-mask-p"
   \
-  \ A constant that returns the address _ca_ of 1-byte system
+  \ A `constant` that returns the address _ca_ of 1-byte system
   \ variable MASK_P, which holds the permanent color attribute
   \ mask, used for transparent colors, etc. Any bit that is 1
   \ shows that the corresponding attribute bit is taken not
@@ -288,7 +288,7 @@ unneeding os-attr-t ?\ #23695 constant os-attr-t
   \
   \ os-attr-t ( -- ca ) "o-s-attribute-t"
   \
-  \ A constant that returns the address _ca_ of 1-byte system
+  \ A `constant` that returns the address _ca_ of 1-byte system
   \ variable ATTR_T, which holds the current temporary color
   \ attribute, as set up by color statements.
   \
@@ -302,7 +302,7 @@ unneeding os-mask-t ?\ #23696 constant os-mask-t
   \
   \ os-mask-t ( -- ca ) "o-s-mask-t"
   \
-  \ A constant that returns the address _ca_ of 1-byte system
+  \ A `constant` that returns the address _ca_ of 1-byte system
   \ variable MASK_T, which holds the temporary color attribute
   \ mask, used for transparent colors, etc. Any bit that is 1
   \ shows that the corresponding attribute bit is taken not
@@ -318,7 +318,7 @@ unneeding os-p-flag ?\ #23697 constant os-mask-t
   \
   \ os-p-flag ( -- ca ) "o-s-p-flag"
   \
-  \ A constant that returns the address _ca_ of 1-byte system
+  \ A `constant` that returns the address _ca_ of 1-byte system
   \ variable P_FLAG, which holds some flags related to
   \ printing.
   \
@@ -330,7 +330,7 @@ unneeding os-stkend ?\ #23653 constant os-stkend
   \
   \ os-stkend ( -- a ) "o-s-stack-end"
   \
-  \ A constant that returns the address _a_ of 2-byte system
+  \ A `constant` that returns the address _a_ of 2-byte system
   \ variable STKEND which holds the address of the start of
   \ spare space of BASIC system area.
   \
@@ -366,5 +366,7 @@ unneeding os-stkend ?\ #23653 constant os-stkend
   \ 2018-03-23: Add `os-strms`. Improve documentation of
   \ `os-chans`. Fix and update documentation. Rename the file.
   \ Add `os-prog`, `os-ramtop`, `os-stkend`.
+  \
+  \ 2018-06-04: Link `constant` in documentation.
 
   \ vim: filetype=soloforth

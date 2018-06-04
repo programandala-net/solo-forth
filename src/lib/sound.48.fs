@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804112020
+  \ Last modified: 201806041338
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -269,8 +269,8 @@ unneeding /octave ?\ 12 cconstant /octave
   \
   \ /octave ( -- c ) "slash-octave"
   \
-  \ A constant that returns the number of notes in one octave:
-  \ 12.
+  \ A `cconstant` that returns the number of notes in one
+  \ octave: 12.
   \
   \ See: `middle-octave`.
   \
@@ -635,5 +635,7 @@ code white-noise ( u -- )
   \
   \ 2018-04-11: Improve documentation of `beep`, `bleep` and
   \ friends.
+  \
+  \ 2018-06-04: Link `cconstant` in documentation.
 
   \ vim: filetype=soloforth

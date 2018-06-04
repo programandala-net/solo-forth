@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041136
+  \ Last modified: 201806041332
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -125,10 +125,10 @@ unneeding ufia2 ?\ $3E1A constant ufia2
   \
   \ ufia2 ( -- a ) "u-f-i-a-2"
   \
-  \ _a_ is the address of G+DOS UFIA2 (in the Plus D memory).
-  \ A UFIA (User File Information Area) is a 24-byte structure
-  \ which describes a file.  See `ufia` for a detailed
-  \ description.
+  \ A `constant`. _a_ is the address of G+DOS UFIA2 (in the Plus
+  \ D memory).  A UFIA (User File Information Area) is a
+  \ 24-byte structure which describes a file.  See `ufia` for a
+  \ detailed description.
   \
   \ See: `/ufia`, `ufia1`, `dfca`.
   \
@@ -707,7 +707,7 @@ need ufia need get-drive
   \
   \ /filename ( -- b ) "slash-filename"
   \
-  \ A constant that returns the maximum length of a G+DOS
+  \ A `cconstant` that returns the maximum length of a G+DOS
   \ filename.
   \
   \ See: `set-filename`.
@@ -2142,7 +2142,7 @@ need write-file need read-file need .ufia
   \
   \ 2018-04-16: Improve description of _ior_ notation.
   \
-  \ 2018-06-04: Update: remove trailing closing paren from
-  \ word names.
+  \ 2018-06-04: Update: remove trailing closing paren from word
+  \ names.  Link `cconstant` and `constant` in documentation.
 
   \ vim: filetype=soloforth

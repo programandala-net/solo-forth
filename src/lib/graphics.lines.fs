@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201806041343
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -81,7 +81,7 @@ unneeding y1 unneeding incy and and and
   \
   \ x1 ( -- a ) "x-one"
   \
-  \ A double-cell variable used by `adraw176` and `aline176`.
+  \ A `2variable` used by `adraw176` and `aline176`.
   \
   \ See: `y1`, `incx`, `incy`.
   \
@@ -91,7 +91,7 @@ unneeding y1 unneeding incy and and and
   \
   \ y1 ( -- a ) "y-one"
   \
-  \ A double-cell variable used by `adraw176` and `aline176`.
+  \ A `2variable` used by `adraw176` and `aline176`.
   \
   \ See: `x1`, `incx`, `incy`.
   \
@@ -101,7 +101,7 @@ unneeding y1 unneeding incy and and and
   \
   \ incx ( -- a ) "inc-x"
   \
-  \ A double-cell variable used by `adraw176` and `aline176`.
+  \ A `2variable` used by `adraw176` and `aline176`.
   \
   \ See: `incy`, `x1`, `y1`.
   \
@@ -111,7 +111,7 @@ unneeding y1 unneeding incy and and and
   \
   \ incy ( -- a ) "ink-y"
   \
-  \ A double-cell variable used by `adraw176` and `aline176`.
+  \ A `2variable` used by `adraw176` and `aline176`.
   \
   \ See: `incx`, `x1`, `y1`.
   \
@@ -571,5 +571,7 @@ code ortholine ( gx gy gxinc gyinc len -- )
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-06-04: Link `2variable` in documentation.
 
   \ vim: filetype=soloforth

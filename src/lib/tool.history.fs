@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201806041103
+  \ Last modifed: 201806041324
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -172,7 +172,7 @@ variable browsed-history
 ( history )
 
 variable history
-  \ A variable holding the current status of the command line
+  \ A `variable` holding the current status of the command line
   \ history as a flag: on (true) or off (false).
 
 : history-off ( -- )
@@ -340,7 +340,7 @@ init-history  -->
 : (history-down ( -- ca ) get-history newer-history ;
 
 variable history
-  \ A variable holding the current status of the command line
+  \ A `variable` holding the current status of the command line
   \ history as a flag: on (true) or off (false).
 
 : history-off ( -- )
@@ -380,6 +380,6 @@ variable history
   \ mentions to it.
   \
   \ 2018-06-04: Update: remove trailing closing paren from
-  \ word names.
+  \ word names. Link `variable` in documentation.
 
   \ vim: filetype=soloforth

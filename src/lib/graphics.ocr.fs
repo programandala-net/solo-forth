@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modifed: 201806041324
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,7 +33,7 @@ variable ocr-font  $3D00 ocr-font !
   \
   \ ocr-font ( -- a ) "o-c-r-font"
   \
-  \ A variable. _a_ is the address of a cell containing the
+  \ A `variable`. _a_ is the address of a cell containing the
   \ address of the first printable character in the character
   \ set used by `ocr`.  By default it contains 0x3D00, the
   \ address of the space character in the `rom-font`.
@@ -253,5 +253,7 @@ unneeding udg-ocr ?( need ocr need os-udg
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-06-04: Link `variable` in documentation.
 
   \ vim: filetype=soloforth

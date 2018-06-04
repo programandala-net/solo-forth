@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804111757
+  \ Last modified: 201806041331
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,7 +33,7 @@ wordlist constant environment-wordlist ( -- wid )
   \
   \ environment-wordlist ( -- wid )
   \
-  \ A constant. _wid_ is the identifier of the word list where
+  \ A `constant`. _wid_ is the identifier of the word list where
   \ the environmental queries are defined.
   \
   \ See: `environment?`.
@@ -350,5 +350,7 @@ unneeding stack-cells
   \ 2018-03-09: Update notation "address units" to "bytes".
   \
   \ 2018-04-11: Fix documentation.
+  \
+  \ 2018-06-04: Link `constant` in documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201806041339
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -48,7 +48,7 @@ unneeding cell-bits ?\ 16 cconstant cell-bits
   \
   \ cell-bits  ( -- n )
   \
-  \ A constant. _n_ is the number of bits in a cell.
+  \ A `cconstant`. _n_ is the number of bits in a cell.
   \
   \ See: `cell`, `environment?`.
   \
@@ -64,6 +64,8 @@ unneeding cell-bits ?\ 16 cconstant cell-bits
   \ operators modules. Improve documentation.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-06-04: Link `cconstant` in documentation.
 
   \ vim: filetype=soloforth
 

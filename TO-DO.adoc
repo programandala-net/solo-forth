@@ -886,17 +886,6 @@ Improve tab control.
 
 NOTE: Milestone: 0.14.0
 
-Link `user`, `variable`, `constant` and others in the descriptions of
-the corresponding instances. Example:
-
-....
-; A variable. _a_ is the address of a cell containing...
-....
-
-=== 2018-04-14
-
-NOTE: Milestone: 0.14.0
-
 Improve the width of table columns.
 
 === 2018-04-12

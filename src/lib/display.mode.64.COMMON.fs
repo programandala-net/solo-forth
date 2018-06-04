@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802041811
+  \ Last modifed: 201806041324
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -39,7 +39,7 @@ variable mode-64-font
   \
   \ mode-64-font ( -- a )
   \
-  \ A variable. _a_ is the address of a cell containing the
+  \ A `variable`. _a_ is the address of a cell containing the
   \ address of the 4x8-pixel font used by `mode-64o`. Note the
   \ address of the font must be the address of its character 32
   \ (space). The size of a 4x8-pixel font is 336 bytes. The
@@ -544,5 +544,7 @@ decimal
   \
   \ 2018-02-04: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2018-06-04: Link `variable` in documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804152059
+  \ Last modified: 201806041734
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -162,7 +162,7 @@ variable labels  variable l-refs
   \
   \ labels  ( -- a )
   \
-  \ A variable. _a_ is the address of a cell containing the
+  \ A `variable`. _a_ is the address of a cell containing the
   \ address of the labels table, which is allocated in the
   \ `stringer` by `init-labels`.  The size of the table can be
   \ configured with `max-label`.
@@ -179,7 +179,7 @@ variable labels  variable l-refs
   \
   \ l-refs  ( -- a )
   \
-  \ A variable. _a_ is the address of a cell containing the
+  \ A `variable`. _a_ is the address of a cell containing the
   \ address of the label references table, which is allocated
   \ in the `stringer` by `init-labels`. The size of the table
   \ can be configured with `max-l-refs`.
@@ -511,5 +511,7 @@ previous
   \ 2018-04-14: Fix documentation of `al-id`.
   \
   \ 2018-04-15: Fix markup in documentation.
+  \
+  \ 2018-06-04: Link `variable` in documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804142327
+  \ Last modifed: 201806041324
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -35,7 +35,7 @@ variable first-esc-block-char  128 first-esc-block-char !
   \
   \ first-esc-block-char ( -- a )
   \
-  \ A variable. _a_ is the address of a cell containing the
+  \ A `variable`. _a_ is the address of a cell containing the
   \ code of the first block graphic.  Its default value is 128,
   \ like in the ZX Spectrum charset.  This variable can be
   \ modified in order to make the escaped block characters
@@ -215,5 +215,7 @@ set-current
   \ 2017-12-09: Improve documentation.
   \
   \ 2018-04-14: Fix markup in documentation.
+  \
+  \ 2018-06-04:  Link `variable` in documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041143
+  \ Last modified: 201806041340
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1105,7 +1105,7 @@ variable warnings  warnings on
   \
   \ warnings ( -- a )
   \
-  \ A user variable. _a_ is the address of a cell containing a
+  \ A `user` variable. _a_ is the address of a cell containing a
   \ flag. If it's zero, no warning is shown when a compiled
   \ word is not unique in the compilation word list.  Its
   \ default value is _true_.
@@ -1467,7 +1467,7 @@ unneeding warn-throw ?( need ?warn
   \ 2018-03-10: Make the string comparisons of `[if] [else]
   \ [then]` case-insensitive.
   \
-  \ 2018-06-04: Update: remove trailing closing paren from
-  \ word names.
+  \ 2018-06-04: Update: remove trailing closing paren from word
+  \ names.  Link `user` in documentation.
 
   \ vim: filetype=soloforth

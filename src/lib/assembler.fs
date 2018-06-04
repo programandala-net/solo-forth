@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041145
+  \ Last modifed: 201806041324
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -565,7 +565,7 @@ variable unresolved> ( -- a ) unresolved0> unresolved> !
   \
   \ unresolved> ( -- a ) "unresolved-forward"
   \
-  \ A variable. Address _a_ contains the address of a cell
+  \ A `variable`. Address _a_ contains the address of a cell
   \ array accessed by `unresolved`. Its default value is
   \ `unresolved0>`, which is an 8-cell array.
   \
@@ -774,5 +774,7 @@ set-current
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2018-06-04: Link `variable` in documentation.
 
   \ vim: filetype=soloforth

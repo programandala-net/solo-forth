@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804142247
+  \ Last modified: 201806041734
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -142,7 +142,7 @@ variable mode-32iso-font  rom-font bl 8 * + mode-32iso-font !
   \
   \ mode-32iso-font ( -- a )
   \
-  \ A variable. _a_ is the address of a cell containing the
+  \ A `variable`. _a_ is the address of a cell containing the
   \ address of the font used by `mode-32iso`. Note the address
   \ of the font must be the address of its character 32
   \ (space).
@@ -203,6 +203,8 @@ variable mode-32iso-font  rom-font bl 8 * + mode-32iso-font !
   \ 2018-03-08: Add words' pronunciaton.
   \
   \ 2018-04-14: Fix markup in documentation.
+  \
+  \ 2018-06-04: Link `variable` in documentation.
 
   \ vim: filetype=soloforth
 

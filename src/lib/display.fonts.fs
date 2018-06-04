@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804251802
+  \ Last modified: 201806041331
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -51,7 +51,7 @@ unneeding rom-font ?\ 15360 constant rom-font
   \
   \ rom-font ( -- a )
   \
-  \ A constant. _a_ is the address _a_ of the ROM font, which
+  \ A `constant`. _a_ is the address _a_ of the ROM font, which
   \ is 15360 ($3C00), the bitmap address of character 0, 256
   \ bytes below the bitmap of the space (character 32), which
   \ is the first printable character. This is the default hold
@@ -249,5 +249,7 @@ code outlet-autochars ( a -- )
   \ 2018-04-14: Fix markup in documentation.
   \
   \ 2018-04-25: Fix typo in documentation.
+  \
+  \ 2018-06-04: Link `constant` in documentation.
 
   \ vim: filetype=soloforth

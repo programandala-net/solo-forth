@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041126
+  \ Last modified: 201806041335
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -36,7 +36,7 @@
   \
   \ accept-xy ( -- a )
   \
-  \ A variable. _a_ is the address of a double cell containing
+  \ A `variable`. _a_ is the address of a double cell containing
   \ the cursor position at the start of the most recent
   \ `accept`.
   \
@@ -46,7 +46,7 @@ variable accept-buffer    \ address of the edited string
   \
   \ accept-buffer ( -- a )
   \
-  \ A variable. _a_ is the address of a cell containing the
+  \ A `variable`. _a_ is the address of a cell containing the
   \ buffer address used by the latest execution of `accept`.
   \
 
@@ -55,7 +55,7 @@ variable /accept          \ max length of the edited string
   \
   \ /accept ( -- a )
   \
-  \ A variable. _a_ is the address of a cell containing the
+  \ A `variable`. _a_ is the address of a cell containing the
   \ buffer max length used by the latest execution of `accept`.
   \
 
@@ -64,7 +64,7 @@ variable >accept          \ offset to the cursor position
   \
   \ >accept ( -- a )
   \
-  \ A variable. _a_ is the address of a cell containing the
+  \ A `variable`. _a_ is the address of a cell containing the
   \ offset of the cursor in the string being edited by
   \ `accept`.
   \
@@ -83,7 +83,7 @@ variable span
   \
   \ span ( -- a )
   \
-  \ A variable. _a_ is the address of a cell containing the
+  \ A `variable`. _a_ is the address of a cell containing the
   \ count of characters actually received and stored by the
   \ last execution of some words.  Originally ``span`` is used
   \ by ``expect``, which is not implemented in Solo Forth.
@@ -320,15 +320,15 @@ unneeding new-key- ?( need new-key need -keys
   \
   \ ===========================================================
 
-need [defined]  [defined] /kk ?\ 4 cconstant /kk
+defined /kk ?\ 4 cconstant /kk
 
   \ doc{
   \
   \ /kk ( -- n ) "slash-k-k"
   \
-  \ A constant that holds the bytes ocuppied by every key
-  \ stored in `kk-ports`: 3 (smaller and slower table) or 4
-  \ (bigger and faster table).
+  \ _n_ is the number of bytes ocuppied by every key stored in
+  \ `kk-ports`: 3 (smaller and slower table) or 4 (bigger and
+  \ faster table).
   \
   \ There are two versions of `kk,` and `kk@`. They depend on
   \ the value of `/kk`.
@@ -866,9 +866,9 @@ $10 $7FFE 2constant kk-b  -->
   \
   \ #kk ( -- n ) "dash-k-k"
   \
-  \ A constant that holds the number _n_ of keyboard keys. This
-  \ is the number of physical rubber keys on the keyboard of
-  \ the original ZX Spectrum: 40.
+  \ A `cconstant`. _n_ is the number of keyboard keys. This is
+  \ the number of physical rubber keys on the keyboard of the
+  \ original ZX Spectrum: 40.
   \
   \ See: `kk-ports`, `kk-chars`, `kk-0#`, `kk-0`, `kk-1#`,
   \ `kk-1`, `kk-2#`, `kk-2`, `kk-3#`, `kk-3`, `kk-4#`, `kk-4`,
@@ -1754,7 +1754,8 @@ unneeding key-caps-lock ?\ 6 cconstant key-caps-lock
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
-  \ 2018-06-04: Update: remove trailing closing paren from
-  \ word names.
+  \ 2018-06-04: Update: remove trailing closing paren from word
+  \ names.  Link `variable` in documentation. Replace
+  \ `[defined]` with `defined`, which is the kernel.
 
   \ vim: filetype=soloforth

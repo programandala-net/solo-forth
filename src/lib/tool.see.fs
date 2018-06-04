@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041101
+  \ Last modifed: 201806041324
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -115,7 +115,7 @@ variable manual-see manual-see on
   \
   \ manual-see ( -- a )
   \
-  \ A variable. _a_ is the address of a cell containing a flag.
+  \ A `variable`. _a_ is the address of a cell containing a flag.
   \ When the flag is non-zero, the decompilation of colon words
   \ done by `see` can be controlled manually with some keys,
   \ which are displayed at the start of the process.
@@ -393,6 +393,6 @@ need see
   \ 2018-03-09: Add words' pronunciaton.
   \
   \ 2018-06-04: Update: remove trailing closing paren from
-  \ word names.
+  \ word names. Link `variable` in documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041141
+  \ Last modified: 201806041734
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -44,7 +44,7 @@ unneeding xstack and ?(
   \
   \ xp ( -- a ) "x-p"
   \
-  \ A variable. Address _a_ holds the address of the current
+  \ A `variable`. Address _a_ holds the address of the current
   \ `xstack` pointer.
   \
   \ }doc
@@ -415,7 +415,7 @@ need xp0 need xlen need xdepth need .depth
   \
   \ 2018-04-15: Update notation ".." to "...".
   \
-  \ 2018-06-04: Update: remove trailing closing paren from
-  \ word names.
+  \ 2018-06-04: Update: remove trailing closing paren from word
+  \ names.  Link `variable` in documentation.
 
   \ vim: filetype=soloforth

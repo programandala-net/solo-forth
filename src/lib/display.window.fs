@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804111802
+  \ Last modifed: 201806041324
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -60,7 +60,7 @@ variable current-window
   \
   \ current-window ( -- a )
   \
-  \ A variable. _a_ is the address of a cell containing the
+  \ A `variable`. _a_ is the address of a cell containing the
   \ address of the `current-window`.
   \
   \ }doc
@@ -445,7 +445,7 @@ unneeding wtyped ?\ variable wtyped
   \
   \ wtyped ( -- a ) "w-typed"
   \
-  \ A variable. _a_ is the address o a cell containing a flag
+  \ A `variable`. _a_ is the address o a cell containing a flag
   \ indicating if a space-delimited substring was found and
   \ displayed in the `current-window`. Otherwise, the string
   \ must be broken in order to fit the current line of the
@@ -595,5 +595,7 @@ unneeding wltype ?( need wtyped need wfreecolumns
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-04-11: Remove duplicated definition.
+  \
+  \ 2018-06-04: Link `variable` in documentation.
 
   \ vim: filetype=soloforth

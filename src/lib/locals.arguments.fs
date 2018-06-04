@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modifed: 201806041324
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -77,7 +77,7 @@ variable arg-default-action arg-default-action off
   \
   \ arg-default-action ( -- a )
   \
-  \ A variable. _a_ holds the execution token of the default
+  \ A `variable`. _a_ holds the execution token of the default
   \ action performed by the locals defined by `arguments`.  Its
   \ default value is zero, which means "no action" (`noop` can
   \ be used too, but ``arg-default-action off`` is simpler than
@@ -100,7 +100,7 @@ variable arg-action  arg-default-action @ arg-action !
   \
   \ arg-action ( -- a )
   \
-  \ A variable. _a_ holds the execution token of the action
+  \ A `variable`. _a_ holds the execution token of the action
   \ performed by the locals defined by `arguments`.  Its
   \ default value is stored in `arg-default-action`.  The
   \ content of ``arg-default-action`` is copied to `arg-action`
@@ -267,5 +267,7 @@ $0A arg: l5 $0C arg: l6 $0E arg: l7 $10 arg: l8 $12 arg: l9 -->
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-06-04: Link `variable` in documentation.
 
   \ vim: filetype=soloforth

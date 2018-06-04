@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201803091412
+  \ Last modifed: 201806041324
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -687,7 +687,7 @@ variable mode-42pw-font  rom-font bl 8 * + mode-42pw-font !
   \
   \ mode-42pw-font ( -- a ) "mode-42-p-w-font"
   \
-  \ A variable. _a_ is the address of a cell containing the
+  \ A `variable`. _a_ is the address of a cell containing the
   \ address of the font used by `mode-42pw`. The font is a
   \ standard ZX Spectrum font (8x8-pixel characters, 32
   \ characters per line), which is converted to 42 characters
@@ -769,5 +769,7 @@ variable mode-42pw-font  rom-font bl 8 * + mode-42pw-font !
   \ files and words: "42rt" (real time) ->  "42pw" (P. Wardle).
   \
   \ 2018-03-09: Add words' pronunciaton.
+  \
+  \ 2018-06-04: Link `variable` in documentation.
 
   \ vim: filetype=soloforth

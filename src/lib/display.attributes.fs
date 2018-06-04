@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803082249
+  \ Last modified: 201806041330
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -89,7 +89,7 @@ unneeding black ?\ 0 cconstant black
   \
   \ black ( -- b )
   \
-  \ A constant that returns 0, the value that represents the
+  \ A `cconstant` that returns 0, the value that represents the
   \ black color.
   \
   \ See: `blue`, `red`, `magenta`, `green`,
@@ -104,7 +104,7 @@ unneeding blue ?\ 1 cconstant blue
   \
   \ blue ( -- b )
   \
-  \ A constant that returns 1, the value that represents the
+  \ A `cconstant` that returns 1, the value that represents the
   \ blue color.
   \
   \ See: `black`, `red`, `magenta`, `green`, `cyan`,
@@ -118,7 +118,7 @@ unneeding red ?\ 2 cconstant red
   \
   \ red ( -- b )
   \
-  \ A constant that returns 2, the value that represents the
+  \ A `cconstant` that returns 2, the value that represents the
   \ red color.
   \
   \ See: `black`, `blue`, `magenta`, `green`, `cyan`,
@@ -132,7 +132,7 @@ unneeding magenta ?\ 3 cconstant magenta
   \
   \ magenta ( -- b )
   \
-  \ A constant that returns 3, the value that represents the
+  \ A `cconstant` that returns 3, the value that represents the
   \ magenta color.
   \
   \ See: `black`, `blue`, `red`, `green`, `cyan`,
@@ -146,7 +146,7 @@ unneeding green ?\ 4 cconstant green
   \
   \ green ( -- b )
   \
-  \ A constant that returns 4, the value that represents the
+  \ A `cconstant` that returns 4, the value that represents the
   \ green color.
   \
   \ See: `black`, `blue`, `red`, `magenta`, `cyan`,
@@ -160,7 +160,7 @@ unneeding cyan ?\ 5 cconstant cyan
   \
   \ cyan ( -- b )
   \
-  \ A constant that returns 5, the value that represents the
+  \ A `cconstant` that returns 5, the value that represents the
   \ cyan color.
   \
   \ See: `black`, `blue`, `red`, `magenta`, `green`,
@@ -174,7 +174,7 @@ unneeding yellow ?\ 6 cconstant yellow
   \
   \ yellow ( -- b )
   \
-  \ A constant that returns 6, the value that represents the
+  \ A `cconstant` that returns 6, the value that represents the
   \ yellow color.
   \
   \ See: `black`, `blue`, `red`, `magenta`, `green`,
@@ -188,7 +188,7 @@ unneeding white ?\ 7 cconstant white
   \
   \ white ( -- b )
   \
-  \ A constant that returns 7, the value that represents the
+  \ A `cconstant` that returns 7, the value that represents the
   \ white color.
   \
   \ See: `black`, `blue`, `red`, `magenta`, `green`,
@@ -732,13 +732,13 @@ code set-ink ( b -- )
 
 ( ink-mask unink-mask paper-mask unpaper-mask )
 
-unneeding ink-mask       ?\ %00000111 cconstant ink-mask
+unneeding ink-mask ?\ %00000111 cconstant ink-mask
 
   \ doc{
   \
   \ ink-mask ( -- b )
   \
-  \ A constant. _b_ is the bitmask of the bits used to
+  \ A `cconstant`. _b_ is the bitmask of the bits used to
   \ indicate the ink in an attribute byte.
   \
   \ See: `unink-mask`, `set-ink`, `attr!`,
@@ -746,13 +746,13 @@ unneeding ink-mask       ?\ %00000111 cconstant ink-mask
   \
   \ }doc
 
-unneeding unink-mask     ?\ %11111000 cconstant unink-mask
+unneeding unink-mask ?\ %11111000 cconstant unink-mask
 
   \ doc{
   \
   \ unink-mask ( -- b )
   \
-  \ A constant. _b_ is the inverted bitmask of the bits used to
+  \ A `cconstant`. _b_ is the inverted bitmask of the bits used to
   \ indicate the ink in an attribute byte.
   \
   \ See: `ink-mask`, `set-ink`, `attr!`,
@@ -760,13 +760,13 @@ unneeding unink-mask     ?\ %11111000 cconstant unink-mask
   \
   \ }doc
 
-unneeding paper-mask     ?\ %00111000 cconstant paper-mask
+unneeding paper-mask ?\ %00111000 cconstant paper-mask
 
   \ doc{
   \
   \ paper-mask ( -- b )
   \
-  \ A constant. _b_ is the bitmask of the bits used to
+  \ A `cconstant`. _b_ is the bitmask of the bits used to
   \ indicate the paper in an attribute byte.
   \
   \ See: `unpaper-mask`, `papery`, `set-paper`, `attr!`,
@@ -774,13 +774,13 @@ unneeding paper-mask     ?\ %00111000 cconstant paper-mask
   \
   \ }doc
 
-unneeding unpaper-mask   ?\ %11000111 cconstant unpaper-mask
+unneeding unpaper-mask ?\ %11000111 cconstant unpaper-mask
 
   \ doc{
   \
   \ unpaper-mask ( -- b )
   \
-  \ A constant. _b_ is the inverted bitmask of the bits used to
+  \ A `cconstant`. _b_ is the inverted bitmask of the bits used to
   \ indicate the paper in an attribute byte.
   \
   \ See: `paper-mask`, `papery`, `set-paper`, `attr!`,
@@ -790,13 +790,13 @@ unneeding unpaper-mask   ?\ %11000111 cconstant unpaper-mask
 
 ( bright-mask unbright-mask get-bright set-bright )
 
-unneeding bright-mask    ?\ %01000000 cconstant bright-mask
+unneeding bright-mask ?\ %01000000 cconstant bright-mask
 
   \ doc{
   \
   \ bright-mask ( -- b )
   \
-  \ A constant. _b_ is the bitmask of the bit used to indicate
+  \ A `cconstant`. _b_ is the bitmask of the bit used to indicate
   \ the bright status in an attribute byte.
   \
   \ See: `unbright-mask`, `brighty`, `set-bright`, `attr!`,
@@ -804,13 +804,13 @@ unneeding bright-mask    ?\ %01000000 cconstant bright-mask
   \
   \ }doc
 
-unneeding unbright-mask  ?\ %10111111 cconstant unbright-mask
+unneeding unbright-mask ?\ %10111111 cconstant unbright-mask
 
   \ doc{
   \
   \ unbright-mask ( -- b )
   \
-  \ A constant. _b_ is the inverted bitmask of the bit used to
+  \ A `cconstant`. _b_ is the inverted bitmask of the bit used to
   \ indicate the bright status in an attribute byte.
   \
   \ See: `bright-mask`, `brighty`, `set-bright`, `attr!`.
@@ -858,13 +858,13 @@ need bright-mask need attr@ need unbright-mask need attr!
 
 ( flash-mask unflash-mask get-flash set-flash )
 
-unneeding flash-mask   ?\ %10000000 cconstant flash-mask
+unneeding flash-mask ?\ %10000000 cconstant flash-mask
 
   \ doc{
   \
   \ flash-mask ( -- b )
   \
-  \ A constant. _b_ is the bitmask of the bit used to indicate
+  \ A `cconstant`. _b_ is the bitmask of the bit used to indicate
   \ the flash status in an attribute byte.
   \
   \ See: `unflash-mask`, `flashy`, `set-flash`, `attr!`,
@@ -878,7 +878,7 @@ unneeding unflash-mask ?\ %01111111 cconstant unflash-mask
   \
   \ unflash-mask ( -- b )
   \
-  \ A constant. _b_ is the inverted bitmask of the bit used to
+  \ A `cconstant`. _b_ is the inverted bitmask of the bit used to
   \ indicate the flash status in an attribute byte.
   \
   \ See: `flash-mask`, `flashy`, `set-flash`, `attr!`,
@@ -1324,5 +1324,7 @@ unneeding (0-1-8-color.
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-08: Add words' pronunciaton.
+  \
+  \ 2018-06-04: Link `cconstant` in documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705152043
+  \ Last modifed: 201806041324
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -34,7 +34,7 @@ variable mode-32-font  rom-font bl 8 * + mode-32-font !
   \
   \ mode-32-font ( -- a )
   \
-  \ A variable. _a_ is the address of a cell containing the
+  \ A `variable`. _a_ is the address of a cell containing the
   \ address of the font used by `mode-32`. Note the address of
   \ the font must be the address of its character 32 (space).
   \
@@ -90,5 +90,7 @@ variable mode-32-font  rom-font bl 8 * + mode-32-font !
   \
   \ 2017-05-15: Use `>form` for mode transition. Add
   \ `mode-32-font`.
+  \
+  \ 2018-06-04: Link `variable` in documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041104
+  \ Last modifed: 201806041324
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -84,7 +84,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \
   \ assert-level ( -- a )
   \
-  \ A variable. _a_ is the address of a cell containing the
+  \ A `variable`. _a_ is the address of a cell containing the
   \ highest assertions that are turned on (0..3).  Its default
   \ value is 1: all assertions above 1 are turned off.
   \
@@ -245,6 +245,6 @@ variable assert-level ( -- a ) 1 assert-level !
   \ 2018-04-14: Fix markup in documentation.
   \
   \ 2018-06-04: Update: remove trailing closing paren from
-  \ word names.
+  \ word names. Link `variable` in documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802271734
+  \ Last modifed: 201806041324
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -31,7 +31,7 @@ variable r#
   \
   \ r# ( -- a ) "r-slash"
   \
-  \ A variable. _a_ is the address of a cell containing the
+  \ A `variable`. _a_ is the address of a cell containing the
   \ location of the editing cursor, an offset from the top of
   \ the current block. Its default value is zero.
   \
@@ -63,6 +63,8 @@ variable r#
   \ 2018-02-04: Improve documentation: add pronunciation to
   \ words that need it.
   \
-  \ 2018-02-27. Update source style (remove double spaces).
+  \ 2018-02-27: Update source style (remove double spaces).
+  \
+  \ 2018-06-04: Link `variable` in documentation.
 
   \ vim: filetype=soloforth

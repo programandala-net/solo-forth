@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041130
+  \ Last modifed: 201806041324
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -73,7 +73,7 @@ unneeding doer ?(
   \ a4 = address of the optional continuation after `;and`
 
 variable >;and ( -- a )
-  \ A variable. _a_ is the address of a cell containing the
+  \ A `variable`. _a_ is the address of a cell containing the
   \ address of the optional continuation of a definition where
   \ `make` is used.  Used by `make` and `;and`.
 
@@ -187,7 +187,7 @@ unneeding undo ?( need doer
   \
   \ 2018-04-15: Fix markup in documentation.
   \
-  \ 2018-06-04: Update: remove trailing closing paren from
-  \ word names.
+  \ 2018-06-04: Update: remove trailing closing paren from word
+  \ names.  Link `variable` in documentation.
 
   \ vim: filetype=soloforth
