@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091625
+  \ Last modified: 201806051704
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -40,7 +40,7 @@ defer gxy>scra_ ( -- a )
 
   \ doc{
   \
-  \ gxy>scra_ ( -- a ) "g-x-y-to-s-c-r-a"
+  \ gxy>scra_ ( -- a ) "g-x-y-to-s-c-r-a-underscore"
   \
   \ A deferred word that executes `fast-gxy>scra_` or, by
   \ default, `slow-gxy>scra_`:  Return address _a_ of an
@@ -61,7 +61,7 @@ create slow-gxy>scra_ ( -- a ) asm
 
   \ doc{
   \
-  \ slow-gxy>scra_ ( -- a ) "slow-g-x-y-to-s-c-r-a"
+  \ slow-gxy>scra_ ( -- a ) "slow-g-x-y-to-s-c-r-a-underscore"
   \
   \ Return address _a_ of an alternative entry point to the
   \ PIXEL-ADD ROM routine ($22AA), to let the range of the y
@@ -127,7 +127,7 @@ create fast-gxy>scra_ ( -- a ) asm
 
   \ doc{
   \
-  \ fast-gxy>scra_ ( -- a ) "fast-g-x-y-to-s-c-r-a"
+  \ fast-gxy>scra_ ( -- a ) "fast-g-x-y-to-s-c-r-a-underscore"
   \
   \ Return address _a_ of a a modified copy of the PIXEL-ADD
   \ ROM routine ($22AA), to let the range of the y coordinate
@@ -171,7 +171,7 @@ create gxy176>scra_ ( -- a ) asm
 
   \ doc{
   \
-  \ gxy176>scra_ ( -- a ) "g-x-y-176-to-s-c-r-a"
+  \ gxy176>scra_ ( -- a ) "g-x-y-176-to-s-c-r-a-underscore"
   \
   \ Return address _a_ of a routine that uses an alternative
   \ entry point to the PIXEL-ADD ROM routine ($22AA), to bypass
@@ -887,5 +887,8 @@ need gxy>attra
   \
   \ 2018-03-09: Update stack notation "x y" to "gx gy" or "col
   \ row".
+  \
+  \ 2018-06-05: Fix pronunciation of words that have a trailing
+  \ underscore.
 
   \ vim: filetype=soloforth

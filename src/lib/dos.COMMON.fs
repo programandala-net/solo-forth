@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804161751
+  \ Last modified: 201806051612
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -263,11 +263,11 @@ need ?drives need -block-drives need block-drive!
   \
   \ set-block-drives ( c#n..c#1 n -- )
   \
-  \ Set the block drives to the drives specified by drive
-  \ identifiers _c#n..c#1_. Subsequently drive _c#1_ will be
-  \ searched first for blocks from block number 0 to block
-  \ number ``blocks/disk 1-``; drive _c[n+1]_ will be searched
-  \ for blocks from block number `blocks/disk` to block number
+  \ Set the drives specified by drive identifiers _c#n..c#1_ as
+  \ block drives. Subsequently drive _c#1_ will be searched
+  \ first for blocks from block number 0 to block number
+  \ ``blocks/disk 1-``; drive _c#2_ will be searched for blocks
+  \ from block number `blocks/disk` to block number
   \ ``blocks/disk 2 * 1-``; and so on.
   \
   \ If _n_ is zero, no drive is used for blocks.
@@ -359,5 +359,7 @@ unneeding get-block-drives ?( need block-drive@
   \ which failed with TR-DOS' drive 0, with an `if` structure.
   \
   \ 2018-04-16: Improve description of _ior_ notation.
+  \
+  \ 2018-06-05: Improve documentation.
 
   \ vim: filetype=soloforth
