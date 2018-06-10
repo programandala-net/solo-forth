@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201804152140
+  \ Last modified: 201806101144
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( extend size system turnkey )
+( extend system-size system-zone turnkey )
 
   \ XXX WARNING -- Since name fields are saved in a memory
   \ bank, the best way to save a modified Forth system is to
@@ -37,16 +37,19 @@
   \ XXX TODO -- Study how to save and load the names bank, even
   \ after assembling the kernel.
 
-: extend ( -- )
-  latest $08 +origin !
-    \ top most word in `forth` vocabulary
-  here $1F +origin !
-    \ `dp` init value
-  np@ $26 +origin !
-    \ `np` init value
-  latest-wordlist @ $0C +origin ! ;
-    \ `latest-wordlist` init value
-  \ XXX TODO -- update
+: extend ( -- ) get-order only forth
+                root-wordlist @      $06 +origin !
+                forth-wordlist @     $08 +origin !
+                assembler-wordlist @ $0A +origin !
+                latest-wordlist @    $0C +origin !
+                width @              $18 +origin !
+                latest               $1C +origin !
+                here                 $1E +origin !
+                latestxt             $22 +origin !
+                np@                  $26 +origin !
+                  \ XXX Needed?
+                np@                  $28 +origin !
+                set-order ;
 
   \
   \ extend ( -- )
@@ -54,49 +57,50 @@
   \ Change the `cold` start parameters to extend the system to
   \ its current state.
   \
-  \ WARNING: Under development.
-  \
   \ See: `system`.
   \
 
-: size ( -- u ) here 0 +origin - ;
+: system-size ( -- len ) here 0 +origin - ;
 
   \
-  \ size ( -- u )
+  \ system-size ( -- len )
   \
-  \ _u_ is the size of the system, in bytes, i.e. the size of
+  \ _len_ is the size of the system, in bytes, i.e. the size of
   \ data/code space.
   \
-  \ See: `here`, `+origin`.
+  \ See: `here`, `+origin`, `system-zone`, `turnkey`.
   \
 
-: system ( -- a len ) extend  0 +origin size 10 + ;
+: system-zone ( -- a len ) 0 +origin system-size ;
 
   \
-  \ system ( -- a len )
+  \ system-zone ( -- a len )
   \
-  \ Prepare the system in order to save a copy.  Return its
-  \ start address _a_ and length _len_, to be used as
-  \ parameters for saving the system to disk.
+  \ Return the start address _a_ of the system and its length
+  \ _len_, to be used as parameters for saving the system to
+  \ tape or disk.
   \
-  \ WARNING: Under development.
-  \
-  \ See: `extend`, `+origin`, `size`.
+  \ See: `+origin`, `system-size`, `turnkey`.
   \
 
-: turnkey ( xt -- a len ) boot defer! system ;
+: turnkey ( xt -- a len ) ['] boot defer! extend system-zone ;
 
   \
   \ turnkey ( xt -- a len )
   \
-  \ Prepare the system in order to save a copy that will
-  \ execute _xt_ after the ordinary boot process.  Return its
-  \ start address _a_ and length _len_, to be used as
-  \ parameters for saving the system to disk.
+  \ Prepare the system in order to save a copy of its current
+  \ state.  Return its start address _a_ and length _len_, to
+  \ be used as parameters for saving the system to disk.  The
+  \ saved copy will execute _xt_ after the ordinary boot
+  \ process.
   \
-  \ WARNING: Under development.
-  \
-  \ See: `boot`, `system`.
+  \ Usage example:
+
+  \ ----
+  \ ' my-game turnkey s" my-game" >tape-file
+  \ ----
+
+  \ See: `boot`, `extend`, `system-zone`, `cold`.
   \
 
   \ ===========================================================
@@ -114,5 +118,10 @@
   \
   \ 2018-04-15: Improve documentation of `size`. Deactivate the
   \ documentation.
+  \
+  \ 2018-06-09: Fix `turnkey`. Rename `size` to `system-size`.
+  \ Rename `system` to `system-zone`.
+  \
+  \ 2018-06-10: Update and complete `extend`.
 
   \ vim: filetype=soloforth
