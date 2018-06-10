@@ -888,8 +888,6 @@ NOTE: Milestone: 0.14.0
 
 - Remove section _Summary of the DOS support_. Use the table of section
   _Comparative of DOS support_ instead.
-- Since htmldoc is not used anymore, restore the graphic tree in section
-  _Project directories_. 
 - Confirm corrupted links with backslash and remove the corresponding note.
 
 === 2018-06-05, 2018-06-09

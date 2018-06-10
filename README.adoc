@@ -177,8 +177,9 @@ files.
 // Project directories {{{1
 == Project directories
 
-// XXX FIXME -- This tree was created by ``tree``. The UTF-8 graphic
-// characters are ruined  by `htmldoc` in the PDF.
+// XXX OLD -- This tree was created by ``tree``. The UTF-8 graphic
+// characters are ruined  by `htmldoc` in the PDF. `asciidoctor-pdf`
+// renders it fine, except some descriptions are not aligned.
 
 // ....
 // .
@@ -210,6 +211,7 @@ files.
 
 // XXX OLD -- A table version is not legible enough.
 
+// [%autowidth]
 // |===
 // | Directory      | Description
 
@@ -238,29 +240,87 @@ files.
 // | vim/syntax     | Syntax highlighting
 // |===
 
-* *backgrounds* :  Version background images
-* *bin* : Binary files needed to build disk 0
-  - *addons* : Code loaded from disk, not assembled in the library yet
-  - *dos* : DOS files
-  - *fonts* : Fonts for the supported screen modes
-* *disks* : Disk images
-  - *gplusdos* : G+DOS disk images
-  - *plus3dos* : +3DOS disk images
-  - *trdos* : TR-DOS disk images
-* *doc* : Documentation
-* *make* : Files used by ``make`` to build the system
-* *screenshots* : Version screenshots
-* *src* : Sources
-  - *addons* : Code that is loaded from disk
-  - *doc* : Files used to build the documentation
-  - *inc* : Z80 symbols
-  - *lib* : Library
-  - *loader* : BASIC loader for disk 0
-* *tmp* : Temporary files created by ``make``
-* *tools* : Development and user tools
-* *vim* : Vim files
-  - *ftplugin* : Filetype plugin
-  - *syntax* : Syntax highlighting
+// XXX OLD -- A list version.
+
+// * *backgrounds* :  Version background images
+// * *bin* : Binary files needed to build disk 0
+//   - *addons* : Code loaded from disk, not assembled in the library yet
+//   - *dos* : DOS files
+//   - *fonts* : Fonts for the supported screen modes
+// * *disks* : Disk images
+//   - *gplusdos* : G+DOS disk images
+//   - *plus3dos* : +3DOS disk images
+//   - *trdos* : TR-DOS disk images
+// * *doc* : Documentation
+// * *make* : Files used by ``make`` to build the system
+// * *screenshots* : Version screenshots
+// * *src* : Sources
+//   - *addons* : Code that is loaded from disk
+//   - *doc* : Files used to build the documentation
+//   - *inc* : Z80 symbols
+//   - *lib* : Library
+//   - *loader* : BASIC loader for disk 0
+// * *tmp* : Temporary files created by ``make``
+// * *tools* : Development and user tools
+// * *vim* : Vim files
+//   - *ftplugin* : Filetype plugin
+//   - *syntax* : Syntax highlighting
+
+// XXX OLD -- A description list version.
+
+// [horizontal]
+// backgrounds    :: Version background images
+// bin            :: Binary files needed to build disk 0
+// bin/addons     :: Code loaded from disk, not assembled in the library yet
+// bin/dos        :: DOS files
+// bin/fonts      :: Fonts for the supported screen modes
+// disks          :: Disk images
+// disks/gplusdos :: G+DOS disk images
+// disks/plus3dos :: +3DOS disk images
+// disks/trdos    :: TR-DOS disk images
+// doc            :: Documentation
+// make           :: Files used by ``make`` to build the system
+// screenshots    :: Version screenshots
+// src            :: Sources
+// src/addons     :: Code that is loaded from disk
+// src/doc        :: Files used to build the documentation
+// src/inc        :: Z80 symbols
+// src/lib        :: Library
+// src/loader     :: BASIC loader for disk 0
+// tmp            :: Temporary files created by ``make``
+// tools          :: Development and user tools
+// vim            :: Vim files
+// vim/ftplugin   :: Filetype plugin
+// vim/syntax     :: Syntax highlighting
+
+[%autowidth]
+|===
+| Directory   | Subdirectory | Description
+
+| backgrounds |              | Version background images
+| bin         |              | Binary files needed to build disk 0
+| bin         | addons       | Code loaded from disk, not assembled in the library yet
+| bin         | dos          | DOS files
+| bin         | fonts        | Fonts for the supported screen modes
+| disks       |              | Disk images
+| disks       | gplusdos     | G+DOS disk images
+| disks       | plus3dos     | +3DOS disk images
+| disks       | trdos        | TR-DOS disk images
+| doc         |              | Documentation
+| make        |              | Files used by ``make`` to build the system
+| screenshots |              | Version screenshots
+| src         |              | Sources
+| src         | addons       | Code that is loaded from disk
+| src         | doc          | Files used to build the documentation
+| src         | inc          | Z80 symbols
+| src         | lib          | Library
+| src         | loader       | BASIC loader for disk 0
+| tmp         |              | Temporary files created by ``make``
+| tools       |              | Development and user tools
+| vim         |              | Vim files
+| vim         | ftplugin     | Filetype plugin
+| vim         | syntax       | Syntax highlighting
+|===
 
 // end::tree[]
 
