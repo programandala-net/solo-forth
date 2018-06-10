@@ -29,9 +29,8 @@ could be used as well).
 
 .Minimum requirements
 - 128 KiB RAM
-- One double-sided high-density disk drive (two
-  recommended)footnote:[The original single-sided low-density disk
-  drives provided by the ZX Spectrum +3 are not supported.]
+- One double-sided 80-track disk drive (two
+  recommended).
 
 .Main features
 - Fast DTC (Direct Threaded Code) implementation.
@@ -39,7 +38,7 @@ could be used as well).
 - Name space in banked memory, separated from code and data space.
 - Transparent access to banked memory.
 - Big <<_library,library>> of useful source code.
-- Modular <<_computers,DOS support>>.
+- Modular <<_platforms,DOS support>>.
 - Fully documented source code.
 - Detailed documentation.
 
@@ -78,12 +77,13 @@ http://programandala.net/en.program.black_flag.html[Black Flag].
 
 // end::history[]
 
-// tag::computers[]
+// tag::platforms[]
 
-[id=_computers]
+[id=_platforms]
 // Platforms {{{1
 == Platforms
 
+[%autowidth]
 .Supported platforms
 |===
 | Computer        | Disk interface        | DOS
@@ -103,7 +103,7 @@ http://programandala.net/en.program.black_flag.html[Black Flag].
 |===
 
 Porting the G+DOS version of Solo Forth to its close relatives GDOS,
-Beta DOS and Uni-DOS will require only minor changes, beside adding
+Beta DOS and Uni-DOS would require only minor changes, beside adding
 some library code to support their specific features.
 
 Supporting
@@ -113,6 +113,7 @@ http://esxdos.org[esxDOS,role="external"] or
 http://specnext.com[NextOS,role="external"] will let Solo Forth use
 hard drives, flash cards, and a lot of memory.
 
+[%autowidth]
 .Planned supported platforms
 |===
 | Computer                      | Disk interface               | DOS      | Priority
@@ -128,7 +129,7 @@ hard drives, flash cards, and a lot of memory.
 | ZX-Uno                        |                              | esxDOS   | Low
 |===
 
-// end::computers[]
+// end::platforms[]
 
 // Summary of the DOS support {{{2
 === Summary of the DOS support
@@ -142,8 +143,9 @@ Block disks are fully supported, but most file-management words are
 not implemented yet, though standard Forth words are better supported
 than on G+DOS or TR-DOS.
 
-NOTE: Only double-sided 80-track disk drives (i.e. 780-KiB disks) are
-supported.
+NOTE: Only double-sided 80-track disk drives (i.e. 720-KiB disks) are
+supported.  The original single-sided 40-track disk drives (173 KiB
+per disk side) provided by the ZX Spectrum +3 are not supported.
 
 // end::plus3dos_support_summary[]
 
@@ -341,6 +343,7 @@ disks/*/disk_3_workbench.*
 The subdirectory and the filename extension of every DOS are the
 following:
 
+[%autowidth]
 .DOS subdirectories and disk image filename extensions
 |===
 | DOS    | Subdirectory | Filename extension
@@ -382,8 +385,9 @@ DOS commands.
 // Pentagon 128 {{{2
 === Pentagon 128
 
-1. Run a ZX Spectrum emulator and select a Pentagon 128.  Make sure
-   the disk drives configuration is double-sided 80-track disks.
+1. Run a ZX Spectrum emulator and select a Pentagon
+   128footnote:[diskformat,Make sure the disk drives are configured as
+   double-sided and 80-track].
 2. "Insert" the disk image file <disks/trdos/disk_0_boot.trd> as disk
    'A'.
 3. Choose "TR DOS" from the computer start menu. This will enter the
@@ -401,8 +405,8 @@ DOS commands.
 // Pentagon 512 {{{2
 === Pentagon 512
 
-1. Run a ZX Spectrum emulator and select a Pentagon 512.  Make sure
-   the disk drives configuration is double-sided 80-track disks.
+1. Run a ZX Spectrum emulator and select a Pentagon
+   512footnoteref:[diskformat].
 2. "Insert" the disk image file
    <disks/trdos/disk_0_boot.pentagon_512.trd> as disk 'A'.
 3. Choose "128k menu"footnoteref:[pentagonboot,In theory, choosing
@@ -419,8 +423,8 @@ DOS commands.
 // Pentagon 1024 {{{2
 === Pentagon 1024
 
-1. Run a ZX Spectrum emulator and select a Pentagon 1024.  Make sure
-   the disk drives configuration is double-sided 80-track disks.
+1. Run a ZX Spectrum emulator and select a Pentagon
+   1024footnoteref:[diskformat].
 2. "Insert" the disk image file
    <disks/trdos/disk_0_boot.pentagon_1024.trd> as disk 'A'.
 3. Choose "128k menu"footnoteref:[pentagonboot] from the computer
@@ -433,8 +437,8 @@ DOS commands.
 // Scorpion ZS 256 {{{2
 === Scorpion ZS 256
 
-1. Run a ZX Spectrum emulator and select a Scorpion ZS 256.  Make sure
-   the disk drives configuration is double-sided 80-track disks.
+1. Run a ZX Spectrum emulator and select a Scorpion ZS
+   256footnoteref:[diskformat].
 2. "Insert" the disk image file
    <disks/trdos/disk_0_boot.scorpion_zs_256.trd> as disk 'A'.
 3. Choose "128 TR DOS" from the computer start menu.  Solo Forth will
@@ -452,8 +456,7 @@ DOS commands.
 
 1. Run a ZX Spectrum emulator and select a ZX Spectrum +3 (or
    http://www.worldofspectrum.org/zxplus3e/[ZX
-   Spectrum{sp}+3e,role="external"]).  Make sure the disk drives
-   configuration is double-sided 80-track disks.
+   Spectrum{sp}+3e,role="external"])footnoteref:[diskformat].
 2. "Insert" the disk image file <disks/plus3dos/disk_0_boot.180.dsk>
    (or <disks/plus3dos/disk_0_boot.720.dsk>, depending on the capacity
    of the drive) as disk 'A'.
@@ -464,8 +467,7 @@ DOS commands.
 === ZX Spectrum 128/+2 with the Beta 128 interface
 
 1. Run a ZX Spectrum emulator and select a ZX Spectrum 128 (or ZX
-   Spectrum +2) with the Beta 128 interface.  Make sure the disk
-   drives configuration is double-sided 80-track disks.
+   Spectrum +2) with the Beta 128 interfacefootnoteref:[diskformat].
 2. "Insert" the disk image file <disks/trdos/disk_0_boot.trd> as disk
    A of the Beta 128 interface.
 3. Choose "128 BASIC" from the computer start menu.

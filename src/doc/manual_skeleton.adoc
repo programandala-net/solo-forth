@@ -28,7 +28,7 @@ include::doc.README.linked.adoc[tags=history]
 // Supported computers and disk operating systems {{{1
 // == Supported computers and disk operating systems
 
-include::doc.README.linked.adoc[tags=computers]
+include::doc.README.linked.adoc[tags=platforms]
 
 // DOS support {{{1
 == DOS support
@@ -97,8 +97,8 @@ Forth blocks or files), but it haves some interesting features:
 The following table shows the main disk-management words implemented
 on each DOS.
 
+[%autowidth]
 .Main disk-related words implemented
-[cols="3,1,1,1,4"]
 |===
 | Word              | +3DOS | G+DOS | TR-DOS | Comment
 
@@ -275,6 +275,7 @@ is defined.
 
 :indexnote: Test done on Solo Forth 0.12.0 on ZX Spectrum 128.
 
+[%autowidth]
 .Time and memory required to make the library indexfootnote:[pass:a,[{indexnote}]]
 |===
 | DOS     | First block | Last block | Seconds | Bytes of far memory
@@ -348,6 +349,7 @@ drives are seen as one single set, i.e. ``200 list`` will list block
 200 from the first disk, but ``850 list`` will list the block from the
 second disk:
 
+[%autowidth]
 .Range of blocks per drive in normal order
 |===
 | DOS    | 1st drive | 2nd drive | 3rd drive | 4th drive
@@ -516,6 +518,7 @@ file and install the required programs. Then enter the project
 directory and use one of the following commands to build the disk
 images or the manual for your DOS of choice:
 
+[%autowidth]
 .Commands to rebuild Solo Forth
 |===
 | DOS    | Computers         | Disk images                     | Documentation
