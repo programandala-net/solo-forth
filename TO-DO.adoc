@@ -1802,11 +1802,11 @@ way.
 
 Use `_jump` macros at the end of `umax`, `umin`, `dabs`, `abs`, etc.
 
-=== 2016-04-24, 2017-05-06, 2017-12-09, 2018-01-03, 2018-03-01, 2018-06-05
+=== 2016-04-24, 2017-05-06, 2017-12-09, 2018-01-03, 2018-03-01, 2018-06-05, 2018-06-10
 
 Words that can be moved to the library: 
 `umin`, `umax`, `char+`, `char-`, `break-key?`,
-`default-break-key?`, `get-drive`...
+`default-break-key?`, `get-drive`, `np!`...
 
 Study how to move `line>string` and `undefined?` to the library.  They
 are not used in the kernel, but they are needed by the `need` utility.

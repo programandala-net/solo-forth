@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201806041342
+; Last modified: 201806101009
 
 include version.z80s
 
@@ -775,34 +775,42 @@ default_attribute_and_mask:
 
   ; The first 9 user variables have default values.  They are
   ; used by `cold` to overwrite the actual user variables and
-  ; must be in the same order than them.
+  ; must be defined in identical order.
 
 default_user_variables_start:
 
 sp0_init_value:                               ; +$00
   ; `$12 +origin`
   dw data_stack_bottom
+
 rp0_init_value:                               ; +$02
   ; `$14 +origin`
   dw return_stack_bottom
-                                              ; +$04 ; XXX OLD
+
+; XXX OLD -- Not used.                        ; +$04
   ; `$16 +origin`
   dw $0000
+
 width_init_value:                             ; +$06
   ; `$18 +origin`
   dw max_word_length
-                                              ; +$08 ; XXX OLD
+
+; XXX OLD -- Not used.                        ; +$08
   ; `$1A +origin`
   dw $0000
+
 last_init_value:                              ; +$0A
   ; `$1C +origin`
   dw latest_nt_in_forth_word_list
+
 dictionary_pointer_init_value:                ; +$0C
   ; `$1E +origin`
   dw dictionary_pointer_after_cold
+
 user_data_pointer_init_value:                 ; +$0E
   ; `$20 +origin`
   dw user_data_pointer
+
 lastxt_init_value:                            ; +$10
   ; `$22 +origin`
   dw latest_xt_in_forth_word_list
@@ -811,8 +819,8 @@ default_user_variables_end:
 
 ip_backup: ; temporary copy of Forth IP
   ; `$24 +origin`
-  dw 0
   ; XXX OLD -- not used
+  dw 0
 
 np: defl names_pointer_bottom
 
@@ -844,8 +852,8 @@ names_pointer_init_value:
 user_variables:
 
   ; Note: the first 9 user variables are initialized with
-  ; default values by `cold`.  They must be in the same order
-  ; than their default values.
+  ; default values by `cold`.  They must be ordered after their
+  ; default values.
 
   ; User variables that are initialized by `cold`:
 
@@ -5051,6 +5059,7 @@ u_m_slash_mod.4:
 ; }doc
 
   ; XXX TODO -- User variable?
+  ; XXX TODO -- Variable?
 
   dw names_pointer
 
@@ -6907,7 +6916,7 @@ do_user:
 ; maximum number of letters saved in the compilation of a
 ; definition name. It must be 1 thru 31, with a default value of
 ; 31. The name character count and its natural characters are
-; saved, up to the value in `width`.  The value may be changed
+; saved, up to the value in ``width``.  The value may be changed
 ; at any time within the above limits.
 ;
 ; Origin: fig-Forth.
@@ -10848,7 +10857,9 @@ search.failed:
 ;   postpone slit s, ; immediate compile-only
 ; ----
 
-; See: `slit`, `s,`, `csliteral`.
+; Origin: Forth-94 (STRING), Forth-2012 (STRING).
+;
+; See: `s,`, `csliteral`.
 ;
 ; }doc
 
