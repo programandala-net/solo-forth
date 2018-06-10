@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201804171840
+# Last modified: 201806042155
 # See change loge at the end of the file.
 
 # ==============================================================
@@ -31,6 +31,8 @@
 # 	http://metalbrain.speccy.org/link-eng.htm
 
 # cat (from the GNU coreutils)
+
+# dd (from the GNU coreutils)
 
 # DOSBox (by The DOSBox Team)
 #   http://www.dosbox.com
@@ -118,7 +120,8 @@ trdosdisks: \
 
 .PHONY: trdosblockdisks
 trdosblockdisks: \
-	disks/trdos/disk_1_library.trd \
+	disks/trdos/disk_1a_library.trd \
+	disks/trdos/disk_1b_library.trd \
 	disks/trdos/disk_2_programs.trd \
 	disks/trdos/disk_3_workbench.trd
 
@@ -573,13 +576,32 @@ disks/plus3dos/disk_3_workbench.dsk: tmp/workbench.fs
 # TR-DOS block disks
 
 # ------------------------------
-# Library disk
+# Library disks
 
 tmp/library.trdos.fs: $(trdos_core_lib_files)
 	cat $(trdos_core_lib_files) > $@
 
-disks/trdos/disk_1_library.trd: tmp/library.trdos.fs
-	fsb2-trd $< SoloFth1 ; \
+tmp/library.trdos.fb: tmp/library.trdos.fs
+	fsb2 $<
+
+tmp/library_a.trdos.fb: tmp/library.trdos.fb
+	dd if=$< of=$@ bs=1K count=636
+
+tmp/library_b.trdos.fb: tmp/library.trdos.fb
+	dd if=$< of=$@ bs=1K count=636 skip=636
+
+tmp/library_a.trdos.fs: tmp/library_a.trdos.fb
+	dd if=$< of=$@ bs=1K cbs=64 conv=unblock
+
+tmp/library_b.trdos.fs: tmp/library_b.trdos.fb
+	dd if=$< of=$@ bs=1K cbs=64 conv=unblock
+
+disks/trdos/disk_1a_library.trd: tmp/library_a.trdos.fs
+	fsb2-trd $< SoloF1a ; \
+	mv $(basename $<).trd $@
+
+disks/trdos/disk_1b_library.trd: tmp/library_b.trdos.fs
+	fsb2-trd $< SoloF1b ; \
 	mv $(basename $<).trd $@
 
 # ------------------------------
@@ -1097,3 +1119,5 @@ oldbackup:
 # glossary, using the new `--annex` option of Glosara. Fix:
 # make the +3DOS and TR-DOS manuals depend also on the Z80
 # flags notation document.
+#
+# 2018-06-04: Split the TR-DOS library into two disks.

@@ -1,6 +1,6 @@
 = Solo Forth %VERSION% %DOS%
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-04-17
+:revdate: 2018-06-09
 :toc:
 :toclevels: 1
 :toc-placement!:
@@ -15,37 +15,47 @@ toc::[]
 
 // =============================================================
 
+// Description {{{1
 // == Description
 
 include::doc.README.linked.adoc[tags=description]
 
+// History and current status {{{1
 // == History and current status
 
 include::doc.README.linked.adoc[tags=history]
 
+// Supported computers and disk operating systems {{{1
 // == Supported computers and disk operating systems
 
 include::doc.README.linked.adoc[tags=computers]
 
+// DOS support {{{1
 == DOS support
 
+// +3DOS {{{2
 === +3DOS
 
+// Summary {{{3
 ==== Summary
 
 include::doc.README.linked.adoc[tags=plus3dos_support_summary]
 
+// Rationale {{{3
 ==== Rationale
 
 +3DOS uses 16 KiB of banked memory, but their features and API are
 excellent and very well documented.
 
+// G+DOS {{{2
 === G+DOS
 
+// Summary {{{3
 ==== Summary
 
 include::doc.README.linked.adoc[tags=gplusdos_support_summary]
 
+// Rationale {{{3
 ==== Rationale
 
 G+DOS was the first target (in fact, the only planned target at the
@@ -56,12 +66,15 @@ projects in Solo Forth, because of its excellent features:
 - Big disk capacity (800 KiB for Forth blocks or 780 KiB for files).
 - It uses only the RAM of the Plus D interface.
 
+// TR-DOS {{{2
 === TR-DOS
 
+// Summary {{{3
 ==== Summary
 
 include::doc.README.linked.adoc[tags=trdos_support_summary]
 
+// Rationale {{{3
 ==== Rationale
 
 TR-DOS is much <<_blockspeed,slower than +3DOS and G+DOS>>, it uses
@@ -70,14 +83,15 @@ capacity of its disks is smaller (636 KiB of useful space, either for
 Forth blocks or files), but it haves some interesting features:
 
 - TR-DOS can handle 4 disk drives. This makes it an interesting choice
-  in some cases. For example, to compile a program from the third
-  drive, using the library on the second drive during the process, and
-  also reading or manipulating the files on the first drive (for
+  in some cases. For example, to compile a program from the fourth
+  drive, using the library on the second and third drives during the process,
+  while reading or manipulating the files on the first drive (for
   example, graphics); or just to use a total of 2544 Forth blocks
   (``636 4 *``).
 - TR-DOS is used by Pentagon and Scorpion, the powerful Russian clones
   of ZX Spectrum.
 
+// Comparative of DOS support {{{2
 === Comparative of DOS support
 
 The following table shows the main disk-management words implemented
@@ -146,6 +160,7 @@ on each DOS.
 |===
 
 [id=_blockspeed]
+// Comparative of block access speed {{{2
 === Comparative of block access speed
 
 ////////////////////////////////////////////////////////////////
@@ -223,6 +238,7 @@ http://fuse-emulator.sourceforge.net[Fuse emulator], on a Raspberry Pi
 | Pentagon 512    |          | TR-DOS | 528
 |===
 
+// Download {{{1
 == Download
 
 Solo Forth can be downloaded from two sites:
@@ -238,16 +254,20 @@ Solo Forth can be downloaded from two sites:
 - http://programandala.net/en.program.solo_forth.html[Solo Forth home page]
 - http://github.com/programandala-net/solo-forth[Solo Forth repository in GitHub,role="external"]
 
+// Directory tree {{{1
 // == Directory tree
 
 include::doc.README.linked.adoc[tags=tree]
 
+// Disks {{{1
 // == Disks
 
 include::doc.README.linked.adoc[tags=disks]
 
+// About the disk image formats {{{2
 === About the disk image formats
 
+// DSK {{{3
 ==== DSK
 
 The DSK disk image format, used for +3DOS and other systems, is quite
@@ -259,6 +279,7 @@ because it must contain the disk specification, even for sector-level
 access.  Since the size of a sector is 512 B, only one Forth block is
 lost because of this restriction.
 
+// MGT {{{3
 ==== MGT
 
 The MGT disk image file format (used for G+DOS disks) does not include
@@ -274,6 +295,7 @@ All this means the MGT disk images actually are identical to Forth
 block files, as used by modern Forth systems.  Therefore, for example,
 they can be browsed with a Forth block editor.
 
+// TRD {{{3
 ==== TRD
 
 Also the TRD disk images, one of the formats used for TR-DOS disk
@@ -288,14 +310,17 @@ the following restriction: blocks 0..3 will be shown as garbage (they
 are track 0 of the disk), while the actual first Forth block of the
 disk (block 0) will be shown as block 4.
 
+// How to run {{{1
 // == How to run
 
 include::doc.README.linked.adoc[tags=run]
 
+// Library {{{1
 // == Library
 
 include::doc.README.linked.adoc[tags=library]
 
+// Library index {{{2
 === Library index
 
 The `need` word and its related words search the index line (line 0)
@@ -347,6 +372,7 @@ indexes the blocks on the fly, when they are searched the first time.
 This indexer was included in Solo Forth 0.12.0 but it's not finished
 yet.
 
+// How to search the source files {{{2
 === How to search the source files
 
 Three simple one-line wrapper scripts are included to search the Forth
@@ -371,10 +397,11 @@ tools/search_library "\-bank"
 tools/search_library "code\s+\S+\s+\("
 ----
 
+// How to use more than one block disk {{{1
 == How to use more than one block disk
 
 The programs included in disk 2, and the tests and benchmarks included
-in disk 3, need to load words from the library, which is in disk 1.
+in disk 3, need to load words from the library, which is in disk(s) 1.
 Therefore, both disk drives must be configured first as block drives,
 using `2-block-drives`.
 
@@ -397,7 +424,7 @@ disk 1:
 
 When `2-block-drives` is executed, the blocks of the first two disk
 drives are seen as one single set, i.e. ``200 list`` will list block
-200 from the first disk, but ``750 list`` will list the block from the
+200 from the first disk, but ``850 list`` will list the block from the
 second disk:
 
 .Range of blocks per drive in normal order
@@ -426,6 +453,7 @@ configure any number of block drives in any order. Examples:
 ----
 
 [id=_test]
+// How to test and benchmark {{{1
 == How to test and benchmark
 
 Besides many little specific tests and benchmarks used during the
@@ -433,33 +461,63 @@ development of Solo Forth probably not interesting for the application
 programmer, disk image number 3 (called "workbench") contains also and
 adapted version of the Hayes test and some known benchmarks.
 
-First, in order to access disk image number 3, follow these steps:
+// First, set the required block disks {{{2
+=== First, set the required block disks
+
+// On G+DOS {{{3
+==== On G+DOS
 
 . <<_run,Run Solo Forth>> or enter `cold` to start from scratch.
-. "Insert" the file <disks/\*/disk_1_library.\*> (the <<_disks,actual
-  subdirectory and filename>> depend on your DOS) into the first disk
-  drive of your emulated machine, if it's not already "inserted".
-. "Insert" the file <disks/\*/disk_3_workbench.\*> (the
-  <<_disks,actual subdirectory and filename>> depend on your DOS) into
-  the second disk drive of your emulated machine, if it's not already
-  "inserted".
+. "Insert" the file <disks/gplusdos/disk_1_library.mgt> into disk drive 1 of
+  your emulated machine.
+. "Insert" the file <disks/gplusdos/disk_3_workbench.mgt> into disk drive 2 of
+  your emulated machine.
 . Enter command ``1 load`` to load the ``need`` tool.
-. Enter command ``need 2-block-drives`` to set the first two disk drives
-  as block drives, in their normal order.
+. Enter command ``need 2-block-drives`` to set both disk drives as block drives
+  in their normal order, making `need` search both of them: first drive 1 (the
+  library), then drive 2 (the benchmarks and tests).  Note ``need
+  2-block-drives`` not only loads the word `2-block-drives`, but also executes
+  it. This is equivalent to the command ``need set-block-drives 2 1 2
+  set-block-drives``
 
-Now the first two disk drives are used as block drives, and `need`
-will search both of them in the normal order: first the first one (the
-library), then the second one (the benchmarks and tests).
+// On +3DOS {{{3
+==== On +3DOS
 
-Note ``need 2-block-drives`` not only loads the word `2-block-drives`,
-but also executes it. This is equivalent to the following commands:
+. <<_run,Run Solo Forth>> or enter `cold` to start from scratch.
+. "Insert" the file <disks/plus3dos/disk_1_library.dsk> into the disk drive 'A'
+  of your emulated machine.
+. "Insert" the file <disks/plus3dos/disk_3_workbench.dsk> into the disk drive
+  'B' of your emulated machine.
+. Enter command ``1 load`` to load the ``need`` tool.
+. Enter command ``need 2-block-drives`` to set both disk drives as block drives
+  in their normal order, making `need` search both of them: first drive 'A'
+  (the library), then drive 'B' (the benchmarks and tests).  Note ``need
+  2-block-drives`` not only loads the word `2-block-drives`, but also executes
+  it. This is equivalent to the command ``need set-block-drives 'B' 'A' 2
+  set-block-drives``
 
-- On G+DOS: ``need set-block-drives 2 1 2 set-block-drives``
-- On TR-DOS: ``need set-block-drives 1 0 2 set-block-drives``
-- On +3DOS: ``need set-block-drives 'B' 'A' 2 set-block-drives``
+// On TR-DOS {{{3
+==== On TR-DOS
 
-Second, depending on the code you want to run, enter the corresponding
-command:
+. <<_run,Run Solo Forth>> or enter `cold` to start from scratch.
+. "Insert" the files <disks/trdos/disk_1a_library.trd> and
+  <disks/trdos/disk_1b_library.trd> into drives 'A' and 'B' respectively of
+  your emulated machine.
+. "Insert" the file <disks/trdos/disk_3_workbench.trd> into disk drive 'C' of
+  your emulated machine.
+. Enter command ``1 load`` to load the ``need`` tool.
+. Enter command ``need 3-block-drives`` to set the first three disk drives as
+  block drives, in their normal order, making `need` search all of them: first
+  drive 'A'/0 (the first part of the library), then drive 'B'/1 (the second
+  part of the library), and finally drive 'C'/2 (the benchmarks and tests) Note
+  ``need 3-block-drives`` not only loads the word `3-block-drives`, but also
+  executes it. This is equivalent to the command ``need set-block-drives 2 1 0
+  3 set-block-drives``.
+
+// Second, load the desired code {{{2
+=== Second, load the desired code
+
+Depending on the code you want to run, enter the corresponding command:
 
 . ``need hayes-test``
 . ``need byte-magazine-benchmark``
@@ -468,22 +526,22 @@ command:
 . ``need all-benchmarks`` to run all the three benchmarks above
 
 [id=_write]
+// How to write Forth programs {{{1
 == How to write Forth programs
 
 // XXX TODO --
 
 Briefly, the steps of cross development are the following:
 
-to be used as the last step of the development
-process, i.e. to compile and debug a Forth program on a ZX Spectrum
-emulator.
-
-. Edit the sources of the Forth program on the host operating system.
+. Edit the sources of the Forth program on the host operating system, using the
+  simple FSB format described in the documentation of
+  http://programandala.net/en.program.fsb.html[fsb] and
+  http://programandala.net/en.program.fsb2.html[fsb2].
 . Convert the sources into Forth block disk images using
   http://programandala.net/en.program.fsb2.html[fsb2].
-. <<_run,Run Solo Forth>> on a ZX Spectrum emulator and compile the
-  Forth program from the disk image. Further testing and debugging can
-  be done in the Forth system.
+. <<_run,Run Solo Forth>> on a ZX Spectrum emulator and compile the Forth
+  program from the disk image. Further testing and debugging can be done in the
+  Forth system.
 
 In order to use Solo Forth to write programs for ZX Spectrum,
 programmers already acquainted with Forth and GNU/Linux systems can
@@ -492,7 +550,7 @@ Forth.
 
 The only difference between <<_rebuild,building Solo Forth>> and
 building a Forth program is the content of disk 0 (the boot disk), if
-needed, and the library modules included in disk 1 (the library disk),
+needed, and the library modules included in library disk,
 which usually also contains the source of the program.  If the program
 does not need to use the disk at run-time, you can simply copy the
 default disk 0, and boot it to load your program from block 1 of your
@@ -525,6 +583,7 @@ program development with Solo Forth.
 // to your home <~/.vim/> directory.
 
 [id=_rebuild]
+// How to rebuild Solo Forth {{{1
 == How to rebuild Solo Forth
 
 If you modify the sources, you have to build new disk images for your
@@ -552,6 +611,9 @@ images or the manual for your DOS of choice:
 The disk images will be created in the <disks> directory. The manual
 will be created in the <doc> directory.
 
+// Notation {{{1
 == Notation
 
 // =============================================================
+
+// vim: foldmethod=marker
