@@ -1,13 +1,13 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-06-05
+:revdate: 2018-06-10
 :toc:
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 201806051615
+// Last modified: 201806101359
 
 // tag::description[]
 
@@ -16,13 +16,21 @@
 
 Solo Forth is a modern http://forth-standard.org[standard
 Forth,role="external"] system under development for the ZX Spectrum
-128 and compatible computers, with disk drives.
+128 and compatible computers, with disk drives.  Solo Forth can not
+run on the original ZX Spectrum 48, but it may be used to develop
+Forth programs that machine.
 
 Solo Forth can be used as a stand-alone Forth system on a ZX Spectrum
 emulator or the real computer. Nevertheless, its goal is the cross
 development of Forth programs using a ZX Spectrum emulator on a
 GNU/Linux operating system (in theory, other type of operating system
 could be used as well).
+
+.Minimum requirements
+- 128 KiB RAM
+- One double-sided high-density disk drive (two
+  recommended)footnote:[The original single-sided low-density disk
+  drives provided by the ZX Spectrum +3 are not supported.]
 
 // Main features {{{1
 == Main features
@@ -74,58 +82,54 @@ http://programandala.net/en.program.black_flag.html[Black Flag].
 // tag::computers[]
 
 [id=_computers]
-// Supported computers and disk operating systems {{{1
-== Supported computers and disk operating systems
+// Platforms {{{1
+== Platforms
 
-Solo Forth needs a ZX Spectrum 128 or compatible computer with at
-least one disk drive.  It can not run on the original ZX Spectrum 48,
-but it could be used to develop Forth programs for it.
-
-.Supported computers and disk operating systems
+.Supported platforms
 |===
 | Computer        | Disk interface        | DOS
 
+| Pentagon 1024   |                       | TR-DOS
 | Pentagon 128    |                       | TR-DOS
 | Pentagon 512    |                       | TR-DOS
-| Pentagon 1024   |                       | TR-DOS
 | Scorpion ZS 256 |                       | TR-DOS
-| ZX Spectrum 128 | Beta 128              | TR-DOS
-| ZX Spectrum 128 | Plus D                | G+DOS
 | ZX Spectrum +2  | Beta 128              | TR-DOS
 | ZX Spectrum +2  | Plus D                | G+DOS
 | ZX Spectrum +2A | (External disk drive) | +3DOS
 | ZX Spectrum +2B | (External disk drive) | +3DOS
 | ZX Spectrum +3  |                       | +3DOS
 | ZX Spectrum +3e |                       | +3DOS
+| ZX Spectrum 128 | Beta 128              | TR-DOS
+| ZX Spectrum 128 | Plus D                | G+DOS
 |===
-
-// end::computers[]
-
-// Future targets {{{2
-=== Future targets
-
-The DOS support in Solo Forth is modular, so in theory it would not be
-too difficult to support also other DOS in future versions. There are
-some ideas:
 
 Porting the G+DOS version of Solo Forth to its close relatives GDOS,
 Beta DOS and Uni-DOS will require only minor changes, beside adding
-some library code to benefit from their specific features.
+some library code to support their specific features.
 
-Supporting a more powerful and modern DOS like
+Supporting
 http://www.worldofspectrum.org/zxplus3e/technical.html[IDEDOS,role="external"],
 http://www.worldofspectrum.org/residos/[ResiDOS,role="external"],
-http://esxdos.org[esxDOS,role="external"] and
-http://specnext.com[NextOS] would not be trivial, but would let Solo
-Forth use hard drives, flash cards, and a lot of memory, beside many
-other new features.
+http://esxdos.org[esxDOS,role="external"] or
+http://specnext.com[NextOS,role="external"] will let Solo Forth use
+hard drives, flash cards, and a lot of memory.
 
-Porting the G+DOS version of Solo Forth to http://worldofsam.org[SAM
-Coupé,role="external"] (the powerful quite compatible cousin of ZX
-Spectrum) would not be a trivial task, because of the quite different
-OS and memory bank switching, but feasible.
+.Planned supported platforms
+|===
+| Computer                      | Disk interface               | DOS      | Priority
 
-At the time of writing the *planned ports are IDEDOS and NextOS*.
+| ZX Evolution TS-Conf          |                              | TR-DOS   | Low
+| ZX Spectrum +3e               | divIDE/ZXATASP/ZXCF/ZXMMC... | IDEDOS   | Medium
+| ZX Spectrum +3e               | divIDE/ZXATASP/ZXCF/ZXMMC... | ResiDOS  | Low
+| ZX Spectrum 128/+2            | DISCiPLE                     | GDOS     | Low
+| ZX Spectrum 128/+2            | DISCiPLE/Plus D              | Uni-DOS  | Low
+| ZX Spectrum 128/+2            | Plus D                       | Beta DOS | Low
+| ZX Spectrum 128/+2/+2A/+2B/+3 | divIDE/ZXATSP/ZXCF/ZXMMC...  | esxDOS   | Low
+| ZX Spectrum Next              |                              | NextOS   | High
+| ZX-Uno                        |                              | esxDOS   | Low
+|===
+
+// end::computers[]
 
 // Summary of the DOS support {{{2
 === Summary of the DOS support
