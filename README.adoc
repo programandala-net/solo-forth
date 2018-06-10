@@ -7,7 +7,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 201806101359
+// Last modified: 201806101659
 
 // tag::description[]
 
@@ -16,9 +16,10 @@
 
 Solo Forth is a modern http://forth-standard.org[standard
 Forth,role="external"] system under development for the ZX Spectrum
-128 and compatible computers, with disk drives.  Solo Forth can not
-run on the original ZX Spectrum 48, but it may be used to develop
-Forth programs that machine.
+128 and compatible computers, with disk drives.
+
+Solo Forth can not run on the original ZX Spectrum 48, but it may be
+used to develop Forth programs for that machine.
 
 Solo Forth can be used as a stand-alone Forth system on a ZX Spectrum
 emulator or the real computer. Nevertheless, its goal is the cross
@@ -32,16 +33,14 @@ could be used as well).
   recommended)footnote:[The original single-sided low-density disk
   drives provided by the ZX Spectrum +3 are not supported.]
 
-// Main features {{{1
-== Main features
-
+.Main features
 - Fast DTC (Direct Threaded Code) implementation.
 - A kernel as small as possible.
-- Dictionary in banked memory, separated from code and data space.
+- Name space in banked memory, separated from code and data space.
 - Transparent access to banked memory.
 - Big <<_library,library>> of useful source code.
 - Modular <<_computers,DOS support>>.
-- Documented source code.
+- Fully documented source code.
 - Detailed documentation.
 
 // end::description[]
