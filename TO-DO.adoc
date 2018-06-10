@@ -891,7 +891,6 @@ NOTE: Milestone: 0.14.0
 - Since htmldoc is not used anymore, restore the graphic tree in section
   _Project directories_. 
 - Confirm corrupted links with backslash and remove the corresponding note.
-- Move section _Comparative of block access speed_ to the benchmarks module.
 
 === 2018-06-05, 2018-06-09
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041121
+  \ Last modified: 201806101707
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -49,6 +49,85 @@ need ticks need timer
   \ Date       Times  1-line    multiline Note
   \ ---------- -----  --------  --------- -------------------
   \ 2018-06-03     1      1716          ? Multiline freezes
+
+( block-bench )
+
+  \
+
+  \ ////////////////////////////////////////////////////////////////
+
+  \ // XXX OLD
+
+  \ In order to compare the block access speed on every platform, the
+  \ following code was executed with disk 1 (library) in the first drive
+  \ and disk 2 (programs) in the second drive:
+
+  \ ---
+  \ 1 load need dtimer
+  \ dticks need 2-block-drives need edit-sound dtimer
+  \ ---
+
+  \ The test was run several times on every platform, and the fastest
+  \ result was noted.
+
+  \ Final results as of 2018-04-09, from fastest to slowest:
+
+  \ // XXX REMARK -- 2018-04-10: The results are wrong, because TR-DOS is
+  \ // actually the slowest system. It seems the ticks clock is not
+  \ // properly updated by TR-DOS. The test has to be repeated with a real
+  \ // clock.
+
+  \ |===
+  \ | Computer        | Interface| DOS    | Ticks
+
+  \ | Pentagon 128    |          | TR-DOS | 11056
+  \ | Pentagon 1024   |          | TR-DOS | 11480
+  \ | Pentagon 512    |          | TR-DOS | 11526
+  \ | Scorpion ZS 256 |          | TR-DOS | 12395
+  \ | ZX Spectrum 128 | Beta 128 | TR-DOS | 14754
+  \ | ZX Spectrum +2  | Beta 128 | TR-DOS | 14774
+  \ | ZX Spectrum +2  | Plus D   | G+DOS  | 19018
+  \ | ZX Spectrum 128 | Plus D   | G+DOS  | 19778
+  \ | ZX Spectrum +3e |          | +3DOS  | 24347
+  \ | ZX Spectrum +3  |          | +3DOS  | 24505
+  \ |===
+
+  \ ////////////////////////////////////////////////////////////////
+
+  \ The following table compares the block access speed on different
+  \ platforms.
+
+  \ The ticks clock can not be used for the tests, because it's not
+  \ regulary updated by the DOS during disk operations. A chronometer
+  \ watch was used instead.  The following line of code was executed with
+  \ disk 1 (library) in the first drive and disk 2 (programs) in the
+  \ second drive:
+
+  \ ----
+  \ 1 load 4 border need 2-block-drives need edit-sound 2 border
+  \ ----
+
+  \ The tests were done running Solo Forth on the
+  \ http://fuse-emulator.sourceforge.net[Fuse emulator], on a Raspberry Pi
+  \ 2 with Raspbian, at c. 700% the speed of the original machines.
+
+  \ 2018-04-10:
+
+  \ .Block access speed test in seconds
+  \ |===
+  \ | Computer        | Interface| DOS    | Seconds
+
+  \ | ZX Spectrum +3  |          | +3DOS  | 100
+  \ | ZX Spectrum +3e |          | +3DOS  | 101
+  \ | ZX Spectrum +2  | Plus D   | G+DOS  | 119
+  \ | ZX Spectrum 128 | Plus D   | G+DOS  | 121
+  \ | Scorpion ZS 256 |          | TR-DOS | 506
+  \ | ZX Spectrum 128 | Beta 128 | TR-DOS | 510
+  \ | ZX Spectrum +2  | Beta 128 | TR-DOS | 515
+  \ | Pentagon 128    |          | TR-DOS | 519
+  \ | Pentagon 1024   |          | TR-DOS | 523
+  \ | Pentagon 512    |          | TR-DOS | 528
+  \ |===
 
 ( >in-bench )
 
@@ -3270,5 +3349,8 @@ need bench{ need }bench.
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2018-06-10: Move the block access speed results from the
+  \ manual.
 
   \ vim: filetype=soloforth
