@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201806042155
+# Last modified: 201806122023
 # See change loge at the end of the file.
 
 # ==============================================================
@@ -55,6 +55,9 @@
 # 	http://programandala.net/en.program.mkmgt.html
 
 # sort (from the GNU coreutils)
+
+# tap2dsk (from taptools, by John Elliott)
+#		http://www.seasip.info/ZX/unix.html
 
 # zmakebas (by Russell Marks)
 #   Usually included in Linux distros. Also see:
@@ -114,7 +117,7 @@ trdos: trdosdisks
 
 .PHONY: trdosdisks
 trdosdisks: \
-	t128 \
+	trdos128 \
 	pentagon \
 	scorpion
 
@@ -126,7 +129,10 @@ trdosblockdisks: \
 	disks/trdos/disk_3_workbench.trd
 
 .PHONY: t128
-t128: \
+t128: trdos128
+
+.PHONY: trdos128
+trdos128: \
 	disks/trdos/disk_0_boot.trd \
 	trdosblockdisks
 
@@ -1121,3 +1127,7 @@ oldbackup:
 # flags notation document.
 #
 # 2018-06-04: Split the TR-DOS library into two disks.
+#
+# 2018-06-10: Rename TR-DOS phony recipes.
+#
+# 2018-06-12: Add taptools to the list of requirements.

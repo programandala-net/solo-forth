@@ -9,7 +9,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201806101707
+// Last modified 201806102152
 
 toc::[]
 
@@ -473,8 +473,8 @@ Forth.
 
 The only difference between <<_rebuild,building Solo Forth>> and
 building a Forth program is the content of disk 0 (the boot disk), if
-needed, and the library modules included in library disk,
-which usually also contains the source of the program.  If the program
+needed, and the library modules included in the library disk,
+which usually also contains the source of the program at the end.  If the program
 does not need to use the disk at run-time, you can simply copy the
 default disk 0, and boot it to load your program from block 1 of your
 customized disk 1, with a simple ``1 load``. When the loading
@@ -521,15 +521,15 @@ images or the manual for your DOS of choice:
 [%autowidth]
 .Commands to rebuild Solo Forth
 |===
-| DOS    | Computers         | Disk images                     | Documentation
+| DOS    | Computers         | Disk images                       | Documentation
 
-| All    | All               | ``make all`` or ``make``        | ``make doc``
-| +3DOS  | All               | ``make plus3dos`` or ``make p`` | ``make plus3dosdoc`` or ``make pdoc``
-| G+DOS  | All               | ``make gplusdos`` or ``make g`` | ``make gplusdosdoc`` or ``make gdoc``
-| TR-DOS | 128-KiB models    | ``make t128``                   |
-| TR-DOS | All               | ``make trdos`` or ``make t``    | ``make trdosdoc`` or ``make tdoc``
-| TR-DOS | Pentagon 512/1024 | ``make pentagon``               |
-| TR-DOS | Scorpion ZS 256   | ``make scorpion``               |
+| All    | All               | ``make all`` or ``make``          | ``make doc``
+| +3DOS  | All               | ``make plus3dos`` or ``make p``   | ``make plus3dosdoc`` or ``make pdoc``
+| G+DOS  | All               | ``make gplusdos`` or ``make g``   | ``make gplusdosdoc`` or ``make gdoc``
+| TR-DOS | 128-KiB models    | ``make trdos128`` or ``make t128` |
+| TR-DOS | All               | ``make trdos`` or ``make t``      | ``make trdosdoc`` or ``make tdoc``
+| TR-DOS | Pentagon 512/1024 | ``make pentagon``                 |
+| TR-DOS | Scorpion ZS 256   | ``make scorpion``                 |
 |===
 
 The disk images will be created in the <disks> directory. The manual
