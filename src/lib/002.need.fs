@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041342
+  \ Last modified: 201806162303
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -241,7 +241,7 @@ defer unlocated ( block -- )
   \
   \ multiline-(located ( ca len -- block | 0 ) "multiline-paren-located"
   \
-  \ Locate the first block whose multiline-header header
+  \ Locate the first block whose multiline header
   \ contains the string _ca len_ (surrounded by spaces), and
   \ return its number. If not found, return zero.  The search
   \ is case-sensitive.
@@ -525,7 +525,7 @@ defer need ( "name" -- )
   \ `use-default-located`, which is an optional word.
 
 blk @ 1+ dup default-first-locatable !  first-locatable !
-  \ Set the default first block searche by `(locate)`.
+  \ Set the default first block searched by `(locate`.
 
 ( use-default-need use-default-located use-no-index )
 
@@ -863,5 +863,7 @@ unneeding need-here ?(
   \ 2018-06-04: Update: remove trailing closing paren from word
   \ names. Fix typo in documentation. Link `variable` and
   \ `2variable` in documentation.
+  \
+  \ 2018-06-16: Fix typos in documentation and comments.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806051612
+  \ Last modified: 201806160036
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -283,24 +283,19 @@ need ?drives need -block-drives need block-drive!
 
 unneeding get-block-drives ?( need block-drive@
 
-: get-block-drives ( -- c#n..c#1 n )
+: get-block-drives ( -- c#n..c#1 n | 0 )
   #block-drives c@
   dup 0 ?do dup i - 1- block-drive@ swap loop ; ?)
 
   \ doc{
   \
-  \ get-block-drives ( -- c#n..c#1 n )
+  \ get-block-drives ( -- c#n..c#1 n | 0 )
   \
   \ Get the current configuration of block drives, as
-  \ configured by `
+  \ configured by `set-block-drives`.
   \
-  \ to the drives specified by drive identifiers _c#n..c#1_.
-  \ Subsequently drive _c#1_ will be searched first for
-  \ blocks, from block 0 to `blocks/disk` minus one, and so on.
-  \
-  \ If _n_ is zero, no drive is used for blocks.
-  \
-  \ See: `-block-drives`, `#block-drives`, `block-drive!`.
+  \ See: `2-block-drives`, `-block-drives`, `#block-drives`,
+  \ `block-drive!`.
   \
   \ }doc
 
@@ -361,5 +356,8 @@ unneeding get-block-drives ?( need block-drive@
   \ 2018-04-16: Improve description of _ior_ notation.
   \
   \ 2018-06-05: Improve documentation.
+  \
+  \ 2018-06-16: Fix and improve documentation of
+  \ `get-block-drives`.
 
   \ vim: filetype=soloforth
