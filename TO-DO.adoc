@@ -882,6 +882,14 @@ Improve tab control.
 // Documentation {{{1
 == Documentation
 
+=== 2018-06-16
+
+NOTE: Milestone: 0.14.0
+
+- Convert the definition lists of exception codes into tables.
+- Remove the OS exception codes? They are supported only because some of them
+  may be returned by G+DOS commands. At least, explain this.
+
 === 2018-06-09
 
 NOTE: Milestone: 0.14.0
@@ -1010,11 +1018,6 @@ ____
 
 Fix: Glossary cross references to Forth words that contain a
 backslash, or that are included in code examples, are corrupted.
-
-=== 2017-03-15
-
-Add exception codes to the manual, by including and filtering the
-corresponding library modules.
 
 === 2017-03-04
 
@@ -1166,6 +1169,9 @@ get-drive . \ but now the current drive is number 2
 
 === 2017-03-12, 2017-03-13
 
+// NOTE: Milestone: 0.14.0
+// XXX TODO -- Remove from 0.14.0
+
 Support block files?
 
 Block files can be supported easily on +3DOS (already done on
@@ -1201,6 +1207,8 @@ the _dosior_ in the factor, returning to `next`, and using
 Study if `flush` should be added to `set-drive`.
 
 === 2017-02-05
+
+NOTE: Milestone: 0.14.0
 
 Unify G+DOS `transfer-sector` and TR-DOS `transfer-sectors`. Make
 their behaviour and names identical. Write the +3DOS version too.
@@ -1470,9 +1478,13 @@ Fix: Use standard exception code #-13 (undefined word) in
 `interpret-table` instead of more specific #-256 (not a word nor a
 number).
 
-=== 2017-05-05
+=== 2017-05-05, 2018-06-16
+
+NOTE: Milestone: 0.14.0
 
 Use term "throw code" instead of "exception code"?
+
+"throw value" is used in Forth-2012.
 
 === 2016-11-27
 
@@ -1757,10 +1769,10 @@ Test `break?`.
 
 New: command history, stored in the names bank.
 
-=== 2015-06-07
+=== 2015-06-07, 2018-06-16
 
-Change: move key to the blocks, as `mode-key` or similar, and use a
-simpler `key` (`akey` from Afera).
+Change: move `key` to the library, as `mode-key` or similar, and use a simpler
+`key` in the kernel (e.g. `akey` from Afera).
 
 === 2015-06-30
 
@@ -2447,9 +2459,11 @@ Check `need-here`: `needed-word 2!` is duplicated. Compare with
 
 Extract a common factor from `need-here` and `locate-needed`?
 
-=== 2017-02-12
+=== 2017-02-12, 2018-06-16
 
-Idea for a faster version of `(locate)`: Load only the first sector of
+NOTE: Milestone: 0.14.0
+
+Idea for a faster version of `(located`: Load only the first sector of
 the blocks, and do the search directly in the buffer, without the
 `line>string` step. It will be faster, but it's lower level and may
 give problems with recursion.

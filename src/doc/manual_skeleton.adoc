@@ -1,6 +1,6 @@
 = Solo Forth %VERSION% %DOS%
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-06-10
+:revdate: 2018-06-16
 :toc:
 :toclevels: 1
 :toc-placement!:
@@ -534,6 +534,26 @@ images or the manual for your DOS of choice:
 
 The disk images will be created in the <disks> directory. The manual
 will be created in the <doc> directory.
+
+// Exception codes {{{1
+== Exception codes
+
+The `throw` values -255..-1 are used only as assigned by the Forth-2012
+standard.  The values -4095..-256 are reserved by Solo Forth.
+
+Programs shall not define values for use with `throw` in the range -4095..-1.
+
+=== +3DOS
+
+include::doc.plus3dos.exception_codes.adoc[]
+
+=== G+DOS
+
+include::doc.gplusdos.exception_codes.adoc[]
+
+=== TR-DOS
+
+include::doc.trdos.exception_codes.adoc[]
 
 // Notation {{{1
 == Notation

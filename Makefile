@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201806122023
+# Last modified: 201806162344
 # See change loge at the end of the file.
 
 # ==============================================================
@@ -187,7 +187,7 @@ cleantmp:
 
 .PHONY: cleandoc
 cleandoc:
-	-rm -f doc/*.html doc/*.pdf doc/*.pdf.* doc/*.docbook doc/*.epub tmp/doc.* 
+	-rm -f doc/*.html doc/*.pdf doc/*.pdf.* doc/*.docbook doc/*.epub tmp/doc.*
 
 .PHONY: doc
 doc: gplusdosdoc plus3dosdoc trdosdoc
@@ -200,6 +200,11 @@ pdoc: plus3dosdoc
 
 .PHONY: tdoc
 tdoc: trdosdoc
+
+# ==============================================================
+# Debug
+
+# .PHONY: try
 
 # ==============================================================
 # Kernel
@@ -446,11 +451,12 @@ disks/trdos/disk_0_boot.pentagon_1024.trd: tmp/disk_0_boot.trdos.pentagon_1024.t
 # Source file lists
 
 #not_ready = src/lib/meta.test.forth2012-test-suite.fs
-not_ready = 
+not_ready =
 
 lib_files = $(sort $(wildcard src/lib/*.fs))
 dos_lib_files = $(sort $(wildcard src/lib/dos.*.fs))
 prog_lib_files = $(sort $(wildcard src/lib/prog.*.fs))
+exception_codes_lib_files = $(sort $(wildcard src/lib/exception.codes.*.fs))
 
 meta_lib_files = $(filter-out $(not_ready),$(sort $(wildcard src/lib/meta.*.fs)))
 
@@ -465,17 +471,27 @@ core_lib_files = \
 	$(filter-out \
 			$(not_ready) $(prog_lib_files) $(meta_lib_files), \
 			$(lib_files))
+
 no_dos_core_lib_files = \
 	$(filter-out $(dos_lib_files), $(core_lib_files))
 
 gplusdos_core_lib_files = \
-	$(filter-out %trdos.fs %plus3dos.fs , $(core_lib_files))
+	$(filter-out %idedos.fs %plus3dos.fs %trdos.fs, $(core_lib_files))
 
 plus3dos_core_lib_files = \
-	$(filter-out %trdos.fs %gplusdos.fs, $(core_lib_files))
+	$(filter-out %gplusdos.fs %idedos.fs %trdos.fs, $(core_lib_files))
 
 trdos_core_lib_files = \
-	$(filter-out %gplusdos.fs %plus3dos.fs, $(core_lib_files))
+	$(filter-out %gplusdos.fs %idedos.fs %plus3dos.fs, $(core_lib_files))
+
+gplusdos_exception_codes_lib_files = \
+	$(filter-out %idedos.fs %plus3dos.fs %trdos.fs , $(exception_codes_lib_files))
+
+plus3dos_exception_codes_lib_files = \
+	$(filter-out %gplusdos.fs %idedos.fs %trdos.fs, $(exception_codes_lib_files))
+
+trdos_exception_codes_lib_files = \
+	$(filter-out %gplusdos.fs %idedos.fs %plus3dos.fs, $(exception_codes_lib_files))
 
 # ==============================================================
 # Block files
@@ -671,6 +687,12 @@ tmp/doc.z80_flags_notation.linked.adoc: src/doc/z80_flags_notation.adoc
 tmp/doc.README.linked.adoc: README.adoc
 	glosara --annex $< > $@
 
+# XXX OLD -- Not used:
+tmp/doc.exception_codes.adoc: $(exception_codes_lib_files)
+	grep --no-filename "^#-[0-9]\+\s[\]\s[[:print:]]" $^ | \
+	sed -e "1s/^/\[horizontal]\n/" -e "s/[\]/::/" \
+	> $@
+
 %.docbook: %.adoc
 	asciidoctor --backend=docbook --out-file=$@ $<
 
@@ -717,9 +739,15 @@ tmp/doc.gplusdos.files.txt: \
 	$(gplusdos_core_lib_files)
 	ls -1 $^ > $@
 
+tmp/doc.gplusdos.exception_codes.adoc: $(gplusdos_exception_codes_lib_files)
+	grep --no-filename "^#-[0-9]\+\s[\]\s[[:print:]]" $^ | \
+	sed -e "1s/^/\[horizontal]\n/" -e "s/[\]/::/" \
+	> $@
+
 tmp/doc.gplusdos.manual_skeleton.adoc: \
 	src/doc/manual_skeleton.adoc \
 	src/version.z80s \
+	tmp/doc.gplusdos.exception_codes.adoc \
 	tmp/doc.README.linked.adoc
 	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
 	sed -e "s/%DOS%/G+DOS/" -e "s/%VERSION%/$${version}/" $< > $@
@@ -784,9 +812,15 @@ tmp/doc.plus3dos.files.txt: \
 	$(plus3dos_core_lib_files)
 	ls -1 $^ > $@
 
+tmp/doc.plus3dos.exception_codes.adoc: $(plus3dos_exception_codes_lib_files)
+	grep --no-filename "^#-[0-9]\+\s[\]\s[[:print:]]" $^ | \
+	sed -e "1s/^/\[horizontal]\n/" -e "s/[\]/::/" \
+	> $@
+
 tmp/doc.plus3dos.manual_skeleton.adoc: \
 	src/doc/manual_skeleton.adoc \
 	src/version.z80s \
+	tmp/doc.plus3dos.exception_codes.adoc \
 	tmp/doc.README.linked.adoc
 	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
 	sed -e "s/%DOS%/+3DOS/" -e "s/%VERSION%/$${version}/" $< > $@
@@ -831,9 +865,15 @@ tmp/doc.trdos.files.txt: \
 	$(trdos_core_lib_files)
 	ls -1 $^ > $@
 
+tmp/doc.trdos.exception_codes.adoc: $(trdos_exception_codes_lib_files)
+	grep --no-filename "^#-[0-9]\+\s[\]\s\w" $^ | \
+	sed -e "1s/^/\[horizontal]\n/" -e "s/[\]/::/" \
+	> $@
+
 tmp/doc.trdos.manual_skeleton.adoc: \
 	src/doc/manual_skeleton.adoc \
 	src/version.z80s \
+	tmp/doc.trdos.exception_codes.adoc \
 	tmp/doc.README.linked.adoc
 	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
 	sed -e "s/%DOS%/TR-DOS/" -e "s/%VERSION%/$${version}/" $< > $@
@@ -888,7 +928,7 @@ oldbackup:
 		*.txt
 
 # ==============================================================
-# Makefile variables cheat sheet 
+# Makefile variables cheat sheet
 
 # $@ = the name of the target of the rule
 # $< = the name of the first prerequisite
@@ -1094,40 +1134,40 @@ oldbackup:
 # 	https://sites.google.com/site/zxgraph/home/einar-saukas/fonts
 # 	http://www.worldofspectrum.org/infoseekid.cgi?id=0027130
 
-# 2017-07-22: Add DocBook and EPUB experimental versions of the
-# manual.
+# 2017-07-22: Add DocBook and EPUB experimental versions of the manual.
 #
 # 2017-12-05: Don't make a +3DOS 180 KiB boot disk anymore.
 #
 # 2017-12-07: Fix rule of +3DOS boot disk.
 #
-# 2018-02-27: Move editors from the library disk to the games
-# disk and rename it, because the library didn't fit a TR-DOS
-# disk image.
+# 2018-02-27: Move editors from the library disk to the games disk and rename
+# it, because the library didn't fit a TR-DOS disk image.
 #
-# 2018-03-10: Add `not_ready` to exclude modules under
-# development. Needed for
-# <src/lib/meta.test.forth2012-test-suite.fs>, which is being
-# adapted.
+# 2018-03-10: Add `not_ready` to exclude modules under development. Needed for
+# <src/lib/meta.test.forth2012-test-suite.fs>, which is being adapted.
 #
-# 2018-04-05: Remove the old code that made the disks
-# containing also the library. Fix name of TR-DOS disk 1.
+# 2018-04-05: Remove the old code that made the disks containing also the
+# library. Fix name of TR-DOS disk 1.
 #
-# 2018-04-07: Update after the renaming of program modules
-# (games, block editors and `edit-sound`).
+# 2018-04-07: Update after the renaming of program modules (games, block
+# editors and `edit-sound`).
 #
-# 2018-04-10: Replace `htmldoc` with `asciidoctor-pdf` for
-# making the PDF versions of the manual.
+# 2018-04-10: Replace `htmldoc` with `asciidoctor-pdf` for making the PDF
+# versions of the manual.
 #
 # 2018-04-11: Create gzipped PDF.
 #
-# 2018-04-17: Link the Forth words of the manual to the
-# glossary, using the new `--annex` option of Glosara. Fix:
-# make the +3DOS and TR-DOS manuals depend also on the Z80
-# flags notation document.
+# 2018-04-17: Link the Forth words of the manual to the glossary, using the new
+# `--annex` option of Glosara. Fix: make the +3DOS and TR-DOS manuals depend
+# also on the Z80 flags notation document.
 #
 # 2018-06-04: Split the TR-DOS library into two disks.
 #
 # 2018-06-10: Rename TR-DOS phony recipes.
 #
 # 2018-06-12: Add taptools to the list of requirements.
+#
+# 2018-06-15: Prepare the list of exception codes that will be included in the
+# manual.
+#
+# 2018-06-16: Finish the exception codes lists.
