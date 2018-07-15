@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041124
+  \ Last modified: 201807151417
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -356,7 +356,7 @@ code 3* ( x1 -- x2 )
   \
   \ }doc
 
-( polarity <=> )
+( polarity <=> min>top max>top pair= )
 
 unneeding polarity ?(
 
@@ -417,6 +417,62 @@ unneeding <=>
   \ If _n1_ is greater than _n2_, return positive one.
   \
   \ See: `polatiry`, `<`, `=`, `>`.
+  \
+  \ }doc
+
+unneeding min>top
+
+?\ : min>top ( n1 n2 -- n1 n2 | n2 n1 ) 2dup min >r max r> ;
+
+  \ Credit:
+  \
+  \ Code from Galope.
+
+  \ doc{
+  \
+  \ min>top ( n1 n2 -- n1 n2 | n2 n1 )
+  \
+  \ Make sure the top of stack is the lesser of _n1_ and _n2_.
+  \
+  \ See: `max>top`, `pair=`.
+  \
+  \ }doc
+
+unneeding max>top
+
+?\ : max>top ( n1 n2 -- n1 n2 | n2 n1 ) 2dup max >r min r> ;
+
+  \ Credit:
+  \
+  \ Code from Galope.
+
+  \ doc{
+  \
+  \ max>top ( n1 n2 -- n1 n2 | n2 n1 )
+  \
+  \ Make sure the top of stack is the greater of _n1_ and _n2_.
+  \
+  \ See: `min>top`, `pair=`.
+  \
+  \ }doc
+
+unneeding pair= ?( need max>top
+
+: pair= ( x1 x2 x3 x4 -- f ) 2>r max>top 2r> max>top d= ; ?)
+
+  \ Credit:
+  \
+  \ Code from Galope.
+
+  \ doc{
+  \
+  \ pair= ( x1 x2 x3 x4 -- f )
+  \
+  \ _f_ is true if and only if _x1 x2_ is the same pair as _x3
+  \ x4_, i.e. both components of the each pair are in the other
+  \ pair, no matter the order.
+  \
+  \ See: `str<>`, `min>top`, `max>top`.
   \
   \ }doc
 
@@ -1349,5 +1405,7 @@ code join ( b1 b2 -- x )
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2018-07-15: Add `min>top`, `max>top`, `pair=`.
 
   \ vim: filetype=soloforth
