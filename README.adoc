@@ -1,6 +1,6 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-06-10
+:revdate: 2018-07-20
 :toc:
 :linkattrs:
 
@@ -386,7 +386,7 @@ DOS commands.
 === Pentagon 128
 
 1. Run a ZX Spectrum emulator and select a Pentagon
-   128footnote:[diskformat,Make sure the disk drives are configured as
+   128footnoteref:[diskformat,Make sure the disk drives are configured as
    double-sided and 80-track].
 2. "Insert" the disk image file <disks/trdos/disk_0_boot.trd> as disk
    'A'.
