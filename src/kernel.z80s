@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201806101009
+; Last modified: 201807202341
 
 include version.z80s
 
@@ -7618,8 +7618,8 @@ source.other:
 ; : allot ( n -- ) dp +! ;
 ; ----
 
-; Origin: fig-Forth, Forth-79, Forth-83 (Required Word Set),
-; Forth-94 (CORE), Forth-2012 (CORE).
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; See: `alloted`, `dp`, here`, `reserve`.
 ;
@@ -13993,8 +13993,8 @@ if.do:
 ; : spaces ( n -- ) bl swap emits ;
 ; ----
 
-; Origin: fig-Forth, Forth-79, Forth-83 (Required Word Set),
-; Forth-94 (CORE), Forth-2012 (CORE).
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; See: `space`, `bl`, `emits`.
 ;

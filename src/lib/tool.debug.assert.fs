@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modifed: 201806041324
+  \ Last modified: 201807202342
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -144,7 +144,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \ Origin: Gforth.
   \
   \ See: `assert-level`, `assert(`, `assert0(`, `assert2(`,
-  \ assert3(`, `)`.
+  \ `assert3(`, `)`.
   \
   \ }doc
 
@@ -246,5 +246,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names. Link `variable` in documentation.
+  \
+  \ 2018-07-20: Fix typo in documentation markup.
 
   \ vim: filetype=soloforth
