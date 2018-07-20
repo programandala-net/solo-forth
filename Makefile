@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201806162344
+# Last modified: 201807201635
 # See change loge at the end of the file.
 
 # ==============================================================
@@ -687,12 +687,6 @@ tmp/doc.z80_flags_notation.linked.adoc: src/doc/z80_flags_notation.adoc
 tmp/doc.README.linked.adoc: README.adoc
 	glosara --annex $< > $@
 
-# XXX OLD -- Not used:
-tmp/doc.exception_codes.adoc: $(exception_codes_lib_files)
-	grep --no-filename "^#-[0-9]\+\s[\]\s[[:print:]]" $^ | \
-	sed -e "1s/^/\[horizontal]\n/" -e "s/[\]/::/" \
-	> $@
-
 %.docbook: %.adoc
 	asciidoctor --backend=docbook --out-file=$@ $<
 
@@ -741,8 +735,13 @@ tmp/doc.gplusdos.files.txt: \
 
 tmp/doc.gplusdos.exception_codes.adoc: $(gplusdos_exception_codes_lib_files)
 	grep --no-filename "^#-[0-9]\+\s[\]\s[[:print:]]" $^ | \
-	sed -e "1s/^/\[horizontal]\n/" -e "s/[\]/::/" \
-	> $@
+	sed -e "s/^/| /" -e "s/[\]/|/" -e "1s/^/\|===\n/" \
+	> $@ && \
+	echo "|===" >> $@
+
+#	XXX FIXME -- 2018-07-20:
+#	sed -e "s/^/| /" -e "s/[\]/|/" -e "1s/^/\|===OPEN\n/" -e "/$$/s/$$/\n|===CLOSE/" \
+# XXX REMARK -- `echo` was used instead.
 
 tmp/doc.gplusdos.manual_skeleton.adoc: \
 	src/doc/manual_skeleton.adoc \
@@ -814,8 +813,9 @@ tmp/doc.plus3dos.files.txt: \
 
 tmp/doc.plus3dos.exception_codes.adoc: $(plus3dos_exception_codes_lib_files)
 	grep --no-filename "^#-[0-9]\+\s[\]\s[[:print:]]" $^ | \
-	sed -e "1s/^/\[horizontal]\n/" -e "s/[\]/::/" \
-	> $@
+	sed -e "s/^/| /" -e "s/[\]/|/" -e "1s/^/\|===\n/" \
+	> $@ && \
+	echo "|===" >> $@
 
 tmp/doc.plus3dos.manual_skeleton.adoc: \
 	src/doc/manual_skeleton.adoc \
@@ -866,9 +866,10 @@ tmp/doc.trdos.files.txt: \
 	ls -1 $^ > $@
 
 tmp/doc.trdos.exception_codes.adoc: $(trdos_exception_codes_lib_files)
-	grep --no-filename "^#-[0-9]\+\s[\]\s\w" $^ | \
-	sed -e "1s/^/\[horizontal]\n/" -e "s/[\]/::/" \
-	> $@
+	grep --no-filename "^#-[0-9]\+\s[\]\s[[:print:]]" $^ | \
+	sed -e "s/^/| /" -e "s/[\]/|/" -e "1s/^/\|===\n/" \
+	> $@ && \
+	echo "|===" >> $@
 
 tmp/doc.trdos.manual_skeleton.adoc: \
 	src/doc/manual_skeleton.adoc \
@@ -1171,3 +1172,5 @@ oldbackup:
 # manual.
 #
 # 2018-06-16: Finish the exception codes lists.
+#
+# 2018-07-20: Convert exception codes into tables instead of definition lists.
