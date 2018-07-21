@@ -9,7 +9,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201807211715
+// Last modified 201807212204
 
 toc::[]
 
@@ -814,6 +814,11 @@ The `throw` values -255..-1 are used only as assigned by the Forth-2012
 standard.  The values -4095..-256 are reserved by Solo Forth.
 
 Programs shall not define values for use with `throw` in the range -4095..-1.
+
+NOTE: By default, only the exception code is displayed by an uncatched `throw`,
+because the default action of `.throw` is `.throw#`. In order to display also
+the error description, `.throw-message` must be loaded from the
+<<_library,library>>.
 
 ifdef::plus3dos[]
 
