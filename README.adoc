@@ -7,7 +7,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 201807211906
+// Last modified: 201807212055
 
 // Description {{{1
 == Description
@@ -17,7 +17,7 @@
 Solo Forth is a modern http://forth-standard.org[standard
 Forth,role="external"] system under development for the ZX Spectrum
 128 and compatible computers, with disk drives and a supported DOS:
-+3DOS, G+DOS, or TR-DOS
++3DOS, G+DOS, or TR-DOS.
 
 Solo Forth can not run on the original ZX Spectrum 48, but it may be
 used to develop Forth programs for that machine.

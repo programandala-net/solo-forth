@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201807212019
+# Last modified: 201807212033
 # See change loge at the end of the file.
 
 # ==============================================================
@@ -720,12 +720,12 @@ doc/gplusdos_solo_forth_manual.pdf.gz: doc/gplusdos_solo_forth_manual.pdf
 doc/gplusdos_solo_forth_manual.pdf: \
 	tmp/doc.gplusdos.manual.adoc \
 	README.adoc
-	asciidoctor-pdf --attribute=gplusdos --out-file=$@ $<
+	asciidoctor-pdf --attribute=gplusdos --attribute=dosname=G+DOS --out-file=$@ $<
 
 doc/gplusdos_solo_forth_manual.html: \
 	tmp/doc.gplusdos.manual.adoc \
 	README.adoc
-	asciidoctor --attribute=gplusdos --out-file=$@ $<
+	asciidoctor --attribute=gplusdos --attribute=dosname=G+DOS --out-file=$@ $<
 
 tmp/doc.gplusdos.files.txt: \
 	src/kernel.z80s \
@@ -749,7 +749,7 @@ tmp/doc.gplusdos.manual_skeleton.adoc: \
 	tmp/doc.gplusdos.exception_codes.adoc \
 	tmp/doc.README.linked.adoc
 	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
-	sed -e "s/%DOS%/G+DOS/" -e "s/%VERSION%/$${version}/" $< > $@
+	sed -e "s/%VERSION%/$${version}/" $< > $@
 
 # Preserve the links in the DocBook source by removing the
 # enclosing <literal> tags:
@@ -798,12 +798,12 @@ doc/plus3dos_solo_forth_manual.pdf.gz: doc/plus3dos_solo_forth_manual.pdf
 doc/plus3dos_solo_forth_manual.pdf: \
 	tmp/doc.plus3dos.manual.adoc \
 	README.adoc
-	asciidoctor-pdf --attribute=plus3dos --out-file=$@ $<
+	asciidoctor-pdf --attribute=plus3dos --attribute=dosname=+3DOS --out-file=$@ $<
 
 doc/plus3dos_solo_forth_manual.html: \
 	tmp/doc.plus3dos.manual.adoc \
 	README.adoc
-	asciidoctor --attribute=plus3dos --out-file=$@ $<
+	asciidoctor --attribute=plus3dos --attribute=dosname=+3DOS --out-file=$@ $<
 
 tmp/doc.plus3dos.files.txt: \
 	src/kernel.z80s \
@@ -823,7 +823,7 @@ tmp/doc.plus3dos.manual_skeleton.adoc: \
 	tmp/doc.plus3dos.exception_codes.adoc \
 	tmp/doc.README.linked.adoc
 	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
-	sed -e "s/%DOS%/+3DOS/" -e "s/%VERSION%/$${version}/" $< > $@
+	sed -e "s/%VERSION%/$${version}/" $< > $@
 
 tmp/doc.plus3dos.manual.adoc: \
 	tmp/doc.plus3dos.manual_skeleton.linked.adoc \
@@ -850,14 +850,14 @@ doc/trdos_solo_forth_manual.pdf.gz: doc/trdos_solo_forth_manual.pdf
 doc/trdos_solo_forth_manual.pdf: \
 	tmp/doc.trdos.manual.adoc \
 	README.adoc
-	asciidoctor-pdf --attribute=trdos --out-file=$@ $<
+	asciidoctor-pdf --attribute=trdos --attribute=dosname=TR-DOS --out-file=$@ $<
 
 #	asciidoctor --require=asciidoctor-pdf --backend=pdf --out-file=$@ $<
 
 doc/trdos_solo_forth_manual.html: \
 	tmp/doc.trdos.manual.adoc \
 	README.adoc
-	asciidoctor --attribute=trdos --out-file=$@ $<
+	asciidoctor --attribute=trdos --attribute=dosname=TR-DOS --out-file=$@ $<
 
 tmp/doc.trdos.files.txt: \
 	src/kernel.z80s \
@@ -877,7 +877,7 @@ tmp/doc.trdos.manual_skeleton.adoc: \
 	tmp/doc.trdos.exception_codes.adoc \
 	tmp/doc.README.linked.adoc
 	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
-	sed -e "s/%DOS%/TR-DOS/" -e "s/%VERSION%/$${version}/" $< > $@
+	sed -e "s/%VERSION%/$${version}/" $< > $@
 
 tmp/doc.trdos.manual.adoc: \
 	tmp/doc.trdos.manual_skeleton.linked.adoc \
@@ -1177,4 +1177,5 @@ oldbackup:
 #
 # 2018-07-21: Add `--attribute DOS` to Asciidoctor commands, to build the
 # manuals using Asciidoctor's conditional preprocessor directives. Add
-# `[%autowidth] to the tables of exception codes.
+# `[%autowidth] to the tables of exception codes. Set an Asciidoctor attribute
+# "dosname" instead of replacing the "%DOS%" mark with `sed`.

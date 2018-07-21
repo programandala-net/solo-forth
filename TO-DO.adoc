@@ -897,8 +897,6 @@ NOTE: Milestone: 0.14.0
 
 NOTE: Milestone: 0.14.0
 
-- Replace "%DOS%" label with Asciidoctor attribute `{dosname}`, set by the
-  command-line option `--attribute`.
 - Update the `make-thru-index` test in the manual.
 
 === 2018-06-16

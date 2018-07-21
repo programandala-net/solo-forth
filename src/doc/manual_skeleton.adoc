@@ -5,7 +5,6 @@
 :toclevels: 1
 :toc-placement!:
 :linkattrs:
-:dosname: %DOS%
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
