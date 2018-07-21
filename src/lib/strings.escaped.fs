@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041324
+  \ Last modified: 201807212115
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -342,7 +342,8 @@ need max-esc-order
   \ ?esc-order ( n -- ) "question-esc-order"
   \
   \ Check if _n_ is a valid size for the escaped strings search
-  \ order, else throw an exception.
+  \ order, else `throw` an exception #-281 ("escaped strings
+  \ search-order overflow").
   \
   \ See: `#esc-order`, `esc-context`, `>esc-order`,
   \ `set-esc-order`, `get-esc-order`.
@@ -539,5 +540,7 @@ need parse-char need char>string
   \
   \ 2018-06-04: Update: remove trailing closing paren from word
   \ names. Link `variable` and `constant` in documentation.
+  \
+  \ 2018-07-21: Improve documentation, linking `throw`.
 
   \ vim: filetype=soloforth

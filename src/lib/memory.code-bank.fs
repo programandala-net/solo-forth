@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201709091154
+  \ Last modified: 201807212117
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -18,7 +18,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
 
   \ ===========================================================
   \ License
@@ -51,7 +51,8 @@ variable code-bank#  3 code-bank# !
 
 : ?bank ( -- ) bank-start here u< #-276 ?throw ;
   \ If the dictionary has reached the zone of memory banks,
-  \ throw error #-276; else do nothing.  This check is required
+  \ `throw` an exception #-276 ("dictionary reached the zone of
+  \ memory banks") ; else do nothing.  This check is required
   \ after compiling code that manipulates memory banks.
 
 : code-bank-caller ( i*x a "name" -- j*x )
@@ -74,5 +75,7 @@ variable code-bank#  3 code-bank# !
   \ been moved to the library.
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
+  \
+  \ 2018-07-21: Improve documentation, linking `throw`.
 
   \ vim: filetype=soloforth

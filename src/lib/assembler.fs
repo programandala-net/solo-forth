@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modifed: 201806041324
+  \ Last modified: 201807212104
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -541,7 +541,7 @@ unneeding ?rel
   \
   \ ?rel ( n -- ) "question-rel"
   \
-  \ If assembler relative branch _n_ is too long, throw
+  \ If assembler relative branch _n_ is too long, `throw`
   \ exception #-269 (relative jump too long).
   \
   \ }doc
@@ -776,5 +776,7 @@ set-current
   \ word names.
   \
   \ 2018-06-04: Link `variable` in documentation.
+  \
+  \ 2018-07-21: Improve documentation, linking `throw`.
 
   \ vim: filetype=soloforth

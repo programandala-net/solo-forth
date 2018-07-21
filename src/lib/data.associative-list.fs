@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201807212110
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -67,8 +67,8 @@ need search-wordlist
   \ item ( ca len wid -- i*x )
   \
   \ If _ca len_ is an item of the `associative-list` _wid_,
-  \ return its value _i*x_; else throw exception -13,
-  \ "undefined word".
+  \ return its value _i*x_; else `throw` an exception #-13
+  \ ("undefined word").
   \
   \ See: `item?`.  `entry:`, `centry:`, `2entry:`, `sentry:`,
   \ `items`.
@@ -201,5 +201,7 @@ unneeding items ?exit need alias need wordlist-words
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-07-21: Improve documentation, linking `throw`.
 
   \ vim: filetype=soloforth

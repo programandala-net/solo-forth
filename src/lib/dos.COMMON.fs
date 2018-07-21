@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806160036
+  \ Last modified: 201807212111
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -63,7 +63,7 @@ unneeding ?drive# ?(
   \ ?drive# ( u -- ) "question-drive-hash"
   \
   \ If _u_ is greater than the maximum number of disk drives,
-  \ throw exception #-35 ("invalid block number").
+  \ `throw` an exception #-35 ("invalid block number").
   \
   \ See: `(>drive-block`, `block-drives`, `?block-drive`,
   \ `?drives`.
@@ -78,11 +78,10 @@ unneeding ?block-drive
   \
   \ ?block-drive# ( u -- ) "question-block-drive-hash"
   \
-  \ If _u_ is `not-block-drive`, throw exception #-35 ("invalid
-  \ block number").
+  \ If _u_ is `not-block-drive`, `throw` an exception #-35
+  \ ("invalid block number").
   \
-  \ See: `(>drive-block`, `block-drives`, `?drive#`,
-  \ `?drives`.
+  \ See: `(>drive-block`, `block-drives`, `?drive#`, `?drives`.
   \
   \ }doc
 
@@ -244,7 +243,7 @@ unneeding ?drives
   \ ?drives ( n -- ) "question-drives"
   \
   \ If _n_ is greater than the maximum number of disk drives,
-  \ throw exception #-287 ("wrong number of drives").
+  \ `throw` an exception #-287 ("wrong number of drives").
   \
   \ See: `set-block-drives`.  `?block-drive`, `?drive#`.
   \
@@ -359,5 +358,7 @@ unneeding get-block-drives ?( need block-drive@
   \
   \ 2018-06-16: Fix and improve documentation of
   \ `get-block-drives`.
+  \
+  \ 2018-07-21: Improve documentation, linking `throw`.
 
   \ vim: filetype=soloforth

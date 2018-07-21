@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091536
+  \ Last modified: 201807212109
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -160,8 +160,8 @@ unneeding } ?( need <=
   \ } ( a1 n -- a2 ) "right-curly-bracket"
   \
   \ If in range, return address _a2_ of the _n_ item of the
-  \ 1-cell array _a1_.  Otherwise throw error #-272 (array
-  \ index out of range).
+  \ 1-cell array _a1_.  Otherwise `throw` an exception #-272
+  \ ("array index out of range").
   \
   \ See: `1array`, `array>items`.
   \
@@ -223,5 +223,7 @@ unneeding 2array ?( need } need align
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-09: Update notation "address units" to "bytes".
+  \
+  \ 2018-07-21: Improve documentation, linking `throw`.
 
   \ vim: filetype=soloforth

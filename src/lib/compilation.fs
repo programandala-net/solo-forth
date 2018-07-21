@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041340
+  \ Last modified: 201807212109
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -338,7 +338,7 @@ unneeding '' ?( need need-here need-here name>>
   \ '' ( "name" -- xtp ) "tick-tick"
   \
   \ If _name_ is found in the current search order, return its
-  \ execution-token pointer _xtp_, else throw an exception.
+  \ execution-token pointer _xtp_, else `throw` an exception.
   \
   \ Since aliases share the execution token of their original
   \ word, it's not possible to get the name of an alias from
@@ -366,7 +366,7 @@ unneeding [''] ?( need need-here need-here ''
 
   \
   \ If _name_ is found in the current search order, compile its
-  \ execution-token pointer as a literal, else throw an
+  \ execution-token pointer as a literal, else `throw` an
   \ exception.
   \
   \ ``['']`` is an `immediate` and `compile-only` word.
@@ -725,8 +725,8 @@ unneeding ?pairs ?\ : ?pairs ( x1 x2 -- ) <> #-22 ?throw ;
   \
   \ ?pairs ( x1 x2 -- ) "question-pairs"
   \
-  \ If _x1_ not equals _x2_ throw error #-22 (control structure
-  \ mismatch).
+  \ If _x1_ not equals _x2_ `throw` an exception #-22 (control
+  \ structure mismatch).
   \
   \ }doc
 
@@ -953,8 +953,8 @@ unneeding exec ?(
   \ exec ( "name" -- i*x )
   \
   \ Parse _name_.  If "name" is the name of a word in the
-  \ current search order, `execute` it; else throw exception
-  \ #-13.
+  \ current search order, `execute` it; else `throw` an
+  \ exception #-13 ("undefined word").
   \
   \ See: `defined`, `name>`.
   \
@@ -1177,8 +1177,8 @@ unneeding warn.throw ?( need ?warn
   \ Alternative action for the deferred word `warn`.  If the
   \ contents of the user variable `warnings` is not zero and
   \ the word name _ca len_ is already defined in the current
-  \ compilation word list, display `throw` error #-257, without
-  \ actually throwing an error.
+  \ compilation word list, display a `throw` exception #-257,
+  \ without actually throwing an exception.
   \
   \ See: `warnings`, `warn-throw`, `warn.message`, `?warn`.
   \
@@ -1218,8 +1218,8 @@ unneeding warn-throw ?( need ?warn
   \ Alternative action for the deferred word `warn`.  If the
   \ contents of the user variable `warnings` is not zero and
   \ the word name _ca len_ is already defined in the current
-  \ compilation word list, throw error #-257 instead of
-  \ printing a warning message.
+  \ compilation word list, `throw` an exception #-257 instead
+  \ of printing a warning message.
   \
   \ See: `warnings`, `warn.throw`, `warn.message`, `?warn`.
   \
@@ -1469,5 +1469,7 @@ unneeding warn-throw ?( need ?warn
   \
   \ 2018-06-04: Update: remove trailing closing paren from word
   \ names.  Link `user` in documentation.
+  \
+  \ 2018-07-21: Improve documentation, linking `throw`.
 
   \ vim: filetype=soloforth

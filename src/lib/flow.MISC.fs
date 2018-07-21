@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041132
+  \ Last modified: 201807212112
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -309,8 +309,8 @@ unneeding ?? ?(
   \ Compilation:
   \
   \ Parse _name_ and search the current search order for it.
-  \ If not found, throw exception #-13. If found and it's an
-  \ `immediate` word, execute it, else compile it.
+  \ If not found, `throw` an exception #-13. If found and it's
+  \ an `immediate` word, execute it, else compile it.
   \
   \ Run-time:
   \
@@ -696,5 +696,7 @@ unneeding orif ?(
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2018-07-21: Improve documentation, linking `throw`.
 
   \ vim: filetype=soloforth

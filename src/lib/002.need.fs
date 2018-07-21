@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806162303
+  \ Last modified: 201807212100
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -339,7 +339,7 @@ defer reneeded ( ca len -- )
   \ reneeded ( ca len -- )
   \
   \ Load the first block whose header contains the string _ca
-  \ len_ (surrounded by spaces).  If not found, throw an
+  \ len_ (surrounded by spaces).  If not found, `throw` an
   \ exception #-268 ("needed, but not located").
   \
   \ This is a deferred word whose default action is
@@ -357,7 +357,7 @@ defer reneeded ( ca len -- )
   \
   \ Locate the first block whose header contains the string _ca
   \ len_ (surrounded by spaces), and `load` it. If not found,
-  \ throw an exception #-268 ("needed, but not located").
+  \ `throw` an exception #-268 ("needed, but not located").
   \
   \ This is the default action of the deferred word
   \ `reneeded`.
@@ -389,7 +389,7 @@ defer reneed ( "name" -- )  defer needed ( ca len -- )
   \ If the string _ca len_ is not the name of a word found in
   \ the current search order, load the first block where _ca
   \ len_ is included in the block header (surrounded by
-  \ spaces).  If not found, throw an exception #-268 ("needed,
+  \ spaces).  If not found, `throw` an exception #-268 ("needed,
   \ but not located").
   \
   \ This is a deferred word whose default action is
@@ -407,7 +407,7 @@ defer reneed ( "name" -- )  defer needed ( ca len -- )
   \ locate-reneed ( "name" -- )
   \
   \ Locate the first block whose header contains _name_
-  \ (surrounded by spaces), and load it.  If not found, throw
+  \ (surrounded by spaces), and load it.  If not found, `throw`
   \ an exception #-268 ("needed, but not located").
   \
   \ This is the default action of the deferred word `reneed`.
@@ -462,7 +462,7 @@ defer reneed ( "name" -- )  defer needed ( ca len -- )
   \ If the string _ca len_ is not the name of a word found in
   \ the current search order, locate the first block where _ca
   \ len_ is included in the block header (surrounded by
-  \ spaces), and load it.  If not found, throw an exception
+  \ spaces), and load it.  If not found, `throw` an exception
   \ #-268 ("needed, but not located").
   \
   \ This is the default action of the deferred word `needed`.
@@ -480,7 +480,7 @@ defer need ( "name" -- )
   \ If _name_ is not found in the current search order, locate
   \ the first block where _name_ is included is the block
   \ header (surrounded by spaces), and load it.  If not found,
-  \ throw an exception #-268 ("needed, but not located").
+  \ `throw` an exception #-268 ("needed, but not located").
   \
   \ This is a deferred word whose default action is
   \ `locate-need`.
@@ -498,7 +498,7 @@ defer need ( "name" -- )
   \ If _name_ is not found in the current search order, locate
   \ the first block where _name_ is included is the block
   \ header (surrounded by spaces), and load it.  If not found,
-  \ throw an exception #-268 ("needed, but not located").
+  \ `throw` an exception #-268 ("needed, but not located").
   \
   \ This is the default action of the deferred word `need`.
   \
@@ -636,7 +636,7 @@ unneeding need-from ?( need locate
   \
   \ Locate the first block whose header contains _name_
   \ (surrounded by spaces), and set it the first one `located`
-  \ will search from. If not found, throw an exception #-268
+  \ will search from. If not found, `throw` an exception #-268
   \ ("needed, but not located").
   \
   \ ``need-from`` is intended to prevent undesired name clashes
@@ -865,5 +865,7 @@ unneeding need-here ?(
   \ `2variable` in documentation.
   \
   \ 2018-06-16: Fix typos in documentation and comments.
+  \
+  \ 2018-07-21: Improve documentation, linking `throw`.
 
   \ vim: filetype=soloforth

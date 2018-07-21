@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041109
+  \ Last modified: 201807212116
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -82,7 +82,8 @@ unneeding parse-all ?( : parse-all ( "ccc" -- ca len )
   \ Parse _name_ and return it as string _ca len_ within the
   \ input buffer. If the parse area is empty, use `refill` to
   \ fill it from the input source. If the input source is
-  \ exhausted, throw exception #-289 (input source exhausted).
+  \ exhausted, `throw` an exception #-289 ("input source
+  \ exhausted").
   \
   \ See: `parse-name`, `parse`.
   \
@@ -323,5 +324,7 @@ unneeding word ?(
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2018-07-21: Improve documentation, linking `throw`.
 
   \ vim: filetype=soloforth

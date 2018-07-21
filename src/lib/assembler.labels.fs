@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041734
+  \ Last modified: 201807212105
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -252,7 +252,7 @@ init-labels ' init-labels ' init-asm defer!
   or free-l-ref dup 0= #-285 ?throw tuck c! 1+ ! ;
   \ Create a new reference _orig_ to label _n_ of type _b_
   \ (`rl-id` or `al-id`).  If all label references are in use,
-  \ throw exception #-285.
+  \ `throw` exception #-285.
 
 : >l ( b -- a )
   [ rl-id al-id or invert ] cliteral and labels @ array> ;
@@ -513,5 +513,7 @@ previous
   \ 2018-04-15: Fix markup in documentation.
   \
   \ 2018-06-04: Link `variable` in documentation.
+  \
+  \ 2018-07-21: Improve documentation, linking `throw`.
 
   \ vim: filetype=soloforth
