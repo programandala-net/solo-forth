@@ -1,22 +1,23 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-07-20
+:revdate: 2018-07-21
 :toc:
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 201806101659
-
-// tag::description[]
+// Last modified: 201807211906
 
 // Description {{{1
 == Description
 
+// tag::description[]
+
 Solo Forth is a modern http://forth-standard.org[standard
 Forth,role="external"] system under development for the ZX Spectrum
-128 and compatible computers, with disk drives.
+128 and compatible computers, with disk drives and a supported DOS:
++3DOS, G+DOS, or TR-DOS
 
 Solo Forth can not run on the original ZX Spectrum 48, but it may be
 used to develop Forth programs for that machine.
@@ -27,12 +28,12 @@ development of Forth programs using a ZX Spectrum emulator on a
 GNU/Linux operating system (in theory, other type of operating system
 could be used as well).
 
-.Minimum requirements
-- 128 KiB RAM
-- One double-sided 80-track disk drive (two
-  recommended).
+// end::description[]
 
-.Main features
+=== Main features
+
+// tag::mainfeatures[]
+
 - Fast DTC (Direct Threaded Code) implementation.
 - A kernel as small as possible.
 - Name space in banked memory, separated from code and data space.
@@ -42,7 +43,16 @@ could be used as well).
 - Fully documented source code.
 - Detailed documentation.
 
-// end::description[]
+// end::mainfeatures[]
+
+=== Minimum requirements
+
+// XXX REMARK -- These are generic requirements. The manual contains
+// more details, depending on the DOS.
+
+- 128 KiB RAM.
+- One double-sided 80-track disk drive (two or three recommended,
+  depending on the DOS).
 
 // tag::name[]
 
@@ -52,10 +62,10 @@ could be used as well).
 
 // end::name[]
 
-// tag::history[]
-
 // History and current status {{{1
 == History and current status
+
+// tag::history[]
 
 The development of Solo Forth started on 2015-05-30, from the
 http://programandala.net/en.program.abersoft_forth.html[disassembled
@@ -77,11 +87,11 @@ http://programandala.net/en.program.black_flag.html[Black Flag].
 
 // end::history[]
 
-// tag::platforms[]
-
 [id=_platforms]
 // Platforms {{{1
 == Platforms
+
+// tag::platforms[]
 
 [%autowidth]
 .Supported platforms
@@ -131,53 +141,11 @@ hard drives, flash cards, and a lot of memory.
 
 // end::platforms[]
 
-// Summary of the DOS support {{{2
-=== Summary of the DOS support
-
-// +3DOS {{{3
-==== +3DOS
-
-// tag::plus3dos_support_summary[]
-
-Block disks are fully supported, but most file-management words are
-not implemented yet, though standard Forth words are better supported
-than on G+DOS or TR-DOS.
-
-NOTE: Only double-sided 80-track disk drives (i.e. 720-KiB disks) are
-supported.  The original single-sided 40-track disk drives (173 KiB
-per disk side) provided by the ZX Spectrum +3 are not supported.
-
-// end::plus3dos_support_summary[]
-
-// G+DOS {{{3
-==== G+DOS
-
-// tag::gplusdos_support_summary[]
-
-Block disks are fully supported, but some file-management words are
-not implemented yet, especially the standard Forth words.
-
-// end::gplusdos_support_summary[]
-
-// TR-DOS {{{3
-==== TR-DOS
-
-// tag::trdos_support_summary[]
-
-Block disks are fully supported, but many file-management words are
-not implemented yet, especially the standard Forth words.
-
-NOTE: Only double-sided 80-track disk drives (i.e. 640-KiB disks) are
-supported for Forth blocks. Other formats can be used, but only for
-files.
-
-// end::trdos_support_summary[]
-
-// tag::tree[]
-
 [id=_tree]
 // Project directories {{{1
 == Project directories
+
+// tag::tree[]
 
 // XXX OLD -- This tree was created by ``tree``. The UTF-8 graphic
 // characters are ruined  by `htmldoc` in the PDF. `asciidoctor-pdf`
@@ -308,7 +276,7 @@ files.
 | disks       | gplusdos     | G+DOS disk images
 | disks       | plus3dos     | +3DOS disk images
 | disks       | trdos        | TR-DOS disk images
-| doc         |              | Documentation
+| doc         |              | Documentation: PDF and HTML manuals
 | make        |              | Files used by ``make`` to build the system
 | screenshots |              | Version screenshots
 | src         |              | Sources
@@ -326,7 +294,6 @@ files.
 
 // end::tree[]
 
-// tag::disks[]
 // Disks {{{1
 == Disks
 
@@ -353,34 +320,10 @@ following:
 | TR-DOS | trdos        | trd
 |===
 
-
-- Disk 0 is the boot disk. It contains the BASIC loader, the Solo
-  Forth binary, some addons (i.e. compiled code that is not part of
-  the library yet) and fonts for the supported screen modes.  Several
-  TR-DOS disk images are included, for specific models of Pentagon and
-  Scorpion computers (in a future version, one single disk will
-  contain all the executables, and the right one will be selected
-  automatically).
-- Disk 1 contains the library. Since TR-DOS disks are only 640 KiB,
-  its library is splitted into two disks: 1a and 1b.
-- Disk 2 contains some programs: little sample games, most of them
-  under development, two block editors and one sound editor.
-- Disk 3 contains tests and benchmarks. Most of them were used during
-  the development and their only documentation is the commented
-  source.
-
-WARNING: Disks 1, 2 and 3 are Forth block disks: They contain the
-source Forth blocks directly on the disk sectors, without any file
-system.  Therefore their contents can not be accessed with ordinary
-DOS commands.
-
-// end::disks[]
-
-// tag::run[]
-
-[id=_run]
 // How to run {{{1
 == How to run
+
+// tag::run_pentagon[]
 
 // Pentagon 128 {{{2
 === Pentagon 128
@@ -434,6 +377,10 @@ DOS commands.
 4. Press the '.' key to get the ``RUN`` command and press the Enter
    key.  Solo Forth will be loaded from disk.
 
+// end::run_pentagon[]
+
+// tag::run_scorpion[]
+
 // Scorpion ZS 256 {{{2
 === Scorpion ZS 256
 
@@ -444,8 +391,10 @@ DOS commands.
 3. Choose "128 TR DOS" from the computer start menu.  Solo Forth will
    be loaded from disk.
 
+// end::run_scorpion[]
+
 // ZX Spectrum +3/+3e {{{2
-=== ZX Spectrum +3/+3e
+== ZX Spectrum +3/+3e
 
 // XXX REMARK -- A problem with Asciidoctor makes the rendering of the
 // ZX Spectrum +3e link text fail. It seems the error condition has to
@@ -453,6 +402,12 @@ DOS commands.
 // presence of the link attribute. The result is the "+3e" part is
 // omited. Using ``{sp}`` to prevent the text from being splitted
 // fixes the problem.
+
+// tag::run_plus3[]
+
+// XXX REMARK -- This tag does not include the title, because this is
+// the only entry for +3DOS, and the computers are mentioned in item
+// 1:
 
 1. Run a ZX Spectrum emulator and select a ZX Spectrum +3 (or
    http://www.worldofspectrum.org/zxplus3e/[ZX
@@ -462,6 +417,10 @@ DOS commands.
    of the drive) as disk 'A'.
 3. Choose "Loader" from the computer start menu. Solo Forth will be
    loaded from disk.
+
+// end::run_plus3[]
+
+// tag::run_128_with_betadisk[]
 
 // ZX Spectrum 128/+2 with the Beta 128 interface {{{2
 === ZX Spectrum 128/+2 with the Beta 128 interface
@@ -477,8 +436,16 @@ DOS commands.
 5. Press the '.' key to get the ``RUN`` command and press the Enter
    key.  Solo Forth will be loaded from disk.
 
+// end::run_128_with_betadisk[]
+
 // ZX Spectrum 128/+2 with the Plus D interface {{{2
 === ZX Spectrum 128/+2 with the Plus D interface
+
+// tag::run_128_with_plusd[]
+
+// XXX REMARK -- This tag does not include the title, because this is
+// the only entry for +3DOS, and the computers are mentioned in item
+// 1:
 
 1. Run a ZX Spectrum emulator and select a ZX Spectrum 128 (or ZX
    Spectrum +2) with the Plus D disk interface.
@@ -488,9 +455,7 @@ DOS commands.
 4. Type ``run`` in BASIC. G+DOS will be loaded from disk, and Solo
    Forth as well.
 
-// end::run[]
-
-// tag::library[]
+// end::run_128_with_plusd[]
 
 [id=_library]
 // How to use the library {{{1
@@ -498,6 +463,8 @@ DOS commands.
 
 // On +3DOS {{{2
 === On +3DOS
+
+// tag::library_on_plus3dos[]
 
 // XXX TODO -- is `set-drive` needed?
 
@@ -511,8 +478,12 @@ DOS commands.
 4. Type ``need name``, were "name" is the name of the word or tool you
    want to load from the library.
 
+// end::library_on_plus3dos[]
+
 // On G+DOS {{{2
 === On G+DOS
+
+// tag::library_on_gplusdos[]
 
 1. <<_run,Run Solo Forth>>.
 2. "Insert" the file <disks/gplusdos/disk_1_library.mgt> as
@@ -525,8 +496,12 @@ DOS commands.
 4. Type ``need name``, were "name" is the name of the word or tool you
    want to load from the library.
 
+// end::library_on_gplusdos[]
+
 // On TR-DOS {{{2
 === On TR-DOS
+
+// tag::library_on_trdos[]
 
 1. <<_run,Run Solo Forth>>.
 2. "Insert" the file <disks/trdos/disk_1a_library.trd> as disk B of
@@ -549,25 +524,13 @@ DOS commands.
 4. Type ``need name``, were "name" is the name of the word or tool you
    want to load from the library.
 
-// end::library[]
+// end::library_on_trdos[]
 
 // Documentation {{{1
 == Documentation
 
 The <doc> directory contains one version of the manual for every DOS
-supported, in HTML and PDF formats.
-
-The manual, which is automatically built from the library and other
-files, is a work in progress. At the moment it contains only a
-description of the Forth system, the basic information required to use
-it and a complete glossary with cross references.
-
-The following improvements are planned for a future version:
-
-- A reference guide by subject, e.g. graphics, sound, blocks, files,
-  control flow structures, etc.
-- A description of the library modules.
-
-NOTE: Glossary cross references to Forth words that contain a
-backslash, or that are included in code examples, are corrupted. This
-problem will be fixed in a future version.
+supported, in HTML and PDF formats.  The manuals are built
+automatically from the sources and other files.  At the moment they
+contain a description of the Forth system, the basic information
+required to use it and a complete glossary with cross references.

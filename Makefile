@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201807201635
+# Last modified: 201807211904
 # See change loge at the end of the file.
 
 # ==============================================================
@@ -720,12 +720,12 @@ doc/gplusdos_solo_forth_manual.pdf.gz: doc/gplusdos_solo_forth_manual.pdf
 doc/gplusdos_solo_forth_manual.pdf: \
 	tmp/doc.gplusdos.manual.adoc \
 	README.adoc
-	asciidoctor-pdf --out-file=$@ $<
+	asciidoctor-pdf --attribute=gplusdos --out-file=$@ $<
 
 doc/gplusdos_solo_forth_manual.html: \
 	tmp/doc.gplusdos.manual.adoc \
 	README.adoc
-	asciidoctor --out-file=$@ $<
+	asciidoctor --attribute=gplusdos --out-file=$@ $<
 
 tmp/doc.gplusdos.files.txt: \
 	src/kernel.z80s \
@@ -798,12 +798,12 @@ doc/plus3dos_solo_forth_manual.pdf.gz: doc/plus3dos_solo_forth_manual.pdf
 doc/plus3dos_solo_forth_manual.pdf: \
 	tmp/doc.plus3dos.manual.adoc \
 	README.adoc
-	asciidoctor-pdf --out-file=$@ $<
+	asciidoctor-pdf --attribute=plus3dos --out-file=$@ $<
 
 doc/plus3dos_solo_forth_manual.html: \
 	tmp/doc.plus3dos.manual.adoc \
 	README.adoc
-	asciidoctor --out-file=$@ $<
+	asciidoctor --attribute=plus3dos --out-file=$@ $<
 
 tmp/doc.plus3dos.files.txt: \
 	src/kernel.z80s \
@@ -850,14 +850,14 @@ doc/trdos_solo_forth_manual.pdf.gz: doc/trdos_solo_forth_manual.pdf
 doc/trdos_solo_forth_manual.pdf: \
 	tmp/doc.trdos.manual.adoc \
 	README.adoc
-	asciidoctor-pdf --out-file=$@ $<
+	asciidoctor-pdf --attribute=trdos --out-file=$@ $<
 
 #	asciidoctor --require=asciidoctor-pdf --backend=pdf --out-file=$@ $<
 
 doc/trdos_solo_forth_manual.html: \
 	tmp/doc.trdos.manual.adoc \
 	README.adoc
-	asciidoctor --out-file=$@ $<
+	asciidoctor --attribute=trdos --out-file=$@ $<
 
 tmp/doc.trdos.files.txt: \
 	src/kernel.z80s \
@@ -1174,3 +1174,6 @@ oldbackup:
 # 2018-06-16: Finish the exception codes lists.
 #
 # 2018-07-20: Convert exception codes into tables instead of definition lists.
+#
+# 2018-07-21: Add `--attribute DOS` to Asciidoctor commands, to build the
+# manuals using Asciidoctor's conditional preprocessor directives.

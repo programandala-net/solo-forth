@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-07-20
+:revdate: 2018-07-21
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -882,29 +882,31 @@ Improve tab control.
 // Documentation {{{1
 == Documentation
 
+=== 2018-07-21
+
+NOTE: Milestone: 0.14.0
+
+- Update pronunciation of words in quotes, e.g. `"y"` should be
+  "quote-y-quote".
+- Add `[%autowidth]` markup to tables of exception codes.
+- Factor the setting of the library disks from section "How to use the
+  library", and link that part from "How to load a program that needs the
+  library" and "How to test and benchmark".
+
+=== 2018-07-20
+
+NOTE: Milestone: 0.14.0
+
+- Replace "%DOS%" label with Asciidoctor attribute `{dosname}`, set by the
+  command-line option `--attribute`.
+- Update the `make-thru-index` test in the manual.
+
 === 2018-06-16
 
 NOTE: Milestone: 0.14.0
 
 - Remove the OS exception codes? They are supported only because some of them
   may be returned by G+DOS commands. At least, explain this.
-
-=== 2018-06-09
-
-NOTE: Milestone: 0.14.0
-
-- Remove section _Summary of the DOS support_. Use the table of section
-  _Comparative of DOS support_ instead.
-- Confirm corrupted links with backslash and remove the corresponding note.
-
-=== 2018-06-05, 2018-06-09
-
-NOTE: Milestone: 0.14.0
-
-- Make a different version of the manual for every DOS, not only the glossary.
-  Use Asciidoctor's conditional preprocessor directives and the command-line
-  option `--attribute`.
-- Split sections _Disks_, _How to run_, _About the disk image formats_...
 
 === 2018-04-14
 
@@ -1214,6 +1216,12 @@ their behaviour and names identical. Write the +3DOS version too.
 
 // G+DOS {{{2
 === G+DOS ===
+
+==== 2018-07-21
+
+NOTE: Milestone: 0.14.0
+
+Fix `cat`. It always throws exception #-1022 (wrong drive).
 
 ==== 2018-04-07
 
