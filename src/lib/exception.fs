@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modifed: 201806041324
+  \ Last modified: 201807212130
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -169,7 +169,7 @@ unneeding warning?( ?( need string-parameter
   \ ----
   \ -n1 =    -90 ...    -1 \ Standard error codes
   \         -300 ...  -256 \ Solo Forth error codes
-  \        -1024 ... -1000 \ G+DOS error codes
+  \        -1024 ... -1000 \ DOS error codes
   \ +n2 =      1 ...   146
   \ ----
 
@@ -330,6 +330,8 @@ s" Standard error codes" located errors-block !
   \
   \ 2018-06-04: Update: remove trailing closing paren from word
   \ names.  Link `variable` in documentation.
+  \
+  \ 2018-07-21: Fix typo in documentation of `error>ordinal`.
 
   \ vim: filetype=soloforth
 

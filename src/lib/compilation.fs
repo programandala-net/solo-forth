@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201807212109
+  \ Last modified: 201807212141
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1177,8 +1177,9 @@ unneeding warn.throw ?( need ?warn
   \ Alternative action for the deferred word `warn`.  If the
   \ contents of the user variable `warnings` is not zero and
   \ the word name _ca len_ is already defined in the current
-  \ compilation word list, display a `throw` exception #-257,
-  \ without actually throwing an exception.
+  \ compilation word list, display a `throw` exception #-257
+  \ ("warning: is not unique") without actually throwing an
+  \ exception.
   \
   \ See: `warnings`, `warn-throw`, `warn.message`, `?warn`.
   \
@@ -1470,6 +1471,7 @@ unneeding warn-throw ?( need ?warn
   \ 2018-06-04: Update: remove trailing closing paren from word
   \ names.  Link `user` in documentation.
   \
-  \ 2018-07-21: Improve documentation, linking `throw`.
+  \ 2018-07-21: Improve documentation, linking `throw`. Improve
+  \ description of `warn.throw`.
 
   \ vim: filetype=soloforth
