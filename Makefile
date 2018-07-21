@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201807211904
+# Last modified: 201807212019
 # See change loge at the end of the file.
 
 # ==============================================================
@@ -735,7 +735,7 @@ tmp/doc.gplusdos.files.txt: \
 
 tmp/doc.gplusdos.exception_codes.adoc: $(gplusdos_exception_codes_lib_files)
 	grep --no-filename "^#-[0-9]\+\s[\]\s[[:print:]]" $^ | \
-	sed -e "s/^/| /" -e "s/[\]/|/" -e "1s/^/\|===\n/" \
+	sed -e "s/^/| /" -e "s/[\]/|/" -e "1s/^/[%autowidth]\n\|===\n/" \
 	> $@ && \
 	echo "|===" >> $@
 
@@ -813,7 +813,7 @@ tmp/doc.plus3dos.files.txt: \
 
 tmp/doc.plus3dos.exception_codes.adoc: $(plus3dos_exception_codes_lib_files)
 	grep --no-filename "^#-[0-9]\+\s[\]\s[[:print:]]" $^ | \
-	sed -e "s/^/| /" -e "s/[\]/|/" -e "1s/^/\|===\n/" \
+	sed -e "s/^/| /" -e "s/[\]/|/" -e "1s/^/[%autowidth]\n\|===\n/" \
 	> $@ && \
 	echo "|===" >> $@
 
@@ -867,7 +867,7 @@ tmp/doc.trdos.files.txt: \
 
 tmp/doc.trdos.exception_codes.adoc: $(trdos_exception_codes_lib_files)
 	grep --no-filename "^#-[0-9]\+\s[\]\s[[:print:]]" $^ | \
-	sed -e "s/^/| /" -e "s/[\]/|/" -e "1s/^/\|===\n/" \
+	sed -e "s/^/| /" -e "s/[\]/|/" -e "1s/^/[%autowidth]\n\|===\n/" \
 	> $@ && \
 	echo "|===" >> $@
 
@@ -1176,4 +1176,5 @@ oldbackup:
 # 2018-07-20: Convert exception codes into tables instead of definition lists.
 #
 # 2018-07-21: Add `--attribute DOS` to Asciidoctor commands, to build the
-# manuals using Asciidoctor's conditional preprocessor directives.
+# manuals using Asciidoctor's conditional preprocessor directives. Add
+# `[%autowidth] to the tables of exception codes.

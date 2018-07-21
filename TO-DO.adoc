@@ -888,10 +888,10 @@ NOTE: Milestone: 0.14.0
 
 - Update pronunciation of words in quotes, e.g. `"y"` should be
   "quote-y-quote".
-- Add `[%autowidth]` markup to tables of exception codes.
 - Factor the setting of the library disks from section "How to use the
   library", and link that part from "How to load a program that needs the
   library" and "How to test and benchmark".
+- Link the words mentioned in the description of exception codes.
 
 === 2018-07-20
 
