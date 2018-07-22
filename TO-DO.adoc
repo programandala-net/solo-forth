@@ -897,13 +897,6 @@ NOTE: Milestone: 0.14.0
 
 - Update the `make-thru-index` test in the manual.
 
-=== 2018-06-16
-
-NOTE: Milestone: 0.14.0
-
-- Remove the OS exception codes? They are supported only because some of them
-  may be returned by G+DOS commands. At least, explain this.
-
 === 2018-04-14
 
 NOTE: Milestone: 0.14.0

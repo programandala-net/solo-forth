@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201807212159
+  \ Last modified: 201807221318
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -214,9 +214,7 @@ s" Standard error codes" located errors-block !
 
 : .throw-message ( n -- )
   errors-block @ if   cr error>line errors-block @ .line space
-                 else .throw# then ;
-
-' .throw-message ' .throw defer!
+                 else .throw# then ;  latestxt ' .throw defer!
 
   \ doc{
   \
@@ -228,8 +226,12 @@ s" Standard error codes" located errors-block !
   \ block where messages are hold. If `errors-block` contains
   \ zero, only the error number is displayed.
   \
-  \ NOTE: The error description is not stored in memory, but
-  \ read from the library every time.
+  \ For convenience, loading ``.throw-message`` makes it the
+  \ action of `.throw`.
+  \
+  \ NOTE: The error descriptions are not stored in memory, but
+  \ read from the library every time. Therefore the library
+  \ must be accessible.
   \
   \ See: `.throw#`, `error>line`.
   \
@@ -336,6 +338,8 @@ s" Standard error codes" located errors-block !
   \
   \ 2018-07-21: Fix typo in documentation of `error>ordinal`.
   \ Improve documentation of `.throw-message`.
+  \
+  \ 2018-07-22: Improve documentation of `.throw-message`.
 
   \ vim: filetype=soloforth
 

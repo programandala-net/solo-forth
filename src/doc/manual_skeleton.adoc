@@ -9,7 +9,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 201807212204
+// Last modified: 201807221755
 
 toc::[]
 
@@ -515,7 +515,7 @@ Terminals, which is in disk 2.
 . Insert the first library disk image (disk 1a) into the first drive.
 . Insert the second library disk image (disk 1b) into the second drive.
 . Insert the programs disk image (disk 2) into the third drive.
-. Execute command ``1 load`` in order to load the `need` utility from
+. Execute command ``1 load`` in order to `load` the `need` utility from
   the first library disk.
 . Execute the command `need 3-block-drives`, which loads
   `3-block-drives` from the library disk and then executes it, setting the
@@ -544,7 +544,7 @@ Terminals, which is in disk 2.
 . <<_run,Run Solo Forth>>.
 . Insert the library disk image (disk 1) into the first drive.
 . Insert the programs disk image (disk 2) into the second drive.
-. Execute command ``1 load`` in order to load the `need` utility from
+. Execute command ``1 load`` in order to `load` the `need` utility from
   the library disk.
 . Execute the command `need 2-block-drives`, which loads
   `2-block-drives` from the library disk and then executes it, setting the
@@ -659,7 +659,7 @@ ifdef::plus3dos[]
   of your emulated machine.
 . "Insert" the file <disks/plus3dos/disk_3_workbench.dsk> into the disk drive
   'B' of your emulated machine.
-. Enter command ``1 load`` to load the ``need`` tool.
+. Enter command ``1 load`` to `load` the `need` tool.
 . Enter command ``need 2-block-drives`` to set both disk drives as block drives
   in their normal order, making `need` search both of them: first drive 'A'
   (the library), then drive 'B' (the benchmarks and tests).  Note ``need
@@ -678,7 +678,7 @@ ifdef::gplusdos[]
   your emulated machine.
 . "Insert" the file <disks/gplusdos/disk_3_workbench.mgt> into disk drive 2 of
   your emulated machine.
-. Enter command ``1 load`` to load the ``need`` tool.
+. Enter command ``1 load`` to `load` the `need` tool.
 . Enter command ``need 2-block-drives`` to set both disk drives as block drives
   in their normal order, making `need` search both of them: first drive 1 (the
   library), then drive 2 (the benchmarks and tests).  Note ``need
@@ -698,7 +698,7 @@ ifdef::trdos[]
   your emulated machine.
 . "Insert" the file <disks/trdos/disk_3_workbench.trd> into disk drive 'C' of
   your emulated machine.
-. Enter command ``1 load`` to load the ``need`` tool.
+. Enter command ``1 load`` to `load` the `need` tool.
 . Enter command ``need 3-block-drives`` to set the first three disk drives as
   block drives, in their normal order, making `need` search all of them: first
   drive 'A'/0 (the first part of the library), then drive 'B'/1 (the second
@@ -748,7 +748,7 @@ building a Forth program is the content of disk 0 (the boot disk), if
 needed, and the library modules included in the library disk,
 which usually also contains the source of the program at the end.  If the program
 does not need to use the disk at run-time, you can simply copy the
-default disk 0, and boot it to load your program from block 1 of your
+default disk 0, and boot it to `load` your program from block 1 of your
 customized disk 1, with a simple ``1 load``. When the loading
 finishes, you can save a system snapshot, in SZX format, using the
 corresponding option of your ZX Spectrum emulator.
@@ -810,15 +810,33 @@ will be created in the <doc> directory.
 // Exception codes {{{1
 == Exception codes
 
-The `throw` values -255..-1 are used only as assigned by the Forth-2012
-standard.  The values -4095..-256 are reserved by Solo Forth.
+Exception codes (also called `throw` values) are used as prescribed by the
+Forth-2012 standard: codes -255..-1 are used only as assigned by the standard,
+and codes -4095..-256 are reserved for Solo Forth.  Therefore, programs shall
+not define values for use with `throw` in the range -4095..-1.
 
-Programs shall not define values for use with `throw` in the range -4095..-1.
+[%autowidth]
+.Ranges of exception codes
+|===
+| Range         | Reserved for
 
-NOTE: By default, only the exception code is displayed by an uncatched `throw`,
-because the default action of `.throw` is `.throw#`. In order to display also
-the error description, `.throw-message` must be loaded from the
-<<_library,library>>.
+| 1..32767      | Programs
+| -255..-1      | Standard Forth
+| -999..-256    | Solo Forth
+| -1127..-1000  | Solo Forth: {dosname}
+| -1154..-1128  | Solo Forth: ZX Spectrum OS (BASIC)
+| -4095..-1155  | Solo Forth
+| -32768..-4096 | Programs
+|===
+
+The original ZX Spectrum OS error codes are included (in range -1154..-1128)
+because a few of them may be returned by some DOS words in special cases.
+
+The way errors are displayed is configurable.  By default only the exception
+code is displayed by an uncatched `throw`, because the default action of
+`.throw`, which is a deferred word, is `.throw#`.  In order to display also the
+error description, the alternative action `.throw-message` must be loaded from
+the <<_library,library>> with ``need .throw-message``.
 
 ifdef::plus3dos[]
 
