@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201807212112
+  \ Last modified: 201807220028
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -331,10 +331,10 @@ unneeding ?? ?(
   \ Factoring", by Richard Astle, published on Forth Dimensions
   \ (volume 17, number 4, page 19, 1995-11).
 
-unneeding retry ?( need name>body
+unneeding retry ?( need >body
 
 : retry ( -- )
-  latest name>body postpone again ; immediate compile-only ?)
+  latestxt >body postpone again ; immediate compile-only ?)
 
   \ doc{
   \
@@ -361,8 +361,9 @@ unneeding ?retry ?( need retry
   \ ?retry "question-retry"
   \   Compilation: ( -- )
   \   Run-time:    ( f -- )
-  \
-  \ Do a conditional branch to the start of the word.
+
+  \ If _f_ is zero, do nothing. Otherwise do a branch to the
+  \ start of the word.
   \
   \ ``?retry`` is an `immediate` and `compile-only` word.
   \
@@ -698,5 +699,7 @@ unneeding orif ?(
   \ word names.
   \
   \ 2018-07-21: Improve documentation, linking `throw`.
+  \
+  \ 2018-07-22: Simplify `retry`.
 
   \ vim: filetype=soloforth
