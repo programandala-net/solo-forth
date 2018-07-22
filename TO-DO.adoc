@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-07-21
+:revdate: 2018-07-22
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -886,8 +886,6 @@ Improve tab control.
 
 NOTE: Milestone: 0.14.0
 
-- Update pronunciation of words in quotes, e.g. `"y"` should be
-  "quote-y-quote".
 - Factor the setting of the library disks from section "How to use the
   library", and link that part from "How to load a program that needs the
   library" and "How to test and benchmark".

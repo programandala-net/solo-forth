@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201807221229
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -35,7 +35,7 @@ unneeding "y" unneeding "n" and ?(
 
   \ doc{
   \
-  \ "y" ( -- c ) "quote-y"
+  \ "y" ( -- c ) "quote-y-quote"
   \
   \ A character constant containing the (lowercase) character
   \ used by `y/n`, `y/n?` and `yes?`, to represent an
@@ -50,7 +50,7 @@ unneeding "y" unneeding "n" and ?(
 
   \ doc{
   \
-  \ "n" ( -- c ) "quote-n"
+  \ "n" ( -- c ) "quote-n-quote"
   \
   \ A character constant containing the (lowercase) character
   \ used by `y/n`, `y/n?` and `no?` to represent a negative
@@ -136,5 +136,7 @@ unneeding yes?
   \ individually accessible to `need`.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2018-07-22: Fix pronunciation of `"y"` and `"n"`.
 
   \ vim: filetype=soloforth
