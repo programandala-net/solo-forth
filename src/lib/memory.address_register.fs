@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041324
+  \ Last modified: 201807221757
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -116,7 +116,7 @@ code @a ( -- x ) 2A c, a , 5E c, 23 c, 66 c, 68 03 + c, E5 c,
   \
   \ @a ( -- x ) "fetch-a"
   \
-  \ Fetch _x_ at the address register.
+  \ Fetch cell _x_ stored at the address register.
   \
   \ See: `a`, `!a`.
   \
@@ -155,7 +155,7 @@ code c@a ( -- c ) 2A c, a , 6E c, 26 c, 00 c, E5 c, jpnext,
   \
   \ c@a ( -- c ) "c-fetch-a"
   \
-  \ Fetch _c_ at the address register.
+  \ Fetch the character _c_ stored at the address register.
   \
   \ See: `a`, `c!a`.
   \
@@ -204,8 +204,8 @@ code @a+ ( -- x ) 2A c, a , 5E c, 23 c, 56 c, 23 c, 22 c, a ,
   \
   \ @a+ ( -- x ) "fetch-a-plus"
   \
-  \ Fetch cell at the address register and increment the
-  \ address register by one cell.
+  \ Fetch cell _x_ stored at the address register and increment
+  \ the address register by one cell.
   \
   \ See: `a`, `!a+`.
   \
@@ -250,8 +250,8 @@ code c@a+ ( -- c ) 2A c, a , 5E c, 23 c, 16 c, 00 c,
   \
   \ c@a+ ( -- c ) "c-fetch-a-plus"
   \
-  \ Fetch _c_ at the address register and increment the address
-  \ register by one address unit.
+  \ Fetch character _c_ stored at the address register and
+  \ increment the address register by one address unit.
   \
   \ See: `a`, `c!a+`.
   \
@@ -295,5 +295,7 @@ code c@a+ ( -- c ) 2A c, a , 5E c, 23 c, 16 c, 00 c,
   \ 2018-03-07: Add words' pronunciaton.
   \
   \ 2018-06-04:  Link `variable` in documentation.
+  \
+  \ 2018-07-22: Improve documentation.
 
   \ vim: filetype=soloforth
