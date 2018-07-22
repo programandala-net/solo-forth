@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modifed: 201806041324
+  \ Last modified: 201806041324
   \ See change log at the end of the file
 
   \ ===========================================================
