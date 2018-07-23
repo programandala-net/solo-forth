@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041116
+  \ Last modified: 201807230127
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -476,6 +476,7 @@ need lina-rng-px-bench       lina-rng-px-bench -->
 ( 16b-rng-px-benchs )
 
 need mb-rng-px-bench         mb-rng-px-bench
+need mim-rng-px-bench        mim-rng-px-bench
 need sf83-rng-px-bench       sf83-rng-px-bench
 need tt-rng-px-bench         tt-rng-px-bench
 need vf-rng-px-bench         vf-rng-px-bench
@@ -834,6 +835,26 @@ need 16b-rng-px-bench need :noname
 ' mb-random
 :noname ( -- ca len ) s" Milos Bazelides" ;
 16b-rng-px-bench mb-rng-px-bench ( -- )
+
+( mim-random mim-rng-px-bench )
+
+  \ Credit:
+  \
+  \ Original code by "MIM" (1982-08-20), found on 2015-12-14 at
+  \ <http://atariwiki.strotmann.de/wiki/Wiki.jsp?page=Forth%20sorting%20routines>,
+  \ as part of "16-bit Numerical Sort Demo".
+
+need os-seed need */
+
+: mim-random ( n -- 0..n-1 )
+  os-seed @ $0103 * 3 + $7FFF and dup os-seed ! $7FFF */ ;
+
+need 16b-rng-px-bench need :noname
+
+:noname ( -- ) os-seed off ;
+' mim-random
+:noname ( -- ca len ) s" MIM 1982" ;
+16b-rng-px-bench mim-rng-px-bench ( -- )
 
 ( mm-random mm-rng-px-bench )
 
@@ -1814,5 +1835,7 @@ need 8b-rng-px-bench need :noname
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2018-07-23: Add `mim-random` and `mim-rng-px-bench`.
 
   \ vim: filetype=soloforth
