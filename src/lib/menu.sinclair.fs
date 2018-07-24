@@ -347,11 +347,11 @@ create current-option 0 c,
   \
   \ new-menu ( a1 a2 ca len col row n1 n2 -- )
   \
-  \ Set, display at cursor coordinates _col row_ and activate a
-  \ new menu of _n2_ options, _n1_ characters width, title _ca
-  \ len_, actions table _a1_ (a cell array of _n2_ execution
-  \ tokens) and option texts table _a2_ (a cell array of _n2_
-  \ addresses of counted strings).
+  \ Set, display an activate a new menu at cursor coordinates
+  \ _col row_, with _n2_ options, _n1_ characters width, title
+  \ _ca len_, actions table _a1_ (a cell array of _n2_
+  \ execution tokens) and option texts table _a2_ (a cell array
+  \ of _n2_ addresses of counted strings).
   \
   \ See: `set-menu`, `.menu`, `menu`.
   \

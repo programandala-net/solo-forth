@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201807221713
+# Last modified: 201807222004
 # See change loge at the end of the file.
 
 # ==============================================================
@@ -735,7 +735,7 @@ tmp/doc.gplusdos.files.txt: \
 
 tmp/doc.gplusdos.exception_codes.adoc: $(gplusdos_exception_codes_lib_files)
 	grep --no-filename "^#-[0-9]\+\s[\]\s[[:print:]]" $^ | \
-	sed -e "s/^/| /" -e "s/[\]/|/" -e "1s/^/[%autowidth]\n\|===\n|Code|Meaning\n\n/" \
+	sed -e "s/^/| /" -e "s/[\]/|/" -e "1s/^/[%autowidth]\n\|===\n|Exception code|Meaning\n\n/" \
 	> $@ && \
 	echo "|===" >> $@
 
@@ -813,7 +813,7 @@ tmp/doc.plus3dos.files.txt: \
 
 tmp/doc.plus3dos.exception_codes.adoc: $(plus3dos_exception_codes_lib_files)
 	grep --no-filename "^#-[0-9]\+\s[\]\s[[:print:]]" $^ | \
-	sed -e "s/^/| /" -e "s/[\]/|/" -e "1s/^/[%autowidth]\n\|===\n|Code|Meaning\n\n/" \
+	sed -e "s/^/| /" -e "s/[\]/|/" -e "1s/^/[%autowidth]\n\|===\n|Exception code|Meaning\n\n/" \
 	> $@ && \
 	echo "|===" >> $@
 
@@ -867,7 +867,7 @@ tmp/doc.trdos.files.txt: \
 
 tmp/doc.trdos.exception_codes.adoc: $(trdos_exception_codes_lib_files)
 	grep --no-filename "^#-[0-9]\+\s[\]\s[[:print:]]" $^ | \
-	sed -e "s/^/| /" -e "s/[\]/|/" -e "1s/^/[%autowidth]\n\|===\n|Code|Meaning\n\n/" \
+	sed -e "s/^/| /" -e "s/[\]/|/" -e "1s/^/[%autowidth]\n\|===\n|Exception code|Meaning\n\n/" \
 	> $@ && \
 	echo "|===" >> $@
 

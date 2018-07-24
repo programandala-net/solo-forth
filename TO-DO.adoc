@@ -897,12 +897,6 @@ NOTE: Milestone: 0.14.0
 
 - Update the `make-thru-index` test in the manual.
 
-=== 2018-04-14
-
-NOTE: Milestone: 0.14.0
-
-Improve the width of table columns.
-
 === 2018-04-12
 
 NOTE: Milestone: 0.14.0

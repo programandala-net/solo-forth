@@ -3,7 +3,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 201807221438
+// Last modified: 201807222007
 // See change log at the end of the file
 
 === Stack notation
@@ -46,7 +46,7 @@ symbols for aligned addresses are used in the source, for clarity.
 
 :floatnote: In the floating point stack of the ZX Spectrum operating system.
 
-[cols="1,5,2,2",id="_stacknotationfornumbers"]
+[cols="2,5,2,3",id="_stacknotationfornumbers"]
 .Stack notation symbols for numbers
 |===
 | Symbol     | Data type                                     | Size   | Range

@@ -263,7 +263,7 @@ hard drives, flash cards, and a lot of memory.
 // vim/ftplugin   :: Filetype plugin
 // vim/syntax     :: Syntax highlighting
 
-[%autowidth]
+[cols="12,14,54"]
 |===
 | Directory   | Subdirectory | Description
 
@@ -310,7 +310,7 @@ disks/*/disk_3_workbench.*
 The subdirectory and the filename extension of every DOS are the
 following:
 
-[%autowidth]
+[cols="6,11,18"]
 .DOS subdirectories and disk image filename extensions
 |===
 | DOS    | Subdirectory | Filename extension
