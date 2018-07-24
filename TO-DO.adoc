@@ -2397,24 +2397,6 @@ NOTE: Milestone: 0.14.0
 
 Move `2variable` to the library.
 
-=== 2018-02-14, 2018-02-28, 2018-03-11, 2018-06-03
-
-One 640-KiB TR-DOS disk is barely enough to contain the library.
-
-To compact the code:
-
-- Implement the multiline block headers.  This will make more long-name short
-  definitions fit into one block.
-- Move the stack comments to a meta comment below the code. This will make many
-  one-liners fit one line.
-- Use `needing X 0(` instead of `unneeding X ?(`, i.e. with zero-version of the
-  conditional comments.
-- Implement `need(` to compact the requirements
-
-Another, definitive solution is to split the library into two disks,
-for TR-DOS.  But then the usage instructions of TR-DOS will be
-different than G+DOS and +3DOS.
-
 === 2017-03-28, 2017-09-09
 
 Move words from <chars.fs> to <strings.MISC.fs>?
