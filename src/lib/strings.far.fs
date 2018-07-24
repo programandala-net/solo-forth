@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091347
+  \ Last modified: 201807250056
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -40,7 +40,7 @@ unneeding far,"
 
 unneeding fars, ?( need farplace need farallot
 
-: fars, ( ca len -- ) tuck np@ farplace 1+ farallot ; ?)
+: fars, ( ca len -- ) tuck np@ farplace char+ farallot ; ?)
 
   \ doc{
   \
@@ -325,6 +325,8 @@ code faruppers ( ca len -- )
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-09: Add words' pronunciaton.
+  \
+  \ 2018-07-25: Use `char+` in `fars,`.
 
   \ vim: filetype=soloforth
 
