@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091614
+  \ Last modified: 201807272035
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -148,8 +148,20 @@ unneeding .sinclair-stripes ?( need sinclair-stripes
   \
   \ }doc
 
-5 cconstant /stripes
-  \ Size of the stripes on the display, in characters.
+5 cconstant /sinclair-stripes
+
+  \ doc{
+  \
+  \ /sinclair-stripes ( -- len )
+  \
+  \ A `cconstant`. _len_ is the size of `sinclair-stripes$` in
+  \ graphic characters, i.e. the visible length of the string
+  \ when displayed.
+  \
+  \ ``/sinclair-stripes`` is used by `set-menu` and other menu
+  \ words.
+  \
+  \ }doc
 
 ( menu )
 
@@ -197,7 +209,8 @@ variable menu-rounding  menu-rounding on
   menu-banner-attr c@ attr! overprint-off inverse-off
   menu-xy 2@
   2dup at-xy menu-title 2@ menu-width c@ type-left-field
-       swap menu-width c@ + [ /stripes 1+ ] cliteral - swap
+       swap menu-width c@ +
+       [ /sinclair-stripes 1+ ] cliteral - swap
        at-xy .sinclair-stripes ;
   \ Display the banner of the current menu.
 
@@ -291,7 +304,7 @@ create current-option 0 c,
 ( menu )
 
 : menu ( -- )
-  0 dup current-option c! +option
+  0 +option
   begin key case
           menu-key-up     c@ of previous-option   endof
           menu-key-down   c@ of next-option       endof
@@ -323,7 +336,8 @@ create current-option 0 c,
   \ }doc
 
 : set-menu ( a1 a2 ca len col row n1 n2 -- )
-  menu-options c! [ /stripes 2+ ] cliteral max menu-width c!
+  menu-options c!
+  [ /sinclair-stripes 2+ ] cliteral max menu-width c!
   menu-xy 2! menu-title 2!  options-table ! actions-table ! ;
 
   \ doc{
@@ -353,6 +367,33 @@ create current-option 0 c,
   \ execution tokens) and option texts table _a2_ (a cell array
   \ of _n2_ addresses of counted strings).
   \
+  \ Usage example:
+
+  \ ----
+
+  \ need menu need :noname
+  \
+  \ :noname ( -- ) unnest unnest ;
+  \ :noname ( -- ) 2 border ;
+  \ :noname ( -- ) 1 border ;
+  \ :noname ( -- ) 0 border ;
+  \
+  \ create actions> , , , ,
+  \
+  \ here s" EXIT"  s,
+  \ here s" Red"   s,
+  \ here s" Blue"  s,
+  \ here s" Black" s,
+  \
+  \ create texts> , , , ,
+  \
+  \ : menu-pars ( -- a1 a2 ca len col row n1 n2 )
+  \   actions> texts> s" Border" 7 7 14 4 ;
+  \
+  \ menu-pars new-menu
+
+  \ ----
+
   \ See: `set-menu`, `.menu`, `menu`.
   \
   \ }doc
@@ -375,5 +416,11 @@ create current-option 0 c,
   \ documentation.
   \
   \ 2018-03-09: Update stack notation "x y" to "col row".
+  \
+  \ 2018-07-25: Rename `/stripes` to `/sinclair-stripes` and
+  \ document it.
+  \
+  \ 2018-07-27: Remove useless code from `menu`. Improve
+  \ documentation of `new-menu`.
 
   \ vim: filetype=soloforth

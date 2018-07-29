@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201807151417
+  \ Last modified: 201807292046
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -416,7 +416,7 @@ unneeding <=>
   \ If _n1_ is less than _n2_, return negative one.
   \ If _n1_ is greater than _n2_, return positive one.
   \
-  \ See: `polatiry`, `<`, `=`, `>`.
+  \ See: `polarity`, `<`, `=`, `>`.
   \
   \ }doc
 
@@ -1407,5 +1407,7 @@ code join ( b1 b2 -- x )
   \ word names.
   \
   \ 2018-07-15: Add `min>top`, `max>top`, `pair=`.
+  \
+  \ 2018-07-29: Fix typo in documentation.
 
   \ vim: filetype=soloforth
