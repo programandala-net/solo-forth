@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201807222004
+# Last modified: 201807291956
 # See change loge at the end of the file.
 
 # ==============================================================
@@ -133,7 +133,7 @@ t128: trdos128
 
 .PHONY: trdos128
 trdos128: \
-	disks/trdos/disk_0_boot.trd \
+	disks/trdos/disk_0_boot.128.trd \
 	trdosblockdisks
 
 .PHONY: pentagon
@@ -1181,3 +1181,5 @@ oldbackup:
 # "dosname" instead of replacing the "%DOS%" mark with `sed`.
 #
 # 2018-07-22: Add a header to the tables of exception codes.
+#
+# 2018-07-29: Rename the TR-DOS disk image used for 128-KiB machines.

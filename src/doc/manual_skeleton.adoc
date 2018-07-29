@@ -1,6 +1,6 @@
 = Solo Forth: Version %VERSION% for {dosname}
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-07-21
+:revdate: 2018-07-29
 :toc:
 :toclevels: 1
 :toc-placement!:
@@ -9,7 +9,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 201807222008
+// Last modified: 201807291956
 
 toc::[]
 
@@ -301,10 +301,10 @@ The <disks/trdos> directory of the <<_tree,directory tree>>
 contains the disk images:
 
 ....
+disks/trdos/disk_0_boot.128.trd
 disks/trdos/disk_0_boot.pentagon_1024.trd
 disks/trdos/disk_0_boot.pentagon_512.trd
 disks/trdos/disk_0_boot.scorpion_zs_256.trd
-disks/trdos/disk_0_boot.trd
 disks/trdos/disk_1a_library.trd
 disks/trdos/disk_1b_library.trd
 disks/trdos/disk_2_programs.trd
