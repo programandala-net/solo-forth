@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201807212100
+  \ Last modified: 201809242137
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -590,7 +590,7 @@ need use-default-need need  use-default-located
 
 ( needing locate need-from need-here )
 
-: needing ( "name" -- f ) unneeding 0= ;
+unneeding needing ?\ : needing ( "name" -- f ) unneeding 0= ;
 
   \ doc{
   \
@@ -867,5 +867,7 @@ unneeding need-here ?(
   \ 2018-06-16: Fix typos in documentation and comments.
   \
   \ 2018-07-21: Improve documentation, linking `throw`.
+  \
+  \ 2018-09-24: Fix needing of `needing`.
 
   \ vim: filetype=soloforth
