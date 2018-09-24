@@ -3,13 +3,13 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201705071839
+  \ Last modified: 201809242120
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ The `where` tool, which prints information about the last
+  \ The `where` tool, which displays information about the last
   \ error.
 
   \ ===========================================================
@@ -31,7 +31,7 @@
   \ n = value of `>in` when the error happened
   \ u = value of `blk` when the error happened
   dup if
-    ." Block #" dup base @ >r decimal u. r> base ! cr
+    ." Block #" dup dec. cr
     swap c/l /mod c/l * rot block + c/l type cr
     here c@ - spaces '^' emit
   else  2drop  then ;
@@ -42,7 +42,7 @@
   \
   \ Display information about the last error: block number, line
   \ number and a picture of where it occurred. If the error was
-  \ in the command line, nothing is printed.
+  \ in the command line, nothing is displayed.
   \
   \ Origin: Forth-79 (Reference Word Set).
   \
@@ -71,5 +71,7 @@
   \ 2017-02-17: Update cross references.
   \
   \ 2017-05-07: Improve documentation.
+  \
+  \ 2018-09-24: Improve documentation. Simplify with `dec.`.
 
   \ vim: filetype=soloforth

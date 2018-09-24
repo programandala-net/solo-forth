@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201807250053
+; Last modified: 201809230141
 
 include version.z80s
 
@@ -8736,8 +8736,8 @@ name_to_string.loop_exit:
 ;
 ; postpone ( "name" -- )
 ;
-; Skip leading space delimiters. Parse name delimited by a
-; space. Find name. Append the compilation semantics of _name_
+; Skip leading space delimiters. Parse _name_ delimited by a
+; space. Find _name_. Append the compilation semantics of _name_
 ; to the current definition.
 ;
 ; ``postpone`` is an `immediate` word.
@@ -11633,8 +11633,6 @@ do_vocabulary:
   call do_colon
   dw fetch_,context_,store_
   dw exit_
-
-  ; XXX TODO -- Move to the library.
 
 ; ----------------------------------------------
   _colon_header get_current_,'get-current'
