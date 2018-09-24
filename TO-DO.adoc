@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-07-25
+:revdate: 2018-09-24
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -236,6 +236,19 @@ and `do_variable` to the `next` entry of the inner interpreter.
 
 // Bugs {{{1
 == Bugs
+
+=== 2018-09-23
+
+NOTE: Milestone: 0.14.0
+
+Use the circular string buffer as pictured output buffer.
+
+From comp.lang.forth (By Gerry Jackson, Fri, 21 Sep 2018 20:54:45 +0100):
+
+Try `123. <# #S #> 456 . TYPE`. On popular systems such as Win32
+Forth, VFX Forth and SwiftForth the output is 456 456. Gforth is a
+notable exception as it outputs 456 123.
+
 
 === 2017-02-11, 2017-12-05, 2018-01-25
 
