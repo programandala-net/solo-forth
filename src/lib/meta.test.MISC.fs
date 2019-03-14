@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041114
+  \ Last modified: 201903141805
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -22,6 +22,58 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+( scan-test )
+
+  \ 2019-03-14
+  \
+  \ A strange problem happens in project _Nuclear Waste
+  \ Invaders_: strings containing any byte greater than 127 are
+  \ ignored by `s"` and `,"`.
+  \
+  \ Some test code has been added to the kernel. This is
+  \ another try to find something wrong.
+  \
+  \ Everything seems OK with `scan` and `parse`.
+
+cr .s here
+cr .s s" Atomrubaĵaj Invadantoj"
+cr .s s,
+cr .s constant title  title count cr type
+
+( localized-string-test )
+
+  \ 2019-03-14
+  \
+  \ Strings with characters >127 are ignored by `," and `s"` in
+  \ project _Nuclear Waste Invaders_. But everything seems OK
+  \ in Solo Forth's `scan` and `parse`, and the very same code
+  \ works fine here:
+
+need localized-string need cenum need c!>
+
+0 cenum en         \ English
+  cenum eo         \ Esperanto
+  cenum es         \ Spanish
+  c!> langs  \ number of languages
+
+en c!> lang  \ current language
+
+cr .s \ XXX INFORMER
+here ," Invasores de Residuos Nucleares"
+cr .s \ XXX INFORMER
+
+here ," Atomrubaĵaj Invadantoj"
+
+  \ here s" Atomrubaĵaj Invadantoj" s,
+  \ XXX TMP -- no difference
+  
+cr .s \ XXX INFORMER
+here ," Nuclear Waste Invaders"
+cr .s \ XXX INFORMER
+localized-string game-title$ ( -- ca len )
+  \ Return game title _ca len_ in the current language.
+cr .s .( PRESS KEY) key drop \ XXX INFORMER
 
 ( read-byte-test )
 
@@ -1728,7 +1780,9 @@ blk @ 1+ blk @ 2+ thru
   \ 2018-03-28: Move `read-byte-test` from the +3DOS module.
   \ Add `clocal` and `2local` to `local-test` and improve it.
   \
-  \ 2018-06-04: Update: remove trailing closing paren from
-  \ word names.
+  \ 2018-06-04: Update: remove trailing closing paren from word
+  \ names.
+  \
+  \ 2019-03-14: Add `scan-test` and `localized-string-test`.
 
   \ vim: filetype=soloforth

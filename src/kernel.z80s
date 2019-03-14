@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201809230141
+; Last modified: 201903141802
 
 include version.z80s
 
@@ -9916,7 +9916,7 @@ fill.done:
 ;
 ; Parse _ccc_ delimited by the delimiter _char_.  _ca_ is the
 ; address (within the input buffer) and _len_ is the length of
-; the parsed string If the parse area was empty, the resulting
+; the parsed string. If the parse area was empty, the resulting
 ; string has a zero length.
 ;
 ; Definition:
@@ -15778,6 +15778,49 @@ backslash.interpreting:
   ; Interpreting
   dw hash_tib_,fetch_,to_in_,store_
   dw exit_
+
+; ----------------------------------------------
+
+if 0
+
+; XXX TMP -- 2019-03-14: Temporary code to check 'scan' and
+; `parse`.
+
+  _variable_header ctxt_,'ctxt'
+  db 6
+  db 'a'
+  db 'b'
+  db 'c'
+  db 128
+  db 'e'
+  db '"'
+
+  _colon_header txt_,'txt'
+
+  dw ctxt_
+  dw count_
+  dw exit_
+
+  _colon_header parse2_,'parse2'
+
+; ----
+; : parse2 ( char ca1 len1 -- ca len )
+;   2dup 2>r rot scan
+;   dup if  char-  then
+;   2r> rot - drop
+;   tuck - ;
+; ----
+
+  dw two_dup_,two_to_r_,rot_,scan_
+  dw dup_,zero_branch_,parse2.end
+  dw char_minus_
+parse2.end:
+  dw two_from_r_,rot_,minus_
+  dw drop_
+  dw tuck_,minus_
+  dw exit_
+
+endif
 
 ; ----------------------------------------------
   _colon_header dot_paren_,'.(',immediate

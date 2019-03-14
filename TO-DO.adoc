@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-09-24
+:revdate: 2019-03-14
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1839,6 +1839,15 @@ the BASIC loader are built; the second time, only the BASIC loader.
 
 This does not happen doing `make clean;make all`: the next `make all`
 does nothing, as expected.
+
+=== 2019-03-14
+
+TR-DOS can not be built:
+
+....
+make: *** No hay ninguna regla para construir el objetivo
+'disks/trdos/disk_0_boot.128.trd', necesario para 'trdos128'.  Alto.
+....
 
 // Maths {{{1
 == Maths
