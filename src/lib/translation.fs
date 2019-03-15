@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201903141723
+  \ Last modified: 201903151606
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,13 +33,45 @@
   \ Words used by `localized-word`, `localized-string` and
   \ `localized-character`.
 
-need n,
+unneeding langs ?\ 0 cconstant langs \ number of languages
 
-0 cconstant langs \ number of languages
+  \ doc{
+  \
+  \ langs ( -- b )
+  \
+  \ A `cconstant` containing the number _b_ of languages used
+  \ by the application, needed by translation tools
+  \ `localized-word`, `localized-string` and
+  \ `localized-character`.
+  \
+  \ Its default value is zero. The value must be configured by
+  \ the application using `c!>`, and it should not be changed
+  \ later.
+  \
+  \ See: `lang`.
+  \
+  \ }doc
 
-0 cconstant lang  \ current language
+unneeding lang ?\ 0 cconstant lang  \ current language
 
-: localized, ( x[langs]..x[1] -- ) langs n, ;
+  \ doc{
+  \
+  \ lang ( -- b )
+  \
+  \ A `cconstant` containint the number _b_ of the current
+  \ language, used by translation tools `localized-word`,
+  \ `localized-string` and `localized-character`.
+  \
+  \ Its default value is zero. The value must be changed by the
+  \ application using `c!>`.
+  \
+  \ See: `langs`.
+  \
+  \ }doc
+
+unneeding localized, ?( need langs need n,
+
+: localized, ( x[langs]..x[1] -- ) langs n, ; ?)
 
 ( localized-word localized-string localized-character )
 
@@ -51,11 +83,19 @@ need localized, need lang need +perform
   create localized,
   does> ( -- ) ( pfa ) lang +perform ; ?)
 
+  \ doc{
+  \
+  \ localized-word ( xt[langs]..xt[1] "name" -- )
+  \
   \ Create a word _name_ that will execute an execution token
-  \ from _xt[langs]..xt[1]_, depending on the current language.
+  \ from _xt[langs]..xt[1]_, depending on `lang`.
   \ _xt[langs]..xt[1]_, are the execution tokens of the
   \ localized versions.  _xt[langs]..xt[1]_, are ordered by ISO
   \ language code, being TOS the first one.
+  \
+  \ See: `localized-string`, `localized-character`, `langs`.
+  \
+  \ }doc
 
 unneeding localized-string ?(
 
@@ -66,12 +106,20 @@ need localized, need lang need array>
   \ does> ( -- ca len ) ( pfa ) lang cells + @ count ;
   does> ( -- ca len ) ( pfa ) lang swap array> @ count ; ?)
 
-  \ Create a word _name_ that will return a counted string
-  \ from _ca[langs]..ca[1]_, depending on the current language.
-  \ _ca[langs]..ca[1]_, are the addresses where the localized
-  \ strings have been compiled.  _ca[langs]..ca[1]_, are
-  \ ordered by ISO language code, being TOS the first one.
+  \ doc{
   \
+  \ localized-string ( ca[langs]..ca[1] "name" -- )
+  \
+  \ Create a word _name_ that will return a counted string from
+  \ _ca[langs]..ca[1]_, depending on `lang`.
+  \ _ca[langs]..ca[1]_, are the addresses where the strings
+  \ have been compiled.  _ca[langs]..ca[1]_, are ordered by ISO
+  \ language code, being TOS the first one.
+  \
+  \ See: `localized-word`, `localized-character`, `langs`.
+  \
+  \ }doc
+
   \ XXX TODO -- Benchmark `cells +` vs `swap array>`.
 
 unneeding localized-string ?( need langs need lang
@@ -80,10 +128,17 @@ unneeding localized-string ?( need langs need lang
   create langs 0 ?do c, loop
   does> ( -- c ) ( pfa ) lang + c@ ; ?)
 
-  \ Create a word _name_ that will return a character
-  \ from _c[langs]..c[1]_, depending on the current language.
-  \ _c[langs]..c[1]_ are ordered by ISO language code, being
-  \ TOS the first one.
+  \ doc{
+  \
+  \ localized-character ( c[langs]..c[1] "name" -- c )
+  \
+  \ Create a word _name_ that will return a character from
+  \ _c[langs]..c[1]_, depending on `lang`.  _c[langs]..c[1]_
+  \ are ordered by ISO language code, being TOS the first one.
+  \
+  \ See: `localized-word`, `localized-string`, `langs`.
+  \
+  \ }doc
 
   \ ===========================================================
   \ Change log
@@ -92,5 +147,7 @@ unneeding localized-string ?( need langs need lang
   \ `localized-word` and `localized-character` from project
   \ _Nuclear Waste Invaders_
   \ (http://programandala.net/en.program.nuclear_waste_invaders.html).
+  \
+  \ 2019-03-15: Improve documentation and needing.
 
   \ vim: filetype=soloforth

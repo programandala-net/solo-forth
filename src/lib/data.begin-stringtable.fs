@@ -3,13 +3,13 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201805011546
+  \ Last modified: 201903151508
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ `begin-stringtable end-stringtable`.
+  \ `begin-stringtable` and `end-stringtable`.
 
   \ ===========================================================
   \ Author
@@ -79,7 +79,7 @@ need array>
   \
   \ }doc
 
-: end-stringtable ( stringtable-sys -- )
+: end-stringtable ( a1 a2 -- )
   here rot !   \ set the index
   here swap ( a3 a2 )
   begin 2dup <> while
@@ -94,6 +94,9 @@ need array>
   \ End a named stringtable, consuming _a1_ (containing the
   \ address of the strings index) and _a2_ (the address of the
   \ compiled strings), which were left by `begin-stringtable`.
+  \ Create the strings index by traversing the compiled strings
+  \ and update its address in _a1_.
+	\
   \
   \ See `begin-stringtable` for a usage example.
   \
@@ -108,5 +111,7 @@ need array>
   \ General Public License v3.0.
   \
   \ 2018-05-01: Fix filename in the file header.
+	\
+	\ 2019-03-15: Improve documentation.
 
   \ vim: filetype=soloforth
