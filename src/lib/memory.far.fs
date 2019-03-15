@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804121303
+  \ Last modified: 201903151617
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -198,7 +198,7 @@ unneeding e-bank_
 
 previous set-current
 
-( farallot far, )
+( farallot far, far-n, )
 
 unneeding farallot
 
@@ -224,6 +224,22 @@ unneeding far, ?( need farallot
   \ far, ( x -- ) "far-comma"
   \
   \ Compile _x_ in far-memory headers space.
+  \
+  \ }doc
+
+unneeding far-n, ?( need far,
+: far-n, ( x[u]..x[1] u -- ) 0 ?do far, loop ; ?)
+
+  \ doc{
+  \
+  \ far-n, ( x[u]..x[1] u -- ) "far-n-comma"
+  \
+  \ If _u_ is not zero, store _u_ cells _x[u]..x[1]_ into
+  \ far-memory headers
+  \ space, being _x[1]_ the first one stored and _x[u]_ the
+  \ last one.
+  \
+  \ See: `far,`, `n,`.
   \
   \ }doc
 
@@ -542,5 +558,7 @@ code c@bank ( ca n -- c ) D1 c, e-bank_ call,
   \ 2018-03-09: Update notation "address units" to "bytes".
   \
   \ 2018-04-12: Fix markup in documentation.
+  \
+  \ 2019-03-15: Add `far-n,`.
 
   \ vim: filetype=soloforth

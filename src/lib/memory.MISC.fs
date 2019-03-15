@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041307
+  \ Last modified: 201903151618
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -362,7 +362,7 @@ unneeding n, ?\ : n, ( x[u]..x[1] u -- ) 0 ?do , loop ;
   \ space, being _x[1]_ the first one stored and _x[u]_ the
   \ last one.
   \
-  \ See: `,`, `nn,`, `n@`, `n!`.
+  \ See: `,`, `far-n,`, `nn,`, `n@`, `n!`.
   \
   \ }doc
 
@@ -958,5 +958,7 @@ code cexchange ( ca1 ca2 -- )
   \ 2018-03-28: Fix needing of `c?`. Add `2?`.
   \
   \ 2018-06-04: Simplify documentation about aligned addresses.
+  \
+  \ 2019-03-15: Update documentation.
 
   \ vim: filetype=soloforth

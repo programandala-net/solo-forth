@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2019-03-14
+:revdate: 2019-03-15
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -233,6 +233,11 @@ to implement a debugger or multitasking.
 
 Benchmark variables before and after moving the Z80 labels `do_create`
 and `do_variable` to the `next` entry of the inner interpreter.
+
+=== 2019-03-15
+
+Benchmark `cells +` vs `swap array>`, used by `localized-string`
+`far-localized-string` and `far>localized-string`.
 
 // Bugs {{{1
 == Bugs
