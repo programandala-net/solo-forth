@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 201903190130
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -86,7 +86,7 @@ unneeding far2avariable ?( need farallot need 2array>
   \
   \ }doc
 
-unneeding cavariable ?( need farallot
+unneeding farcavariable ?( need farallot
 
 : farcavariable ( n "name" -- )
   create  np@ , farallot
@@ -130,5 +130,7 @@ unneeding cavariable ?( need farallot
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2019-03-19: Fix needing of `farcavariable`.
 
   \ vim: filetype=soloforth
