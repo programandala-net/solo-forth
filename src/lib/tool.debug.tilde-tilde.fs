@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041324
+  \ Last modified: 201903182346
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2019.
 
   \ ===========================================================
   \ License
@@ -27,7 +28,7 @@
 
 need :noname need defer need .s need columns
 
-variable ~~?  ~~? on
+variable ~~? ~~? on  create ~~y 0 c,
 
   \ doc{
   \
@@ -39,8 +40,6 @@ variable ~~?  ~~? on
   \
   \ }doc
 
-create ~~y  0 c,
-
   \ doc{
   \
   \ ~~y ( -- ca ) "tilde-tilde-y"
@@ -51,7 +50,7 @@ create ~~y  0 c,
   \
   \ }doc
 
-create ~~quit-key 'q' c,
+create ~~resume-key bl c,  create ~~quit-key 'q' c,
 
   \ doc{
   \
@@ -66,8 +65,6 @@ create ~~quit-key 'q' c,
   \ See: `~~resume-key`.
   \
   \ }doc
-
-create ~~resume-key bl c,
 
   \ doc{
   \
@@ -86,21 +83,33 @@ create ~~resume-key bl c,
   \
   \ }doc
 
-: ~~info ( nt line block -- )
+: (~~info ( nt line block -- )
   0 ~~y c@ 2dup 2>r at-xy columns 2* spaces 2r@ at-xy
   ." Block " 4 .r ."  Line " 2 .r space .name 2r> 1+ at-xy .s ;
+
+  \ doc{
+  \
+  \ (~~info ( -- ) "paren-tilde-tilde-info"
+  \
+  \ Default action of `~~info`: Show the debugging info
+  \ compiled by `~~` and the current contents of the data
+  \ stack. At least to lines are used, depending on the
+  \ contents of the stack. The first line shows the block, line
+  \ and definition name where `~~` was compiled; the second
+  \ line shows the contents of the stack. The printing position
+  \ can be configured with `~~y`.
+  \
+  \ }doc
+
+defer ~~info ( nt line block -- )  ' (~~info ' ~~info defer!
 
   \ doc{
   \
   \ ~~info ( -- ) "tilde-tilde-info"
   \
   \ Show the debugging info compiled by `~~` and the current
-  \ contents of the data stack. At least to lines are used,
-  \ depending on the contents of the stack. The first line
-  \ shows the block, line and definition name where `~~`
-  \ was compiled; the second line shows the contents of the
-  \ stack. The printing position can be configured with
-  \ `~~y`.
+  \ contents of the data stack. ``~~info`` is a deferred word
+  \ whose default action is `(~~info`.
   \
   \ }doc
 
@@ -134,6 +143,7 @@ create ~~resume-key bl c,
     ~~resume-key c@ $FF = if drop exit then
     ~~resume-key ~~press? if exit      then again ; -->
 
+
   \ doc{
   \
   \ ~~control ( -- ) "tilde-tilde-control"
@@ -159,99 +169,88 @@ create ~~resume-key bl c,
   \
   \ A `2variable`. _a_ is the address of a double cell
   \ that holds cursor coordinates saved and restored by the
-  \ default actions of `~~save` and `~~restore`.
+  \ default actions of `~~before-info` and `~~after-info`.
   \
   \ ``~~xy-backup`` is part of the `~~` tool.
   \
   \ }doc
 
-defer ~~save ( -- ) defer ~~restore ( -- )
+defer ~~before-info ( -- )  defer ~~after-info ( -- )
 
   \ doc{
   \
-  \ ~~save ( -- ) "tilde-tilde-save"
+  \ ~~before-info ( -- ) "tilde-tilde-before-info"
   \
-  \ Save system status before executing the debugging code
-  \ compiled by `~~`..  This is a deferred word. Its default
-  \ action is to save the cursor coordinates.
+  \ Executed at the start of the debugging code compiled by
+  \ `~~`.  This is a deferred word. Its default action is
+  \ `~~save-xy`, which saves the cursor coordinates.
   \
-  \ See: `~~restore`, `~~save-xy`.
+  \ See: `~~after-info`, `~~save-xy`.
   \
   \ }doc
 
   \ doc{
   \
-  \ ~~restore ( -- ) "tilde-tilde-restore"
+  \ ~~after-info ( -- ) "tilde-tilde-after-info"
   \
-  \ Restore system status after executing the debugging code
-  \ compiled by `~~`.  This is a deferred word. Its default
-  \ action is to restore the cursor coordinates.
+  \ Executed at the end of the debugging code compiled by `~~`.
+  \ This is a deferred word. Its default action is
+  \ `~~restore-xy`, which restores the cursor coordinates.
   \
-  \ See: `~~save`, `~~restore-xy`.
+  \ See: `~~before-info`, `~~restore-xy`.
   \
   \ }doc
 
 : ~~save-xy ( -- ) xy ~~xy-backup 2! ;
+
+' ~~save-xy ' ~~before-info defer!
 
   \ doc{
   \
   \ ~~save-xy ( -- ) "tilde-tilde-save-x-y"
   \
   \ Save the cursor coordinates.  This is the default
-  \ action of `~~save`.
+  \ action of `~~before-info`.
   \
   \ ``~~save-xy`` is part of the `~~` tool.
   \
-  \ See: `~~restore-xy`, `~~restore`, `~~xy-backup`.
+  \ See: `~~restore-xy`, `~~after-info`, `~~xy-backup`.
   \
   \ }doc
 
 : ~~restore-xy ( -- ) ~~xy-backup 2@ at-xy ;
+
+' ~~restore-xy ' ~~after-info defer!
 
   \ doc{
   \
   \ ~~restore-xy ( -- ) "tilde-tilde-restore-x-y"
   \
   \ Restore the cursor coordinates.  This is the default
-  \ action of `~~restore`.
+  \ action of `~~after-info`.
   \
   \ ``~~restore-xy`` is part of the `~~` tool.
   \
-  \ See: `~~save-xy`, `~~save`, `~~xy-backup`.
+  \ See: `~~save-xy`, `~~before-info`, `~~xy-backup`.
   \
   \ }doc
-
-' ~~save-xy ' ~~save defer!  ' ~~restore-xy ' ~~restore defer!
-
-defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
-
-  \ doc{
-  \
-  \ ~~app-info ( -- ) "tilde-tilde-app-info"
-  \
-  \ A deferred word that can be used by the application in
-  \ order to show application-specific debugging information as
-  \ part of the debugging code compiled by `~~`.  By default it
-  \ does nothing.
-  \
-  \ See: `~~info`.
-  \
-  \ }doc
-
 
 : (~~ ( nt line block -- )
-  ~~? @ if    ~~save ~~app-info ~~info ~~control ~~restore
+  ~~? @ if    ~~before-info ~~info ~~control ~~after-info
         else  2drop drop  then ;
 
   \ doc{
   \
   \ (~~ ( nt n u -- ) "paren-tilde-tilde"
   \
-  \ If the content of `~~?` is not zero, execute the debugging
-  \ code that was compiled by `~~` during the definition of
-  \ word _nt_ in line _n_ of block _u_.
+  \ The runtime action compiled by `~~` during the definition
+  \ of word _nt_ in line _n_ of block _u_:
   \
-  \ See: `~~y`, `~~control`.
+  \ If the content of `~~?` is not zero, execute the following
+  \ words in the given order: `~~before-info`, `~~info`,
+  \ `~~control` and `~after-info`.
+  \
+  \ See: `~~y`.
   \
   \ }doc
 
@@ -265,14 +264,15 @@ defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
   \
   \ ~~ ( -- ) "tilde-tilde"
   \
-  \ Compile debugging code.
+  \ Compile the name token, block and line of the current
+  \ definition, and `(~~`.
   \
   \ ``~~`` is an `immediate` and `compile-only` word.
   \
   \ Origin: Gforth.
   \
   \ See: `(~~`, `~~?`, `~~y`, `~~quit-key`, `~~resume-key`,
-  \ `~~info`, `~~app-info`, `~~control` `~~save`, `~~restore`.
+  \ `~~info`, `~~control` `~~before-info`, `~~after-info`.
   \
   \ }doc
 
@@ -286,8 +286,8 @@ defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
   \
   \ 2016-11-25: Add a pause control with a configurable key to
   \ resume. Update and improve documentation. Convert the
-  \ default actions of `~~save` and `~~restore` to named words,
-  \ in order to make them easier to reuse.
+  \ default actions of `~~save` and `~~after-info` to named
+  \ words, in order to make them easier to reuse.
   \
   \ 2016-11-29: Improve `~~control` to wait for any key when
   \ `~~resume-key` is less than zero. This makes it possible to
@@ -329,5 +329,10 @@ defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
   \
   \ 2018-06-04: Update: remove trailing closing paren from word
   \ names. Link `variable` and `2variable` in documentation.
+  \
+  \ 2019-03-18: Rename `~~save` `~~before-info`. Rename
+  \ `~~restore` `~~after-info`. Remove `~~app-info` and make
+  \ `~~info` deferred: this is simpler and equally
+  \ configurable. Improve documentation.
 
   \ vim: filetype=soloforth
