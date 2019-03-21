@@ -3,14 +3,14 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201903151722
+; Last modified: 201903210043
 
 include version.z80s
 
 ; ==============================================================
 ; Author
 
-; Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+; Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018, 2019.
 
 ; ==============================================================
 ; License
@@ -9664,8 +9664,8 @@ refill.not_loading:
 ;
 ; fill ( ca len b -- )
 ;
-; If _u_ is not zero, store _b_ in each of _u_
-; consecutive characters of memory beginning at _a_.
+; If _len_ is greater than zero, store _b_ in each of _len_
+; consecutive bytes of memory beginning at _ca_.
 ;
 ; Origin: fig-Forth, Forth-83 (Required Word Set), Forth-94
 ; (CORE), Forth-2012 (CORE).

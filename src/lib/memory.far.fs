@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201903151617
+  \ Last modified: 201903210058
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -18,7 +18,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018, 2019.
 
   \ ===========================================================
   \ License
@@ -198,11 +198,9 @@ unneeding e-bank_
 
 previous set-current
 
-( farallot far, far-n, )
+( farallot far, far-n, farfill farerase )
 
-unneeding farallot
-
-?\ : farallot ( n -- ) np +! ;
+unneeding farallot ?\ : farallot ( n -- ) np +! ;
 
   \ doc{
   \
@@ -212,6 +210,8 @@ unneeding farallot
   \ space. If _n_ is less than zero, release _n_ bytes of
   \ headers space. If _n_ is zero, leave the headers-space
   \ pointer unchanged.
+  \
+  \ See: `farfill`, `far-banks`.
   \
   \ }doc
 
@@ -225,9 +225,12 @@ unneeding far, ?( need farallot
   \
   \ Compile _x_ in far-memory headers space.
   \
+  \ See: `far-n,`, `,`, `farallot`.
+  \
   \ }doc
 
 unneeding far-n, ?( need far,
+
 : far-n, ( x[u]..x[1] u -- ) 0 ?do far, loop ; ?)
 
   \ doc{
@@ -239,7 +242,40 @@ unneeding far-n, ?( need far,
   \ space, being _x[1]_ the first one stored and _x[u]_ the
   \ last one.
   \
-  \ See: `far,`, `n,`.
+  \ See: `far,`, `n,`, `farallot`.
+  \
+  \ }doc
+
+unneeding farfill ?(
+
+: farfill ( ca len b -- )
+  rot rot bounds ?do dup i farc! loop drop ; ?)
+
+  \ doc{
+  \
+  \ farfill ( ca len b -- ) "far-fill"
+  \
+  \ If _len_ is not zero, store _b_ in each of _len_
+  \ consecutive characters of far memory beginning at _a_.
+  \
+  \ See: `farerase`, `farallot`, `far-n,`, `farc!`,
+  \ `far-banks`.
+  \
+  \ }doc
+
+unneeding farerase
+
+?\ : farerase ( ca len -- ) bounds ?do 0 i farc! loop ;
+
+  \ doc{
+  \
+  \ farerase ( ca len -- ) "far-erase"
+  \
+  \ If _len_ is greater than zero, clear all bits in each of
+  \ _len_ consecutive address units of far memory beginning at
+  \ _ca_.
+  \
+  \ See: `farfill`, `farallot`, `far-n,`, `farc!`, `far-banks`.
   \
   \ }doc
 
@@ -560,5 +596,8 @@ code c@bank ( ca n -- c ) D1 c, e-bank_ call,
   \ 2018-04-12: Fix markup in documentation.
   \
   \ 2019-03-15: Add `far-n,`.
+  \
+  \ 2019-03-21: Add `farfill` and `farerase`. Improve
+  \ documentation.
 
   \ vim: filetype=soloforth
