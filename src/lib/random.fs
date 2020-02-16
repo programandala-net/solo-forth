@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091341
+  \ Last modified: 202002160127
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -16,7 +16,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -31,14 +32,14 @@ unneeding rnd ?(
 
 2variable rnd-seed  $0111 rnd-seed !
 
-: rnd ( -- u )
+: rnd ( -- x )
   rnd-seed 2@ $62DC um* rot 0 d+ over rnd-seed 2! ; ?)
 
   \ doc{
   \
-  \ rnd ( -- u ) "r-n-d"
+  \ rnd ( -- x ) "r-n-d"
   \
-  \ Return a random number _u_.
+  \ Generate a single-cell random number _x_.
   \
   \ See: `random`, `random-within`, `fast-rnd`.
   \
@@ -176,7 +177,8 @@ unneeding random-within ?( need random
   \
   \ random-within ( n1 n2 -- n3 )
   \
-  \ Return a random number _n3_ from _n1_ (min) to _n2_ (max).
+  \ Return a random number _n3_ from _n1_ (min) to _n2-1_
+  \ (max).
   \
   \ See: `random-between`, `random`, `within`.
   \
@@ -190,8 +192,7 @@ unneeding random-between ?( need random-within
   \
   \ random-between ( n1 n2 -- n3 )
   \
-  \ Return a random number _n3_ from _n1_ (min) to _n2-1_
-  \ (max).
+  \ Return a random number _n3_ from _n1_ (min) to _n2_ (max).
   \
   \ See: `random-within`, `random`, `between`.
   \
@@ -362,5 +363,9 @@ unneeding randomize0 ?( need os-frames need randomize
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-09: Add words' pronunciaton.
+  \
+  \ 2020-02-16: Fix documentation: the descriptions of
+  \ `random-within` and `random-between` were exchanged.
+  \ Improve some data stack comments.
 
   \ vim: filetype=soloforth
