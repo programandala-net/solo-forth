@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201807291956
+# Last modified: 201907122127
 # See change loge at the end of the file.
 
 # ==============================================================
@@ -367,7 +367,7 @@ tmp/disk_0_boot.trdos.tap: \
 		tmp/img.tap
 	cat $^ > $@
 
-disks/trdos/disk_0_boot.trd: tmp/disk_0_boot.trdos.tap
+disks/trdos/disk_0_boot.128.trd: tmp/disk_0_boot.trdos.tap
 	cd tmp && ln -sf $(notdir $<) TRDOS-D0.TAP && cd -
 	rm -f $@
 	ln -f make/emptytrd.exe make/writetrd.exe tmp/

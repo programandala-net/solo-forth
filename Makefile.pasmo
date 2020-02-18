@@ -31,8 +31,9 @@
 # ==============================================================
 # Config
 
-pasmo=/usr/local/bin/pasmo.054beta2
+#pasmo=/usr/local/bin/pasmo.054beta2
 #pasmo=/usr/local/bin/pasmo.053
+pasmo=/usr/local/bin/pasmo
 
 # ==============================================================
 # Kernel
@@ -198,3 +199,5 @@ tmp/kernel.trdos.pentagon_1024.bin.tap: \
 #
 # 2017-02-20: Build kernels for Scorpion ZS 256, Pentagon 512
 # and Pentagon 1024.
+#
+# 2019-07-12: Update the filename of Pasmo.
