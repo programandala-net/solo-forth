@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804012049
+  \ Last modified: 202002220127
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -31,7 +32,7 @@ unneeding str<
 
   \ doc{
   \
-  \ str< ( ca1 len1 ca2 len2 -- f ) "s-t-r-lees-than"
+  \ str< ( ca1 len1 ca2 len2 -- f ) "s-t-r-less-than"
   \
   \ Is string _ca1 len1_ lexicographically smaller than string
   \ _ca2 len2_?
@@ -1097,5 +1098,7 @@ unneeding unescape ?(
   \ `unneeding` lines. Update notation of stack comments.
   \
   \ 2018-04-01: Add `str<>`.
+  \
+  \ 2020-02-22: Fix typo.
 
   \ vim: filetype=soloforth
