@@ -3,8 +3,8 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201907122127
-# See change loge at the end of the file.
+# Last modified: 202002262048.
+# See change log at the end of the file.
 
 # ==============================================================
 # Author
@@ -939,7 +939,7 @@ oldbackup:
 # `%` works only at the start of the filter pattern
 
 # ==============================================================
-# History
+# Change log
 
 # 2015-06-02: Start.
 #
