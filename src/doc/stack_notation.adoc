@@ -3,7 +3,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 201807222007
+// Last modified: 202002271504
 // See change log at the end of the file
 
 === Stack notation
@@ -52,9 +52,9 @@ symbols for aligned addresses are used in the source, for clarity.
 | Symbol     | Data type                                     | Size   | Range
 
 | a           | address                                      | 1 cell | 0 .. 65535
-| aa          | aligned addressfootnoteref:[align,{addrnote}]| 1 cell | 0 .. 65535
-| ca          | character-aligned addressfootnoteref:[align] | 1 cell | 0 .. 65535
-| fa          | float-aligned addressfootnoteref:[align]     | 1 cell | 0 .. 65535
+| aa          | aligned addressfootnote:align:[{addrnote}]   | 1 cell | 0 .. 65535
+| ca          | character-aligned addressfootnote:align:[]   | 1 cell | 0 .. 65535
+| fa          | float-aligned addressfootnote:align:[]       | 1 cell | 0 .. 65535
 
 | f           | well-formed flag (false: 0; true: -1)        | 1 cell | -1 .. 0
 | 0f          | zero flag (false: 0; true: non-zero)         | 1 cell | -32768 .. 65535
@@ -117,8 +117,8 @@ symbols for aligned addresses are used in the source, for clarity.
 | k*x         | any data type                                | 0 or more cells |
 | u*x         | u elements of type x (eg. ``u*wid``)         | 0 or more cells |
 
-| r           | a floating point real number                 | 5 bytesfootnoteref:[float,{floatnote}] | 1E-38 .. 1E38
-| rf          | a floating point real number flag            | 5 bytesfootnoteref:[float] | 0 .. 1
+| r           | a floating point real number                 | 5 bytesfootnote:float:[{floatnote}] | 1E-38 .. 1E38
+| rf          | a floating point real number flag            | 5 bytesfootnote:float:[] | 0 .. 1
 
 | op          | Z80 8-bit opcode, generally a jump           | 1 cell | 0 .. 255
 | reg         | Z80 8-bit register identifier                | 1 cell | 0 .. 7
@@ -176,3 +176,5 @@ symbols for aligned addresses are used in the source, for clarity.
 // 2018-04-13: Improve documentation.
 //
 // 2018-07-22: Fix typo. Improve wording.
+//
+// 2020-02-27: Update Asciidoctor's footnote markups.

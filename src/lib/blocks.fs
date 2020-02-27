@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041144
+  \ Last modified: 202002271516
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -293,7 +294,7 @@ variable loading-program
   \ `end-program` is executed.
   \
   \ ``(load-program`` is a factor of `load-program`.
-  \ ``(load-program`` can be used to resume the `load-program`
+  \ ``(load-program`` can be used to resume `load-program`
   \ after an error, provided the code of block where the error
   \ happened (`lastblk`) is not the continuation of the
   \ previous block.
@@ -384,5 +385,7 @@ variable loading-program
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2020-02-27: Fix typo.
 
   \ vim: filetype=soloforth

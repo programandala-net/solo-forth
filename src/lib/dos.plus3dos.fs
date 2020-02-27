@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804161949
+  \ Last modified: 202002271513
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -485,7 +485,7 @@ unneeding 'ctrl-z' ?\ $1A cconstant 'ctrl-z'
 
   \ doc{
   \
-  \ 'ctrl-z' ( -- c )
+  \ 'ctrl-z' ( -- c ) "tick-control-z-tick"
   \
   \ _c_ is the character used by +3DOS for padding the files,
   \ which is $1A.
@@ -1654,5 +1654,7 @@ need reposition-file need file-position
   \ 2018-03-29: Add `get-user` and `set-user`.
   \
   \ 2018-04-16: Update description of _ior_ stack notation.
+  \
+  \ 2020-02-27: Add pronunciation of `'ctrl-z'`.
 
   \ vim: filetype=soloforth
