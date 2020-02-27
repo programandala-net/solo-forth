@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-02-19
+:revdate: 2020-02-27
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -900,12 +900,13 @@ Improve tab control.
 // Documentation {{{1
 == Documentation
 
-=== 2020-02-19
+=== 2020-02-27
 
-NOTE: Milestone: 0.14.0
+Add this sections to the manual:
 
-- Build EPUB version of all manuals, with pandoc, asciidoctor-epub3 and other
-	tools.
+- A reference guide by subject, e.g. graphics, sound, blocks, files, control
+  flow structures, etc.
+- A description of the library modules.
 
 === 2018-07-21
 
@@ -914,7 +915,6 @@ NOTE: Milestone: 0.14.0
 - Factor the setting of the library disks from section "How to use the
   library", and link that part from "How to load a program that needs the
   library" and "How to test and benchmark".
-- Link the words mentioned in the description of exception codes.
 
 === 2018-07-20
 
@@ -942,13 +942,6 @@ NOTE: Milestone: 0.14.0
 
 Replace term "characters" with "bytes".
 
-=== 2018-03-08
-
-NOTE: Milestone: 0.14.0
-
-Confirm if pronunciation of ISO is letter by letter. Update
-`mode-32iso` and friends.
-
 === 2018-03-07
 
 NOTE: Milestone: 0.14.0
@@ -960,7 +953,7 @@ NOTE: Milestone: 0.14.0
 How a link to `default-1346` (a +3DOS-only word) can be included in
 the documentation of `far-banks` (a DOS-independent word)? The link
 would be broken in G+DOS and TR-DOS. Fake glossary entries could be
-created it them, with a note: "not available".
+created in them, with a note: "not available".
 
 === 2017-12-14
 
@@ -1025,8 +1018,8 @@ ____
 
 === 2017-04-27
 
-Fix: Glossary cross references to Forth words that contain a
-backslash, or that are included in code examples, are corrupted.
+Fix: The glossary cross references to Forth words that contain a backslash, or
+that are included in code examples, are corrupted.
 
 === 2017-03-04
 
@@ -2741,6 +2734,11 @@ Options to make it easier to share code with other systems:
 
 // Project tree {{{1
 == Project tree
+
+=== 2020-02-27
+
+- Move <fonts> to the root.
+- Make <img> and move <screenshots> and <backgrounds> to it.
 
 // System {{{1
 == System

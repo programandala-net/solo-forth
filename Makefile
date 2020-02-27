@@ -3,13 +3,13 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202002262048.
+# Last modified: 202002271754.
 # See change log at the end of the file.
 
 # ==============================================================
 # Author
 
-# Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+# Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018, 2020.
 
 # ==============================================================
 # License
@@ -31,6 +31,9 @@
 # 	http://metalbrain.speccy.org/link-eng.htm
 
 # cat (from the GNU coreutils)
+
+# dbtoepub
+# 	http://docbook.sourceforge.net/release/xsl/current/epub/README
 
 # dd (from the GNU coreutils)
 
@@ -60,13 +63,13 @@
 #		http://www.seasip.info/ZX/unix.html
 
 # zmakebas (by Russell Marks)
-#   Usually included in Linux distros. Also see:
+# Usually included in Linux distros. Also see:
 # 	http://sourceforge.net/p/emuscriptoria/code/HEAD/tree/desprot/ZMakeBas.c
 # 	https://github.com/catseye/zmakebas
 # 	http://zmakebas.sourcearchive.com/documentation/1.2-1/zmakebas_8c-source.html
 
 # zx7 (by Einar Saukas)
-# http://www.worldofspectrum.org/infoseekid.cgi?id=0027996
+# 	http://www.worldofspectrum.org/infoseekid.cgi?id=0027996
 
 # ==============================================================
 # Config
@@ -200,6 +203,21 @@ pdoc: plus3dosdoc
 
 .PHONY: tdoc
 tdoc: trdosdoc
+
+.PHONY: epub
+epub: gplusdosepub plus3dosepub trdosepub
+
+.PHONY: html
+html: \
+		doc/gplusdos_solo_forth_manual.html \
+		doc/plus3dos_solo_forth_manual.html \
+		doc/trdos_solo_forth_manual.html
+
+.PHONY: pdf
+pdf: \
+		doc/gplusdos_solo_forth_manual.pdf \
+		doc/plus3dos_solo_forth_manual.pdf \
+		doc/trdos_solo_forth_manual.pdf
 
 # ==============================================================
 # Debug
@@ -687,26 +705,23 @@ tmp/doc.z80_flags_notation.linked.adoc: src/doc/z80_flags_notation.adoc
 tmp/doc.README.linked.adoc: README.adoc
 	glosara --annex $< > $@
 
-%.docbook: %.adoc
-	asciidoctor --backend=docbook --out-file=$@ $<
+# %.docbook: %.adoc
+# 	asciidoctor --backend=docbook --out-file=$@ $<
 
-# %.epub: %.docbook
-# 	pandoc --output=$@ -f docbook -t epub $<
+%doc.gplusdos.manual.docbook: %doc.gplusdos.manual.adoc
+	asciidoctor --backend=docbook --attribute=dosname=G+DOS --out-file=$@ $<
 
-%.epub: %.docbook
-	make/docbook2epub.py $<
+%doc.plus3dos.manual.docbook: %doc.plus3dos.manual.adoc
+	asciidoctor --backend=docbook --attribute=dosname=+3DOS --out-file=$@ $<
 
-%.html.epub: %.html
-	pandoc --output=$@ -f html -t epub $<
+%doc.trdos.manual.docbook: %doc.trdos.manual.adoc
+	asciidoctor --backend=docbook --attribute=dosname=TR-DOS --out-file=$@ $<
 
-%.docbook.epub: %.docbook
+%.docbook.dbtoepub.epub: %.docbook
+	dbtoepub -o $@ $<
+
+%.docbook.pandoc.epub: %.docbook
 	pandoc --output=$@ -f docbook -t epub $<
-
-# XXX FIXME -- Pandoc does not preserve the HTML anchor ids.
-# Therefore the links are useless.
-
-# XXX OLD
-# dbtoepub --output=$@ $<
 
 # ----------------------------------------------
 # Documentation for G+DOS
@@ -765,9 +780,6 @@ tmp/doc.gplusdos.manual.adoc: \
 	tmp/doc.gplusdos.glossary.adoc
 	cat $^ > $@
 
-# doc/gplusdos_solo_forth_manual.epub: doc/gplusdos_solo_forth_manual.docbook
-# 	pandoc --output=$@ -f docbook -t epub $<
-
 # XXX OLD
 # dbtoepub --output=$@ $<
 
@@ -778,13 +790,13 @@ tmp/doc.gplusdos.manual.adoc: \
 .PHONY: gplusdosdoc
 gplusdosdoc: \
 	doc/gplusdos_solo_forth_manual.html \
-	doc/gplusdos_solo_forth_manual.pdf.gz
+	doc/gplusdos_solo_forth_manual.pdf.gz \
+	gplusdosepub
 
-# XXX TMP -- Experimental:
-.PHONY: epub
-epub: \
-	doc/gplusdos_solo_forth_manual.html.epub \
-	doc/gplusdos_solo_forth_manual.docbook.epub
+.PHONY: gplusdosepub
+gplusdosepub: \
+	doc/gplusdos_solo_forth_manual.docbook.pandoc.epub \
+	doc/gplusdos_solo_forth_manual.docbook.dbtoepub.epub
 
 # ----------------------------------------------
 # Documentation for +3DOS
@@ -825,6 +837,12 @@ tmp/doc.plus3dos.manual_skeleton.adoc: \
 	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
 	sed -e "s/%VERSION%/$${version}/" $< > $@
 
+# Preserve the links in the DocBook source by removing the
+# enclosing <literal> tags:
+
+doc/plus3dos_solo_forth_manual.docbook: tmp/doc.plus3dos.manual.docbook
+	sed -e "s/<literal><link/<link/g" -e "s/<\/link><\/literal>/<\/link>/g" $< > $@
+
 tmp/doc.plus3dos.manual.adoc: \
 	tmp/doc.plus3dos.manual_skeleton.linked.adoc \
 	tmp/doc.stack_notation.linked.adoc \
@@ -836,7 +854,13 @@ tmp/doc.plus3dos.manual.adoc: \
 .PHONY: plus3dosdoc
 plus3dosdoc: \
 	doc/plus3dos_solo_forth_manual.html \
-	doc/plus3dos_solo_forth_manual.pdf.gz
+	doc/plus3dos_solo_forth_manual.pdf.gz \
+	plus3dosepub
+
+.PHONY: plus3dosepub
+plus3dosepub: \
+	doc/plus3dos_solo_forth_manual.docbook.pandoc.epub \
+	doc/plus3dos_solo_forth_manual.docbook.dbtoepub.epub
 
 # ----------------------------------------------
 # Documentation for TR-DOS
@@ -879,6 +903,12 @@ tmp/doc.trdos.manual_skeleton.adoc: \
 	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
 	sed -e "s/%VERSION%/$${version}/" $< > $@
 
+# Preserve the links in the DocBook source by removing the
+# enclosing <literal> tags:
+
+doc/trdos_solo_forth_manual.docbook: tmp/doc.trdos.manual.docbook
+	sed -e "s/<literal><link/<link/g" -e "s/<\/link><\/literal>/<\/link>/g" $< > $@
+
 tmp/doc.trdos.manual.adoc: \
 	tmp/doc.trdos.manual_skeleton.linked.adoc \
 	tmp/doc.stack_notation.linked.adoc \
@@ -890,7 +920,13 @@ tmp/doc.trdos.manual.adoc: \
 .PHONY: trdosdoc
 trdosdoc: \
 	doc/trdos_solo_forth_manual.html \
-	doc/trdos_solo_forth_manual.pdf.gz
+	doc/trdos_solo_forth_manual.pdf.gz \
+	trdosepub
+
+.PHONY: trdosepub
+trdosepub: \
+	doc/trdos_solo_forth_manual.docbook.pandoc.epub \
+	doc/trdos_solo_forth_manual.docbook.dbtoepub.epub
 
 # ==============================================================
 # Backup
@@ -1183,3 +1219,5 @@ oldbackup:
 # 2018-07-22: Add a header to the tables of exception codes.
 #
 # 2018-07-29: Rename the TR-DOS disk image used for 128-KiB machines.
+#
+# 2020-02-27: Build EPUB versions of the manuals.
