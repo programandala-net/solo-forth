@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201807211756
+; Last modified: 202002271839
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -14,7 +14,7 @@
 ; ==============================================================
 ; Author
 
-; Marcos Cruz (programandala.net), 2016, 2017, 2018.
+; Marcos Cruz (programandala.net), 2016, 2017, 2018, 2020.
 
 ; ==============================================================
 ; License
@@ -781,7 +781,9 @@ if 0 ; XXX TMP --
 
 ; doc{
 ;
-; (>file) ( -- ior )
+; (>file ( -- ior )
+;
+; See: `>file`.
 ;
 ; }doc
 
@@ -824,10 +826,20 @@ paren_to_file.exit:
 ; ----------------------------------------------
   _colon_header to_file_,'>file'
 
+; doc{
+;
+; >file ( ca1 len1 ca2 len2 -- ior )
+
+; Definition:
+
 ; ----
 ; : >file ( ca1 len1 ca2 len2 -- ior )
-;   filename>fda file-length ! file-address ! (>file) ;
+;   filename>fda file-length ! file-address ! (>file ;
 ; ----
+
+; See: `filename>fda`, `file-length`, `file-address`, `(>file`.
+;
+; }doc
 
   dw filename_to_fda_
   dw file_length_,store_
@@ -1172,5 +1184,7 @@ endif ; defined trdos
 ; 2018-06-04: Update: remove closing paren from word names.
 ;
 ; 2018-07-21: Improve documentation of `set-drive`.
+;
+; 2020-02-27: Improve documentation.
 
 ; vim: filetype=z80:textwidth=64

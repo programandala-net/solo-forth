@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201806101144
+  \ Last modified: 202002271834
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -16,7 +16,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -27,13 +28,14 @@
 
 ( extend system-size system-zone turnkey )
 
-  \ XXX WARNING -- Since name fields are saved in a memory
-  \ bank, the best way to save a modified Forth system is to
-  \ make a snapshot with the ZX Spectrum emulator; otherwise a
-  \ multipart saving and loading would be needed.  Anyway,
-  \ these words are meant to save a Forth program that does not
-  \ need to search the dictionary.
-  \
+  \ XXX WARNING -- Since name fields are kept in a memory bank,
+  \ the best way to save a modified Forth system is creating a
+  \ snapshot with a ZX Spectrum emulator, or with the
+  \ equivalent feature provided by certain interfaces or modern
+  \ ZX Spectrum clones.  ``turnkey`` and its related words are
+  \ meant to save a Forth program that does not need to search
+  \ the dictionary or use data already stored in paged memory.
+
   \ XXX TODO -- Study how to save and load the names bank, even
   \ after assembling the kernel.
 
@@ -100,6 +102,14 @@
   \ ' my-game turnkey s" my-game" >tape-file
   \ ----
 
+  \ WARNING: Since name fields are kept in a memory bank, the
+  \ best way to save a modified Forth system is creating a
+  \ snapshot with a ZX Spectrum emulator, or with the
+  \ equivalent feature provided by certain interfaces or modern
+  \ ZX Spectrum clones.  ``turnkey`` and its related words are
+  \ meant to save a Forth program that does not need to search
+  \ the dictionary or use data already stored in paged memory.
+  \
   \ See: `boot`, `extend`, `system-zone`, `cold`.
   \
 
@@ -123,5 +133,7 @@
   \ Rename `system` to `system-zone`.
   \
   \ 2018-06-10: Update and complete `extend`.
+  \
+  \ 2020-02-27: Improve documentation.
 
   \ vim: filetype=soloforth

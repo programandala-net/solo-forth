@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041137
+  \ Last modified: 202002271845
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -56,7 +57,7 @@ unneeding >form ?( need form>xy need columns need rows need to
   \ display mode whose `form` is _cols rows_.
   \
   \ ``>form`` is used by the display modes, e.g. `mode-32` and
-  \ `mode-64o`.
+  \ `mode-64ao`.
   \
   \ NOTE: When ``>form`` is executed, the action of `at-xy`
   \ must be that of the new mode, but `xy`, `rows` and
@@ -74,7 +75,7 @@ unneeding form ?( need columns need rows
   \ form ( -- cols rows )
   \
   \ Number of `columns` and `rows` in the terminal in the
-  \ current display mode (e.g. `mode-32`, `mode-64o`).
+  \ current display mode (e.g. `mode-32`, `mode-64ao`).
   \
   \ Origin: Gforth.
   \
@@ -225,5 +226,8 @@ code (banked-mode-output ( -- )
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2020-02-27: Fix: update names that renamed in 2018-01-24:
+  \ "64o" (Owen) -> "64ao" (Andrew Owen).
 
   \ vim: filetype=soloforth

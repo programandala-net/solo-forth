@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041102
+  \ Last modified: 202002271805
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -96,7 +97,7 @@ unneeding words ?( need trail need more-words?
   \ Origin: Forth-83 (Uncontrolled Reference Words), Forth-94
   \ (TOOLS), Forth-2012 (TOOLS).
   \
-  \ See: `wordlist-wordls`, `wordlists`.
+  \ See: `wordlist-words`, `wordlists`.
   \
   \ }doc
 
@@ -194,5 +195,7 @@ unneeding words# ?( need trail need name<name
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2020-02-27: Fix typo in documentation.
 
   \ vim: filetype=soloforth

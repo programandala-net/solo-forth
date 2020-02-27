@@ -3,14 +3,15 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201903210043
+; Last modified: 202002271815
 
 include version.z80s
 
 ; ==============================================================
 ; Author
 
-; Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018, 2019.
+; Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018, 2019,
+; 2020.
 
 ; ==============================================================
 ; License
@@ -14497,6 +14498,8 @@ if 1 ; developing
 
   ; XXX TODO -- Move to the library.
 
+; doc{
+;
 ; u. ( u -- ) "u-dot"
 ;
 ; Display _u_ in free field format.
@@ -14511,6 +14514,8 @@ if 1 ; developing
 ; Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; See: `u.r`, `ud.`, `.`.
+;
+; }doc
 
   _literal 0 ; XXX TODO -- `s>d`
   dw d_dot_ ; XXX TODO -- `ud.`

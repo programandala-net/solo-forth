@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804132007
+  \ Last modified: 202002271822
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -50,7 +51,7 @@ need os-flags2 need ctoggle need cset need creset
   \ Toggle capslock.
   \
   \ See: `set-capslock`, `unset-capslock`, `capslock?`,
-  \ `capslock`, `ctoogle`.
+  \ `capslock`, `ctoggle`.
   \
   \ }doc
 
@@ -106,5 +107,7 @@ need os-flags2 need ctoggle need cset need creset
   \ 2017-02-17: Update cross references.
   \
   \ 2018-04-13: Improve documentation.
+  \
+  \ 2020-02-27: Fix typo in documentation.
 
   \ vim: filetype=soloforth

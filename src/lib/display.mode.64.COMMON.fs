@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041324
+  \ Last modified: 202002271844
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -22,7 +22,7 @@
   \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027130
 
   \ Marcos Cruz (programandala.net) adapted the fonts to Solo
-  \ Forth, 2017, 2018.
+  \ Forth, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -137,8 +137,8 @@ decimal
   \ mini-64cpl-font ( -- a ) "mini-64-c-p-l-font"
   \
   \ _a_ is the address of a 4x8-pixel font compiled in data
-  \ space (336 bytes used), to be used in `mode-64o` by setting
-  \ `mode-64-font` first.
+  \ space (336 bytes used), to be used in `mode-64ao` by
+  \ setting `mode-64-font` first.
   \
   \ This font is included also in disk 0 as "mini.f64".
   \
@@ -228,7 +228,7 @@ decimal
   \ nbot-64cpl-font ( -- a ) "n-bot-64-c-p-l-font"
   \
   \ _a_ is the address of a 4x8-pixel font compiled in data
-  \ space (336 bytes used), to be used in `mode-64o` by setting
+  \ space (336 bytes used), to be used in `mode-64ao` by setting
   \ `mode-64-font` first.
   \
   \ This font is included also in disk 0 as "nbot.f64".
@@ -321,7 +321,7 @@ decimal
   \ omn1-64cpl-font ( -- a ) "omn-1-64-c-p-l-font"
   \
   \ _a_ is the address of a 4x8-pixel font compiled in data
-  \ space (336 bytes used), to be used in `mode-64o` by setting
+  \ space (336 bytes used), to be used in `mode-64ao` by setting
   \ `mode-64-font` first.
   \
   \ This font is included also in disk 0 as "omn1.f64".
@@ -412,7 +412,7 @@ decimal
   \ omn2-64cpl-font ( -- a ) "omn-2-64-c-p-l-font"
   \
   \ _a_ is the address of a 4x8-pixel font compiled in data
-  \ space (336 bytes used), to be used in `mode-64o` by setting
+  \ space (336 bytes used), to be used in `mode-64ao` by setting
   \ `mode-64-font` first.
   \
   \ This font is included also in disk 0 as "omn2.f64".
@@ -504,8 +504,8 @@ decimal
   \ owen-64cpl-font ( -- a ) "owen-64-c-p-l-font"
   \
   \ _a_ is the address of a 4x8-pixel font compiled in data
-  \ space (336 bytes used), to be used in `mode-64o` by setting
-  \ `mode-64-font` first.
+  \ space (336 bytes used), to be used in `mode-64ao` by
+  \ setting `mode-64-font` first.
   \
   \ This font is included also in disk 0 as "owen.f64".
   \
@@ -546,5 +546,9 @@ decimal
   \ words that need it.
   \
   \ 2018-06-04: Link `variable` in documentation.
+  \
+  \ 2020-02-27: Fix: update documentation with names that were
+  \ renamed in 2018-01-24: "64o" (Owen) -> "64ao" (Andrew
+  \ Owen).
 
   \ vim: filetype=soloforth
