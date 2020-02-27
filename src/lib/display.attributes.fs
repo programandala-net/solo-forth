@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041330
+  \ Last modified: 202002270143
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -227,7 +228,7 @@ unneeding papery ?( need 8* need alias
   \
   \ ``papery`` is an alias of `8*`, which is written in Z80.
 
-  \ See: `brighty`, `flashy`, `attr>paper`, `contrast,
+  \ See: `brighty`, `flashy`, `attr>paper`, `contrast`,
   \ `inversely`.
   \
   \ }doc
@@ -1326,5 +1327,7 @@ unneeding (0-1-8-color.
   \ 2018-03-08: Add words' pronunciaton.
   \
   \ 2018-06-04: Link `cconstant` in documentation.
+  \
+  \ 2020-02-27: Fix markup in documentation.
 
   \ vim: filetype=soloforth

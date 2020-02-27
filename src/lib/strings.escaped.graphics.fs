@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041324
+  \ Last modified: 202002270124
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -78,7 +78,7 @@ wordlist dup constant esc-block-chars-wordlist
   \ | \::               | 143
   \ |===
 
-  \ In order to make `s\", `.\"` and their common factor
+  \ In order to make `s\"`, `.\"` and their common factor
   \ `parse-esc-string` recognize the escaped block characters,
   \ `esc-block-chars-wordlist` must be pushed to the escaped
   \ strings search order.  Example:
@@ -217,5 +217,7 @@ set-current
   \ 2018-04-14: Fix markup in documentation.
   \
   \ 2018-06-04:  Link `variable` in documentation.
+  \
+  \ 2020-02-27: Fix markup in documentation.
 
   \ vim: filetype=soloforth

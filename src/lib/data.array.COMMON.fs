@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201805011545
+  \ Last modified: 202002270032
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -141,7 +141,7 @@ code 2array< ( a1 n -- a2 )
   \ : 2array< ( a1 n -- a2 ) [ 2 cells ] literal * + ;
   \ ----
 
-  \ See: `2array>, `array<`.
+  \ See: `2array>`, `array<`.
   \
   \ }doc
 
@@ -180,6 +180,8 @@ code 2array< ( a1 n -- a2 )
   \ 2018-04-14: Fix markup in documentation.
   \
   \ 2018-05-01: Fix typo in documentation.
+  \
+  \ 2020-02-27: Fix markup in documentation of `2array<`.
 
   \ vim: filetype=soloforth
 

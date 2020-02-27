@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201807202342
+  \ Last modified: 202002270049
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -126,7 +127,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \ Origin: Gforth.
   \
   \ See: `assert-level`, `assert(`, `assert1(`, `assert2(`,
-  \ assert3(`, `)`.
+  \ `assert3(`, `)`.
   \
   \ }doc
 
@@ -198,7 +199,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \ Origin: Gforth.
   \
   \ See: `assert-level`, `assert0(`, `assert1(`,
-  \ `assert2(`, assert3(`, `)`.
+  \ `assert2(`, `assert3(`, `)`.
   \
   \ }doc
 
@@ -248,5 +249,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \ word names. Link `variable` in documentation.
   \
   \ 2018-07-20: Fix typo in documentation markup.
+  \
+  \ 2020-02-27: Fix markups in documentation.
 
   \ vim: filetype=soloforth
