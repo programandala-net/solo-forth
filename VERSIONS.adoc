@@ -1,6 +1,6 @@
 = Solo Forth version history
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-09-01
+:revdate: 2020-02-26
 :toc:
 
 // This file is part of Solo Forth
@@ -31,6 +31,335 @@ chapter 1, page 21.
 The ZX Spectrum image was created from
 http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=0009605796[image
 0009605796 of QBI].
+
+=== New
+
+- Add frames converters: `frames/second`, `frames>seconds`,
+  `frames>cs`, `frames>ms`.
+- Add `gigatype-style` to improve `gigatype`.  Move the `gigatype`
+  style from the stack to `gigatype-style`. This makes the usage
+  simpler and compatible with the ordinary `type`. Update and improve
+  documentation.
+- Add "The ultimate Forth Benchmark".  Adapted from
+  https://theultimatebenchmark.org/.
+- Add `farfill`, `farerase`.
+- Add far-memory variants of `localized-string`.
+- Add translation tools.
+- Add `mim-rng-px-bench`.
+- Add `min>top`, `max>top`, `pair=`.
+- Add toy `the-matrix`.
+- Add TR-DOS `get-drive`.
+- Add `?set-drive`.
+- Add TR-DOS `3-block-drives` and `4-block-drives`.  The TR-DOS
+  version of the library has to be split in two disks, because the
+  disk size is only 640 KiB (636 KiB usable for blocks). These words
+  will be helpful for using it.
+- Add `str<>`.
+- Add +3DOS `eof?`, `get-user` and `set-user`.
+- Add `clocal`, `2local`.
+- Draft G+DOS `sectors-used`, `drive-used`, `drive-unused`.
+- Add +3DOS `flush-drive`.
+- Add +3DOS `drive-unused`.
+- Add G+DOS `tracks/disk`, `tracks/cat`.
+- Add +3DOS `write-line` and `read-line`.
+- Add `0leave`.
+- Add +3DOS `write-byte` and `read-byte`.
+- Add `'lf'`.
+- Add `emit-ascii`.
+- Add `eol?`, `newline`.
+- Add +3DOS `file-size`.
+- Add `os-prog`, `os-unused`, `?os-unused`, `os-ramtop`, `os-stkend`.
+- Add `chan>`, `chan>id`, `stream>`, `stream?`.
+- Add `os-streams`, `.os-strms` and `.os-chans`.
+- Add `dfca` and `current-channel`.
+- Add G+DOS `((cat`.
+- Add `array<` and `2array<`.
+- Add routines to save/restore the Forth IP in +3DOS.  They will be
+  needed to implement `write-file` and friends.
+- Add +3DOS `bank-write-file` and `write-file`.
+- Factor +3DOS `default-1346` from `cold`.
+- Factor `default-display` from `cold`.
+- Add `no-exit`.
+- Factor `d>str` from `d.r`.
+- New words common to all display modes: `form>xy`, `>form`, `form`.
+- Add `.2x1-udg`.
+- Add `csprite`.
+- Add `display>tape-file` and `tape-file>display`.
+- Add the 64-cpl fonts of the 64#4 driver.
+- Add `8+` and `8-` They will be useful for writing new variants of
+  UDG sprites.
+- Add `emit-udga`.
+- Add `#do`.
+- Add +3DOS `acat` and `wacat`.
+- Add +3DOS `full-cat` flag.
+- Add `home?`.
+- Add `/first-name`.
+- Add `i'`, `j'', `k'`.
+- Add `-keys`, `new-key`, `new-key-`.
+- Add 2-cell variants of `ticks` (old `frames`).
+- Add `elapsed`, `delapsed`, `timer` and `dtimer`.
+- Add `expired` and `dexpired`.
+- Add `n>str`.
+- Add `?depth`.
+- Add `cs-dup`, `cs-mark`, `cs-test`.
+- Add `0repeat`.
+- Add `coff` and `c?`.
+- Add `ms>ticks`.
+- Add `>name/order`.
+- Add `>oldest-name/order`.
+- Add `>oldest-name` and `>oldest-name/fast`.
+- Add `empty-stack`, a useful factor of `(abort)`.
+- Add `c@1+` and `c@1-`.
+- Add `attr-wcls`, `wcolor`.
+- Add `x>gx` and `y>gy`.
+- Add `c@2+` and `c@2-`.
+- Add `andif` and `orif`.
+- Add `?c1-!`.
+- Add `3*`.
+- Add `manual-see` control to `see`.
+- Add `,udg-block`, `,udg-block-test`.
+- Add `con`.
+- Add assembler debug tools `<<` and `>>`.
+- Add `astack`.
+- Add `inversely`.
+- Add `key-graphics`, `key-true-video`, `key-inverse-video`,
+  `key-caps-lock`.
+- Add `unpick`.
+- Add `4dup`.
+- Add `2-block-drives`.
+- Add new tests.
+- Add +3DOS `read-file` and `bank-read-file`.
+- Add G+DOS `-uifa` and draft `create-file`.
+- Add G+DOS `bin`, `r/o`, `w/o`, `r/w`.
+- Add a G+DOS UFIA data structure.  First step to implement file
+  identifiers.
+- Add G+DOS `create-file`.
+
+=== Fixes
+
+- Make control-flow-stack words compile-only.
+- Fix needing of `d0=` and `d=`.
+- Fix needing of `farcavariable`.
+- Fix needing of `needing`.
+- Rewrite/fix +3DOS `set-drive` & `transfer-sector`.  An important
+  fix. Now +3DOS can use both drive units as block drives.  Therefore
+  `2-block-drives` can be used.
+- Fix needing of G+DOS `dfca`.
+- Fix needing of `c?`; add `2?`.
+- Fix `eol?`.
+- Fix +3DOS `reposition-file`.
+- Fix +3DOS `file-position`.
+- Fix `d2/`.
+- Fix needing of `set-pixel`.
+- Fix and finish +3DOS `wcat`.
+- Fix +3DOS `.cat-entry`.
+- Fix needing of `thens`.
+- Fix `do-dos-open_`.
+- Add `default-mode` & `reset-default-mode` to `cold`.  This fixes an
+  evident but subtle bug.
+- Fix needing of `cs-roll` and `cs-pick`.
+- Fix and improve needing of `to`.
+- Fix requirements of `cs-test`.
+- Fix needing of `defer@`.
+- Fix TR-DOS `read-system-track`.
+- Fix `d2/`.
+- Fix `c@1+` and `c@1-`.
+- Fix requirement of `>oldest-name`.
+- Fix `?c1-!`.
+- Fix/improve "kk" and other keyboard tools.
+- Fix port of key row Caps Shift-V.
+- Fix `key-delete`.
+- Fix `unfit?`.
+- Fix `}` in Hayes tester.
+- Fix `marker`.
+- Fix `blk-line`.
+- Fix requirement of `2value`.
+- Fix requirement of `[char]`.
+- Fix `d2/`.
+- Fix `m*/`.
+- Fix `m+`.
+- Fix requirement of `index`.
+
+=== Improvements
+
+- Improve documentation.  Almost all kernel definitions, and their
+  library variants, are documented.  Now all Forth words mentioned in
+  the manual outside the glossary are linked to their corresponding
+  glossary entries.
+- Make the manuals more DOS-specific.
+- Homogenize description of _ior_ notation.
+- Rewrite `d0=` in Z80.  Much faster, and only two more bytes needed.
+- Improve `bench.` to display seconds with hundrendths precision.
+- Rename and document the ROM calculator commands.  Now all calculator
+  commands and friends have a "|" prefix.  This makes the code
+  clearer, makes search order changes unnecessary and makes a single
+  glossary possible
+- Improve `quit`.  Now the return is stack is emptied only once
+  instead of in the loop, following the standard.  `terminal>source`
+  was unnecessary, because it's included in `query`.
+- Improve needing of G+DOS directory descriptions.
+- Improve the `{if` control structure.
+- Simplify `where`.
+- Improve the width of table columns in the manual.
+- Improve `s,` and `fars,`.
+- Simplify `retry`.
+- Improve `extend` and `turnkey`.  Still under development, though.
+- Improve `in-block-header?`.
+- Make G+DOS `get-drive` return an I/O result.  It's a fake value, but
+  it makes the word compatible with +3DOS and TR-DOS.
+- Rewrite `?` in Z80 and combine it with `.`.  This is faster and
+  saves 4 bytes.
+- Make `eol?` check `newline`.  This is more versatile.
+- Improve `open-ot-file` with `?fam`, `/w/o`, `/r/o`.
+- Make G+DOS `set-ot-file` choose an unused stream.
+- Improve `.os-chans`.
+- Improve the 128K sound editor.
+- Make `[needed]` optional.  It's almost useless. No need to load it
+  with the `need` tool.
+- Improve G+DOS `get-drive`.
+- Rewrite G+DOS `back-from-dos-error_` with Z80 opcodes.
+- Improve TR-DOS `cat`.
+- Improve needing of `y/n?` module.
+- Improve `next`; remove `push_hlde` from the kernel.  The `next` code
+  (the inner interpreter) has been moved after `exit` and copied after
+  `do_colon`.  This reduces nesting time to 0.92.  Jumps to
+  `push_hlde`, which was a secondary entry of `next`, have been
+  removed.  Some benchmarks that use double-cell operations reduce its
+  time to 0.99.  These changes increase the size of the kernel by only
+  12 bytes.
+- Rewrite `0.r` and `0d.r` in Z80.  Faster and smaller. 10 bytes are
+  saved in total.
+- Rewrite `cexchange` and `c!exchange` in Z80.
+- Improve `version` and `.version`.  One byte was too small for the
+  prerelease counter.  The improvements in `.version` save 12 bytes.
+- Update the Vim syntax highlighting.
+- Improve the text `window` implementation.
+- Improve transition between 32/64 CPL display modes.  Now the cursor
+  position is preserved across `mode-32`, `mode-32-iso` and
+  `mode-64o`. Beside, `mode-32-font` and `mode-32iso-font` preserve
+  the fonts of their corresponding modes.
+- Improve `mode-32iso`; add `mode-32iso-output_`.
+- Improve `ocr-chars` and `ocr-first`.
+- Improve and extend the `window` module. It's still in an early stage
+  of development, with limited features, but it can be used for basic
+  things and finally it's documented.
+- Update `lastblk` in `(load)` instead of `load`.  This is more
+  useful, since `(load)` is used by `load`, `continued` and
+  `load-program`.
+- Improve `ltype`.
+- Make `dticks>ms` and `set-time` faster.
+- Rewrite +3DOS `headed` in Z80.
+- Use `mode-64-font` for both 64-cpl modes.
+- Adapt to the library all 64-cpl fonts from disk 0.
+- Init far-memory config in `cold`.
+- Make `cold` a code word with a high-level part.  This change saves
+  47 bytes of data/code space, and makes the word more versatile for
+  future improvements.
+- Improve `doer`-`make`.
+- Move `*/` to the library.  `*/` is not used in the kernel. This
+  change saves 9 bytes of code/data space and 7 bytes of name space.
+- Improve `[if]` and `[else]`.
+- Move `[defined]` and `[undefined]` to the library.  Also, simplify
+  reducing their usage in the library.
+- Make `push,` and `pop,` accept register `a`.  This change makes the
+  syntax of `pop,` and `push,` regular with all registers.
+- Improve `(;code)` with `latestxt`.
+- Remove `.system-time` and `.system-date`.  Not very useful.  Beside,
+  the names were almost longer than their definitions, which anyway
+  are evident.
+- Rewrite `?repeat`.  Now its name is coherent with the rest of
+  optional control-flow structures, included the new `0repeat`.
+- Rewrite `>name` and move it to the library.
+- Make `;code` standard.  Now the data field address of the redefined
+  word is not placed on the stack but moved to register HL.
+- Improve `does>`.
+- Improve `default-stringer`.
+- Make `.sinclair-stripes` and friends independent.
+- Improve `see` to support non-colon words.  But only directly, not
+  recursively in colon words yet.
+- Improve `udg-block`
+- Rewrite run-time code of values in Z80.
+- Improve error checking in `(locate)`.
+- Improve `g-emit-udg` with `last-font-char`.
+- Restore default value of `#block-drives` in `cold`.
+- Improve `xstack`.
+- Make `hook,` and `prt,` optional.
+- Improve `defined?`.
+- Make `lwidth` a byte variable
+- Update stack notation "x y" to "col row" & "gx gy".
+- Make string checks of `[if] [else]` case-insensitive.
+
+=== Other changes
+
+- Remove `get-default-bank` and `set-default-bank`.
+- Move `bank-start` and `/bank` to the library.
+- Rename `display` to `terminal`.  Following the standard, "display"
+  is used in the documentation as a generic term, valid for both the
+  terminal and the printer.
+- Rename `print` to `ltype`.  This word is a variant of `type`, like
+  `gigatype` and others. Beside, "print" is used for words related to
+  the printer.
+- Rename `load-app` to `load-program`.
+- Defer and factor `~~info`; remove `~~app-info`.
+- Move blocks speed test to benchmarks module.
+- Split TR-DOS library into two disks.  This increases the maximum
+  size of the library from 636 KiB (one TR-DOS disk, too small to fit
+  the current library) to 719 KiB (one +3DOS disk).
+- Remove trailing closing paren from word names.  This new convention
+  is simpler. Beside it saves some bytes in name space and blocks.
+- Make `(located)` deferred; factor `in-blk-header?`.  Multiline block
+  headers are activated by default, but the method fails when the
+  block has no paren comment as header.
+- Make `?locate` consume its argument.
+- Remove +3DOS old `set-drive` & `transfer-sector`.
+- Make `newline>` a counted string; remove `/newline`.
+- Make `/tabulate` a byte variable.
+- Move `fardump` and `farwdump` to <tool.dump.fs>.
+- Rename "printable-ascii-char" "graphic-ascii-char".  "graphic" is
+  the standard notation for non-control characters.  Old words
+  affected: `printable-ascii-char?` `default-printable-ascii-char?`,
+  `>printable-ascii-char`.
+- Rename `#>kk` `kk#>kk`.
+- Rename `keys` `#kk`.
+- Rename graphic "blocks" to "rectangles".  "Rectangle" is a less
+  confusing name, but it may be changed to "box", depending on the
+  final word set, including words to draw line boxes in high
+  resolution.  Anyway, these words will be used as low-level
+  procedures of the text windows.
+- Replace `mode-64` with `mode-64o`.  The code is identical
+  (originally written by Andrew Owen), but now its source is
+  integrated into the library. The name has changed because an
+  improved variant `mode-64s` (adapted from code written by Einar
+  Saukas) is under development.
+- Factor `load-program` into `(load-program`.
+- Replace "frames" names with "ticks".  The OS variable used is called
+  FRAMES, but `ticks` is the common name in Forth. All related words
+  have been renamed.
+- Rename `pause` `basic-pause`.  `pause` is a common usage name in the
+  Forth multitasker, which will be implemented.
+- Move `cs-swap` to the kernel.
+- Don't make a +3DOS 180 KiB boot disk.  Supporting only one disk
+  format makes some things simpler on +3DOS.
+- Replace `random-range` with `random-between` and `random-within`.
+- Rename `d/expired` to `d/past?`.
+- Replace `>name` with `>oldest-name` in `see`.
+- Add suffix "-sound" to sound effects.  Most names were too generic.
+  The new names are clearer and prevent name clashes.
+- Remove `jppushhl,`.  This word is useless, since it compiles `push
+  hl` and `jp (ix)`.  But the `pushhl` constant is useful to make
+  conditional exits in code words.
+- Rename `ocr-charset` `ocr-font`.
+- Rename `1literal` to `xliteral`, `]1l` to `]xl`, `[1const]` to
+  `[xconst]`.  The new names seem clearer, because an unknown cell is
+  represented as "x" in the stack notation.
+- Make "[(un)needed]" nonimmediate "(un)needing".
+- Move `blk-line` to the library.
+- Move `>in/l` and `->in/l` to the kernel.  `->in/l` is a factor of
+  `\`.
+- Rename disk 2 "programs".
+- Rename `astack` `estack`, and so the related words.
+- Remove `?name-too-short`.  It was used only once, and it was too
+  specific to be useful.
 
 // Version 0.14.0-pre.209  {{{1
 == Version 0.14.0-pre.209
