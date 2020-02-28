@@ -1,0 +1,399 @@
+// z80_instructions.adoc
+
+// This file is part of Solo Forth
+// http://programandala.net/en.program.solo_forth.html
+
+// Last modified: 202002282218
+// See change log at the end of the file
+
+// XXX TODO -- Add the credits to the acknowledgements file:
+
+// Credits:
+//
+// The Z80 data were adapted from:
+//   Table collected by Oscar Lindberg, 1996-03-24,
+//   (offler at skip.adb.gu.se) from:
+//   - Z80 pocketbook
+//   - Z80 assembly language programming
+// With some details adapted also from a document by:
+//    Devin Gardner, 2000-04-29,
+//    (Cepaughfe at aol.com).
+
+
+== Z80 instructions
+
+// XXX TODO -- Explain difference between Z80 ``djnz/jr`` and Forth
+// ``djnz,/jr,``.
+
+|===
+| Z80 instruction   | Equivalent Forth command           | Size | Object code         | Clock | `SZHPNC`   | Effect
+
+| ``ADC A,(HL)``    | ``m a adc,``                       | 1    | ``8E``              | 7     | ``***V0*`` | ``A=A+[HL]+CY``
+| ``ADC A,(IX+n)``  | ``_n_ ix adcx,``                   | 3    | ``DD 8E xx``        | 19    | ``***V0*`` | ``A=A+[IX+n]+CY``
+| ``ADC A,(IY+n)``  | ``_n_ iy adcx,``                   | 3    | ``FD 8E xx``        | 19    | ``***V0*`` | ``A=A+[IY+n]+CY``
+| ``ADC A,n``       | ``_n_ adc#,``                      | 2    | ``CE xx``           | 7     | ``***V0*`` | ``A=A+n+CY``
+| ``ADC A,r``       | ``_r_ adc,``                       | 1    | ``88+r``            | 4     | ``***V0*`` | ``A=A+r+CY``
+| ``ADC HL,BC``     | ``b adcp,``                        | 2    | ``ED 4A``           | 15    | ``***V0*`` | ``HL=HL+BC+CY``
+| ``ADC HL,DE``     | ``d adcp,``                        | 2    | ``ED 5A``           | 15    | ``***V0*`` | ``HL=HL+DE+CY``
+| ``ADC HL,HL``     | ``h adcp,``                        | 2    | ``ED 6A``           | 15    | ``***V0*`` | ``HL=HL+HL+CY``
+| ``ADC HL,SP``     | ``sp adcp,``                       | 2    | ``ED 7A``           | 15    | ``***V0*`` | ``HL=HL+SP+CY``
+| ``ADD A,(HL)``    | ``m a add,``                       | 1    | ``86``              | 7     | ``***V0*`` | ``A=A+[HL]``
+| ``ADD A,(IX+n)``  | ``_n_ ix addx,``                   | 3    | ``DD 86 xx``        | 19    | ``***V0*`` | ``A=A+[IX+n]``
+| ``ADD A,(IY+n)``  | ``_n_ iy addx,``                   | 3    | ``FD 86 xx``        | 19    | ``***V0*`` | ``A=A+[IY+n]``
+| ``ADD A,n``       | ``_n_ add#,``                      | 2    | ``C6 xx``           | 7     | ``***V0*`` | ``A=A+n``
+| ``ADD A,r``       | ``_r_ add,``                       | 1    | ``80+r``            | 4     | ``***V0*`` | ``A=A+r``
+| ``ADD HL,BC``     | ``b addp,``                        | 1    | ``09``              | 11    | ``--*-0*`` | ``HL=HL+BC``
+| ``ADD HL,DE``     | ``d addp,``                        | 1    | ``19``              | 11    | ``--*-0*`` | ``HL=HL+DE``
+| ``ADD HL,HL``     | ``h addp,``                        | 1    | ``29``              | 11    | ``--*-0*`` | ``HL=HL+HL``
+| ``ADD HL,SP``     | ``sp addp,``                       | 1    | ``39``              | 11    | ``--*-0*`` | ``HL=HL+SP``
+| ``ADD IX,BC``     | ``b ix addp,`` or ``ix b addp,``   | 2    | ``DD 09``           | 15    | ``--*-0*`` | ``IX=IX+BC``
+| ``ADD IX,DE``     | ``d ix addp,`` or ``ix d addp,``   | 2    | ``DD 19``           | 15    | ``--*-0*`` | ``IX=IX+DE``
+| ``ADD IX,IX``     |                                    | 2    | ``DD 29``           | 15    | ``--*-0*`` | ``IX=IX+IX``
+| ``ADD IX,SP``     | ``sp ix addp,`` or ``ix sp addp,`` | 2    | ``DD 39``           | 15    | ``--*-0*`` | ``IX=IX+SP``
+| ``ADD IY,BC``     | ``b iy addp,`` or ``iy b addp,``   | 2    | ``FD 09``           | 15    | ``--*-0*`` | ``IY=IY+BC``
+| ``ADD IY,DE``     | ``d iy addp,`` or ``iy d addp,``   | 2    | ``FD 19``           | 15    | ``--*-0*`` | ``IY=IY+DE``
+| ``ADD IY,IY``     |                                    | 2    | ``FD 29``           | 15    | ``--*-0*`` | ``IY=IY+IY``
+| ``ADD IY,SP``     | ``sp iy addp,`` or ``iy sp addp,`` | 2    | ``FD 39``           | 15    | ``--*-0*`` | ``IY=IY+SP``
+| ``AND (HL)``      | ``m and,``                         | 1    | ``A6``              | 7     | ``***P00`` | ``A=A&[HL]``
+| ``AND (IX+n)``    | ``_n_ ix andx,``                   | 3    | ``DD A6 xx``        | 19    | ``***P00`` | ``A=A&[IX+n]``
+| ``AND (IY+n)``    | ``_n_ iy andx,``                   | 3    | ``FD A6 xx``        | 19    | ``***P00`` | ``A=A&[IY+n]``
+| ``AND n``         | ``_n_ and#,``                      | 2    | ``E6 xx``           | 7     | ``***P00`` | ``A=A&n``
+| ``AND r``         | ``_r_ and,``                       | 1    | ``A0+r``            | 4     | ``***P00`` | ``A=A&r``
+| ``BIT b,(HL)``    | ``m _b_ bit,``                     | 2    | ``CB 46+8*b``       | 12    | ``**1*0-`` | ``[HL]&{2^b}``
+| ``BIT b,(IX+n)``  | ``_n_ ix _b_ bitx,``               | 4    | ``DD CB xx 46+8*b`` | 20    | ``**1*0-`` | ``[IX+n]&{2^b}``
+| ``BIT b,(IY+n)``  | ``_n_ iy _b_ bitx, ``              | 4    | ``FD CB xx 46+8*b`` | 20    | ``**1*0-`` | ``[IY+n]&{2^b}``
+| ``BIT b,r``       | ``_r_ b bit,``                     | 2    | ``CB 40+8*b+r``     | 8     | ``**1*0-`` | ``r&{2^b}``
+| ``CALL C,nn``     | ``_nn_ c? ?call,``                 | 3    | ``DC xx xx``        | 17/10 | ``------`` | ``If CY then [SP-=2]=PC,PC=nn``
+| ``CALL M,nn``     | ``_nn_ m? ?call,``                 | 3    | ``FC xx xx``        | 17/10 | ``------`` | ``If S then [SP-=2]=PC,PC=nn``
+| ``CALL NC,nn``    | ``_nn_ nc? ?call,``                | 3    | ``D4 xx xx``        | 17/10 | ``------`` | ``If !CY then [SP-=2]=PC,PC=nn``
+| ``CALL nn``       | ``_nn_ call,``                     | 3    | ``CD xx xx``        | 17    | ``------`` | ``SP-=2,[SP+1,SP]=PC,PC=nn``
+| ``CALL NZ,nn``    | ``_nn_ nz? ?call,``                | 3    | ``C4 xx xx``        | 17/10 | ``------`` | ``If !Z then [SP-=2]=PC,PC=nn``
+| ``CALL P,nn``     | ``_nn_ p? ?call,``                 | 3    | ``F4 xx xx``        | 17/10 | ``------`` | ``If !S then [SP-=2]=PC,PC=nn``
+| ``CALL PE,nn``    | ``_nn_ pe? ?call,``                | 3    | ``EC xx xx``        | 17/10 | ``------`` | ``If P then [SP-=2]=PC,PC=nn``
+| ``CALL PO,nn``    | ``_nn_ po? ?call``                 | 3    | ``E4 xx xx``        | 17/10 | ``------`` | ``If !P then [SP-=2]=PC,PC=nn``
+| ``CALL Z,nn``     | ``_nn_ z? ?call,``                 | 3    | ``CC xx xx``        | 17/10 | ``------`` | ``If Z then [SP-=2]=PC,PC=nn``
+| ``CCF``           | ``ccf,``                           | 1    | ``3F``              | 4     | ``--*-0*`` | ``CY=~CY``
+| ``CP (HL)``       | ``m cp,``                          | 1    | ``BE``              | 7     | ``***V1*`` | ``A-[HL]``
+| ``CP (IX+n)``     | ``_n_ ix cpx,``                    | 3    | ``DD BE xx``        | 19    | ``***V1*`` | ``A-[IX+n]``
+| ``CP (IY+n)``     | ``_n_ iy cpx,``                    | 3    | ``FD BE xx``        | 19    | ``***V1*`` | ``A-[IY+n]``
+| ``CP n``          | ``_n_ cp#,``                       | 2    | ``FE xx``           | 7     | ``***V1*`` | ``A-n``
+| ``CP r``          | ``_r_ cp,``                        | 1    | ``B8+r``            | 4     | ``***V1*`` | ``A-r``
+| ``CPD``           |                                    | 2    | ``ED A9``           | 16    | ``****1-`` | ``A-[HL],HL=HL-1,BC=BC-1``
+| ``CPDR``          |                                    | 2    | ``ED B9``           | 21/16 | ``****1-`` | ``CPD until A=[HL] or BC=0``
+| ``CPI``           |                                    | 2    | ``ED A1``           | 16    | ``****1-`` | ``A-[HL],HL=HL+1,BC=BC-1``
+| ``CPIR``          | ``cpir,``                          | 2    | ``ED B1``           | 21/16 | ``****1-`` | ``CPI until A=[HL] or BC=0``
+| ``CPL``           | ``cpl,``                           | 1    | ``2F``              | 4     | ``--1-1-`` | ``A=~A``
+| ``DAA``           | ``daa,``                           | 1    | ``27``              | 4     | ``***P-*`` | ``A=adjust result to BCD-format``
+| ``DEC (HL)``      | ``m dec,``                         | 1    | ``35``              | 11    | ``***V1-`` | ``[HL]=[HL]-1``
+| ``DEC (IX+n)``    | ``_n_ ix decx,``                   | 3    | ``DD 35 xx``        | 23    | ``***V1-`` | ``[IX+n]=[IX+n]-1``
+| ``DEC (IY+n)``    | ``_n_ iy decx,``                   | 3    | ``FD 35 xx``        | 23    | ``***V1-`` | ``[IY+n]=[IY+n]-1``
+| ``DEC A``         | ``a dec,``                         | 1    | ``3D``              | 4     | ``***V1-`` | ``A=A-1``
+| ``DEC B``         | ``b dec,``                         | 1    | ``05``              | 4     | ``***V1-`` | ``B=B-1``
+| ``DEC BC``        | ``b decp,``                        | 1    | ``0B``              | 6     | ``------`` | ``BC=BC-1``
+| ``DEC C``         | ``c dec,``                         | 1    | ``0D``              | 4     | ``***V1-`` | ``C=C-1``
+| ``DEC D``         | ``d dec,``                         | 1    | ``15``              | 4     | ``***V1-`` | ``D=D-1``
+| ``DEC DE``        | ``d decp,``                        | 1    | ``1B``              | 6     | ``------`` | ``DE=DE-1``
+| ``DEC E``         | ``e dec,``                         | 1    | ``1D``              | 4     | ``***V1-`` | ``E=E-1``
+| ``DEC H``         | ``h dec,``                         | 1    | ``25``              | 4     | ``***V1-`` | ``H=H-1``
+| ``DEC HL``        | ``h decp,``                        | 1    | ``2B``              | 6     | ``------`` | ``HL=HL-1``
+| ``DEC IX``        | ``ix decp,``                       | 2    | ``DD 2B``           | 10    | ``------`` | ``IX=IX-1``
+| ``DEC IY``        | ``iy decp,``                       | 2    | ``FD 2B``           | 10    | ``------`` | ``IY=IY-1``
+| ``DEC L``         | ``l dec,``                         | 2    | ``2D``              | 4     | ``***V1-`` | ``L=L-1``
+| ``DEC SP``        | ``sp decp,``                       | 1    | ``3B``              | 6     | ``------`` | ``SP=SP-1``
+| ``DI``            | ``di,``                            | 1    | ``F3``              | 4     | ``------`` | ``disable interrupts``
+| ``DJNZ n``        | ``_nn_ djnz,``                     | 2    | ``10 xx``           | 13/8  | ``------`` | ``B=B-1, if B != 0 then PC+=n``
+| ``EI``            | ``ei,``                            | 1    | ``FB``              | 4     | ``------`` | ``enable interrupts``
+| ``EX (SP),HL``    | ``exsp,``                          | 1    | ``E3``              | 19    | ``------`` | ``[SP]<->HL``
+| ``EX (SP),IX``    |                                    | 2    | ``DD E3``           | 23    | ``------`` | ``[SP]<->IX``
+| ``EX (SP),IY``    |                                    | 2    | ``FD E3``           | 23    | ``------`` | ``[SP]<->IY``
+| ``EX AF,AF'``     | ``exaf,`                           | 1    | ``08``              | 4     | ``******`` | ``AF<->AF'``
+| ``EX DE,HL``      | ``exde,                            | 1    | ``EB``              | 4     | ``------`` | ``DE<->HL``
+| ``Exx``           | ``exx,                             | 1    | ``D9``              | 4     | ``------`` | ``BC<->BC',DE<->DE',HL<->HL'``
+| ``HALT``          | ``halt,                            | 1    | ``76``              | 4     | ``------`` | ``repeat NOP until interrupt``
+| ``IM 0``          |                                    | 2    | ``ED 46``           | 8     | ``------`` | ``set interrupt 0``
+| ``IM 1``          | ``im1,``                           | 2    | ``ED 56``           | 8     | ``------`` | ``set interrupt 1``
+| ``IM 2``          | ``im2,``                           | 2    | ``ED 5E``           | 8     | ``------`` | ``set interrupt 2``
+| ``IN A,(C)``      | ``a inbc,``                        | 2    | ``ED 78``           | 12    | ``***P0-`` | ``A=[C]``
+| ``IN A,(n)``      | ``_n_ in,``                        | 2    | ``DB xx``           | 11    | ``------`` | ``A=[n]``
+| ``IN B,(C)``      | ``b inbc,``                        | 2    | ``ED 40``           | 12    | ``***P0-`` | ``B=[C]``
+| ``IN C,(C)``      | ``c inbc,``                        | 2    | ``ED 48``           | 12    | ``***P0-`` | ``C=[C]``
+| ``IN D,(C)``      | ``d inbc,``                        | 2    | ``ED 50``           | 12    | ``***P0-`` | ``D=[C]``
+| ``IN E,(C)``      | ``e inbc,``                        | 2    | ``ED 58``           | 12    | ``***P0-`` | ``E=[C]``
+| ``IN H,(C)``      | ``h inbc,``                        | 2    | ``ED 60``           | 12    | ``***P0-`` | ``H=[C]``
+| ``IN L,(C)``      | ``l inbc,``                        | 2    | ``ED 68``           | 12    | ``***P0-`` | ``L=[C]``
+| ``INC (HL)``      | ``h incp,``                        | 1    | ``34``              | 11    | ``***V0-`` | ``[HL]=[HL]+1``
+| ``INC (IX+n)``    | ``_n_ ix incx,``                   | 3    | ``DD 34 xx``        | 23    | ``***V0-`` | ``[IY+n]=[IX+n]+1``
+| ``INC (IY+n)``    | ``_n_ iy incx,``                   | 3    | ``FD 34 xx``        | 23    | ``***V0-`` | ``[IY+n]=[IY+n]+1``
+| ``INC A``         | ``a inc,``                         | 1    | ``3C``              | 4     | ``***V0-`` | ``A=A+1``
+| ``INC B``         | ``b inc,``                         | 1    | ``04``              | 4     | ``***V0-`` | ``B=B+1``
+| ``INC BC``        | ``b incp,``                        | 1    | ``03``              | 6     | ``------`` | ``BC=BC+1``
+| ``INC C``         | ``c inc,``                         | 1    | ``0C``              | 4     | ``***V0-`` | ``C=C+1``
+| ``INC D``         | ``d inc,``                         | 1    | ``14``              | 4     | ``***V0-`` | ``D=D+1``
+| ``INC DE``        | ``d incp,``                        | 1    | ``13``              | 6     | ``------`` | ``DE=DE+1``
+| ``INC E``         | ``e inc,``                         | 1    | ``1C``              | 4     | ``***V0-`` | ``E=E+1``
+| ``INC H``         | ``h inc,``                         | 1    | ``24``              | 4     | ``***V0-`` | ``H=H+1``
+| ``INC HL``        | ``h incp,``                        | 1    | ``23``              | 6     | ``------`` | ``HL=HL+1``
+| ``INC IX``        | ``ix incp,``                       | 2    | ``DD 23``           | 10    | ``------`` | ``IX=IX+1``
+| ``INC IY``        | ``iy incp,``                       | 2    | ``FD 23``           | 10    | ``------`` | ``IY=IY+1``
+| ``INC L``         | ``l inc,``                         | 1    | ``2C``              | 4     | ``***V0-`` | ``L=L+1``
+| ``INC SP``        | ``sp incp,``                       | 1    | ``33``              | 6     | ``------`` | ``SP=SP+1``
+| ``IND``           |                                    | 2    | ``ED AA``           | 16    | ``***?1-`` | ``[HL]=[C],HL=HL-1,B=B-1``
+| ``INDR``          |                                    | 2    | ``ED BA``           | 21/16 | ``01*?1-`` | ``IND until B=0``
+| ``INI``           |                                    | 2    | ``ED A2``           | 16    | ``***?1-`` | ``[HL]=[C],HL=HL+1,B=B-1``
+| ``INIR``          |                                    | 2    | ``ED B2``           | 21/16 | ``01*?1-`` | ``INI until B=0``
+| ``JP (HL)``       | ``jphl,``                          | 1    | ``E9``              | 4     | ``------`` | ``PC=HL``
+| ``JP (IX)``       | ``jpix,``                          | 2    | ``DD E9``           | 8     | ``------`` | ``PC=IX``
+| ``JP (IY)``       |                                    | 2    | ``FD E9``           | 8     | ``------`` | ``PC=IY``
+| ``JP C,nn``       | ``_nn_ c? ?jp,``                   | 3    | ``DA xx xx``        | 10/10 | ``------`` | ``If CY then PC=nn``
+| ``JP M,nn``       | ``_nn_ m? ?jp,``                   | 3    | ``FA xx xx``        | 10/10 | ``------`` | ``If S then PC=nn``
+| ``JP NC,nn``      | ``_nn_ nc? ?jp,``                  | 3    | ``D2 xx xx``        | 10/10 | ``------`` | ``If !CY then PC=nn``
+| ``JP nn``         | ``_nn_ jp,``                       | 3    | ``C3 xx xx``        | 10    | ``------`` | ``PC=nn``
+| ``JP NZ,nn``      | ``_nn_ nz? ?jp,``                  | 3    | ``C2 xx xx``        | 10/10 | ``------`` | ``If !Z then PC=nn``
+| ``JP P,nn``       | ``_nn_ p? ?jp,``                   | 3    | ``F2 xx xx``        | 10/10 | ``------`` | ``If !S then PC=nn``
+| ``JP PE,nn``      | ``_nn_ pe? ?jp,``                  | 3    | ``EA xx xx``        | 10/10 | ``------`` | ``If P then PC=nn``
+| ``JP PO,nn``      | ``_nn_ po? ?jp,``                  | 3    | ``E2 xx xx``        | 10/10 | ``------`` | ``If !P then PC=nn``
+| ``JP Z,nn``       | ``_nn_ z? ?jp,``                   | 3    | ``CA xx xx``        | 10/10 | ``------`` | ``If Z then PC=nn``
+| ``JR C,n``        | ``_nn_ c? ?jr,``                   | 2    | ``38 xx``           | 12/7  | ``------`` | ``If CY then PC=PC+n``
+| ``JR NC,n``       | ``_nn_ nc? ?jr,``                  | 2    | ``30 xx``           | 12/7  | ``------`` | ``If !CY then PC=PC+n``
+| ``JR NZ,n``       | ``_nn_ z? ?jr,``                   | 2    | ``20 xx``           | 12/7  | ``------`` | ``If !Z then PC=PC+n``
+| ``JR Z,n``        | ``_nn_ z? ?jr,``                   | 2    | ``28 xx``           | 12/7  | ``------`` | ``If Z then PC=PC+n``
+| ``JR n``          | ``_nn_ jr,``                       | 2    | ``18 xx``           | 12    | ``------`` | ``PC=PC+n``
+| ``LD (BC),A``     | ``b stap,``                        | 1    | ``02``              | 7     | ``------`` | ``[BC]=A``
+| ``LD (DE),A``     | ``d stap,``                        | 1    | ``12``              | 7     | ``------`` | ``[DE]=A``
+| ``LD (HL),n``     | ``_n_ m ld#,``                     | 2    | ``36 xx``           | 10    | ``------`` | ``[HL]=n``
+| ``LD (HL),r``     | ``_r_ m ld, ``                     | 1    | ``70+r``            | 7     | ``------`` | ``[HL]=r``
+| ``LD (IX+n1),n2`` | ``_n2_ _n1_ ix st#x,``             | 4    | ``DD 36 xx xx``     | 19    | ``------`` | ``[IX+n]=n``
+| ``LD (IX+n),r``   | ``_r_ _n_ ix stx,``                | 3    | ``DD 70+r xx``      | 19    | ``------`` | ``[IX+n]=r``
+| ``LD (IY+n1),n2`` | ``_n2_ _n1_ iy st#x,``             | 4    | ``FD 36 xx xx``     | 19    | ``------`` | ``[IY+n]=n``
+| ``LD (IY+n),r``   | ``_r_ _n_ iy stx,``                | 3    | ``FD 70+r xx``      | 19    | ``------`` | ``[IY+n]=r``
+| ``LD (nn),A``     | ``_nn_ sta,``                      | 3    | ``32 xx xx``        | 13    | ``------`` | ``[nn]=A``
+| ``LD (nn),BC``    | ``_nn_ b stp,``                    | 4    | ``ED 43 xx xx``     | 20    | ``------`` | ``[nn]=C, (nn+1)=B``
+| ``LD (nn),DE``    | ``_nn_ d stp,``                    | 4    | ``ED 53 xx xx``     | 20    | ``------`` | ``[nn]=E, (nn+1)=D``
+| ``LD (nn),HL``    | ``_nn_ h stp,``                    | 3    | ``22 xx xx``        | 16    | ``------`` | ``[nn]=L, (nn+1)=H``
+| ``LD (nn),IX``    | ``_nn_ ix stp,``                   | 4    | ``DD 22 xx xx``     | 20    | ``------`` | ``[nn,nn+1]=IX``
+| ``LD (nn),IY``    | ``_nn_ iy stp,``                   | 4    | ``FD 22 xx xx``     | 20    | ``------`` | ``[nn,nn+1]=IY``
+| ``LD (nn),SP``    | ``_nn_ sp stp,``                   | 4    | ``ED 73 xx xx``     | 20    | ``------`` | ``[nn,nn+1]=SP``
+| ``LD A,(BC)``     | ``b ftap,``                        | 1    | ``0A``              | 7     | ``------`` | ``A=[BC]``
+| ``LD A,(DE)``     | ``d ftap,``                        | 1    | ``1A``              | 7     | ``------`` | ``A=[DE]``
+| ``LD A,(HL)``     | ``m a ld,``                        | 1    | ``7E``              | 7     | ``------`` | ``A=[HL]``
+| ``LD A,(IX+n)``   | ``_n_ ix a ftx,``                  | 3    | ``DD 7E xx``        | 19    | ``------`` | ``A=[IX+n]``
+| ``LD A,(IY+n)``   | ``_n_ iy a ftx,``                  | 3    | ``FD 7E xx``        | 19    | ``------`` | ``A=[IY+n]``
+| ``LD A,(nn)``     | ``_nn_ fta,``                      | 3    | ``3A xx xx``        | 13    | ``------`` | ``A=[nn]``
+| ``LD A,I``        | ``ldai,``                          | 2    | ``ED 57``           | 9     | ``**0*0-`` | ``A=I``
+| ``LD A,n``        | ``_n_ a ld#,``                     | 2    | ``3E xx``           | 7     | ``------`` | ``A=n``
+| ``LD A,R``        |                                    | 2    | ``ED 5F``           | 9     | ``**0*0-`` | ``A=R``
+| ``LD A,r``        | ``_r_ a ld,``                      | 1    | ``78+r``            | 4     | ``------`` | ``A=r``
+| ``LD B,(HL)``     | ``m b ld,``                        | 1    | ``46``              | 7     | ``------`` | ``B=[HL]``
+| ``LD B,(IX+n)``   | ``_n_ ix b ftx,``                  | 3    | ``DD 46 xx``        | 19    | ``------`` | ``B=[IX+n]``
+| ``LD B,(IY+n)``   | ``_n_ iy b ftx,``                  | 3    | ``FD 46 xx``        | 19    | ``------`` | ``B=[IY+n]``
+| ``LD B,n``        | ``_n_ b ld#,``                     | 2    | ``06 xx``           | 7     | ``------`` | ``B=n``
+| ``LD B,r``        | ``_r_ b ld,``                      | 1    | ``40+r``            | 4     | ``------`` | ``B=r``
+| ``LD BC,(nn)``    | ``_nn_ b ftp,``                    | 4    | ``ED 4B xx xx``     | 20    | ``------`` | ``C=[nn],B=[nn+1]``
+| ``LD BC,nn``      | ``_nn_ b ldp#,``                   | 3    | ``01 xx xx``        | 10    | ``------`` | ``BC=nn``
+| ``LD C,(HL)``     | ``m c ld,``                        | 1    | ``4E``              | 7     | ``------`` | ``C=[HL] ``
+| ``LD C,(IX+n)``   | ``_n_ ix c ftx,``                  | 3    | ``DD 4E xx``        | 19    | ``------`` | ``C=[IX+n]``
+| ``LD C,(IY+n)``   | ``_n_ iy c ftx,``                  | 3    | ``FD 4E xx``        | 19    | ``------`` | ``C=[IY+n]``
+| ``LD C,n``        | ``_n_ c ld#,``                     | 2    | ``0E xx``           | 7     | ``------`` | ``C=n``
+| ``LD C,r``        | ``_r_ c ld,``                      | 1    | ``48+r``            | 4     | ``------`` | ``C=r``
+| ``LD D,(HL)``     | ``m d ld,``                        | 1    | ``56``              | 7     | ``------`` | ``D=[HL]``
+| ``LD D,(IX+n)``   | ``_n_ ix d ftx,``                  | 3    | ``DD 56 xx``        | 19    | ``------`` | ``D=[IX+n]``
+| ``LD D,(IY+n)``   | ``_n_ iy d ftx,``                  | 3    | ``FD 56 xx``        | 19    | ``------`` | ``D=[IY+n]``
+| ``LD D,n``        | ``_n_ d ld#,``                     | 2    | ``16 xx``           | 7     | ``------`` | ``D=n``
+| ``LD D,r``        | ``_r_ d ld,``                      | 1    | ``50+r``            | 4     | ``------`` | ``D=r``
+| ``LD DE,(nn)``    | ``_nn_ d ftp,``                    | 4    | ``ED 5B xx xx``     | 20    | ``------`` | ``E=[nn],D=[nn+1]``
+| ``LD DE,nn``      | ``_nn_ d ldp#,``                   | 3    | ``11 xx xx``        | 10    | ``------`` | ``DE=nn``
+| ``LD E,(HL)``     | ``m e ld,``                        | 1    | ``5E``              | 7     | ``------`` | ``E=[HL] ``
+| ``LD E,(IX+n)``   | ``_n_ ix e ftx,``                  | 3    | ``DD 5E xx``        | 19    | ``------`` | ``E=[IX+n]``
+| ``LD E,(IY+n)``   | ``_n_ iy e ftx,``                  | 3    | ``FD 5E xx``        | 19    | ``------`` | ``E=[IY+n]``
+| ``LD E,n``        | ``_n_ e ld#,``                     | 2    | ``1E xx``           | 7     | ``------`` | ``E=n``
+| ``LD E,r``        | ``_r_ e ld,``                      | 1    | ``58+r``            | 4     | ``------`` | ``E=r``
+| ``LD H,(HL)``     | ``m h ld,``                        | 1    | ``66``              | 7     | ``------`` | ``H=[HL]``
+| ``LD H,(IX+n)``   | ``_n_ ix h ftx,``                  | 3    | ``DD 66 xx``        | 19    | ``------`` | ``H=[IX+n]``
+| ``LD H,(IY+n)``   | ``_n_ iy h ftx,``                  | 3    | ``FD 66 xx``        | 19    | ``------`` | ``H=[IY+n]``
+| ``LD H,n``        | ``_n_ h ld#,``                     | 2    | ``26 xx``           | 7     | ``------`` | ``H=n``
+| ``LD H,r``        | ``_r_ h ld,``                      | 1    | ``60+r``            | 4     | ``------`` | ``H=r``
+| ``LD HL,(nn)``    | ``_nn_ h ftp,``                    | 3    | ``2A xx xx``        | 16    | ``------`` | ``L=[nn],H=[nn+1]``
+| ``LD HL,(nn)``    | ````                               | 4    | ``ED 6B xx xx``     | 20    | ``------`` | ``L=[nn],H=[nn+1]``
+| ``LD HL,nn``      | ``_nn_ h ldp#,``                   | 3    | ``21 xx xx``        | 10    | ``------`` | ``HL=nn``
+| ``LD I,A``        | ``ldia,``                          | 2    | ``ED 47``           | 9     | ``------`` | ``I=A``
+| ``LD IX,(nn)``    | ``_nn_ ix ftp,``                   | 4    | ``DD 2A xx xx``     | 20    | ``------`` | ``IX=[nn,nn+1]``
+| ``LD IX,nn``      | ``_nn_ ix ldp#,``                  | 4    | ``DD 21 xx xx``     | 14    | ``------`` | ``IX=nn``
+| ``LD IY,(nn)``    | ``_nn_ iy ftp,``                   | 4    | ``FD 2A xx xx``     | 20    | ``------`` | ``IY=[nn,nn+1]``
+| ``LD IY,nn``      | ``_nn_ iy ldp#,``                  | 4    | ``FD 21 xx xx``     | 14    | ``------`` | ``IY=nn``
+| ``LD L,(HL)``     | ``m l ld,``                        | 1    | ``6E``              | 7     | ``------`` | ``L=[HL] ``
+| ``LD L,(IX+n)``   | ``_n_ ix l ftx,``                  | 3    | ``DD 6E xx``        | 19    | ``------`` | ``L=[IX+n]``
+| ``LD L,(IY+n)``   | ``_n_ iy l ftx,``                  | 3    | ``FD 6E xx``        | 19    | ``------`` | ``L=[IY+n]``
+| ``LD L,n``        | ``_n_ l ld#,``                     | 2    | ``2E xx``           | 7     | ``------`` | ``L=n``
+| ``LD L,r``        | ``_r_ l ld,``                      | 1    | ``68+r``            | 4     | ``------`` | ``L=r``
+| ``LD R,A``        |                                    | 2    | ``ED 4F``           | 9     | ``------`` | ``R=A``
+| ``LD SP,(nn)``    | ``_nn_ sp ftp,``                   | 4    | ``ED 7B xx xx``     | 20    | ``------`` | ``SP=[nn,nn+1]``
+| ``LD SP,HL``      |                                    | 1    | ``F9``              | 6     | ``------`` | ``SP=HL``
+| ``LD SP,IX``      |                                    | 2    | ``DD F9``           | 10    | ``------`` | ``SP=IX``
+| ``LD SP,IY``      |                                    | 2    | ``FD F9``           | 10    | ``------`` | ``SP=IY``
+| ``LD SP,nn``      | ``_nn_ sp ldp#,``                  | 3    | ``31 xx xx``        | 10    | ``------`` | ``SP=nn``
+| ``LDD``           | ``ldd,``                           | 2    | ``ED A8``           | 16    | ``--0*0-`` | ``[DE]=[HL],HL-=1,DE-=1,BC-=1``
+| ``LDDR``          | ``lddr,``                          | 2    | ``ED B8``           | 21/16 | ``--000-`` | ``LDD until BC=0``
+| ``LDI``           | ``ldi,``                           | 2    | ``ED A0``           | 16    | ``--0*0-`` | ``[DE]=[HL],HL+=1,DE+=1,BC=-1``
+| ``LDIR``          | ``ldir,``                          | 2    | ``ED B0``           | 21/16 | ``--000-`` | ``LDI until BC=0``
+| ``NEG``           | ``neg,``                           | 2    | ``ED 44``           | 8     | ``***V1*`` | ``A=-A``
+| ``NOP``           | ``nop,``                           | 1    | ``00``              | 4     | ``------`` |
+| ``OR (HL)``       | ``m or,``                          | 1    | ``B6``              | 7     | ``***P00`` | ``A=Av[HL]``
+| ``OR (IX+n)``     | ``_n_ ix orx,``                    | 3    | ``DD B6 xx``        | 19    | ``***P00`` | ``A=Av[IX+n]``
+| ``OR (IY+n)``     | ``_n_ iy orx,``                    | 3    | ``FD B6 xx``        | 19    | ``***P00`` | ``A=Av[IY+n]``
+| ``OR n``          | ``_n_ or#,``                       | 2    | ``F6 xx``           | 7     | ``***P00`` | ``A=AvN``
+| ``OR r``          | ``_r_ or,``                        | 1    | ``B0+r``            | 4     | ``***P00`` | ``A=Avr``
+| ``OTDR``          |                                    | 2    | ``ED BB``           | 21/16 | ``01*?1-`` | ``OUTD until B=0``
+| ``OTIR``          |                                    | 2    | ``ED B3``           | 21/16 | ``01*?1-`` | ``OUTI until B=0``
+| ``OUT (C),A``     | ``a outbc,``                       | 2    | ``ED 79``           | 12    | ``------`` | ``[C]=A``
+| ``OUT (C),B``     | ``b outbc,``                       | 2    | ``ED 41``           | 12    | ``------`` | ``[C]=B``
+| ``OUT (C),C``     | ``c outbc,``                       | 2    | ``ED 49``           | 12    | ``------`` | ``[C]=C``
+| ``OUT (C),D``     | ``d outbc,``                       | 2    | ``ED 51``           | 12    | ``------`` | ``[C]=D``
+| ``OUT (C),E``     | ``e outbc,``                       | 2    | ``ED 59``           | 12    | ``------`` | ``[C]=E``
+| ``OUT (C),H``     | ``h outbc,``                       | 2    | ``ED 61``           | 12    | ``------`` | ``[C]=H``
+| ``OUT (C),L``     | ``l outbc,``                       | 2    | ``ED 69``           | 12    | ``------`` | ``[C]=L``
+| ``OUT (n),A``     | ``_n_ out,``                       | 2    | ``D3 xx``           | 11    | ``------`` | ``[n]=A``
+| ``OUTD``          |                                    | 2    | ``ED AB``           | 16    | ``***?1-`` | ``[C]=[HL],HL=HL-1,B=B-1``
+| ``OUTI``          |                                    | 2    | ``ED A3``           | 16    | ``***?1-`` | ``[C]=[HL],HL=HL+1,B=B-1``
+| ``POP AF``        | ``a pop,``                         | 1    | ``F1``              | 10    | ``******`` | ``F=[SP],SP+,A=[SP],SP+``
+| ``POP BC``        | ``b pop,``                         | 1    | ``C1``              | 10    | ``------`` | ``C=[SP],SP+,B=[SP],SP+``
+| ``POP DE``        | ``d pop,``                         | 1    | ``D1``              | 10    | ``------`` | ``E=[SP],SP+,D=[SP],SP+``
+| ``POP HL``        | ``h pop,``                         | 1    | ``E1``              | 10    | ``------`` | ``L=[SP],SP+,H=[SP],SP+``
+| ``POP IX``        | ``ix pop,``                        | 2    | ``DD E1``           | 14    | ``------`` | ``IX=[SP,SP+1],SP+,SP+``
+| ``POP IY``        | ``iy pop,``                        | 2    | ``FD E1``           | 14    | ``------`` | ``IY=[SP,SP+1],SP+,SP+``
+| ``PUSH AF``       | ``a push,``                        | 1    | ``F5``              | 11    | ``------`` | ``-SP,[SP]=A,-SP,[SP]=F``
+| ``PUSH BC``       | ``b push,``                        | 1    | ``C5``              | 11    | ``------`` | ``-SP,[SP]=B,-SP,[SP]=C``
+| ``PUSH DE``       | ``d push,``                        | 1    | ``D5``              | 11    | ``------`` | ``-SP,[SP]=D,-SP,[SP]=E``
+| ``PUSH HL``       | ``h push,``                        | 1    | ``E5``              | 11    | ``------`` | ``-SP,[SP]=H,-SP,[SP]=L``
+| ``PUSH IX``       | ``ix push,``                       | 2    | ``DD E5``           | 15    | ``------`` | ``-SP,-SP,[SP,SP+1]=IX``
+| ``PUSH IY``       | ``iy push,``                       | 2    | ``FD E5``           | 15    | ``------`` | ``-SP,-SP,[SP,SP+1]=IY``
+| ``RES b,(HL)``    | ``m _b_ res,``                     | 2    | ``CB 86+8*b``       | 15    | ``------`` | ``[HL]=[HL]&{~2^b}``
+| ``RES b,(IX+n)``  | ``_n_ ix _b_ resx,``               | 4    | ``DD CB xx 86+8*b`` | 23    | ``------`` | ``[IX+n]=[IX+n]&{~2^b}``
+| ``RES b,(IY+n)``  | ``_n_ iy _b_ resx,``               | 4    | ``FD CB xx 86+8*b`` | 23    | ``------`` | ``[IY+n]=[IY+n]&{~2^b}``
+| ``RES b,r``       | ``_r_ _b_ res,``                   | 2    | ``CB 80+8*b+r``     | 8     | ``------`` | ``r=r&{~2^b}``
+| ``RET``           | ``ret,``                           | 1    | ``C9``              | 10    | ``------`` | ``PC=[SP,SP+1],SP+,SP+``
+| ``RET C``         | ``c? ?ret,``                       | 1    | ``D8``              | 11/5  | ``------`` | ``If CY then PC=[SP,SP+1],SP+=2``
+| ``RET M``         | ``m? ?ret,``                       | 1    | ``F8``              | 11/5  | ``------`` | ``If S then PC=[SP,SP+1],SP+=2``
+| ``RET NC``        | ``nc? ?ret,``                      | 1    | ``D0``              | 11/5  | ``------`` | ``If !CY then PC=[SP,SP+1],SP+=2``
+| ``RET NZ``        | ``nz? ?ret,``                      | 1    | ``C0``              | 11/5  | ``------`` | ``If !Z then PC=[SP,SP+1],SP+=2``
+| ``RET P``         | ``p? ?ret,``                       | 1    | ``F0``              | 11/5  | ``------`` | ``If !S then PC=[SP,SP+1],SP+=2``
+| ``RET PE``        | ``pe? ?ret,``                      | 1    | ``E8``              | 11/5  | ``------`` | ``If P then PC=[SP,SP+1],SP+=2``
+| ``RET PO``        | ``po? ?ret,``                      | 1    | ``E0``              | 11/5  | ``------`` | ``If !P then PC=[SP,SP+1],SP+=2``
+| ``RET Z``         | ``z? ?ret,``                       | 1    | ``C8``              | 11/5  | ``------`` | ``If Z then PC=[SP,SP+1],SP+=2``
+| ``RETI``          |                                    | 2    | ``ED 4D``           | 14    | ``------`` | ``PC=[SP,SP+1],SP+,SP+``
+| ``RETN``          |                                    | 2    | ``ED 45``           | 14    | ``------`` | ``PC=[SP,SP+1],SP+,SP+``
+| ``RL (HL)``       | ``m rl,``                          | 2    | ``CB 16``           | 15    | ``**0P0*`` | ``[HL]={CY,[HL]}<<CY``
+| ``RL (IX+n)``     | ``_n_ ir rlx,``                    | 4    | ``DD CB xx 16``     | 23    | ``**0P0*`` | ``[IX+n]={CY,[IX+n]}<<CY``
+| ``RL (IY+n)``     | ``_n_ iy rlx,``                    | 4    | ``FD CB xx 16``     | 23    | ``**0P0*`` | ``[IY+n]={CY,[IY+n]}<<CY``
+| ``RL r``          | ``_r_ rl,``                        | 2    | ``CB 10+r``         | 8     | ``**0P0*`` | ``r={CY,r}<<CY``
+| ``RLA``           | ``rla,``                           | 1    | ``17``              | 4     | ``--0-0*`` | ``A={CY,A}<<CY``
+| ``RLC (HL)``      | ``m rlc,``                         | 2    | ``CB 06``           | 15    | ``**0P0*`` | ``[HL]={[HL]}<<``
+| ``RLC (IX+n)``    | ``_n_ ix rlcx,``                   | 4    | ``DD CB xx 06``     | 23    | ``**0P0*`` | ``[IX+n]={[IX+n]}<<``
+| ``RLC (IY+n)``    | ``_n_ iy rlcx,``                   | 4    | ``FD CB xx 06``     | 23    | ``**0P0*`` | ``[IY+n]={[IY+n]}<<``
+| ``RLC r``         | ``_r_ rlc,``                       | 2    | ``CB 00+r``         | 8     | ``**0P0*`` | ``r={r}<<``
+| ``RLCA``          | ``rlca,``                          | 1    | ``07``              | 4     | ``--0-0*`` | ``A={A}<<``
+| ``RLD``           | ``rld,``                           | 2    | ``ED 6F``           | 18    | ``**0P0-`` | ``{A,[HL]}={A,[HL]}<-4``
+| ``RR (HL)``       | ``m rr,``                          | 2    | ``CB 1E``           | 15    | ``**0P0*`` | ``[HL]=CY>>{CY,[HL]}``
+| ``RR (IX+n)``     | ``_n_ ix rrx,``                    | 4    | ``DD CB xx 1E``     | 23    | ``**0P0*`` | ``[IX+n]=CY>>{CY,[IX+n]}``
+| ``RR (IY+n)``     | ``_n_ iy rrx,``                    | 4    | ``FD CB xx 1E``     | 23    | ``**0P0*`` | ``[IT+n]=CY>>{CY,[IY+n]}``
+| ``RR r``          | ``_r_ rr,``                        | 2    | ``CB 18+r``         | 8     | ``**0P0*`` | ``r=CY>>{CY,r}``
+| ``RRA``           | ``rra,                             | 1    | ``1F``              | 4     | ``--0-0*`` | ``A=CY>>{CY,A}``
+| ``RRC (HL)``      | ``m rrc,``                         | 2    | ``CB 0E``           | 15    | ``**0P0*`` | ``[HL]=>>{[HL]}``
+| ``RRC (IX+n)``    | ``_n_ ix rrcx,``                   | 4    | ``DD CB xx 0E``     | 23    | ``**0P0*`` | ``[IX+n]=>>{[IX+n]}``
+| ``RRC (IY+n)``    | ``_n_ iy rrcx, ``                  | 4    | ``FD CB xx 0E``     | 23    | ``**0P0*`` | ``[IY+n]=>>{[IY+n]}``
+| ``RRC r``         | ``_r_ rrc,``                       | 2    | ``CB 08+r``         | 8     | ``**0P0*`` | ``r=>>{r}``
+| ``RRCA``          | ``rrca,``                          | 1    | ``0F``              | 4     | ``--0-0*`` | ``A=>>{A}``
+| ``RRD``           |                                    | 2    | ``ED 67``           | 18    | ``**0P0-`` | ``{A,[HL]}=4->{A,[HL]}``
+| ``RST 0``         | ``0 rst,``                         | 1    | ``C7``              | 11    | ``------`` | ``-SP,-SP,[SP+1,SP]=PC,PC=00``
+| ``RST 10H``       | ``$10 rst,``                       | 1    | ``D7``              | 11    | ``------`` | ``-SP,-SP,[SP+1,SP]=PC,PC=10``
+| ``RST 18H``       | ``$18 rst,``                       | 1    | ``DF``              | 11    | ``------`` | ``-SP,-SP,[SP+1,SP]=PC,PC=18``
+| ``RST 20H``       | ``$20 rst,``                       | 1    | ``E7``              | 11    | ``------`` | ``-SP,-SP,[SP+1,SP]=PC,PC=20``
+| ``RST 28H``       | ``$28 rst,``                       | 1    | ``EF``              | 11    | ``------`` | ``-SP,-SP,[SP+1,SP]=PC,PC=28``
+| ``RST 30H``       | ``$30 rst,``                       | 1    | ``F7``              | 11    | ``------`` | ``-SP,-SP,[SP+1,SP]=PC,PC=30``
+| ``RST 38H``       | ``$38 rst,``                       | 1    | ``FF``              | 11    | ``------`` | ``-SP,-SP,[SP+1,SP]=PC,PC=38``
+| ``RST 8H``        | ``$8 rst,``                        | 1    | ``CF``              | 11    | ``------`` | ``-SP,-SP,[SP+1,SP]=PC,PC=08``
+| ``SBC (HL)``      | ``m sbc,``                         | 1    | ``9E``              | 7     | ``***V1*`` | ``A=A-[HL]-CY ``
+| ``SBC A,(IX+n)``  | ``_n_ ix sbcx,``                   | 3    | ``DD 9E xx``        | 19    | ``***V1*`` | ``A=A-[IX+n]-CY``
+| ``SBC A,(IY+n)``  | ``_n_ iy sbcx,``                   | 3    | ``FD 9E xx``        | 19    | ``***V1*`` | ``A=A-[IY+n]-CY``
+| ``SBC A,n``       | ``_n_ sbc#,``                      | 2    | ``DE xx``           | 7     | ``***V1*`` | ``A=A-n-CY    ``
+| ``SBC HL,BC``     | ``b sbcp,``                        | 2    | ``ED 42``           | 15    | ``***V1*`` | ``HL=HL-BC-CY``
+| ``SBC HL,DE``     | ``d sbcp,``                        | 2    | ``ED 52``           | 15    | ``***V1*`` | ``HL=HL-DE-CY``
+| ``SBC HL,HL``     | ``h sbcp,``                        | 2    | ``ED 62``           | 15    | ``***V1*`` | ``HL=HL-HL-CY``
+| ``SBC HL,SP``     | ``sp sbcp,``                       | 2    | ``ED 72``           | 15    | ``***V1*`` | ``HL=HL-SP-CY``
+| ``SBC r``         | ``_r_ sbc,``                       | 1    | ``98+r``            | 4     | ``***V1*`` | ``A=A-r-CY    ``
+| ``SCF``           | ``scf,``                           | 1    | ``37``              | 4     | ``--0-01`` | ``CY=1``
+| ``SET b,(HL)``    | ``m _b_ set,``                     | 2    | ``CB C6+8*b``       | 15    | ``------`` | ``[HL]=[HL]v{2^b}``
+| ``SET b,(IX+n)``  | ``_n_ ix _b_ setx,``               | 4    | ``DD CB xx C6+8*b`` | 23    | ``------`` | ``[IX+n]=[IX+n]v{2^b}``
+| ``SET b,(IY+n)``  | ``_n_ iy _b_ setx,``               | 4    | ``FD CB xx C6+8*b`` | 23    | ``------`` | ``[IY+n]=[IY+n]v{2^b}``
+| ``SET b,r``       | ``_r_ _b_ set,``                   | 2    | ``CB C0+8*b+r``     | 8     | ``------`` | ``r=rv{2^b}``
+| ``SLA (HL)``      | ``m sla,``                         | 2    | ``CB 26``           | 15    | ``**0P0*`` | ``[HL]=[HL]*2``
+| ``SLA (IX+n)``    | ``_n_ ix sla,``                    | 4    | ``DD CB xx 26``     | 23    | ``**0P0*`` | ``[IX+n]=[IX+n]*2``
+| ``SLA (IY+n)``    | ``_n_ iy sla,``                    | 4    | ``FD CB xx 26``     | 23    | ``**0P0*`` | ``[IY+n]=[IY+n]*2``
+| ``SLA r``         | ``_r_ sla,``                       | 2    | ``CB 20+r``         | 8     | ``**0P0*`` | ``r=r*2``
+| ``SLL (HL)``      | ``m sll,``                         | 2    | ``CB 36``           | 15    | ``**0P0*`` | ``[HL]=[HL]*2+1``
+| ``SLL (IX+n)``    | ``_n_ ix sll``                     | 4    | ``DD CB xx 36``     | 23    | ``**0P0*`` | ``[IX+n]=[IX+n]*2+1``
+| ``SLL (IY+n)``    | ``_n_ iy sllx,`                    | 4    | ``FD CB xx 36``     | 23    | ``**0P0*`` | ``[IY+n]=[IY+n]*2+1``
+| ``SLL r``         | ``_r_ sll,``                       | 2    | ``CB 30+r``         | 8     | ``**0P0*`` | ``r=r*2+1``
+| ``SRA (HL)``      | ``m sra,``                         | 2    | ``CB 2E``           | 15    | ``**0P0*`` | ``[HL]=(signed)[HL]/2``
+| ``SRA (IX+n)``    | ``_n_ ix srax,``                   | 4    | ``DD CB xx 2E``     | 23    | ``**0P0*`` | ``[IX+n]=(signed)[IX+n]/2``
+| ``SRA (IY+n)``    | ``_n_ iy srax,``                   | 4    | ``FD CB xx 2E``     | 23    | ``**0P0*`` | ``[IY+n]=(signed)[IY+n]/2``
+| ``SRA r``         | ``_r_ sra,``                       | 2    | ``CB 28+r``         | 8     | ``**0P0*`` | ``r=(signed)r/2``
+| ``SRL (HL)``      | ``m sra,``                         | 2    | ``CB 3E``           | 15    | ``**0P0*`` | ``[HL]=(unsigned)[HL]/2``
+| ``SRL (IX+n)``    | ``_n_ ix srlx,``                   | 4    | ``DD CB xx 3E``     | 23    | ``**0P0*`` | ``[IX+n]=(unsigned)[IX+n]/2``
+| ``SRL (IY+n)``    | ``_n_ iy srlx,``                   | 4    | ``FD CB xx 3E``     | 23    | ``**0P0*`` | ``[IY+n]=(unsigned)[IY+n]/2``
+| ``SRL r``         | ``_r_ srl,``                       | 2    | ``CB 38+r``         | 8     | ``**0P0*`` | ``r=(unsigned)r/2``
+| ``SUB (HL)``      | ``m sub,``                         | 1    | ``96``              | 7     | ``***V1*`` | ``A=A-[HL]``
+| ``SUB (IX+n)``    | ``_n_ ix subx,``                   | 3    | ``DD 96 xx``        | 19    | ``***V1*`` | ``A=A-[IX+n]``
+| ``SUB (IY+n)``    | ``_n_ iy subx,``                   | 3    | ``FD 96 xx``        | 19    | ``***V1*`` | ``A=A-[IY+n]``
+| ``SUB n``         | ``_n_ sub#,``                      | 2    | ``D6 xx``           | 7     | ``***V1*`` | ``A=A-n``
+| ``SUB r``         | ``_r_ sub,``                       | 1    | ``90+r``            | 4     | ``***V1*`` | ``A=A-r``
+| ``XOR (HL)``      | ``m xor,``                         | 1    | ``AE``              | 7     | ``***P00`` | ``A=Ax[HL]``
+| ``XOR (IX+n)``    | ``_n_ ix xorx,``                   | 3    | ``DD AE xx``        | 19    | ``***P00`` | ``A=Ax[IX+n]``
+| ``XOR (IY+n)``    | ``_n_ ix xorx,``                   | 3    | ``FD AE xx``        | 19    | ``***P00`` | ``A=Ax[IY+n]``
+| ``XOR n``         | ``_n_ xor#,``                      | 2    | ``EE xx``           | 7     | ``***P00`` | ``A=AxN``
+| ``XOR r``         | ``_r_ xor,``                       | 1    | ``A8+r``            | 4     | ``***P00`` | ``A=Axr``
+|===
+
+=== Legend
+
+Clock:: The time it takes to execute the instruction in CPU cycles.
+If there are two numbers given for Clock, then the highest is when the
+jump is taken, the lowest is when it skips the jump.
+
+Size:: How many bytes the instruction takes up in a program.
+
+SZHPNC:: How the different bits of the "F" register are affected:
++
+--
+``-`` ::  Flag unaffected
+``*`` ::  Flag affected
+``0`` ::  Flag reset
+``1`` ::  Flag set
+``?`` ::  Unknown
+``P`` ::  Parity-Flag used as Parity
+``V`` ::  Parity-Flag used as Overflow-flag
+--
+
+Object code:: The instruction's equivalent in hexadecimal.
+
+``b`` :: Bit. Can be 0-7.
+``r`` :: Register. Can be "B", "C", "D", "E", "H", "L" or "A".
++
+|===
+| Register | Value of ``r`` in the object code
+
+| B        | 0
+| C        | 1
+| D        | 2
+| E        | 3
+| H        | 4
+| L        | 5
+| A        | 7
+|===
++
+Actually, the Solo Forth's Z80 assembler treats ``(HL)`` as a register
+named `m`, with value 6.
+
+// =============================================================
+// Change log
+
+// 2020-02-28: Start,
