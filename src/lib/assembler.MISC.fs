@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041145
+  \ Last modified: 202002282221
 
   \ ===========================================================
   \ Description
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -177,7 +178,7 @@ unneeding ;code ?(
   \ Place _name_'s data field address _dfa_ on the stack. The
   \ stack effects _i*x_ represent arguments to name.
   \
-  \ name Execution:
+  \ _name_ execution:
   \
   \ Perform the machine code sequence that was generated
   \ following ``;code`` and finished by `end-code`.
@@ -238,5 +239,7 @@ unneeding ;code ?(
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2020-02-28: Fix markup in documentation.
 
   \ vim: filetype=soloforth
