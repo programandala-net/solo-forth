@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202002290111.
+# Last modified: 202002291801.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -193,7 +193,7 @@ cleandoc:
 	-rm -f doc/*.html doc/*.pdf doc/*.pdf.* doc/*.docbook doc/*.epub tmp/doc.*
 
 .PHONY: doc
-doc: gplusdosdoc plus3dosdoc trdosdoc
+doc: gdoc pdoc tdoc
 
 .PHONY: gdoc
 gdoc: gplusdosdoc
@@ -204,20 +204,65 @@ pdoc: plus3dosdoc
 .PHONY: tdoc
 tdoc: trdosdoc
 
+.PHONY: gplusdosdoc
+gplusdosdoc: gplusdosepub gplusdoshtml gplusdospdf
+
+.PHONY: plus3dosdoc
+plus3dosdoc: plus3dosepub plus3doshtml plus3dospdf
+
+.PHONY: trdosdoc
+trdosdoc: trdosepub trdoshtml trdospdf
+
 .PHONY: epub
 epub: gplusdosepub plus3dosepub trdosepub
 
+.PHONY: gplusdosepub
+gplusdosepub: \
+	doc/gplusdos_solo_forth_manual.docbook.pandoc.epub \
+	doc/gplusdos_solo_forth_manual.docbook.dbtoepub.epub
+
+.PHONY: plus3dosepub
+plus3dosepub: \
+	doc/plus3dos_solo_forth_manual.docbook.pandoc.epub \
+	doc/plus3dos_solo_forth_manual.docbook.dbtoepub.epub
+
+.PHONY: trdosepub
+trdosepub: \
+	doc/trdos_solo_forth_manual.docbook.pandoc.epub \
+	doc/trdos_solo_forth_manual.docbook.dbtoepub.epub
+
 .PHONY: html
-html: \
-		doc/gplusdos_solo_forth_manual.html \
-		doc/plus3dos_solo_forth_manual.html \
-		doc/trdos_solo_forth_manual.html
+html: gplusdospdf plus3dospdf trdospdf
+
+.PHONY: gplusdoshtml
+gplusdoshtml: \
+		doc/gplusdos_solo_forth_manual.html.gz \
+
+.PHONY: plus3doshtml
+plus3doshtml: \
+		doc/plus3dos_solo_forth_manual.html.gz \
+
+.PHONY: trdoshtml
+trdoshtml: \
+		doc/trdos_solo_forth_manual.html.gz
 
 .PHONY: pdf
-pdf: \
-		doc/gplusdos_solo_forth_manual.pdf \
-		doc/plus3dos_solo_forth_manual.pdf \
-		doc/trdos_solo_forth_manual.pdf
+pdf: gplusdospdf plus3dospdf trdospdf
+
+.PHONY: gplusdospdf
+gplusdospdf: \
+		doc/gplusdos_solo_forth_manual.pdf.zip \
+		doc/gplusdos_solo_forth_manual.pdf.gz
+
+.PHONY: plus3dospdf
+plus3dospdf: \
+		doc/plus3dos_solo_forth_manual.pdf.zip \
+		doc/plus3dos_solo_forth_manual.pdf.gz
+
+.PHONY: trdospdf
+trdospdf: \
+		doc/trdos_solo_forth_manual.pdf.zip \
+		doc/trdos_solo_forth_manual.pdf.gz
 
 # ==============================================================
 # Debug
@@ -684,6 +729,12 @@ backgrounds/current.scr: backgrounds/current.pbm
 # ----------------------------------------------
 # Common rules
 
+%.zip: %
+	zip -9 $@ $<
+
+%.gz: %
+	gzip --force $<
+
 %.pdf: %.adoc
 	asciidoctor-pdf $<
 
@@ -728,12 +779,6 @@ tmp/doc.README.linked.adoc: README.adoc
 
 # ----------------------------------------------
 # Documentation for G+DOS
-
-doc/gplusdos_solo_forth_manual.pdf.zip: doc/gplusdos_solo_forth_manual.pdf
-	zip -9 $@ $<
-
-doc/gplusdos_solo_forth_manual.pdf.gz: doc/gplusdos_solo_forth_manual.pdf
-	gzip --force $<
 
 doc/gplusdos_solo_forth_manual.pdf: \
 	tmp/doc.gplusdos.manual.adoc \
@@ -791,25 +836,8 @@ tmp/doc.gplusdos.manual.adoc: \
 #         from /usr/local/lib/ruby/2.3.0/rubygems/core_ext/kernel_require.rb:55:in `require'
 #         from /usr/bin/dbtoepub:24:in `<main>'
 
-.PHONY: gplusdosdoc
-gplusdosdoc: \
-	doc/gplusdos_solo_forth_manual.html \
-	doc/gplusdos_solo_forth_manual.pdf.gz \
-	gplusdosepub
-
-.PHONY: gplusdosepub
-gplusdosepub: \
-	doc/gplusdos_solo_forth_manual.docbook.pandoc.epub \
-	doc/gplusdos_solo_forth_manual.docbook.dbtoepub.epub
-
 # ----------------------------------------------
 # Documentation for +3DOS
-
-doc/plus3dos_solo_forth_manual.pdf.zip: doc/plus3dos_solo_forth_manual.pdf
-	zip -9 $@ $<
-
-doc/plus3dos_solo_forth_manual.pdf.gz: doc/plus3dos_solo_forth_manual.pdf
-	gzip --force $<
 
 doc/plus3dos_solo_forth_manual.pdf: \
 	tmp/doc.plus3dos.manual.adoc \
@@ -856,25 +884,8 @@ tmp/doc.plus3dos.manual.adoc: \
 	tmp/doc.plus3dos.glossary.adoc
 	cat $^ > $@
 
-.PHONY: plus3dosdoc
-plus3dosdoc: \
-	doc/plus3dos_solo_forth_manual.html \
-	doc/plus3dos_solo_forth_manual.pdf.gz \
-	plus3dosepub
-
-.PHONY: plus3dosepub
-plus3dosepub: \
-	doc/plus3dos_solo_forth_manual.docbook.pandoc.epub \
-	doc/plus3dos_solo_forth_manual.docbook.dbtoepub.epub
-
 # ----------------------------------------------
 # Documentation for TR-DOS
-
-doc/trdos_solo_forth_manual.pdf.zip: doc/trdos_solo_forth_manual.pdf
-	zip -9 $@ $<
-
-doc/trdos_solo_forth_manual.pdf.gz: doc/trdos_solo_forth_manual.pdf
-	gzip --force $<
 
 doc/trdos_solo_forth_manual.pdf: \
 	tmp/doc.trdos.manual.adoc \
@@ -922,17 +933,6 @@ tmp/doc.trdos.manual.adoc: \
 	src/doc/glossary_heading.adoc \
 	tmp/doc.trdos.glossary.adoc
 	cat $^ > $@
-
-.PHONY: trdosdoc
-trdosdoc: \
-	doc/trdos_solo_forth_manual.html \
-	doc/trdos_solo_forth_manual.pdf.gz \
-	trdosepub
-
-.PHONY: trdosepub
-trdosepub: \
-	doc/trdos_solo_forth_manual.docbook.pandoc.epub \
-	doc/trdos_solo_forth_manual.docbook.dbtoepub.epub
 
 # ==============================================================
 # Backup
@@ -1229,3 +1229,6 @@ oldbackup:
 # 2020-02-27: Build EPUB versions of the manuals.
 #
 # 2020-02-28: Add the _Z80 instructions_ annex to the manual.
+#
+# 2020-02-29: Make the zip and gzip rules common to all cases. Generalize the
+# interface to build the manual in any format for any DOS.
