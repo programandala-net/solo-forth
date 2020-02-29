@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202002281901
+  \ Last modified: 202002291047
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -294,7 +294,7 @@ rl, 18 m6 rr, 20 m6 sla, 28 m6 sra, 30 m6 sll, 38 m6 srl,  40
 m7 bit, 80 m7 res, C0 m7 set, A0ED m8 ldi, B0ED m8 ldir, A8ED
 m8 ldd, B8ED m8 lddr, 44ED m8 neg, 57ED m8 ldai, 47ED m8 ldia,
 56ED m8 im1, 5EED m8 im2, B1ED m8 cpir, 6FED m8 rld, A0 m2 and,
-B0 m2 or, A8 m2 xor, -->
+B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
 
   \ doc{
   \
@@ -963,6 +963,8 @@ B0 m2 or, A8 m2 xor, -->
   \
   \ Compile the Z80 instruction ``LD A,I``.
   \
+  \ See: `ldia,`, `ldar,`, `ld,`.
+  \
   \ }doc
 
   \ doc{
@@ -970,6 +972,28 @@ B0 m2 or, A8 m2 xor, -->
   \ ldia, ( -- )
   \
   \ Compile the Z80 instruction ``LD I,A``.
+  \
+  \ See: `ldai,`, `ldra,`, `ld,`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ ldar, ( -- )
+  \
+  \ Compile the Z80 instruction ``LD A,R``.
+  \
+  \ See: `ldra,`, `ldai,`, `ld,`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ ldra, ( -- )
+  \
+  \ Compile the Z80 instruction ``LD R,A``.
+  \
+  \ See: `ldar,`, `ldri,`, `ld,`.
   \
   \ }doc
 
@@ -1132,6 +1156,9 @@ B0 m2 or, A8 m2 xor, -->
   \ store the contents of pair register _regp_ into memory
   \ address _a_.
   \
+  \ NOTE: For the "HL" register there is a specific word:
+  \ `fthl,`, which compiles shorten and faster code.
+  \
   \ See: `ftp,`.
   \
   \ }doc
@@ -1146,6 +1173,9 @@ B0 m2 or, A8 m2 xor, -->
   \ the contents of pair register _regp_ from memory address
   \ _a_.
   \
+  \ NOTE: For the "HL" register has a specific word: `fthl,`,
+  \ which compiles shorten and faster code.
+  \
   \ See: `stp,`.
   \
   \ }doc
@@ -1158,6 +1188,7 @@ B0 m2 or, A8 m2 xor, -->
   \
   \ Compile the Z80 instruction ``ADD IX,_regp_``.
   \
+  \ See: `addiy,`, `addp,`.
   \
   \ }doc
 
@@ -1168,6 +1199,8 @@ B0 m2 or, A8 m2 xor, -->
   \ addiy, ( regp -- )
   \
   \ Compile the Z80 instruction ``ADD IY,_regp_``.
+  \
+  \ See: `addiy,`, `addp,`.
   \
   \ }doc
 
@@ -2395,5 +2428,7 @@ set-current
   \ 2020-02-27: Improve documentation.
   \
   \ 2020-02-28: Complete the documentation of all instructions.
+  \
+  \ 2020-02-29: Improve documentation. Add `ldar,` and `ldra,`.
 
   \ vim: filetype=soloforth

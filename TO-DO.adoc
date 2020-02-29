@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-02-28
+:revdate: 2020-02-29
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -8,9 +8,25 @@
 // Assembler {{{1
 == Assembler
 
+=== 2020-02-29
+
+- Replace `im1,` and `im2,` with `im,`; or add `im0` with the `m8`
+  definer.
+- Make `addix` and `addiy` smart to detect `h` in order to avoid
+  `ix-op c,` and `iy-op c,`, maxing the syntaxes `ix addix,` and `iy
+  addiy,` possible. Currently a second $DD or $FD is compiled in those
+  cases.
+- Rewrite `exsp,` to accept `h`, `ix` or `ix`.
+- Add `jpiy,`.
+- Add `cpd,`, `cpdr,`, and `cpi,` with the `m8` definer.
+- Add `ind,`, `indr,`, `ini,` and `inir,` with the `m8` definer.
+- Add `otdr,` and `otir,` with the `m8` definer.
+- Add `outd,` and `outi,` with the `m8` definer.
+- Add `reti,` and `retn,` with the `m8` definer.
+
 === 2020-02-28
 
-- Add `rrd,`.
+- Add `rrd,` with the `m8` definer.
 - Make `stp,` and `ftp,` smarter, making `sthl,` and `fthl,`
   unnecessary.
 
@@ -246,6 +262,7 @@ and `do_variable` to the `next` entry of the inner interpreter.
 
 Benchmark `cells +` vs `swap array>`, used by `localized-string`
 `far-localized-string` and `far>localized-string`.
+
 
 // Bugs {{{1
 == Bugs
@@ -908,12 +925,10 @@ Improve tab control.
 // Documentation {{{1
 == Documentation
 
-=== 2020-02-28
+=== 2020-02-29
 
-- Homogenize the notation of Z80 registers in the documentation, e.g.
-`"hl"` vs. `HL`.
-- Add a Z80 instructions table with the standard and the Forth
-  sintaxes.
+- Fix rendering of footnotes in tables (e.g. in the HTML target of the stack notation
+  document).
 
 === 2020-02-27
 
