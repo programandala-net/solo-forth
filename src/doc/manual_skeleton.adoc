@@ -1,6 +1,6 @@
 = Solo Forth: Version {version} for {dosname}
 :author: Marcos Cruz (programandala.net)
-:revdate: 2018-07-29
+:revdate: 2020-03-01
 :toc:
 :toclevels: 1
 :toc-placement!:
@@ -9,7 +9,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202002291600
+// Last modified: 202003010013
 
 toc::[]
 
@@ -782,17 +782,28 @@ directory and use one of the following commands to build the disk
 images or the manual for your DOS of choice:
 
 [%autowidth]
-.Commands to rebuild Solo Forth
+.Commands to rebuild the disk images
 |===
-| DOS    | Computers         | Disk images                        | Documentation
+| DOS    | Computer          |
 
-| All    | All               | ``make all`` or ``make``           | ``make doc``
-| +3DOS  | All               | ``make plus3dos`` or ``make p``    | ``make plus3dosdoc`` or ``make pdoc``
-| G+DOS  | All               | ``make gplusdos`` or ``make g``    | ``make gplusdosdoc`` or ``make gdoc``
-| TR-DOS | All               | ``make trdos`` or ``make t``       | ``make trdosdoc`` or ``make tdoc``
-| TR-DOS | 128-KiB models    | ``make trdos128`` or ``make t128`` |
-| TR-DOS | Pentagon 512/1024 | ``make pentagon``                  |
-| TR-DOS | Scorpion ZS 256   | ``make scorpion``                  |
+| All    | All               | ``make``
+| +3DOS  | All               | ``make plus3dos``
+| G+DOS  | All               | ``make gplusdos``
+| TR-DOS | All               | ``make trdos``
+| TR-DOS | 128-KiB models    | ``make trdos128``
+| TR-DOS | Pentagon 512/1024 | ``make pentagon``
+| TR-DOS | Scorpion ZS 256   | ``make scorpion``
+|===
+
+[%autowidth]
+.Commands to rebuild the manual
+|===
+| DOS    | All formats          | EPUB                  | HTML                  | ODT                  | PDF
+
+| All    | ``make doc``         | ``make epub``         | ``make html``         | ``make odt``         | ``make pdf``
+| +3DOS  | ``make plus3dosdoc`` | ``make plus3dosepub`` | ``make plus3doshtml`` | ``make plus3dosodt`` | ``make plus3dospdf``
+| G+DOS  | ``make gplusdosdoc`` | ``make gplusdosepub`` | ``make gplusdoshtml`` | ``make gplusdosodt`` | ``make gplusdospdf``
+| TR-DOS | ``make trdosdoc``    | ``make trdosepub``    | ``make trdoshtml``    | ``make trdosodt``    | ``make trdospdf``
 |===
 
 The disk images will be created in the <disks> directory. The manual

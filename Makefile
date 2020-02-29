@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202002292122.
+# Last modified: 202002292155.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -91,9 +91,6 @@ version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs)
 .PHONY: all
 all: gplusdos trdos plus3dos
 
-.PHONY: g
-g: gplusdos
-
 .PHONY: gplusdos
 gplusdos: gplusdosdisks
 
@@ -104,9 +101,6 @@ gplusdosdisks: \
 	disks/gplusdos/disk_2_programs.mgt \
 	disks/gplusdos/disk_3_workbench.mgt
 
-.PHONY: p
-p: plus3dos
-
 .PHONY: plus3dos
 plus3dos: plus3dosdisks
 
@@ -116,9 +110,6 @@ plus3dosdisks: \
 	disks/plus3dos/disk_1_library.dsk \
 	disks/plus3dos/disk_2_programs.dsk \
 	disks/plus3dos/disk_3_workbench.dsk
-
-.PHONY: t
-t: trdos
 
 .PHONY: trdos
 trdos: trdosdisks
@@ -198,25 +189,16 @@ cleandoc:
 	-rm -f doc/* tmp/doc.*
 
 .PHONY: doc
-doc: gdoc pdoc tdoc
-
-.PHONY: gdoc
-gdoc: gplusdosdoc
-
-.PHONY: pdoc
-pdoc: plus3dosdoc
-
-.PHONY: tdoc
-tdoc: trdosdoc
+doc: gplusdosdoc plus3dosdoc trdosdoc
 
 .PHONY: gplusdosdoc
-gplusdosdoc: gplusdosepub gplusdoshtml gplusdospdf
+gplusdosdoc: gplusdosepub gplusdoshtml gplusdosodt gplusdospdf
 
 .PHONY: plus3dosdoc
-plus3dosdoc: plus3dosepub plus3doshtml plus3dospdf
+plus3dosdoc: plus3dosepub plus3doshtml plus3dosodt plus3dospdf
 
 .PHONY: trdosdoc
-trdosdoc: trdosepub trdoshtml trdospdf
+trdosdoc: trdosepub trdoshtml trdosodt trdospdf
 
 .PHONY: epub
 epub: gplusdosepub plus3dosepub trdosepub
@@ -237,7 +219,7 @@ trdosepub: \
 	doc/trdos_solo_forth_manual.docbook.dbtoepub.epub
 
 .PHONY: html
-html: gplusdospdf plus3dospdf trdospdf
+html: gplusdoshtml plus3doshtml trdoshtml
 
 .PHONY: gplusdoshtml
 gplusdoshtml: \
@@ -250,6 +232,21 @@ plus3doshtml: \
 .PHONY: trdoshtml
 trdoshtml: \
 		doc/trdos_solo_forth_manual.html
+
+.PHONY: odt
+odt: gplusdosodt plus3dosodt trdosodt
+
+.PHONY: gplusdosodt
+gplusdosodt: \
+		doc/gplusdos_solo_forth_manual.docbook.pandoc.odt
+
+.PHONY: plus3dosodt
+plus3dosodt: \
+		doc/plus3dos_solo_forth_manual.docbook.pandoc.odt
+
+.PHONY: trdosodt
+trdosodt: \
+		doc/trdos_solo_forth_manual.docbook.pandoc.odt
 
 .PHONY: pdf
 pdf: gplusdospdf plus3dospdf trdospdf
@@ -777,13 +774,18 @@ tmp/doc.README.linked.adoc: README.adoc
 	pandoc \
 		--output=$@ -f docbook -t epub $<
 
+%.docbook.pandoc.odt: %.docbook
+	pandoc \
+		--from docbook \
+		--to odt \
+		--output=$@ $<
+
 %.html.pandoc.pdf: %.html
 	pandoc \
 		--from html \
 		--to pdf \
 		--pdf-engine=wkhtmltopdf \
 		--output=$@ $<
-
 
 # ----------------------------------------------
 # Documentation for G+DOS {{{2
@@ -1252,7 +1254,8 @@ oldbackup:
 # command lines by parameters.  Get the Solo Forth version only once, store it
 # in a variable and pass it to Asciidoctor as a parameter, instead of replacing
 # a markup in the source file. Add Vim folding markers. Build PDF also with
-# Pandoc (and wkhtmltopdf as PDF-engine).
+# Pandoc (and wkhtmltopdf as PDF-engine). Build also a ODT version of the
+# manuals.
 
 # ==============================================================
 
