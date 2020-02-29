@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202002271754.
+# Last modified: 202002290111.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -702,6 +702,9 @@ tmp/doc.stack_notation.linked.adoc: src/doc/stack_notation.adoc
 tmp/doc.z80_flags_notation.linked.adoc: src/doc/z80_flags_notation.adoc
 	glosara --annex $< > $@
 
+tmp/doc.z80_instructions.linked.adoc: src/doc/z80_instructions.adoc
+	glosara --annex $< > $@
+
 tmp/doc.README.linked.adoc: README.adoc
 	glosara --annex $< > $@
 
@@ -776,6 +779,7 @@ tmp/doc.gplusdos.manual.adoc: \
 	tmp/doc.gplusdos.manual_skeleton.linked.adoc \
 	tmp/doc.stack_notation.linked.adoc \
 	tmp/doc.z80_flags_notation.linked.adoc \
+	tmp/doc.z80_instructions.linked.adoc \
 	src/doc/glossary_heading.adoc \
 	tmp/doc.gplusdos.glossary.adoc
 	cat $^ > $@
@@ -847,6 +851,7 @@ tmp/doc.plus3dos.manual.adoc: \
 	tmp/doc.plus3dos.manual_skeleton.linked.adoc \
 	tmp/doc.stack_notation.linked.adoc \
 	tmp/doc.z80_flags_notation.linked.adoc \
+	tmp/doc.z80_instructions.linked.adoc \
 	src/doc/glossary_heading.adoc \
 	tmp/doc.plus3dos.glossary.adoc
 	cat $^ > $@
@@ -913,6 +918,7 @@ tmp/doc.trdos.manual.adoc: \
 	tmp/doc.trdos.manual_skeleton.linked.adoc \
 	tmp/doc.stack_notation.linked.adoc \
 	tmp/doc.z80_flags_notation.linked.adoc \
+	tmp/doc.z80_instructions.linked.adoc \
 	src/doc/glossary_heading.adoc \
 	tmp/doc.trdos.glossary.adoc
 	cat $^ > $@
@@ -1221,3 +1227,5 @@ oldbackup:
 # 2018-07-29: Rename the TR-DOS disk image used for 128-KiB machines.
 #
 # 2020-02-27: Build EPUB versions of the manuals.
+#
+# 2020-02-28: Add the _Z80 instructions_ annex to the manual.
