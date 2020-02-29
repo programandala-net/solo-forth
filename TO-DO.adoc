@@ -958,8 +958,12 @@ Improve tab control.
 
 === 2020-02-29
 
-- Fix rendering of footnotes in tables (e.g. in the HTML target of the stack notation
-  document).
+- Fix rendering of footnotes in all formats (PDF, HTML and EPUB),
+  especially in tables.
+- Homogenize the transcription of names' "<" ("less-than", "from",
+  "backwards").  and ">" ("greater-than", "to", "forwards"). 
+- Pass `version` as a parameter to Asciidoctor calls in Makefile,
+  instead of replacing a markup in the source..
 
 === 2020-02-27
 

@@ -3,23 +3,23 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202002291801.
+# Last modified: 202002291922.
 # See change log at the end of the file.
 
 # ==============================================================
-# Author
+# Author {{{1
 
 # Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018, 2020.
 
 # ==============================================================
-# License
+# License {{{1
 
 # You may do whatever you want with this work, so long as you
 # retain every copyright, credit and authorship notice, and this
 # license.  There is no warranty.
 
 # ==============================================================
-# Requirements
+# Requirements {{{1
 
 # Asciidoctor (by Dan Allen, Sarah White et al.)
 # 	http://asciidoctor.org
@@ -72,7 +72,7 @@
 # 	http://www.worldofspectrum.org/infoseekid.cgi?id=0027996
 
 # ==============================================================
-# Config
+# Config {{{1
 
 VPATH = ./
 
@@ -81,7 +81,12 @@ MAKEFLAGS = --no-print-directory
 #.ONESHELL:
 
 # ==============================================================
-# Main
+# Metadata {{{1
+
+version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs)
+
+# ==============================================================
+# Main {{{1
 
 .PHONY: all
 all: gplusdos trdos plus3dos
@@ -190,7 +195,7 @@ cleantmp:
 
 .PHONY: cleandoc
 cleandoc:
-	-rm -f doc/*.html doc/*.pdf doc/*.pdf.* doc/*.docbook doc/*.epub tmp/doc.*
+	-rm -f doc/* tmp/doc.*
 
 .PHONY: doc
 doc: gdoc pdoc tdoc
@@ -236,11 +241,11 @@ html: gplusdospdf plus3dospdf trdospdf
 
 .PHONY: gplusdoshtml
 gplusdoshtml: \
-		doc/gplusdos_solo_forth_manual.html.gz \
+		doc/gplusdos_solo_forth_manual.html.gz
 
 .PHONY: plus3doshtml
 plus3doshtml: \
-		doc/plus3dos_solo_forth_manual.html.gz \
+		doc/plus3dos_solo_forth_manual.html.gz
 
 .PHONY: trdoshtml
 trdoshtml: \
@@ -251,31 +256,31 @@ pdf: gplusdospdf plus3dospdf trdospdf
 
 .PHONY: gplusdospdf
 gplusdospdf: \
-		doc/gplusdos_solo_forth_manual.pdf.zip \
-		doc/gplusdos_solo_forth_manual.pdf.gz
+		doc/gplusdos_solo_forth_manual.asciidoctor-pdf.pdf.zip \
+		doc/gplusdos_solo_forth_manual.asciidoctor-pdf.pdf.gz
 
 .PHONY: plus3dospdf
 plus3dospdf: \
-		doc/plus3dos_solo_forth_manual.pdf.zip \
-		doc/plus3dos_solo_forth_manual.pdf.gz
+		doc/plus3dos_solo_forth_manual.asciidoctor-pdf.pdf.zip \
+		doc/plus3dos_solo_forth_manual.asciidoctor-pdf.pdf.gz
 
 .PHONY: trdospdf
 trdospdf: \
-		doc/trdos_solo_forth_manual.pdf.zip \
-		doc/trdos_solo_forth_manual.pdf.gz
+		doc/trdos_solo_forth_manual.asciidoctor-pdf.pdf.zip \
+		doc/trdos_solo_forth_manual.asciidoctor-pdf.pdf.gz
 
 # ==============================================================
-# Debug
+# Debug {{{1
 
 # .PHONY: try
 
 # ==============================================================
-# Kernel
+# Kernel {{{1
 
 include Makefile.pasmo
 
 # ==============================================================
-# Loader
+# Loader {{{1
 
 # The BASIC loader of the system is coded in plain text. The addresses
 # that depend on the kernel (its load address and entry points) are
@@ -285,7 +290,7 @@ include Makefile.pasmo
 # into a TAP file, ready to be copied to a disk image.
 
 # ----------------------------------------------
-# G+DOS loader
+# G+DOS loader {{{2
 
 tmp/loader.gplusdos.bas: \
 	tmp/kernel.symbols.gplusdos.z80s \
@@ -297,7 +302,7 @@ tmp/loader.gplusdos.bas.tap: tmp/loader.gplusdos.bas
 	zmakebas -n Autoload -a 1 -o $@ $<
 
 # ----------------------------------------------
-# +3DOS loader
+# +3DOS loader {{{2
 
 tmp/loader.plus3dos.bas: \
 	tmp/kernel.symbols.plus3dos.z80s \
@@ -309,7 +314,7 @@ tmp/loader.plus3dos.bas.tap: tmp/loader.plus3dos.bas
 	zmakebas -n DISK -a 1 -o $@ $<
 
 # ----------------------------------------------
-# TR-DOS loader
+# TR-DOS loader {{{2
 
 tmp/loader.trdos.bas: \
 	tmp/kernel.symbols.trdos.z80s \
@@ -322,7 +327,7 @@ tmp/loader.trdos.bas.tap: \
 	zmakebas -n boot -a 1 -o $@ $<
 
 # ==============================================================
-# Addons
+# Addons {{{1
 
 # These addons (font drivers) are not part of the Solo Forth
 # library yet.  Meanwhile, their binary files are included in
@@ -340,7 +345,7 @@ tmp/pr42.tap: bin/addons/pr42.bin
 	mv bin/addons/pr42.tap tmp/pr42.tap
 
 # ==============================================================
-# Fonts
+# Fonts {{{1
 
 # Note: The DSK disk image needs the fzx files to be packed
 # into TAP first.
@@ -368,16 +373,10 @@ tmp/f64_fonts.tap : $(f64_fonts)
 	rm -f $(addsuffix .tap, $(f64_fonts))
 
 # ==============================================================
-# Compressed test screen
-
-# XXX TODO --
+# Compressed test screen {{{1
 
 # A ZX Spectrum screen compressed with ZX7 is included in the
 # boot disk, in order to try the ZX7 decompressor.
-
-# tmp/pic.scr.zx7: backgrounds/v00.12.00.scr
-
-# tmp/pic.scr.zx7: backgrounds/v00.12.00.scr
 
 tmp/img.tap: bin/test/img.zx7
 	cd bin/test/ ; \
@@ -386,10 +385,10 @@ tmp/img.tap: bin/test/img.zx7
 	mv bin/test/img.tap tmp/img.tap
 
 # ==============================================================
-# Boot disk
+# Boot disk {{{1
 
 # ----------------------------------------------
-# G+DOS boot disk
+# G+DOS boot disk {{{2
 
 disks/gplusdos/disk_0_boot.mgt: \
 		tmp/loader.gplusdos.bas.tap \
@@ -402,7 +401,7 @@ disks/gplusdos/disk_0_boot.mgt: \
 	mkmgt $@ bin/dos/gplusdos-sys-2a.tap $^
 
 # ----------------------------------------------
-# +3DOS boot disk
+# +3DOS boot disk {{{2
 
 tmp/disk_0_boot.plus3dos.tap: \
 		tmp/loader.plus3dos.bas.tap \
@@ -418,7 +417,7 @@ disks/plus3dos/disk_0_boot.dsk: tmp/disk_0_boot.plus3dos.tap
 	tap2dsk -720 -label SoloForth $< $@
 
 # ----------------------------------------------
-# TR-DOS boot disk
+# TR-DOS boot disk {{{2
 
 tmp/disk_0_boot.trdos.tap: \
 		tmp/loader.trdos.bas.tap \
@@ -442,7 +441,7 @@ disks/trdos/disk_0_boot.128.trd: tmp/disk_0_boot.trdos.tap
 	mv tmp/SOLOFTH0.TRD $@
 
 # ----------------------------------------------
-# TR-DOS boot disk for Scorpion ZS 256
+# TR-DOS boot disk for Scorpion ZS 256 {{{2
 
 tmp/disk_0_boot.trdos.scorpion_zs_256.tap: \
 		tmp/loader.trdos.bas.tap \
@@ -465,7 +464,7 @@ disks/trdos/disk_0_boot.scorpion_zs_256.trd: tmp/disk_0_boot.trdos.scorpion_zs_2
 	mv tmp/SOLOFTH0.TRD $@
 
 # ----------------------------------------------
-# TR-DOS boot disk for Pentagon 512
+# TR-DOS boot disk for Pentagon 512 {{{2
 
 tmp/disk_0_boot.trdos.pentagon_512.tap: \
 		tmp/loader.trdos.bas.tap \
@@ -488,7 +487,7 @@ disks/trdos/disk_0_boot.pentagon_512.trd: tmp/disk_0_boot.trdos.pentagon_512.tap
 	mv tmp/SOLOFTH0.TRD $@
 
 # ----------------------------------------------
-# TR-DOS boot disk for Pentagon 1024
+# TR-DOS boot disk for Pentagon 1024 {{{2
 
 tmp/disk_0_boot.trdos.pentagon_1024.tap: \
 		tmp/loader.trdos.bas.tap \
@@ -511,7 +510,7 @@ disks/trdos/disk_0_boot.pentagon_1024.trd: tmp/disk_0_boot.trdos.pentagon_1024.t
 	mv tmp/SOLOFTH0.TRD $@
 
 # ==============================================================
-# Source file lists
+# Source file lists {{{1
 
 #not_ready = src/lib/meta.test.forth2012-test-suite.fs
 not_ready =
@@ -557,7 +556,7 @@ trdos_exception_codes_lib_files = \
 	$(filter-out %gplusdos.fs %idedos.fs %plus3dos.fs, $(exception_codes_lib_files))
 
 # ==============================================================
-# Block files
+# Block files {{{1
 
 # XXX UNDER DEVELOPMENT
 
@@ -595,7 +594,7 @@ tmp/library.plus3dos.tap: tmp/library.plus3dos.fb
 	cd -;
 
 # ==============================================================
-# Block disks
+# Block disks {{{1
 
 # The block disks contain the source blocks of the library and
 # additional code.
@@ -610,10 +609,10 @@ tmp/programs.fs: $(prog_lib_files)
 	cat $^ > $@
 
 # ----------------------------------------------
-# G+DOS block disks
+# G+DOS block disks {{{2
 
 # ------------------------------
-# Library disk
+# Library disk {{{3
 
 tmp/library.gplusdos.fs: $(gplusdos_core_lib_files)
 	cat $(gplusdos_core_lib_files) > $@
@@ -623,7 +622,7 @@ disks/gplusdos/disk_1_library.mgt: tmp/library.gplusdos.fs
 	mv $(basename $<).mgt $@
 
 # ------------------------------
-# Additional disks
+# Additional disks {{{3
 
 disks/gplusdos/disk_2_programs.mgt: tmp/programs.fs
 	fsb2-mgt $< ;\
@@ -634,10 +633,10 @@ disks/gplusdos/disk_3_workbench.mgt: tmp/workbench.fs
 	mv $(basename $<).mgt $@
 
 # ----------------------------------------------
-# +3DOS block disks
+# +3DOS block disks {{{2
 
 # ------------------------------
-# Library disk
+# Library disk {{{3
 
 tmp/library.plus3dos.fs: $(plus3dos_core_lib_files)
 	cat $(plus3dos_core_lib_files) > $@
@@ -647,7 +646,7 @@ disks/plus3dos/disk_1_library.dsk: tmp/library.plus3dos.fs
 	mv $(basename $<).dsk $@
 
 # ------------------------------
-# Additional disks
+# Additional disks {{{3
 
 disks/plus3dos/disk_2_programs.dsk: tmp/programs.fs
 	fsb2-dsk $< ;\
@@ -658,10 +657,10 @@ disks/plus3dos/disk_3_workbench.dsk: tmp/workbench.fs
 	mv $(basename $<).dsk $@
 
 # ----------------------------------------------
-# TR-DOS block disks
+# TR-DOS block disks {{{2
 
 # ------------------------------
-# Library disks
+# Library disks {{{3
 
 tmp/library.trdos.fs: $(trdos_core_lib_files)
 	cat $(trdos_core_lib_files) > $@
@@ -690,7 +689,7 @@ disks/trdos/disk_1b_library.trd: tmp/library_b.trdos.fs
 	mv $(basename $<).trd $@
 
 # ------------------------------
-# Additional disks
+# Additional disks {{{3
 
 disks/trdos/disk_2_programs.trd: tmp/programs.fs
 	fsb2-trd $< SoloFth2 ; \
@@ -701,7 +700,7 @@ disks/trdos/disk_3_workbench.trd: tmp/workbench.fs
 	mv $(basename $<).trd $@
 
 # ==============================================================
-# Background images
+# Background images {{{1
 
 # Starting from version 0.12.0, Solo Forth shows a background
 # image every time it boots.
@@ -724,19 +723,19 @@ backgrounds/current.scr: backgrounds/current.pbm
 	make/pbm2scr.fs $<
 
 # ==============================================================
-# Documentation
+# Documentation {{{1
 
 # ----------------------------------------------
-# Common rules
+# Common rules {{{2
 
 %.zip: %
 	zip -9 $@ $<
 
 %.gz: %
-	gzip --force $<
+	gzip -9 --force $<
 
-%.pdf: %.adoc
-	asciidoctor-pdf $<
+# %.asciidoctor-pdf.pdf: %.adoc
+# 	asciidoctor-pdf $<
 
 %.html: %.adoc
 	asciidoctor --out-file=$@ $<
@@ -744,51 +743,60 @@ backgrounds/current.scr: backgrounds/current.pbm
 %.glossary.adoc: %.files.txt
 	glosara --level=3 --input=$< > $@
 
-%.linked.adoc: %.adoc
-	glosara --annex $< > $@
-
-tmp/doc.stack_notation.linked.adoc: src/doc/stack_notation.adoc
-	glosara --annex $< > $@
-
-tmp/doc.z80_flags_notation.linked.adoc: src/doc/z80_flags_notation.adoc
-	glosara --annex $< > $@
-
-tmp/doc.z80_instructions.linked.adoc: src/doc/z80_instructions.adoc
+tmp/doc.%.linked.adoc: src/doc/%.adoc
 	glosara --annex $< > $@
 
 tmp/doc.README.linked.adoc: README.adoc
 	glosara --annex $< > $@
 
-# %.docbook: %.adoc
-# 	asciidoctor --backend=docbook --out-file=$@ $<
-
 %doc.gplusdos.manual.docbook: %doc.gplusdos.manual.adoc
-	asciidoctor --backend=docbook --attribute=dosname=G+DOS --out-file=$@ $<
+	asciidoctor \
+		--backend=docbook \
+		--attribute=dosname=G+DOS \
+		--attribute=version=$(version) \
+		--out-file=$@ $<
 
 %doc.plus3dos.manual.docbook: %doc.plus3dos.manual.adoc
-	asciidoctor --backend=docbook --attribute=dosname=+3DOS --out-file=$@ $<
+	asciidoctor \
+		--backend=docbook \
+		--attribute=dosname=+3DOS \
+		--attribute=version=$(version) \
+		--out-file=$@ $<
 
 %doc.trdos.manual.docbook: %doc.trdos.manual.adoc
-	asciidoctor --backend=docbook --attribute=dosname=TR-DOS --out-file=$@ $<
+	asciidoctor \
+		--backend=docbook \
+		--attribute=dosname=TR-DOS \
+		--attribute=version=$(version) \
+		--out-file=$@ $<
 
 %.docbook.dbtoepub.epub: %.docbook
 	dbtoepub -o $@ $<
 
 %.docbook.pandoc.epub: %.docbook
-	pandoc --output=$@ -f docbook -t epub $<
+	pandoc \
+		--output=$@ -f docbook -t epub $<
 
 # ----------------------------------------------
-# Documentation for G+DOS
+# Documentation for G+DOS {{{2
 
-doc/gplusdos_solo_forth_manual.pdf: \
+doc/gplusdos_solo_forth_manual.asciidoctor-pdf.pdf: \
 	tmp/doc.gplusdos.manual.adoc \
 	README.adoc
-	asciidoctor-pdf --attribute=gplusdos --attribute=dosname=G+DOS --out-file=$@ $<
+	asciidoctor-pdf \
+		--attribute=gplusdos \
+		--attribute=dosname=G+DOS \
+		--attribute=version=$(version) \
+		--out-file=$@ $<
 
 doc/gplusdos_solo_forth_manual.html: \
 	tmp/doc.gplusdos.manual.adoc \
 	README.adoc
-	asciidoctor --attribute=gplusdos --attribute=dosname=G+DOS --out-file=$@ $<
+	asciidoctor \
+		--attribute=gplusdos \
+		--attribute=dosname=G+DOS \
+		--attribute=version=$(version) \
+		--out-file=$@ $<
 
 tmp/doc.gplusdos.files.txt: \
 	src/kernel.z80s \
@@ -797,8 +805,12 @@ tmp/doc.gplusdos.files.txt: \
 	ls -1 $^ > $@
 
 tmp/doc.gplusdos.exception_codes.adoc: $(gplusdos_exception_codes_lib_files)
-	grep --no-filename "^#-[0-9]\+\s[\]\s[[:print:]]" $^ | \
-	sed -e "s/^/| /" -e "s/[\]/|/" -e "1s/^/[%autowidth]\n\|===\n|Exception code|Meaning\n\n/" \
+	grep \
+		--no-filename "^#-[0-9]\+\s[\]\s[[:print:]]" $^ | \
+	sed \
+		-e "s/^/| /" \
+		-e "s/[\]/|/" \
+		-e "1s/^/[%autowidth]\n\|===\n|Exception code|Meaning\n\n/" \
 	> $@ && \
 	echo "|===" >> $@
 
@@ -806,19 +818,13 @@ tmp/doc.gplusdos.exception_codes.adoc: $(gplusdos_exception_codes_lib_files)
 #	sed -e "s/^/| /" -e "s/[\]/|/" -e "1s/^/\|===OPEN\n/" -e "/$$/s/$$/\n|===CLOSE/" \
 # XXX REMARK -- `echo` was used instead.
 
-tmp/doc.gplusdos.manual_skeleton.adoc: \
-	src/doc/manual_skeleton.adoc \
-	src/version.z80s \
-	tmp/doc.gplusdos.exception_codes.adoc \
-	tmp/doc.README.linked.adoc
-	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
-	sed -e "s/%VERSION%/$${version}/" $< > $@
-
 # Preserve the links in the DocBook source by removing the
 # enclosing <literal> tags:
 
 doc/gplusdos_solo_forth_manual.docbook: tmp/doc.gplusdos.manual.docbook
-	sed -e "s/<literal><link/<link/g" -e "s/<\/link><\/literal>/<\/link>/g" $< > $@
+	sed \
+		-e "s/<literal><link/<link/g" \
+		-e "s/<\/link><\/literal>/<\/link>/g" $< > $@
 
 tmp/doc.gplusdos.manual.adoc: \
 	tmp/doc.gplusdos.manual_skeleton.linked.adoc \
@@ -829,25 +835,26 @@ tmp/doc.gplusdos.manual.adoc: \
 	tmp/doc.gplusdos.glossary.adoc
 	cat $^ > $@
 
-# XXX OLD
-# dbtoepub --output=$@ $<
-
-# /usr/local/lib/ruby/2.3.0/rubygems/core_ext/kernel_require.rb:55:in `require': cannot load such file -- dbtoepub/docbook (LoadError)
-#         from /usr/local/lib/ruby/2.3.0/rubygems/core_ext/kernel_require.rb:55:in `require'
-#         from /usr/bin/dbtoepub:24:in `<main>'
-
 # ----------------------------------------------
-# Documentation for +3DOS
+# Documentation for +3DOS {{{2
 
-doc/plus3dos_solo_forth_manual.pdf: \
+doc/plus3dos_solo_forth_manual.asciidoctor-pdf.pdf: \
 	tmp/doc.plus3dos.manual.adoc \
 	README.adoc
-	asciidoctor-pdf --attribute=plus3dos --attribute=dosname=+3DOS --out-file=$@ $<
+	asciidoctor-pdf \
+		--attribute=plus3dos \
+		--attribute=dosname=+3DOS \
+		--attribute=version=$(version) \
+		--out-file=$@ $<
 
 doc/plus3dos_solo_forth_manual.html: \
 	tmp/doc.plus3dos.manual.adoc \
 	README.adoc
-	asciidoctor --attribute=plus3dos --attribute=dosname=+3DOS --out-file=$@ $<
+	asciidoctor \
+		--attribute=plus3dos \
+		--attribute=dosname=+3DOS \
+		--attribute=version=$(version) \
+		--out-file=$@ $<
 
 tmp/doc.plus3dos.files.txt: \
 	src/kernel.z80s \
@@ -856,24 +863,22 @@ tmp/doc.plus3dos.files.txt: \
 	ls -1 $^ > $@
 
 tmp/doc.plus3dos.exception_codes.adoc: $(plus3dos_exception_codes_lib_files)
-	grep --no-filename "^#-[0-9]\+\s[\]\s[[:print:]]" $^ | \
-	sed -e "s/^/| /" -e "s/[\]/|/" -e "1s/^/[%autowidth]\n\|===\n|Exception code|Meaning\n\n/" \
+	grep \
+		--no-filename "^#-[0-9]\+\s[\]\s[[:print:]]" $^ | \
+	sed \
+		-e "s/^/| /" \
+		-e "s/[\]/|/" \
+		-e "1s/^/[%autowidth]\n\|===\n|Exception code|Meaning\n\n/" \
 	> $@ && \
 	echo "|===" >> $@
-
-tmp/doc.plus3dos.manual_skeleton.adoc: \
-	src/doc/manual_skeleton.adoc \
-	src/version.z80s \
-	tmp/doc.plus3dos.exception_codes.adoc \
-	tmp/doc.README.linked.adoc
-	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
-	sed -e "s/%VERSION%/$${version}/" $< > $@
 
 # Preserve the links in the DocBook source by removing the
 # enclosing <literal> tags:
 
 doc/plus3dos_solo_forth_manual.docbook: tmp/doc.plus3dos.manual.docbook
-	sed -e "s/<literal><link/<link/g" -e "s/<\/link><\/literal>/<\/link>/g" $< > $@
+	sed \
+		-e "s/<literal><link/<link/g" \
+		-e "s/<\/link><\/literal>/<\/link>/g" $< > $@
 
 tmp/doc.plus3dos.manual.adoc: \
 	tmp/doc.plus3dos.manual_skeleton.linked.adoc \
@@ -885,19 +890,25 @@ tmp/doc.plus3dos.manual.adoc: \
 	cat $^ > $@
 
 # ----------------------------------------------
-# Documentation for TR-DOS
+# Documentation for TR-DOS {{{2
 
-doc/trdos_solo_forth_manual.pdf: \
+doc/trdos_solo_forth_manual.asciidoctor-pdf.pdf: \
 	tmp/doc.trdos.manual.adoc \
 	README.adoc
-	asciidoctor-pdf --attribute=trdos --attribute=dosname=TR-DOS --out-file=$@ $<
-
-#	asciidoctor --require=asciidoctor-pdf --backend=pdf --out-file=$@ $<
+	asciidoctor-pdf \
+		--attribute=trdos \
+		--attribute=dosname=TR-DOS \
+		--attribute=version=$(version) \
+		--out-file=$@ $<
 
 doc/trdos_solo_forth_manual.html: \
 	tmp/doc.trdos.manual.adoc \
 	README.adoc
-	asciidoctor --attribute=trdos --attribute=dosname=TR-DOS --out-file=$@ $<
+	asciidoctor \
+		--attribute=trdos \
+		--attribute=dosname=TR-DOS \
+		--attribute=version=$(version) \
+		--out-file=$@ $<
 
 tmp/doc.trdos.files.txt: \
 	src/kernel.z80s \
@@ -906,24 +917,22 @@ tmp/doc.trdos.files.txt: \
 	ls -1 $^ > $@
 
 tmp/doc.trdos.exception_codes.adoc: $(trdos_exception_codes_lib_files)
-	grep --no-filename "^#-[0-9]\+\s[\]\s[[:print:]]" $^ | \
-	sed -e "s/^/| /" -e "s/[\]/|/" -e "1s/^/[%autowidth]\n\|===\n|Exception code|Meaning\n\n/" \
+	grep \
+		--no-filename "^#-[0-9]\+\s[\]\s[[:print:]]" $^ | \
+	sed \
+		-e "s/^/| /" \
+		-e "s/[\]/|/" \
+		-e "1s/^/[%autowidth]\n\|===\n|Exception code|Meaning\n\n/" \
 	> $@ && \
 	echo "|===" >> $@
-
-tmp/doc.trdos.manual_skeleton.adoc: \
-	src/doc/manual_skeleton.adoc \
-	src/version.z80s \
-	tmp/doc.trdos.exception_codes.adoc \
-	tmp/doc.README.linked.adoc
-	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
-	sed -e "s/%VERSION%/$${version}/" $< > $@
 
 # Preserve the links in the DocBook source by removing the
 # enclosing <literal> tags:
 
 doc/trdos_solo_forth_manual.docbook: tmp/doc.trdos.manual.docbook
-	sed -e "s/<literal><link/<link/g" -e "s/<\/link><\/literal>/<\/link>/g" $< > $@
+	sed \
+		-e "s/<literal><link/<link/g" \
+		-e "s/<\/link><\/literal>/<\/link>/g" $< > $@
 
 tmp/doc.trdos.manual.adoc: \
 	tmp/doc.trdos.manual_skeleton.linked.adoc \
@@ -935,7 +944,7 @@ tmp/doc.trdos.manual.adoc: \
 	cat $^ > $@
 
 # ==============================================================
-# Backup
+# Backup {{{1
 
 .PHONY: backupsrc
 backupsrc:
@@ -971,7 +980,7 @@ oldbackup:
 		*.txt
 
 # ==============================================================
-# Makefile variables cheat sheet
+# Makefile variables cheat sheet {{{1
 
 # $@ = the name of the target of the rule
 # $< = the name of the first prerequisite
@@ -981,7 +990,7 @@ oldbackup:
 # `%` works only at the start of the filter pattern
 
 # ==============================================================
-# Change log
+# Change log {{{1
 
 # 2015-06-02: Start.
 #
@@ -1231,4 +1240,11 @@ oldbackup:
 # 2020-02-28: Add the _Z80 instructions_ annex to the manual.
 #
 # 2020-02-29: Make the zip and gzip rules common to all cases. Generalize the
-# interface to build the manual in any format for any DOS.
+# interface to build the manual in any format for any DOS. Split the long
+# command lines by parameters.  Get the Solo Forth version only once, store it
+# in a variable and pass it to Asciidoctor as a parameter, instead of replacing
+# a markup in the source file. Add Vim folding markers.
+
+# ==============================================================
+
+# vim: foldmethod=marker
