@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202002291922.
+# Last modified: 202002292122.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -86,7 +86,7 @@ MAKEFLAGS = --no-print-directory
 version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs)
 
 # ==============================================================
-# Main {{{1
+# Interface {{{1
 
 .PHONY: all
 all: gplusdos trdos plus3dos
@@ -241,33 +241,33 @@ html: gplusdospdf plus3dospdf trdospdf
 
 .PHONY: gplusdoshtml
 gplusdoshtml: \
-		doc/gplusdos_solo_forth_manual.html.gz
+		doc/gplusdos_solo_forth_manual.html
 
 .PHONY: plus3doshtml
 plus3doshtml: \
-		doc/plus3dos_solo_forth_manual.html.gz
+		doc/plus3dos_solo_forth_manual.html
 
 .PHONY: trdoshtml
 trdoshtml: \
-		doc/trdos_solo_forth_manual.html.gz
+		doc/trdos_solo_forth_manual.html
 
 .PHONY: pdf
 pdf: gplusdospdf plus3dospdf trdospdf
 
 .PHONY: gplusdospdf
 gplusdospdf: \
-		doc/gplusdos_solo_forth_manual.asciidoctor-pdf.pdf.zip \
-		doc/gplusdos_solo_forth_manual.asciidoctor-pdf.pdf.gz
+		doc/gplusdos_solo_forth_manual.asciidoctor-pdf.pdf \
+		doc/gplusdos_solo_forth_manual.html.pandoc.pdf
 
 .PHONY: plus3dospdf
 plus3dospdf: \
-		doc/plus3dos_solo_forth_manual.asciidoctor-pdf.pdf.zip \
-		doc/plus3dos_solo_forth_manual.asciidoctor-pdf.pdf.gz
+		doc/plus3dos_solo_forth_manual.asciidoctor-pdf.pdf \
+		doc/plus3dos_solo_forth_manual.html.pandoc.pdf
 
 .PHONY: trdospdf
 trdospdf: \
-		doc/trdos_solo_forth_manual.asciidoctor-pdf.pdf.zip \
-		doc/trdos_solo_forth_manual.asciidoctor-pdf.pdf.gz
+		doc/trdos_solo_forth_manual.asciidoctor-pdf.pdf \
+		doc/trdos_solo_forth_manual.html.pandoc.pdf
 
 # ==============================================================
 # Debug {{{1
@@ -777,6 +777,14 @@ tmp/doc.README.linked.adoc: README.adoc
 	pandoc \
 		--output=$@ -f docbook -t epub $<
 
+%.html.pandoc.pdf: %.html
+	pandoc \
+		--from html \
+		--to pdf \
+		--pdf-engine=wkhtmltopdf \
+		--output=$@ $<
+
+
 # ----------------------------------------------
 # Documentation for G+DOS {{{2
 
@@ -1243,7 +1251,8 @@ oldbackup:
 # interface to build the manual in any format for any DOS. Split the long
 # command lines by parameters.  Get the Solo Forth version only once, store it
 # in a variable and pass it to Asciidoctor as a parameter, instead of replacing
-# a markup in the source file. Add Vim folding markers.
+# a markup in the source file. Add Vim folding markers. Build PDF also with
+# Pandoc (and wkhtmltopdf as PDF-engine).
 
 # ==============================================================
 
