@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202002291047
+  \ Last modified: 202002291321
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -64,6 +64,8 @@ assembler-wordlist wordlist>vocabulary assembler
 also assembler definitions base @ hex
 
 need ?rel need inverse-cond
+
+: ed, ( -- )  ED c, ;
 
   \ Registers
 
@@ -1122,7 +1124,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ }doc
 
-: sbcp, ( regp -- ) ED c, 8* 42 + c, ;
+: sbcp, ( regp -- ) ed, 8* 42 + c, ;
 
   \ doc{
   \
@@ -1134,7 +1136,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ }doc
 
-: adcp, ( regp1 regp2 -- ) ED c, 8* 4A + c, ;
+: adcp, ( regp1 regp2 -- ) ed, 8* 4A + c, ;
 
   \ doc{
   \
@@ -1146,7 +1148,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ }doc
 
-: stp, ( a regp -- ) ED c, 8* 43 + c, , ;
+: stp, ( a regp -- ) ed, 8* 43 + c, , ;
 
   \ doc{
   \
@@ -1163,7 +1165,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ }doc
 
-: ftp, ( a regp -- ) ED c, 8* 4B + c, , ;
+: ftp, ( a regp -- ) ed, 8* 4B + c, , ;
 
   \ doc{
   \
@@ -2430,5 +2432,6 @@ set-current
   \ 2020-02-28: Complete the documentation of all instructions.
   \
   \ 2020-02-29: Improve documentation. Add `ldar,` and `ldra,`.
+  \ Factor `ed,` from `sbcp,`, `adcp,`, `stp,` and `ftp,`.
 
   \ vim: filetype=soloforth

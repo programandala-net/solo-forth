@@ -10,12 +10,43 @@
 
 === 2020-02-29
 
-- Replace `im1,` and `im2,` with `im,`; or add `im0` with the `m8`
-  definer.
+Replace `im1,` and `im2,` with `im,`; or add `im0` with the `m8`
+definer.
+
+Tests:
+
+Replacing `im1,` and `im2,` with this code costs 17 bytes of code/data
+space and saves 10 bytes of name space:
+
+----
+: im, ( n -- ) ed, dup if 1+ then 8* 46 or c, ;
+----
+
+This alternative, factoring `ed,` out of the four words that contain
+`ED c,` (`sbcp,`, `adcp,`, `stp,` and `ftp,`), costs 12 bytes of
+code/data space and saves 2 bytes of name space:
+
+----
+: ed, ( -- ) ED c, ;
+: im, ( n -- ) ed, dup if 1+ then 8* 46 or c, ;
+----
+
+This variant costs 8 bytes of code/data space and saves 2 bytes of
+name space:
+
+----
+: ed, ( -- ) ED c, ;
+here 46 c, 56 c, 5E c,
+: im, ( n -- ) ed, [ dup ] literal + c@ c, ; drop
+----
+
+=== 2020-02-29
+
+
 - Make `addix` and `addiy` smart to detect `h` in order to avoid
   `ix-op c,` and `iy-op c,`, maxing the syntaxes `ix addix,` and `iy
   addiy,` possible. Currently a second $DD or $FD is compiled in those
-  cases.
+  cases. Other solution: make `addp,` smart, as noted on 2017-03-12.
 - Rewrite `exsp,` to accept `h`, `ix` or `ix`.
 - Add `jpiy,`.
 - Add `cpd,`, `cpdr,`, and `cpi,` with the `m8` definer.
