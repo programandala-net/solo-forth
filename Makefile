@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202003011514.
+# Last modified: 202003011940.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -863,13 +863,21 @@ doc/gplusdos_solo_forth_manual.docbook: tmp/doc.gplusdos.manual.docbook
 		-e "s/<\/link><\/literal>/<\/link>/g" $< > $@
 
 tmp/doc.gplusdos.manual.adoc: \
-	tmp/doc.gplusdos.manual_skeleton.linked.adoc \
+	tmp/doc.manual_skeleton.linked.adoc \
 	tmp/doc.stack_notation.linked.adoc \
 	tmp/doc.z80_flags_notation.linked.adoc \
 	tmp/doc.z80_instructions.linked.adoc \
 	src/doc/glossary_heading.adoc \
-	tmp/doc.gplusdos.glossary.adoc
-	cat $^ > $@
+	tmp/doc.gplusdos.glossary.adoc \
+	tmp/doc.README.linked.adoc
+	cat \
+		tmp/doc.manual_skeleton.linked.adoc \
+		tmp/doc.stack_notation.linked.adoc \
+		tmp/doc.z80_flags_notation.linked.adoc \
+		tmp/doc.z80_instructions.linked.adoc \
+		src/doc/glossary_heading.adoc \
+		tmp/doc.gplusdos.glossary.adoc \
+		> $@
 
 # ----------------------------------------------
 # Documentation for +3DOS {{{2
@@ -928,13 +936,21 @@ doc/plus3dos_solo_forth_manual.docbook: tmp/doc.plus3dos.manual.docbook
 		-e "s/<\/link><\/literal>/<\/link>/g" $< > $@
 
 tmp/doc.plus3dos.manual.adoc: \
-	tmp/doc.plus3dos.manual_skeleton.linked.adoc \
+	tmp/doc.manual_skeleton.linked.adoc \
 	tmp/doc.stack_notation.linked.adoc \
 	tmp/doc.z80_flags_notation.linked.adoc \
 	tmp/doc.z80_instructions.linked.adoc \
 	src/doc/glossary_heading.adoc \
-	tmp/doc.plus3dos.glossary.adoc
-	cat $^ > $@
+	tmp/doc.plus3dos.glossary.adoc \
+	tmp/doc.README.linked.adoc
+	cat \
+		tmp/doc.manual_skeleton.linked.adoc \
+		tmp/doc.stack_notation.linked.adoc \
+		tmp/doc.z80_flags_notation.linked.adoc \
+		tmp/doc.z80_instructions.linked.adoc \
+		src/doc/glossary_heading.adoc \
+		tmp/doc.plus3dos.glossary.adoc \
+		> $@
 
 # ----------------------------------------------
 # Documentation for TR-DOS {{{2
@@ -993,13 +1009,21 @@ doc/trdos_solo_forth_manual.docbook: tmp/doc.trdos.manual.docbook
 		-e "s/<\/link><\/literal>/<\/link>/g" $< > $@
 
 tmp/doc.trdos.manual.adoc: \
-	tmp/doc.trdos.manual_skeleton.linked.adoc \
+	tmp/doc.manual_skeleton.linked.adoc \
 	tmp/doc.stack_notation.linked.adoc \
 	tmp/doc.z80_flags_notation.linked.adoc \
 	tmp/doc.z80_instructions.linked.adoc \
 	src/doc/glossary_heading.adoc \
-	tmp/doc.trdos.glossary.adoc
-	cat $^ > $@
+	tmp/doc.trdos.glossary.adoc \
+	tmp/doc.README.linked.adoc
+	cat \
+		tmp/doc.manual_skeleton.linked.adoc \
+		tmp/doc.stack_notation.linked.adoc \
+		tmp/doc.z80_flags_notation.linked.adoc \
+		tmp/doc.z80_instructions.linked.adoc \
+		src/doc/glossary_heading.adoc \
+		tmp/doc.trdos.glossary.adoc \
+		> $@
 
 # ==============================================================
 # Backup {{{1
@@ -1305,7 +1329,8 @@ oldbackup:
 # Pandoc (and wkhtmltopdf as PDF-engine). Build also a ODT version of the
 # manuals.
 #
-# 2020-03-01: Build EPUB also with asciidoctor-epub3.
+# 2020-03-01: Build EPUB also with asciidoctor-epub3. Fix prerequites: README
+# and manual skeleton.
 
 # ==============================================================
 
