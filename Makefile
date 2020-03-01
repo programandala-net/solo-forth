@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202002292155.
+# Last modified: 202003011514.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -22,54 +22,69 @@
 # Requirements {{{1
 
 # Asciidoctor (by Dan Allen, Sarah White et al.)
-# 	http://asciidoctor.org
+#   http://asciidoctor.org
+
+# Asciidoctor EPUB3 (by Dan Allen and Sarah White)
+#   http://github.com/asciidoctor/asciidoctor-epub3
 
 # Asciidoctor PDF (by Dan Allen and Sarah White)
 #   http://github.com/asciidoctor/asciidoctor-pdf
 
 # bin2code (by Metalbrain)
-# 	http://metalbrain.speccy.org/link-eng.htm
+#   http://metalbrain.speccy.org/link-eng.htm
 
-# cat (from the GNU coreutils)
+# cat (by Torbjorn Granlund and Richard M. Stallman)
+#   Part of GNU Coreutils
+#   http://gnu.org/software/coreutils
 
 # dbtoepub
-# 	http://docbook.sourceforge.net/release/xsl/current/epub/README
+#   http://docbook.sourceforge.net/release/xsl/current/epub/README
 
-# dd (from the GNU coreutils)
+# dd
+#   Part of GNU Coreutils
+#   http://gnu.org/software/coreutils
 
 # DOSBox (by The DOSBox Team)
 #   http://www.dosbox.com
 
 # Forth Foundation Library (by Dick van Oudheusden)
-# 	http://irdvo.github.io/ffl/
+#   http://irdvo.github.io/ffl/
 
 # fsb2 (by Marcos Cruz)
-# 	http://programandala.net/en.program.fsb2.html
+#   http://programandala.net/en.program.fsb2.html
 
 # Gforth (by Anton Erlt, Bernd Paysan et al.)
-# 	http://gnu.org/software/gforth
+#   http://gnu.org/software/gforth
 
 # Glosara (by Marcos Cruz)
-# 	http://programandala.net/en.program.glosara.html
+#   http://programandala.net/en.program.glosara.html
 
-# head (from the GNU coreutils)
+# head (by David MacKenzie and Jim Meyering)
+#   Part of GNU Coreutils
+#   http://gnu.org/software/coreutils
 
 # mkmgt (by Marcos Cruz)
-# 	http://programandala.net/en.program.mkmgt.html
+#   http://programandala.net/en.program.mkmgt.html
 
-# sort (from the GNU coreutils)
+# Pandoc (by John MaFarlane)
+#   http://pandoc.org
 
-# tap2dsk (from taptools, by John Elliott)
-#		http://www.seasip.info/ZX/unix.html
+# sort (by Mike Haertel and Paul Eggert)
+#   Part of GNU Coreutils
+#   http://gnu.org/software/coreutils
+
+# tap2dsk (by John Elliott)
+#    Part of taptools
+#    http://www.seasip.info/ZX/unix.html
 
 # zmakebas (by Russell Marks)
-# Usually included in Linux distros. Also see:
-# 	http://sourceforge.net/p/emuscriptoria/code/HEAD/tree/desprot/ZMakeBas.c
-# 	https://github.com/catseye/zmakebas
-# 	http://zmakebas.sourcearchive.com/documentation/1.2-1/zmakebas_8c-source.html
+#   Usually included in Linux distros. Also see:
+#   http://sourceforge.net/p/emuscriptoria/code/HEAD/tree/desprot/ZMakeBas.c
+#   https://github.com/catseye/zmakebas
+#   http://zmakebas.sourcearchive.com/documentation/1.2-1/zmakebas_8c-source.html
 
 # zx7 (by Einar Saukas)
-# 	http://www.worldofspectrum.org/infoseekid.cgi?id=0027996
+#   http://www.worldofspectrum.org/infoseekid.cgi?id=0027996
 
 # ==============================================================
 # Config {{{1
@@ -205,16 +220,19 @@ epub: gplusdosepub plus3dosepub trdosepub
 
 .PHONY: gplusdosepub
 gplusdosepub: \
+	doc/gplusdos_solo_forth_manual.asciidoctor-epub3.epub \
 	doc/gplusdos_solo_forth_manual.docbook.pandoc.epub \
 	doc/gplusdos_solo_forth_manual.docbook.dbtoepub.epub
 
 .PHONY: plus3dosepub
 plus3dosepub: \
+	doc/plus3dos_solo_forth_manual.asciidoctor-epub3.epub \
 	doc/plus3dos_solo_forth_manual.docbook.pandoc.epub \
 	doc/plus3dos_solo_forth_manual.docbook.dbtoepub.epub
 
 .PHONY: trdosepub
 trdosepub: \
+	doc/trdos_solo_forth_manual.asciidoctor-epub3.epub \
 	doc/trdos_solo_forth_manual.docbook.pandoc.epub \
 	doc/trdos_solo_forth_manual.docbook.dbtoepub.epub
 
@@ -731,9 +749,6 @@ backgrounds/current.scr: backgrounds/current.pbm
 %.gz: %
 	gzip -9 --force $<
 
-# %.asciidoctor-pdf.pdf: %.adoc
-# 	asciidoctor-pdf $<
-
 %.html: %.adoc
 	asciidoctor --out-file=$@ $<
 
@@ -790,10 +805,21 @@ tmp/doc.README.linked.adoc: README.adoc
 # ----------------------------------------------
 # Documentation for G+DOS {{{2
 
+doc/gplusdos_solo_forth_manual.asciidoctor-epub3.epub: \
+	tmp/doc.gplusdos.manual.adoc \
+	README.adoc
+	asciidoctor-epub3 \
+		--trace \
+		--attribute=gplusdos \
+		--attribute=dosname=G+DOS \
+		--attribute=version=$(version) \
+		--out-file=$@ $<
+
 doc/gplusdos_solo_forth_manual.asciidoctor-pdf.pdf: \
 	tmp/doc.gplusdos.manual.adoc \
 	README.adoc
 	asciidoctor-pdf \
+		--trace \
 		--attribute=gplusdos \
 		--attribute=dosname=G+DOS \
 		--attribute=version=$(version) \
@@ -848,10 +874,21 @@ tmp/doc.gplusdos.manual.adoc: \
 # ----------------------------------------------
 # Documentation for +3DOS {{{2
 
+doc/plus3dos_solo_forth_manual.asciidoctor-epub3.epub: \
+	tmp/doc.plus3dos.manual.adoc \
+	README.adoc
+	asciidoctor-epub3 \
+		--trace \
+		--attribute=plus3dos \
+		--attribute=dosname=+3DOS \
+		--attribute=version=$(version) \
+		--out-file=$@ $<
+
 doc/plus3dos_solo_forth_manual.asciidoctor-pdf.pdf: \
 	tmp/doc.plus3dos.manual.adoc \
 	README.adoc
 	asciidoctor-pdf \
+		--trace \
 		--attribute=plus3dos \
 		--attribute=dosname=+3DOS \
 		--attribute=version=$(version) \
@@ -902,10 +939,21 @@ tmp/doc.plus3dos.manual.adoc: \
 # ----------------------------------------------
 # Documentation for TR-DOS {{{2
 
+doc/trdos_solo_forth_manual.asciidoctor-epub3.epub: \
+	tmp/doc.trdos.manual.adoc \
+	README.adoc
+	asciidoctor-epub3 \
+		--trace \
+		--attribute=trdos \
+		--attribute=dosname=TRDOS \
+		--attribute=version=$(version) \
+		--out-file=$@ $<
+
 doc/trdos_solo_forth_manual.asciidoctor-pdf.pdf: \
 	tmp/doc.trdos.manual.adoc \
 	README.adoc
 	asciidoctor-pdf \
+		--trace \
 		--attribute=trdos \
 		--attribute=dosname=TR-DOS \
 		--attribute=version=$(version) \
@@ -1256,6 +1304,8 @@ oldbackup:
 # a markup in the source file. Add Vim folding markers. Build PDF also with
 # Pandoc (and wkhtmltopdf as PDF-engine). Build also a ODT version of the
 # manuals.
+#
+# 2020-03-01: Build EPUB also with asciidoctor-epub3.
 
 # ==============================================================
 
