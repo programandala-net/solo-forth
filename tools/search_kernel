@@ -1,9 +1,0 @@
-#!/bin/sh
-
-# search_kernel
-
-# Search the kernel of Solo Forth for the regex $1.
-
-# 2017-02-21
-
-ack $1 $2 -r ~/forth/solo_forth/src/kernel*.z80s

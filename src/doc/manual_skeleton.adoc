@@ -1,6 +1,7 @@
 = Solo Forth: Version {version} for {dosname}
 :author: Marcos Cruz (programandala.net)
 :revdate: 2020-03-01
+:doctype: book
 :toc:
 :toclevels: 1
 :toc-placement!:
@@ -9,7 +10,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202003010013
+// Last modified: 202003012143
 
 toc::[]
 
@@ -53,15 +54,15 @@ ifdef::trdos[]
 
 endif::trdos[]
 
-// History and current status {{{1
-== History and current status
+// Motivation, history and current status {{{1
+== Motivation, history and current status
 
 include::doc.README.linked.adoc[tags=history]
 
 // About this manual {{{1
 == About this manual
 
-This is the {dosname} variant of the Solo Forth manual. Nevertheles, some
+This is the {dosname} variant of the Solo Forth manual. Nevertheless, some
 details about the rest of supported DOSes are included as well, when the
 comparison is useful.
 
@@ -606,26 +607,21 @@ endif::trdos[]
 // How to search the source files {{{1
 == How to search the source files
 
-Three simple one-line wrapper scripts are included to search the Forth
-sources for a regular expression: <tools/search_library>,
-<tools/search_kernel> and <tools/search_source> (to search all files
-in the <src> directory).
+A shell script is included in order to make searching the Forth
+sources for a regular expression a bit easier: <tools/search_sources>.
 
-The scripts use ``ack``. In order to use the more common ``grep``,
-edit the files.  ``ack`` and ``grep`` are compatible.
-
-Their first parameter is the regular expression. An optional second
-parameter is passed to ``ack``.
+The script uses ``ack`` by default; if ``ack`` is not installed,
+``grep`` is used instead.
 
 Usage examples:
 
 ----
-tools/search_source use-thru-index
-tools/search_source use-thru-index -l
-tools/search_kernel color
-tools/search_kernel ";\s:\s"
-tools/search_library "\-bank"
-tools/search_library "code\s+\S+\s+\("
+tools/search_sources use-thru-index
+tools/search_sources use-thru-index -l
+tools/search_sources color
+tools/search_sources ";\s:\s"
+tools/search_sources "\-bank"
+tools/search_sources "code\s+\S+\s+\("
 ----
 
 // How to test and benchmark {{{1

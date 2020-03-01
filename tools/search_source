@@ -1,9 +1,0 @@
-#!/bin/sh
-
-# search_source
-
-# Search the source of Solo Forth for the regex $1.
-
-# 2017-02-21
-
-ack $1 $2 -r ~/forth/solo_forth/src/** ~/forth/solo_forth/src/**/*
