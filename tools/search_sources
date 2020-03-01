@@ -5,7 +5,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202003012113
+# Last modified: 202003012155
 
 # Search the sources of Solo Forth using ack (by default) or grep
 # (when ack is not installed).  All parameters and options are passed
@@ -14,9 +14,7 @@
 # 2020-03-01
 
 dirs="./src/kernel*.z80s ./src/lib/*.fs"
-errors_file=./tmp/search_sources_errors
 
-ack $* -r $dirs 2>$errors_file || \
-grep $* -r $dirs 2>$errors_file
+ack $* -r $dirs 2>/dev/null || \
+grep $* -r $dirs 2>/dev/null
 
-rm -f $errors_file
