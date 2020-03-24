@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202003011940.
+# Last modified: 202003032156.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -869,6 +869,7 @@ tmp/doc.gplusdos.manual.adoc: \
 	tmp/doc.z80_instructions.linked.adoc \
 	src/doc/glossary_heading.adoc \
 	tmp/doc.gplusdos.glossary.adoc \
+	tmp/doc.gplusdos.exception_codes.adoc \
 	tmp/doc.README.linked.adoc
 	cat \
 		tmp/doc.manual_skeleton.linked.adoc \
@@ -942,6 +943,7 @@ tmp/doc.plus3dos.manual.adoc: \
 	tmp/doc.z80_instructions.linked.adoc \
 	src/doc/glossary_heading.adoc \
 	tmp/doc.plus3dos.glossary.adoc \
+	tmp/doc.plus3dos.exception_codes.adoc \
 	tmp/doc.README.linked.adoc
 	cat \
 		tmp/doc.manual_skeleton.linked.adoc \
@@ -1015,6 +1017,7 @@ tmp/doc.trdos.manual.adoc: \
 	tmp/doc.z80_instructions.linked.adoc \
 	src/doc/glossary_heading.adoc \
 	tmp/doc.trdos.glossary.adoc \
+	tmp/doc.trdos.exception_codes.adoc \
 	tmp/doc.README.linked.adoc
 	cat \
 		tmp/doc.manual_skeleton.linked.adoc \
@@ -1331,6 +1334,8 @@ oldbackup:
 #
 # 2020-03-01: Build EPUB also with asciidoctor-epub3. Fix prerequites: README
 # and manual skeleton.
+#
+# 2020-03-03: Fix prerequisite: exceptions file.
 
 # ==============================================================
 
