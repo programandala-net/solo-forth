@@ -1,13 +1,13 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-02-29
+:revdate: 2020-03-08
 :toc:
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202002291947
+// Last modified: 202003081418
 
 // Description {{{1
 == Description
@@ -95,8 +95,9 @@ The motivation behind Solo Forth is double:
    fig-Forth in these computers. In fact, it can run on ZX Spectrum 48
    as well. The only difference was that on ZX Spectrum 128 the
    RAM-disk was bigger and used banked memory. Beside, this Forth-83
-   port is built by metacompilation, therefore it was very hard to
-   adapt to disk-drives or use it as a cross-development system.
+   port is built by metacompilation, therefore it would be very
+   difficult to adapt to disk-drives or use it as a cross-development
+   system.
 
 The development of Solo Forth started on 2015-05-30, from the
 disassembled code of Abersoft Forth. Some ideas and code were reused
