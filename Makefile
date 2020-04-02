@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202003032156.
+# Last modified: 202004030117.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -221,20 +221,20 @@ epub: gplusdosepub plus3dosepub trdosepub
 .PHONY: gplusdosepub
 gplusdosepub: \
 	doc/gplusdos_solo_forth_manual.asciidoctor-epub3.epub \
-	doc/gplusdos_solo_forth_manual.docbook.pandoc.epub \
-	doc/gplusdos_solo_forth_manual.docbook.dbtoepub.epub
+	doc/gplusdos_solo_forth_manual.dbk.pandoc.epub \
+	doc/gplusdos_solo_forth_manual.dbk.dbtoepub.epub
 
 .PHONY: plus3dosepub
 plus3dosepub: \
 	doc/plus3dos_solo_forth_manual.asciidoctor-epub3.epub \
-	doc/plus3dos_solo_forth_manual.docbook.pandoc.epub \
-	doc/plus3dos_solo_forth_manual.docbook.dbtoepub.epub
+	doc/plus3dos_solo_forth_manual.dbk.pandoc.epub \
+	doc/plus3dos_solo_forth_manual.dbk.dbtoepub.epub
 
 .PHONY: trdosepub
 trdosepub: \
 	doc/trdos_solo_forth_manual.asciidoctor-epub3.epub \
-	doc/trdos_solo_forth_manual.docbook.pandoc.epub \
-	doc/trdos_solo_forth_manual.docbook.dbtoepub.epub
+	doc/trdos_solo_forth_manual.dbk.pandoc.epub \
+	doc/trdos_solo_forth_manual.dbk.dbtoepub.epub
 
 .PHONY: html
 html: gplusdoshtml plus3doshtml trdoshtml
@@ -256,15 +256,15 @@ odt: gplusdosodt plus3dosodt trdosodt
 
 .PHONY: gplusdosodt
 gplusdosodt: \
-		doc/gplusdos_solo_forth_manual.docbook.pandoc.odt
+		doc/gplusdos_solo_forth_manual.dbk.pandoc.odt
 
 .PHONY: plus3dosodt
 plus3dosodt: \
-		doc/plus3dos_solo_forth_manual.docbook.pandoc.odt
+		doc/plus3dos_solo_forth_manual.dbk.pandoc.odt
 
 .PHONY: trdosodt
 trdosodt: \
-		doc/trdos_solo_forth_manual.docbook.pandoc.odt
+		doc/trdos_solo_forth_manual.dbk.pandoc.odt
 
 .PHONY: pdf
 pdf: gplusdospdf plus3dospdf trdospdf
@@ -761,35 +761,35 @@ tmp/doc.%.linked.adoc: src/doc/%.adoc
 tmp/doc.README.linked.adoc: README.adoc
 	glosara --annex $< > $@
 
-%doc.gplusdos.manual.docbook: %doc.gplusdos.manual.adoc
+%doc.gplusdos.manual.dbk: %doc.gplusdos.manual.adoc
 	asciidoctor \
 		--backend=docbook \
 		--attribute=dosname=G+DOS \
 		--attribute=version=$(version) \
 		--out-file=$@ $<
 
-%doc.plus3dos.manual.docbook: %doc.plus3dos.manual.adoc
+%doc.plus3dos.manual.dbk: %doc.plus3dos.manual.adoc
 	asciidoctor \
 		--backend=docbook \
 		--attribute=dosname=+3DOS \
 		--attribute=version=$(version) \
 		--out-file=$@ $<
 
-%doc.trdos.manual.docbook: %doc.trdos.manual.adoc
+%doc.trdos.manual.dbk: %doc.trdos.manual.adoc
 	asciidoctor \
 		--backend=docbook \
 		--attribute=dosname=TR-DOS \
 		--attribute=version=$(version) \
 		--out-file=$@ $<
 
-%.docbook.dbtoepub.epub: %.docbook
+%.dbk.dbtoepub.epub: %.dbk
 	dbtoepub -o $@ $<
 
-%.docbook.pandoc.epub: %.docbook
+%.dbk.pandoc.epub: %.dbk
 	pandoc \
 		--output=$@ -f docbook -t epub $<
 
-%.docbook.pandoc.odt: %.docbook
+%.dbk.pandoc.odt: %.dbk
 	pandoc \
 		--from docbook \
 		--to odt \
@@ -857,7 +857,7 @@ tmp/doc.gplusdos.exception_codes.adoc: $(gplusdos_exception_codes_lib_files)
 # Preserve the links in the DocBook source by removing the
 # enclosing <literal> tags:
 
-doc/gplusdos_solo_forth_manual.docbook: tmp/doc.gplusdos.manual.docbook
+doc/gplusdos_solo_forth_manual.dbk: tmp/doc.gplusdos.manual.dbk
 	sed \
 		-e "s/<literal><link/<link/g" \
 		-e "s/<\/link><\/literal>/<\/link>/g" $< > $@
@@ -931,7 +931,7 @@ tmp/doc.plus3dos.exception_codes.adoc: $(plus3dos_exception_codes_lib_files)
 # Preserve the links in the DocBook source by removing the
 # enclosing <literal> tags:
 
-doc/plus3dos_solo_forth_manual.docbook: tmp/doc.plus3dos.manual.docbook
+doc/plus3dos_solo_forth_manual.dbk: tmp/doc.plus3dos.manual.dbk
 	sed \
 		-e "s/<literal><link/<link/g" \
 		-e "s/<\/link><\/literal>/<\/link>/g" $< > $@
@@ -1005,7 +1005,7 @@ tmp/doc.trdos.exception_codes.adoc: $(trdos_exception_codes_lib_files)
 # Preserve the links in the DocBook source by removing the
 # enclosing <literal> tags:
 
-doc/trdos_solo_forth_manual.docbook: tmp/doc.trdos.manual.docbook
+doc/trdos_solo_forth_manual.dbk: tmp/doc.trdos.manual.dbk
 	sed \
 		-e "s/<literal><link/<link/g" \
 		-e "s/<\/link><\/literal>/<\/link>/g" $< > $@
@@ -1336,6 +1336,8 @@ oldbackup:
 # and manual skeleton.
 #
 # 2020-03-03: Fix prerequisite: exceptions file.
+#
+# 2020-04-03: Replace "docbook" filename extension with "dbk".
 
 # ==============================================================
 
