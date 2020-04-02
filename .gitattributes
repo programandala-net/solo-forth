@@ -1,6 +1,7 @@
 *.bin binary
 *.dsk binary
 *.exe binary
+*.f64 binary
 *.fs linguist-language=Forth
 *.fzx binary
 *.mgt binary

@@ -1,13 +1,13 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-03-08
+:revdate: 2020-04-03
 :toc:
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202003081418
+// Last modified: 202004030130
 
 // Description {{{1
 == Description
@@ -313,7 +313,7 @@ hard drives, flash cards, and a lot of memory.
 | make        |              | Files used by ``make`` to build the system
 | screenshots |              | Version screenshots
 | src         |              | Sources
-| src         | addons       | Code that is loaded from disk
+| src         | addons       | Code to be loaded from disk. Not used yet.
 | src         | doc          | Files used to build the documentation
 | src         | inc          | Z80 symbols
 | src         | lib          | Library
