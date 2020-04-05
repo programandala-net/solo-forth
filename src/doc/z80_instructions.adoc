@@ -3,7 +3,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202002291025
+// Last modified: 202004051701
 // See change log at the end of the file
 
 // XXX TODO -- Add the credits to the acknowledgements file:
@@ -300,7 +300,7 @@
 | ``RR (IX+n)``     | ``_n_ ix rrx,``                    | 4 | ``DD CB xx 1E``       | 23    | ``{a}{a}0P0{a}``       | ``[IX+n]=CY>>{CY,[IX+n]}``
 | ``RR (IY+n)``     | ``_n_ iy rrx,``                    | 4 | ``FD CB xx 1E``       | 23    | ``{a}{a}0P0{a}``       | ``[IT+n]=CY>>{CY,[IY+n]}``
 | ``RR r``          | ``_r_ rr,``                        | 2 | ``CB 18+r``           | 8     | ``{a}{a}0P0{a}``       | ``r=CY>>{CY,r}``
-| ``RRA``           | ``rra,                             | 1 | ``1F``                | 4     | ``{u}{u}0{u}0{a}``     | ``A=CY>>{CY,A}``
+| ``RRA``           | ``rra,``                           | 1 | ``1F``                | 4     | ``{u}{u}0{u}0{a}``     | ``A=CY>>{CY,A}``
 | ``RRC (HL)``      | ``m rrc,``                         | 2 | ``CB 0E``             | 15    | ``{a}{a}0P0{a}``       | ``[HL]=>>{[HL]}``
 | ``RRC (IX+n)``    | ``_n_ ix rrcx,``                   | 4 | ``DD CB xx 0E``       | 23    | ``{a}{a}0P0{a}``       | ``[IX+n]=>>{[IX+n]}``
 | ``RRC (IY+n)``    | ``_n_ iy rrcx, ``                  | 4 | ``FD CB xx 0E``       | 23    | ``{a}{a}0P0{a}``       | ``[IY+n]=>>{[IY+n]}``
@@ -415,5 +415,7 @@ named `m`, with value 6.
 // Fix/complete variants of ``LD HL,(nn)`` and ``LD (nn),HL``.  and .
 // Update with ``ldar,`` and ``ldra,``. Complete documentation of
 // ``ADD IX/IY,...`` and ``LD SP,HL``.
+//
+// 2020-04-05: Fix markup.
 
 // vim: filetype=asciidoc
