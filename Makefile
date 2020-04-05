@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202004030117.
+# Last modified: 202004052105.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -207,34 +207,34 @@ cleandoc:
 doc: gplusdosdoc plus3dosdoc trdosdoc
 
 .PHONY: gplusdosdoc
-gplusdosdoc: gplusdosepub gplusdoshtml gplusdosodt gplusdospdf
+gplusdosdoc: gplusdosepub gplusdoshtml gplusdospdf
 
 .PHONY: plus3dosdoc
-plus3dosdoc: plus3dosepub plus3doshtml plus3dosodt plus3dospdf
+plus3dosdoc: plus3dosepub plus3doshtml plus3dospdf
 
 .PHONY: trdosdoc
-trdosdoc: trdosepub trdoshtml trdosodt trdospdf
+trdosdoc: trdosepub trdoshtml trdospdf
 
 .PHONY: epub
 epub: gplusdosepub plus3dosepub trdosepub
 
 .PHONY: gplusdosepub
 gplusdosepub: \
-	doc/gplusdos_solo_forth_manual.asciidoctor-epub3.epub \
-	doc/gplusdos_solo_forth_manual.dbk.pandoc.epub \
-	doc/gplusdos_solo_forth_manual.dbk.dbtoepub.epub
+	doc/gplusdos_solo_forth_manual.epub \
+	doc/gplusdos_solo_forth_manual.dbk.dbtoepub.epub \
+	doc/gplusdos_solo_forth_manual.dbk.pandoc.epub
 
 .PHONY: plus3dosepub
 plus3dosepub: \
-	doc/plus3dos_solo_forth_manual.asciidoctor-epub3.epub \
-	doc/plus3dos_solo_forth_manual.dbk.pandoc.epub \
-	doc/plus3dos_solo_forth_manual.dbk.dbtoepub.epub
+	doc/plus3dos_solo_forth_manual.epub \
+	doc/plus3dos_solo_forth_manual.dbk.dbtoepub.epub \
+	doc/plus3dos_solo_forth_manual.dbk.pandoc.epub
 
 .PHONY: trdosepub
 trdosepub: \
-	doc/trdos_solo_forth_manual.asciidoctor-epub3.epub \
-	doc/trdos_solo_forth_manual.dbk.pandoc.epub \
-	doc/trdos_solo_forth_manual.dbk.dbtoepub.epub
+	doc/trdos_solo_forth_manual.epub \
+	doc/trdos_solo_forth_manual.dbk.dbtoepub.epub \
+	doc/trdos_solo_forth_manual.dbk.pandoc.epub
 
 .PHONY: html
 html: gplusdoshtml plus3doshtml trdoshtml
@@ -271,18 +271,15 @@ pdf: gplusdospdf plus3dospdf trdospdf
 
 .PHONY: gplusdospdf
 gplusdospdf: \
-		doc/gplusdos_solo_forth_manual.asciidoctor-pdf.pdf \
-		doc/gplusdos_solo_forth_manual.html.pandoc.pdf
+		doc/gplusdos_solo_forth_manual.pdf
 
 .PHONY: plus3dospdf
 plus3dospdf: \
-		doc/plus3dos_solo_forth_manual.asciidoctor-pdf.pdf \
-		doc/plus3dos_solo_forth_manual.html.pandoc.pdf
+		doc/plus3dos_solo_forth_manual.pdf
 
 .PHONY: trdospdf
 trdospdf: \
-		doc/trdos_solo_forth_manual.asciidoctor-pdf.pdf \
-		doc/trdos_solo_forth_manual.html.pandoc.pdf
+		doc/trdos_solo_forth_manual.pdf
 
 # ==============================================================
 # Debug {{{1
@@ -764,6 +761,7 @@ tmp/doc.README.linked.adoc: README.adoc
 %doc.gplusdos.manual.dbk: %doc.gplusdos.manual.adoc
 	asciidoctor \
 		--backend=docbook \
+		--attribute=gplusdos \
 		--attribute=dosname=G+DOS \
 		--attribute=version=$(version) \
 		--out-file=$@ $<
@@ -771,6 +769,7 @@ tmp/doc.README.linked.adoc: README.adoc
 %doc.plus3dos.manual.dbk: %doc.plus3dos.manual.adoc
 	asciidoctor \
 		--backend=docbook \
+		--attribute=plus3dos \
 		--attribute=dosname=+3DOS \
 		--attribute=version=$(version) \
 		--out-file=$@ $<
@@ -778,6 +777,7 @@ tmp/doc.README.linked.adoc: README.adoc
 %doc.trdos.manual.dbk: %doc.trdos.manual.adoc
 	asciidoctor \
 		--backend=docbook \
+		--attribute=trdos \
 		--attribute=dosname=TR-DOS \
 		--attribute=version=$(version) \
 		--out-file=$@ $<
@@ -795,6 +795,9 @@ tmp/doc.README.linked.adoc: README.adoc
 		--to odt \
 		--output=$@ $<
 
+# XXX REMARK -- 2020-04-05: This PDF is not build by default anymore, because the links
+# don't work:
+
 %.html.pandoc.pdf: %.html
 	pandoc \
 		--from html \
@@ -805,7 +808,7 @@ tmp/doc.README.linked.adoc: README.adoc
 # ----------------------------------------------
 # Documentation for G+DOS {{{2
 
-doc/gplusdos_solo_forth_manual.asciidoctor-epub3.epub: \
+doc/gplusdos_solo_forth_manual.epub: \
 	tmp/doc.gplusdos.manual.adoc \
 	README.adoc
 	asciidoctor-epub3 \
@@ -815,7 +818,7 @@ doc/gplusdos_solo_forth_manual.asciidoctor-epub3.epub: \
 		--attribute=version=$(version) \
 		--out-file=$@ $<
 
-doc/gplusdos_solo_forth_manual.asciidoctor-pdf.pdf: \
+doc/gplusdos_solo_forth_manual.pdf: \
 	tmp/doc.gplusdos.manual.adoc \
 	README.adoc
 	asciidoctor-pdf \
@@ -883,7 +886,7 @@ tmp/doc.gplusdos.manual.adoc: \
 # ----------------------------------------------
 # Documentation for +3DOS {{{2
 
-doc/plus3dos_solo_forth_manual.asciidoctor-epub3.epub: \
+doc/plus3dos_solo_forth_manual.epub: \
 	tmp/doc.plus3dos.manual.adoc \
 	README.adoc
 	asciidoctor-epub3 \
@@ -893,7 +896,7 @@ doc/plus3dos_solo_forth_manual.asciidoctor-epub3.epub: \
 		--attribute=version=$(version) \
 		--out-file=$@ $<
 
-doc/plus3dos_solo_forth_manual.asciidoctor-pdf.pdf: \
+doc/plus3dos_solo_forth_manual.pdf: \
 	tmp/doc.plus3dos.manual.adoc \
 	README.adoc
 	asciidoctor-pdf \
@@ -957,7 +960,7 @@ tmp/doc.plus3dos.manual.adoc: \
 # ----------------------------------------------
 # Documentation for TR-DOS {{{2
 
-doc/trdos_solo_forth_manual.asciidoctor-epub3.epub: \
+doc/trdos_solo_forth_manual.epub: \
 	tmp/doc.trdos.manual.adoc \
 	README.adoc
 	asciidoctor-epub3 \
@@ -967,7 +970,7 @@ doc/trdos_solo_forth_manual.asciidoctor-epub3.epub: \
 		--attribute=version=$(version) \
 		--out-file=$@ $<
 
-doc/trdos_solo_forth_manual.asciidoctor-pdf.pdf: \
+doc/trdos_solo_forth_manual.pdf: \
 	tmp/doc.trdos.manual.adoc \
 	README.adoc
 	asciidoctor-pdf \
@@ -1338,6 +1341,12 @@ oldbackup:
 # 2020-03-03: Fix prerequisite: exceptions file.
 #
 # 2020-04-03: Replace "docbook" filename extension with "dbk".
+#
+# 2020-04-05: Deprecate the PDF build by Pandoc from HTML. Simplify the
+# filenames of the manuals built by Asciidoctor EPUB3 and Asciidoctor PDF. Fix
+# the building of DocBook (the DOS label attribute was not passed, and the
+# corresponding Asciidoctor conditions failed, making the DOS-spcific contents
+# missing). Dont't build OpenDocument by default.
 
 # ==============================================================
 
