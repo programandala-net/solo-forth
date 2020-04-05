@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202004052105.
+# Last modified: 202004052345.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -215,6 +215,21 @@ plus3dosdoc: plus3dosepub plus3doshtml plus3dospdf
 .PHONY: trdosdoc
 trdosdoc: trdosepub trdoshtml trdospdf
 
+.PHONY: dbk
+dbk: gplusdosdbk plus3dosdbk trdosdbk
+
+.PHONY: gplusdosdbk
+gplusdosdbk: \
+	doc/gplusdos_solo_forth_manual.dbk
+
+.PHONY: plus3dosdbk
+plus3dosdbk: \
+	doc/plus3dos_solo_forth_manual.dbk
+
+.PHONY: trdosdbk
+trdosdbk: \
+	doc/trdos_solo_forth_manual.dbk
+
 .PHONY: epub
 epub: gplusdosepub plus3dosepub trdosepub
 
@@ -241,15 +256,18 @@ html: gplusdoshtml plus3doshtml trdoshtml
 
 .PHONY: gplusdoshtml
 gplusdoshtml: \
-		doc/gplusdos_solo_forth_manual.html
+		doc/gplusdos_solo_forth_manual.html ­\
+		doc/gplusdos_solo_forth_manual.dbk.pandoc.html
 
 .PHONY: plus3doshtml
 plus3doshtml: \
-		doc/plus3dos_solo_forth_manual.html
+		doc/plus3dos_solo_forth_manual.html \
+		doc/plus3dos_solo_forth_manual.dbk.pandoc.html
 
 .PHONY: trdoshtml
 trdoshtml: \
-		doc/trdos_solo_forth_manual.html
+		doc/trdos_solo_forth_manual.html \
+		doc/trdos_solo_forth_manual.dbk.pandoc.html
 
 .PHONY: odt
 odt: gplusdosodt plus3dosodt trdosodt
@@ -788,6 +806,12 @@ tmp/doc.README.linked.adoc: README.adoc
 %.dbk.pandoc.epub: %.dbk
 	pandoc \
 		--output=$@ -f docbook -t epub $<
+
+%.dbk.pandoc.html: %.dbk
+	pandoc \
+		--from docbook \
+		--to html \
+		--output=$@ $<
 
 %.dbk.pandoc.odt: %.dbk
 	pandoc \
@@ -1346,7 +1370,8 @@ oldbackup:
 # filenames of the manuals built by Asciidoctor EPUB3 and Asciidoctor PDF. Fix
 # the building of DocBook (the DOS label attribute was not passed, and the
 # corresponding Asciidoctor conditions failed, making the DOS-spcific contents
-# missing). Dont't build OpenDocument by default.
+# missing). Dont't build OpenDocument by default. Add rules to build the
+# DocBook directly. Build an HTML manual also with Pandoc.
 
 # ==============================================================
 
