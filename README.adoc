@@ -1,13 +1,13 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-04-03
+:revdate: 2020-04-06
 :toc:
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202004030130
+// Last modified: 202004070109
 
 // Description {{{1
 == Description
@@ -80,7 +80,7 @@ The motivation behind Solo Forth is double:
    wrote the http://programandala.net/en.program.afera.html[Afera
    library] in order to make Abersoft Forth more stable, powerful and
    comfortable for cross development.  In fact both projects were
-   parallel for months. Finally the objective was reached but, after a
+   parallel for months. The objective was reached but, after a
    certain point, further improvements weren't feasible without making
    radical changes in the system. The need for a new Forth system
    arised: a Forth designed from the start to use disk drives and
@@ -88,29 +88,23 @@ The motivation behind Solo Forth is double:
 
 2. *Nobody had written such a Forth system before:* In 2015 there was
    no disk-based Forth for the ZX Spectrum platform, and the only
-   Forth written for ZX Spectrum 128 was Lennart Benschop's Forth-83
-   (1988). But despite being more powerful than fig-Forth, it was
-   still tape-based (or microdrive-based) and used a RAM disk to keep
-   the sources, basically the same method used by all ports of
-   fig-Forth in these computers. In fact, it can run on ZX Spectrum 48
-   as well. The only difference was that on ZX Spectrum 128 the
-   RAM-disk was bigger and used banked memory. Beside, this Forth-83
-   port is built by metacompilation, therefore it would be very
-   difficult to adapt to disk-drives or use it as a cross-development
-   system.
+   Forth written for ZX Spectrum 128, the first model with banked
+   memory, was Lennart Benschop's Forth-83
+   (1988). But despite being more powerful than fig-Forth, it is still
+   tape-based and keeps the block sources in a RAM disk. Beside, the
+   system is built by metacompilation, what makes it difficult to
+   adapt to disk drives.
 
 The development of Solo Forth started on 2015-05-30, from the
 disassembled code of Abersoft Forth. Some ideas and code were reused
 also from the Afera library and from a previous abandoned project
 called http://programandala.net/en.program.dzx-forth.html[DZX-Forth]
-(a port from CP/M DX-Forth to ZX Spectrum +3e).
+(a port of CP/M DX-Forth to ZX Spectrum +3e).
 
 The http://github.com/programandala-net/solo-forth[GitHub
 repository,role="external"] was created on 2016-03-13 from the
 development backups, in order to preserve the evolution of the code
-from the very beginning.  Also, there's a
-http://programandala.net/en.program.solo_forth.history.html[development
-history until v0.12.0 (2016-12-31)].
+from the very beginning.
 
 Solo Forth is very stable, and it's being used to develop two projects
 in Forth:
@@ -362,11 +356,11 @@ following:
 === Pentagon 128
 
 1. Run a ZX Spectrum emulator and select a Pentagon
-   128footnote:diskformat:[Make sure the disk drives are configured as
+   128{blank}footnote:diskformat:[Make sure the disk drives are configured as
    double-sided and 80-track].
-2. "`Insert`" the disk image file <disks/trdos/disk_0_boot.trd> as disk
+2. “Insert” the disk image file <disks/trdos/disk_0_boot.trd> as disk
    'A'.
-3. Choose "`TR DOS`" from the computer start menu. This will enter the
+3. Choose “TR DOS” from the computer start menu. This will enter the
    TR-DOS command linefootnote:trdoscli:[The TR-DOS command line
    uses keyboard tokens, like the ZX Spectrum 48, but commands typed
    in 'L' cursor mode will be recognized as well, as on the ZX
@@ -375,7 +369,7 @@ following:
    ``REM``. When the DOS command is typed in full, the quote or the
    ``REM`` must be removed from the start of the line before pressing
    'Enter'.].
-4. Press the '.' key to get the `RUN` command and press the Enter key.
+4. Press the '.' key to get the ``RUN`` command and press the Enter key.
    Solo Forth will be loaded from disk.
 
 // Pentagon 512 {{{2
@@ -383,15 +377,15 @@ following:
 
 1. Run a ZX Spectrum emulator and select a Pentagon
    512footnote:diskformat:[].
-2. "`Insert`" the disk image file
+2. “Insert” the disk image file
    <disks/trdos/disk_0_boot.pentagon_512.trd> as disk 'A'.
 3. Choose "128k menu"footnote:pentagonboot:[In theory, choosing
-   option "`TR-DOS`" from the system service menu should work. But it
+   option “TR-DOS” from the system service menu should work. But it
    seems it depends on a specific version of TR-DOS.  This alternative
    method is longer, but it works with the TR-DOS 5.03 ROM. It will be
    improved in future versions of the manual.] from the computer start
    menu (the reset service menu). This will enter a ZX Spectrum 128
-   style menu. Choose "`TR-DOS`".  This will enter the TR-DOS command
+   style menu. Choose “TR-DOS”.  This will enter the TR-DOS command
    linefootnote:trdoscli:[].
 4. Press the '.' key to get the ``RUN`` command and press the Enter
    key.  Solo Forth will be loaded from disk.
@@ -401,11 +395,11 @@ following:
 
 1. Run a ZX Spectrum emulator and select a Pentagon
    1024footnote:diskformat:[].
-2. "`Insert`" the disk image file
+2. “Insert” the disk image file
    <disks/trdos/disk_0_boot.pentagon_1024.trd> as disk 'A'.
 3. Choose "128k menu"footnote:pentagonboot:[] from the computer
    start menu (the reset service menu). This will enter a ZX Spectrum
-   128 style menu. Choose "`TR-DOS`".  This will enter the TR-DOS
+   128 style menu. Choose “TR-DOS”.  This will enter the TR-DOS
    command linefootnote:trdoscli:[].
 4. Press the '.' key to get the ``RUN`` command and press the Enter
    key.  Solo Forth will be loaded from disk.
@@ -419,7 +413,7 @@ following:
 
 1. Run a ZX Spectrum emulator and select a Scorpion ZS
    256footnote:diskformat:[].
-2. "`Insert`" the disk image file
+2. “Insert” the disk image file
    <disks/trdos/disk_0_boot.scorpion_zs_256.trd> as disk 'A'.
 3. Choose "128 TR DOS" from the computer start menu.  Solo Forth will
    be loaded from disk.
@@ -445,10 +439,10 @@ following:
 1. Run a ZX Spectrum emulator and select a ZX Spectrum +3 (or
    http://www.worldofspectrum.org/zxplus3e/[ZX
    Spectrum{sp}+3e,role="external"])footnote:diskformat:[].
-2. "`Insert`" the disk image file <disks/plus3dos/disk_0_boot.180.dsk>
+2. “Insert” the disk image file <disks/plus3dos/disk_0_boot.180.dsk>
    (or <disks/plus3dos/disk_0_boot.720.dsk>, depending on the capacity
    of the drive) as disk 'A'.
-3. Choose "`Loader`" from the computer start menu. Solo Forth will be
+3. Choose “Loader” from the computer start menu. Solo Forth will be
    loaded from disk.
 
 // end::run_plus3[]
@@ -460,7 +454,7 @@ following:
 
 1. Run a ZX Spectrum emulator and select a ZX Spectrum 128 (or ZX
    Spectrum +2) with the Beta 128 interfacefootnote:diskformat:[].
-2. "`Insert`" the disk image file <disks/trdos/disk_0_boot.trd> as disk
+2. “Insert” the disk image file <disks/trdos/disk_0_boot.trd> as disk
    A of the Beta 128 interface.
 3. Choose "128 BASIC" from the computer start menu.
 4. Type `randomize usr 15616` in BASIC (or just `run usr15616` to save
@@ -482,7 +476,7 @@ following:
 
 1. Run a ZX Spectrum emulator and select a ZX Spectrum 128 (or ZX
    Spectrum +2) with the Plus D disk interface.
-2. "`Insert`" the disk image file <disks/gplusdos/disk_0_boot.mgt> as
+2. “Insert” the disk image file <disks/gplusdos/disk_0_boot.mgt> as
    disk 1 of the Plus D disk interface.
 3. Choose "128 BASIC" from the computer start menu.
 4. Type ``run`` in BASIC. G+DOS will be loaded from disk, and Solo
@@ -502,13 +496,13 @@ following:
 // XXX TODO -- is `set-drive` needed?
 
 1. <<_run,Run Solo Forth>>.
-2. "`Insert`" the file <disks/plus3dos/disk_1_library.dsk> as disk B.
-   ``'b' set-drive throw`` to make drive 'B' the current one.
+2. “Insert” the file <disks/plus3dos/disk_1_library.dsk> as disk B.
+   `'b' set-drive throw` to make drive 'B' the current one.
 3. Type `1 load` to load block 1 from the library disk. By convention,
    block 0 can not be loaded (it is used for comments), and block 1 is
    used as a loader.  In Solo Forth, block 1 contains `2 load`, in
    order to load the `need` tool from block 2.
-4. Type ``need name``, were "`name`" is the name of the word or tool you
+4. Type `need name`, were “name” is the name of the word or tool you
    want to load from the library.
 
 // end::library_on_plus3dos[]
@@ -519,14 +513,14 @@ following:
 // tag::library_on_gplusdos[]
 
 1. <<_run,Run Solo Forth>>.
-2. "`Insert`" the file <disks/gplusdos/disk_1_library.mgt> as
+2. “Insert” the file <disks/gplusdos/disk_1_library.mgt> as
   disk 2 of the Plus D disk interface. Type `2 set-drive throw` to
   make drive 2 the current one.
 3. Type `1 load` to load block 1 from the library disk. By convention,
    block 0 can not be loaded (it is used for comments), and block 1 is
    used as a loader.  In Solo Forth, block 1 contains `2 load`, in
    order to load the `need` tool from block 2.
-4. Type ``need name``, were "`name`" is the name of the word or tool you
+4. Type `need name`, were “name” is the name of the word or tool you
    want to load from the library.
 
 // end::library_on_gplusdos[]
@@ -537,7 +531,7 @@ following:
 // tag::library_on_trdos[]
 
 1. <<_run,Run Solo Forth>>.
-2. "`Insert`" the file <disks/trdos/disk_1a_library.trd> as disk B of
+2. “Insert” the file <disks/trdos/disk_1a_library.trd> as disk B of
    the Beta 128 interface, and the file
    <disks/trdos/disk_1b_library.trd> as disk C.  Type `1 set-drive
    throw` to make drive 1footnote:[The TR-DOS BASIC interface uses
@@ -545,7 +539,7 @@ following:
    filenames. But, under the hood, TR-DOS uses numbers 0..3 to
    identify the disk drives, and filenames don't include the drive
    letter. This is the way Solo Forth works too.  Usage of 'A'..'D'
-   instead of 0..3 maybe implemented in a future version of Solo
+   instead of 0..3 may be implemented in a future version of Solo
    Forth, either by default or as an option.] the current one.
 3. Type `1 load` to load block 1 from the library disk. By convention,
    block 0 can not be loaded (it is used for comments), and block 1 is
@@ -554,7 +548,7 @@ following:
    set-block-drives` to load the word `set-block-drives` from the
    library. Then type `2 1 2 set-block-drives` to configure the second
    and the third drives as block drives.
-4. Type ``need name``, were "`name`" is the name of the word or tool you
+4. Type `need name`, were “name” is the name of the word or tool you
    want to load from the library.
 
 // end::library_on_trdos[]
