@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202004052345.
+# Last modified: 202004061536.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -234,39 +234,84 @@ trdosdbk: \
 epub: gplusdosepub plus3dosepub trdosepub
 
 .PHONY: gplusdosepub
-gplusdosepub: \
-	doc/gplusdos_solo_forth_manual.epub \
-	doc/gplusdos_solo_forth_manual.dbk.dbtoepub.epub \
+gplusdosepub: gplusdosepuba gplusdosepubd gplusdosepubp
+
+.PHONY: gplusdosepuba
+gplusdosepuba: \
+	doc/gplusdos_solo_forth_manual.epub
+
+.PHONY: gplusdosepubd
+gplusdosepubd: \
+	doc/gplusdos_solo_forth_manual.dbk.dbtoepub.epub
+
+.PHONY: gplusdosepubp
+gplusdosepubp: \
 	doc/gplusdos_solo_forth_manual.dbk.pandoc.epub
 
 .PHONY: plus3dosepub
-plus3dosepub: \
-	doc/plus3dos_solo_forth_manual.epub \
-	doc/plus3dos_solo_forth_manual.dbk.dbtoepub.epub \
+plus3dosepub: plus3dosepuba plus3dosepubd plus3dosepubp
+
+.PHONY: plus3dosepuba
+plus3dosepuba: \
+	doc/plus3dos_solo_forth_manual.epub
+
+.PHONY: plus3dosepubd
+plus3dosepubd: \
+	doc/plus3dos_solo_forth_manual.dbk.dbtoepub.epub
+
+.PHONY: plus3dosepubp
+plus3dosepubp: \
 	doc/plus3dos_solo_forth_manual.dbk.pandoc.epub
 
 .PHONY: trdosepub
-trdosepub: \
-	doc/trdos_solo_forth_manual.epub \
-	doc/trdos_solo_forth_manual.dbk.dbtoepub.epub \
+trdosepub: trdosepuba trdosepubd trdosepubp
+
+.PHONY: trdosepuba
+trdosepuba: \
+	doc/trdos_solo_forth_manual.epub
+
+.PHONY: trdosepubd
+trdosepubd: \
+	doc/trdos_solo_forth_manual.dbk.dbtoepub.epub
+
+.PHONY: trdosepubp
+trdosepubp: \
 	doc/trdos_solo_forth_manual.dbk.pandoc.epub
 
 .PHONY: html
 html: gplusdoshtml plus3doshtml trdoshtml
 
 .PHONY: gplusdoshtml
-gplusdoshtml: \
-		doc/gplusdos_solo_forth_manual.html ­\
+gplusdoshtml: gplusdoshtmla gplusdoshtmlp
+
+.PHONY: gplusdoshtmla
+gplusdoshtmla: \
+		doc/gplusdos_solo_forth_manual.html
+
+.PHONY: gplusdoshtmlp
+gplusdoshtmlp: \
 		doc/gplusdos_solo_forth_manual.dbk.pandoc.html
 
 .PHONY: plus3doshtml
-plus3doshtml: \
-		doc/plus3dos_solo_forth_manual.html \
+plus3doshtml: plus3doshtmla plus3doshtmlp
+
+.PHONY: plus3doshtmla
+plus3doshtmla: \
+		doc/plus3dos_solo_forth_manual.html
+
+.PHONY: plus3doshtmlp
+plus3doshtmlp: \
 		doc/plus3dos_solo_forth_manual.dbk.pandoc.html
 
 .PHONY: trdoshtml
-trdoshtml: \
-		doc/trdos_solo_forth_manual.html \
+trdoshtml: trdoshtmla trdoshtmlp
+
+.PHONY: trdoshtmla
+trdoshtmla: \
+		doc/trdos_solo_forth_manual.html
+
+.PHONY: trdoshtmlp
+trdoshtmlp: \
 		doc/trdos_solo_forth_manual.dbk.pandoc.html
 
 .PHONY: odt
@@ -1372,6 +1417,9 @@ oldbackup:
 # corresponding Asciidoctor conditions failed, making the DOS-spcific contents
 # missing). Dont't build OpenDocument by default. Add rules to build the
 # DocBook directly. Build an HTML manual also with Pandoc.
+#
+# 2020-04-06: Split the rules to build EPUB and HTML: one rule for every DOS
+# and converter.
 
 # ==============================================================
 
