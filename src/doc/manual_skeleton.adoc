@@ -1,6 +1,6 @@
 = Solo Forth: Version {version} for {dosname}
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-04-06
+:revdate: 2020-04-07
 :doctype: book
 :toc:
 :toclevels: 1
@@ -10,7 +10,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202004070245
+// Last modified: 202004072145
 
 ifdef::backend-html5[]
 toc::[]
@@ -465,7 +465,7 @@ How to use the library index:
 The indexer creates an index (actually, a Forth word list whose
 definitions use no code or data space) and changes the default
 behaviour of `need` and related words to use it. Then ``need name``
-will automatically start loading the first block where the word "`name`"
+will automatically start loading the first block where the word “name”
 is defined.
 
 :indexnote: Test done on Solo Forth 0.12.0 on ZX Spectrum 128.
@@ -626,7 +626,7 @@ Usage examples:
 
 // XXX TODO -- Combine with section "How to loed a program that uses the library"
 
-Disk 3 (called "`workbench`") contains many little specific tests and benchmarks
+Disk 3 (called “workbench”) contains many little specific tests and benchmarks
 used during the development of Solo Forth, probably not interesting for the
 application programmer.  But it also contains an adapted version of the Hayes
 test and some known benchmarks.
@@ -639,9 +639,9 @@ test and some known benchmarks.
 ifdef::plus3dos[]
 
 . <<_how_to_run,Run Solo Forth>> or enter `cold` to start from scratch.
-. "`Insert`" the file <disks/plus3dos/disk_1_library.dsk> into the disk drive 'A'
+. “Insert” the file <disks/plus3dos/disk_1_library.dsk> into the disk drive 'A'
   of your emulated machine.
-. "`Insert`" the file <disks/plus3dos/disk_3_workbench.dsk> into the disk drive
+. “Insert” the file <disks/plus3dos/disk_3_workbench.dsk> into the disk drive
   'B' of your emulated machine.
 . Enter command ``1 load`` to `load` the `need` tool.
 . Enter command ``need 2-block-drives`` to set both disk drives as block drives
@@ -658,9 +658,9 @@ endif::[]
 ifdef::gplusdos[]
 
 . <<_how_to_run,Run Solo Forth>> or enter `cold` to start from scratch.
-. "`Insert`" the file <disks/gplusdos/disk_1_library.mgt> into disk drive 1 of
+. “Insert” the file <disks/gplusdos/disk_1_library.mgt> into disk drive 1 of
   your emulated machine.
-. "`Insert`" the file <disks/gplusdos/disk_3_workbench.mgt> into disk drive 2 of
+. “Insert” the file <disks/gplusdos/disk_3_workbench.mgt> into disk drive 2 of
   your emulated machine.
 . Enter command ``1 load`` to `load` the `need` tool.
 . Enter command ``need 2-block-drives`` to set both disk drives as block drives
@@ -677,10 +677,10 @@ endif::gplusdos[]
 ifdef::trdos[]
 
 . <<_how_to_run,Run Solo Forth>> or enter `cold` to start from scratch.
-. "`Insert`" the files <disks/trdos/disk_1a_library.trd> and
+. “Insert” the files <disks/trdos/disk_1a_library.trd> and
   <disks/trdos/disk_1b_library.trd> into drives 'A' and 'B' respectively of
   your emulated machine.
-. "`Insert`" the file <disks/trdos/disk_3_workbench.trd> into disk drive 'C' of
+. “Insert” the file <disks/trdos/disk_3_workbench.trd> into disk drive 'C' of
   your emulated machine.
 . Enter command ``1 load`` to `load` the `need` tool.
 . Enter command ``need 3-block-drives`` to set the first three disk drives as
@@ -796,7 +796,7 @@ images or the manual for your DOS of choice:
 | TR-DOS | ``make trdosdoc``    | ``make trdosdbk``    | ``make trdosepub``    | ``make trdoshtml``    | ``make trdosodt``    | ``make trdospdf``
 |===
 
-NOTE: The manuals in ODT are not built by default. Three versions of
+NOTE: The manuals in ODT are not built by default. Two versions of
 EPUB and two versions of HTML are built, with different tools.
 
 The disk images will be created in the <disks> directory. The manual
