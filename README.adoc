@@ -1,13 +1,13 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-04-06
+:revdate: 2020-04-07
 :toc:
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202004070204
+// Last modified: 202004071346
 
 // Description {{{1
 == Description
@@ -114,7 +114,6 @@ http://programandala.net/en.program.black_flag.html[Black Flag].
 
 // end::history[]
 
-[id=_platforms]
 // Platforms {{{1
 == Platforms
 
@@ -168,7 +167,6 @@ hard drives, flash cards, and a lot of memory.
 
 // end::platforms[]
 
-[id=_tree]
 // Project directories {{{1
 == Project directories
 
@@ -324,7 +322,7 @@ hard drives, flash cards, and a lot of memory.
 // Disks {{{1
 == Disks
 
-The <disks> directory of the <<_tree,directory tree>> contains the
+The <disks> directory of the <<_project_directories,directory tree>> contains the
 disk images:
 
 ....
@@ -484,7 +482,6 @@ following:
 
 // end::run_128_with_plusd[]
 
-[id=_library]
 // How to use the library {{{1
 == How to use the library
 

@@ -10,7 +10,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202004070206
+// Last modified: 202004070245
 
 ifdef::backend-html5[]
 toc::[]
@@ -69,10 +69,9 @@ details about the rest of supported DOSes are included as well, when the
 comparison is useful.
 
 This manual is built automatically from the sources. It contains mainly a
-<<_description,description of the Forth system>>, the basic <<_run,usage
+<<_description,description of the Forth system>>, the basic <<_how_to_run,usage
 information>> and a complete <<_glossary,glossary>> with cross references.
 
-[id=_platforms]
 // Platforms {{{1
 == Platforms
 
@@ -405,7 +404,6 @@ disk (block 0) will be shown as block 4.
 
 endif::trdos[]
 
-[id=_run]
 // How to run {{{1
 == How to run
 
@@ -423,7 +421,6 @@ ifdef::gplusdos[]
 include::doc.README.linked.adoc[tags=run_128_with_plusd]
 endif::gplusdos[]
 
-[id=_library]
 // How to use the library {{{1
 == How to use the library
 
@@ -439,7 +436,6 @@ ifdef::trdos[]
 include::doc.README.linked.adoc[tags=library_on_trdos]
 endif::trdos[]
 
-[id=_library_index]
 // How to make a library index {{{2
 === How to make a library index
 
@@ -505,7 +501,7 @@ disk drives must be configured as block drives, using `3-block-drives`.
 Let's see an example, how to load the game called Tetris for
 Terminals, which is in disk 2.
 
-. <<_run,Run Solo Forth>>.
+. <<_how_to_run,Run Solo Forth>>.
 . Insert the first library disk image (disk 1a) into the first drive.
 . Insert the second library disk image (disk 1b) into the second drive.
 . Insert the programs disk image (disk 2) into the third drive.
@@ -535,7 +531,7 @@ must be configured first as block drives, using `2-block-drives`.
 Let's see an example, how to load the game called Tetris for
 Terminals, which is in disk 2.
 
-. <<_run,Run Solo Forth>>.
+. <<_how_to_run,Run Solo Forth>>.
 . Insert the library disk image (disk 1) into the first drive.
 . Insert the programs disk image (disk 2) into the second drive.
 . Execute command ``1 load`` in order to `load` the `need` utility from
@@ -605,7 +601,6 @@ ifdef::trdos[]
 ----
 endif::trdos[]
 
-[id=_test]
 // How to search the source files {{{1
 == How to search the source files
 
@@ -643,7 +638,7 @@ test and some known benchmarks.
 
 ifdef::plus3dos[]
 
-. <<_run,Run Solo Forth>> or enter `cold` to start from scratch.
+. <<_how_to_run,Run Solo Forth>> or enter `cold` to start from scratch.
 . "`Insert`" the file <disks/plus3dos/disk_1_library.dsk> into the disk drive 'A'
   of your emulated machine.
 . "`Insert`" the file <disks/plus3dos/disk_3_workbench.dsk> into the disk drive
@@ -662,7 +657,7 @@ endif::[]
 
 ifdef::gplusdos[]
 
-. <<_run,Run Solo Forth>> or enter `cold` to start from scratch.
+. <<_how_to_run,Run Solo Forth>> or enter `cold` to start from scratch.
 . "`Insert`" the file <disks/gplusdos/disk_1_library.mgt> into disk drive 1 of
   your emulated machine.
 . "`Insert`" the file <disks/gplusdos/disk_3_workbench.mgt> into disk drive 2 of
@@ -681,7 +676,7 @@ endif::gplusdos[]
 
 ifdef::trdos[]
 
-. <<_run,Run Solo Forth>> or enter `cold` to start from scratch.
+. <<_how_to_run,Run Solo Forth>> or enter `cold` to start from scratch.
 . "`Insert`" the files <disks/trdos/disk_1a_library.trd> and
   <disks/trdos/disk_1b_library.trd> into drives 'A' and 'B' respectively of
   your emulated machine.
@@ -709,7 +704,6 @@ Depending on the code you want to run, enter the corresponding command:
 . ``need vector-loop-benchmark``
 . ``need all-benchmarks`` to run all the three benchmarks above
 
-[id=_write]
 // How to write Forth programs {{{1
 == How to write Forth programs
 
@@ -723,7 +717,7 @@ Briefly, the steps of cross development are the following:
   http://programandala.net/en.program.fsb2.html[fsb2].
 . Convert the sources into Forth block disk images using
   http://programandala.net/en.program.fsb2.html[fsb2].
-. <<_run,Run Solo Forth>> on a ZX Spectrum emulator and compile the Forth
+. <<_how_to_run,Run Solo Forth>> on a ZX Spectrum emulator and compile the Forth
   program from the disk image. Further testing and debugging can be done in the
   Forth system.
 
@@ -732,7 +726,7 @@ programmers already acquainted with Forth and GNU/Linux systems can
 extract all the required information from the <Makefile> of Solo
 Forth.
 
-The only difference between <<_rebuild,building Solo Forth>> and
+The only difference between <<_how_to_rebuild_solo_forth,building Solo Forth>> and
 building a Forth program is the content of disk 0 (the boot disk), if
 needed, and the library modules included in the library disk,
 which usually also contains the source of the program at the end.  If the program
@@ -757,7 +751,6 @@ more complex game projects are being developed at the same time:
 They are not finished yet, but they can be useful as examples of
 program development with Solo Forth.
 
-// [id=_vim]
 // == Vim support
 //
 // XXX TODO --
@@ -766,7 +759,6 @@ program development with Solo Forth.
 // with the ".fsb" extension, copy the contents of the <vim> directory
 // to your home <~/.vim/> directory.
 
-[id=_rebuild]
 // How to rebuild Solo Forth {{{1
 == How to rebuild Solo Forth
 
@@ -839,7 +831,7 @@ The way errors are displayed is configurable.  By default only the exception
 code is displayed by an uncatched `throw`, because the default action of
 `.throw`, which is a deferred word, is `.throw#`.  In order to display also the
 error description, the alternative action `.throw-message` must be loaded from
-the <<_library,library>> with ``need .throw-message``.
+the <<_how_to_use_the_library,library>> with ``need .throw-message``.
 
 ifdef::plus3dos[]
 
