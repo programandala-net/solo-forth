@@ -3,7 +3,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202002271504
+// Last modified: 202004070209
 // See change log at the end of the file
 
 === Stack notation
@@ -49,82 +49,82 @@ symbols for aligned addresses are used in the source, for clarity.
 [cols="2,5,2,3",id="_stacknotationfornumbers"]
 .Stack notation symbols for numbers
 |===
-| Symbol     | Data type                                     | Size   | Range
+| Symbol     | Data type                                                  | Size                                      | Range
 
-| a           | address                                      | 1 cell | 0 .. 65535
-| aa          | aligned addressfootnote:align:[{addrnote}]   | 1 cell | 0 .. 65535
-| ca          | character-aligned addressfootnote:align:[]   | 1 cell | 0 .. 65535
-| fa          | float-aligned addressfootnote:align:[]       | 1 cell | 0 .. 65535
+| a          | address                                                    | 1 cell                                    | 0 .. 65535
+| aa         | aligned address{blank}footnote:align[{addrnote}]           | 1 cell                                    | 0 .. 65535
+| ca         | character-aligned address{blank}footnote:align[]           | 1 cell                                    | 0 .. 65535
+| fa         | float-aligned address{blank}footnote:align[]               | 1 cell                                    | 0 .. 65535
 
-| f           | well-formed flag (false: 0; true: -1)        | 1 cell | -1 .. 0
-| 0f          | zero flag (false: 0; true: non-zero)         | 1 cell | -32768 .. 65535
-| true        | true flag (-1)                               | 1 cell | -1
-| false       | false flag (0)                               | 1 cell | 0
+| f          | well-formed flag (false: 0; true: -1)                      | 1 cell                                    | -1 .. 0
+| 0f         | zero flag (false: 0; true: non-zero)                       | 1 cell                                    | -32768 .. 65535
+| true       | true flag (-1)                                             | 1 cell                                    | -1
+| false      | false flag (0)                                             | 1 cell                                    | 0
 
-| b           | 8-bit byte                                   | 1 cell | -128 .. 255
-| c           | 8-bit character                              | 1 cell | 0 .. 255
-| char        | 8-bit character                              | 1 cell | 0 .. 255
+| b          | 8-bit byte                                                 | 1 cell                                    | -128 .. 255
+| c          | 8-bit character                                            | 1 cell                                    | 0 .. 255
+| char       | 8-bit character                                            | 1 cell                                    | 0 .. 255
 
-| u           | 16-bit unsigned number                       | 1 cell | 0 .. 65535
-| len         | 16-bit unsigned number (memory zone length)  | 1 cell | 0 .. 65335
-| n           | 16-bit signed number                         | 1 cell | -32768 .. 32767
-| +n          | 16-bit non-negative number                   | 1 cell | 0 .. 32767
-| x           | 16-bit unspecified number                    | 1 cell | -32768 .. 65535
+| u          | 16-bit unsigned number                                     | 1 cell                                    | 0 .. 65535
+| len        | 16-bit unsigned number (memory zone length)                | 1 cell                                    | 0 .. 65335
+| n          | 16-bit signed number                                       | 1 cell                                    | -32768 .. 32767
+| +n         | 16-bit non-negative number                                 | 1 cell                                    | 0 .. 32767
+| x          | 16-bit unspecified number                                  | 1 cell                                    | -32768 .. 65535
 
-| d           | 32-bit signed double number                  | 2 cells | -2147483648 .. 2147483647
-| +d          | 32-bit non-negative double number            | 2 cells | 0 .. 2147483647
-| ud          | 32-bit unsigned double number                | 2 cells | 0 .. 4294697295
-| xd          | 32-bit unspecified number                    | 2 cells | -2147483648 .. 2147483647
+| d          | 32-bit signed double number                                | 2 cells                                   | -2147483648 .. 2147483647
+| +d         | 32-bit non-negative double number                          | 2 cells                                   | 0 .. 2147483647
+| ud         | 32-bit unsigned double number                              | 2 cells                                   | 0 .. 4294697295
+| xd         | 32-bit unspecified number                                  | 2 cells                                   | -2147483648 .. 2147483647
 
-| t           | 48-bit signed triple number                  | 3 cells | -140737488355328 .. 140737488355327
-| +t          | 48-bit non-negative triple number            | 3 cells | 0 .. 140737488355327
-| ut          | 48-bit unsigned triple number                | 3 cells | 0 .. 281474976710655
+| t          | 48-bit signed triple number                                | 3 cells                                   | -140737488355328 .. 140737488355327
+| +t         | 48-bit non-negative triple number                          | 3 cells                                   | 0 .. 140737488355327
+| ut         | 48-bit unsigned triple number                              | 3 cells                                   | 0 .. 281474976710655
 
-| q           | 64-bit signed quadruple number               | 4 cells | −9223372036854775808 .. 9223372036854775807
-| +q          | 64-bit non-negative quadruple number         | 4 cells | 0 .. 9223372036854775807
-| uq          | 64-bit unsigned quadruple number             | 4 cells | 0 .. 18446744073709551615 
+| q          | 64-bit signed quadruple number                             | 4 cells                                   | −9223372036854775808 .. 9223372036854775807
+| +q         | 64-bit non-negative quadruple number                       | 4 cells                                   | 0 .. 9223372036854775807
+| uq         | 64-bit unsigned quadruple number                           | 4 cells                                   | 0 .. 18446744073709551615
 
-| col         | 8-bit cursor column                          | 1 cell | 0 .. 31; 0 .. 41; 0 .. 63
-| row         | 8-bit cursor row                             | 1 cell | 0 .. 23
+| col        | 8-bit cursor column                                        | 1 cell                                    | 0 .. 31; 0 .. 41; 0 .. 63
+| row        | 8-bit cursor row                                           | 1 cell                                    | 0 .. 23
 
-| gx          | 8-bit (absolute) or 16-bit (relative) graphic x coordinate | 1 cell | 0 .. 255; -32768 .. 32767
-| gy          | 8-bit (absolute) or 16-bit (relative) graphic y coordinate | 1 cell | 0 .. 191; -32768 .. 32767; 0 .. 175
+| gx         | 8-bit (absolute) or 16-bit (relative) graphic x coordinate | 1 cell                                    | 0 .. 255; -32768 .. 32767
+| gy         | 8-bit (absolute) or 16-bit (relative) graphic y coordinate | 1 cell                                    | 0 .. 191; -32768 .. 32767; 0 .. 175
 
-| xt          | execution token (=cfa)                       | 1 cell |
-| cfa         | code field address (=xt)                     | 1 cell |
-| lfa         | link field address                           | 1 cell |
-| nt          | name token (=nfa)                            | 1 cell |
-| nfa         | name field address (=nt)                     | 1 cell |
-| dfa         | data field address                           | 1 cell |
-| xtp         | execution token pointer                      | 1 cell |
+| xt         | execution token (=cfa)                                     | 1 cell                                    |
+| cfa        | code field address (=xt)                                   | 1 cell                                    |
+| lfa        | link field address                                         | 1 cell                                    |
+| nt         | name token (=nfa)                                          | 1 cell                                    |
+| nfa        | name field address (=nt)                                   | 1 cell                                    |
+| dfa        | data field address                                         | 1 cell                                    |
+| xtp        | execution token pointer                                    | 1 cell                                    |
 
-| wid         | word-list identifier                         | 1 cell |
+| wid        | word-list identifier                                       | 1 cell                                    |
 
-| ior         | Input/Output result code                     | 1 cell | -32768 .. 0
-| dosior      | Input/Output result code in DOS format       | 1 cell | -322768 .. 65535
+| ior        | Input/Output result code                                   | 1 cell                                    | -32768 .. 0
+| dosior     | Input/Output result code in DOS format                     | 1 cell                                    | -322768 .. 65535
 
-| orig        | address of an unresolved forward branch      | 1 cell | 0 .. 65535
-| dest        | address of a backward branch target          | 1 cell | 0 .. 65535
+| orig       | address of an unresolved forward branch                    | 1 cell                                    | 0 .. 65535
+| dest       | address of a backward branch target                        | 1 cell                                    | 0 .. 65535
 
-| cs-id       | control structure identifier                 | 1 cell  |
-| do-sys      | loop control parameters (=orig)              | 1 cell  | 0 .. 65535
-| loop-sys    | loop control parameters                      | 2 cells |
-| nest-sys    | definition call                              | 1 cell  |
-| source-sys  | source identifier                            | n cells |
+| cs-id      | control structure identifier                               | 1 cell                                    |
+| do-sys     | loop control parameters (=orig)                            | 1 cell                                    | 0 .. 65535
+| loop-sys   | loop control parameters                                    | 2 cells                                   |
+| nest-sys   | definition call                                            | 1 cell                                    |
+| source-sys | source identifier                                          | n cells                                   |
 
-| i*x         | any data type                                | 0 or more cells |
-| j*x         | any data type                                | 0 or more cells |
-| k*x         | any data type                                | 0 or more cells |
-| u*x         | u elements of type x (eg. ``u*wid``)         | 0 or more cells |
+| i*x        | any data type                                              | 0 or more cells                           |
+| j*x        | any data type                                              | 0 or more cells                           |
+| k*x        | any data type                                              | 0 or more cells                           |
+| u*x        | u elements of type x (eg. ``u*wid``)                       | 0 or more cells                           |
 
-| r           | a floating point real number                 | 5 bytesfootnote:float:[{floatnote}] | 1E-38 .. 1E38
-| rf          | a floating point real number flag            | 5 bytesfootnote:float:[] | 0 .. 1
+| r          | a floating point real number                               | 5 bytes{blank}footnote:float[{floatnote}] | 1E-38 .. 1E38
+| rf         | a floating point real number flag                          | 5 bytes{blank}footnote:float[]            | 0 .. 1
 
-| op          | Z80 8-bit opcode, generally a jump           | 1 cell | 0 .. 255
-| reg         | Z80 8-bit register identifier                | 1 cell | 0 .. 7
-| regp        | Z80 16-bit register pair identifier          | 1 cell | 0; 2; 4
-| regph       | Z80 16-bit HL register pair identifier       | 1 cell | 4
-| regpi       | Z80 16-bit IX/IY register pair identifier    | 1 cell | 4
+| op         | Z80 8-bit opcode, generally a jump                         | 1 cell                                    | 0 .. 255
+| reg        | Z80 8-bit register identifier                              | 1 cell                                    | 0 .. 7
+| regp       | Z80 16-bit register pair identifier                        | 1 cell                                    | 0; 2; 4
+| regph      | Z80 16-bit HL register pair identifier                     | 1 cell                                    | 4
+| regpi      | Z80 16-bit IX/IY register pair identifier                  | 1 cell                                    | 4
 |===
 
 [cols="1,6",id="_stacknotationforparsedtext"]
@@ -178,3 +178,6 @@ symbols for aligned addresses are used in the source, for clarity.
 // 2018-07-22: Fix typo. Improve wording.
 //
 // 2020-02-27: Update Asciidoctor's footnote markups.
+//
+// 2020-04-07: Fix `footnote` markup: there was an extra colon after
+// the target.
