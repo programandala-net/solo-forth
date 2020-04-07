@@ -7,7 +7,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202004071346
+// Last modified: 202004080033
 
 // Description {{{1
 == Description
@@ -358,7 +358,7 @@ following:
    double-sided and 80-track].
 2. “Insert” the disk image file <disks/trdos/disk_0_boot.trd> as disk
    'A'.
-3. Choose “TR DOS” from the computer start menu. This will enter the
+3. Choose “TR-DOS” from the computer start menu. This will enter the
    TR-DOS command line{blank}footnote:trdoscli[The TR-DOS command line
    uses keyboard tokens, like the ZX Spectrum 48, but commands typed
    in 'L' cursor mode will be recognized as well, as on the ZX
@@ -367,7 +367,7 @@ following:
    ``REM``. When the DOS command is typed in full, the quote or the
    ``REM`` must be removed from the start of the line before pressing
    'Enter'.].
-4. Press the '.' key to get the ``RUN`` command and press the Enter key.
+4. Press the 'R' key to get the ``RUN`` command and press the Enter key.
    Solo Forth will be loaded from disk.
 
 // Pentagon 512 {{{2
@@ -413,7 +413,7 @@ following:
    256{blank}footnote:diskformat[].
 2. “Insert” the disk image file
    <disks/trdos/disk_0_boot.scorpion_zs_256.trd> as disk 'A'.
-3. Choose "128 TR DOS" from the computer start menu.  Solo Forth will
+3. Choose "128 TR-DOS" from the computer start menu.  Solo Forth will
    be loaded from disk.
 
 // end::run_scorpion[]
@@ -458,7 +458,7 @@ following:
 4. Type `randomize usr 15616` in BASIC (or just `run usr15616` to save
    seven keystrokes). This will enter the TR-DOS command
    line{blank}footnote:trdoscli[].
-5. Press the '.' key to get the ``RUN`` command and press the Enter
+5. Press the 'R' key to get the ``RUN`` command and press the Enter
    key.  Solo Forth will be loaded from disk.
 
 // end::run_128_with_betadisk[]
