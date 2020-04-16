@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202004061536.
+# Last modified: 202004131316.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -234,7 +234,7 @@ trdosdbk: \
 epub: gplusdosepub plus3dosepub trdosepub
 
 .PHONY: gplusdosepub
-gplusdosepub: gplusdosepuba gplusdosepubd gplusdosepubp
+gplusdosepub: gplusdosepuba gplusdosepubd
 
 .PHONY: gplusdosepuba
 gplusdosepuba: \
@@ -249,7 +249,7 @@ gplusdosepubp: \
 	doc/gplusdos_solo_forth_manual.dbk.pandoc.epub
 
 .PHONY: plus3dosepub
-plus3dosepub: plus3dosepuba plus3dosepubd plus3dosepubp
+plus3dosepub: plus3dosepuba plus3dosepubd
 
 .PHONY: plus3dosepuba
 plus3dosepuba: \
@@ -264,7 +264,7 @@ plus3dosepubp: \
 	doc/plus3dos_solo_forth_manual.dbk.pandoc.epub
 
 .PHONY: trdosepub
-trdosepub: trdosepuba trdosepubd trdosepubp
+trdosepub: trdosepuba trdosepubd
 
 .PHONY: trdosepuba
 trdosepuba: \
@@ -813,7 +813,7 @@ backgrounds/current.scr: backgrounds/current.pbm
 	asciidoctor --out-file=$@ $<
 
 %.glossary.adoc: %.files.txt
-	glosara --level=3 --input=$< > $@
+	glosara --level=4 --sections --input=$< > $@
 
 tmp/doc.%.linked.adoc: src/doc/%.adoc
 	glosara --annex $< > $@
@@ -848,9 +848,15 @@ tmp/doc.README.linked.adoc: README.adoc
 %.dbk.dbtoepub.epub: %.dbk
 	dbtoepub -o $@ $<
 
+# XXX REMARK -- Pandoc is not used anymore to create an EPUB, because the
+# internal links don't work:
+
 %.dbk.pandoc.epub: %.dbk
 	pandoc \
-		--output=$@ -f docbook -t epub $<
+		--from docbook \
+		--to epub \
+		--epub-chapter-level=3 \
+		--output=$@ $<
 
 %.dbk.pandoc.html: %.dbk
 	pandoc \
@@ -1420,6 +1426,9 @@ oldbackup:
 #
 # 2020-04-06: Split the rules to build EPUB and HTML: one rule for every DOS
 # and converter.
+#
+# 2020-04-13: Add `--epub-chapter-level` to Pandoc, to force the huge
+# glossary XHTML file be splitted in subchapters into the EPUB.
 
 # ==============================================================
 
