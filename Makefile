@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202004131316.
+# Last modified: 202004170205.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -25,6 +25,7 @@
 #   http://asciidoctor.org
 
 # Asciidoctor EPUB3 (by Dan Allen and Sarah White)
+#   (>v0.5.0.alpha.15)
 #   http://github.com/asciidoctor/asciidoctor-epub3
 
 # Asciidoctor PDF (by Dan Allen and Sarah White)
@@ -890,6 +891,7 @@ doc/gplusdos_solo_forth_manual.epub: \
 		--trace \
 		--attribute=gplusdos \
 		--attribute=dosname=G+DOS \
+		--attribute=epub-chapter-level=1 \
 		--attribute=version=$(version) \
 		--out-file=$@ $<
 
@@ -1427,8 +1429,11 @@ oldbackup:
 # 2020-04-06: Split the rules to build EPUB and HTML: one rule for every DOS
 # and converter.
 #
-# 2020-04-13: Add `--epub-chapter-level` to Pandoc, to force the huge
-# glossary XHTML file be splitted in subchapters into the EPUB.
+# 2020-04-13: Add `--epub-chapter-level` to Pandoc, to force the huge glossary
+# XHTML file be splitted in subchapters into the EPUB.
+#
+# 2020-04-17: Add attribute `epub-chapter-level` to Asciidoctor EPUB3, just
+# added to the future version following v0.5.0.alpha.15.
 
 # ==============================================================
 
