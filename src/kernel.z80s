@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202002271815
+; Last modified: 202004270106
 
 include version.z80s
 
@@ -9322,7 +9322,7 @@ minus_trailing.begin:
 ; : ," ( -- ) '"' parse s, ;
 ; ----
 
-; See: `parse`, `s,`.
+; See: `parse`, `s,`, `'"'`.
 ;
 ; }doc
 
@@ -11860,8 +11860,7 @@ question_paren.exit:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See: `[`, `query`, `interpret`, `ok`,
-; `abort
+; See: `[`, `query`, `interpret`, `ok`, `abort`.
 ;
 ; }doc
 
@@ -15657,7 +15656,7 @@ throw.end:
 
 ; Origin: Forth-94 (CORE, FILE), Forth-2012 (CORE, FILE).
 ;
-; See: `parse-string`, `s\"`, `s'`, `s""`, `."`.
+; See: `parse-string`, `s\"`, `s'`, `s""`, `."`, `,"`.
 ;
 ; }doc
 

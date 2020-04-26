@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803082243
+  \ Last modified: 202004270016
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -24,7 +24,7 @@
   \ ZX7 decompressor "Mega" by Einar Saukas, 2012, 2013.
   \
   \ Solo Forth ports by Marcos Cruz (programandala.net), 2017,
-  \ 2018.
+  \ 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -139,8 +139,8 @@ rthen e rr, exsp, h push, d sbcp, d pop, ldir,
   \ |===
 
   \ For more information, see
-  \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027996
-  \ ZX7 in World of Spectrum].
+  \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027996[ZX7
+  \ in World of Spectrum].
   \
   \ }doc
 
@@ -254,8 +254,8 @@ rthen e rr, exsp, h push, d sbcp, d pop, ldir,
   \ faster. See a comparation table in `dzx7s`.
   \
   \ For more information, see
-  \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027996
-  \ ZX7 in World of Spectrum].
+  \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027996[ZX7
+  \ in World of Spectrum].
   \
   \ }doc
 
@@ -542,8 +542,8 @@ also assembler max-labels c! previous
   \ table in `dzx7s`.
   \
   \ For more information, see
-  \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027996
-  \ ZX7 in World of Spectrum].
+  \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027996[ZX7
+  \ in World of Spectrum].
   \
   \ }doc
 
@@ -576,5 +576,8 @@ also assembler max-labels c! previous
   \ 2017-03-26: Fix description of ZX7 links in documentation.
   \
   \ 2018-03-08: Add words' pronunciaton. Improve documentation.
+  \
+  \ 2020-04-27: Fix the markup of World of Spectrum links in
+  \ the documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202002220127
+  \ Last modified: 202004270059
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -934,7 +934,7 @@ unneeding sconstants ?( need array>
   \ 3 digitname cr type cr
   \ ----
 
-  \ See: `sconstant`, `begin-stringtable`.
+  \ See: `sconstant`, `,"`, `begin-stringtable`.
   \
   \ }doc
 
@@ -1100,5 +1100,7 @@ unneeding unescape ?(
   \ 2018-04-01: Add `str<>`.
   \
   \ 2020-02-22: Fix typo.
+  \
+  \ 2020-04-27: Improve documentation of `sconstants`.
 
   \ vim: filetype=soloforth

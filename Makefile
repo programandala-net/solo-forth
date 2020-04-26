@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202004170205.
+# Last modified: 202004270034.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -891,7 +891,7 @@ doc/gplusdos_solo_forth_manual.epub: \
 		--trace \
 		--attribute=gplusdos \
 		--attribute=dosname=G+DOS \
-		--attribute=epub-chapter-level=1 \
+		--attribute=epub-chapter-level=2 \
 		--attribute=version=$(version) \
 		--out-file=$@ $<
 
@@ -970,6 +970,7 @@ doc/plus3dos_solo_forth_manual.epub: \
 		--trace \
 		--attribute=plus3dos \
 		--attribute=dosname=+3DOS \
+		--attribute=epub-chapter-level=2 \
 		--attribute=version=$(version) \
 		--out-file=$@ $<
 
@@ -1044,6 +1045,7 @@ doc/trdos_solo_forth_manual.epub: \
 		--trace \
 		--attribute=trdos \
 		--attribute=dosname=TRDOS \
+		--attribute=epub-chapter-level=2 \
 		--attribute=version=$(version) \
 		--out-file=$@ $<
 
@@ -1432,8 +1434,11 @@ oldbackup:
 # 2020-04-13: Add `--epub-chapter-level` to Pandoc, to force the huge glossary
 # XHTML file be splitted in subchapters into the EPUB.
 #
-# 2020-04-17: Add attribute `epub-chapter-level` to Asciidoctor EPUB3, just
+# 2020-04-17: Test attribute `epub-chapter-level` to Asciidoctor EPUB3, just
 # added to the future version following v0.5.0.alpha.15.
+#
+# 2020-04-27: Add attribute `epub-chapter-level`, after the fixes in
+# Asciidoctor EPUB3 v0.5.0.alpha.17.dev.
 
 # ==============================================================
 
