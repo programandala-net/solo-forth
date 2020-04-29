@@ -1,7 +1,7 @@
 = Solo Forth: Version {version} for {dosname}
 :author: Marcos Cruz (programandala.net)
 :producer: Marcos Cruz (programandala.net)
-:revdate: 2020-04-12
+:revdate: 2020-04-30
 :doctype: book
 :lang: en
 :toc:
@@ -18,7 +18,7 @@ endif::[]
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202004121811
+// Last modified: 202004300007
 
 ifdef::backend-html5[]
 toc::[]
@@ -194,40 +194,40 @@ DOS{blank}footnote:[Links to words that are not defined in {dosname} are inactiv
 | `3-block-drives`  | n/a   | n/a   | YES    | Use the first three drives as block drives
 | `4-block-drives`  | n/a   | n/a   | YES    | Use the first four drives as block drives
 | `>file`           |       | YES   | YES    | Save memory zone to a file
-| `acat`            | YES   | YES   | YES    | Abbreviated disk catalogue
-| `bank-read-file`  | YES   |       |        |
-| `bank-write-file` | YES   |       |        |
+| `acat`            | YES   | YES   | YES    | Display an abbreviated disk catalogue
+| `bank-read-file`  | YES   |       |        | Read from a file with a bank paged in
+| `bank-write-file` | YES   |       |        | Write to a file with a bank paged in
 | `bin`             | YES   |       |        | Standard Forth
-| `cat`             | YES   | YES   | YES    | Detailed disk catalogue
+| `cat`             | YES   | YES   | YES    | Display a detailed disk catalogue
 | `close-file`      | YES   |       |        | Standard Forth
 | `create-file`     | YES   |       |        | Standard Forth
 | `delete-file`     | YES   | YES   | YES    | Standard Forth
-| `drive-unused`    | YES   |       |        |
-| `file-dir#`       |       | YES   | YES    |
-| `file-dirdesc`    |       | YES   | n/a    |
-| `file-exists?`    |       | YES   | YES    |
-| `file-length`     |       | YES   | YES    |
+| `drive-unused`    | YES   |       |        | Return the number of unused kibibytes in a drive
+| `file-dir#`       |       | YES   | YES    | Return the directory number of a file
+| `file-dirdesc`    |       | YES   | n/a    | Return the file directory identifier of a file
+| `file-exists?`    |       | YES   | YES    | Return a flag: does a files exists?
+| `file-length`     |       | YES   | YES    | Return the length of a file
 | `file-position`   | YES   |       |        | Standard Forth
-| `file-sector`     |       |       | YES    |
-| `file-sectors`    |       |       | YES    |
+| `file-sector`     |       |       | YES    | Return the first sector of a file
+| `file-sectors`    |       |       | YES    | Return the number of sectors occupied by a file
 | `file-size`       | YES   |       |        | Standard Forth
-| `file-start`      |       | YES   | YES    |
+| `file-start`      |       | YES   | YES    | Return the start address of a file
 | `file-status`     |       | YES   | YES    | Standard Forth
-| `file-track`      |       |       | YES    |
-| `file-type`       |       | YES   | YES    |
+| `file-track`      |       |       | YES    | Return the first track of a file
+| `file-type`       |       | YES   | YES    | Return the type of a file
 | `file>`           |       | YES   | YES    | Load file contents to memory zone
-| `find-file`       |       | YES   | YES    |
-| `flush-drive`     | YES   |       |        |
+| `find-file`       |       | YES   | YES    | Find a file
+| `flush-drive`     | YES   |       |        | Write pending data for a drive
 | ``flush-file``    |       |       |        | Standard Forth
 | `get-block-drives`| YES   | YES   | YES    | Get the drives used as block drives
-| `get-drive`       | YES   | YES   | YES    |
+| `get-drive`       | YES   | YES   | YES    | Get the number of the current drive
 | ``include-file``  |       |       |        | Standard Forth
 | ``include``       |       |       |        | Standard Forth
 | ``included``      |       |       |        | Standard Forth
 | `open-file`       | YES   |       |        | Standard Forth
 | `r/o`             | YES   |       |        | Standard Forth
 | `r/w`             | YES   |       |        | Standard Forth
-| `read-byte`       | YES   |       |        |
+| `read-byte`       | YES   |       |        | Read byte from file
 | `read-file`       | YES   |       |        | Standard Forth
 | `read-line`       | YES   |       |        | Standard Forth
 | `rename-file`     | YES   | YES   | YES    | Standard Forth
@@ -236,12 +236,12 @@ DOS{blank}footnote:[Links to words that are not defined in {dosname} are inactiv
 | ``required``      |       |       |        | Standard Forth
 | ``resize-file``   |       |       |        | Standard Forth
 | `set-block-drives`| YES   | YES   | YES    | Set the drives used as block drives
-| `set-drive`       | YES   | YES   | YES    |
-| `undelete-file`   |       |       | YES    |
+| `set-drive`       | YES   | YES   | YES    | Set the current drive
+| `undelete-file`   |       |       | YES    | Undelete a file
 | `w/o`             | YES   |       |        | Standard Forth
 | `wacat`           | YES   | YES   |        | Abbreviated disk catalogue with wildcards
 | `wcat`            | YES   | YES   |        | Detailed disk catalogue with wildcards
-| `write-byte`      | YES   |       |        |
+| `write-byte`      | YES   |       |        | Write a byte to a file
 | `write-file`      | YES   |       |        | Standard Forth
 | `write-line`      | YES   |       |        | Standard Forth
 
