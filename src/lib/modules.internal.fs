@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 202005030016
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -26,7 +26,7 @@
   \ number 5, page 132, 1981-01).
 
   \ Marcos Cruz (programandala.net), adapted it to Solo Forth,
-  \ 2015, 2016, 2017, 2018.
+  \ 2015, 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -85,7 +85,7 @@ unneeding unlink-internal ?( need internal need >>link
   \ unlink-internal ( nt xtp -- )
   \
   \ Unlink all words defined between the latest pair `internal`
-  \ and `end-external`, linking the first word after
+  \ and `end-internal`, linking the first word after
   \ `end-internal` to the word before `internal`, thus making
   \ all the internal words skipped by the dictionary searches.
   \
@@ -134,7 +134,7 @@ need internal need name<name need >>name
   \ hide-internal ( nt xtp -- )
   \
   \ Hide all words defined between the latest pair `internal`
-  \ and `end-external`, setting the `smudge` bit of their
+  \ and `end-internal`, setting the `smudge` bit of their
   \ headers.
   \
   \ Usage example:
@@ -202,5 +202,7 @@ need internal need name<name need >>name
   \ 2017-03-14: Improve documentation.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2020-05-03: Fix cross references.
 
   \ vim: filetype=soloforth

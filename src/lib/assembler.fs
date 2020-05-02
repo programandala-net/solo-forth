@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202003300129
+  \ Last modified: 202005022219
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1598,10 +1598,10 @@ F2 cconstant p?   FA cconstant m?
   \
   \ z? ( -- op ) "z-question"
   \
-  \ Return the opcode _op_ of the Z80 instruction ``jp z``,
-  \ to be used as condition and consumed by
-  \ `?ret,`, `?jp,`, `?call`, `?jr`, `aif`, `rif`, `awhile`,
-  \ `rwhile`, `auntil` or `runtil`.
+  \ Return the opcode _op_ of the Z80 instruction ``jp z``, to
+  \ be used as condition and consumed by `?ret,`, `?jp,`,
+  \ `?call,`, `?jr`, `aif`, `rif`, `awhile`, `rwhile`, `auntil`
+  \ or `runtil`.
   \
   \ See: `nz?`, `c?`, `nc?`, `po?`, `pe?`, `p?`, `m?`.
   \
@@ -1611,10 +1611,10 @@ F2 cconstant p?   FA cconstant m?
   \
   \ nz? ( -- op ) "n-z-question"
   \
-  \ Return the opcode _op_ of the Z80 instruction ``jp nz``,
-  \ to be used as condition and consumed by
-  \ `?ret,`, `?jp,`, `?call`, `?jr`, `aif`, `rif`, `awhile`,
-  \ `rwhile`, `auntil` or `runtil`.
+  \ Return the opcode _op_ of the Z80 instruction ``jp nz``, to
+  \ be used as condition and consumed by `?ret,`, `?jp,`,
+  \ `?call,`, `?jr,`, `aif`, `rif`, `awhile`, `rwhile`,
+  \ `auntil` or `runtil`.
   \
   \ See: `z?`, `c?`, `nc?`, `po?`, `pe?`, `p?`, `m?`.
   \
@@ -1624,10 +1624,10 @@ F2 cconstant p?   FA cconstant m?
   \
   \ c? ( -- op ) "c-question"
   \
-  \ Return the opcode _op_ of the Z80 instruction ``jp c``,
-  \ to be used as condition and consumed by
-  \ `?ret,`, `?jp,`, `?call`, `?jr`, `aif`, `rif`, `awhile`,
-  \ `rwhile`, `auntil` or `runtil`.
+  \ Return the opcode _op_ of the Z80 instruction ``jp c``, to
+  \ be used as condition and consumed by `?ret,`, `?jp,`,
+  \ `?call,`, `?jr,`, `aif`, `rif`, `awhile`, `rwhile`,
+  \ `auntil` or `runtil`.
   \
   \ See: `z?`, `nz?`, `nc?`, `po?`, `pe?`, `p?`, `m?`.
   \
@@ -1639,7 +1639,7 @@ F2 cconstant p?   FA cconstant m?
   \
   \ Return the opcode _op_ of the Z80 instruction ``jp nc``,
   \ to be used as condition and consumed by
-  \ `?ret,`, `?jp,`, `?call`, `?jr`, `aif`, `rif`, `awhile`,
+  \ `?ret,`, `?jp,`, `?call,`, `?jr,`, `aif`, `rif`, `awhile`,
   \ `rwhile`, `auntil` or `runtil`.
   \
   \ See: `z?`, `nz?`, `c?`, `po?`, `pe?`, `p?`, `m?`.
@@ -2404,7 +2404,7 @@ set-current
   \
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
   \ Finish documentation of conditions (`z?`, `nz?`...).
-  \ Document `?ret,`, `?call`, `?jp,`, `?jr,`.
+  \ Document `?ret,`, `?call,`, `?jp,`, `?jr,`.
   \
   \ 2017-12-10: Add `m3p` to define `push,` and `pop,` with.
   \ This makes register A usable with those instructions
@@ -2435,5 +2435,7 @@ set-current
   \ Factor `ed,` from `sbcp,`, `adcp,`, `stp,` and `ftp,`.
   \
   \ 2020-03-30: Complete the words' pronunciations.
+  \
+  \ 2020-05-02: Fix cross references.
 
   \ vim: filetype=soloforth

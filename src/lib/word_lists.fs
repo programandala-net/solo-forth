@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804141424
+  \ Last modified: 202005022128
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -300,7 +300,7 @@ unneeding swap-current ?(
   \
   \ Exchange the contents of the current compilation word list,
   \ which is identified by _wid2_, with the word list
-  \ identified by `wid1`.
+  \ identified by _wid1_.
   \
   \ Origin: lpForth.
   \
@@ -384,5 +384,7 @@ unneeding search-wordlist ?(
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-04-14: Fix typo.
+  \
+  \ 2020-05-02: Fix false link in documentation.
 
   \ vim: filetype=soloforth

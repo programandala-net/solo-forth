@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201807221318
+  \ Last modified: 202005030019
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -128,9 +129,10 @@ unneeding warning?( ?( need string-parameter
 
   \ doc{
   \
-  \ warning" "warning-quote"
+  \ warning"
   \   Compilation: ( "ccc<quote>" -- )
   \   Execution:   ( f -- )
+  \ "warning-quote"
 
   \
   \ Compilation:
@@ -340,6 +342,8 @@ s" Standard error codes" located errors-block !
   \ Improve documentation of `.throw-message`.
   \
   \ 2018-07-22: Improve documentation of `.throw-message`.
+  \
+  \ 2020-05-03: Improve documentation layout.
 
   \ vim: filetype=soloforth
 

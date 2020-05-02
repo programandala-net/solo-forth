@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201806041125
+  \ Last modified: 202005022213
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -17,7 +17,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -770,6 +770,8 @@ code facos ( F: r1 -- r2 )
   \
   \ facos ( F: r1 -- r2 )
   \
+  \ See: `fasin`, `fatan`, `fcos`.
+  \
   \ }doc
   \
   \ XXX TODO -- Document.
@@ -780,6 +782,8 @@ code fasin ( F: r1 -- r2 )
   \ doc{
   \
   \ fasin ( F: r1 -- r2 )
+  \
+  \ See: `facos`, `fatan`, `fsin`.
   \
   \ }doc
   \
@@ -792,6 +796,8 @@ code fatan ( F: r1 -- r2 )
   \
   \ fatan ( F: r1 -- r2 )
   \
+  \ See: `facos`, `fasin`, `ftan`.
+  \
   \ }doc
   \
   \ XXX TODO -- Document.
@@ -802,6 +808,8 @@ code fcos ( F: r1 -- r2 )
   \ doc{
   \
   \ fcos ( F: r1 -- r2 )
+  \
+  \ See: `fsin`, `ftan`, `facos`.
   \
   \ }doc
   \
@@ -814,6 +822,8 @@ code fsin ( F: r1 -- r2 )
   \
   \ fsin ( F: r1 -- r2 )
   \
+  \ See: `fcos`, `ftan`, `fasin`.
+  \
   \ }doc
   \
   \ XXX TODO -- Document.
@@ -824,6 +834,8 @@ code ftan ( F: r1 -- r2 )
   \ doc{
   \
   \ ftan ( F: r1 -- r2 )
+  \
+  \ See: `fcos`, `fsin`, `fatan`.
   \
   \ }doc
   \
@@ -845,6 +857,14 @@ code (f. ( F: r -- ) C5 c, CD c, 2DE3 , C1 c, jpnext, end-code
 : f. ( F: r -- )
   fdepth >r (f. space fdepth r> = if fdrop then ;
 
+  \ doc{
+  \
+  \ f. ( F: r -- )
+  \
+  \ See: `.fs`.
+  \
+  \ }doc
+  \
   \ XXX TODO -- Document.
 
   \ Note: the depth of the stack must be checked because
@@ -863,9 +883,19 @@ code (f. ( F: r -- ) C5 c, CD c, 2DE3 , C1 c, jpnext, end-code
 need (fp@ need fp0 need f@ need f.
 need fdepth need float need float+ need .depth
 
-: (.fs ( -- ) (fp@ fp0 @ ?do i f@ f. float +loop ;
+: (.fs ( F: i*r -- i*r ) (fp@ fp0 @ ?do i f@ f. float +loop ;
 
-: .fs ( -- ) fdepth dup .depth 0> if (.fs then ;
+: .fs ( F: i*r -- i*r ) fdepth dup .depth 0> if (.fs then ;
+
+  \ doc{
+  \
+  \ .fs ( F: i*r -- i*r )
+  \
+  \ See: `dump-fs`, `f.`.
+  \
+  \ }doc
+  \
+  \ XXX TODO -- Document.
 
 : (dump-fs ( -- )
   cr ." Bottom"
@@ -875,6 +905,16 @@ need fdepth need float need float+ need .depth
   \ XXX TODO -- improve: display the top at the top
 
 : dump-fs ( -- ) fdepth dup .depth 0> if (dump-fs then ;
+
+  \ doc{
+  \
+  \ dump-fs ( F: i*r -- i*r )
+  \
+  \ See: `.fs`.
+  \
+  \ }doc
+  \
+  \ XXX TODO -- Document.
 
 ( floor ftrunc fround )
 
@@ -1115,5 +1155,7 @@ unneeding dfaligned
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2020-05-02: Improve documentation.
 
   \ vim: filetype=soloforth

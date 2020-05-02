@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201903151618
+  \ Last modified: 202005021939
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -718,7 +718,7 @@ unneeding reserve
   \ Reserve _n_ bytes of data space, erase the zone and return
   \ its address _a_.
   \
-  \ See: `allot`, `alloted`, `here`, `erase`.
+  \ See: `buffer:`, `allot`, `alloted`, `here`, `erase`.
   \
   \ }doc
 
@@ -730,7 +730,7 @@ unneeding alloted ?\ : allotted ( n -- a ) here swap allot ;
   \
   \ Reserve _n_ bytes of data space and return its address _a_.
   \
-  \ See: `allot`, `here`, `reserve`.
+  \ See: `reserve`, `buffer:`, `allot`, `here`.
   \
   \ }doc
 
@@ -960,5 +960,7 @@ code cexchange ( ca1 ca2 -- )
   \ 2018-06-04: Simplify documentation about aligned addresses.
   \
   \ 2019-03-15: Update documentation.
+  \
+  \ 2020-05-02: Improve documentation.
 
   \ vim: filetype=soloforth

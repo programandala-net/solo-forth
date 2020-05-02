@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201807212115
+  \ Last modified: 202005030033
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -190,9 +191,8 @@ variable case-sensitive-esc-chars  case-sensitive-esc-chars on
   \ the `stringer`.
   \
   \ The characters that must be escaped depend on the search
-  \ order set by the deferred word `set-esc-string-order`,
-  \ whose default action is `set-standard-esc-string-order`.
-  \ Therefore, by default, the escaped characters are those
+  \ order set by `set-esc-order`.
+  \ By default, the escaped characters are those
   \ described in Forth-2012's `s\"`.
   \
   \ ``parse-esc-string`` is a common factor of `s\"` and `.\"`.
@@ -450,7 +450,7 @@ need parse-char need char>string
   \
   \ The translation is done by searching the name of the
   \ escaped char in the current search order, which has been
-  \ set by calling `set-esc-string-order` in
+  \ set by calling `set-esc-order` in
   \ `parse-esc-string`.
   \
   \ }doc
@@ -542,5 +542,7 @@ need parse-char need char>string
   \ names. Link `variable` and `constant` in documentation.
   \
   \ 2018-07-21: Improve documentation, linking `throw`.
+  \
+  \ 2020-05-03: Fix documentation.
 
   \ vim: filetype=soloforth

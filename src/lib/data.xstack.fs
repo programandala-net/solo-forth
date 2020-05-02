@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041734
+  \ Last modified: 202005022215
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
   \
   \ Code adapted from Galope (xstack module).
 
@@ -82,7 +83,7 @@ unneeding xstack and ?(
   \ `xp0`, `xp` and `xsize` are used to access the contents of
   \ the table.
 
-  \ See: `astack`.
+  \ See: `estack`.
   \
   \ }doc
 
@@ -417,5 +418,7 @@ need xp0 need xlen need xdepth need .depth
   \
   \ 2018-06-04: Update: remove trailing closing paren from word
   \ names.  Link `variable` in documentation.
+  \
+  \ 2020-05-02: Fix cross reference.
 
   \ vim: filetype=soloforth

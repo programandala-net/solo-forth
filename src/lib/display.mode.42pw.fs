@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201806041324
+  \ Last modified: 202005030047
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -24,7 +24,7 @@
   \ http://www.users.globalnet.co.uk/~jg27paw4/pourri/pourri.htm
 
   \ Marcos Cruz (programandala.net) integrated it into Solo
-  \ Forth, 2017, 2018.
+  \ Forth, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -90,18 +90,23 @@ also assembler max-labels c@ 9 max-labels c! previous
 
 create mode-42pw-output_ ( -- a ) asm
 
+  \ doc{
+  \
+  \ mode-42pw-output_ ( -- a )
+  \
   \ _a_ is the address of a Z80 routine that displays the
   \ character in register A in `mode-42pw`.
   \
-  \ Recognized:
+  \ The only control character recognized is
+  \ #13 (move cursor to next line, column 0).
   \
-  \ Character #13 (move cursor to next line, column 0).
-  \
-  \ XXX TODO -- Not recognized:
-  \
-  \ Character #22 + y-pos + x-pos.
+  \ }doc
 
-  \ Credit:
+  \ XXX TODO --
+  \ - #22 + y-pos + x-pos (move cursor to given coordinates).
+  \ (Not fully tested, under development).
+
+\ Credit:
   \
   \ Original routine "PRINT42" from Your Sinclair #78 (1992-06)
   \ by P Wardle.
@@ -722,19 +727,22 @@ variable mode-42pw-font  rom-font bl 8 * + mode-42pw-font !
   \ http://www.users.globalnet.co.uk/~jg27paw4/pourri/pourri.htm
   \ ....
 
-  \ The control characters recognized are 13 (carriage return)
-  \ and 22 (at).
-  \
-  \ WARNING: the "at" control character is followed by row and
-  \ column, i.e. the order used in Sinclair BASIC strings. This
-  \ is the order used also in `mode-32` and `mode-32iso`, but
-  \ not in `mode-64ao`.
+  \ The only control character recognized is #13 (carriage
+  \ return).
   \
   \ See: `current-mode`, `set-font`, `set-mode-output`,
   \ `columns`, `rows`, `mode-42pw-emit`, `mode-42pw-xy`,
   \ `mode-42pw-font`, `>form`, `mode-42pw-output_`.
   \
   \ }doc
+
+  \ XXX TODO -- Documentation about control character #22, not
+  \ implemented yet:
+  \
+  \ WARNING: the "at" control character is followed by row and
+  \ column, i.e. the order used in Sinclair BASIC strings. This
+  \ is the order used also in `mode-32` and `mode-32iso`, but
+  \ not in `mode-64ao`.
 
   \ ===========================================================
   \ Change log
@@ -771,5 +779,7 @@ variable mode-42pw-font  rom-font bl 8 * + mode-42pw-font !
   \ 2018-03-09: Add words' pronunciaton.
   \
   \ 2018-06-04: Link `variable` in documentation.
+  \
+  \ 2020-05-03: Fix/update documentation.
 
   \ vim: filetype=soloforth
