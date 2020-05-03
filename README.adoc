@@ -1,13 +1,13 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-04-07
+:revdate: 2020-05-04
 :toc:
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202004080033
+// Last modified: 202005040049
 
 // Description {{{1
 == Description
@@ -138,37 +138,10 @@ http://programandala.net/en.program.black_flag.html[Black Flag].
 | ZX Spectrum 128 | Plus D                | G+DOS
 |===
 
-Porting the G+DOS version of Solo Forth to its close relatives GDOS,
-Beta DOS and Uni-DOS would require only minor changes, beside adding
-some library code to support their specific features.
-
-Supporting
-http://www.worldofspectrum.org/zxplus3e/technical.html[IDEDOS,role="external"],
-http://www.worldofspectrum.org/residos/[ResiDOS,role="external"],
-http://esxdos.org[esxDOS,role="external"] or
-http://specnext.com[NextZXOS,role="external"] would let Solo Forth use
-hard drives, flash cards, and a lot of memory.
-
-[%autowidth]
-.Platforms that could be supported in future versions
-|===
-| Computer                      | Disk interface               | DOS
-
-| ZX Evolution TS-Conf          |                              | TR-DOS
-| ZX Spectrum +3e               | divIDE/ZXATASP/ZXCF/ZXMMC... | IDEDOS
-| ZX Spectrum +3e               | divIDE/ZXATASP/ZXCF/ZXMMC... | ResiDOS
-| ZX Spectrum 128/+2            | DISCiPLE                     | GDOS
-| ZX Spectrum 128/+2            | DISCiPLE/Plus D              | Uni-DOS
-| ZX Spectrum 128/+2            | Plus D                       | Beta DOS
-| ZX Spectrum 128/+2/+2A/+2B/+3 | divIDE/ZXATSP/ZXCF/ZXMMC...  | esxDOS
-| ZX Spectrum Next              |                              | NextZXOS
-| ZX-UNO/ZXUNO+/ZXDOS           |                              | esxDOS
-|===
-
 // end::platforms[]
 
 // Project directories {{{1
-== Project directories
+== Project directories [[_tree]]
 
 // tag::tree[]
 
