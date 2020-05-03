@@ -976,6 +976,7 @@ NOTE: Milestone: 0.14.0
 - Document also the main words of the sample games.
 - Finally, modify the Makefile to include all programs from the
   library (<prog.*.fs>) to the glossary.
+- Share `r#` and `top`, loading them in `forth-wordlist`.
 - Homogenize the naming of "#" in words: "number-sign" (11), "hash"
   (24).
 

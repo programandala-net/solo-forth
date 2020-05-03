@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041324
+  \ Last modified: 202005030144
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -23,7 +24,9 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( r# top )
+( r# top editor )
+
+unneeding r# unneeding top or ?(
 
 variable r#
 
@@ -35,17 +38,31 @@ variable r#
   \ location of the editing cursor, an offset from the top of
   \ the current block. Its default value is zero.
   \
-  \ Origin: fig'Forth's user variable `r#`.
+  \ Origin: fig-Forth's user variable ``r#``.
+  \
+  \ See: `top`.
   \
   \ }doc
 
-: top ( -- ) r# off ; top
+: top ( -- ) r# off ; top ?)
 
   \ doc{
   \
   \ top ( -- )
   \
-  \ Position the editing cursor at the top of the block.
+  \ Position the editing cursor at the top of the block, by
+  \ setting `r#` to zero.
+  \
+  \ }doc
+
+unneeding editor ?\ defer editor
+
+  \ doc{
+  \
+  \ editor ( -- )
+  \
+  \ A deferred word. Its action can be `gforth-editor` or
+  \ `specforth-editor`, depending on the current block editor.
   \
   \ }doc
 
@@ -66,5 +83,7 @@ variable r#
   \ 2018-02-27: Update source style (remove double spaces).
   \
   \ 2018-06-04: Link `variable` in documentation.
+  \
+  \ 2020-05-03: Fix/improve documentation. Add `editor`.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041109
+  \ Last modified: 202005030221
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -28,7 +28,7 @@
   \ Written by Chris A. Thornton, 1983.
 
   \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
-  \ 2015, 2016, 2017, 2018.
+  \ 2015, 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -37,15 +37,15 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( editor )
+( specforth-editor )
 
 only forth definitions
 
 need list need update need flush need parse-all need vocabulary
+need editor
 
-vocabulary editor  also editor definitions
-
-need r# need top
+vocabulary specforth-editor ' specforth-editor is editor
+also editor definitions need r# need top
 
   \ XXX OLD
   \ XXX FIXME `1 text`, used by two words, corrupts the system.
@@ -172,7 +172,7 @@ need r# need top
   \
   \ }doc
 
-( editor )
+( specforth-editor )
 
 : d ( n -- ) dup h $0F dup rot ?do i 1+ line i -move loop e ;
 
@@ -282,7 +282,7 @@ need r# need top
 
 -->
 
-( editor )
+( specforth-editor )
 
 : -text ( ca1 len1 ca2 -- f )
   swap ?dup if over + swap ?do
@@ -347,7 +347,7 @@ need r# need top
   \ }doc
 
 
-( editor )
+( specforth-editor )
 
 : delete ( n -- ) >r #lag + r@ - #lag r@ negate r# +! #lead +
                   swap cmove r> blank ;
@@ -503,5 +503,7 @@ only forth definitions
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2020-05-03: Add `specforth-editor`.
 
   \ vim: filetype=soloforth

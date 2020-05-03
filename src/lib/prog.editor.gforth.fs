@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201802271728
+  \ Last modified: 202005030223
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -45,12 +45,12 @@
   \ s   search until a given screen
   \ y   yank deleted string
 
-( blocked )
+( gforth-editor )
 
 only forth definitions
 
 need inverse need list need update
-need list-lines need vocabulary need catch
+need list-lines need vocabulary need catch need editor
 
 : delete ( ca1 len1 len2 -- )
   over min >r r@ - ( left over ) dup 0>
@@ -70,8 +70,8 @@ need list-lines need vocabulary need catch
   \ len1_.
   \ XXX TODO -- move to <strings.misc.fsb>
 
-vocabulary editor  also editor definitions
-need r# need top
+vocabulary gforth-editor ' gforth-editor is editor
+also editor definitions  need r# need top
 
 variable len len off
   \ Length of the text found.
@@ -83,7 +83,7 @@ variable len len off
 
 -->
 
-( blocked )
+( gforth-editor )
 
 create rbuf $100 allot
   \ Replace buffer.
@@ -125,7 +125,7 @@ create fbuf $100 allot
   \ XXX TODO -- word to move cursor by _n_ lines, and putting
   \ it at the start of a line
 
-( blocked )
+( gforth-editor )
 
 : 'rest ( -- ca len ) scr @ block b/buf r# @ /string ;
   \ Return the rest of the current screen, from the
@@ -173,7 +173,7 @@ create fbuf $100 allot
   pad c/l 'rest insert 'rest drop c/l blank update l ;  -->
   \ Insert a line at the cursor position.
 
-( blocked )
+( gforth-editor )
 
 : dl ( -- ) 'rest c/l delete update l ;
   \ Delete a line at the cursor position.
@@ -221,5 +221,8 @@ forth definitions
   \ 2017-03-12: Update mentions to the `stringer`.
   \
   \ 2018-02-27: Update header and source layout.
+  \
+  \ 2020-05-03: Rename filename to <prog.editor.gforth.fs>. Add
+  \ `gforth-editor`.
 
   \ vim: filetype=soloforth
