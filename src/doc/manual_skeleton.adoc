@@ -1,7 +1,7 @@
 = Solo Forth: Version {version} for {dosname}
 :author: Marcos Cruz (programandala.net)
 :producer: Marcos Cruz (programandala.net)
-:revdate: 2020-04-30
+:revdate: 2020-05-03
 :doctype: book
 :lang: en
 :toc:
@@ -18,7 +18,7 @@ endif::[]
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202004300007
+// Last modified: 202005032043
 
 ifdef::backend-html5[]
 toc::[]
@@ -183,68 +183,187 @@ not implemented yet, especially the standard Forth words.
 endif::trdos[]
 
 The following table shows the main disk-management words implemented on each
-DOS{blank}footnote:[Links to words that are not defined in {dosname} are inactive.]:
+DOS:
 
-[cols="18,6,6,7,41"]
+// Create attributes to make the table entries be rendered by Glosara
+// as links only if the Forth word is provided by the current DOS.
+// Words defined in all of the DOS variants, or in none of them, are
+// hardcoded in the table.
+
+ifdef::plus3dos[:3-block-drives: ``3-block-drives``]
+ifdef::gplusdos[:3-block-drives: ``3-block-drives``]
+ifdef::trdos[:3-block-drives: `3-block-drives`]
+ifdef::plus3dos[:4-block-drives: ``4-block-drives``]
+ifdef::gplusdos[:4-block-drives: ``4-block-drives``]
+ifdef::trdos[:4-block-drives: `4-block-drives`]
+ifdef::plus3dos[:greater-than-file: ``>file``]
+ifdef::gplusdos[:greater-than-file: `>file`]
+ifdef::trdos[:greater-than-file: `>file`]
+ifdef::plus3dos[:bank-read-file: `bank-read-file`]
+ifdef::gplusdos[:bank-read-file: ``bank-read-file`]
+ifdef::trdos[:bank-read-file: ``bank-read-file`]
+ifdef::plus3dos[:bank-write-file: `bank-write-file`]
+ifdef::gplusdos[:bank-write-file: ``bank-write-file``]
+ifdef::trdos[:bank-write-file: ``bank-write-file`]
+ifdef::plus3dos[:bin: `bin`]
+ifdef::gplusdos[:bin: `bin`]
+ifdef::trdos[:bin: ``bin``]
+ifdef::plus3dos[:close-file: ``close-file``]
+ifdef::gplusdos[:close-file: `close-file`]
+ifdef::trdos[:close-file: `close-file`]
+ifdef::plus3dos[:create-file: ``create-file``]
+ifdef::gplusdos[:create-file: `create-file`]
+ifdef::trdos[:create-file: `create-file`]
+ifdef::plus3dos[:drive-unused: `drive-unused`]
+ifdef::gplusdos[:drive-unused: ``drive-unused``]
+ifdef::trdos[:drive-unused: ``drive-unused``]
+ifdef::plus3dos[:file-dir-number-sign: ``file-dir#``]
+ifdef::gplusdos[:file-dir-number-sign: `file-dir#`]
+ifdef::trdos[:file-dir-number-sign: `file-dir#`]
+ifdef::plus3dos[:file-dirdesc: ``file-dirdesc``]
+ifdef::gplusdos[:file-dirdesc: `file-dirdesc`]
+ifdef::trdos[:file-dirdesc: ``file-dirdesc``]
+ifdef::plus3dos[:file-exists-question: ``file-exists?``]
+ifdef::gplusdos[:file-exists-question: `file-exists?`]
+ifdef::trdos[:file-exists-question: `file-exists?`]
+ifdef::plus3dos[:file-length: ``file-length``]
+ifdef::gplusdos[:file-length: `file-length`]
+ifdef::trdos[:file-length: `file-length`]
+ifdef::plus3dos[:file-position: `file-position`]
+ifdef::gplusdos[:file-position: ``file-position``]
+ifdef::trdos[:file-position: ``file-position``]
+ifdef::plus3dos[:file-sector: ``file-sector``]
+ifdef::gplusdos[:file-sector: ``file-sector``]
+ifdef::trdos[:file-sector: `file-sector`]
+ifdef::plus3dos[:file-sectors: ``file-sectors``]
+ifdef::gplusdos[:file-sectors: ``file-sectors``]
+ifdef::trdos[:file-sectors: `file-sectors`]
+ifdef::plus3dos[:file-size: `file-size`]
+ifdef::gplusdos[:file-size: ``file-size``]
+ifdef::trdos[:file-size: ``file-size``]
+ifdef::plus3dos[:file-start: ``file-start``]
+ifdef::gplusdos[:file-start: `file-start`]
+ifdef::trdos[:file-start: `file-start`]
+ifdef::plus3dos[:file-status: ``file-status``]
+ifdef::gplusdos[:file-status: `file-status`]
+ifdef::trdos[:file-status: `file-status`]
+ifdef::plus3dos[:file-track: ``file-track``]
+ifdef::gplusdos[:file-track: ``file-track``]
+ifdef::trdos[:file-track: `file-track`]
+ifdef::plus3dos[:file-type: ``file-type``]
+ifdef::gplusdos[:file-type: `file-type`]
+ifdef::trdos[:file-type: `file-type`]
+ifdef::plus3dos[:file-greater-than: ``file>``]
+ifdef::gplusdos[:file-greater-than: `file>`]
+ifdef::trdos[:file-greater-than: `file>`]
+ifdef::plus3dos[:find-file: ``find-file``]
+ifdef::gplusdos[:find-file: `find-file`]
+ifdef::trdos[:find-file: `find-file`]
+ifdef::plus3dos[:flush-drive: `flush-drive`]
+ifdef::gplusdos[:flush-drive: ``flush-drive``]
+ifdef::trdos[:flush-drive: ``flush-drive``]
+ifdef::plus3dos[:open-file: `open-file`]
+ifdef::gplusdos[:open-file: ``open-file``]
+ifdef::trdos[:open-file: ``open-file``]
+ifdef::plus3dos[:r-slash-o: `r/o`]
+ifdef::gplusdos[:r-slash-o: ``r/o``]
+ifdef::trdos[:r-slash-o: ``r/o``]
+ifdef::plus3dos[:r-slash-w: `r/w`]
+ifdef::gplusdos[:r-slash-w: ``r/w``]
+ifdef::trdos[:r-slash-w: ``r/w``]
+ifdef::plus3dos[:read-byte: `read-byte`]
+ifdef::gplusdos[:read-byte: ``read-byte``]
+ifdef::trdos[:read-byte: ``read-byte``]
+ifdef::plus3dos[:read-file: `read-file`]
+ifdef::gplusdos[:read-file: ``read-file``]
+ifdef::trdos[:read-file: ``read-file``]
+ifdef::plus3dos[:read-line: `read-line`]
+ifdef::gplusdos[:read-line: ``read-line``]
+ifdef::trdos[:read-line: ``read-line``]
+ifdef::plus3dos[:reposition-file: `reposition-file`]
+ifdef::gplusdos[:reposition-file: ``reposition-file``]
+ifdef::trdos[:reposition-file: ``reposition-file``]
+ifdef::plus3dos[:undelete-file: ``undelete-file``]
+ifdef::gplusdos[:undelete-file: ``undelete-file``]
+ifdef::trdos[:undelete-file: `undelete-file`]
+ifdef::plus3dos[:w-slash-o: `w/o`]
+ifdef::gplusdos[:w-slash-o: ``w/o``]
+ifdef::trdos[:w-slash-o: ``w/o``]
+ifdef::plus3dos[:wacat: `wacat`]
+ifdef::gplusdos[:wacat: `wacat`]
+ifdef::trdos[:wacat: ``wacat``]
+ifdef::plus3dos[:wcat: `wcat`]
+ifdef::gplusdos[:wcat: `wcat`]
+ifdef::trdos[:wcat: ``wcat``]
+ifdef::plus3dos[:write-byte: `write-byte`]
+ifdef::gplusdos[:write-byte: ``write-byte``]
+ifdef::trdos[:write-byte: ``write-byte``]
+ifdef::plus3dos[:write-file: `write-file`]
+ifdef::gplusdos[:write-file: ``write-file``]
+ifdef::trdos[:write-file: ``write-file``]
+ifdef::plus3dos[:write-line: `write-line`]
+ifdef::gplusdos[:write-line: ``write-line``]
+ifdef::trdos[:write-line: ``write-line``]
+
+[cols="17,8,8,8,59"]
 .Main disk-related words implemented
 |===
-| Word              | +3DOS | G+DOS | TR-DOS | Comment
+| Word                   | +3DOS | G+DOS | TR-DOS | Comment
 
-| `2-block-drives`  | YES   | YES   | YES    | Use the first two drives as block drives
-| `3-block-drives`  | n/a   | n/a   | YES    | Use the first three drives as block drives
-| `4-block-drives`  | n/a   | n/a   | YES    | Use the first four drives as block drives
-| `>file`           |       | YES   | YES    | Save memory zone to a file
-| `acat`            | YES   | YES   | YES    | Display an abbreviated disk catalogue
-| `bank-read-file`  | YES   |       |        | Read from a file with a bank paged in
-| `bank-write-file` | YES   |       |        | Write to a file with a bank paged in
-| `bin`             | YES   |       |        | Standard Forth
-| `cat`             | YES   | YES   | YES    | Display a detailed disk catalogue
-| `close-file`      | YES   |       |        | Standard Forth
-| `create-file`     | YES   |       |        | Standard Forth
-| `delete-file`     | YES   | YES   | YES    | Standard Forth
-| `drive-unused`    | YES   |       |        | Return the number of unused kibibytes in a drive
-| `file-dir#`       |       | YES   | YES    | Return the directory number of a file
-| `file-dirdesc`    |       | YES   | n/a    | Return the file directory identifier of a file
-| `file-exists?`    |       | YES   | YES    | Return a flag: does a files exists?
-| `file-length`     |       | YES   | YES    | Return the length of a file
-| `file-position`   | YES   |       |        | Standard Forth
-| `file-sector`     |       |       | YES    | Return the first sector of a file
-| `file-sectors`    |       |       | YES    | Return the number of sectors occupied by a file
-| `file-size`       | YES   |       |        | Standard Forth
-| `file-start`      |       | YES   | YES    | Return the start address of a file
-| `file-status`     |       | YES   | YES    | Standard Forth
-| `file-track`      |       |       | YES    | Return the first track of a file
-| `file-type`       |       | YES   | YES    | Return the type of a file
-| `file>`           |       | YES   | YES    | Load file contents to memory zone
-| `find-file`       |       | YES   | YES    | Find a file
-| `flush-drive`     | YES   |       |        | Write pending data for a drive
-| ``flush-file``    |       |       |        | Standard Forth
-| `get-block-drives`| YES   | YES   | YES    | Get the drives used as block drives
-| `get-drive`       | YES   | YES   | YES    | Get the number of the current drive
-| ``include-file``  |       |       |        | Standard Forth
-| ``include``       |       |       |        | Standard Forth
-| ``included``      |       |       |        | Standard Forth
-| `open-file`       | YES   |       |        | Standard Forth
-| `r/o`             | YES   |       |        | Standard Forth
-| `r/w`             | YES   |       |        | Standard Forth
-| `read-byte`       | YES   |       |        | Read byte from file
-| `read-file`       | YES   |       |        | Standard Forth
-| `read-line`       | YES   |       |        | Standard Forth
-| `rename-file`     | YES   | YES   | YES    | Standard Forth
-| `reposition-file` | YES   |       |        | Standard Forth
-| ``require``       |       |       |        | Standard Forth
-| ``required``      |       |       |        | Standard Forth
-| ``resize-file``   |       |       |        | Standard Forth
-| `set-block-drives`| YES   | YES   | YES    | Set the drives used as block drives
-| `set-drive`       | YES   | YES   | YES    | Set the current drive
-| `undelete-file`   |       |       | YES    | Undelete a file
-| `w/o`             | YES   |       |        | Standard Forth
-| `wacat`           | YES   | YES   |        | Abbreviated disk catalogue with wildcards
-| `wcat`            | YES   | YES   |        | Detailed disk catalogue with wildcards
-| `write-byte`      | YES   |       |        | Write a byte to a file
-| `write-file`      | YES   |       |        | Standard Forth
-| `write-line`      | YES   |       |        | Standard Forth
-
+| `2-block-drives`       | YES   | YES   | YES    | Use the first two drives as block drives
+| {3-block-drives}       | n/a   | n/a   | YES    | Use the first three drives as block drives
+| {4-block-drives}       | n/a   | n/a   | YES    | Use the first four drives as block drives
+| {greater-than-file}    |       | YES   | YES    | Save memory zone to a file
+| `acat`                 | YES   | YES   | YES    | Display an abbreviated disk catalogue
+| {bank-read-file}       | YES   |       |        | Read from a file with a bank paged in
+| {bank-write-file}      | YES   |       |        | Write to a file with a bank paged in
+| {bin}                  | YES   | YES   |        | Standard Forth
+| `cat`                  | YES   | YES   | YES    | Display a detailed disk catalogue
+| {close-file}           | YES   |       |        | Standard Forth
+| {create-file}          | YES   |       |        | Standard Forth
+| `delete-file`          | YES   | YES   | YES    | Standard Forth
+| {drive-unused}         | YES   |       |        | Return the number of unused kibibytes in a drive
+| {file-dir-number-sign} |       | YES   | YES    | Return the directory number of a file
+| {file-dirdesc}         |       | YES   | n/a    | Return the file directory identifier of a file
+| {file-exists-question} |       | YES   | YES    | Return a flag: does a files exists?
+| {file-length}          |       | YES   | YES    | Return the length of a file
+| {file-position}        | YES   |       |        | Standard Forth
+| {file-sector}          |       |       | YES    | Return the first sector of a file
+| {file-sectors}         |       |       | YES    | Return the number of sectors occupied by a file
+| {file-size}            | YES   |       |        | Standard Forth
+| {file-start}           |       | YES   | YES    | Return the start address of a file
+| {file-status}          |       | YES   | YES    | Standard Forth
+| {file-track}           |       |       | YES    | Return the first track of a file
+| {file-type}            |       | YES   | YES    | Return the type of a file
+| {file-greater-than}    |       | YES   | YES    | Load file contents to memory zone
+| {find-file}            |       | YES   | YES    | Find a file
+| {flush-drive}          | YES   |       |        | Write all pending data for a drive
+| ``flush-file``         |       |       |        | Standard Forth
+| `get-block-drives`     | YES   | YES   | YES    | Get the drives used as block drives
+| `get-drive`            | YES   | YES   | YES    | Get the number of the current drive
+| ``include-file``       |       |       |        | Standard Forth
+| ``include``            |       |       |        | Standard Forth
+| ``included``           |       |       |        | Standard Forth
+| {open-file}            | YES   |       |        | Standard Forth
+| {r-slash-o}            | YES   |       |        | Standard Forth
+| {r-slash-w}            | YES   |       |        | Standard Forth
+| {read-byte}            | YES   |       |        | Read byte from file
+| {read-file}            | YES   |       |        | Standard Forth
+| {read-line}            | YES   |       |        | Standard Forth
+| `rename-file`          | YES   | YES   | YES    | Standard Forth
+| {reposition-file}      | YES   |       |        | Standard Forth
+| ``require``            |       |       |        | Standard Forth
+| ``required``           |       |       |        | Standard Forth
+| ``resize-file``        |       |       |        | Standard Forth
+| `set-block-drives`     | YES   | YES   | YES    | Set the drives used as block drives
+| `set-drive`            | YES   | YES   | YES    | Set the current drive
+| {undelete-file}        |       |       | YES    | Undelete a file
+| {w-slash-o}            | YES   |       |        | Standard Forth
+| {wacat}                | YES   | YES   |        | Display an abbreviated disk catalogue with wildcards
+| {wcat}                 | YES   | YES   |        | Display a detailed disk catalogue with wildcards
+| {write-byte}           | YES   |       |        | Write a byte to a file
+| {write-file}           | YES   |       |        | Standard Forth
+| {write-line}           | YES   |       |        | Standard Forth
 |===
 
 // Download {{{1
