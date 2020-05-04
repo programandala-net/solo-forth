@@ -1,6 +1,6 @@
 = Acknowledgments
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-03-01
+:revdate: 2020-05-04
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -12,8 +12,7 @@ fully disassembled
 (http://programandala.net/en.program.abersoft_forth.html).
 
 Solo Forth is being possible thanks to code, documentation, ideas and
-inspiration from the following Forth systems and libraries, listed in
-alphabetical order:
+inspiration from the following works, listed in alphabetical order:
 
 - 4tH, by J.L. Bezemer, 1994..2016.
 - Abersoft Forth (for ZX Spectrum 48K), by John Jones Steele, 1983.
@@ -50,6 +49,8 @@ alphabetical order:
 - v.Forth (for ZX Spectrum 48K/128K with Interface 1), by Matteo
   Vitturi, 1990..2016.
 - volksFORTH 3.80a (for C/PM), by Forth Gesellschaft e.V., 1985..2006.
+- Z80 data collected by Oscar Lindberg, 1996-03-24.
+- Z80 data prepared by Devin Gardner, 2000-04-29.
 - Z88 CamelForth 3.04 (for Cambridge Z88), by Garry Lancaster, 2001.
 
 Specific credits and acknowledgment notes are included in the source.
