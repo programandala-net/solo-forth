@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806051704
+  \ Last modified: 202005042341
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -133,14 +134,15 @@ create fast-gxy>scra_ ( -- a ) asm
   \ ROM routine ($22AA), to let the range of the y coordinate
   \ be 0..191 instead of 0..175.
   \
-  \ This code is a bit faster than `slow-gxy>scra_` because
-  \ the necessary jump to the ROM is saved and a useless `and
-  \ a` has been removed. But in most cases the speed gain is so
-  \ small (only 0.01: see `set-pixel-bench`) that it's not
-  \ worth the extra space, including the assembler.
+  \ This code is a bit faster than `slow-gxy>scra_` because the
+  \ necessary jump to the ROM is saved and a useless `and a`
+  \ has been removed. But in most cases the speed gain is so
+  \ small (only 0.01: see ``set-pixel-bench``, defined in
+  \ <src/lib/meta.benchmark.MISC.fs>) that it's not worth the
+  \ extra space, including the assembler.
   \
-  \ When ``fast-gxy>scra_`` is loaded, it is set as the
-  \ current action of `gxy>scra_`.
+  \ When ``fast-gxy>scra_`` is loaded, it is set as the current
+  \ action of `gxy>scra_`.
   \
   \ Input registers:
 
@@ -890,5 +892,7 @@ need gxy>attra
   \
   \ 2018-06-05: Fix pronunciation of words that have a trailing
   \ underscore.
+  \
+  \ 2020-05-04: Fix cross reference. Improve documentation.
 
   \ vim: filetype=soloforth

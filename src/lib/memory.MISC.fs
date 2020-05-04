@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005021939
+  \ Last modified: 202005042225
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2019, 2020.
 
   \ ===========================================================
   \ License
@@ -658,7 +659,7 @@ unneeding 2? ?\ : 2? ( a -- ) 2@ d. ;
   \
   \ }doc
 
-( !exchange c!exchange reserve alloted align aligned )
+( !exchange c!exchange reserve allotted align aligned )
 
 unneeding !exchange
 
@@ -718,11 +719,11 @@ unneeding reserve
   \ Reserve _n_ bytes of data space, erase the zone and return
   \ its address _a_.
   \
-  \ See: `buffer:`, `allot`, `alloted`, `here`, `erase`.
+  \ See: `buffer:`, `allot`, `allotted`, `here`, `erase`.
   \
   \ }doc
 
-unneeding alloted ?\ : allotted ( n -- a ) here swap allot ;
+unneeding allotted ?\ : allotted ( n -- a ) here swap allot ;
 
   \ doc{
   \
@@ -962,5 +963,7 @@ code cexchange ( ca1 ca2 -- )
   \ 2019-03-15: Update documentation.
   \
   \ 2020-05-02: Improve documentation.
+  \
+  \ 2020-05-04: Fix cross references.
 
   \ vim: filetype=soloforth

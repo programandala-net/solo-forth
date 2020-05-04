@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041324
+  \ Last modified: 202005042023
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -172,8 +172,8 @@ variable current-window
   \
   \ WARNING: At the moment windows are not aware of display
   \ modes that dont't use 32 characters per line (e.g.
-  \ `mode-64`, `mode-42`). If windows are used when such mode
-  \ is active, the layout of the output will be wrong.
+  \ `mode-64ao`, `mode-42pw`). If windows are used when such
+  \ mode is active, the layout of the output will be wrong.
   \
   \ See: `current-window`, `wx`, `wy`, `wx0`, `wy0`,
   \ `wcolumns`, `wrows`.
@@ -597,5 +597,8 @@ unneeding wltype ?( need wtyped need wfreecolumns
   \ 2018-04-11: Remove duplicated definition.
   \
   \ 2018-06-04: Link `variable` in documentation.
+  \
+  \ 2020-05-04: Fix cross reference: `mode-64` -> `mode-64ao`.
+  \ `mode-42` -> `mode-42pw`.
 
-  \ vim: filetype=soloforth
+\ vim: filetype=soloforth

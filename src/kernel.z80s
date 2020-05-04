@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202005010021
+; Last modified: 202005042334
 
 include version.z80s
 
@@ -1774,6 +1774,10 @@ question_previous_bank:
 ; See: `far-hl_`, `bank`.
 ;
 ; }doc
+
+  ; XXX WARNING -- The address of `far.hl` is stored in constant
+  ; `far-hl_` (defined in <memory.fas.fs>), using the address of
+  ; `far` to calculate the address of `call far.hl`:
 
   pop hl
   call far.hl
@@ -8815,7 +8819,7 @@ postpone.end:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See: `[`, `]l`, `]2l`, `]cl`, `]1l`.
+; See: `[`, `]l`, `]2l`, `]cl`, `]xl`.
 ;
 ; }doc
 
@@ -9322,7 +9326,7 @@ minus_trailing.begin:
 ; : ," ( -- ) '"' parse s, ;
 ; ----
 
-; See: `parse`, `s,`, `'"'`.
+; See: `parse`, `s,`.
 ;
 ; }doc
 
@@ -10342,7 +10346,7 @@ far_place.copy_char:
 ;
 ; error ( n -- )
 ;
-; Save the `throw` code _n_ into `error-number`, and the current
+; Save the `throw` code _n_ into `error#`, and the current
 ; block and line into `error-pos`, to be used by `where`.  Then
 ; perform the action required by `throw` code _n_ as follows:
 ;
@@ -10362,7 +10366,7 @@ far_place.copy_char:
 
 ; ----
 ; : error ( n -- )
-;   dup error-number !
+;   dup error# !
 ;   >in @ blk @ error-pos 2!
 ;   dup -1 = if (abort then
 ;   dup -2 = if space abort-message 2@ type (abort then
@@ -10958,7 +10962,7 @@ search.failed:
 ;             then postpone literal ; immediate compile-only
 ; ----
 
-; See: `2literal`, `]1l`, `byte?`.
+; See: `2literal`, `]xl`, `byte?`.
 ;
 ; }doc
 
@@ -14300,7 +14304,7 @@ hash_s.begin:
 ; must be used or preserved before the buffer is moved or
 ; overwritten.
 ;
-; See: `<#`, `#s`, `sign` ,`#>`, `>stringer`, `,s`,
+; See: `<#`, `#s`, `sign` ,`#>`, `>stringer`, `s,`,
 ; `cmove`.
 ;
 ; }doc

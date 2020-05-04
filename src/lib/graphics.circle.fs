@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 202005042242
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -20,7 +20,7 @@
   \ <http://worldofspectrum.org/forums/discussion/22058/bresenhams-circle-algorithm/>.
   \
   \ Marcos Cruz (programandala.net) adapted the code to Solo
-  \ Forth, 2015, 2016, 2017, 2018.
+  \ Forth, 2015, 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -96,7 +96,7 @@ unneeding circle-pixel
   \ _a_ is the address of a subroutine used by `circle` to set
   \ its pixels.  This routine does a jump to the actual
   \ routine, which by default does nothing. The desired routine
-  \ must be set by `set-circle`.
+  \ must be set by `set-circle-pixel`.
   \
   \ Also any routine provided by the application can be used as
   \ the action of `circle-pixel`, provided the following
@@ -347,6 +347,8 @@ code circle ( gx gy b -- )
   \ `(pixel-addr)` to `gxy>scra_`.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2020-05-04: Fix cross reference.
 
   \ vim: filetype=soloforth
 

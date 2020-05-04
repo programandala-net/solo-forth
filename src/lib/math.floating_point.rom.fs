@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202005022213
+  \ Last modified: 202005050010
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -298,7 +298,7 @@ need fsgn
   \
   \ f~abs ( -- f ) ( F: r1 r2 r3 -- ) "f-tilde-abs"
   \
-  \ Approximate equality with absolute error: `|r1-r2|<r3`.
+  \ Approximate equality with absolute error: ``|r1-r2|<r3``.
   \
   \ Flag _f_ is true if the absolute value of _r1-r2_ is less
   \ than _r3_.
@@ -1157,5 +1157,7 @@ unneeding dfaligned
   \ word names.
   \
   \ 2020-05-02: Improve documentation.
+  \
+  \ 2020-05-05: Fix documentation markup.
 
   \ vim: filetype=soloforth

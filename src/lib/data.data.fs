@@ -3,13 +3,13 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806032146
+  \ Last modified: 202005042247
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ Credit
@@ -37,7 +37,7 @@
   \
   \ Create a definition for _name_, in order to compile data
   \ items of _n_ bytes each, finished by `end-data`.  Leave _n_
-  \ and _orig_ to be consumed by `end-cdata`.  When _name_ is
+  \ and _orig_ to be consumed by `end-data`.  When _name_ is
   \ executed, it will leave the start address of the data and
   \ the number of items, which depends on _n_.
   \
@@ -91,5 +91,7 @@
   \ 2018-03-09: Update notation "address units" to "bytes".
   \
   \ 2018-06-03: Fix typos in documentation.
+  \
+  \ 2020-05-04: Fix cross reference.
 
   \ vim: filetype=soloforth

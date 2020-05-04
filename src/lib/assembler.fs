@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005022219
+  \ Last modified: 202005050006
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1520,7 +1520,7 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \ Compile the Z80 instruction ``LD
   \ _reg_,(_regpi_+_disp_)``.
   \
-  \ See: `ft#x,`, `stx,`.
+  \ See: `stx,`.
   \
   \ }doc
 
@@ -1544,7 +1544,7 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ Compile the Z80 instruction ``LD (_regpi_+_disp_),_8b_``.
   \
-  \ See: `stx,`, `ft#x,`.
+  \ See: `stx,`.
   \
   \ }doc
 
@@ -1813,7 +1813,7 @@ F2 cconstant p?   FA cconstant m?
   \
   \ Resolve a backward relative branch.
   \
-  \ See: `rresolve>`, `rresolve`.
+  \ See: `>rresolve`, `rresolve`.
   \
   \ }doc
 
@@ -2437,5 +2437,8 @@ set-current
   \ 2020-03-30: Complete the words' pronunciations.
   \
   \ 2020-05-02: Fix cross references.
+  \
+  \ 2020-05-04: Fix cross reference. Remove cross references to
+  \ inexistent word `ft#x,`,
 
   \ vim: filetype=soloforth

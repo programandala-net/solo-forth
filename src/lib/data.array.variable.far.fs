@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201903190130
+  \ Last modified: 202005042336
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,7 +27,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2017, 2018, 2019, 2020.
 
   \ ===========================================================
   \ License
@@ -82,7 +82,7 @@ unneeding far2avariable ?( need farallot need 2array>
   \
   \ Return far-memory address _a_ of element _n_.
   \
-  \ See: `faravariable`, `farcvariable`, `2avariable`.
+  \ See: `faravariable`, `farcavariable`, `2avariable`.
   \
   \ }doc
 
@@ -106,7 +106,7 @@ unneeding farcavariable ?( need farallot
   \
   \ Return far-memory address _ca_ of element _n_.
   \
-  \ See: `faravariable`, `far2variable`, `cavariable`.
+  \ See: `faravariable`, `far2avariable`, `cavariable`.
   \
   \ }doc
 
@@ -132,5 +132,7 @@ unneeding farcavariable ?( need farallot
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2019-03-19: Fix needing of `farcavariable`.
+  \
+  \ 2020-05-04: Fix cross references.
 
   \ vim: filetype=soloforth

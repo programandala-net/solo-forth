@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201804142325
+  \ Last modified: 202005050044
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -16,7 +16,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -151,7 +152,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``multiply`` ROM `calculator` command.
   \
-  \ See: `|\`, `|**`.
+  \ See: `|/`, `|**`.
   \
   \ }doc
 
@@ -175,7 +176,7 @@ get-current  calculator-wordlist set-current
   \
   \ Compile the ``n-mod-m`` ROM `calculator` command.
   \
-  \ See: `|\`.
+  \ See: `|/`.
   \
   \ }doc
 
@@ -907,5 +908,7 @@ set-current  previous
   \ words that need it.
   \
   \ 2018-04-14: Fix markup in documentation.
+  \
+  \ 2020-05-05: Fix cros references.
 
   \ vim: filetype=soloforth

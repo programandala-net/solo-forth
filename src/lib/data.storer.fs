@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072315
+  \ Last modified: 202005042148
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -37,7 +38,7 @@ unneeding storer ?(
   \ Define a word _name_ which, when executed, will cause that
   \ _x_ be stored at _a_.
   \
-  \ Origin: word `set` found in Forth-79 (Reference Word Set)
+  \ Origin: word ``set`` found in Forth-79 (Reference Word Set)
   \ and Forth-83 (Appendix B.  Uncontrolled Reference Words).
   \
   \ }doc
@@ -54,9 +55,9 @@ unneeding cstorer ?(
   \ Define a word _name_ which, when executed, will cause that
   \ _c_ be stored at _ca_.
   \
-  \ Origin: variant of the word `set` found in Forth-79
-  \ (Reference Word Set) and Forth-83 (Appendix B.
-  \ Uncontrolled Reference Words).
+  \ Origin: variant of the word ``set`` found in Forth-79
+  \ (Reference Word Set) and Forth-83 (Appendix B. Uncontrolled
+  \ Reference Words).
   \
   \ }doc
 
@@ -73,9 +74,9 @@ unneeding 2storer ?(
   \ Define a word _name_ which, when executed, will cause that
   \ _xd_ be stored at _a_.
   \
-  \ Origin: variant of the word `set` found in Forth-79
-  \ (Reference Word Set) and Forth-83 (Appendix B.
-  \ Uncontrolled Reference Words).
+  \ Origin: variant of the word ``set`` found in Forth-79
+  \ (Reference Word Set) and Forth-83 (Appendix B. Uncontrolled
+  \ Reference Words).
   \
   \ }doc
 
@@ -93,6 +94,8 @@ unneeding 2storer ?(
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-07: Add words' pronunciaton.
+  \
+  \ 2020-05-04: Fix markup in documentation.
 
   \ vim: filetype=soloforth
 

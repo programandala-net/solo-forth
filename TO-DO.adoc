@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-05-03
+:revdate: 2020-05-04
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1655,6 +1655,11 @@ This will save several blocks of source.
 
 // Graphics {{{1
 == Graphics
+
+=== 2020-05-04
+
+Compare `emit-udga`, defined in the kernel, with the draft `.udga`,
+defined in <graphics.udg.fs>.
 
 === 2018-01-03
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 202005042211
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -20,7 +20,7 @@
   \ 1998-09).
   \
   \ Marcos Cruz (programandala.net) adapted the code to Solo
-  \ Forth, 2015, 2016, 2017, 2018.
+  \ Forth, 2015, 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -156,7 +156,7 @@ unneeding [+switch
   \
   \ Origin: SwiftForth.
   \
-  \ See: `runs`, `run`.
+  \ See: `runs`, `run:`.
   \
   \ }doc
 
@@ -310,5 +310,7 @@ unneeding run: ?( need evaluate need <switch need :noname
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2020-05-04: Fix cross reference.
 
   \ vim: filetype=soloforth

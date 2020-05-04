@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803082256
+  \ Last modified: 202005050013
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -19,7 +19,7 @@
   \ issue 132 (1998-08).
   \
   \ Marcos Cruz (programandala.net) disassembled and adapted it
-  \ to Solo Forth, 2017, 2018.
+  \ to Solo Forth, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -392,7 +392,7 @@ need xy>scra need array>
   \   key drop home ;
   \ ----
 
-  \ See: `gigatype-title`, `set-font`, `(gigatext`,
+  \ See: `gigatype-title`, `set-font`, `(gigatype`,
   \ `type`.
   \
   \ }doc
@@ -826,7 +826,7 @@ need gigatype need 2/
   \ characters.  Therefore, the maximum value of _len1_ is 16
   \ characters, but ``gigatype-title`` does no check. Beside,
   \ it calculates the column of the title assuming the current
-  \ mode is `mode32` (32 characters per line), which is the
+  \ mode is `mode-32` (32 characters per line), which is the
   \ default one.
   \
   \ See: `gigatype-style`, `type-center-field`.
@@ -856,6 +856,8 @@ need gigatype need 2/
   \ change in the assembler.
   \
   \ 2018-03-08: Add words' pronunciaton.
+  \
+  \ 2020-05-05: Fix cross references.
 
   \ vim: filetype=soloforth
 

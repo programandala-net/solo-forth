@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201903182346
+  \ Last modified: 202005042046
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -15,7 +15,7 @@
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
-  \ 2019.
+  \ 2019, 2020.
 
   \ ===========================================================
   \ License
@@ -248,7 +248,7 @@ defer ~~before-info ( -- )  defer ~~after-info ( -- )
   \
   \ If the content of `~~?` is not zero, execute the following
   \ words in the given order: `~~before-info`, `~~info`,
-  \ `~~control` and `~after-info`.
+  \ `~~control` and `~~after-info`.
   \
   \ See: `~~y`.
   \
@@ -334,5 +334,7 @@ defer ~~before-info ( -- )  defer ~~after-info ( -- )
   \ `~~restore` `~~after-info`. Remove `~~app-info` and make
   \ `~~info` deferred: this is simpler and equally
   \ configurable. Improve documentation.
+  \
+  \ 2020-05-04: Fix cross reference in `(~~`.
 
   \ vim: filetype=soloforth

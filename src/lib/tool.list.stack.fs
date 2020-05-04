@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041102
+  \ Last modified: 202005042207
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -26,6 +27,17 @@
 ( .depth .s u.s )
 
 unneeding .depth ?\ : .depth ( n -- ) ." <" 0 .r ." > " ;
+
+  \ doc{
+  \
+  \ .depth ( n -- )
+  \
+  \ Display _n_ with the format used by `.s` and `u.s` to
+  \ display the `depth` of the data stack`.
+  \
+  \ See: `.r`.
+  \
+  \ }doc
 
 unneeding .s ?( need .depth
 
@@ -39,10 +51,31 @@ defer (.s ( x -- ) ' . ' (.s defer!
   \ Credit:
   \ Code from Afera. Original algorithm from v.Forth.
 
+  \ doc{
+  \
+  \ .s ( -- )
+  \
+  \ Display, using `.`, the values currently on the data stack.
+  \
+  \ See: `u.s`, `depth`, `.depth`.
+  \
+  \ }doc
+
 unneeding u.s ?( need .s
 
 : u.s   ( -- )
   ['] u. ['] (.s defer!  .s  ['] . ['] (.s defer! ; ?)
+
+  \ doc{
+  \
+  \ u.s ( -- )
+  \
+  \ Display, using `u.`,  the values currently on the data
+  \ stack.
+  \
+  \ See: `.s`, `depth`, `.depth`.
+  \
+  \ }doc
 
   \ ===========================================================
   \ Change log
@@ -73,5 +106,7 @@ unneeding u.s ?( need .s
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2020-05-04: Improve documentation.
 
   \ vim: filetype=soloforth

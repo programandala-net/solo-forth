@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201807212105
+  \ Last modified: 202005042036
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -19,7 +19,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -133,6 +133,9 @@ need evaluate need catch need use-default-located
   last-locatable @ 1+ first-locatable @
   ?do i (index-block loop ;
 
+  \ XXX WARNING -- `(make-thru-index` is mentioned in the
+  \ documentation of `(index-block`.
+
   \ XXX TODO -- factor `last-locatable @ 1+ first-locatable @`,
   \ to `need-bounds`; see `(located`.
 
@@ -242,5 +245,7 @@ need evaluate need catch need use-default-located
   \ word names.
   \
   \ 2018-07-21: Improve documentation, linking `throw`.
+  \
+  \ 2020-05-04: Improve documentation.
 
   \ vim: filetype=soloforth

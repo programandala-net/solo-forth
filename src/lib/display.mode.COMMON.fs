@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202002271845
+  \ Last modified: 202005042022
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -90,8 +90,8 @@ unneeding (at-xy
   \
   \ Set the cursor coordinates to column _col_ and row _row_,
   \ by displaying control character 22 followed by _col_ and
-  \ _row_, as needed by some display modes, e.g. `mode-64` and
-  \ `mode-42`.  The upper left corner is column zero, row zero.
+  \ _row_, as needed by some display modes, e.g. `mode-64ao` and
+  \ `mode-42pw`.  The upper left corner is column zero, row zero.
   \
   \ ``(at-xy`` is a possible action of `at-xy`, which is a
   \ deferred word configured by the current display mode.
@@ -224,10 +224,13 @@ code (banked-mode-output ( -- )
   \
   \ 2018-03-09: Update stack notation "x y" to "col row".
   \
-  \ 2018-06-04: Update: remove trailing closing paren from
-  \ word names.
+  \ 2018-06-04: Update: remove trailing closing paren from word
+  \ names.
   \
-  \ 2020-02-27: Fix: update names that renamed in 2018-01-24:
-  \ "64o" (Owen) -> "64ao" (Andrew Owen).
+  \ 2020-02-27: Fix: update names that were renamed in
+  \ 2018-01-24: "64o" (Owen) -> "64ao" (Andrew Owen).
+  \
+  \ 2020-05-04: Fix cross references: `mode-64` -> `mode-64ao`.
+  \ `mode-42` -> `mode-42pw`.
 
   \ vim: filetype=soloforth

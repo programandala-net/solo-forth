@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not ready yet
 
-  \ Last modified: 201704261942
+  \ Last modified: 202005042018
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,7 +25,7 @@
   \ K. Myneni, modified for kForth., 2002-05-30.
 
   \ Marcos Cruz (programandala.net), version for Solo Forth,
-  \ 2015, 2016.
+  \ 2015, 2016, 2017, 2020.
 
   \ ===========================================================
   \ License
@@ -38,11 +38,7 @@
 
 only forth definitions
 
-need ms need mode-64 need alloted need recurse
-
-  \ XXX FIXME -- 2017-04-26: `mode-64` loads the code from
-  \ disk. Therefore it can not be "needed" without confirmir
-  \ disk 0 is in the first drive.
+need ms need mode-64ao need alloted need recurse
 
 wordlist dup constant hanoi-wordlist dup >order set-current
 
@@ -136,7 +132,7 @@ decimal
 
   0 11 at-xy ;
 
-mode-64 page
+mode-64ao page
   \  <-------------------------->
   .( Towers of Hanoi) cr
   .( Type 'n run' to play where) cr
@@ -158,5 +154,7 @@ mode-64 page
   \ library, with `?do`.
   \
   \ 2017-04-26: Check and update.
+  \
+  \ 2020-05-04: Update: `mode-64` -> `mode-64ao`.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201807212110
+  \ Last modified: 202005042238
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ Credit
@@ -106,7 +107,7 @@ need create-entry  unneeding entry: ?(
   \ Create a cell entry "name" in the `associative-list`
   \ _wid_, with value _x_.
   \
-  \ See: `centry:`, `2entry`, `sentry:`, `create-entry`.
+  \ See: `centry:`, `2entry:`, `sentry:`, `create-entry`.
   \
   \ }doc
 
@@ -121,7 +122,7 @@ unneeding centry: ?(
   \ Create a character entry "name" in the `associative-list`
   \ _wid_, with value _c_.
   \
-  \ See: `entry:`, `2entry`, `sentry:`, `create-entry`.
+  \ See: `entry:`, `2entry:`, `sentry:`, `create-entry`.
   \
   \ }doc
 
@@ -203,5 +204,7 @@ unneeding items ?exit need alias need wordlist-words
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-07-21: Improve documentation, linking `throw`.
+  \
+  \ 2020-05-04: Fix cross references.
 
   \ vim: filetype=soloforth

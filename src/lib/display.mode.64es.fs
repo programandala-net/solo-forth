@@ -11,12 +11,20 @@
 
   \ A 64-cpl display mode.
 
+  \ XXX UNDER DEVELOPMENT --
+
   \ ===========================================================
   \ Authors
 
   \ Author of the original code: Andrew Owen, 2007.
   \ Published on the World of Spectrum forum:
   \ http://www.worldofspectrum.org/forums/discussion/14526/redirect/p1
+  \
+  \ Version with integrated driver, adapted from 64#4, written
+  \ by Einar Saukas.
+  \
+  \ https://sites.google.com/site/zxgraph/home/einar-saukas/fonts
+  \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027130
 
   \ Marcos Cruz (programandala.net) adapted it to Solo Forth,
   \ 2015, 2016, 2017, 2018.
@@ -29,14 +37,6 @@
   \ this license.  There is no warranty.
 
 ( mode-64es )
-
-  \ Version with integrated driver, adapted from 64#4, written
-  \ by Einar Saukas.
-  \
-  \ https://sites.google.com/site/zxgraph/home/einar-saukas/fonts
-  \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027130
-  \
-  \ XXX UNDER DEVELOPMENT --
 
 need assembler need l: need hook,
 

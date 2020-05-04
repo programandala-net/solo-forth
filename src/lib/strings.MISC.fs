@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202004270059
+  \ Last modified: 202005042153
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -272,7 +272,7 @@ unneeding 2>bstring ?(
 
   \ doc{
   \
-  \ >2bstring ( xd -- ca len ) "to-two-b-string"
+  \ 2>bstring ( xd -- ca len ) "two-to-b-string"
   \
   \ Convert _xd_ to a 2-cell binary string in `pad`.
   \ _ca len_ contains _xd_ "as is", as stored in memory.
@@ -968,6 +968,58 @@ unneeding unescape ?(
   \
   \ }doc
 
+( delete insert replace )
+
+unneeding delete ?(
+
+: delete ( ca1 len1 len2 -- )
+  over min >r r@ - ( left over ) dup 0>
+  if   2dup swap dup r@ + -rot swap move
+  then + r> blank ; ?)
+
+  \ doc{
+  \
+  \ delete ( ca1 len1 len2 -- )
+  \
+  \ Delete _len2_ characters at the start of string _ca1 len1_,
+  \ moving the rest of the string to the left (_ca1_) and
+  \ filling the end with blanks.
+  \
+  \ See: `insert`, `replace`.
+  \
+  \ }doc
+
+unneeding insert ?(
+
+: insert ( ca1 len1 ca2 len2 -- )
+  rot over min >r r@ - over dup r@ + rot move r> move ; ?)
+
+  \ doc{
+  \
+  \ insert ( ca1 len1 ca2 len2 -- )
+  \
+  \ Insert string _ca1 len1_ at the start of string _ca2 len2_.
+  \
+  \ See: `delete`, `replace`.
+  \
+  \ }doc
+
+unneeding replace
+
+?\ : replace ( ca1 len1 ca2 len2 -- ) rot min move ;
+
+  \ doc{
+  \
+  \ replace ( ca1 len1 ca2 len2 -- )
+  \
+  \ Replace the contents of zone _ca2 len2_ with string _ca1
+  \ len1_. If _len1_ is greater than _len2_, only _len2_ bytes
+  \ are replaced.
+  \
+  \ See: `insert`, `delete`, `replaces`.
+  \
+  \ }doc
+
   \ ===========================================================
   \ Change log
 
@@ -1102,5 +1154,8 @@ unneeding unescape ?(
   \ 2020-02-22: Fix typo.
   \
   \ 2020-04-27: Improve documentation of `sconstants`.
+  \
+  \ 2020-05-04: Move `insert`, `delete`, `replace` here from
+  \ <prog.editor.gforth.fs>. Fix documentation.
 
   \ vim: filetype=soloforth

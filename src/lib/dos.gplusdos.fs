@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041332
+  \ Last modified: 202005050036
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -226,10 +227,12 @@ cconstant /fid
   \
   \ ~fid-link ( a1 -- a2 ) "tilde-f-i-d-link"
   \
+  \ Convert UFIA data structure address _a1_ to field address
+  \ _a2_, which contains the address of the previous structure.
+  \
   \ See: `/fid`.
   \
-  \ }doc
-  \ XXX TODO --
+  \ }doc XXX TODO --
 
   \ doc{
   \
@@ -238,7 +241,7 @@ cconstant /fid
   \ _n_ is the length of a UFIA (User File Information Area), a
   \ 24-byte structure which describes a file.
   \
-  \ See: `ufia`, `ufia1`, `ufia2`, `/fid`.
+  \ See: `ufia`, `ufia0`, `ufia1`, `ufia2`, `/fid`.
   \
   \ }doc
 
@@ -265,8 +268,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \
   \ Return address _a_ of a buffer used as UFIA (User File
   \ Information Area), a 24-byte structure which describes a
-  \ file. ``ufia0`` is the default value of `ufia`. See `ufia`
-  \ for details.
+  \ file. ``ufia0`` is the default value of `ufia`.
   \
   \ See: `default-ufia`.
   \
@@ -304,7 +306,9 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ |     22 |     2 | Autostart line of a BASIC program
   \ |===
 
-  \ See: `/ufia`, `>ufiax`.
+  \ See: `/ufia`, `>ufiax`, `dstr1`, `fstr1`, `sstr1`,
+  \ `device`, `nstr1`, `nstr2`, `hd00`, `hd0b`, `hd0d`, `hd0f`,
+  \ `hd011`.
   \
   \ }doc
 
@@ -329,21 +333,153 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ Note: The original UFIA field names are used, except
   \ `device`, whose original name is "lstr1":
 
-: dstr1  ( -- a ) ufia ~dstr1  ; \ drive: 1, 2 or '*'
-: fstr1  ( -- a ) ufia ~fstr1  ; \ file directory number
-: sstr1  ( -- a ) ufia ~sstr1  ; \ stream number
-: device ( -- a ) ufia ~device ; \ device: 'D' or 'd'
-: nstr1  ( -- a ) ufia ~nstr1  ; \ directory description
-: nstr2  ( -- a ) ufia ~nstr2  ; \ file name
-: hd00   ( -- a ) ufia ~hd00   ; \ file type
-: hd0b   ( -- a ) ufia ~hd0b   ; \ file length
-: hd0d   ( -- a ) ufia ~hd0d   ; \ file start address
-: hd0f   ( -- a ) ufia ~hd0f   ; \ BASIC length w/out variables
-: hd11   ( -- a ) ufia ~hd11   ; \ BASIC autorun line
-  \ XXX TODO -- Document.
+: dstr1  ( -- ca ) ufia ~dstr1  ; \ drive: 1, 2 or '*'
+: fstr1  ( -- ca ) ufia ~fstr1  ; \ file directory number
+: sstr1  ( -- ca ) ufia ~sstr1  ; \ stream number
+: device ( -- ca ) ufia ~device ; \ device: 'D' or 'd'
+: nstr1  ( -- ca ) ufia ~nstr1  ; \ directory description
+: nstr2  ( -- ca ) ufia ~nstr2  ; \ file name
+: hd00   ( -- ca ) ufia ~hd00   ; \ file type
+: hd0b   ( -- a  ) ufia ~hd0b   ; \ file length
+: hd0d   ( -- a  ) ufia ~hd0d   ; \ file start address
+: hd0f   ( -- a  ) ufia ~hd0f   ; \ BASIC length w/out variables
+: hd11   ( -- a  ) ufia ~hd11   ; \ BASIC autorun line
 
   \ XXX TODO -- Remove `device`. The distinction is useless in
   \ Forth.
+
+  \ doc{
+  \
+  \ dstr1 ( -- ca )
+  \
+  \ Return address _ca_ of the drive in the current `ufia`,
+  \ containing 1, 2 or '*'.
+  \
+  \ See: `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`, `hd00`,
+  \ `hd0b`, `hd0d`, `hd0f`, `hd011`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ fstr1 ( -- ca )
+  \
+  \ Return address _ca_ of the file directory number in the
+  \ current `ufia`.
+  \
+  \ See: `dstr1`, `sstr1`, `device`, `nstr1`, `nstr2`, `hd00`,
+  \ `hd0b`, `hd0d`, `hd0f`, `hd011`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ sstr1 ( -- ca )
+  \
+  \ Return address _ca_ of the stream number in the current
+  \ `ufia`.
+  \
+  \ See: `dstr1`, `fstr1`, `device`, `nstr1`, `nstr2`, `hd00`,
+  \ `hd0b`, `hd0d`, `hd0f`, `hd011`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ device ( -- ca )
+  \
+  \ Return address _ca_ of the device in the current `ufia`,
+  \ containing 'D' or 'd'.
+  \
+  \ NOTE: In G+DOS, this UFIA field is called "lstr1".
+  \
+  \ See: `dstr1`, `fstr1`, `sstr1`, `nstr1`, `nstr2`, `hd00`,
+  \ `hd0b`, `hd0d`, `hd0f`, `hd011`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ nstr1 ( -- ca )
+  \
+  \ Return address _ca_ of the directory description in the
+  \ current `ufia`.
+  \
+  \ See: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr2`, `hd00`,
+  \ `hd0b`, `hd0d`, `hd0f`, `hd011`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ nstr2 ( -- ca )
+  \
+  \ Return address _ca_ of the 10-character file name in the
+  \ current `ufia`.
+  \
+  \ See: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `hd00`,
+  \ `hd0b`, `hd0d`, `hd0f`, `hd011`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ hd00 ( -- ca )
+  \
+  \ Return address _ca_ of the file type in the current `ufia`.
+  \
+  \ See: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`,
+  \ `hd0b`, `hd0d`, `hd0f`, `hd011`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ hd0b ( -- a )
+  \
+  \ Return address _a_ of the file length in the current
+  \ `ufia`.
+  \
+  \ See: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`,
+  \ `hd00`, `hd0d`, `hd0f`, `hd011`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ hd0d ( -- a )
+  \
+  \ Return address _a_ of the file start address in the current
+  \ `ufia`.
+  \
+  \ See: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`,
+  \ `hd00`, `hd0b`, `hd0f`, `hd011`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ hd0f ( -- a )
+  \
+  \ Return address _a_ of the BASIC length without variables in
+  \ the current `ufia`.
+  \
+  \ See: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`,
+  \ `hd00`, `hd0b`, `hd0d`, `hd011`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ hd11 ( -- a )
+  \
+  \ Return address _a_ of the BASIC autorun line in the current
+  \ `ufia`.
+  \
+  \ See: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`,
+  \ `hd00`, `hd0b`, `hd0d`, `hd0f`, `hd011`.
+  \
+  \ }doc
 
 : -ufia ( -- ) ufia /ufia erase ;
 
@@ -377,33 +513,86 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
 need /fid need coff
 
 variable latest-fid  0 latest-fid !
-  \ Address of the latest file identifier created by
-  \ `create-fid`, or zero if no one was created yet.
+
+  \ doc{
+  \
+  \ latest-fid ( -- a )
+  \
+  \ A `variable`. _a_ is the address of the latest file
+  \ identifier created by `create-fid`, or zero if no one was
+  \ created yet.
+  \
+  \ }doc
 
 : create-fid ( -- fid )
   latest-fid @ here /fid allot dup /fid erase dup latest-fid !
                tuck ~fid-link ! ;
+
+  \ doc{
+  \
+  \ create-fid ( -- fid )
+  \
   \ Create a new file identifier _fid_ and link its structure
   \ to the previous one, pointed by `latest-fid`. Also update
   \ `latest-fid`.
+  \
+  \ See: `latest-fid`, `/fid`, `~fid-link`.
+  \
+  \ }doc
 
 : free-fid? ( fid -- f ) ~dstr1 c@ 0= ;
+
+  \ doc{
+  \
+  \ free-fid? ( fid -- f )
+  \
   \ Is file identifier _fid_ free to be reused?
+  \
+  \ See: `free-fid`, `create-fid`.
+  \
+  \ }doc
 
 : free-fid ( fid -- ) ~dstr1 coff ;
+
+  \ doc{
+  \
+  \ free-fid ( fid -- )
+  \
   \ Make file identifier _fid_ free for reuse. The
   \ corresponding file is supposed to be closed already.
+  \
+  \ See: `free-fid?`, `create-fid`.
+  \
+  \ }doc
 
 : find-fid ( fid -- fid' )
   begin dup free-fid? ?exit  ~fid-link @ ?dup 0=
   until create-fid ;
+
+  \ doc{
+  \
+  \ find-fid ( fid -- fid' )
+  \
   \ Find an unused file identifier _fid'_ starting from _fid_.
   \ If no unused file identifier is found, a new one is
   \ created.
+  \
+  \ See: `free-fid?`, `~fid-link`, `create-fid`.
+  \
+  \ }doc
 
 : fid ( -- fid ) latest-fid @ ?dup if find-fid exit then
                                    create-fid ;
+
+  \ doc{
+  \
+  \ fid ( -- fid )
+  \
   \ Return a usable file identifier _fid_.
+  \
+  \ See: `latest-fid`, `find-fid`, `create-fid`.
+  \
+  \ }doc
 
 ( .ufia .fid )
 
@@ -468,7 +657,7 @@ unneeding r/o ?\ $BF cconstant r/o
   \
   \ Return the "read only" file access method _fam_.
   \
-  \ See: `w/o`, `r/w`, `bin`, `create-file`.
+  \ See: `w/o`, `r/w`, `bin`.
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
@@ -484,7 +673,7 @@ unneeding w/o ?\ $DF cconstant w/o
   \
   \ Return the "write only" file access method _fam_.
   \
-  \ See: `r/o`, `r/w`, `bin`, `create-file`.
+  \ See: `r/o`, `r/w`, `bin`.
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
@@ -502,7 +691,7 @@ unneeding r/w ?\ 0 cconstant r/w
   \
   \ WARNING: ``r/w`` is not supported on G+DOS.
   \
-  \ See: `r/o`, `w/o`, `bin`, `create-file`.
+  \ See: `r/o`, `w/o`, `bin`.
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
@@ -518,7 +707,7 @@ unneeding bin ?\ need alias ' noop alias bin immediate
   \ "binary", i.e., not line oriented, file access method,
   \ giving file access method _fam2_.
   \
-  \ See: `r/o`, `w/o`, `r/w`, `create-file`.
+  \ See: `r/o`, `w/o`, `r/w`.
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
@@ -836,7 +1025,7 @@ code (file> ( ca len -- ior )
   \
   \ ``(file>`` is a factor of `file>`.
   \
-  \ See: `file-address`, `file-length`.
+  \ See: `file-length`.
   \
   \ }doc
 
@@ -937,7 +1126,7 @@ code (file-status ( -- a ior )
   \ Origin: Forth-94 (FILE-EXT), Forth-2012 (FILE-EXT).
   \
   \ See: `file-exists?`, `file-start`, `file-length`,
-  \ `file-type`, `file-dir`, `find-file`, `file-dir#`,
+  \ `file-type`, `file-dirdesc`, `find-file`, `file-dir#`,
   \ `file-dirdesc`.
   \
   \ }doc
@@ -1072,6 +1261,8 @@ unneeding file-dirdesc  ?( need file-status need ufia
   \ successfully found, _ior_ is zero and _n_ is the file
   \ directory identifier.  Otherwise _ior_ is the I/O result
   \ code and _n_ is undefined.
+  \
+  \ WARNING: This word has a bug and _n_ is always zero.
   \
   \ See: `file-status`.
   \
@@ -1593,7 +1784,7 @@ code @dosvar ( n -- x )
 
   \ doc{
   \
-  \ name ( -- )
+  \ @dosvar ( -- )
   \
   \ Fetch the contents _x_ of G+DOS variable _n_.
   \
@@ -2144,5 +2335,13 @@ need write-file need read-file need .ufia
   \
   \ 2018-06-04: Update: remove trailing closing paren from word
   \ names.  Link `cconstant` and `constant` in documentation.
+  \
+  \ 2020-05-04: Fix documentation of `@dosvar` and `(file>`.
+  \ Document the "fid" words. Remove cross references to
+  \ `create-file`, which is not finished yet. Update obsolote
+  \ cross reference `file-dir` to `file-dirdesc`. Improve
+  \ documentation of `file-dir#`.
+  \
+  \ 2020-05-05:  Document the `ufia` fields.
 
   \ vim: filetype=soloforth

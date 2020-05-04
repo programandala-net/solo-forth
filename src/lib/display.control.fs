@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201805131337
+  \ Last modified: 202005042004
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -163,8 +164,7 @@ unneeding 'lf' ?\ 10 cconstant 'lf'  exit
   \
   \ NOTE: In the ZX Spectrum's character set, control character
   \ code 10 is not called "line feed" but "cursor down", which
-  \ is analogous. ``lf`` is provided for making `read-line` and
-  \ other words clearer.
+  \ is analogous.
   \
   \ See: `cr`, `newline`.
   \
@@ -295,5 +295,7 @@ unneeding eol? ?( need newline need char-in-string?
   \ string. Make `eol?` check `newline`.
   \
   \ 2018-05-13: Update pronunciation.
+  \
+  \ 2020-05-04: Improve documentation of `lf`.
 
   \ vim: filetype=soloforth

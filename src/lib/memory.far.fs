@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201903210058
+  \ Last modified: 202005042334
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -18,7 +18,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017, 2018, 2019.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018, 2019,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -50,7 +51,7 @@ unneeding far-hl_ ?\ ' far 2+ @ constant far-hl_
   \
   \ far-hl_ ( -- a ) "far-h-l-underscore"
   \
-  \ Address of the `far.hl` routine of the kernel, which
+  \ Address of the ``far.hl`` routine of the kernel, which
   \ converts the far-memory address ($0000..$FFFF) hold in the
   \ HL register to its actual equivalent ($C000..$FFFF) and
   \ pages in the corresponding memory bank.
@@ -173,7 +174,7 @@ unneeding default-bank_
   \
   \ Output of the routine: A and E corrupted.
   \
-  \ See: `bank-e_`.
+  \ See: `e-bank_`.
   \
   \ }doc
 
@@ -599,5 +600,7 @@ code c@bank ( ca n -- c ) D1 c, e-bank_ call,
   \
   \ 2019-03-21: Add `farfill` and `farerase`. Improve
   \ documentation.
+  \
+  \ 2020-05-04: Fix cross references.
 
   \ vim: filetype=soloforth

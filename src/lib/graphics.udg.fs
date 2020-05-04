@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091619
+  \ Last modified: 202005042123
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -443,7 +444,7 @@ unneeding ,udg-block ?( need /udg* need (udg-block
   \ cr .tank cr
   \ ----
 
-  \ See: `udga-emit`, `udg-block`, `csprite`, `udg-group`.
+  \ See: `udg-block`, `csprite`, `udg-group`, `emit-udga`.
   \
   \ }doc
 
@@ -1044,8 +1045,10 @@ unused - cr .( Data space used by .2x1-udg-fast : ) u.  cr
 
 ( .udga )
 
-  \ 2017-05-21
-  \ XXX UNDER DEVELOPMENT
+  \ XXX UNDER DEVELOPMENT -- 2017-05-21
+  \
+  \ XXX TODO -- 2020-05-04: Compare with `emit-udga`, defined
+  \ in the kernel.
 
 code .udga ( a -- )
 
@@ -1208,5 +1211,7 @@ exx, jpnext, end-code
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-09: Update stack notation "x y" to "col row".
+  \
+  \ 2020-05-04: Fix/improve documentation.
 
   \ vim: filetype=soloforth

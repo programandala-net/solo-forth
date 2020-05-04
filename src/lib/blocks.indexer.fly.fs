@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not usable yet
 
-  \ Last modified: 201806041144
+  \ Last modified: 202005042036
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -21,7 +21,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -81,7 +81,9 @@ blocks/disk bit-array indexed-blocks
   get-current get-order set-index-order
   ['] (index-block catch  dup #-278 <> swap ?throw
   set-order set-current block-indexed ;
-  \ Index block _block_.
+
+  \ XXX WARNING -- `index-block` is mentioned in the
+  \ documentation of `(index-block`.
 
   \ XXX TODO -- #-278 \ empty block found: quit indexing
 
@@ -173,5 +175,7 @@ blocks/disk bit-array indexed-blocks
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2020-05-04: Improve documentation.
 
   \ vim: filetype=soloforth

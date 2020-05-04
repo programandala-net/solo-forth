@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202002271834
+  \ Last modified: 202005042237
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -53,17 +53,23 @@
                 np@                  $28 +origin !
                 set-order ;
 
+  \ doc{
   \
   \ extend ( -- )
   \
   \ Change the `cold` start parameters to extend the system to
   \ its current state.
   \
+  \ WARNING: This word is experimental. See the source code for
+  \ details.
+  \
   \ See: `system`.
   \
+  \ }doc
 
 : system-size ( -- len ) here 0 +origin - ;
 
+  \ doc{
   \
   \ system-size ( -- len )
   \
@@ -72,9 +78,11 @@
   \
   \ See: `here`, `+origin`, `system-zone`, `turnkey`.
   \
+  \ }doc
 
 : system-zone ( -- a len ) 0 +origin system-size ;
 
+  \ doc{
   \
   \ system-zone ( -- a len )
   \
@@ -82,11 +90,16 @@
   \ _len_, to be used as parameters for saving the system to
   \ tape or disk.
   \
+  \ WARNING: This word is experimental. See the source code for
+  \ details.
+  \
   \ See: `+origin`, `system-size`, `turnkey`.
   \
+  \ }doc
 
 : turnkey ( xt -- a len ) ['] boot defer! extend system-zone ;
 
+  \ doc{
   \
   \ turnkey ( xt -- a len )
   \
@@ -102,6 +115,9 @@
   \ ' my-game turnkey s" my-game" >tape-file
   \ ----
 
+  \ WARNING: This word is experimental. See the source code for
+  \ details.
+  \
   \ WARNING: Since name fields are kept in a memory bank, the
   \ best way to save a modified Forth system is creating a
   \ snapshot with a ZX Spectrum emulator, or with the
@@ -112,6 +128,7 @@
   \
   \ See: `boot`, `extend`, `system-zone`, `cold`.
   \
+  \ }doc
 
   \ ===========================================================
   \ Change log
@@ -135,5 +152,7 @@
   \ 2018-06-10: Update and complete `extend`.
   \
   \ 2020-02-27: Improve documentation.
+  \
+  \ 2020-05-04: Improve and activate the documentation.
 
   \ vim: filetype=soloforth

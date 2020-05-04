@@ -56,6 +56,18 @@ also editor definitions need r# need top
   \ into `pad`, blank-filling the remainder of `pad` to `c/l`
   \ characters.
 
+  \ doc{
+  \
+  \ specforth-editor ( -- )
+  \
+  \ A `vocabulary` containing the Specforth block editor. When
+  \ ``specforth-editor`` is loaded, it becomes the action of
+  \ `editor`.
+  \
+  \ See: `gforth-editor`.
+  \
+  \ }doc
+
 : text ( "ccc<eol>" -- ) pad c/l 1+ blank parse-all pad place ;
 
   \ doc{
@@ -135,7 +147,7 @@ also editor definitions need r# need top
   \ Erase line _n_ with blanks.
   \
   \ See: `b`, `c`, `d`, `f`, `<<,h>>`,
-  \ `<<src/lib/editor.specforth.fsb,i>>`, `l`, `m`, `n`, `p`,
+  \ `<<src/lib/prog.editor.specforth.fs,i>>`, `l`, `m`, `n`, `p`,
   \ `r`, `s`, `t`, `x`.
   \
   \ }doc

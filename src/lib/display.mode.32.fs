@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041324
+  \ Last modified: 202005042021
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -57,7 +58,7 @@ variable mode-32-font  rom-font bl 8 * + mode-32-font !
   \
   \ Set the default 32-cpl display mode. Usually this is not
   \ needed by the application, except when any other mode is
-  \ used, e.g.  `mode-32iso`, `mode-42` or `mode-64`.
+  \ used, e.g.  `mode-32iso`, `mode-42pw` or `mode-64ao`.
   \
   \ When any other mode is loaded, ``mode-32`` is automatically
   \ loaded and made the default display mode (therefore
@@ -92,5 +93,7 @@ variable mode-32-font  rom-font bl 8 * + mode-32-font !
   \ `mode-32-font`.
   \
   \ 2018-06-04: Link `variable` in documentation.
+  \
+  \ 2020-05-04: Fix cross reference: `mode-42` -> `mode-42pw`.
 
   \ vim: filetype=soloforth

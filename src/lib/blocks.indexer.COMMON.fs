@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041144
+  \ Last modified: 202005042034
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -80,11 +80,11 @@ variable indexed-block
   \
   \ (index-block ( u -- ) "paren-index-block"
   \
-  \ Index block _u_, evaluating its header line.  The only
-  \ word list in the search order must be `index-wordlist`.
+  \ Index block _u_, evaluating its header line.  The only word
+  \ list in the search order must be `index-wordlist`.
   \
-  \ This is a common factor of `(indexer` (from the `indexer`
-  \ tool) and `(index-block` (from the `fly-indexer` tool).
+  \ This is a common factor of `index-block` and
+  \ `(make-thru-index`.
   \
   \ }doc
 
@@ -160,5 +160,7 @@ unneeding indexer-words ?( need wordlist-words need .wordname
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2020-05-04: Fix documentation of `(index-block`.
 
   \ vim: filetype=soloforth

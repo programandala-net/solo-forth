@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 202005042027
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -216,7 +217,7 @@ unneeding (d.
   \ Convert _d_ to an unsigned number in the current `base`,
   \ with _n_ digits, as string _ca len_.
   \
-  \ See: `(bin.`, `(hex.`.
+  \ See: `(dbin.`, `(dhex.`.
   \
   \ }doc
 
@@ -256,7 +257,7 @@ unneeding (dhex. dup ?\ need <hex need (d.
   \
   \ Display _d_ as an unsigned hexadecimal number with _n_ digits.
   \
-  \ See: `(bin.`, `32hex.`, `16hex.`, `8hex.`, `hex.`.
+  \ See: `(dbin.`, `32hex.`, `16hex.`, `8hex.`, `hex.`.
   \
   \ }doc
 
@@ -353,7 +354,7 @@ unneeding (dbin. dup
   \
   \ Display _d_ as an unsigned binary number with _n_ digits.
   \
-  \ See: `(hex.`, `32bin.`, `16bin.`, `8bin.`, `bin.`.
+  \ See: `(dhex.`, `32bin.`, `16bin.`, `8bin.`, `bin.`.
   \
   \ }doc
 
@@ -435,5 +436,8 @@ unneeding 8bin.
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2020-05-04: Fix cross references: `(bin.` -> `(dbin.`,
+  \ `(hex.` -> `(dhex.`.
 
   \ vim: filetype=soloforth

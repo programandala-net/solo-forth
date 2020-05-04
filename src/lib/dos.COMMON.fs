@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201807212111
+  \ Last modified: 202005042006
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -76,7 +76,7 @@ unneeding ?block-drive
 
   \ doc{
   \
-  \ ?block-drive# ( u -- ) "question-block-drive-hash"
+  \ ?block-drive ( u -- ) "question-block-drive"
   \
   \ If _u_ is `not-block-drive`, `throw` an exception #-35
   \ ("invalid block number").
@@ -360,5 +360,7 @@ unneeding get-block-drives ?( need block-drive@
   \ `get-block-drives`.
   \
   \ 2018-07-21: Improve documentation, linking `throw`.
+  \
+  \ 2020-05-04: Fix documentation of `?block-drive`.
 
   \ vim: filetype=soloforth

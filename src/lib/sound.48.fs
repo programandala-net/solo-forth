@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041338
+  \ Last modified: 202005042231
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -136,7 +137,7 @@ code bleep ( duration pitch -- )
   \ _____
 
   \
-  \ See: `hz>bleep`, `dzh>bleep`, `beep`.
+  \ See: `hz>bleep`, `dhz>bleep`, `beep`.
   \
   \ }doc
 
@@ -637,5 +638,7 @@ code white-noise ( u -- )
   \ friends.
   \
   \ 2018-06-04: Link `cconstant` in documentation.
+  \
+  \ 2020-05-04: Fix cross reference.
 
   \ vim: filetype=soloforth

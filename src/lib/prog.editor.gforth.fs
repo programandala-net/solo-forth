@@ -51,24 +51,7 @@ only forth definitions
 
 need inverse need list need update
 need list-lines need vocabulary need catch need editor
-
-: delete ( ca1 len1 len2 -- )
-  over min >r r@ - ( left over ) dup 0>
-  if   2dup swap dup r@ + -rot swap move
-  then + r> blank ;
-  \ Delete _len2_ characters at _ca1 len1_, moving the rest
-  \ to the left and filling the end with blanks.
-  \ XXX TODO -- move to <strings.misc.fsb>
-
-: insert ( ca1 len1 ca2 len2 -- )
-  rot over min >r r@ - over dup r@ + rot move r> move ;
-  \ Insert string _ca len_ at zone _ca2 len2_.
-  \ XXX TODO -- move to <strings.misc.fsb>
-
-: replace ( ca1 len1 ca2 len2 -- ) rot min move ;
-  \ Replace the contents of zone _ca2 len2_ with string _ca1
-  \ len1_.
-  \ XXX TODO -- move to <strings.misc.fsb>
+need insert need replace need delete
 
 vocabulary gforth-editor ' gforth-editor is editor
 also editor definitions  need r# need top
@@ -76,7 +59,7 @@ also editor definitions  need r# need top
 variable len len off
   \ Length of the text found.
   \ XXX TODO -- rename to `/r#`
-  \ XXX TODO -- move to <editor.common.fsb>
+  \ XXX TODO -- move to <prog.editor.COMMON.fsb>
 
 2variable mark 0. mark 2!
   \ Backup of the editing position (cursor and block).
@@ -224,5 +207,8 @@ forth definitions
   \
   \ 2020-05-03: Rename filename to <prog.editor.gforth.fs>. Add
   \ `gforth-editor`.
+  \
+  \ 2020-05-04: Move `insert`, `delete`, `replace` to
+  \ <strings.MISC.fs>.
 
   \ vim: filetype=soloforth

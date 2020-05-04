@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005021939
+  \ Last modified: 202005042225
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -40,7 +40,7 @@ unneeding buffer:
   \
   \ Origin: Forth-2012 (CORE EXT).
   \
-  \ See: `reserve`, `alloted`, `create`, `allot`.
+  \ See: `reserve`, `allotted`, `create`, `allot`.
   \
   \ }doc
 
@@ -220,5 +220,7 @@ need alias ' @ alias link@ ( node1 -- node2 )
   \ aligned addresses.
   \
   \ 2020-05-02: Improve documentation.
+  \
+  \ 2020-05-04: Fix cross reference.
 
   \ vim: filetype=soloforth

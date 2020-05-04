@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041343
+  \ Last modified: 202005042222
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -291,7 +292,7 @@ need x1 need incx need y1 need incy
   \ rows of the screen (the lower 16 pixel rows are not used).
   \ _gx_ is 0..255; _gy_ is 0..175.
   \
-  \ See: `rdraw176`, `rline176`.
+  \ See: `rdraw176`.
   \
   \ }doc
 
@@ -520,8 +521,6 @@ code ortholine ( gx gy gxinc gyinc len -- )
   \ system graphic coordinates are not updated. That's what
   \ makes ``ortholine`` almost twice faster than `orthodraw`.
   \
-  \ See: `rline176`.
-  \
   \ }doc
 
   \ }doc
@@ -573,5 +572,8 @@ code ortholine ( gx gy gxinc gyinc len -- )
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-06-04: Link `2variable` in documentation.
+  \
+  \ 2020-05-04: Remove cross references to `rline176`, which is
+  \ not implemented yet.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041143
+  \ Last modified: 202005042226
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,7 +27,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ Credit
@@ -91,7 +92,7 @@ unneeding 2avalue ?( need 2array>
   \
   \ Return contents _xd_ of element _n_.
   \
-  \ See: `2ato`, `+2ato`.
+  \ See: `2ato`.
   \
   \ }doc
 
@@ -148,7 +149,7 @@ unneeding ato ?( need >body
   \
   \ ``ato`` is an `immediate` word.
   \
-  \ See: `array`, `(ato`.
+  \ See: `avalue`, `(ato`.
   \
   \ }doc
 
@@ -321,5 +322,8 @@ unneeding +cato ?(
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2020-05-04: Remove obsolete cross reference. Fix cross
+  \ reference.
 
   \ vim: filetype=soloforth

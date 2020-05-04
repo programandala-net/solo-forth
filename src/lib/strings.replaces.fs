@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091348
+  \ Last modified: 202005041929
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -141,7 +141,7 @@ need slit-substitution
   \ Origin: Forth-2012 (STRING EXT).
   \
   \ See: `substitute`, `unescape`, `substitution`,
-  \ `find-substitution`, `substitute-wordlist`.
+  \ `find-substitution`, `substitute-wordlist`, `replace`.
   \
   \ }doc
 
@@ -172,5 +172,7 @@ need slit-substitution
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-09: Add words' pronunciaton.
+  \
+  \ 2020-05-04: Update documentation.
 
   \ vim: filetype=soloforth
