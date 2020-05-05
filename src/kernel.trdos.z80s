@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202002271839
+; Last modified: 202005051932
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -30,7 +30,7 @@ if trdos
 
 include inc/zx_spectrum_trdos.z80s
 
-testing_trdos: equ 1 ; flag
+testing_trdos: equ 0 ; flag
 
 ; ==============================================================
 ; Routines to call TR-DOS
@@ -771,85 +771,6 @@ transfer_mode:
   dw exit_
 
 ; ==============================================================
-; XXX TMP -- Code restored (removed by mistake on 2017-02-12)
-
-; ----------------------------------------------
-
-if 0 ; XXX TMP --
-
-  _code_header paren_to_file_,'(>file'
-
-; doc{
-;
-; (>file ( -- ior )
-;
-; See: `>file`.
-;
-; }doc
-
-  push bc ; save the Forth IP
-
-  ld c,trdos_command.read_system_track
-  call dos.c
-  jr nz,paren_to_file.exit ; jump if error
-
-  ; XXX FIXME -- 2017-02-10: When there's no disk in the drive,
-  ; TR-DOS throws "Disc Error. Retry,Abort,Ignore?". "Retry" is
-  ; useless; "Abort" exits to BASIC with "Tape loading error";
-  ; "Ignore" crashes the system. The call to `read_system_track`
-  ; does not return.
-  ;
-  ; There must be a way to avoid this and return an ior.
-
-  ld c,trdos_command.find_file
-  call dos.c
-  ; A = directory entry of the file (0..127), or $FF if not found
-  inc a ; file not found?
-  jr z,paren_to_file.file_not_found ; jump if no error
-
-  ; error: file found
-  ld a,trdos_error.file_exists ; error code "file exists"
-  jr paren_to_file.exit
-
-paren_to_file.file_not_found:
-  ld de,(file_length_dfa)
-  ld hl,(file_address_dfa)
-  ld c,trdos_command.create_file
-  call dos.c
-
-  ld a,c ; possible error code
-
-paren_to_file.exit:
-  pop bc  ; restore the Forth IP
-  jp push_dos_ior
-
-; ----------------------------------------------
-  _colon_header to_file_,'>file'
-
-; doc{
-;
-; >file ( ca1 len1 ca2 len2 -- ior )
-
-; Definition:
-
-; ----
-; : >file ( ca1 len1 ca2 len2 -- ior )
-;   filename>fda file-length ! file-address ! (>file ;
-; ----
-
-; See: `filename>fda`, `file-length`, `file-address`, `(>file`.
-;
-; }doc
-
-  dw filename_to_fda_
-  dw file_length_,store_
-  dw file_address_,store_
-  dw paren_to_file_
-  dw exit_
-
-endif
-
-; ==============================================================
 ; Test code
 
   ; XXX TMP --
@@ -1186,5 +1107,8 @@ endif ; defined trdos
 ; 2018-07-21: Improve documentation of `set-drive`.
 ;
 ; 2020-02-27: Improve documentation.
+;
+; 2020-05-05: Delete old versions of `>file` and `(>file`: the
+; new versions are already in the library.
 
 ; vim: filetype=z80:textwidth=64
