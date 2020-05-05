@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041105
+  \ Last modified: 202005052030
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -30,7 +30,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -296,7 +297,10 @@ code (tape-file> ( -- )
   \ message. This will be avoided in a future version of Solo
   \ Forth.
   \
-  \ See: `>tape-file`, `(tape-file>`, `>file`.
+  \ See: `>tape-file`, `(tape-file>`
+  \ ifdef::plu3dos[.]
+  \ ifdef::gplusdos[, `>file`]
+  \ ifdef::trdos[, `>file`]
   \
   \ }doc
 
@@ -344,7 +348,10 @@ code (>tape-file ( -- )
   \ Write a memory region _ca1 len1_ into a tape file _ca2
   \ len2_.
   \
-  \ See: `tape-file>`, `(>tape-file`, `>file`.
+  \ See: `tape-file>`, `(>tape-file`
+  \ ifdef::plu3dos[.]
+  \ ifdef::gplusdos[, `>file`]
+  \ ifdef::trdos[, `>file`]
   \
   \ }doc
 
@@ -493,5 +500,8 @@ unneeding tape-file>display ?( need tape-file>
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2020-05-05: Improve documentation of `tape-file>` and
+  \ `>tape-file` with conditional cross references.
 
   \ vim: filetype=soloforth

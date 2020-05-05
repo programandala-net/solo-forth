@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202002271513
+  \ Last modified: 202005052032
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -227,8 +227,8 @@ unneeding 2-block-drives ?( need set-block-drives
   \
   \ 2-block-drives ( -- )
   \
-  \ Set all drives as block drives, in normal order: `A` and
-  \ `B`.
+  \ Set all drives as block drives, in normal order: "A" and
+  \ "B".
   \
   \ Note: For convenience, when this word is loaded, it's also
   \ executed.
@@ -748,7 +748,7 @@ code file-size ( fid -- d )
   \
   \ _ud_ is  the  size, in  bytes,  of  the file  identified by
   \ _fid_.  _ior_  is  the I/O result code.  This operation
-  \ does not affect the  value returned by `FILE-POSITION`.  If
+  \ does not affect the  value returned by `file-position`.  If
   \ _ior_ is non-zero, _ud_ is undefined.
   \
   \ WARNING: ``file-size`` returns unpredictable results on the
@@ -1017,9 +1017,9 @@ need (cat need 3dup need 3drop
   \ file, not necessarily the same as the amount used by the
   \ file.
   \
-  \ ``.cat-entry`` is a factor of `.cat-entry#`.
+  \ ``.cat-entry`` is a factor of `.cat`.
   \
-  \ See: `.cat`, `.filename`.
+  \ See: `.filename`.
   \
   \ }doc
 
@@ -1656,5 +1656,7 @@ need reposition-file need file-position
   \ 2018-04-16: Update description of _ior_ stack notation.
   \
   \ 2020-02-27: Add pronunciation of `'ctrl-z'`.
+  \
+  \ 2020-05-05: Fix cross references and markup.
 
   \ vim: filetype=soloforth
