@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041239
+  \ Last modified: 202005052014
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -54,7 +54,44 @@ $16 cconstant dos-select-bottom-side
 $17 cconstant dos-select-top-side
 $18 cconstant dos-read-system-track
 
-: --dos-commands-- ;
+: --dos-commands-- ( -- ) ;
+
+  \ doc{
+  \
+  \ --dos-commands-- ( -- )
+  \
+  \ Do nothing. This word is used only in ``need
+  \ --dos-commands--`` in order to load all of the TR-DOS
+  \ command constants:
+
+  \ ----
+  \ $00 cconstant dos-init-interface
+  \ $01 cconstant dos-init-drive
+  \ $02 cconstant dos-seek-track
+  \ $03 cconstant dos-set-sector
+  \ $04 cconstant dos-define-buffer
+  \ $05 cconstant dos-read-sectors
+  \ $06 cconstant dos-write-sectors
+  \ $07 cconstant dos-cat
+  \ $08 cconstant dos-read-file-descriptor
+  \ $09 cconstant dos-write-file-descriptor
+  \ $0A cconstant dos-find-file
+  \ $0B cconstant dos-create-file
+  \ $0C cconstant dos-save-basic-program
+  \ $0E cconstant dos-read-file
+  \ $12 cconstant dos-delete-file
+  \ $13 cconstant dos-copy-from-hl-to-descriptor
+  \ $14 cconstant dos-copy-from-descriptor-to-hl
+  \ $15 cconstant dos-test-track
+  \ $16 cconstant dos-select-bottom-side
+  \ $17 cconstant dos-select-top-side
+  \ $18 cconstant dos-read-system-track
+  \ ----
+
+  \ These constants are used to make the TR-DOS calls more
+  \ legible in `code` words.
+  \
+  \ }doc
 
 ( fda /fda )
 
@@ -102,7 +139,7 @@ fda $0F + constant fda-filetrack ?)
   \
   \ WARNING: The actual filename is a 9-character string formed
   \ by the filename stored at ``fda-filename`` and the
-  \ character stored at `fda-filetype.`
+  \ character stored at `fda-filetype`.
   \
   \ See: `/filename`.
   \
@@ -609,8 +646,43 @@ code (>file ( -- ior )
   \   pop bc  ; restore the Forth IP
   \   jp push_dos_ior
 
+  \ doc{
+  \
+  \ (>file ( -- ior )
+  \
+  \ Save a memory zone (whose start address is stored in
+  \ `fda-filestart` and whose length is stored in
+  \ `fda-filelength`) to a file (whose filename is stored in
+  \ `fda-filename`) returning I/O result _ior_.
+  \
+  \ ``(>file`` is a  factor of `>file`.
+  \
+  \ WARNING: When there's no disk in the drive, TR-DOS prompts
+  \ "Disc Error. Retry,Abort,Ignore?". "Retry" is useless;
+  \ "Abort" exits to BASIC with "Tape loading error"; "Ignore"
+  \ crashes the system. See more details in the source code.
+  \
+  \ }doc
+
 : >file ( ca1 len1 ca2 len2 -- ior )
   set-filename fda-filelength ! fda-filestart ! (>file ;
+
+  \ doc{
+  \
+  \ >file ( ca1 len1 ca2 len2 -- ior )
+  \
+  \ Save memory zone _ca1 len2_ to file _ca2 len2_, returning
+  \ I/O result _ior_.
+  \
+  \ WARNING: When there's no disk in the drive, TR-DOS prompts
+  \ "Disc Error. Retry,Abort,Ignore?". "Retry" is useless;
+  \ "Abort" exits to BASIC with "Tape loading error"; "Ignore"
+  \ crashes the system. See more details in the source code.
+  \
+  \ See: `set-filename`, `fda-filelength`, `fda-filestart`,
+  \ `(>file`.
+  \
+  \ }doc
 
 ( fda-filestatus file-status )
 
@@ -879,7 +951,7 @@ code (delete-file ( -- ior )
   \
   \ (delete-file ( -- ior ) "paren-delete-file"
   \
-  \ Delete a disk file using the data hold in `dfa`, returning
+  \ Delete a disk file using the data hold in `fda`, returning
   \ the I/O result code _ior_.
   \
   \ ``(delete-file`` is a factor of `delete-file`.
@@ -927,11 +999,33 @@ code read-file-descriptor ( n -- ior )
   b pop, pushdosior jp, end-code
   \ XXX TODO -- Rename to `entry>fda`?
 
+  \ doc{
+  \
+  \ read-file-descriptor ( n -- ior )
+  \
+  \ Read file descriptor from disk directory entry _n_ to
+  \ `fda`.
+  \
+  \ See: `write-file-descriptor`.
+  \
+  \ }doc
+
 code write-file-descriptor ( n -- ior )
   h pop, b push, l a ld,
   dos-write-file-descriptor c ld#, dos-c_ call,
   b pop, pushdosior jp, end-code
   \ XXX TODO -- Rename to `fda>entry`?
+
+  \ doc{
+  \
+  \ write-file-descriptor ( n -- ior )
+  \
+  \ Write file descriptor from `fda` to disk directory entry
+  \ _n_.
+  \
+  \ See: `write-file-descriptor`.
+  \
+  \ }doc
 
 ( undelete-file )
 
@@ -1304,8 +1398,12 @@ need read-file-descriptor need write-file-descriptor
   \ 2018-04-16: Improve description of _ior_ notation. Fix
   \ documentation.
   \
-  \ 2018-06-04: Update: remove trailing closing paren from
-  \ word names. Compact the code, saving one block. Fix
+  \ 2018-06-04: Update: remove trailing closing paren from word
+  \ names. Compact the code, saving one block. Fix
   \ documentation of `acat`.
+  \
+  \ 2020-05-05: Fix cross references. Document `>file`,
+  \ `(>file`, `read-file-descriptor`, `write-file-descriptor`.
+  \ `--dos-commands--`.
 
   \ vim: filetype=soloforth

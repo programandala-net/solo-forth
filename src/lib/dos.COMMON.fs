@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005042006
+  \ Last modified: 202005051958
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -102,10 +102,15 @@ unneeding ?set-drive ?( need get-drive
   \
   \ ``?set-drive`` is used by `(>drive-block`, in order to
   \ update the current default drive only when needed, i.e.
-  \ when the desired block is not in the currend default drive.
-  \ This is especially useful on +3DOS, whose `set-drive` is
+  \ when the desired block is not in the current default drive.
+  \
+  \ ifdef::plus3dos[]
+  \
+  \ That is especially useful on +3DOS, whose `set-drive` is
   \ slow because it has to do additional operations in order to
   \ make `transfer-sector` use the current default drive.
+  \
+  \ endif::[]
   \
   \ }doc
 
@@ -362,5 +367,7 @@ unneeding get-block-drives ?( need block-drive@
   \ 2018-07-21: Improve documentation, linking `throw`.
   \
   \ 2020-05-04: Fix documentation of `?block-drive`.
+  \
+  \ 2020-05-05: Improve documentation of `?set-drive`.
 
   \ vim: filetype=soloforth
