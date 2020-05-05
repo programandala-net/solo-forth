@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202002270143
+  \ Last modified: 202005051303
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1002,7 +1002,7 @@ need attr>paper need attr>ink need papery
   \ Convert attribute _b1_ to its inversely equivalent _b2_,
   \ i.e. _b2_ has paper and ink exchanged.
   \
-  \ See: `constrast`, `papery`, `brighty`, `flashy`,
+  \ See: `contrast`, `papery`, `brighty`, `flashy`,
   \ `attr>paper`, `attr>ink`.
   \
   \ }doc
@@ -1329,5 +1329,7 @@ unneeding (0-1-8-color.
   \ 2018-06-04: Link `cconstant` in documentation.
   \
   \ 2020-02-27: Fix markup in documentation.
+  \
+  \ 2020-05-05: Fix typo en cross reference.
 
   \ vim: filetype=soloforth

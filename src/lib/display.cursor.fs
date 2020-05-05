@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803082255
+  \ Last modified: 202005051433
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -332,7 +333,7 @@ code xy>gxy ( col row -- gx gy )
   \
   \ }doc
   \
-  \ XXX TODO --  Adapt to 64-cpl and 42-cpl-modes. Or rename
+  \ XXX TODO --  Adapt to 64-CPL and 42-CPL modes. Or rename
   \ with prefix "mode-32-".
 
 unneeding x>gx ?( need alias need 8*
@@ -352,7 +353,7 @@ unneeding x>gx ?( need alias need 8*
   \
   \ }doc
   \
-  \ XXX TODO --  Adapt to 64-cpl and 42-cpl-modes.
+  \ XXX TODO --  Adapt to 64-CPL and 42-CPL modes.
 
 unneeding y>gy ?(
 
@@ -380,7 +381,7 @@ code y>gy ( row -- gx )
   \
   \ }doc
   \
-  \ XXX TODO --  Adapt to 64-cpl and 42-cpl-modes. Or rename
+  \ XXX TODO --  Adapt to 64-CPL and 42-CPL modes. Or rename
   \ with prefix "mode-32-".
 
 unneeding xy>gxy176 ?(
@@ -571,5 +572,7 @@ code xy>attra ( col row -- a )
   \
   \ 2018-03-08: Add words' pronunciaton. Update stack notation
   \ for cursor coordinates.
+  \
+  \ 2020-05-05: Fix typos.
 
   \ vim: filetype=soloforth

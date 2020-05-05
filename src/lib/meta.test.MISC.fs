@@ -277,7 +277,7 @@ blue-border key drop black-border
 
   \ Credit:
   \
-  \ The 64-cpl fonts are part of:
+  \ The 64-CPL fonts are part of:
   \
   \ 64#4 - 4x8 FONT DRIVER FOR 64 COLUMNS (c) 2007, 2011
   \
@@ -347,7 +347,7 @@ variable sprite-width
 
   \ Credit:
   \
-  \ The 64-cpl fonts are part of:
+  \ The 64-CPL fonts are part of:
   \
   \ 64#4 - 4x8 FONT DRIVER FOR 64 COLUMNS (c) 2007, 2011
   \

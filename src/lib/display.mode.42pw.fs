@@ -11,7 +11,7 @@
   \ ===========================================================
   \ Description
 
-  \ A 42 CPL display mode that adapts the current 32-CPL font
+  \ A 42-CPL display mode that adapts the current 32-CPL font
   \ at real time.
 
   \ ===========================================================
@@ -716,7 +716,7 @@ variable mode-42pw-font  rom-font bl 8 * + mode-42pw-font !
   \
   \ mode-42pw ( -- ) "mode-42-p-w"
   \
-  \ Start the 42 CPL display mode based on:
+  \ Start the 42-CPL display mode based on:
 
   \ ....
   \ PRINT42.ASM
@@ -732,7 +732,8 @@ variable mode-42pw-font  rom-font bl 8 * + mode-42pw-font !
   \
   \ See: `current-mode`, `set-font`, `set-mode-output`,
   \ `columns`, `rows`, `mode-42pw-emit`, `mode-42pw-xy`,
-  \ `mode-42pw-font`, `>form`, `mode-42pw-output_`.
+  \ `mode-42pw-font`, `>form`, `mode-42pw-output_`,
+  \ `mode-42rs`.
   \
   \ }doc
 
@@ -781,5 +782,7 @@ variable mode-42pw-font  rom-font bl 8 * + mode-42pw-font !
   \ 2018-06-04: Link `variable` in documentation.
   \
   \ 2020-05-03: Fix/update documentation.
+  \
+  \ 2020-05-05: Improve documentation.
 
   \ vim: filetype=soloforth

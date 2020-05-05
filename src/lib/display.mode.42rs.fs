@@ -5,24 +5,24 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201801241959
+  \ Last modified: 202005051417
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ A 42-cpl display mode.
+  \ A 42-CPL display mode.
 
   \ ===========================================================
   \ Authors
 
-  \ Author of the 42-cpl printing routine: Ricardo Serral Wigge.
+  \ Author of the 42-CPL printing routine: Ricardo Serral Wigge.
   \ Published on Microhobby, issue 66 (1986-02), page 24:
   \ http://microhobby.org/numero066.htm
   \ http://microhobby.speccy.cz/mhf/066/MH066_24.jpg
 
   \ Marcos Cruz (programandala.net) integrated it into Solo
-  \ Forth, 2015, 2016, 2017, 2018.
+  \ Forth, 2015, 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -48,8 +48,24 @@ need get-drive need drive need file>
 
 : mode-42rs ( -- ) [ latestxt ] literal current-mode !
                   (mode-42rs set-mode-output ;
-  \ Set the 42 cpl printing mode: the driver, the font
-  \ and `at-xy`.
+
+  \ doc{
+  \
+  \ mode-42rs ( -- ) "mode-42-r-s"
+  \
+  \ Start the 42-CPL display mode based on a routine written by
+  \ Ricardo Serral Wigge, published on Microhobby, issue 66
+  \ (1986-02), page 24:
+
+  \ - http://microhobby.org/numero066.htm
+  \ - http://microhobby.speccy.cz/mhf/066/MH066_24.jpg
+
+  \ WARNING: ``mode-42rs`` is under development. See the source
+  \ code for details.
+  \
+  \ See: `current-mode`, `mode-42pw`.
+  \
+  \ }doc
 
 get-drive  0 drive set-drive throw
            s" pr42.bin" 0 0 file> throw  \ load the driver
@@ -88,7 +104,7 @@ need columns need rows need set-font need (at-xy
   ['] mode-42rs-xy ['] xy defer!
   ['] (at-xy ['] at-xy defer!
   [ 64600 256 - ] literal set-font 63900 ;
-  \ Set the 42 cpl font and `at-xy`;
+  \ Set the 42-CPL font and `at-xy`;
   \ return the address of the output routine.
 
   \ ===========================================================
@@ -127,5 +143,7 @@ need columns need rows need set-font need (at-xy
   \
   \ 2018-01-24: Update after the renaming of all display modes
   \ files and words: "42" -> "42rs" (Ricardo Serral).
+  \
+  \ 2020-05-05: Document `mode-42rs`. Improve documentation.
 
   \ vim: filetype=soloforth

@@ -45,16 +45,6 @@ need list need update need flush need parse-all need vocabulary
 need editor
 
 vocabulary specforth-editor ' specforth-editor is editor
-also editor definitions need r# need top
-
-  \ XXX OLD
-  \ XXX FIXME `1 text`, used by two words, corrupts the system.
-  \ How to get the text till the end of the line?
-  \ : text ( c "ccc<char>" -- )
-  \  here c/l 1+ blank word pad c/l 1+ cmove ;
-  \ Parse a text string delimited by character _c_ and store it
-  \ into `pad`, blank-filling the remainder of `pad` to `c/l`
-  \ characters.
 
   \ doc{
   \
@@ -67,6 +57,17 @@ also editor definitions need r# need top
   \ See: `gforth-editor`.
   \
   \ }doc
+
+also editor definitions need r# need top
+
+  \ XXX OLD
+  \ XXX FIXME `1 text`, used by two words, corrupts the system.
+  \ How to get the text till the end of the line?
+  \ : text ( c "ccc<char>" -- )
+  \  here c/l 1+ blank word pad c/l 1+ cmove ;
+  \ Parse a text string delimited by character _c_ and store it
+  \ into `pad`, blank-filling the remainder of `pad` to `c/l`
+  \ characters.
 
 : text ( "ccc<eol>" -- ) pad c/l 1+ blank parse-all pad place ;
 
@@ -515,7 +516,3 @@ only forth definitions
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
-  \
-  \ 2020-05-03: Add `specforth-editor`.
-
-  \ vim: filetype=soloforth

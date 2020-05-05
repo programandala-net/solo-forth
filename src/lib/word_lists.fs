@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005022128
+  \ Last modified: 202005051441
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -37,7 +37,7 @@ unneeding wordlist>link
   \ _wid_, which holds the word-list identifier of the previous
   \ word list defined in the system.
   \
-  \ See: `wordlist`, `wid>name`.
+  \ See: `wordlist`, `wordlist>name`.
   \
   \ }doc
 
@@ -153,7 +153,7 @@ unneeding wordlist-of
   \ Return the word-list identifier _wid_ associated to
   \ vocabulary _name_.
   \
-  \ Origin: eForth's `widof`.
+  \ Origin: eForth's ``widof``.
   \
   \ See: `wordlist`, `vocabulary`.
   \
@@ -386,5 +386,8 @@ unneeding search-wordlist ?(
   \ 2018-04-14: Fix typo.
   \
   \ 2020-05-02: Fix false link in documentation.
+  \
+  \ 2020-05-05: Fix markup in documentation. Update cross
+  \ reference.
 
   \ vim: filetype=soloforth

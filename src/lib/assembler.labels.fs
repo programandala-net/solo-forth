@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201807212105
+  \ Last modified: 202005051305
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -165,7 +165,7 @@ variable labels  variable l-refs
   \ A `variable`. _a_ is the address of a cell containing the
   \ address of the labels table, which is allocated in the
   \ `stringer` by `init-labels`.  The size of the table can be
-  \ configured with `max-label`.
+  \ configured with `max-labels`.
   \
   \ Each element of the table (0 index) is one cell, which
   \ contains either the address of the corresponding label or
@@ -515,5 +515,7 @@ previous
   \ 2018-06-04: Link `variable` in documentation.
   \
   \ 2018-07-21: Improve documentation, linking `throw`.
+  \
+  \ 2020-05-05: Fix typo in cross reference.
 
   \ vim: filetype=soloforth

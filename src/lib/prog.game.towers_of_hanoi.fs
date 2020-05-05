@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not ready yet
 
-  \ Last modified: 202005042018
+  \ Last modified: 202005051253
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -38,7 +38,7 @@
 
 only forth definitions
 
-need ms need mode-64ao need alloted need recurse
+need ms need mode-64ao need allotted need recurse
 
 wordlist dup constant hanoi-wordlist dup >order set-current
 
@@ -86,7 +86,7 @@ create PegStacks  30 chars allot
 
 : maketab ( n1..nn n -- XXX ) \ XXX TODO stack effect
   create
-    dup alloted over 1- + swap 0
+    dup allotted over 1- + swap 0
     2dup <> if    ?do  dup >r c! r> 1-  loop
             else  2drop
             then  drop
@@ -156,5 +156,7 @@ mode-64ao page
   \ 2017-04-26: Check and update.
   \
   \ 2020-05-04: Update: `mode-64` -> `mode-64ao`.
+  \
+  \ 2020-05-05: Fix requirement.
 
   \ vim: filetype=soloforth

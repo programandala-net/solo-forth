@@ -54,6 +54,19 @@ need list-lines need vocabulary need catch need editor
 need insert need replace need delete
 
 vocabulary gforth-editor ' gforth-editor is editor
+
+  \ doc{
+  \
+  \ gforth-editor ( -- )
+  \
+  \ A `vocabulary` containing the Gforth block editor. When
+  \ ``gforth-editor`` is loaded, it becomes the action of
+  \ `editor`.
+  \
+  \ See: `specforth-editor`.
+  \
+  \ }doc
+
 also editor definitions  need r# need top
 
 variable len len off
@@ -210,5 +223,7 @@ forth definitions
   \
   \ 2020-05-04: Move `insert`, `delete`, `replace` to
   \ <strings.MISC.fs>.
+  \
+  \ 2020-05-05: Document `gforth-editor`.
 
   \ vim: filetype=soloforth

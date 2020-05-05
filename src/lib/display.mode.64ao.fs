@@ -3,13 +3,13 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804142243
+  \ Last modified: 202005051425
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ A 64-cpl display mode.
+  \ A 64-CPL display mode.
 
   \ ===========================================================
   \ Authors
@@ -19,7 +19,7 @@
   \ http://www.worldofspectrum.org/forums/discussion/14526/redirect/p1
 
   \ Marcos Cruz (programandala.net) adapted it to Solo Forth,
-  \ 2015, 2016, 2017, 2018.
+  \ 2015, 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -484,7 +484,7 @@ need mode-32 need (at-xy need set-mode-output need >form
   \
   \ mode-64ao ( -- ) "mode-64-a-o"
   \
-  \ Start the 64-cpl display mode based on:
+  \ Start the 64-CPL display mode based on:
 
   \ ....
   \ 4x8 FONT DRIVER
@@ -503,7 +503,7 @@ need mode-32 need (at-xy need set-mode-output need >form
   \
   \ See: `current-mode`, `set-font`, `set-mode-output`,
   \ `columns`, `rows`, `mode-64ao-emit`, `mode-64ao-xy`,
-  \ `mode-64-font`, `>form`, `mode-64ao-output_`.
+  \ `mode-64-font`, `>form`, `mode-64ao-output_`, `mode-64es`.
   \
   \ }doc
 
@@ -571,5 +571,7 @@ need mode-32 need (at-xy need set-mode-output need >form
   \ 2018-04-10: Fix typo in documentation.
   \
   \ 2018-04-14: Fix markup in documentation.
+  \
+  \ 2020-05-05: Improve documentation.
 
   \ vim: filetype=soloforth

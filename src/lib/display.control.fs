@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005042004
+  \ Last modified: 202005051325
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -34,7 +34,7 @@ unneeding printer ?\ : printer ( -- ) 3 channel printing on ;
   \
   \ Select the printer as output.
   \
-  \ See: `display`, `printing`.
+  \ See: `terminal`, `printing`.
   \
   \ }doc
 
@@ -297,5 +297,7 @@ unneeding eol? ?( need newline need char-in-string?
   \ 2018-05-13: Update pronunciation.
   \
   \ 2020-05-04: Improve documentation of `lf`.
+  \
+  \ 2020-05-05: Update cross reference `display` -> `terminal`.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005050006
+  \ Last modified: 202005051442
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -995,7 +995,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ Compile the Z80 instruction ``LD R,A``.
   \
-  \ See: `ldar,`, `ldri,`, `ld,`.
+  \ See: `ldar,`, `ldir,`, `ld,`.
   \
   \ }doc
 
@@ -1096,7 +1096,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ Compile the Z80 instruction ``LD _regp_,_16b_``.
   \
-  \ See: `ldp`, `ld#,`.
+  \ See: `ldp,`, `ld#,`.
   \
   \ }doc
 
@@ -1260,7 +1260,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \ Example: ``d subp,`` compiles the Z80 instructions ``AND
   \ A`` (to reset the carry flag) and ``SBC DE``.
   \
-  \ See: `subcp,`, `sub,`, `ldp,`, `tstp,`.
+  \ See: `sbcp,`, `sub,`, `ldp,`, `tstp,`.
   \
   \ }doc
 
@@ -1600,7 +1600,7 @@ F2 cconstant p?   FA cconstant m?
   \
   \ Return the opcode _op_ of the Z80 instruction ``jp z``, to
   \ be used as condition and consumed by `?ret,`, `?jp,`,
-  \ `?call,`, `?jr`, `aif`, `rif`, `awhile`, `rwhile`, `auntil`
+  \ `?call,`, `?jr,`, `aif`, `rif`, `awhile`, `rwhile`, `auntil`
   \ or `runtil`.
   \
   \ See: `nz?`, `c?`, `nc?`, `po?`, `pe?`, `p?`, `m?`.
@@ -1652,7 +1652,7 @@ F2 cconstant p?   FA cconstant m?
   \
   \ Return the opcode _op_ of the Z80 instruction ``jp op``,
   \ to be used as condition and consumed by
-  \ `?ret,`, `?jp,`, `?call`, `aif`, `awhile` or `auntil`.
+  \ `?ret,`, `?jp,`, `?call,`, `aif`, `awhile` or `auntil`.
   \
   \ See: `z?`, `nz?`, `c?`, `nc?`, `pe?`, `p?`, `m?`.
   \
@@ -1664,7 +1664,7 @@ F2 cconstant p?   FA cconstant m?
   \
   \ Return the opcode _op_ of the Z80 instruction ``jp pe``,
   \ to be used as condition and consumed by
-  \ `?ret,`, `?jp,`, `?call`, `aif`, `awhile` or `auntil`.
+  \ `?ret,`, `?jp,`, `?call,`, `aif`, `awhile` or `auntil`.
   \
   \ See: `z?`, `nz?`, `c?`, `nc?`, `po?`, `p?`, `m?`.
   \
@@ -1676,7 +1676,7 @@ F2 cconstant p?   FA cconstant m?
   \
   \ Return the opcode _op_ of the Z80 instruction ``jp p``,
   \ to be used as condition and consumed by
-  \ `?ret,`, `?jp,`, `?call`, `aif`, `awhile` or `auntil`.
+  \ `?ret,`, `?jp,`, `?call,`, `aif`, `awhile` or `auntil`.
   \
   \ See: `z?`, `nz?`, `c?`, `nc?`, `po?`, `pe?`, `m?`.
   \
@@ -1688,7 +1688,7 @@ F2 cconstant p?   FA cconstant m?
   \
   \ Return the opcode _op_ of the Z80 instruction ``jp m``,
   \ to be used as condition and consumed by
-  \ `?ret,`, `?jp,`, `?call`, `aif`, `awhile` or `auntil`.
+  \ `?ret,`, `?jp,`, `?call,`, `aif`, `awhile` or `auntil`.
   \
   \ See: `z?`, `nz?`, `c?`, `nc?`, `po?`, `pe?`, `p?`.
   \
@@ -2440,5 +2440,7 @@ set-current
   \
   \ 2020-05-04: Fix cross reference. Remove cross references to
   \ inexistent word `ft#x,`,
+  \
+  \ 2020-05-05: Fix cross references.
 
   \ vim: filetype=soloforth

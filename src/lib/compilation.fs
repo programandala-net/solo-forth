@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201807212141
+  \ Last modified: 202005051436
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -1280,7 +1281,7 @@ unneeding warn-throw ?( need ?warn
   \
   \ Return a string compiled after the calling word.
   \
-  \ See `warning"` and `(warning")` for a usage example.
+  \ See `warning"` and `(warning"` for a usage example.
   \
   \ }doc
 
@@ -1473,5 +1474,7 @@ unneeding warn-throw ?( need ?warn
   \
   \ 2018-07-21: Improve documentation, linking `throw`. Improve
   \ description of `warn.throw`.
+  \
+  \ 2020-05-05: Update cross reference.
 
   \ vim: filetype=soloforth

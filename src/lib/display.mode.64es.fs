@@ -3,13 +3,13 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802012254
+  \ Last modified: 202005051424
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ A 64-cpl display mode.
+  \ A 64-CPL display mode.
 
   \ XXX UNDER DEVELOPMENT --
 
@@ -27,7 +27,7 @@
   \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027130
 
   \ Marcos Cruz (programandala.net) adapted it to Solo Forth,
-  \ 2015, 2016, 2017, 2018.
+  \ 2015, 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -346,6 +346,31 @@ need mode-64-font
   ['] mode-64es-xy   ['] xy    defer!
   ['] (at-xy       ['] at-xy defer! ;
 
+  \ doc{
+  \
+  \ mode-64es ( -- ) "mode-64-e-s"
+  \
+  \ Start the 64-CPL display mode based on:
+
+  \ ....
+  \ 4x8 FONT DRIVER
+  \ (c) 2007, 2011 Andrew Owen
+  \ optimized by Crisis (to 602 bytes)
+  \ http://www.worldofspectrum.org/forums/discussion/14526/redirect/p1
+  \
+  \ Version with integrated driver, adapted from 64#4, written
+  \ by Einar Saukas:
+  \ https://sites.google.com/site/zxgraph/home/einar-saukas/fonts
+  \ http://www.worldofspectrum.org/infoseekid.cgi?id=0027130
+  \ ....
+
+  \ WARNING: ``mode-64es`` is under development. See the source
+  \ code for details.
+  \
+  \ See: `current-mode`, `mode-64ao`.
+  \
+  \ }doc
+
   \ ===========================================================
   \ Change log
 
@@ -402,5 +427,7 @@ need mode-64-font
   \ files and words: "64s" (Saukas) -> "64es" (Einar Saukas).
   \
   \ 2018-02-01: Need `hook,`, which has been made optional.
+  \
+  \ 2020-05-05: Document `mode-64es`.
 
   \ vim: filetype=soloforth

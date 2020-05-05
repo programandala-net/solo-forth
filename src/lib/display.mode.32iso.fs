@@ -3,19 +3,19 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041734
+  \ Last modified: 202005051429
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ An alternative 32-cpl display mode that can use an ISO
+  \ An alternative 32-CPL display mode that can use an ISO
   \ character set.
 
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -164,7 +164,7 @@ variable mode-32iso-font  rom-font bl 8 * + mode-32iso-font !
   \
   \ mode-32iso ( -- )
   \
-  \ Activate the 32-cpl display mode,  an alternative to the
+  \ Activate a 32-CPL display mode, an alternative to the
   \ default `mode-32`.  The only difference with `mode-32` is
   \ ``mode-32iso`` can use a ISO character set, i.e. it
   \ displays characters 32..255 from the current font.  See
@@ -205,6 +205,8 @@ variable mode-32iso-font  rom-font bl 8 * + mode-32iso-font !
   \ 2018-04-14: Fix markup in documentation.
   \
   \ 2018-06-04: Link `variable` in documentation.
+  \
+  \ 2020-05-05: Improve documentation.
 
   \ vim: filetype=soloforth
 

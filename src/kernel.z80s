@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202005042334
+; Last modified: 202005051254
 
 include version.z80s
 
@@ -6210,7 +6210,7 @@ two_store.into_hl_pointer:
 ; `last-font-char`.
 ;
 ; See: `get-font`, `rom-font`, `default-font`, `mode-32`,
-; `mode-32iso`, `mode-42rs`, `mode-64ao`.
+; `mode-32iso`, `mode-42pw`, `mode-64ao`.
 ;
 ; }doc
 
@@ -7626,7 +7626,7 @@ source.other:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See: `alloted`, `dp`, here`, `reserve`.
+; See: `allotted`, `dp`, here`, `reserve`.
 ;
 ; }doc
 
@@ -12170,8 +12170,9 @@ endif
 ;
 ; A `variable`. _a_ is the address of a cell containing the
 ; execution token of the word that activates the current screen
-; mode (e.g. `mode-32`, `mode-32iso`, `mode-64ao`). It's set to
-; `noop` until the first mode change is done.
+; mode (e.g. `mode-32`, `mode-32iso`, `mode-42pw`, `mode-42rs`,
+; `mode-64es`, `mode-64ao`). It's set to `noop` until the first
+; mode change is done.
 ;
 ; See: `save-mode`, `restore-mode`.
 ;

@@ -3,13 +3,13 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202002271844
+  \ Last modified: 202005051312
   \ See change log at the end of the file
 
   \ ===========================================================
   \ Description
 
-  \ 64-cpl display mode fonts.
+  \ 64-CPL display mode fonts.
 
   \ ===========================================================
   \ Authors
@@ -40,15 +40,15 @@ variable mode-64-font
   \ mode-64-font ( -- a )
   \
   \ A `variable`. _a_ is the address of a cell containing the
-  \ address of the 4x8-pixel font used by `mode-64o`. Note the
+  \ address of the 4x8-pixel font used by `mode-64ao`. Note the
   \ address of the font must be the address of its character 32
   \ (space). The size of a 4x8-pixel font is 336 bytes. The
   \ program is responsible for initializing the contents of
-  \ this variable before executing `mode-64o`.
+  \ this variable before executing `mode-64ao`.
   \
-  \ NOTE: If ``mode-64-font`` is changed when `mode-64o` is on,
-  \ for example to use a new font, `mode-64o` must be executed
-  \ again in order to make the change effective.
+  \ NOTE: If ``mode-64-font`` is changed when `mode-64ao` is
+  \ on, for example to use a new font, `mode-64ao` must be
+  \ executed again in order to make the change effective.
   \
   \ See: `mini-64cpl-font`, `nbot-64cpl-font`,
   \ `omn1-64cpl-font`, `omn2-64cpl-font`, `owen-64cpl-font`.
@@ -550,5 +550,8 @@ decimal
   \ 2020-02-27: Fix: update documentation with names that were
   \ renamed in 2018-01-24: "64o" (Owen) -> "64ao" (Andrew
   \ Owen).
+  \
+  \ 2020-05-05: Update cross references `mode-64o` ->
+  \ `mode-64ao`. Improve documentation.
 
   \ vim: filetype=soloforth

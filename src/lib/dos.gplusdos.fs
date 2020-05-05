@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005050036
+  \ Last modified: 202005051256
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -227,12 +227,13 @@ cconstant /fid
   \
   \ ~fid-link ( a1 -- a2 ) "tilde-f-i-d-link"
   \
-  \ Convert UFIA data structure address _a1_ to field address
-  \ _a2_, which contains the address of the previous structure.
+  \ A `field:`. Convert a UFIA data structure address _a1_ to
+  \ field address _a2_, which contains the address of the
+  \ previous structure.
   \
-  \ See: `/fid`.
+  \ See: `ufia`, `/ufia`, `/fid`.
   \
-  \ }doc XXX TODO --
+  \ }doc
 
   \ doc{
   \
@@ -308,7 +309,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
 
   \ See: `/ufia`, `>ufiax`, `dstr1`, `fstr1`, `sstr1`,
   \ `device`, `nstr1`, `nstr2`, `hd00`, `hd0b`, `hd0d`, `hd0f`,
-  \ `hd011`.
+  \ `hd11`.
   \
   \ }doc
 
@@ -356,7 +357,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ containing 1, 2 or '*'.
   \
   \ See: `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`, `hd00`,
-  \ `hd0b`, `hd0d`, `hd0f`, `hd011`.
+  \ `hd0b`, `hd0d`, `hd0f`, `hd11`.
   \
   \ }doc
 
@@ -368,7 +369,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ current `ufia`.
   \
   \ See: `dstr1`, `sstr1`, `device`, `nstr1`, `nstr2`, `hd00`,
-  \ `hd0b`, `hd0d`, `hd0f`, `hd011`.
+  \ `hd0b`, `hd0d`, `hd0f`, `hd11`.
   \
   \ }doc
 
@@ -380,7 +381,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ `ufia`.
   \
   \ See: `dstr1`, `fstr1`, `device`, `nstr1`, `nstr2`, `hd00`,
-  \ `hd0b`, `hd0d`, `hd0f`, `hd011`.
+  \ `hd0b`, `hd0d`, `hd0f`, `hd11`.
   \
   \ }doc
 
@@ -394,7 +395,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ NOTE: In G+DOS, this UFIA field is called "lstr1".
   \
   \ See: `dstr1`, `fstr1`, `sstr1`, `nstr1`, `nstr2`, `hd00`,
-  \ `hd0b`, `hd0d`, `hd0f`, `hd011`.
+  \ `hd0b`, `hd0d`, `hd0f`, `hd11`.
   \
   \ }doc
 
@@ -406,7 +407,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ current `ufia`.
   \
   \ See: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr2`, `hd00`,
-  \ `hd0b`, `hd0d`, `hd0f`, `hd011`.
+  \ `hd0b`, `hd0d`, `hd0f`, `hd11`.
   \
   \ }doc
 
@@ -418,7 +419,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ current `ufia`.
   \
   \ See: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `hd00`,
-  \ `hd0b`, `hd0d`, `hd0f`, `hd011`.
+  \ `hd0b`, `hd0d`, `hd0f`, `hd11`.
   \
   \ }doc
 
@@ -429,7 +430,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ Return address _ca_ of the file type in the current `ufia`.
   \
   \ See: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`,
-  \ `hd0b`, `hd0d`, `hd0f`, `hd011`.
+  \ `hd0b`, `hd0d`, `hd0f`, `hd11`.
   \
   \ }doc
 
@@ -441,7 +442,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ `ufia`.
   \
   \ See: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`,
-  \ `hd00`, `hd0d`, `hd0f`, `hd011`.
+  \ `hd00`, `hd0d`, `hd0f`, `hd11`.
   \
   \ }doc
 
@@ -453,7 +454,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ `ufia`.
   \
   \ See: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`,
-  \ `hd00`, `hd0b`, `hd0f`, `hd011`.
+  \ `hd00`, `hd0b`, `hd0f`, `hd11`.
   \
   \ }doc
 
@@ -465,7 +466,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ the current `ufia`.
   \
   \ See: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`,
-  \ `hd00`, `hd0b`, `hd0d`, `hd011`.
+  \ `hd00`, `hd0b`, `hd0d`, `hd11`.
   \
   \ }doc
 
@@ -477,7 +478,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ `ufia`.
   \
   \ See: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`,
-  \ `hd00`, `hd0b`, `hd0d`, `hd0f`, `hd011`.
+  \ `hd00`, `hd0b`, `hd0d`, `hd0f`, `hd11`.
   \
   \ }doc
 
@@ -2342,6 +2343,6 @@ need write-file need read-file need .ufia
   \ cross reference `file-dir` to `file-dirdesc`. Improve
   \ documentation of `file-dir#`.
   \
-  \ 2020-05-05:  Document the `ufia` fields.
+  \ 2020-05-05:  Document the `ufia` fields. Fix markup.
 
   \ vim: filetype=soloforth

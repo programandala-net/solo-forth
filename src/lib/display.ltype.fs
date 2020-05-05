@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041139
+  \ Last modified: 202005051320
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -31,7 +32,17 @@ need 0exit need home? need seclusion
 seclusion
 
 variable #indented
-  \ `#indented` = Indented characters in the current line.
+
+  \ doc{
+  \
+  \ #indented ( -- a ) "hash-indented"
+  \
+  \ A `variable`. _a_ is the address of a cell containing the
+  \ numbers of characters indented on the current line.
+  \
+  \ See: `#ltyped`, `indented+`.
+  \
+  \ }doc
 
 -seclusion
 
@@ -39,12 +50,13 @@ variable #ltyped
 
   \ doc{
   \
-  \ ltyped# ( -- a ) "l-typed-hash"
+  \ #ltyped ( -- a ) "l-typed-hash"
   \
-  \ _a_ is the address of a cell containing the number of
-  \ characters displayed by `ltype` on the current row.
+  \ A `variable` . _a_ is the address of a cell containing the
+  \ number of characters displayed by `ltype` on the current
+  \ row.
   \
-  \ See: `ltyped`.
+  \ See: `ltyped`, `#indented`.
   \
   \ }doc
 
@@ -54,11 +66,19 @@ variable #ltyped
   \
   \ ltyped ( n -- ) "l-typed"
   \
-  \ Update `ltyped#` with _n_ characters typed by `ltype`.
+  \ Update `#ltyped` with _n_ characters typed by `ltype`.
   \
   \ }doc
 
 : indented+ ( u -- ) #indented +! ;
+
+  \ doc{
+  \
+  \ indented+ ( u -- ) "indented-plus"
+  \
+  \ Add _u_ to `#indented`.
+  \
+  \ }doc
 
 : (.word ( ca len -- ) dup ltyped type ;
 
@@ -92,7 +112,7 @@ variable #ltyped
   \
   \ no-ltyped ( -- ) "no-l-typed"
   \
-  \ Set `ltyped#` and `#indented` to zero.
+  \ Set `#ltyped` and `#indented` to zero.
   \
   \ See: `ltyped`.
   \
@@ -158,7 +178,7 @@ defer (lcr ( -- ) ' cr ' (lcr defer! -->
   \
   \ If the cursor is neither at the home position nor at the
   \ start of a line, move it to the next row. ``lcr`` is part
-  \ of the left-justified displaying system. 
+  \ of the left-justified displaying system.
   \
   \ See: `lcr?`, `(lcr`, `ltype`.
   \
@@ -200,6 +220,15 @@ create lwidth columns c,
 -seclusion
 
 : ltype-indentation ( u -- ) ?dup 0exit (ltype-indentation ;
+
+  \ doc{
+  \
+  \ ltype-indentation ( u -- ) "l-type-indentation"
+  \
+  \ Display an indentation of _u_ spaces and update the
+  \ corresponding variables of the `ltype` system.
+  \
+  \ }doc
 
 : ltype ( ca len --)
   begin dup while /first-name .word repeat 2drop ;
@@ -261,7 +290,10 @@ need n>str
   \
   \ 2018-03-09: Make `lwidth` a byte variable. Fix `unfit?`.
   \
-  \ 2018-06-04: Update: remove trailing closing paren from
-  \ word names.
+  \ 2018-06-04: Update: remove trailing closing paren from word
+  \ names.
+  \
+  \ 2020-05-05: Document `#indented`, `indented+` and
+  \ `ltype-indentation`. Fix cross references to `#ltyped`.
 
   \ vim: filetype=soloforth

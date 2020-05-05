@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201807272035
+  \ Last modified: 202005051435
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -125,7 +125,7 @@ here - abs 2constant sinclair-stripes$ ( -- ca len ) ?)
   \ Definitions for UDG codes $80 and $81 are provided
   \ optionally by `sinclair-stripes`.
   \
-  \ See: `.sinclair-sripes`.
+  \ See: `.sinclair-stripes`.
   \
   \ }doc
 
@@ -422,5 +422,7 @@ create current-option 0 c,
   \
   \ 2018-07-27: Remove useless code from `menu`. Improve
   \ documentation of `new-menu`.
+  \
+  \ 2020-05-05: Fix typo in cross reference.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005042222
+  \ Last modified: 202005051331
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -69,7 +69,7 @@ code rdraw176 ( gx gy -- )
   \ ``rdraw176`` is equivalent to Sinclair BASIC's ``DRAW``
   \ command.
   \
-  \ See: `adraw176`, `rdraw`.
+  \ See: `adraw176`.
   \
   \ }doc
 
@@ -243,14 +243,20 @@ code rdraw ( gx gy -- )
   \ `rdraw` is a modified version of the DRAW-LINE ROM
   \ routine.
 
+  \
   \ rdraw ( gx gy -- )
   \
-  \ REMARK: ``rdraw`` is under development.
+  \ WARNING: ``rdraw`` is under development, can not be used
+  \ yet. See the source code for details.
   \
   \ Draw a line relative _gx gy_ to the current coordinates.
   \ _gx_ is 0..255; _gy_ is 0..191.
   \
+  \ NOTE: ``rdraw`` is a modified version of the DRAW-LINE ROM
+  \ routine.
+  \
   \ See: `rdraw176`, `adraw176`.
+  \
 
 ( adraw176 )
 
@@ -575,5 +581,9 @@ code ortholine ( gx gy gxinc gyinc len -- )
   \
   \ 2020-05-04: Remove cross references to `rline176`, which is
   \ not implemented yet.
+  \
+  \ 2020-05-05: Improve the hidden documentation of `rdraw`,
+  \ which is an unfinished word, and remove the cross
+  \ references to it.
 
   \ vim: filetype=soloforth

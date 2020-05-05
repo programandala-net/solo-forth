@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041324
+  \ Last modified: 202005051406
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ Credit
@@ -205,6 +206,16 @@ variable manual-see manual-see on
 
 : see-colon ( nt -- ) name>body see-colon-body ;
 
+  \ doc{
+  \
+  \ see-colon ( nt -- )
+  \
+  \ Decode the colon word's definition _nt_.
+  \
+  \ See: `see`, `see-name`, `see-colon-body`.
+  \
+  \ }doc
+
 : see-defer ( nt -- ) dup name> dup (indent
                           ." defer " swap .name
                           ." \ action: " defer@ >oname. ;
@@ -243,7 +254,7 @@ variable manual-see manual-see on
   \ The listing can be paused with the space bar, then stopped
   \ with the return key or resumed with any other key.
   \
-  \ See: `see`, `see-name`, `see-colon-body`, `see-colon-body>`.
+  \ See: `see`, `see-name`, `see-colon`.
   \
   \ }doc
 
@@ -257,7 +268,7 @@ variable manual-see manual-see on
   \
   \ ``see-name`` is a factor of `see`.
   \
-  \ See: `see-xt`, `see-colon-body`, `see-colon-body>`.
+  \ See: `see`, `see-xt`, `see-colon`.
   \
   \ }doc
 
@@ -268,12 +279,12 @@ variable manual-see manual-see on
   \
   \ see ( "name" -- )
   \
-  \ Decode the word's definition _name_.  At the moment ``see``
-  \ works only with colon definitions.
+  \ Decode the word's definition _name_.
   \
   \ Origin: Forth-94 (TOOLS), Forth-2012 (TOOLS).
   \
-  \ See: `see-name`, `see-xt`, `see-colon-body`, `see-colon-body>`.
+  \ See: `see-name`, `see-xt`, `see-colon`, `see-colon-body`,
+  \ `see-colon-body>`.
   \
   \ }doc
 
@@ -286,7 +297,7 @@ need see
 
   \ doc{
   \
-  \ see-colon-body> ( a -- ) "see-colon-body-from"
+  \ see-colon-body> ( a -- ) "see-colon-body-to"
   \
   \ Decode the colon word's definition from _a_, which is part
   \ of its body. ``see-colon-body>`` is useful to decode words
@@ -392,7 +403,9 @@ need see
   \
   \ 2018-03-09: Add words' pronunciaton.
   \
-  \ 2018-06-04: Update: remove trailing closing paren from
-  \ word names. Link `variable` in documentation.
+  \ 2018-06-04: Update: remove trailing closing paren from word
+  \ names. Link `variable` in documentation.
+  \
+  \ 2020-05-05: Improve documentation.
 
   \ vim: filetype=soloforth

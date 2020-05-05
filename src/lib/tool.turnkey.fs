@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202005042237
+  \ Last modified: 202005051300
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -63,7 +63,7 @@
   \ WARNING: This word is experimental. See the source code for
   \ details.
   \
-  \ See: `system`.
+  \ See: `system-zone`, `system-size`, `turnkey`.
   \
   \ }doc
 
@@ -76,7 +76,7 @@
   \ _len_ is the size of the system, in bytes, i.e. the size of
   \ data/code space.
   \
-  \ See: `here`, `+origin`, `system-zone`, `turnkey`.
+  \ See: `+origin`, `system-zone`, `turnkey`, `here`.
   \
   \ }doc
 
@@ -89,9 +89,6 @@
   \ Return the start address _a_ of the system and its length
   \ _len_, to be used as parameters for saving the system to
   \ tape or disk.
-  \
-  \ WARNING: This word is experimental. See the source code for
-  \ details.
   \
   \ See: `+origin`, `system-size`, `turnkey`.
   \
@@ -154,5 +151,7 @@
   \ 2020-02-27: Improve documentation.
   \
   \ 2020-05-04: Improve and activate the documentation.
+  \
+  \ 2020-05-05: Fix cross reference. Improve documentation.
 
   \ vim: filetype=soloforth
