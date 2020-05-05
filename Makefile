@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202004270034.
+# Last modified: 202005052150.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -593,6 +593,8 @@ not_ready =
 
 lib_files = $(sort $(wildcard src/lib/*.fs))
 dos_lib_files = $(sort $(wildcard src/lib/dos.*.fs))
+editor_prog_lib_files = $(sort $(wildcard src/lib/prog.editor.*.fs))
+app_prog_lib_files = $(sort $(wildcard src/lib/prog.app.*.fs))
 prog_lib_files = $(sort $(wildcard src/lib/prog.*.fs))
 exception_codes_lib_files = $(sort $(wildcard src/lib/exception.codes.*.fs))
 
@@ -917,6 +919,8 @@ doc/gplusdos_solo_forth_manual.html: \
 tmp/doc.gplusdos.files.txt: \
 	src/kernel.z80s \
 	src/kernel.gplusdos.z80s \
+	$(app_prog_lib_files) \
+	$(editor_prog_lib_files) \
 	$(gplusdos_core_lib_files)
 	ls -1 $^ > $@
 
@@ -996,6 +1000,8 @@ doc/plus3dos_solo_forth_manual.html: \
 tmp/doc.plus3dos.files.txt: \
 	src/kernel.z80s \
 	src/kernel.plus3dos.z80s \
+	$(app_prog_lib_files) \
+	$(editor_prog_lib_files) \
 	$(plus3dos_core_lib_files)
 	ls -1 $^ > $@
 
@@ -1071,6 +1077,8 @@ doc/trdos_solo_forth_manual.html: \
 tmp/doc.trdos.files.txt: \
 	src/kernel.z80s \
 	src/kernel.trdos.z80s \
+	$(app_prog_lib_files) \
+	$(editor_prog_lib_files) \
 	$(trdos_core_lib_files)
 	ls -1 $^ > $@
 
@@ -1439,6 +1447,10 @@ oldbackup:
 #
 # 2020-04-27: Add attribute `epub-chapter-level`, after the fixes in
 # Asciidoctor EPUB3 v0.5.0.alpha.17.dev.
+#
+# 2020-05-04: Add the apps to the glossary (actually, only `edit-sound`).
+#
+# 2020-05-05: Add the editors to the glossary.
 
 # ==============================================================
 
