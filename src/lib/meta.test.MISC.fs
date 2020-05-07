@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201903141805
+  \ Last modified: 202005080125
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2019, 2020.
 
   \ ===========================================================
   \ License
@@ -846,7 +847,7 @@ s" Say '%hello%' in %lang%" substitute-test
   \ 2017-12-15: This test is obsolete: The new version of
   \ `>name` searches from newest to oldest definitions.
 
-need far, need >name
+need far, need >name need .name
 
 variable name0  1000 far,
 variable name1
@@ -879,7 +880,7 @@ defined name1 cr .name
 only forth definitions
 
 need >name need >name/order need >oldest-name/order need alias
-need >oldest-name need >oldest-name/fast
+need >oldest-name need >oldest-name/fast need .name
 
 : the-original ;
 
@@ -906,7 +907,7 @@ cr .( "the-original": ) .name previous
   \ 2016-12-29: The headers space reserved for the assembler
   \ must be 246 bytes more than the actual space used. Why?
 
-  need fyi need transient
+  need fyi need transient need .name
   \ 1900 1700 transient  \ fails
   \ 2000 2000 transient  \ fails
   \ 2008 2000 transient  \ fails
@@ -1016,7 +1017,7 @@ s" pi"      stuff item d. cr
 ( transient-asm-test )
 
 only forth definitions
-need order need wordlist-words need .wordname
+need order need wordlist-words need .wordname need .name
 
 : info ( -- )
   cr ." here            =" here u.
@@ -1316,6 +1317,7 @@ need catch
 ( type-fields-test )
 
 need type-left need type-center need type-right need >name
+need .name
 
 s" La Mancha" 2constant text
 
@@ -1784,5 +1786,8 @@ blk @ 1+ blk @ 2+ thru
   \ names.
   \
   \ 2019-03-14: Add `scan-test` and `localized-string-test`.
+  \
+  \ 2020-05-08: Update requirements: `.name` has been moved
+  \ from the kernel to the library.
 
   \ vim: filetype=soloforth

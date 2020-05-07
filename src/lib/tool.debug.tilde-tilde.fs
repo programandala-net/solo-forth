@@ -26,7 +26,7 @@
 
 ( ~~ )
 
-need :noname need defer need .s need columns
+need :noname need defer need .s need columns need .name
 
 variable ~~? ~~? on  create ~~y 0 c,
 
@@ -336,5 +336,8 @@ defer ~~before-info ( -- )  defer ~~after-info ( -- )
   \ configurable. Improve documentation.
   \
   \ 2020-05-04: Fix cross reference in `(~~`.
+  \
+  \ 2020-05-08: Update requirements: `.name` has been moved
+  \ from the kernel to the library.
 
   \ vim: filetype=soloforth

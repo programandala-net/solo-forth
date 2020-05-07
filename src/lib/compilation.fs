@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005051436
+  \ Last modified: 202005080137
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -201,9 +201,9 @@ unneeding name<name
   \
   \ }doc
 
-unneeding name>name
+unneeding name>name ?( need name>str need >>name
 
-?\ need >>name : name>name ( nt1 -- nt2 ) name>str + >>name ;
+: name>name ( nt1 -- nt2 ) name>str + >>name ; ?)
 
   \ doc{
   \
@@ -376,7 +376,7 @@ unneeding [''] ?( need need-here need-here ''
   \
   \ }doc
 
-( >name )
+( >name name>str .name )
 
 unneeding >name ?(
 
@@ -412,6 +412,39 @@ need array> need name>> need name<name need wordlist>link
   \ See: `>name/order`, `>oldest-name`, `>oldest-name/order`,
   \ `>oldest-name/fast`, `name>`, `>body`, `name>body`,
   \ `name>name`, `>>name`.
+  \
+  \ }doc
+
+unneeding name>str
+
+?\ : name>str ( nt -- ca len ) farcount word-length-mask and ;
+
+  \ doc{
+  \
+  \ name>str ( nt -- ca len ) "name-to-s-t-r"
+  \
+  \ Convert the name token _nt_ to its name string _ca len_ in
+  \ far memory.
+  \
+  \ See: `name>string`, `name>immediate?`, `name>`,
+  \ `name>body`.
+  \
+  \ }doc
+
+unneeding .name ?( need name>string
+
+: .name ( nt -- ) name>string type space ; ?)
+
+  \ doc{
+  \
+  \ .name ( nt -- ) "dot-name"
+  \
+  \ Display the name of the word identified by _nt_.
+  \
+  \ NOTE: ``.name`` is called ``.id`` or ``id.`` in other Forth
+  \ systems.
+  \
+  \ See: `name>string`, `type`, `space`.
   \
   \ }doc
 
@@ -570,7 +603,7 @@ need array> need name>> need name<name
   \
   \ }doc
 
-( >oldest-name/fast )
+( >oldest-name/fast name>string )
 
 unneeding >oldest-name/fast ?(
 
@@ -608,6 +641,26 @@ need >>name need name>name need name>>
   \ See: `>oldest-name`, `>oldest-name/order`, `>name`,
   \ `>name/order`, `name>`, `>body`, `name>body`, `name>name`,
   \ `>>name`.
+  \
+  \ }doc
+
+unneeding name>string ?( need name>str
+
+: name>string ( nt -- ca len )
+  name>str allocate-stringer ( ca1 len ca )
+  2dup swap 2>r ( R: ca len ) -rot ( ca ca1 len )
+  0 ?do ( ca ca1 )
+    2dup farc@ swap i + c! char+
+  loop  2drop default-bank 2r> ; ?)
+
+  \ doc{
+  \
+  \ name>string ( nt -- ca len ) "name-to-string"
+  \
+  \ Convert the name token _nt_ to its name string _ca len_ in
+  \ the `stringer`.
+  \
+  \ See: `name>str`, `name>immediate?`, `name>`, `name>body`.
   \
   \ }doc
 
@@ -1186,7 +1239,7 @@ unneeding warn.throw ?( need ?warn
   \
   \ }doc
 
-unneeding warn.message ?( need ?warn need >name
+unneeding warn.message ?( need ?warn need >name need .name
 
 : warn.message ( ca len -- ca len )
   ?warn ( ca len xt ) ." redefined " >name .name ;
@@ -1406,8 +1459,8 @@ unneeding warn-throw ?( need ?warn
   \ typo in documentation of `eval`.  Deactivate documentation
   \ of the alternative implementation of `>name`.
   \
-  \ 2017-02-17: Update notation "behaviour" to "action".
-  \ Update cross references.
+  \ 2017-02-17: Update notation "behaviour" to "action". Update
+  \ cross references.
   \
   \ 2017-02-22: Move `?(` to the kernel.
   \
@@ -1476,5 +1529,8 @@ unneeding warn-throw ?( need ?warn
   \ description of `warn.throw`.
   \
   \ 2020-05-05: Update cross reference.
+  \
+  \ 2020-05-08: Move `name>str`, `name>string` and `.name` from
+  \ the kernel.
 
   \ vim: filetype=soloforth

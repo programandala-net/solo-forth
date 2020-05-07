@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005051406
+  \ Last modified: 202005080128
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -39,7 +39,7 @@
 
 need name>body need case need >oldest-name
 need recurse need >body need body> need [undefined] need d=
-need cond need thens need defer@
+need cond need thens need defer@ need .name
 
 : >oname. ( xt -- ) >oldest-name ?dup if   .name
                                       else ." :noname" then ;
@@ -407,5 +407,8 @@ need see
   \ names. Link `variable` in documentation.
   \
   \ 2020-05-05: Improve documentation.
+  \
+  \ 2020-05-08: Update requirements: `.name` has been moved
+  \ from the kernel to the library.
 
   \ vim: filetype=soloforth

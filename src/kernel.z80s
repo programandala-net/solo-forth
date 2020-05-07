@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202005080034
+; Last modified: 202005080123
 
 include version.z80s
 
@@ -239,6 +239,8 @@ if trdos
   max_drives:                       equ 4
   first_drive:                      equ 0 ; 0 .. 3
 endif
+
+bytes_per_sector:                 equ bytes_per_buffer/sectors_per_block
 
 characters_per_line:              equ $40
 lines_per_screen:                 equ $10
@@ -8458,10 +8460,14 @@ endif ; pentagon=512 or pentagon=1024
   dw exit_
 
 ; ----------------------------------------------
+
+if 0 ; XXX TMP -- for debugging
+
   _colon_header name_to_str_,'name>str'
 
-; doc{
-;
+; XXX REMARK -- This word is in the library. This copy is
+; preserved to be activated for debugging.
+
 ; name>str ( nt -- ca len ) "name-to-s-t-r"
 ;
 ; Convert the name token _nt_ to its name string _ca len_ in
@@ -8473,18 +8479,20 @@ endif ; pentagon=512 or pentagon=1024
 ; : name>str ( nt -- ca len ) farcount word-length-mask and ;
 ; ----
 
-; See: `name>string`, `name>immediate?`, `name>`, `name>body`.
-;
-; }doc
-
   dw far_count_,word_length_mask_,and_
   dw exit_
 
+endif
+
 ; ----------------------------------------------
+
+if 0 ; XXX TMP -- for debugging
+ 
   _colon_header name_to_string_,'name>string'
 
-; doc{
-;
+; XXX REMARK -- This word is in the library. This copy is
+; preserved to be activated for debugging.
+
 ; name>string ( nt -- ca len ) "name-to-string"
 ;
 ; Convert the name token _nt_ to its name string _ca len_
@@ -8501,12 +8509,6 @@ endif ; pentagon=512 or pentagon=1024
 ;   loop  2drop default-bank 2r> ;
 ; ----
 
-; See: `name>str`, `name>immediate?`, `name>`, `name>body`.
-;
-; }doc
-
-  ; XXX TODO -- Move to the library, with `.name`.
-
   dw name_to_str_  ; ( ca1 len )
   dw dup_,allocate_stringer_ ; ( ca1 len ca )
   dw two_dup_,swap_,two_to_r_ ; ( R: ca len )
@@ -8518,6 +8520,8 @@ endif ; pentagon=512 or pentagon=1024
 name_to_string.loop_exit:
   dw two_drop_,two_from_r_
   dw exit_
+
+endif
 
 ; ----------------------------------------------
   _colon_header store_csp_,'!csp'
@@ -10398,10 +10402,14 @@ error.message:
   dw 0,0
 
 ; ----------------------------------------------
+
+if 0 ; XXX TMP -- for debugging
+
   _colon_header dot_name_,'.name'
 
-; doc{
-;
+; XXX REMARK -- This word is in the library. This copy is
+; preserved to be activated for debugging.
+
 ; .name ( nt -- ) "dot-name"
 ;
 ; Display the name of the word identified by _nt_.
@@ -10414,15 +10422,11 @@ error.message:
 
 ; Note ``.name`` is called ``.id`` or ``id.`` in other Forth
 ; systems.
-;
-; See: `name>string`, `type`, `space`.
-;
-; }doc
-
-  ; XXX TODO -- Move to the library.
 
   dw name_to_string_,type_,space_
   dw exit_
+
+endif
 
 ; ----------------------------------------------
   _defer_header warn_,'warn',,noop_

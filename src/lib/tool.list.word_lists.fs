@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091404
+  \ Last modified: 202005080127
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -54,7 +55,7 @@ unneeding .context ?( need .wordlist
   \
   \ }doc
 
-unneeding .wordlist ?( need wordlist>name
+unneeding .wordlist ?( need wordlist>name need .name
 
 : .wordlist ( wid -- )
   dup wordlist>name @ ?dup if  .name drop exit  then  u. ; ?)
@@ -156,5 +157,8 @@ unneeding order ?( need .context need .current
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-09: Add words' pronunciaton.
+  \
+  \ 2020-05-08: Update requirements: `.name` has been moved
+  \ from the kernel to the library.
 
   \ vim: filetype=soloforth

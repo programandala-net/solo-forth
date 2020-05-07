@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not finished
 
-  \ Last modified: 201803072256
+  \ Last modified: 202005080126
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,7 +23,7 @@
   \ Wonyong Koh adapted it to hForth, 1995, 1997.
   \
   \ Marcos Cruz (programandala.net) wrote a version for Solo
-  \ Forth, based on eForth and hForth, 2016, 2017, 2018.
+  \ Forth, based on eForth and hForth, 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -34,7 +34,7 @@
 
 ( muench-koh-multitasker )
 
-get-current forth-wordlist set-current need user
+get-current forth-wordlist set-current need user need .name
 
   \ Structure of a task created by TASK:
   \
@@ -213,5 +213,8 @@ set-current
   \ in the glossary, until the code is ready.
   \
   \ 2018-03-07: Remove doc markup.
+  \
+  \ 2020-05-08: Update requirements: `.name` has been moved
+  \ from the kernel to the library.
 
   \ vim: filetype=soloforth

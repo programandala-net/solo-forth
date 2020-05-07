@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005080036
+  \ Last modified: 202005080134
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -343,7 +343,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
 : hd00   ( -- ca ) ufia ~hd00   ; \ file type
 : hd0b   ( -- a  ) ufia ~hd0b   ; \ file length
 : hd0d   ( -- a  ) ufia ~hd0d   ; \ file start address
-: hd0f   ( -- a  ) ufia ~hd0f   ; \ BASIC length w/out variables
+: hd0f   ( -- a  ) ufia ~hd0f   ; \ BASIC len w/out variables
 : hd11   ( -- a  ) ufia ~hd11   ; \ BASIC autorun line
 
   \ XXX TODO -- Remove `device`. The distinction is useless in
@@ -2347,6 +2347,6 @@ need write-file need read-file need .ufia
   \ 2020-05-05: Document the `ufia` fields. Fix markup.
   \
   \ 2020-05-08: Update requirements: `b/sector` was moved from
-  \ the kernel to the library.
+  \ the kernel to the library. Fix source line length.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202002271805
+  \ Last modified: 202005080128
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -26,7 +26,7 @@
 
 ( .word .wordname more-words? words wordlist-words )
 
-unneeding .word ?( need tab  defer .word ( nt -- )
+unneeding .word ?( need tab need .name  defer .word ( nt -- )
 
 : (.word ( nt -- ) .name tab ;  ' (.word ' .word defer! ?)
 
@@ -51,7 +51,8 @@ unneeding .word ?( need tab  defer .word ( nt -- )
   \
   \ }doc
 
-unneeding .wordname ?( need u.r
+unneeding .wordname ?( need u.r need .name
+
 : .wordname ( nt -- ) cr dup 5 u.r space .name ;
 ' .wordname ' .word defer! ?)
 
@@ -197,5 +198,8 @@ unneeding words# ?( need trail need name<name
   \ word names.
   \
   \ 2020-02-27: Fix typo in documentation.
+  \
+  \ 2020-05-08: Update requirements: `.name` has been moved
+  \ from the kernel to the library.
 
   \ vim: filetype=soloforth
