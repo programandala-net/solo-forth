@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005051958
+  \ Last modified: 202005080039
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,7 +23,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( drive ?drive# ?block-drive ?set-drive )
+( drive ?drive# ?block-drive ?set-drive b/sector )
 
 unneeding drive ?\ : drive ( c1 -- c2 ) first-drive + ;
 
@@ -111,6 +111,18 @@ unneeding ?set-drive ?( need get-drive
   \ make `transfer-sector` use the current default drive.
   \
   \ endif::[]
+  \
+  \ }doc
+
+unneeding b/sector ?\ b/buf sectors/block / constant b/sector
+
+  \ doc{
+  \
+  \ b/sector ( -- n ) "b-slash-sector"
+  \
+  \ A `constant`. _n_ is the number of bytes per sectors.
+  \
+  \ See: `sectors/block`, `sectors/track`.
   \
   \ }doc
 
@@ -369,5 +381,7 @@ unneeding get-block-drives ?( need block-drive@
   \ 2020-05-04: Fix documentation of `?block-drive`.
   \
   \ 2020-05-05: Improve documentation of `?set-drive`.
+  \
+  \ 2020-05-08: Move `b/sector` from the kernel.
 
   \ vim: filetype=soloforth

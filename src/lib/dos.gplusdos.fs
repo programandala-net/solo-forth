@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005051256
+  \ Last modified: 202005080036
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1323,6 +1323,7 @@ unneeding sectors-used ?( need dos-in need dos-out
   \ calculate the number of sectors used.
 
 unneeding drive-used ?( need get-drive need sectors-used
+                        need b/sector
 
 : drive-used ( c -- n ior )
   get-drive >r set-drive ?dup if rdrop dup exit then
@@ -2343,6 +2344,9 @@ need write-file need read-file need .ufia
   \ cross reference `file-dir` to `file-dirdesc`. Improve
   \ documentation of `file-dir#`.
   \
-  \ 2020-05-05:  Document the `ufia` fields. Fix markup.
+  \ 2020-05-05: Document the `ufia` fields. Fix markup.
+  \
+  \ 2020-05-08: Update requirements: `b/sector` was moved from
+  \ the kernel to the library.
 
   \ vim: filetype=soloforth

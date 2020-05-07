@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202005051254
+; Last modified: 202005080034
 
 include version.z80s
 
@@ -239,9 +239,6 @@ if trdos
   max_drives:                       equ 4
   first_drive:                      equ 0 ; 0 .. 3
 endif
-
-bytes_per_sector:                 equ bytes_per_buffer/sectors_per_block
-; XXX TODO -- Move to the library.
 
 characters_per_line:              equ $40
 lines_per_screen:                 equ $10
@@ -6783,23 +6780,6 @@ do_user:
 ; }doc
 
   dw bytes_per_buffer
-
-; ----------------------------------------------
-  _constant_header b_slash_sector_,'b/sector'
-
-; doc{
-;
-; b/sector ( -- n ) "b-slash-sector"
-;
-; A `constant`. _n_ is the number of bytes per sectors.
-;
-; See: `sectors/block`, `sectors/track`.
-;
-; }doc
-
-  ; XXX TODO -- Move to the library, it's calculated.
-
-  dw bytes_per_sector
 
 ; ----------------------------------------------
   _c_constant_header sectors_slash_track_,'sectors/track'

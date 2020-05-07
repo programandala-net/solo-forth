@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806101707
+  \ Last modified: 202005080037
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -19,7 +19,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -1277,7 +1278,7 @@ $0005 1 +field-ca 5f-ca drop  -->
   \ 2016-11-26: Confirm this benchmark for the parameters used
   \ by `transfer-sector` in `transfer-block`.
 
-need bench{ need }bench.
+need bench{ need }bench. need b/sector
 
 : constsum ( -- n ) buffer-data b/sector + ;
 : litsum ( -- n ) [ buffer-data b/sector + ] literal ;
@@ -3352,5 +3353,8 @@ need bench{ need }bench.
   \
   \ 2018-06-10: Move the block access speed results from the
   \ manual.
+  \
+  \ 2020-05-08: Update requirements: `b/sector` was moved from
+  \ the kernel to the library.
 
   \ vim: filetype=soloforth
