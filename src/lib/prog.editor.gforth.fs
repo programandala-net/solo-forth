@@ -1,11 +1,11 @@
-  \ prog.editor.blocked.fs
+  \ prog.editor.gforth.fs
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202005030223
+  \ Last modified: 202005070054
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -25,26 +25,6 @@
   \ Word descriptions and stack comments have been added
   \ following the original source.
 
-  \ ===========================================================
-  \ Usage
-
-  \ m   mark current position
-  \ a   go to marked position
-  \ c   move cursor by given number of chars
-  \ t   go to a given line and inserts
-  \ i   insert
-  \ d   delete marked area
-  \ r   replace marked area
-  \ f   search and mark
-  \ il  insert a line
-  \ dl  delete a line
-  \ n   go to next screen
-  \ p   go to previous screen
-  \ g   go to a given screen
-  \ l   list current screen
-  \ s   search until a given screen
-  \ y   yank deleted string
-
 ( gforth-editor )
 
 only forth definitions
@@ -59,9 +39,31 @@ vocabulary gforth-editor ' gforth-editor is editor
   \
   \ gforth-editor ( -- )
   \
-  \ A `vocabulary` containing the Gforth block editor. When
-  \ ``gforth-editor`` is loaded, it becomes the action of
-  \ `editor`.
+  \ A `vocabulary` containing a port of the Gforth block
+  \ editor. When ``gforth-editor`` is loaded, it becomes the
+  \ action of `editor`.
+
+  \ .Gforth block editor commands
+  \ |===
+  \ | Word                     | Description
+  \
+  \ | `a  ( -- )`              | Go to marked position.
+  \ | `c  ( n -- )`            | Move cursor by _n_ chars.
+  \ | `d  ( -- )`              | Delete marked area.
+  \ | `dl ( -- )`              | Delete a line at the cursor position.
+  \ | `f  ( "ccc<eol>" -- )`   | Search _ccc_ and mark it.
+  \ | `g  ( u -- )`            | Go to screen _u_.
+  \ | `i  ( "ccc<eol>" -- )`   | Insert _ccc_; if _ccc_ is empty, instert the contents of the insert buffer.
+  \ | `il ( -- )`              | Insert a line at the cursor position..
+  \ | `l  ( -- )`              | List current screen.
+  \ | `m  ( -- )`              | Mark current position.
+  \ | `n  ( -- )`              | Go to next screen.
+  \ | `p  ( -- )`              | Go to previous screen.
+  \ | `r  ( "ccc<eol>" -- )`   | Replace marked area.
+  \ | `s  ( u "ccc<eol>" -- )` | Search _ccc_ until screen _u_; if _ccc_ is empty, use the string of the previous search.
+  \ | `t  ( u "ccc<eol>"-- )`  | Go to line _u_ and insert _ccc_.
+  \ | `y  ( -- )`              | Yank deleted string.
+  \ |===
   \
   \ See: `specforth-editor`.
   \
@@ -162,8 +164,8 @@ create fbuf $100 allot
 : f ( "ccc<eol>" | -- )
   'rest len @ c/l mod /string fbuf 'par dup len ! search
   0= throw nip b/buf swap - r# ! l ;
-  \ Parse _ccc_, search it and mark it. If _ccc_ is empty, use
-  \ the
+  \ Parse _ccc_, search it and mark it.
+  \ XXX TODO -- Confirm what happens if _ccc_ is empty.
 
 : il ( -- )
   pad c/l 'rest insert 'rest drop c/l blank update l ;  -->

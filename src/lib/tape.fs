@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005052030
+  \ Last modified: 202005062120
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -283,24 +283,29 @@ code (tape-file> ( -- )
   \
   \ tape-file> ( ca1 len1 ca2 len2 -- ) "tape-file-from"
   \
-  \ Read a tape file _ca1 len1_ (_len1_ is zero if filename is
-  \ unspecified) into a memory region _ca2 len2_.
+  \ Read a tape file _ca1 len1_ into a memory region _ca2
+  \ len2_.
   \
-  \ _ca2_ is zero if the address must be taken from the file
-  \ header instead, which is the address the file was saved
-  \ from.  _len2_ is zero if it's unspecified.
+  \ - When _len1_ is zero, it means the filename is
+  \ unspecified, _ca1_ is irrelevant and the first file must be
+  \ loaded.
+  \
+  \ - When _ca2_ is zero the destination address will be taken
+  \ from the file header, i.e. the address the file was saved
+  \ from.
+  \
+  \ - When _len2_ is zero the zone size will be taken from the
+  \ file header, i.e. the whole length of the file.
   \
   \ WARNING: If _len2_ is not zero or the exact length of the
   \ file, the ROM routine returns to BASIC with "Tape loading
   \ error". This crashes the system, because in Solo Forth the
   \ lower screen has no lines, and BASIC can not display the
-  \ message. This will be avoided in a future version of Solo
-  \ Forth.
-  \
+  \ message.
+
   \ See: `>tape-file`, `(tape-file>`
-  \ ifdef::plu3dos[.]
-  \ ifdef::gplusdos[, `>file`]
-  \ ifdef::trdos[, `>file`]
+  \ ifdef::plus3dos[.]
+  \ ifdef::gplusdos,trdos[, `>file`.]
   \
   \ }doc
 
@@ -350,8 +355,7 @@ code (>tape-file ( -- )
   \
   \ See: `tape-file>`, `(>tape-file`
   \ ifdef::plu3dos[.]
-  \ ifdef::gplusdos[, `>file`]
-  \ ifdef::trdos[, `>file`]
+  \ ifdef::gplusdos,trdos[, `>file`.]
   \
   \ }doc
 
