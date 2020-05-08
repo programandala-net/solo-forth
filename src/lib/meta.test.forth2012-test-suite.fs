@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041113
+  \ Last modified: 202005090038
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -15,7 +15,7 @@
   \ XXX UNDER DEVELOPMENT -- The original test is meant to be
   \ interpreted from a text file. It must be adapted to blocks.
 
-need blk-line need word need do
+need blk-line need word need do need depth
 
 CR CR BLK-LINE TYPE ( Preliminary test ) CR
 BLK-LINE ( These lines test BLK-LINE, TYPE, ) TYPE CR
@@ -7135,5 +7135,8 @@ cr .( Forth-2012 tests completed ) cr cr
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2020-05-09: Update requirements: `depth` has been moved to
+  \ the library.
 
   \ vim: filetype=soloforth

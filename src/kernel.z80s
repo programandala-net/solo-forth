@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202005080123
+; Last modified: 202005090052
 
 include version.z80s
 
@@ -1307,6 +1307,8 @@ endif
 ; See: `end-asm`, `reveal`.
 ;
 ; }doc
+
+  ; XXX TODO -- Move to the library? Not needed in the kernel.
 
   dw end_asm_,reveal_
   dw exit_
@@ -4620,8 +4622,6 @@ endif
 
   ; XXX TODO -- Rename to `a[ccept]key`, `c[aps]key`,
   ; `m[ode]key`?
-  ;
-  ; XXX TODO -- Rewrite in Forth and move to the library.
 
   push bc
 
@@ -6048,7 +6048,8 @@ endif
 ;
 ; }doc
 
-  ; XXX TODO -- Move to the library, when possible.
+  ; XXX TODO -- Move to the library, when possible. Used by
+  ; `lex?`.
 
   pop hl ; address
   pop de ; E = bitmask
@@ -8747,6 +8748,8 @@ endif
 ;
 ; }doc
 
+  ; XXX TODO -- Move to the library.
+
   dw defined_ ; ( nt | 0 )
   dw dup_,question_defined_ ; error if not found
   ; ( nt )
@@ -9219,7 +9222,7 @@ type.loop_exit:
 ;
 ; }doc
 
-  ; XXX TODO -- Can not be moved to the library, because
+  ; XXX REMARK -- Can not be moved to the library, because
   ; `new-needed-word` needs it.
 
   pop de
@@ -10172,8 +10175,8 @@ far_lowers.end:
 ;
 ; }doc
 
-  ; XXX TODO -- Move to the library, but it's needed by
-  ; `needed`.
+  ; XXX REMARK -- Can not be moved to the library, because it's
+  ; used by `needed`.
 
   dw find_name_,zero_equals_
   dw exit_
@@ -10597,6 +10600,8 @@ if 1 ; assembler_core_in_kernel
 ;
 ; }doc
 
+  ; XXX TODO -- Move to the library? Not needed in the kernel.
+
   dw header_,asm_
   dw exit_
 
@@ -10979,15 +10984,14 @@ search.failed:
   dw exit_
 
 ; ----------------------------------------------
-if 1 ; developing
 
-  ; XXX TODO -- Move to the library.
-  ; XXX TMP -- only during the development
+if 0 ; developing
+
+  ; XXX REMARK -- This word is in the library. This copy is
+  ; preserved to be activated for debugging.
 
   _colon_header depth_,'depth'
 
-; doc{
-;
 ; depth  ( -- +n )
 ;
 ; _+n_ is the number of single-cell values contained in the data
@@ -10999,19 +11003,13 @@ if 1 ; developing
 ; : depth  ( -- +n ) sp@ sp0 @ - [ cell negate ] literal / ;
 ; ----
 
-; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
-; Set), Forth-94 (CORE), Forth-2012 (CORE).
-;
-; See: `sp@`, sp0`, `cell`, `rdepth`, `fdepth`.
-;
-; }doc
-
   dw sp_fetch_,sp0_,fetch_,minus_,lit_,-2,slash_
   dw exit_
 
 endif
 
 ; ----------------------------------------------
+
 if 0
 
   ; XXX UNDER DEVELOPMENT
@@ -12028,7 +12026,8 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-if 1 ; developing
+
+if 0 ; developing
 
   ; XXX TMP -- during the development
 
@@ -12071,14 +12070,16 @@ endif
   dw dos_,type_
   dw paren_dot_quote_
   _string "\rBy Marcos Cruz\r(programandala.net), 2015-2020\r"
-if 1 ; developing
+if 0 ; developing
   ; XXX TMP -- during the development
   dw dot_words_,cr_,dot_unused_
 endif
   dw exit_
 
 ; ----------------------------------------------
-if 1 ; developing
+
+if 0 ; developing
+
   ; XXX TMP -- during the development
   _colon_header dot_unused_,'.unused'
 
@@ -14481,10 +14482,7 @@ hash_s.begin:
   dw exit_
 
 ; ----------------------------------------------
-if 1 ; developing
   _colon_header u_dot_,'u.'
-
-  ; XXX TODO -- Move to the library.
 
 ; doc{
 ;
@@ -14509,15 +14507,14 @@ if 1 ; developing
   dw d_dot_ ; XXX TODO -- `ud.`
   dw exit_
 
-endif
-
 ; ----------------------------------------------
-if 1 ; developing
+
+if 0 ; developing
 
   _colon_header dot_s_,'.s'
 
-  ; XXX TMP -- only during the development, then remove
-  ; It is in the library.
+  ; XXX REMARK -- This word is in the library. This copy is
+  ; preserved to be activated for debugging.
 
   dw depth_,dup_
   _literal '<'
@@ -14547,7 +14544,8 @@ dot_s.end:
 endif
 
 ; ----------------------------------------------
-if 1 ; developing
+
+if 0 ; developing
 
   _colon_header u_dot_s_,'u.s'
 
@@ -14562,7 +14560,8 @@ if 1 ; developing
 endif
 
 ; ----------------------------------------------
-if 0
+
+if 0 ; debugging
 
   ; XXX TMP -- for debugging
 
@@ -14589,7 +14588,8 @@ type_ascii.loop_exit:
 endif
 
 ; ----------------------------------------------
-if 0
+
+if 0 ; debugging
 
   ; XXX TMP -- for debugging
 
@@ -15330,7 +15330,7 @@ two_fetch.hl:
 ;
 ; }doc
 
-  ; XXX TODO -- Move to the library?
+  ; XXX TODO -- Move to the library.
 
   dw create_
   dw branch_,two_comma.allot

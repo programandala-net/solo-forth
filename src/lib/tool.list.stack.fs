@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005042207
+  \ Last modified: 202005090041
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -24,7 +24,25 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( .depth .s u.s )
+( depth .depth .s u.s )
+
+unneeding depth
+
+?\ : depth  ( -- +n ) sp@ sp0 @ - [ cell negate ] literal / ;
+
+  \ doc{
+  \
+  \ depth  ( -- +n )
+  \
+  \ _+n_ is the number of single-cell values contained in the
+  \ data stack before _+n_ was placed on the stack.
+  \
+  \ Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
+  \ Set), Forth-94 (CORE), Forth-2012 (CORE).
+  \
+  \ See: `sp@`, sp0`, `cell`, `rdepth`, `fdepth`, `.depth`.
+  \
+  \ }doc
 
 unneeding .depth ?\ : .depth ( n -- ) ." <" 0 .r ." > " ;
 
@@ -35,11 +53,11 @@ unneeding .depth ?\ : .depth ( n -- ) ." <" 0 .r ." > " ;
   \ Display _n_ with the format used by `.s` and `u.s` to
   \ display the `depth` of the data stack`.
   \
-  \ See: `.r`.
+  \ See: `.r`, `depth`.
   \
   \ }doc
 
-unneeding .s ?( need .depth
+unneeding .s ?( need depth need .depth
 
 defer (.s ( x -- ) ' . ' (.s defer!
 
@@ -104,9 +122,12 @@ unneeding u.s ?( need .s
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
-  \ 2018-06-04: Update: remove trailing closing paren from
-  \ word names.
+  \ 2018-06-04: Update: remove trailing closing paren from word
+  \ names.
   \
   \ 2020-05-04: Improve documentation.
+  \
+  \ 2020-05-09: Move `depth` from the kernel. Update the
+  \ corresponding requirements.
 
   \ vim: filetype=soloforth

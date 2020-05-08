@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202002290949
+  \ Last modified: 202005090035
 
   \ ===========================================================
   \ Description
@@ -65,7 +65,7 @@ unneeding << unneeding >> and ?(
   \
   \ See the license at <http://pygmy.utoh.org/license.html>.
 
-need 16hex. need 8hex.
+need depth need 16hex. need 8hex.
 
 : << ( -- ca n ) here depth ;
 
@@ -245,5 +245,8 @@ unneeding ;code ?(
   \ 2020-02-29: Fix `>>`: it displayed one extra byte, it
   \ needed just `1-` before the loop, but it has been rewritten
   \ with `?do` instead of `for`, making it simpler.
+  \
+  \ 2020-05-09: Update requirements: `depth` has been moved to
+  \ the library.
 
   \ vim: filetype=soloforth

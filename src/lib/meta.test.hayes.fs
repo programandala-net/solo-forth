@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804152333
+  \ Last modified: 202005090039
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -24,7 +24,7 @@
   \ John Hayes S1I, 1995-11-27.
 
   \ Marcos Cruz (programandala.net) adapted it to Solo Forth,
-  \ 2016, 2017, 2018.
+  \ 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -43,7 +43,7 @@
 
 ( hayes-test )
 
-need hayes-tester need do  verbose on  hex
+need hayes-tester need do need depth  verbose on  hex
 
 { -> }  \ start with clean slate
 
@@ -912,5 +912,8 @@ decimal cr .( Test passed) cr
   \ Improve documentation.
   \
   \ 2018-04-15: Update notation ".." to "...".
+  \
+  \ 2020-05-09: Update requirements: `depth` has been moved to
+  \ the library.
 
   \ vim: filetype=soloforth

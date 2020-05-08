@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803110126
+  \ Last modified: 202005090036
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -17,7 +17,7 @@
   \ John Hayes S1I, 1995-11-27.
 
   \ Marcos Cruz (programandala.net) adapted it to Solo Forth,
-  \ 2015, 2016, 2017, 2018.
+  \ 2015, 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -36,7 +36,7 @@
 
 ( hayes-tester )
 
-need where need do
+need where need do need depth
 
 variable verbose  verbose on
   \ Set this flag to true for more verbose output;
@@ -155,5 +155,8 @@ create actual-results $20 cells allot
   \ exchanged. Update stack notation and documentation.
   \
   \ 2018-03-11: Activate `verbose` by default.
+  \
+  \ 2020-05-09: Update requirements: `depth` has been moved to
+  \ the library.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803122353
+  \ Last modified: 202005090037
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -53,7 +53,7 @@
   \ errors for error report at end of tests
   \
   \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
-  \ 2018.
+  \ 2018, 2020.
 
   \ ===========================================================
   \ Credit
@@ -133,6 +133,7 @@
 ( ttester )
 
 need environment? need [if] need do need blk-line need s+
+need depth
 
 BASE @ DECIMAL
 
@@ -486,5 +487,8 @@ BASE !
   \ 2018-03-12: Restore the original long messages and convert
   \ them to lowercase. Add a pause to `error1`. Compact the
   \ code, saving one block.
+  \
+  \ 2020-05-09: Update requirements: `depth` has been moved to
+  \ the library.
 
   \ vim: filetype=soloforth
