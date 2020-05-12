@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202005070054
+  \ Last modified: 202005112053
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -45,24 +45,24 @@ vocabulary gforth-editor ' gforth-editor is editor
 
   \ .Gforth block editor commands
   \ |===
-  \ | Word                     | Description
+  \ | Word                         | Description
   \
-  \ | `a  ( -- )`              | Go to marked position.
-  \ | `c  ( n -- )`            | Move cursor by _n_ chars.
-  \ | `d  ( -- )`              | Delete marked area.
-  \ | `dl ( -- )`              | Delete a line at the cursor position.
-  \ | `f  ( "ccc<eol>" -- )`   | Search _ccc_ and mark it.
-  \ | `g  ( u -- )`            | Go to screen _u_.
-  \ | `i  ( "ccc<eol>" -- )`   | Insert _ccc_; if _ccc_ is empty, instert the contents of the insert buffer.
-  \ | `il ( -- )`              | Insert a line at the cursor position..
-  \ | `l  ( -- )`              | List current screen.
-  \ | `m  ( -- )`              | Mark current position.
-  \ | `n  ( -- )`              | Go to next screen.
-  \ | `p  ( -- )`              | Go to previous screen.
-  \ | `r  ( "ccc<eol>" -- )`   | Replace marked area.
-  \ | `s  ( u "ccc<eol>" -- )` | Search _ccc_ until screen _u_; if _ccc_ is empty, use the string of the previous search.
-  \ | `t  ( u "ccc<eol>"-- )`  | Go to line _u_ and insert _ccc_.
-  \ | `y  ( -- )`              | Yank deleted string.
+  \ | `a`  ``( -- )``              | Go to marked position.
+  \ | `c`  ``( n -- )``            | Move cursor by _n_ chars.
+  \ | `d`  ``( -- )``              | Delete marked area.
+  \ | `dl` ``( -- )``              | Delete a line at the cursor position.
+  \ | `f`  ``( "ccc<eol>" -- )``   | Search _ccc_ and mark it.
+  \ | `g`  ``( u -- )``            | Go to screen _u_.
+  \ | `i`  ``( "ccc<eol>" -- )``   | Insert _ccc_; if _ccc_ is empty, instert the contents of the insert buffer.
+  \ | `il` ``( -- )``              | Insert a line at the cursor position..
+  \ | `l`  ``( -- )``              | List current screen.
+  \ | `m`  ``( -- )``              | Mark current position.
+  \ | `n`  ``( -- )``              | Go to next screen.
+  \ | `p`  ``( -- )``              | Go to previous screen.
+  \ | `r`  ``( "ccc<eol>" -- )``   | Replace marked area.
+  \ | `s`  ``( u "ccc<eol>" -- )`` | Search _ccc_ until screen _u_; if _ccc_ is empty, use the string of the previous search.
+  \ | `t`  ``( u "ccc<eol>"-- )``  | Go to line _u_ and insert _ccc_.
+  \ | `y`  ``( -- )``              | Yank deleted string.
   \ |===
   \
   \ See: `specforth-editor`.
@@ -84,115 +84,313 @@ variable len len off
 ( gforth-editor )
 
 create rbuf $100 allot
-  \ Replace buffer.
   \ XXX TODO -- rename
   \ XXX TODO -- use the `stringer` instead?
+
+  \ doc{
+  \
+  \ rbuf ( -- ca )
+  \
+  \ Return the address _ca_ of the 100-byte replace buffer used
+  \ by the `gforth-editor`.
+  \
+  \ See: `ibuf`, `fbuf`.
+  \
+  \ }doc
 
 create ibuf $100 allot
-  \ Insert buffer.
   \ XXX TODO -- rename
   \ XXX TODO -- use the `stringer` instead?
 
+  \ doc{
+  \
+  \ ibuf ( -- ca )
+  \
+  \ Return the address _ca_ of the 100-byte insert buffer used
+  \ by the `gforth-editor`.
+  \
+  \ See: `rbuf`, `fbuf`.
+  \
+  \ }doc
+
 create fbuf $100 allot
-  \ Search buffer.
   \ XXX TODO -- rename
   \ XXX TODO -- use the `stringer` instead?
+
+  \ doc{
+  \
+  \ ibuf ( -- ca )
+  \
+  \ Return the address _ca_ of the 100-byte search buffer used
+  \ by the `gforth-editor`..
+  \
+  \ See: `rbuf`, `ibuf`.
+  \
+  \ }doc
 
 : h ( -- )
   r# @ c/l /mod swap >r scr @ line>string
   2dup drop r@ cr type
        r> /string 2dup drop len @ 1 inverse type 0 inverse
                        len @ /string type ;
+
+  \ doc{
+  \
+  \ h ( -- )
+  \
+  \ A command of `gforth-editor`:
   \ Type the line of the marked area, highlighting it.
+  \
+  \ }doc
 
 : g ( u -- ) page list h ;
+
+  \ doc{a
+  \
+  \  g ( u -- )
+  \
+  \ A command of `gforth-editor`:
   \ Go to screen _u_.
+  \
+  \ }doc
 
 : l ( -- ) scr @ g ;
+
+  \ doc{
+  \
+  \  l ( -- )
+  \
+  \ A command of `gforth-editor`:
   \ Go to current screen.
+  \
+  \ }doc
 
 : m ( -- ) scr @ r# @ mark 2! ;
+
+  \ doc{
+  \
+  \ m ( -- )
+  \
+  \ A command of `gforth-editor`:
   \ Mark current position.
+  \
+  \ }doc
 
 : a ( -- ) mark 2@ m r# ! g ;
-  \ Go to marked position, marking the current position first.
 
-: c ( n -- ) r# +! 1 len ! l ;  -->
-  \ Move cursor by _n_ chars.
+  \ doc{
+  \
+  \ a ( -- )
+  \
+  \ A command of `gforth-editor`:
+  \ Go to marked position, marking the current position first.
+  \
+  \ }doc
+
+: c ( n -- ) r# +! 1 len ! l ; -->
 
   \ XXX TODO -- word to move cursor by _n_ lines, and putting
   \ it at the start of a line
 
+  \ doc{
+  \
+  \  c ( n -- )
+  \
+  \ A command of `gforth-editor`:
+  \ Move cursor by _n_ chars.
+  \
+  \ }doc
+
 ( gforth-editor )
 
 : 'rest ( -- ca len ) scr @ block b/buf r# @ /string ;
-  \ Return the rest of the current screen, from the
-  \ current position.
+
   \ XXX TODO -- rename
 
+  \ doc{
+  \
+  \  'rest ( -- ca len )
+  \
+  \ Part of the `gforth-editor`:
+  \ Return the rest of the current screen, from the
+  \ current position.
+  \
+  \ }doc
+
+
 : 'line ( -- ca len ) 'rest 1- c/l 1- and 1+ ;
+
+  \ XXX TODO -- rename
+
+  \ doc{
+  \
+  \  'line ( -- ca len )
+  \
+  \ Part of the `gforth-editor`:
   \ Return the rest of the current line, from the
   \ current position.
-  \ XXX TODO -- rename
+  \
+  \ }doc
 
 : 'par ( buf "ccc<eol>" -- ca len ) >r 0 parse dup
   0= if 2drop r> count else 2dup  r> place then ;
+
+  \ XXX TODO -- rename to `buffer-parse`
+
+  \ doc{
+  \
+  \  'par ( buf "ccc<eol>" -- ca len )
+  \
+  \ Part of the `gforth-editor`:
   \ Parse _ccc_. If the result string is empty,
   \ discard it and return the counted string at _buf_;
   \ else return the parsed string and also store it
   \ at _buf_ as a counted string.
-  \ XXX TODO -- rename to `buffer-parse`
+  \
+  \ }doc
 
 : t ( u "ccc<eol>" -- ) c/l * r# ! c/l len !
   0 parse tuck 'line insert if update then l ;
-  \ Go to line _u_ and insert _ccc_.
+
   \ XXX TODO -- make `len` the length of the inserted text
 
+  \ doc{
+  \
+  \  t ( u "ccc<eol>" -- )
+  \
+  \ A command of `gforth-editor`:
+  \ Go to line _u_ and insert _ccc_.
+  \
+  \ }doc
+
 : i ( "ccc<eol>" -- ) ibuf 'par 'line insert update l ;
+
+  \ doc{
+  \
+  \ i ( "ccc<eol>" -- )
+  \
+  \ A command of `gforth-editor`:
   \ Insert _ccc_ or, if it's empty, the contents of the insert
   \ buffer.
+  \
+  \ See: `ibuf`, `l`.
+  \
+  \ }doc
 
 : d ( -- ) 'line 2dup rbuf place len @ delete update l ;
+
+  \ doc{
+  \
+  \ d ( -- )
+  \
+  \ A command of `gforth-editor`:
   \ Delete marked area.
+  \
+  \ }doc
 
 : r ( "ccc<eol>" -- ) d i ;
+
+  \ doc{
+  \
+  \  r ( "ccc<eol>" -- )
+  \
+  \ A command of `gforth-editor`:
   \ Replace marked area.
+  \
+  \ }doc
 
 : y ( -- ) rbuf count 'line insert update l ;
+
+  \ doc{
+  \
+  \  y ( -- )
+  \
+  \ A command of `gforth-editor`:
   \ Yank deleted string.
+  \
+  \ }doc
 
 : f ( "ccc<eol>" | -- )
   'rest len @ c/l mod /string fbuf 'par dup len ! search
   0= throw nip b/buf swap - r# ! l ;
-  \ Parse _ccc_, search it and mark it.
+
   \ XXX TODO -- Confirm what happens if _ccc_ is empty.
 
+  \ doc{
+  \
+  \  f ( "ccc<eol>" | -- )
+  \
+  \ A command of `gforth-editor`:
+  \ Parse _ccc_, search it and mark it.
+  \
+  \ }doc
+
 : il ( -- )
-  pad c/l 'rest insert 'rest drop c/l blank update l ;  -->
+  pad c/l 'rest insert 'rest drop c/l blank update l ; -->
+
+  \ doc{
+  \
+  \ il ( -- )
+  \
+  \ A command of `gforth-editor`:
   \ Insert a line at the cursor position.
+  \
+  \ }doc
 
 ( gforth-editor )
 
 : dl ( -- ) 'rest c/l delete update l ;
+
+  \ doc{
+  \
+  \ dl ( -- )
+  \
+  \ A command of `gforth-editor`:
   \ Delete a line at the cursor position.
+  \
+  \ }doc
 
 : n ( -- ) scr @ 1+ top g ;
+
+  \ doc{
+  \
+  \  n ( -- )
+  \
+  \ A command of `gforth-editor`:
   \ Go to next screen.
+  \
+  \ }doc
 
 : p ( -- ) scr @ 1- top g ;
-  \ Go to previous screen.
 
-: s ( u "ccc<eol>" | u -- ) >r
-  begin ['] f catch
-  while scr @ r@ = if rdrop exit then
-        scr @ r@ u< if n else p then
-  repeat r> ;
-  \ Search for _ccc_ until screen _u_. If _ccc_ is empty, use
-  \ the string of the previous search.
+  \ doc{
   \
+  \  p ( -- )
+  \
+  \ A command of `gforth-editor`:
+  \ Go to previous screen.
+  \
+  \ }doc
+
+: s ( u "ccc<eol>" | u -- )
+  >r begin ['] f catch
+     while scr @ r@ =  if rdrop exit then
+           scr @ r@ u< if n else p   then repeat
+  r> ;
+
   \ XXX TODO -- simplify and improve: search from the current
   \ block to the last one, without listing them; use
   \ `break-key?` to stop.
+
+  \ doc{
+  \
+  \ s ( u "ccc<eol>" | u -- )
+  \
+  \ A command of `gforth-editor`:
+  \ Search for _ccc_ until screen _u_. If _ccc_ is empty, use
+  \ the string of the previous search.
+  \
+  \ }doc
 
 forth definitions
 
@@ -227,5 +425,7 @@ forth definitions
   \ <strings.MISC.fs>.
   \
   \ 2020-05-05: Document `gforth-editor`.
+  \
+  \ 2020-05-11: Improve documentation.
 
   \ vim: filetype=soloforth

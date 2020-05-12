@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005070102
+  \ Last modified: 202005112053
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -56,27 +56,27 @@ vocabulary specforth-editor ' specforth-editor is editor
 
   \ .Specforth block editor commands
   \ |===
-  \ | Word                     | Description
+  \ | Word                         | Description
 
-  \ | `b ( -- )`               | Used after `f` to backup the cursor by the length of the most recent text.
-  \ | `c ( "ccc<eol>" -- )`    | Copy in "ccc" to the cursor line at the cursor position.
-  \ | `clear ( n -- )`         | Clear block _n_ with blanks and select for editing.
-  \ | `copy ( n1 n2 -- )`      | Copy block _n1_ to block _n2_.
-  \ | `d ( n -- )`             | Delete line _n_ but hold it in `pad`. Line 15 becomes free as all statements move up one line.
-  \ | `delete ( n -- )`        | Delete _n_ characters prior to the cursor.
-  \ | `e ( n -- )`             | Erase line _n_ with blanks.
-  \ | `find ( -- )`            | Search for a match to the string at `pad`, from the cursor position until the end of block.  If no match found issue an error message and reposition the cursor at the top of the block.
-  \ | `h ( n -- )`             | Hold line _n_ at `pad` (used by system more often than by user).
-  \ | `i ( n -- )`             | Insert text from `pad` at line _n_, moving the old line _n_ down. Line 15 is lost.
-  \ | `l ( -- )`               | List the current block.
-  \ | `m ( n -- )`             | Move the cursor by _n_ characters. The position of the cursor on its line is shown by a "_" (underline).
-  \ | `n ( -- )`               | Find the next occurrence of the string found by an `f` command.
-  \ | `p ( n "ccc<eol>" -- )`  | Put "ccc" on line _n_.
-  \ | `r ( n -- )`             | Replace line _n_ with the text in `pad`.
-  \ | `s ( n -- )`             | Spread at line _n_. Line _n_ and following lines are are moved down one line. Line _n_ becomes blank. Line 15 is lost.
-  \ | `t ( n -- )`             | Type line _n_ and save in `pad`.
-  \ | `till ( "ccc<eol>" -- )` | Delete on the cursor line from the cursor till the end of string "ccc".
-  \ | `x ( "ccc<eol>" -- )`    | Find and delete the next occurrence of the string "ccc".
+  \ | `b` ``( -- )``               | Used after `f` to backup the cursor by the length of the most recent text.
+  \ | `c` ``( "ccc<eol>" -- )``    | Copy in _ccc_ to the cursor line at the cursor position.
+  \ | `clear` ``( n -- )``         | Clear block _n_ with blanks and select for editing.
+  \ | `copy` ``( n1 n2 -- )``      | Copy block _n1_ to block _n2_.
+  \ | `d` ``( n -- )``             | Delete line _n_ but hold it in `pad`. Line 15 becomes free as all statements move up one line.
+  \ | `delete` ``( n -- )``        | Delete _n_ characters prior to the cursor.
+  \ | `e` ``( n -- )``             | Erase line _n_ with blanks.
+  \ | `find` ``( -- )``            | Search for a match to the string at `pad`, from the cursor position until the end of block.  If no match found issue an error message and reposition the cursor at the top of the block.
+  \ | `h` ``( n -- )``             | Hold line _n_ at `pad` (used by system more often than by user).
+  \ | `i` ``( n -- )``             | Insert text from `pad` at line _n_, moving the old line _n_ down. Line 15 is lost.
+  \ | `l` ``( -- )``               | List the current block.
+  \ | `m` ``( n -- )``             | Move the cursor by _n_ characters. The position of the cursor on its line is shown by a "_" (underline).
+  \ | `n` ``( -- )``               | Find the next occurrence of the string found by an `f` command.
+  \ | `p` ``( n "ccc<eol>" -- )``  | Put _ccc_ on line _n_.
+  \ | `r` ``( n -- )``             | Replace line _n_ with the text in `pad`.
+  \ | `s` ``( n -- )``             | Spread at line _n_. Line _n_ and following lines are are moved down one line. Line _n_ becomes blank. Line 15 is lost.
+  \ | `t` ``( n -- )``             | Type line _n_ and save in `pad`.
+  \ | `till` ``( "ccc<eol>" -- )`` | Delete on the cursor line from the cursor till the end of string _ccc_.
+  \ | `x` ``( "ccc<eol>" -- )``    | Find and delete the next occurrence of the string _ccc_.
 
   \ |===
 
@@ -97,6 +97,8 @@ also editor definitions need r# need top
   \ `pad` as a counted string, blank-filling the remainder of
   \ `pad` to `c/l` characters.
   \
+  \ See: `parse-all`.
+  \
   \ }doc
 
 : line ( n -- a )
@@ -112,6 +114,8 @@ also editor definitions need r# need top
   \ Read the disk block from disk if it is not already in the
   \ disk buffer.
   \
+  \ See: `line>string`.
+  \
   \ }doc
 
 : #locate ( -- n1 n2 ) r# @ c/l /mod ;
@@ -123,6 +127,8 @@ also editor definitions need r# need top
   \ Part of `specforth-editor`:
   \ From the cursor pointer `r#` compute the line number _n2_
   \ and the character offset _n1_ in line number _n2_.
+  \
+  \ See: `#lead`, `c/l`.
   \
   \ }doc
 
@@ -137,17 +143,21 @@ also editor definitions need r# need top
   \ in the block buffer and the offset from _a_ to the cursor
   \ location _n_.
   \
+  \ See: `#locate`, `#lag`.
+  \
   \ }doc
 
 : #lag ( -- ca n ) #lead dup >r + c/l r> - ;
 
   \ doc{
   \
-  \ Part of `specforth-editor`:
   \ #lag ( -- ca n ) "hash-lag"
   \
+  \ Part of `specforth-editor`:
   \ Return cursor address _ca_ and count _n_ after cursor till
   \ end of line.
+  \
+  \ See: `#lead`.
   \
   \ }doc
 
@@ -155,10 +165,12 @@ also editor definitions need r# need top
 
   \ doc{
   \
-  \ Part of `specforth-editor`:
   \ -move ( ca n -- ) "minus-move"
   \
+  \ Part of `specforth-editor`:
   \ Move a line of text from _ca_ to line _n_ of current block.
+  \
+  \ See: `m`, `c/l`, `cmove`, `update`.
   \
   \ }doc
 
@@ -172,7 +184,7 @@ also editor definitions need r# need top
   \ Erase line _n_ with blanks.
   \
   \ See: `b`, `c`, `d`, `f`, `h`, `i`, `l`, `m`, `n`, `p`, `r`, `s`,
-  \ `t`, `x`.
+  \ `t`, `x`, `c/l`, `blank`, `update`.
   \
   \ }doc
 
@@ -235,7 +247,7 @@ also editor definitions need r# need top
   \ cursor on its line is shown by a "_" (underline).
   \
   \ See: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `n`,
-  \ `p`, `r`, `s`, `t`, `x`.
+  \ `p`, `r`, `s`, `t`, `x`, `-move`.
   \
   \ }doc
 
@@ -265,7 +277,7 @@ also editor definitions need r# need top
   \ List the current block.
   \
   \ See: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `m`, `n`,
-  \ `p`, `r`, `s`, `t`, `x`.
+  \ `p`, `r`, `s`, `t`, `x`, `scr`, `list`.
   \
   \ }doc
 
@@ -279,7 +291,7 @@ also editor definitions need r# need top
   \ Replace line _n_ with the text in `pad`.
   \
   \ See: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
-  \ `p`, `s`, `t`, `x`.
+  \ `p`, `s`, `t`, `x`, `-move`.
   \
   \ }doc
 
@@ -290,10 +302,10 @@ also editor definitions need r# need top
   \ p ( n "ccc<eol>" -- )
   \
   \ A command of `specforth-editor`:
-  \ Put "ccc" on line _n_.
+  \ Put _ccc_ on line _n_.
   \
   \ See: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
-  \ `r`, `s`, `t`, `x`.
+  \ `r`, `s`, `t`, `x`, `text`.
   \
   \ }doc
 
@@ -323,6 +335,8 @@ also editor definitions need r# need top
   \ A command of `specforth-editor`:
   \ Clear block _n_ with blanks and select for editing.
   \
+  \ See: `e`, `l/scr`.
+  \
   \ }doc
 
 -->
@@ -344,6 +358,8 @@ also editor definitions need r# need top
   \ Return a non-zero _f_ if string _ca1 len1_ exactly
   \ match string _ca2 len1_, else return a false flag.
   \
+  \ See: `match`.
+  \
   \ }doc
 
 : match ( ca1 len1 ca2 len2 -- true n3 | false n4 )
@@ -362,6 +378,8 @@ also editor definitions need r# need top
   \ end of the matching string, else leave _n4_ bytes to end of
   \ line.
   \
+  \ See: `-text`.
+  \
   \ }doc
 
 : 1line ( -- f ) #lag pad count match r# +! ;
@@ -374,6 +392,8 @@ also editor definitions need r# need top
   \ Scan the cursor line for a match to `pad` text. Return flag
   \ and update the cursor `r#` to the end of matching text, or
   \ to the start of the next line if no match is found.
+  \
+  \ See: `#lag`, `match`.
   \
   \ }doc
 
@@ -390,11 +410,12 @@ also editor definitions need r# need top
   \ A command of `specforth-editor`:
   \ Search for a match to the string at `pad`, from the cursor
   \ position until the end of block.  If no match found issue
-  \ an error message and reposition the cursor at the top of
+  \ an error message and reposition the cursor at the `top` of
   \ the block.
   \
+  \ See: `1line`.
+  \
   \ }doc
-
 
 ( specforth-editor )
 
@@ -407,6 +428,8 @@ also editor definitions need r# need top
   \
   \ A command of `specforth-editor`:
   \ Delete _n_ characters prior to the cursor.
+  \
+  \ See: `#lag`, `r#`, `#lead`.
   \
   \ }doc
 
@@ -421,7 +444,7 @@ also editor definitions need r# need top
   \ command.
   \
   \ See: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`,
-  \ `p`, `r`, `s`, `t`, `x`.
+  \ `p`, `r`, `s`, `t`, `x`, `find`.
   \
   \ }doc
 
@@ -433,13 +456,13 @@ also editor definitions need r# need top
   \
   \ A command of `specforth-editor`:
   \ Search forward from the current cursor position until
-  \ string "ccc" is found. The cursor is left at the end of the
+  \ string _ccc_ is found. The cursor is left at the end of the
   \ string and the cursor line is printed. If the string is not
   \ found and error message is given and the cursor
   \ repositioned to the top of the block.
   \
   \ See: `b`, `c`, `d`, `e`, `h`, `i`, `l`, `m`, `n`, `p`, `r`,
-  \ `s`, `t`, `x`.
+  \ `s`, `t`, `x`, `text`.
   \
   \ }doc
 
@@ -465,10 +488,10 @@ also editor definitions need r# need top
   \ x ( "ccc<eol>" -- )
   \
   \ A command of `specforth-editor`:
-  \ Find and delete the next occurrence of the string "ccc".
+  \ Find and delete the next occurrence of the string _ccc_.
   \
   \ See: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
-  \ `p`, `r`, `s`, `t`.
+  \ `p`, `r`, `s`, `t`, `text`, `find`, `delete`.
   \
   \ }doc
 
@@ -480,7 +503,7 @@ also editor definitions need r# need top
   \
   \ A command of `specforth-editor`:
   \ Delete on the cursor line from the cursor till the end of
-  \ string "ccc".
+  \ string _ccc_.
   \
   \ }doc
 
@@ -494,7 +517,9 @@ also editor definitions need r# need top
   \ (c ( ca len -- ) "paren-c"
   \
   \ Copy the string _ca len_ to the cursor line at the cursor
-  \ position.
+  \ position. ``(c`` is a factor of `c`.
+  \
+  \ See: `#lag`, `r#`, `#lead`, `cmove`, `update`.
   \
   \ }doc
 
@@ -506,10 +531,11 @@ also editor definitions need r# need top
   \ c ( "ccc<eol>" -- )
   \
   \ A command of `specforth-editor`:
-  \ Copy in "ccc" to the cursor line at the cursor position.
+  \ Copy in _ccc_ to the cursor line at the cursor position.
   \
-  \ See: `b`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
-  \ `p`, `r`, `s`, `t`, `x`.
+  \ See: `b`, `d`, `e`, `f`, `h`, `i`, `l`,
+  \ `m`, `n`,
+  \ `p`, `r`, `s`, `t`, `x`, `(c`, `text`.
   \
   \ }doc
 
@@ -520,7 +546,9 @@ also editor definitions need r# need top
   \ copy ( n1 n2 -- )
   \
   \ A command of `specforth-editor`:
-  \ Copy block _n1_ to block _n2_.
+  \ Copy `block` _n1_ to block _n2_.
+  \
+  \ See: `update`, `save-buffers`.
   \
   \ }doc
 
@@ -564,3 +592,5 @@ only forth definitions
   \ 2020-05-05: Remove old unused version of `text`.
   \
   \ 2020-05-06: Document `specforth-editor`. Improve documentation.
+  \
+  \ 2020-05-10: Improve documentation.
