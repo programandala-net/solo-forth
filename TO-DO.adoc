@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-05-04
+:revdate: 2020-05-13
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -959,15 +959,20 @@ Improve tab control.
 // Documentation {{{1
 == Documentation
 
+=== 2020-05-13
+
+NOTE: Milestone: 0.14.0
+
+- Make the assembler cross-references that have homonyms explicit,
+  e.g. `a`, `e`, etc, which also are commands of the block editors.
+  Also, update the cross references of the `a` register. Search for
+  all other cases. This improvement has been done already to the links
+  in the block editors.
+
 === 2020-05-03
 
 NOTE: Milestone: 0.14.0
 
-- Rename the editors. Create dummy words `blocked-editor` in
-  <prog.editor.blocked.fs> and `specforth-editor` in
-  <prog.editor.specforth.fs>, document them with the main instructions
-  and a reference to the source code.
-- Deactivate the Glosara markers in <prog.editor.specforth.fs>.
 - Fix: `text` is mentioned in `parse-all`, but not included in the
   glossary because it's part of the Specforth editor. Deactivate the
   link to `text` and add a link to `editor` instead.

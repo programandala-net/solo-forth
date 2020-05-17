@@ -56,27 +56,95 @@ vocabulary specforth-editor ' specforth-editor is editor
 
   \ .Specforth block editor commands
   \ |===
-  \ | Word                         | Description
+  \ | Word | Description
 
-  \ | `b` ``( -- )``               | Used after `f` to backup the cursor by the length of the most recent text.
-  \ | `c` ``( "ccc<eol>" -- )``    | Copy in _ccc_ to the cursor line at the cursor position.
-  \ | `clear` ``( n -- )``         | Clear block _n_ with blanks and select for editing.
-  \ | `copy` ``( n1 n2 -- )``      | Copy block _n1_ to block _n2_.
-  \ | `d` ``( n -- )``             | Delete line _n_ but hold it in `pad`. Line 15 becomes free as all statements move up one line.
-  \ | `delete` ``( n -- )``        | Delete _n_ characters prior to the cursor.
-  \ | `e` ``( n -- )``             | Erase line _n_ with blanks.
-  \ | `find` ``( -- )``            | Search for a match to the string at `pad`, from the cursor position until the end of block.  If no match found issue an error message and reposition the cursor at the top of the block.
-  \ | `h` ``( n -- )``             | Hold line _n_ at `pad` (used by system more often than by user).
-  \ | `i` ``( n -- )``             | Insert text from `pad` at line _n_, moving the old line _n_ down. Line 15 is lost.
-  \ | `l` ``( -- )``               | List the current block.
-  \ | `m` ``( n -- )``             | Move the cursor by _n_ characters. The position of the cursor on its line is shown by a "_" (underline).
-  \ | `n` ``( -- )``               | Find the next occurrence of the string found by an `f` command.
-  \ | `p` ``( n "ccc<eol>" -- )``  | Put _ccc_ on line _n_.
-  \ | `r` ``( n -- )``             | Replace line _n_ with the text in `pad`.
-  \ | `s` ``( n -- )``             | Spread at line _n_. Line _n_ and following lines are are moved down one line. Line _n_ becomes blank. Line 15 is lost.
-  \ | `t` ``( n -- )``             | Type line _n_ and save in `pad`.
-  \ | `till` ``( "ccc<eol>" -- )`` | Delete on the cursor line from the cursor till the end of string _ccc_.
-  \ | `x` ``( "ccc<eol>" -- )``    | Find and delete the next occurrence of the string _ccc_.
+  \ | `<<src-lib-prog-editor-specforth-fs, b>>`
+  \ ``( -- )``
+  \ | Used after `<<src-lib-prog-editor-specforth-fs, f>>` to
+  \ backup the cursor by the length of the most recent text.
+
+  \ | `<<src-lib-prog-editor-specforth-fs, c>>`
+  \ ``( "ccc<eol>" -- )``
+  \ | Copy in _ccc_ to the cursor line at the cursor position.
+
+  \ | `clear`
+  \ ``( n -- )``
+  \ | Clear block _n_ with blanks and select for editing.
+
+  \ | `copy`
+  \ ``( n1 n2 -- )``
+  \ | Copy block _n1_ to block _n2_.
+
+  \ | `<<src-lib-prog-editor-specforth-fs, d>>`
+  \ ``( n -- )``
+  \ | Delete line _n_ but hold it in `pad`. Line 15 becomes
+  \ free as all statements move up one line.
+
+  \ | `delete`
+  \ ``( n -- )``
+  \ | Delete _n_ characters prior to the cursor.
+
+  \ | `<<src-lib-prog-editor-specforth-fs, e>>`
+  \ ``( n -- )``
+  \ | Erase line _n_ with blanks.
+
+  \ | `find`
+  \ ``( -- )``
+  \ | Search for a match to the string at `pad`, from the
+  \ cursor position until the end of block.  If no match found
+  \ issue an error message and reposition the cursor at the top
+  \ of the block.
+
+  \ | `<<src-lib-prog-editor-specforth-fs, h>>`
+  \ ``( n -- )``
+  \ | Hold line _n_ at `pad` (used by system more often than by
+  \ user).
+
+  \ | `<<src-lib-prog-editor-specforth-fs, i>>`
+  \ ``( n -- )``
+  \ | Insert text from `pad` at line _n_, moving the old line
+  \ _n_ down. Line 15 is lost.
+
+  \ | `<<src-lib-prog-editor-specforth-fs, l>>`
+  \ ``( -- )``
+  \ | List the current block.
+
+  \ | `<<src-lib-prog-editor-specforth-fs, m>>`
+  \ ``( n -- )``
+  \ | Move the cursor by _n_ characters. The position of the
+  \ cursor on its line is shown by a "_" (underline).
+
+  \ | `<<src-lib-prog-editor-specforth-fs, n>>`
+  \ ``( -- )``
+  \ | Find the next occurrence of the string found by an
+  \ `<<src-lib-prog-editor-specforth-fs, f>>` command.
+
+  \ | `<<src-lib-prog-editor-specforth-fs, p>>`
+  \ ``( n "ccc<eol>" -- )``
+  \ | Put _ccc_ on line _n_.
+
+  \ | `<<src-lib-prog-editor-specforth-fs, r>>`
+  \ ``( n -- )``
+  \ | Replace line _n_ with the text in `pad`.
+
+  \ | `<<src-lib-prog-editor-specforth-fs, s>>`
+  \ ``( n -- )``
+  \ | Spread at line _n_. Line _n_ and following lines are are
+  \ moved down one line. Line _n_ becomes blank. Line 15 is
+  \ lost.
+
+  \ | `<<src-lib-prog-editor-specforth-fs, t>>`
+  \ ``( n -- )``
+  \ | Type line _n_ and save in `pad`.
+
+  \ | `till`
+  \ ``( "ccc<eol>" -- )``
+  \ | Delete on the cursor line from the cursor till the end of
+  \ string _ccc_.
+
+  \ | `<<src-lib-prog-editor-specforth-fs, x>>`
+  \ ``( "ccc<eol>" -- )``
+  \ | Find and delete the next occurrence of the string _ccc_.
 
   \ |===
 
@@ -170,7 +238,7 @@ also editor definitions need r# need top
   \ Part of `specforth-editor`:
   \ Move a line of text from _ca_ to line _n_ of current block.
   \
-  \ See: `m`, `c/l`, `cmove`, `update`.
+  \ See: `<<src-lib-prog-editor-specforth-fs, m>>`, `c/l`, `cmove`, `update`.
   \
   \ }doc
 
@@ -180,11 +248,24 @@ also editor definitions need r# need top
   \
   \ e ( n -- )
   \
-  \ A command of `specforth-editor`:
-  \ Erase line _n_ with blanks.
+  \ A command of `specforth-editor`: Erase line _n_ with
+  \ blanks.
   \
-  \ See: `b`, `c`, `d`, `f`, `h`, `i`, `l`, `m`, `n`, `p`, `r`, `s`,
-  \ `t`, `x`, `c/l`, `blank`, `update`.
+  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, c>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, d>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, f>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, h>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, i>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, l>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, m>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, n>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, p>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, r>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, s>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, t>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, x>>`, `c/l`, `blank`,
+  \ `update`.
   \
   \ }doc
 
@@ -194,13 +275,24 @@ also editor definitions need r# need top
   \
   \ s ( n -- )
   \
-  \ A command of `specforth-editor`:
-  \ Spread at line _n_. Line _n_ and following lines are are
-  \ moved down one line. Line _n_ becomes blank. Line 15 is
-  \ lost.
+  \ A command of `specforth-editor`: Spread at line _n_. Line
+  \ _n_ and following lines are are moved down one line. Line
+  \ _n_ becomes blank. Line 15 is lost.
   \
-  \ See: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
-  \ `p`, `r`, `t`, `x`.
+  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, c>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, d>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, e>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, f>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, h>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, i>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, l>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, m>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, n>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, p>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, r>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, t>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, x>>`.
   \
   \ }doc
 
@@ -210,12 +302,23 @@ also editor definitions need r# need top
   \
   \ h ( n -- )
   \
-  \ A command of `specforth-editor`:
-  \ Hold line _n_ at `pad` (used by system more often than by
-  \ user).
+  \ A command of `specforth-editor`: Hold line _n_ at `pad`
+  \ (used by system more often than by user).
   \
-  \ See: `b`, `c`, `d`, `e`, `f`, `i`, `l`, `m`, `n`,
-  \ `p`, `r`, `s`, `t`, `x`.
+  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, c>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, d>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, e>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, f>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, i>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, l>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, m>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, n>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, p>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, r>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, s>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, t>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, x>>`.
   \
   \ }doc
 
@@ -227,27 +330,51 @@ also editor definitions need r# need top
   \
   \ d ( n -- )
   \
-  \ A command of `specforth-editor`:
-  \ Delete line _n_ but hold it in `pad`. Line 15 becomes free
-  \ as all statements move up one line.
+  \ A command of `specforth-editor`: Delete line _n_ but hold
+  \ it in `pad`. Line 15 becomes free as all statements move up
+  \ one line.
   \
-  \ See: `b`, `c`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
-  \ `p`, `r`, `s`, `t`, `x`.
+  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, c>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, e>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, f>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, h>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, i>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, l>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, m>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, n>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, p>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, r>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, s>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, t>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, x>>`.
   \
   \ }doc
 
-: m ( n -- ) r# +! cr space #lead type '_' emit
-               #lag type #locate . drop ;
+: m ( n -- ) r# +! cr space #lead type '_' emit #lag type
+#locate . drop ;
   \ doc{
   \
   \ m ( n -- )
   \
-  \ A command of `specforth-editor`:
-  \ Move the cursor by _n_ characters. The position of the
-  \ cursor on its line is shown by a "_" (underline).
+  \ A command of `specforth-editor`: Move the cursor by _n_
+  \ characters. The position of the cursor on its line is shown
+  \ by a "_" (underline).
   \
-  \ See: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `n`,
-  \ `p`, `r`, `s`, `t`, `x`, `-move`.
+  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, c>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, d>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, e>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, f>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, h>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, i>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, l>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, n>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, p>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, r>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, s>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, t>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, x>>`, `-move`.
   \
   \ }doc
 
@@ -257,11 +384,23 @@ also editor definitions need r# need top
   \
   \ t ( n -- )
   \
-  \ A command of `specforth-editor`:
-  \ Type line _n_ and save in `pad`.
+  \ A command of `specforth-editor`: Type line _n_ and save in
+  \ `pad`.
   \
-  \ See: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
-  \ `p`, `r`, `s`, `x`.
+  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, c>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, d>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, e>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, f>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, h>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, i>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, l>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, m>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, n>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, p>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, r>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, s>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, x>>`.
   \
   \ }doc
 
@@ -273,11 +412,22 @@ also editor definitions need r# need top
   \
   \ l ( -- )
   \
-  \ A command of `specforth-editor`:
-  \ List the current block.
+  \ A command of `specforth-editor`: List the current block.
   \
-  \ See: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `m`, `n`,
-  \ `p`, `r`, `s`, `t`, `x`, `scr`, `list`.
+  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, c>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, d>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, e>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, f>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, h>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, i>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, m>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, n>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, p>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, r>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, s>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, t>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, x>>`, `scr`, `list`.
   \
   \ }doc
 
@@ -287,11 +437,23 @@ also editor definitions need r# need top
   \
   \ r ( n -- )
   \
-  \ A command of `specforth-editor`:
-  \ Replace line _n_ with the text in `pad`.
+  \ A command of `specforth-editor`: Replace line _n_ with the
+  \ text in `pad`.
   \
-  \ See: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
-  \ `p`, `s`, `t`, `x`, `-move`.
+  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, c>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, d>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, e>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, f>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, h>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, i>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, l>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, m>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, n>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, p>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, s>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, t>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, x>>`, `-move`.
   \
   \ }doc
 
@@ -301,11 +463,22 @@ also editor definitions need r# need top
   \
   \ p ( n "ccc<eol>" -- )
   \
-  \ A command of `specforth-editor`:
-  \ Put _ccc_ on line _n_.
+  \ A command of `specforth-editor`: Put _ccc_ on line _n_.
   \
-  \ See: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
-  \ `r`, `s`, `t`, `x`, `text`.
+  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, c>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, d>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, e>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, f>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, h>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, i>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, l>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, m>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, n>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, r>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, s>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, t>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, x>>`, `text`.
   \
   \ }doc
 
@@ -315,12 +488,23 @@ also editor definitions need r# need top
   \
   \ i ( n -- )
   \
-  \ A command of `specforth-editor`:
-  \ Insert text from `pad` at line _n_, moving the old line _n_
-  \ down. Line 15 is lost.
+  \ A command of `specforth-editor`: Insert text from `pad` at
+  \ line _n_, moving the old line _n_ down. Line 15 is lost.
   \
-  \ See: `b`, `c`, `d`, `e`, `f`, `h`, `l`, `m`, `n`,
-  \ `p`, `r`, `s`, `t`, `x`.
+  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, c>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, d>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, e>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, f>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, h>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, l>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, m>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, n>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, p>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, r>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, s>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, t>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, x>>`.
   \
   \ }doc
 
@@ -332,10 +516,10 @@ also editor definitions need r# need top
   \
   \ clear ( n -- )
   \
-  \ A command of `specforth-editor`:
-  \ Clear block _n_ with blanks and select for editing.
+  \ A command of `specforth-editor`: Clear block _n_ with
+  \ blanks and select for editing.
   \
-  \ See: `e`, `l/scr`.
+  \ See: `<<src-lib-prog-editor-specforth-fs, e>>`, `l/scr`.
   \
   \ }doc
 
@@ -439,12 +623,24 @@ also editor definitions need r# need top
   \
   \ n ( -- )
   \
-  \ A command of `specforth-editor`:
-  \ Find the next occurrence of the string found by an `f`
-  \ command.
+  \ A command of `specforth-editor`: Find the next occurrence
+  \ of the string found by an
+  \ `<<src-lib-prog-editor-specforth-fs, f>>` command.
   \
-  \ See: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`,
-  \ `p`, `r`, `s`, `t`, `x`, `find`.
+  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, c>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, d>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, e>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, f>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, h>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, i>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, l>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, m>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, p>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, r>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, s>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, t>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, x>>`, `find`.
   \
   \ }doc
 
@@ -454,15 +650,26 @@ also editor definitions need r# need top
   \
   \ f ( "ccc<eol>" -- )
   \
-  \ A command of `specforth-editor`:
-  \ Search forward from the current cursor position until
-  \ string _ccc_ is found. The cursor is left at the end of the
-  \ string and the cursor line is printed. If the string is not
-  \ found and error message is given and the cursor
-  \ repositioned to the top of the block.
+  \ A command of `specforth-editor`: Search forward from the
+  \ current cursor position until string _ccc_ is found. The
+  \ cursor is left at the end of the string and the cursor line
+  \ is printed. If the string is not found and error message is
+  \ given and the cursor repositioned to the top of the block.
   \
-  \ See: `b`, `c`, `d`, `e`, `h`, `i`, `l`, `m`, `n`, `p`, `r`,
-  \ `s`, `t`, `x`, `text`.
+  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, c>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, d>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, e>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, h>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, i>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, l>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, m>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, n>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, p>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, r>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, s>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, t>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, x>>`, `text`.
   \
   \ }doc
 
@@ -472,12 +679,24 @@ also editor definitions need r# need top
   \
   \ b ( -- )
   \
-  \ A command of `specforth-editor`:
-  \ Used after `f` to backup the cursor by the length of the
-  \ most recent text.
+  \ A command of `specforth-editor`: Used after
+  \ `<<src-lib-prog-editor-specforth-fs, f>>` to backup the
+  \ cursor by the length of the most recent text.
   \
-  \ See: `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
-  \ `p`, `r`, `s`, `t`, `x`.
+  \ See: `<<src-lib-prog-editor-specforth-fs, c>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, d>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, e>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, f>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, h>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, i>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, l>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, m>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, n>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, p>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, r>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, s>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, t>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, x>>`.
   \
   \ }doc
 
@@ -487,11 +706,24 @@ also editor definitions need r# need top
   \
   \ x ( "ccc<eol>" -- )
   \
-  \ A command of `specforth-editor`:
-  \ Find and delete the next occurrence of the string _ccc_.
+  \ A command of `specforth-editor`: Find and delete the next
+  \ occurrence of the string _ccc_.
   \
-  \ See: `b`, `c`, `d`, `e`, `f`, `h`, `i`, `l`, `m`, `n`,
-  \ `p`, `r`, `s`, `t`, `text`, `find`, `delete`.
+  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, c>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, d>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, e>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, f>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, h>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, i>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, l>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, m>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, n>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, p>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, r>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, s>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, t>>`, `text`, `find`,
+  \ `delete`.
   \
   \ }doc
 
@@ -511,13 +743,13 @@ also editor definitions need r# need top
   #lag rot over min >r r@ r# +! r@ - >r dup here r@ cmove
   here #lead + r> cmove r> cmove 0 m update ;
 
-  \ XXX TODO -- rename
-  \ doc{
+  \ XXX TODO -- rename doc{
   \
   \ (c ( ca len -- ) "paren-c"
   \
   \ Copy the string _ca len_ to the cursor line at the cursor
-  \ position. ``(c`` is a factor of `c`.
+  \ position. ``(c`` is a factor of
+  \ `<<src-lib-prog-editor-specforth-fs, c>>`.
   \
   \ See: `#lag`, `r#`, `#lead`, `cmove`, `update`.
   \
@@ -530,12 +762,23 @@ also editor definitions need r# need top
   \
   \ c ( "ccc<eol>" -- )
   \
-  \ A command of `specforth-editor`:
-  \ Copy in _ccc_ to the cursor line at the cursor position.
+  \ A command of `specforth-editor`: Copy in _ccc_ to the
+  \ cursor line at the cursor position.
   \
-  \ See: `b`, `d`, `e`, `f`, `h`, `i`, `l`,
-  \ `m`, `n`,
-  \ `p`, `r`, `s`, `t`, `x`, `(c`, `text`.
+  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, d>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, e>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, f>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, h>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, i>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, l>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, m>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, n>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, p>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, r>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, s>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, t>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, x>>`, `(c`, `text`.
   \
   \ }doc
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005062120
+  \ Last modified: 202005140027
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -101,25 +101,25 @@ create tape-header  /tape-header 2 * allot
 
   \ .Detailed structure of both tape headers
   \ |===
-  \ | First header | Second header | BASIC program | Num DATA | String DATA | CODE | Notes
+  \ | First header | Second header | BASIC program | Num DATA | String DATA | CODE  | Notes
 
-  \ | IX+$00 | IX+$11 | 0     | 1   | 2   | 3     | File type
-  \ | IX+$01 | IX+$12 | x     | x   | x   | x     | F ($FF if filename is null)
-  \ | IX+$02 | IX+$13 | x     | x   | x   | x     | i
-  \ | IX+$03 | IX+$14 | x     | x   | x   | x     | l
-  \ | IX+$04 | IX+$15 | x     | x   | x   | x     | e
-  \ | IX+$05 | IX+$16 | x     | x   | x   | x     | n
-  \ | IX+$06 | IX+$17 | x     | x   | x   | x     | a
-  \ | IX+$07 | IX+$18 | x     | x   | x   | x     | m
-  \ | IX+$08 | IX+$19 | x     | x   | x   | x     | e
-  \ | IX+$09 | IX+$1A | x     | x   | x   | x     | .
-  \ | IX+$0A | IX+$1B | x     | x   | x   | x     | Padding spaces
-  \ | IX+$0B | IX+$1C | lo    | lo  | lo  | lo    | Total...
-  \ | IX+$0C | IX+$1D | hi    | hi  | hi  | hi    | ...length of datablock
-  \ | IX+$0D | IX+$1E | Auto  | -   | -   | Start | Various
-  \ | IX+$0E | IX+$1F | Start | a-z | a-z | addr  | ($80 if no autostart).
-  \ | IX+$0F | IX+$20 | lo    | -   | -   | -     | Length of program only...
-  \ | IX+$10 | IX+$21 | hi    | -   | -   | -     | ...i.e. without variables
+  \ | IX+$00       | IX+$11        | 0             | 1        | 2           | 3     | File type
+  \ | IX+$01       | IX+$12        | x             | x        | x           | x     | F ($FF if filename is null)
+  \ | IX+$02       | IX+$13        | x             | x        | x           | x     | i
+  \ | IX+$03       | IX+$14        | x             | x        | x           | x     | l
+  \ | IX+$04       | IX+$15        | x             | x        | x           | x     | e
+  \ | IX+$05       | IX+$16        | x             | x        | x           | x     | n
+  \ | IX+$06       | IX+$17        | x             | x        | x           | x     | a
+  \ | IX+$07       | IX+$18        | x             | x        | x           | x     | m
+  \ | IX+$08       | IX+$19        | x             | x        | x           | x     | e
+  \ | IX+$09       | IX+$1A        | x             | x        | x           | x     | .
+  \ | IX+$0A       | IX+$1B        | x             | x        | x           | x     | Padding spaces
+  \ | IX+$0B       | IX+$1C        | lo            | lo       | lo          | lo    | Total...
+  \ | IX+$0C       | IX+$1D        | hi            | hi       | hi          | hi    | ...length of datablock
+  \ | IX+$0D       | IX+$1E        | Auto          | -        | -           | Start | Various
+  \ | IX+$0E       | IX+$1F        | Start         | a-z      | a-z         | addr  | ($80 if no autostart).
+  \ | IX+$0F       | IX+$20        | lo            | -        | -           | -     | Length of program only...
+  \ | IX+$10       | IX+$21        | hi            | -        | -           | -     | ...i.e. without variables
   \ |===
 
   \ See: `tape-filename`, `tape-filetype`, `tape-start`,
@@ -502,10 +502,13 @@ unneeding tape-file>display ?( need tape-file>
   \
   \ 2018-04-11: Fix documentation.
   \
-  \ 2018-06-04: Update: remove trailing closing paren from
-  \ word names.
+  \ 2018-06-04: Update: remove trailing closing paren from word
+  \ names.
   \
   \ 2020-05-05: Improve documentation of `tape-file>` and
   \ `>tape-file` with conditional cross references.
+  \
+  \ 2020-05-14: Tabulate the tape header table (this doesn't
+  \ affect the final documentation).
 
   \ vim: filetype=soloforth

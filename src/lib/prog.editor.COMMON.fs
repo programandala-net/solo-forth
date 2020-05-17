@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005051401
+  \ Last modified: 202005130147
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -66,11 +66,11 @@ unneeding editor ?\ defer editor
   \ editor ( -- )
   \
   \ Replace the first entry in the search order with the word
-  \ list associated to the current editor.
+  \ list associated to the block editor.
   \
   \ ``editor`` is a deferred word. Its action can be
-  \ `gforth-editor` or `specforth-editor`, depending on the
-  \ current block editor.
+  \ `gforth-editor` or `specforth-editor`. When any of these
+  \ editors is loaded, ``editor`` is updated accordingly.
   \
   \ }doc
 
@@ -95,5 +95,7 @@ unneeding editor ?\ defer editor
   \ 2020-05-03: Fix/improve documentation. Add `editor`.
   \
   \ 2020-05-05: Improve documentation of `editor`.
+  \
+  \ 2020-05-13: Improve documentation of `editor`.
 
   \ vim: filetype=soloforth

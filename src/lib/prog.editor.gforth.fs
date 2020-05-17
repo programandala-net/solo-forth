@@ -45,24 +45,74 @@ vocabulary gforth-editor ' gforth-editor is editor
 
   \ .Gforth block editor commands
   \ |===
-  \ | Word                         | Description
+  \ | Word | Description
   \
-  \ | `a`  ``( -- )``              | Go to marked position.
-  \ | `c`  ``( n -- )``            | Move cursor by _n_ chars.
-  \ | `d`  ``( -- )``              | Delete marked area.
-  \ | `dl` ``( -- )``              | Delete a line at the cursor position.
-  \ | `f`  ``( "ccc<eol>" -- )``   | Search _ccc_ and mark it.
-  \ | `g`  ``( u -- )``            | Go to screen _u_.
-  \ | `i`  ``( "ccc<eol>" -- )``   | Insert _ccc_; if _ccc_ is empty, instert the contents of the insert buffer.
-  \ | `il` ``( -- )``              | Insert a line at the cursor position..
-  \ | `l`  ``( -- )``              | List current screen.
-  \ | `m`  ``( -- )``              | Mark current position.
-  \ | `n`  ``( -- )``              | Go to next screen.
-  \ | `p`  ``( -- )``              | Go to previous screen.
-  \ | `r`  ``( "ccc<eol>" -- )``   | Replace marked area.
-  \ | `s`  ``( u "ccc<eol>" -- )`` | Search _ccc_ until screen _u_; if _ccc_ is empty, use the string of the previous search.
-  \ | `t`  ``( u "ccc<eol>"-- )``  | Go to line _u_ and insert _ccc_.
-  \ | `y`  ``( -- )``              | Yank deleted string.
+
+  \ | `<<src-lib-prog-editor-gforth-fs, a>>`
+  \ ``( -- )``
+  \ | Go to marked position.
+
+  \ | `<<src-lib-prog-editor-gforth-fs, c>>`
+  \ ``( n -- )``
+  \ | Move cursor by _n_ chars.
+
+  \ | `<<src-lib-prog-editor-gforth-fs, d>>`
+  \ ``( -- )``
+  \ | Delete marked area.
+
+  \ | `dl`
+  \ ``( -- )``
+  \ | Delete a line at the cursor position.
+
+  \ | `<<src-lib-prog-editor-gforth-fs, f>>`
+  \ ``( "ccc<eol>" -- )``
+  \ | Search _ccc_ and mark it.
+
+  \ | `<<src-lib-prog-editor-gforth-fs, g>>`
+  \ ``( u -- )``
+  \ | Go to screen _u_.
+
+  \ | `<<src-lib-prog-editor-gforth-fs, i>>`
+  \ ``( "ccc<eol>" -- )``
+  \ | Insert _ccc_; if _ccc_ is empty, instert the contents of
+  \ the insert buffer.
+
+  \ | `il`
+  \ ``( -- )``
+  \ | Insert a line at the cursor position..
+
+  \ | `<<src-lib-prog-editor-gforth-fs, l>>`
+  \ ``( -- )``
+  \ | List current screen.
+
+  \ | `<<src-lib-prog-editor-gforth-fs, m>>`
+  \ ``( -- )``
+  \ | Mark current position.
+
+  \ | `<<src-lib-prog-editor-gforth-fs, n>>`
+  \ ``( -- )``
+  \ | Go to next screen.
+
+  \ | `<<src-lib-prog-editor-gforth-fs, p>>`
+  \ ``( -- )``
+  \ | Go to previous screen.
+
+  \ | `<<src-lib-prog-editor-gforth-fs, r>>`
+  \ ``( "ccc<eol>" -- )``
+  \ | Replace marked area.
+
+  \ | `<<src-lib-prog-editor-gforth-fs, s>>`
+  \ ``( u "ccc<eol>" -- )``
+  \ | Search _ccc_ until screen _u_; if _ccc_ is empty, use the
+  \ string of the previous search.
+
+  \ | `<<src-lib-prog-editor-gforth-fs, t>>`
+  \ ``( u "ccc<eol>"-- )``
+  \ | Go to line _u_ and insert _ccc_.
+
+  \ | `<<src-lib-prog-editor-gforth-fs, y>>`
+  \ ``( -- )``
+  \ | Yank deleted string.
   \ |===
   \
   \ See: `specforth-editor`.
@@ -273,7 +323,7 @@ create fbuf $100 allot
   \ Insert _ccc_ or, if it's empty, the contents of the insert
   \ buffer.
   \
-  \ See: `ibuf`, `l`.
+  \ See: `ibuf`, `<<src-lib-prog-editor-gforth-fs, l>>`.
   \
   \ }doc
 

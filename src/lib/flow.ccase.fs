@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041131
+  \ Last modified: 202005130155
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -24,7 +24,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ Credit
@@ -254,7 +254,7 @@ need char-position?
   \ ``ccase``, where _n_ is the position of the first _c_ in the
   \ string (0..len-1) plus 1, then continue after `endccase`.
   \ If _c_ is not in _ca len_, execute the word compiled right
-  \ after `ccase`, then continue after `endccase`.
+  \ before `endccase`, then continue after `endccase`.
   \
   \ ``ccase`` is an `immediate` and `compile-only` word.
   \
@@ -291,5 +291,7 @@ need char-position?
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2020-05-13: Fix documentation of `ccase`.
 
   \ vim: filetype=soloforth
