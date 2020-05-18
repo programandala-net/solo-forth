@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005112053
+  \ Last modified: 202005181717
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -743,7 +743,9 @@ also editor definitions need r# need top
   #lag rot over min >r r@ r# +! r@ - >r dup here r@ cmove
   here #lead + r> cmove r> cmove 0 m update ;
 
-  \ XXX TODO -- rename doc{
+  \ XXX TODO -- rename
+
+  \ doc{
   \
   \ (c ( ca len -- ) "paren-c"
   \
@@ -837,3 +839,5 @@ only forth definitions
   \ 2020-05-06: Document `specforth-editor`. Improve documentation.
   \
   \ 2020-05-10: Improve documentation.
+  \
+  \ 2020-05-18: Fix documentation markup.

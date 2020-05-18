@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202005112053
+  \ Last modified: 202005181714
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -71,6 +71,10 @@ vocabulary gforth-editor ' gforth-editor is editor
   \ | `<<src-lib-prog-editor-gforth-fs, g>>`
   \ ``( u -- )``
   \ | Go to screen _u_.
+
+  \ | `<<src-lib-prog-editor-gforth-fs, h>>`
+  \ ``( -- )``
+  \ | Type the line of the marked area, highlighting it.
 
   \ | `<<src-lib-prog-editor-gforth-fs, i>>`
   \ ``( "ccc<eol>" -- )``
@@ -169,10 +173,10 @@ create fbuf $100 allot
 
   \ doc{
   \
-  \ ibuf ( -- ca )
+  \ fbuf ( -- ca )
   \
   \ Return the address _ca_ of the 100-byte search buffer used
-  \ by the `gforth-editor`..
+  \ by the `gforth-editor`.
   \
   \ See: `rbuf`, `ibuf`.
   \
@@ -191,16 +195,29 @@ create fbuf $100 allot
   \ A command of `gforth-editor`:
   \ Type the line of the marked area, highlighting it.
   \
+  \ See:
+  \ `<<src-lib-prog-editor-gforth-fs, m>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, a>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, d>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, f>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, r>>`.
+  \
   \ }doc
 
 : g ( u -- ) page list h ;
 
-  \ doc{a
+  \ doc{
   \
   \  g ( u -- )
   \
   \ A command of `gforth-editor`:
   \ Go to screen _u_.
+  \
+  \ `<<src-lib-prog-editor-gforth-fs, c>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, a>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, n>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, p>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, t>>`.
   \
   \ }doc
 
@@ -235,6 +252,13 @@ create fbuf $100 allot
   \ A command of `gforth-editor`:
   \ Go to marked position, marking the current position first.
   \
+  \ See:
+  \ `<<src-lib-prog-editor-gforth-fs, m>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, h>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, d>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, f>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, r>>`.
+  \
   \ }doc
 
 : c ( n -- ) r# +! 1 len ! l ; -->
@@ -249,6 +273,13 @@ create fbuf $100 allot
   \ A command of `gforth-editor`:
   \ Move cursor by _n_ chars.
   \
+  \ See:
+  \ `<<src-lib-prog-editor-gforth-fs, a>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, g>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, n>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, p>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, t>>`.
+  \
   \ }doc
 
 ( gforth-editor )
@@ -259,14 +290,15 @@ create fbuf $100 allot
 
   \ doc{
   \
-  \  'rest ( -- ca len )
+  \ 'rest ( -- ca len )
   \
   \ Part of the `gforth-editor`:
   \ Return the rest of the current screen, from the
   \ current position.
   \
+  \ See: `'line`, `'par`, `scr`, `block`, `b/buf`.
+  \
   \ }doc
-
 
 : 'line ( -- ca len ) 'rest 1- c/l 1- and 1+ ;
 
@@ -274,11 +306,13 @@ create fbuf $100 allot
 
   \ doc{
   \
-  \  'line ( -- ca len )
+  \ 'line ( -- ca len )
   \
   \ Part of the `gforth-editor`:
   \ Return the rest of the current line, from the
   \ current position.
+  \
+  \ See: `'rest`, `c/l`, `'par`.
   \
   \ }doc
 
@@ -289,13 +323,15 @@ create fbuf $100 allot
 
   \ doc{
   \
-  \  'par ( buf "ccc<eol>" -- ca len )
+  \ 'par ( buf "ccc<eol>" -- ca len )
   \
   \ Part of the `gforth-editor`:
   \ Parse _ccc_. If the result string is empty,
   \ discard it and return the counted string at _buf_;
   \ else return the parsed string and also store it
   \ at _buf_ as a counted string.
+  \
+  \ See: `'rest`, `'line`.
   \
   \ }doc
 
@@ -311,6 +347,12 @@ create fbuf $100 allot
   \ A command of `gforth-editor`:
   \ Go to line _u_ and insert _ccc_.
   \
+  \ `<<src-lib-prog-editor-gforth-fs, c>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, a>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, g>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, n>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, p>>`.
+  \
   \ }doc
 
 : i ( "ccc<eol>" -- ) ibuf 'par 'line insert update l ;
@@ -319,11 +361,11 @@ create fbuf $100 allot
   \
   \ i ( "ccc<eol>" -- )
   \
-  \ A command of `gforth-editor`:
-  \ Insert _ccc_ or, if it's empty, the contents of the insert
-  \ buffer.
+  \ A command of `gforth-editor`: Insert _ccc_ or, if it's
+  \ empty, the contents of the insert buffer.
   \
-  \ See: `ibuf`, `<<src-lib-prog-editor-gforth-fs, l>>`.
+  \ See: `<<src-lib-prog-editor-gforth-fs, h>>`, `il`,
+  \ `<<src-lib-prog-editor-gforth-fs, r>>`, `ibuf`.
   \
   \ }doc
 
@@ -336,6 +378,13 @@ create fbuf $100 allot
   \ A command of `gforth-editor`:
   \ Delete marked area.
   \
+  \ See:
+  \ `<<src-lib-prog-editor-gforth-fs, m>>`
+  \ `<<src-lib-prog-editor-gforth-fs, a>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, h>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, f>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, r>>`.
+  \
   \ }doc
 
 : r ( "ccc<eol>" -- ) d i ;
@@ -346,6 +395,13 @@ create fbuf $100 allot
   \
   \ A command of `gforth-editor`:
   \ Replace marked area.
+  \
+  \ See:
+  \ `<<src-lib-prog-editor-gforth-fs, m>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, a>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, d>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, f>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, h>>`.
   \
   \ }doc
 
@@ -372,6 +428,13 @@ create fbuf $100 allot
   \
   \ A command of `gforth-editor`:
   \ Parse _ccc_, search it and mark it.
+  \
+  \ See:
+  \ `<<src-lib-prog-editor-gforth-fs, m>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, a>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, d>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, f>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, h>>`.
   \
   \ }doc
 
@@ -409,6 +472,13 @@ create fbuf $100 allot
   \ A command of `gforth-editor`:
   \ Go to next screen.
   \
+  \ See:
+  \ `<<src-lib-prog-editor-gforth-fs, c>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, a>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, g>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, p>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, t>>`.
+  \
   \ }doc
 
 : p ( -- ) scr @ 1- top g ;
@@ -419,6 +489,13 @@ create fbuf $100 allot
   \
   \ A command of `gforth-editor`:
   \ Go to previous screen.
+  \
+  \ See:
+  \ `<<src-lib-prog-editor-gforth-fs, c>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, a>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, g>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, n>>`,
+  \ `<<src-lib-prog-editor-gforth-fs, t>>`.
   \
   \ }doc
 
@@ -477,5 +554,8 @@ forth definitions
   \ 2020-05-05: Document `gforth-editor`.
   \
   \ 2020-05-11: Improve documentation.
+  \
+  \ 2020-05-18: Fix/improve documentation. Add implicit and
+  \ explicit cross references.
 
   \ vim: filetype=soloforth

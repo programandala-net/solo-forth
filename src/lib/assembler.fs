@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005051442
+  \ Last modified: 202005181715
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -80,7 +80,11 @@ need ?rel need inverse-cond
   \ interpreted as register pair "BC" by assembler words that
   \ use register pairs (for example `ldp,`).
   \
-  \ See: `a`, `c`, `d`, `e`, `h`, `l`, `m`, `ix`, `iy`, `sp`.
+  \ See: `<<src-lib-assembler-fs,a>>`,
+  \ `<<src-lib-assembler-fs,c>>`, `<<src-lib-assembler-fs,d>>`,
+  \ `<<src-lib-assembler-fs,e>>`, `<<src-lib-assembler-fs,h>>`,
+  \ `<<src-lib-assembler-fs,l>>`, `<<src-lib-assembler-fs,m>>`,
+  \ `ix`, `iy`, `sp`.
   \
   \ }doc
 
@@ -90,7 +94,11 @@ need ?rel need inverse-cond
   \
   \ Return the identifier _reg_ of Z80 register "C".
   \
-  \ See: `a`, `b`, `d`, `e`, `h`, `l`, `m`, `ix`, `iy`, `sp`.
+  \ See: `<<src-lib-assembler-fs,a>>`,
+  \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,d>>`,
+  \ `<<src-lib-assembler-fs,e>>`, `<<src-lib-assembler-fs,h>>`,
+  \ `<<src-lib-assembler-fs,l>>`, `<<src-lib-assembler-fs,m>>`,
+  \ `ix`, `iy`, `sp`.
   \
   \ }doc
 
@@ -102,7 +110,11 @@ need ?rel need inverse-cond
   \ interpreted as register pair "DE" by assembler words that
   \ use register pairs (for example `ldp,`).
   \
-  \ See: `a`, `b`, `c`, `e`, `h`, `l`, `m`, `ix`, `iy`, `sp`.
+  \ See: `<<src-lib-assembler-fs,a>>`,
+  \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,c>>`,
+  \ `<<src-lib-assembler-fs,e>>`, `<<src-lib-assembler-fs,h>>`,
+  \ `<<src-lib-assembler-fs,l>>`, `<<src-lib-assembler-fs,m>>`,
+  \ `ix`, `iy`, `sp`.
   \
   \ }doc
 
@@ -112,7 +124,11 @@ need ?rel need inverse-cond
   \
   \ Return the identifier _reg_ of Z80 register "E".
   \
-  \ See: `a`, `b`, `c`, `d`, `h`, `l`, `m`, `ix`, `iy`, `sp`.
+  \ See: `<<src-lib-assembler-fs,a>>`,
+  \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,c>>`,
+  \ `<<src-lib-assembler-fs,d>>`, `<<src-lib-assembler-fs,h>>`,
+  \ `<<src-lib-assembler-fs,l>>`, `<<src-lib-assembler-fs,m>>`,
+  \ `ix`, `iy`, `sp`.
   \
   \ }doc
 
@@ -124,7 +140,11 @@ need ?rel need inverse-cond
   \ interpreted as register pair "HL" by assembler words that
   \ use register pairs (for example `ldp,`).
   \
-  \ See: `a`, `b`, `c`, `d`, `e`, `l`, `m`, `ix`, `iy`, `sp`.
+  \ See: `<<src-lib-assembler-fs,a>>`,
+  \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,c>>`,
+  \ `<<src-lib-assembler-fs,d>>`, `<<src-lib-assembler-fs,e>>`,
+  \ `<<src-lib-assembler-fs,l>>`, `<<src-lib-assembler-fs,m>>`,
+  \ `ix`, `iy`, `sp`.
   \
   \ }doc
 
@@ -134,7 +154,11 @@ need ?rel need inverse-cond
   \
   \ Return the identifier _reg_ of Z80 register "L".
   \
-  \ See: `a`, `b`, `c`, `d`, `e`, `h`, `m`, `ix`, `iy`, `sp`.
+  \ See: `<<src-lib-assembler-fs,a>>`,
+  \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,c>>`,
+  \ `<<src-lib-assembler-fs,d>>`, `<<src-lib-assembler-fs,e>>`,
+  \ `<<src-lib-assembler-fs,h>>`, `<<src-lib-assembler-fs,m>>`,
+  \ `ix`, `iy`, `sp`.
   \
   \ }doc
 
@@ -146,7 +170,11 @@ need ?rel need inverse-cond
   \ i.e. the byte stored in the memory address pointed by
   \ register pair "HL".
   \
-  \ See: `a`, `b`, `c`, `d`, `e`, `h`, `l`, `ix`, `iy`, `sp`.
+  \ See: `<<src-lib-assembler-fs,a>>`,
+  \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,c>>`,
+  \ `<<src-lib-assembler-fs,d>>`, `<<src-lib-assembler-fs,e>>`,
+  \ `<<src-lib-assembler-fs,h>>`, `<<src-lib-assembler-fs,l>>`,
+  \ `ix`, `iy`, `sp`.
   \
   \ }doc
 
@@ -158,7 +186,11 @@ need ?rel need inverse-cond
   \ interpreted as register pair "AF" by assembler words that
   \ use register pairs (for example `push,` and `pop,`).
   \
-  \ See: `b`, `c`, `d`, `e`, `h`, `l`, `m`, `ix`, `iy`, `sp`.
+  \ See: `<<src-lib-assembler-fs,b>>`,
+  \ `<<src-lib-assembler-fs,c>>`, `<<src-lib-assembler-fs,d>>`,
+  \ `<<src-lib-assembler-fs,e>>`, `<<src-lib-assembler-fs,h>>`,
+  \ `<<src-lib-assembler-fs,l>>`, `<<src-lib-assembler-fs,m>>`,
+  \ `ix`, `iy`, `sp`.
   \
   \ }doc
 
@@ -170,7 +202,11 @@ need ?rel need inverse-cond
   \
   \ Return the identifier _reg_ of Z80 register "sp".
   \
-  \ See: `a`, `b`, `c`, `d`, `e`, `h`, `l`, `m`, `ix`, `iy`.
+  \ See: `<<src-lib-assembler-fs,a>>`,
+  \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,c>>`,
+  \ `<<src-lib-assembler-fs,d>>`, `<<src-lib-assembler-fs,e>>`,
+  \ `<<src-lib-assembler-fs,h>>`, `<<src-lib-assembler-fs,l>>`,
+  \ `<<src-lib-assembler-fs,m>>`, `ix`, `iy`.
   \
   \ }doc
 
@@ -184,7 +220,11 @@ DD cconstant ix-op  FD cconstant iy-op
   \
   \ _regpi_ is the identifier of Z80 register "ix".
   \
-  \ See: `a`, `b`, `c`, `d`, `e`, `h`, `l`, `m`, `iy`, `sp`.
+  \ See: `<<src-lib-assembler-fs,a>>`,
+  \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,c>>`,
+  \ `<<src-lib-assembler-fs,d>>`, `<<src-lib-assembler-fs,e>>`,
+  \ `<<src-lib-assembler-fs,h>>`, `<<src-lib-assembler-fs,l>>`,
+  \ `<<src-lib-assembler-fs,m>>`, `iy`, `sp`.
   \
   \ }doc
 
@@ -196,7 +236,11 @@ DD cconstant ix-op  FD cconstant iy-op
   \
   \ _regpi_ is the identifier of Z80 register "iy".
   \
-  \ See: `a`, `b`, `c`, `d`, `e`, `h`, `l`, `m`, `ix`, `sp`.
+  \ See: `<<src-lib-assembler-fs,a>>`,
+  \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,c>>`,
+  \ `<<src-lib-assembler-fs,d>>`, `<<src-lib-assembler-fs,e>>`,
+  \ `<<src-lib-assembler-fs,h>>`, `<<src-lib-assembler-fs,l>>`,
+  \ `<<src-lib-assembler-fs,m>>`, `ix`, `sp`.
   \
   \ }doc
 
@@ -2442,5 +2486,7 @@ set-current
   \ inexistent word `ft#x,`,
   \
   \ 2020-05-05: Fix cross references.
+  \
+  \ 2020-05-18: Add explicit cross references.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802051654
+  \ Last modified: 202005172336
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -31,7 +31,7 @@
   \
   \ macro ( name -- )
   \
-  \ Start the definition of an assembler macro _name_.
+  \ Start the definition of an `assembler` macro _name_.
   \
   \ Usage example:
 
@@ -53,8 +53,7 @@ previous
   \
   \ endm ( -- ) "end-m"
   \
-  \ Finish the definition of an assembler macro, started by
-  \ `macro`.
+  \ Finish the definition of an `assembler` `macro`.
   \
   \ ``endm`` is an `immediate` word.
   \
@@ -81,6 +80,8 @@ previous
   \
   \ 2018-02-05: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2020-05-17: Improve documentation.
 
   \ vim: filetype=soloforth
 
