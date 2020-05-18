@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005042123
+  \ Last modified: 202005182049
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -99,7 +99,7 @@ unneeding udg> ?( need /udg* need get-udg
   \
   \ }doc
 
-unneeding udg! ?( need udg>
+unneeding udg! ?( need udg> need +loop
 
 : udg! ( b0..b7 c -- ) udg> dup 7 + ?do i c! -1 +loop ; ?)
 
@@ -1213,5 +1213,7 @@ exx, jpnext, end-code
   \ 2018-03-09: Update stack notation "x y" to "col row".
   \
   \ 2020-05-04: Fix/improve documentation.
+  \
+  \ 2020-05-18: Update: `+loop` was moved to the library.
 
   \ vim: filetype=soloforth

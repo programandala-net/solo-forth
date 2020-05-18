@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005181717
+  \ Last modified: 202005182058
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -42,7 +42,7 @@
 only forth definitions
 
 need list need update need flush need parse-all need vocabulary
-need editor
+need +loop need editor
 
 vocabulary specforth-editor ' specforth-editor is editor
 
@@ -841,3 +841,5 @@ only forth definitions
   \ 2020-05-10: Improve documentation.
   \
   \ 2020-05-18: Fix documentation markup.
+  \
+  \ 2020-05-18: Update: `+loop` was moved to the library.

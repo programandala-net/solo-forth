@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005090039
+  \ Last modified: 202005182056
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -545,7 +545,7 @@ testing( recurse) need recurse
 { 0 gi6 -> 0 } { 1 gi6 -> 0 1 } { 2 gi6 -> 0 1 2 }
 { 3 gi6 -> 0 1 2 3 } { 4 gi6 -> 0 1 2 3 4 }
 
-testing( do loop +loop i j unloop leave exit) need j
+testing( do loop +loop i j unloop leave exit) need j need +loop
 
 { : gd1 do i loop ; -> } { 4 1 gd1 -> 1 2 3 }
 { 2 -1 gd1 -> -1 0 1 } { mid-uint+1 mid-uint gd1 -> mid-uint }
@@ -915,5 +915,7 @@ decimal cr .( Test passed) cr
   \
   \ 2020-05-09: Update requirements: `depth` has been moved to
   \ the library.
+  \
+  \ 2020-05-18: Update: `+loop` was moved to the library.
 
   \ vim: filetype=soloforth

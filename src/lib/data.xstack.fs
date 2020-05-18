@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005022215
+  \ Last modified: 202005182048
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -348,7 +348,7 @@ unneeding xlen unneeding xdepth and ?( need xp need xp0
 
 unneeding .xs ?(
 
-need xp0 need xlen need xdepth need .depth
+need xp0 need xlen need xdepth need .depth neep +loop
 
 : (.xs ( -- ) xp0 cell+ xlen bounds ?do  i @ . cell +loop ;
 
@@ -420,5 +420,7 @@ need xp0 need xlen need xdepth need .depth
   \ names.  Link `variable` in documentation.
   \
   \ 2020-05-02: Fix cross reference.
+  \
+  \ 2020-05-18: Update: now `+loop` is in the librarary.
 
   \ vim: filetype=soloforth

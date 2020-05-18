@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803231932
+  \ Last modified: 202005182059
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -26,7 +27,7 @@
 ( dump wdump )
 
 unneeding dump ?( need 16hex. need type-ascii need backspace
-                  need ?leave
+                  need ?leave need +loop
 
 : dump ( ca len -- )
   8 max 8 2dup mod - + 8 / 1- 0
@@ -62,9 +63,8 @@ unneeding wdump ?( need 16hex. need ?leave
 
 ( fardump farwdump )
 
-unneeding fardump ?(
-
-need 16hex. need fartype-ascii need backspace need ?leave
+unneeding fardump ?( need 16hex. need fartype-ascii
+                     need backspace need ?leave need +loop
 
 : fardump ( ca len -- )
   8 max 8 2dup mod - + 8 / 1- 0
@@ -130,5 +130,7 @@ unneeding farwdump ?( need 16hex. need ?leave
   \ 2018-03-23: Compact the code, saving one block. Move
   \ `fardump` and `farwdump` from <tool.dump.far.fs>, which is
   \ removed. Compact the code, saving another block.
+  \
+  \ 2020-05-18: Update: `+loop` was moved to the library.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041335
+  \ Last modified: 202005182050
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -1468,7 +1469,7 @@ unneeding pressed? ?( need @p
   \
   \ }doc
 
-unneeding pressed ?( need pressed? need kk-ports
+unneeding pressed ?( need pressed? need kk-ports need +loop
 
 : pressed ( -- false | b a true )
   false \ by default
@@ -1495,7 +1496,7 @@ unneeding pressed ?( need pressed? need kk-ports
 
   \ The application must define the `/k` constant.
 
-need kk-ports  0. 2variable kk-pressed
+need kk-ports need +loop  0. 2variable kk-pressed
 
 : only-one-pressed ( -- false | b a true )
 
@@ -1757,5 +1758,7 @@ unneeding key-caps-lock ?\ 6 cconstant key-caps-lock
   \ 2018-06-04: Update: remove trailing closing paren from word
   \ names.  Link `variable` in documentation. Replace
   \ `[defined]` with `defined`, which is the kernel.
+  \
+  \ 2020-05-18: Update: `+loop` was moved to the library.
 
   \ vim: filetype=soloforth

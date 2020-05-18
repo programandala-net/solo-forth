@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202005090107
+; Last modified: 202005182037
 
 include version.z80s
 
@@ -1308,7 +1308,9 @@ endif
 ;
 ; }doc
 
-  ; XXX TODO -- Move to the library? Not needed in the kernel.
+  ; XXX TODO -- Move `code` and `end-code` to the library? They
+  ; are not used in the kernel, but they used by 382 words in 64
+  ; library modules.
 
   dw end_asm_,reveal_
   dw exit_
@@ -3132,10 +3134,14 @@ question_stringer_.enough:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header plus_loop_,'+loop',immediate+compile_only
 
-; doc{
-;
+if 0 ; developing
+
+_colon_header plus_loop_,'+loop',immediate+compile_only
+
+; XXX REMARK -- This word is in the library. This copy is
+; preserved to be activated for debugging.
+
 ; +loop "plus-loop"
 ;   Compilation: ( do-sys -- )
 ;
@@ -3149,11 +3155,6 @@ question_stringer_.enough:
 ; Forth-2012 (CORE).
 ;
 ; See: `loop`.
-;
-; }doc
-
-  ; XXX TODO -- Move to the library (it's used by `.s`, which
-  ; will be removed from the kernel after the development).
 
   ; Credit:
   ; Code adapted from Spectrum Forth-83.
@@ -3161,6 +3162,8 @@ question_stringer_.enough:
   dw compile_,paren_plus_loop_
   dw forward_resolve_
   dw exit_
+
+endif
 
 ; ----------------------------------------------
   _code_header paren_do_,'(do'
@@ -3313,6 +3316,9 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
   _jp_next
 
 ; ----------------------------------------------
+
+if 1
+
   _code_header paren_plus_loop_,'(+loop'
 
 ; doc{
@@ -3376,6 +3382,8 @@ paren_loop.continue:
   inc hl
   ld b,(hl) ; IP = start address, repeat loop
   _jp_next
+
+endif
 
 ; ----------------------------------------------
   _code_header paren_loop_,'(loop'
@@ -10274,8 +10282,6 @@ far_place.copy_char:
 ;
 ; }doc
 
-  ; XXX TODO -- useful? remove? user variable?
-
   dw 0
 
 ; ----------------------------------------------
@@ -10598,7 +10604,9 @@ if 1 ; assembler_core_in_kernel
 ;
 ; }doc
 
-  ; XXX TODO -- Move to the library? Not needed in the kernel.
+  ; XXX TODO -- Move `code` and `end-code` to the library? They
+  ; are not used in the kernel, but they used by 382 words in 64
+  ; library modules.
 
   dw header_,asm_
   dw exit_
@@ -10985,10 +10993,10 @@ search.failed:
 
 if 0 ; developing
 
+  _colon_header depth_,'depth'
+
   ; XXX REMARK -- This word is in the library. This copy is
   ; preserved to be activated for debugging.
-
-  _colon_header depth_,'depth'
 
 ; depth  ( -- +n )
 ;
@@ -12025,7 +12033,7 @@ endif
 
 ; ----------------------------------------------
 
-if 0 ; developing
+if 0 ; debugging
 
   ; XXX TMP -- during the development
 
@@ -12096,6 +12104,8 @@ if 0 ; developing
   ; XXX TMP -- The layout has additional line breaks to prevent
   ; the text from overwriting the background image of this
   ; version.
+
+  ; XXX TODO -- Copy to the library.
 
   dw ram_,dot_
   dw paren_dot_quote_
@@ -14507,7 +14517,7 @@ hash_s.begin:
 
 ; ----------------------------------------------
 
-if 0 ; developing
+if 0 ; debugging
 
   _colon_header dot_s_,'.s'
 
@@ -14547,8 +14557,8 @@ if 0 ; developing
 
   _colon_header u_dot_s_,'u.s'
 
-  ; XXX TMP -- only during the development, then remove
-  ; (it's in the library)
+  ; XXX REMARK -- This word is in the library. This copy is
+  ; preserved to be activated for debugging.
 
   dw lit_,u_dot_,lit_,dot_s.dot,store_ ; patch `.s`
   dw dot_s_

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041130
+  \ Last modified: 202005182029
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -23,7 +23,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( do -do #do )
+( do -do #do +loop )
 
 unneeding do ?(
 
@@ -166,6 +166,32 @@ unneeding #do ?(
   \
   \ }doc
 
+unneeding +loop
+
+?( : +loop ( C: do-sys -- ) postpone (+loop >resolve ;
+   immediate compile-only ?)
+
+  \ Credit:
+  \ Code adapted from Spectrum Forth-83.
+
+  \ doc{
+  \
+  \ +loop "plus-loop"
+  \   Compilation: ( do-sys -- )
+  \
+
+  \ Compilation: Compile `(+loop` and resolve the _do-sys_
+  \ address left by `do`, `?do` or `-do`.
+  \
+  \ ``+loop`` is an `immediate` and `compile-only` word.
+  \
+  \ Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
+  \ Forth-2012 (CORE).
+  \
+  \ See: `loop`.
+  \
+  \ }doc
+
   \ ===========================================================
   \ Change log
 
@@ -184,5 +210,7 @@ unneeding #do ?(
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2020-05-18: Move `+loop` here from the kernel.
 
   \ vim: filetype=soloforth

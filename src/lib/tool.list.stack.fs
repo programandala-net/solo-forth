@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005090041
+  \ Last modified: 202005182101
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -57,7 +57,7 @@ unneeding .depth ?\ : .depth ( n -- ) ." <" 0 .r ." > " ;
   \
   \ }doc
 
-unneeding .s ?( need depth need .depth
+unneeding .s ?( need depth need .depth need +loop
 
 defer (.s ( x -- ) ' . ' (.s defer!
 
@@ -129,5 +129,7 @@ unneeding u.s ?( need .s
   \
   \ 2020-05-09: Move `depth` from the kernel. Update the
   \ corresponding requirements.
+  \
+  \ 2020-05-18: Update: `+loop` was moved to the library.
 
   \ vim: filetype=soloforth

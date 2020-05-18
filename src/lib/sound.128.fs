@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803082305
+  \ Last modified: 202005182059
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -341,7 +342,7 @@ unneeding play ?( need /sound need !sound
   \
   \ }doc
 
-unneeding sound, ?( need /sound
+unneeding sound, ?( need /sound need +loop
 
 : sound, ( b[0]..b[13] -- )
   here /sound allot here 1- ?do i c! -1 +loop ; ?)
@@ -753,5 +754,7 @@ decimal
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-08: Add words' pronunciaton.
+  \
+  \ 2020-05-18: Update: `+loop` was moved to the library.
 
   \ vim: filetype=soloforth

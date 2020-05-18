@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005042023
+  \ Last modified: 202005182105
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -527,7 +527,7 @@ unneeding wtype ?( need free/wtype
 
 unneeding wltype ?( need wtyped need wfreecolumns
                      need ?wcr need at-wxy need wtype+
-                     need /wtype need free/wtype
+                     need /wtype need free/wtype need +loop
 
 : wltype ( ca len -- )
   wtyped off begin dup wfreecolumns > while
@@ -600,5 +600,7 @@ unneeding wltype ?( need wtyped need wfreecolumns
   \
   \ 2020-05-04: Fix cross reference: `mode-64` -> `mode-64ao`.
   \ `mode-42` -> `mode-42pw`.
+  \
+  \ 2020-05-18: Update: `+loop` was moved to the library.
 
 \ vim: filetype=soloforth

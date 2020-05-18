@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202005050010
+  \ Last modified: 202005182051
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -880,7 +880,7 @@ code (f. ( F: r -- ) C5 c, CD c, 2DE3 , C1 c, jpnext, end-code
 
 ( .fs dump-fs )
 
-need (fp@ need fp0 need f@ need f.
+need (fp@ need fp0 need f@ need f. need +loop
 need fdepth need float need float+ need .depth
 
 : (.fs ( F: i*r -- i*r ) (fp@ fp0 @ ?do i f@ f. float +loop ;
@@ -1159,5 +1159,7 @@ unneeding dfaligned
   \ 2020-05-02: Improve documentation.
   \
   \ 2020-05-05: Fix documentation markup.
+  \
+  \ 2020-05-18: Update: `+loop` was moved to the library.
 
   \ vim: filetype=soloforth

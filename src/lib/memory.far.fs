@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005042334
+  \ Last modified: 202005182051
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -352,10 +352,10 @@ unneeding 2@+ ?exit need far2@
 
 ( move>far move<far cmove>far cmove<far )
 
-unneeding move>far ?(
+unneeding move>far ?( need +loop
 
 : move>far ( a1 a2 len -- )
-  cells bounds ?do  dup @ i far! cell+ cell +loop  drop ; ?)
+  cells bounds ?do  dup @ i far! cell+ cell +loop drop ; ?)
 
   \ doc{
   \
@@ -367,7 +367,7 @@ unneeding move>far ?(
   \
   \ }doc
 
-unneeding move<far ?(
+unneeding move<far ?( need +loop
 
 : move<far ( a1 a2 len -- )
   cells bounds ?do  dup far@ i ! cell+ cell +loop  drop ; ?)
@@ -602,5 +602,7 @@ code c@bank ( ca n -- c ) D1 c, e-bank_ call,
   \ documentation.
   \
   \ 2020-05-04: Fix cross references.
+  \
+  \ 2020-05-18: Update: `+loop` was moved to the library.
 
   \ vim: filetype=soloforth

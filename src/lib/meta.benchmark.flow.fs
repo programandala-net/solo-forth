@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041117
+  \ Last modified: 202005182056
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -192,7 +192,7 @@ switch]
 
   \ 2015-12-17
 
-need bench{
+need bench{ need +loop
 
 32767 0 2constant range
 
@@ -240,8 +240,8 @@ need bench{
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
-
-  \ vim: filetype=soloforth
+  \
+  \ 2020-05-18: Update: `+loop` was moved to the library.
 
 ( exec-bench )
 
@@ -284,3 +284,5 @@ need bench{
   \   100                  2                2               4
   \  1000                 26               24              40
   \ 10000                252              239             395
+
+  \ vim: filetype=soloforth

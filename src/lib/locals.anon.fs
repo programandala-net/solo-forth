@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041734
+  \ Last modified: 202005182050
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -19,7 +19,7 @@
   \ Forth Dimensions (volume 6, number 1, page 33, 1984-05).
   \
   \ Adapted, modified, improved and commented by Marcos Cruz
-  \ (programandala.net), 2015, 2016, 2017.
+  \ (programandala.net), 2015, 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -30,7 +30,7 @@
 
 ( anon )
 
-need array>
+need array> need +loop
 
 variable anon> ( -- a )
 
@@ -141,5 +141,7 @@ variable anon> ( -- a )
   \ 2018-04-15: Update notation ".." to "...".
   \
   \ 2018-06-04: Link `variable` in documentation.
+  \
+  \ 2020-05-18: Update: `+loop` was moved to the library.
 
   \ vim: filetype=soloforth

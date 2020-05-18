@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005080125
+  \ Last modified: 202005182057
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -719,7 +719,7 @@ $FFFF constant test-addr
 
 ( -do-test )
 
-need do need -do
+need do need -do need +loop
 
 cr .( Results of '-1 +loop' loops:)
 
@@ -1789,5 +1789,7 @@ blk @ 1+ blk @ 2+ thru
   \
   \ 2020-05-08: Update requirements: `.name` has been moved
   \ from the kernel to the library.
+  \
+  \ 2020-05-18: Update: `+loop` was moved to the library.
 
   \ vim: filetype=soloforth

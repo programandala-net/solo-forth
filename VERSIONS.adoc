@@ -1,6 +1,6 @@
 = Solo Forth version history
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-05-09
+:revdate: 2020-05-18
 :toc:
 
 // This file is part of Solo Forth
@@ -300,6 +300,7 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
 - Move `b/sector` to the library.
 - Move `name>str`, `name>strings` and `.name` to the library.
 - Move `depth` to the library.
+- Move `+loop` to the library.
 
 // Other changes {{{2
 === Other changes
