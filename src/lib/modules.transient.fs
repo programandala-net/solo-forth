@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132009
+  \ Last modified: 202005182306
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -18,7 +18,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2020.
 
   \ ===========================================================
   \ Credit
@@ -36,7 +36,7 @@
 
 ( transient end-transient forget-transient )
 
-need >>link need there
+need >>link need there need np!
 
 variable old-dp  variable old-latest-wordlist
 variable old-np  variable old-limit   variable old-farlimit
@@ -174,5 +174,7 @@ variable old-current-latest
   \ in the kernel.
   \
   \ 2017-03-13: Improve documentation.
+  \
+  \ 2020-05-18: Update: `np!` has been moved to the library.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202005182131
+; Last modified: 202005182249
 
 include version.z80s
 
@@ -1399,7 +1399,7 @@ endif
 ; ----------------------------------------------
   _constant_header fetchhl_,'fetchhl'
 
-  ; XXX TODO -- Move to the library. Calculate the address from
+  ; XXX TODO -- Move to the library? Calculate the address from
   ; the xt of `@`.
 
 ; doc{
@@ -2547,7 +2547,8 @@ push_hl:
 ; ----------------------------------------------
   _code_header bank_,'bank'
 
-  ; XXX TODO -- Move to the library.
+  ; XXX TODO -- This could be moved to the library, but `bank.e`
+  ; should be calculated.
 
 ; doc{
 ;
@@ -3316,10 +3317,7 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
   _jp_next
 
 ; ----------------------------------------------
-
-if 1
-
-  _code_header paren_plus_loop_,'(+loop'
+_code_header paren_plus_loop_,'(+loop'
 
 ; doc{
 ;
@@ -3336,11 +3334,6 @@ if 1
 ; See: `(loop`.
 ;
 ; }doc
-
-  ; XXX TODO -- Move to the library (it's used by `.s`, which
-  ; will be removed from the kernel after the development).
-  ; The code `paren_loop.continue` is shared with `(loop`, so
-  ; it must be duplicated.
 
   ; Credit:
   ; Code adapted from spectrum Forth-83.
@@ -3382,8 +3375,6 @@ paren_loop.continue:
   inc hl
   ld b,(hl) ; IP = start address, repeat loop
   _jp_next
-
-endif
 
 ; ----------------------------------------------
   _code_header paren_loop_,'(loop'
@@ -4241,6 +4232,8 @@ mode_32_emit.a:
 ; ----------------------------------------------
   _code_header emit_udg_,'emit-udg'
 
+  ; XXX TODO -- Move to the library.
+
 ; doc{
 ;
 ; emit-udg ( c|n -- ) "emit-u-d-g"
@@ -4287,7 +4280,8 @@ emit_udg.address:
   _code_header emit_udga_,'emit-udga'
 
   ; XXX TMP -- Experimental.
-  ; XXX TODO -- Move to the library.
+  ; XXX TODO -- Move to the library. But `emit_udg.address`
+  ; should be calculated from `emit-udg`.
 
 ; doc{
 ;
@@ -4669,7 +4663,7 @@ xkey.translate:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header wait_for_key_,'discard-key'
+  _code_header discard_key_,'discard-key'
 
 ; doc{
 ;
@@ -4679,8 +4673,8 @@ xkey.translate:
 ;
 ; }doc
 
-  ; XXX TODO -- make it compatible with the future multitasking
-  ; XXX TODO -- remove?
+  ; XXX TODO -- Make it compatible with the future multitasking
+  ; XXX TODO -- Move to the library.
 
   push ix ; make next `ret` jump to `next`
 
@@ -5107,35 +5101,13 @@ u_m_slash_mod.4:
 ;
 ; }doc
 
-  ; XXX TODO -- remove?
+  ; XXX TODO -- Remove? `np@` is used 3 times in the kernel
+  ; (beside debugging optional code) and its definition needs 6
+  ; B: 3*2+6=12 B total. After removing the definition: 3*4+0=12
+  ; B.
 
   ld hl,(names_pointer)
   push hl
-  _jp_next
-
-; ----------------------------------------------
-  _code_header np_store_,'np!'
-
-; doc{
-;
-; np! ( a -- ) "n-p-store"
-;
-; Store _a_ into the name-space pointer `np`.
-;
-; ``np!`` is written in Z80. Its equivalent definition in Forth
-; is the following:
-;
-; ----
-; : np! ( a -- ) np ! ;
-; ----
-;
-; }doc
-
-  ; XXX REMARK -- This word could be moved to the library. It is
-  ; used in the modules of `-transient` and `marker`.
-
-  pop hl
-  ld (names_pointer),hl
   _jp_next
 
 ; ----------------------------------------------
@@ -5145,12 +5117,12 @@ u_m_slash_mod.4:
 ;
 ; ,np ( x -- ) "comma-n-p"
 ;
-; Store _x_ into the address pointed by the name-space pointer,
-; advancing the name-space pointer.
+; Store _x_ into the cell address pointed by `np`, the
+; name-space pointer, increasing it by one `cell`.
+;
+; See: `far!`.
 ;
 ; }doc
-
-  ; XXX TODO -- Improve documentation with far-memory details.
 
   dw np_fetch_
   dw far_store_

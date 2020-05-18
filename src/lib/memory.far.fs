@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005182051
+  \ Last modified: 202005182301
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -41,7 +41,7 @@
   \
   \ http://www.worldofspectrum.org/z88forever/camelforth/camel-pools.html
 
-( far-hl_ ?next-bank_ ?previous-bank_ )
+( far-hl_ ?next-bank_ ?previous-bank_ np! )
 
 get-current assembler-wordlist dup >order set-current
 
@@ -154,6 +154,29 @@ unneeding ?previous-bank_ ?(
   \ }doc
 
 previous set-current
+
+unneeding np!
+
+?\ code np! ( x -- ) E1 c, 22 c, np , jpnext, end-code
+
+  \ pop hl
+  \ ld (names_pointer),hl
+  \ _jp_next
+
+  \ doc{
+  \
+  \ np! ( a -- ) "n-p-store"
+  \
+  \ Store _a_ into the name-space pointer `np`.
+  \
+  \ ``np!`` is written in Z80. Its equivalent definition in
+  \ Forth is the following:
+
+  \ ----
+  \ : np! ( a -- ) np ! ;
+  \ ----
+
+  \ }doc
 
 ( default-bank_ e-bank_ )
 
@@ -603,6 +626,7 @@ code c@bank ( ca n -- c ) D1 c, e-bank_ call,
   \
   \ 2020-05-04: Fix cross references.
   \
-  \ 2020-05-18: Update: `+loop` was moved to the library.
+  \ 2020-05-18: Update: `+loop` was moved to the library. Move
+  \ `np!` here from the kernel.
 
   \ vim: filetype=soloforth

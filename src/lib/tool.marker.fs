@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201803091403
+  \ Last modified: 202005182306
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -16,7 +16,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -84,7 +85,7 @@ unneeding marker ?exit
   \ Code partly inspired by m3forth's `marker`:
   \ https://github.com/oco2000/m3forth/blob/master/lib/include/core-ext.f
 
-need get-order need @+ need nn, need nn@ need there
+need get-order need @+ need nn, need nn@ need there need np!
 
 : @order ( a -- ) nn@ set-order ;
 
@@ -180,5 +181,7 @@ need get-order need @+ need nn, need nn@ need there
   \
   \ 2018-03-11: Fix: replace old `@cell+` with `@+`. Compact
   \ the code, saving one block.
+  \
+  \ 2020-05-18: Update: `np!` has been moved to the library.
 
   \ vim: filetype=soloforth
