@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202005182037
+; Last modified: 202005182131
 
 include version.z80s
 
@@ -12032,32 +12032,6 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-
-if 0 ; debugging
-
-  ; XXX TMP -- during the development
-
-  _colon_header dot_words_,'.words'
-
-; doc{
-;
-; .words ( -- ) "dot-words"
-;
-; Display a message informing about the number of words defined
-; in the system.
-;
-; See: `#words`, `greeting`.
-;
-; }doc
-
-  dw hash_words_,u_dot_
-  dw paren_dot_quote_
-  _string "words"
-  dw exit_
-
-endif
-
-; ----------------------------------------------
   _colon_header greeting_,'greeting'
 
 ; doc{
@@ -12076,49 +12050,7 @@ endif
   dw dos_,type_
   dw paren_dot_quote_
   _string "\rBy Marcos Cruz\r(programandala.net), 2015-2020\r"
-if 0 ; developing
-  ; XXX TMP -- during the development
-  dw dot_words_,cr_,dot_unused_
-endif
   dw exit_
-
-; ----------------------------------------------
-
-if 0 ; developing
-
-  ; XXX TMP -- during the development
-  _colon_header dot_unused_,'.unused'
-
-; doc{
-;
-; .unused ( -- ) "dot-unused"
-;
-; Display the total RAM in the system, and the amount of space
-; remaining in the regions addressed by `here` and `np`, in
-; bytes.
-;
-; See: `unused`, `farunused`.
-
-; }doc
-
-  ; XXX TMP -- The layout has additional line breaks to prevent
-  ; the text from overwriting the background image of this
-  ; version.
-
-  ; XXX TODO -- Copy to the library.
-
-  dw ram_,dot_
-  dw paren_dot_quote_
-  _string "KiB RAM\r"
-  dw unused_,dot_
-  dw paren_dot_quote_
-  _string "B free\r  data/code space\r"
-  dw farunused_,u_dot_
-  dw paren_dot_quote_
-  _string "B free\r  name space"
-  dw exit_
-
-endif
 
 ; ----------------------------------------------
   _defer_header boot_,'boot',,noop_

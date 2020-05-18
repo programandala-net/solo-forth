@@ -301,6 +301,7 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
 - Move `name>str`, `name>strings` and `.name` to the library.
 - Move `depth` to the library.
 - Move `+loop` to the library.
+- Move `.unused` and `.words` to the library.
 
 // Other changes {{{2
 === Other changes
