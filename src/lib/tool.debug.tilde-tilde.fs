@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005042046
+  \ Last modified: 202005190025
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,6 +27,7 @@
 ( ~~ )
 
 need :noname need defer need .s need columns need .name
+need 2variable
 
 variable ~~? ~~? on  create ~~y 0 c,
 
@@ -339,5 +340,8 @@ defer ~~before-info ( -- )  defer ~~after-info ( -- )
   \
   \ 2020-05-08: Update requirements: `.name` has been moved
   \ from the kernel to the library.
+  \
+  \ 2020-05-19: Update: `2variable` has been moved to the
+  \ library.
 
   \ vim: filetype=soloforth

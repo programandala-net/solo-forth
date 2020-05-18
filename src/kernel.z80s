@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202005182249
+; Last modified: 202005190012
 
 include version.z80s
 
@@ -7642,7 +7642,6 @@ source.other:
 ; }doc
 
   dw here_,two_store_
-two_comma.allot:
   _literal 2*cell
   dw allot_
   dw exit_
@@ -15210,42 +15209,6 @@ two_fetch.hl:
 
   ; XXX WARNING -- `two_fetch.hl` is used by `2value`. The
   ; address is calculated from the code field of `2@`.
-
-; ----------------------------------------------
-  _colon_header two_variable_,'2variable'
-
-; doc{
-;
-; 2variable ( "name" -- ) "two-variable"
-;
-; Parse _name_.  `create` a definition for _name_, which is
-; referred to as a "two-variable".  `allot` two cells of data space,
-; the data field of _name_, to hold the contents of the
-; two-variable. When _name_ is later executed, the address of its
-; data field is placed on the stack.
-;
-; The program is responsible for initializing the contents of
-; the two-variable.
-;
-; Definition:
-
-; ----
-; : 2variable ( "name" -- ) create [ 2 cells ] literal allot ;
-; ----
-
-; Origin: Forth-79 (Double Number Word Set), Forth-83 (Double
-; Number Extension Word Set), Forth-94 (DOUBLE), Forth-2012
-; (DOUBLE).
-;
-; See: `cells`, `literal`, `variable`, `2variable`,
-; `2constant`.
-;
-; }doc
-
-  ; XXX TODO -- Move to the library.
-
-  dw create_
-  dw branch_,two_comma.allot
 
 ; ----------------------------------------------
   _code_header two_over_,'2over'

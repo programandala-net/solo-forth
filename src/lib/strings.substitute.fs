@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091348
+  \ Last modified: 202005190025
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -17,7 +17,7 @@
   \ Unknown. Published in the documentation of Forth-2012.
   \
   \ Marcos Cruz (programandala.net) adapted it to Solo Forth,
-  \ 2017, 2018.
+  \ 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -28,7 +28,7 @@
 
 ( substitute )
 
-need find-substitution
+need find-substitution need 2variable
 
 '%' cconstant substitution-delimiter
   \ Character used as the substitution name delimiter.
@@ -208,5 +208,8 @@ code substitution-delimiter? ( ca -- f )
   \ 2017-03-13: Improve documentation.
   \
   \ 2018-03-09: Add words' pronunciaton.
+  \
+  \ 2020-05-19: Update: `2variable` has been moved to the
+  \ library.
 
   \ vim: filetype=soloforth

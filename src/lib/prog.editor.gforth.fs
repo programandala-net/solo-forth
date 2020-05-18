@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202005181714
+  \ Last modified: 202005190024
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -31,7 +31,7 @@ only forth definitions
 
 need inverse need list need update
 need list-lines need vocabulary need catch need editor
-need insert need replace need delete
+need insert need replace need delete need 2variable
 
 vocabulary gforth-editor ' gforth-editor is editor
 
@@ -557,5 +557,8 @@ forth definitions
   \
   \ 2020-05-18: Fix/improve documentation. Add implicit and
   \ explicit cross references.
+  \
+  \ 2020-05-19: Update: `2variable` has been moved to the
+  \ library.
 
   \ vim: filetype=soloforth

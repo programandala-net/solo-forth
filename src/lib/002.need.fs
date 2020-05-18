@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201809242137
+  \ Last modified: 202005190015
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -23,7 +23,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -299,7 +300,7 @@ defer located ( ca len -- block | 0 )
   \
   \ }doc
 
-2variable needed-word  0. needed-word 2!
+create needed-word 2 cells allot  0. needed-word 2!
 
   \ doc{
   \
@@ -869,5 +870,8 @@ unneeding need-here ?(
   \ 2018-07-21: Improve documentation, linking `throw`.
   \
   \ 2018-09-24: Fix needing of `needing`.
+  \
+  \ 2020-05-19: Update: `2variable` has been moved to the
+  \ library; `create` is used instead.
 
   \ vim: filetype=soloforth

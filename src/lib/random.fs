@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202002160127
+  \ Last modified: 202005190024
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -28,7 +28,7 @@
 
 ( rnd random fast-rnd fast-random )
 
-unneeding rnd ?(
+unneeding rnd ?( need 2variable
 
 2variable rnd-seed  $0111 rnd-seed !
 
@@ -367,5 +367,8 @@ unneeding randomize0 ?( need os-frames need randomize
   \ 2020-02-16: Fix documentation: the descriptions of
   \ `random-within` and `random-between` were exchanged.
   \ Improve some data stack comments.
+  \
+  \ 2020-05-19: Update: `2variable` has been moved to the
+  \ library.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041344
+  \ Last modified: 202005190016
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -15,7 +15,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -66,7 +67,7 @@ unneeding :noname ?(
   \
   \ }doc
 
-unneeding nextname ?( 2variable nextname-string
+unneeding nextname ?( need 2variable 2variable nextname-string
 
   \ doc{
   \
@@ -179,5 +180,8 @@ unneeding nextname ?( 2variable nextname-string
   \ "double-cell variable".
   \
   \ 2018-06-04: Link `2variable` in documentation.
+  \
+  \ 2020-05-19: Update: `2variable` has been moved to the
+  \ library.
 
   \ vim: filetype=soloforth

@@ -1,6 +1,6 @@
 = Solo Forth version history
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-05-18
+:revdate: 2020-05-19
 :toc:
 
 // This file is part of Solo Forth
@@ -302,6 +302,7 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
 - Move `depth` to the library.
 - Move `+loop` to the library.
 - Move `.unused` and `.words` to the library.
+- Move `2variable` to the library.
 
 // Other changes {{{2
 === Other changes

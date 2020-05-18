@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201807230127
+  \ Last modified: 202005190023
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -15,7 +15,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -515,6 +516,8 @@ need 16b-rng-px-bench need :noname
   \
   \ 2016-03-31: adapted to Solo Forth.
 
+need 2variable
+
 2variable rloc  $111 rloc !  \ seed with nonzero
 
 : cgm-5E9B-rnd ( -- u )
@@ -538,6 +541,8 @@ need 16b-rng-px-bench need :noname
   \ http://web.archive.org/web/20060707001752/http://www.tinyboot.com/index.html
   \
   \ 2016-03-31: adapted to Solo Forth.
+
+need 2variable
 
 2variable rloc  $111 rloc !  \ seed with nonzero
 
@@ -563,6 +568,8 @@ need 16b-rng-px-bench need :noname
   \
   \ 2016-03-31: adapted to Solo Forth.
 
+need 2variable
+
 2variable rloc  $111 rloc !  \ seed with nonzero
 
 : cgm-62DC-rnd ( -- u )
@@ -586,6 +593,8 @@ need 16b-rng-px-bench need :noname
   \ http://web.archive.org/web/20060707001752/http://www.tinyboot.com/index.html
   \
   \ 2016-03-31: adapted to Solo Forth.
+
+need 2variable
 
 2variable rloc  $111 rloc !  \ seed with nonzero
 
@@ -611,6 +620,8 @@ need 16b-rng-px-bench need :noname
   \
   \ 2016-03-31: adapted to Solo Forth.
 
+need 2variable
+
 2variable rloc  $111 rloc !  \ seed with nonzero
 
 : cgm-6594-rnd ( -- u )
@@ -635,6 +646,8 @@ need 16b-rng-px-bench need :noname
   \
   \ 2016-03-31: adapted to Solo Forth.
 
+need 2variable
+
 2variable rloc  $111 rloc !  \ seed with nonzero
 
 : cgm-65E8-rnd ( -- u )
@@ -655,6 +668,8 @@ need 16b-rng-px-bench need :noname
   \ Credit:
   \
   \ Code from DX-Forth 4.13.
+
+need 2variable
 
 2variable dx-seed  1. dx-seed 2!
 
@@ -1066,7 +1081,7 @@ need 16b-rng-px-bench need :noname
   \ generator", Park & Miller, 1988, Comm of the ACM, 31(10),
   \ pp. 1192-1201
 
-need d* need du/mod need 2nip
+need d* need du/mod need 2nip need 2variable
 
 2variable 2seed
 
@@ -1837,5 +1852,8 @@ need 8b-rng-px-bench need :noname
   \ word names.
   \
   \ 2018-07-23: Add `mim-random` and `mim-rng-px-bench`.
+  \
+  \ 2020-05-19: Update: `2variable` has been moved to the
+  \ library.
 
   \ vim: filetype=soloforth

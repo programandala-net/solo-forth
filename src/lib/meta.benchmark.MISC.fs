@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005080037
+  \ Last modified: 202005190020
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1466,8 +1466,11 @@ defer (fill
   \ 2018-01-24: Remove 1-cell benchmarks. Move old results to
   \ `fetch-bencthmark`. Combine with `2constant-bench` and
   \ `2literal-bench`.
+  \
+  \ 2020-05-19: Update: `2variable` has been moved to the
+  \ library.
 
-need 2value need bench{ need }bench.
+need 2value need 2variable need bench{ need }bench.
 
 0. 2value val2
 
@@ -3356,5 +3359,8 @@ need bench{ need }bench.
   \
   \ 2020-05-08: Update requirements: `b/sector` was moved from
   \ the kernel to the library.
+  \
+  \ 2020-05-19: Update: `2variable` has been moved to the
+  \ library.
 
   \ vim: filetype=soloforth

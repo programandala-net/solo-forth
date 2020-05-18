@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005042225
+  \ Last modified: 202005190011
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -23,7 +24,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( buffer: cvariable enum cenum enumcell link@ link, )
+( buffer: 2variable cvariable enum cenum enumcell link@ link, )
 
 unneeding buffer:
 ?\ : buffer: ( u "name" -- ) create allot ;
@@ -41,6 +42,31 @@ unneeding buffer:
   \ Origin: Forth-2012 (CORE EXT).
   \
   \ See: `reserve`, `allotted`, `create`, `allot`.
+  \
+  \ }doc
+
+unneeding 2variable ?( : 2variable ( "name"  -- ) create
+  [ 2 cells ] cliteral allot ; ?)
+
+  \ doc{
+  \
+  \ 2variable ( "name" -- ) "two-variable"
+  \
+  \ Parse _name_.  `create` a definition for _name_, which is
+  \ referred to as a "two-variable".  `allot` two cells of data
+  \ space, the data field of _name_, to hold the contents of
+  \ the two-variable. When _name_ is later executed, the
+  \ address of its data field is placed on the stack.
+  \
+  \ The program is responsible for initializing the contents of
+  \ the two-variable.
+  \
+  \ Origin: Forth-79 (Double Number Word Set), Forth-83 (Double
+  \ Number Extension Word Set), Forth-94 (DOUBLE), Forth-2012
+  \ (DOUBLE).
+  \
+  \ See: `cells`, `literal`, `variable`, `2variable`,
+  \ `2constant`.
   \
   \ }doc
 
@@ -222,5 +248,7 @@ need alias ' @ alias link@ ( node1 -- node2 )
   \ 2020-05-02: Improve documentation.
   \
   \ 2020-05-04: Fix cross reference.
+  \
+  \ 2020-05-19: Move `2variable` from the kernel.
 
   \ vim: filetype=soloforth

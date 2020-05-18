@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005051435
+  \ Last modified: 202005190019
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -171,7 +171,7 @@ need white need black need cyan need papery need brighty
 need overprint-off need inverse-off
 need xy>gxy need ortholine need 8*
 need under+ need within need polarity
-need .sinclair-stripes
+need .sinclair-stripes need 2variable
 
 -->
 
@@ -424,5 +424,8 @@ create current-option 0 c,
   \ documentation of `new-menu`.
   \
   \ 2020-05-05: Fix typo in cross reference.
+  \
+  \ 2020-05-19: Update: `2variable` has been moved to the
+  \ library.
 
   \ vim: filetype=soloforth

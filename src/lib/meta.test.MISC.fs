@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005182057
+  \ Last modified: 202005190023
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -459,6 +459,7 @@ menu-pars new-menu
 ( orthodraw-test ortholine-test )
 
 need orthodraw need ortholine need attr! need ms need random
+need 2variable
 
 variable delay  300 delay !  variable length  30 length !
 
@@ -558,7 +559,7 @@ run
 ( local-test )
 
 need local need clocal need 2local need cvariable need rnd
-need c? need 2?
+need c? need 2? need 2variable
 
 variable tmp cvariable ctmp 2variable 2tmp
 
@@ -1791,5 +1792,8 @@ blk @ 1+ blk @ 2+ thru
   \ from the kernel to the library.
   \
   \ 2020-05-18: Update: `+loop` was moved to the library.
+  \
+  \ 2020-05-19: Update: `2variable` has been moved to the
+  \ library.
 
   \ vim: filetype=soloforth

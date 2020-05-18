@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005051331
+  \ Last modified: 202005190018
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -74,9 +74,9 @@ code rdraw176 ( gx gy -- )
   \ }doc
 
 unneeding x1 unneeding incx
-unneeding y1 unneeding incy and and and
+unneeding y1 unneeding incy and and and ?( need 2variable
 
-?\ 2variable x1  2variable incx  2variable y1  2variable incy
+2variable x1  2variable incx  2variable y1  2variable incy ?)
 
   \ doc{
   \
@@ -585,5 +585,8 @@ code ortholine ( gx gy gxinc gyinc len -- )
   \ 2020-05-05: Improve the hidden documentation of `rdraw`,
   \ which is an unfinished word, and remove the cross
   \ references to it.
+  \
+  \ 2020-05-19: Update: `2variable` has been moved to the
+  \ library.
 
   \ vim: filetype=soloforth
