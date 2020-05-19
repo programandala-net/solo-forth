@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202005190012
+; Last modified: 202005191612
 
 include version.z80s
 
@@ -1309,8 +1309,8 @@ endif
 ; }doc
 
   ; XXX TODO -- Move `code` and `end-code` to the library? They
-  ; are not used in the kernel, but they used by 382 words in 64
-  ; library modules.
+  ; are not used in the kernel, but they are used by 382 words
+  ; in 64 library modules.
 
   dw end_asm_,reveal_
   dw exit_
@@ -2547,8 +2547,7 @@ push_hl:
 ; ----------------------------------------------
   _code_header bank_,'bank'
 
-  ; XXX TODO -- This could be moved to the library, but `bank.e`
-  ; should be calculated.
+  ; XXX TODO -- Move to the library, using `e-bank_`.
 
 ; doc{
 ;
@@ -10706,7 +10705,10 @@ compare.end:
 ;
 ; }doc
 
-  ; XXX TODO -- Move to the library -- but needed by `contains`.
+  ; XXX REMARK -- `search` could be moved to the library, but
+  ; it's used by `contains`, part of the `need` tool. Besides,
+  ; the assembly would be needed to compile this word, or at
+  ; least the assembler labels.
 
   pop de
   pop hl                      ; HL/DE=substring
@@ -15227,7 +15229,7 @@ two_fetch.hl:
 ;
 ; }doc
 
-  ; XXX REMARK -- Could be moved to the library, using `' 2@
+  ; XXX REMARK -- `2over` could be moved to the library, using `' 2@
   ; 1+ jp,` to jump into `2@`, but it's needed in `(located`.
 
   ld hl,$0004
@@ -15771,39 +15773,6 @@ first_boot:
   ld de,sys_screen ; destination
   ld bc,sys_screen_size ; count
   ldir ; copy the background to the screen
-
-; ----------------------------------------------
-; Pause
-
-; Wait 5 seconds, or until a key is pressed.
-
-  ; Set frames counter to zero:
-  xor a
-  ld (sys_frames+0),a
-  ld (sys_frames+1),a
-  ld (sys_frames+2),a
-
-  ; XXX TODO -- setting the counter to zero would make it
-  ; possible to add `uptime`, but it doesn't look useful enough.
-  ; In order to limit the pause here, only the first byte has to
-  ; be reseted.
-
-  ld (sys_last_k),a ; forget last key
-
-wait_a_bit:
-
-  ld a,(sys_frames) ; is frames...
-  inc a             ; ...$FF? (so, passed 255*20 ms = 5.12 s)
-  jr z,end_of_pause ; if so, exit
-
-  ld a,(sys_last_k) ; has a key...
-  and a             ; ...been pressed?
-  jr z,wait_a_bit   ; if not, keep waiting
-
-  xor a
-  ld (sys_last_k),a ; forget last key
-
-end_of_pause:
 
 ; ----------------------------------------------
 ; Clear memory
