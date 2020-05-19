@@ -2517,6 +2517,22 @@ Study the way v.Forth manages the interrupts and adapt it.
 // Library {{{1
 == Library
 
+=== 2020-05-19
+
+NOTE: Milestone: 0.14.0
+
+Move to the kernel: `0exit`.
+
+Move to the library: `?` (in Z80 or Forth).
+
+Combine <memory.bank.fs> and <memory.far.fs>.
+
+=== 2020-05-18
+
+NOTE: Milestone: 0.14.0
+
+Move to the library: `bank`, `place`.
+
 ==== 2018-03-21
 
 Improve needing of G+DOS directory descriptions no save blocks.
