@@ -959,25 +959,10 @@ Improve tab control.
 // Documentation {{{1
 == Documentation
 
-=== 2020-05-13
-
-NOTE: Milestone: 0.14.0
-
-- Make the assembler cross-references that have homonyms explicit,
-  e.g. `a`, `e`, etc, which also are commands of the block editors.
-  Also, update the cross references of the `a` register. Search for
-  all other cases. This improvement has been done already to the links
-  in the block editors.
-
 === 2020-05-03
 
 NOTE: Milestone: 0.14.0
 
-- Fix: `text` is mentioned in `parse-all`, but not included in the
-  glossary because it's part of the Specforth editor. Deactivate the
-  link to `text` and add a link to `editor` instead.
-- Add cross references to the words in <prog.editor.COMMON.fs>,
-  linking to the editors that need them.
 - Document also the main words of the sample games.
 - Finally, modify the Makefile to include all programs from the
   library (<prog.*.fs>) to the glossary.
