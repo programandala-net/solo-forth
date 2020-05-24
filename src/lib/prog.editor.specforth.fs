@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005182058
+  \ Last modified: 202005241419
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -42,7 +42,7 @@
 only forth definitions
 
 need list need update need flush need parse-all need vocabulary
-need +loop need editor
+need +loop need editor need r# need top
 
 vocabulary specforth-editor ' specforth-editor is editor
 
@@ -152,7 +152,7 @@ vocabulary specforth-editor ' specforth-editor is editor
   \
   \ }doc
 
-also editor definitions need r# need top
+also editor definitions
 
 : text ( "ccc<eol>" -- ) pad c/l 1+ blank parse-all pad place ;
 
@@ -843,3 +843,6 @@ only forth definitions
   \ 2020-05-18: Fix documentation markup.
   \
   \ 2020-05-18: Update: `+loop` was moved to the library.
+  \
+  \ 2020-05-24: Load `r#` and `top` in `forth-wordlist`, because they
+  \ are shared with `gforth-editor`.

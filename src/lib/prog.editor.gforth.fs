@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202005190024
+  \ Last modified: 202005241419
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -29,7 +29,7 @@
 
 only forth definitions
 
-need inverse need list need update
+need inverse need list need update need r# need top
 need list-lines need vocabulary need catch need editor
 need insert need replace need delete need 2variable
 
@@ -123,7 +123,7 @@ vocabulary gforth-editor ' gforth-editor is editor
   \
   \ }doc
 
-also editor definitions  need r# need top
+also editor definitions
 
 variable len len off
   \ Length of the text found.
@@ -560,5 +560,8 @@ forth definitions
   \
   \ 2020-05-19: Update: `2variable` has been moved to the
   \ library.
+  \
+  \ 2020-05-24: Load `r#` and `top` in `forth-wordlist`,
+  \ because they are shared with `specforth-editor`.
 
   \ vim: filetype=soloforth
