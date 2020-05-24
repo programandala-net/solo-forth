@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005241419
+  \ Last modified: 202005241534
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -190,7 +190,7 @@ also editor definitions
 
   \ doc{
   \
-  \ #locate ( -- n1 n2 ) "hash-locate"
+  \ #locate ( -- n1 n2 ) "number-sign-locate"
   \
   \ Part of `specforth-editor`:
   \ From the cursor pointer `r#` compute the line number _n2_
@@ -204,7 +204,7 @@ also editor definitions
 
   \ doc{
   \
-  \ #lead ( -- a n ) "hash-lead"
+  \ #lead ( -- a n ) "number-sign-lead"
   \
   \ Part of `specforth-editor`:
   \ From the cursor pointer `r#` compute the line address _a_
@@ -219,7 +219,7 @@ also editor definitions
 
   \ doc{
   \
-  \ #lag ( -- ca n ) "hash-lag"
+  \ #lag ( -- ca n ) "number-sign-lag"
   \
   \ Part of `specforth-editor`:
   \ Return cursor address _ca_ and count _n_ after cursor till
@@ -845,4 +845,5 @@ only forth definitions
   \ 2020-05-18: Update: `+loop` was moved to the library.
   \
   \ 2020-05-24: Load `r#` and `top` in `forth-wordlist`, because they
-  \ are shared with `gforth-editor`.
+  \ are shared with `gforth-editor`. Replace "hash" notation with
+  \ "number sign".

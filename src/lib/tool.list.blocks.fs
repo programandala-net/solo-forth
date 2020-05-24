@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005241407
+  \ Last modified: 202005241534
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -30,7 +30,7 @@ unneeding /line# ?\ : /line# ( -- n ) #16 base @ - 4 / 1+ ;
 
   \ doc{
   \
-  \ /line# ( -- n ) "slash-line-hash"
+  \ /line# ( -- n ) "slash-line-number-sign"
   \
   \ Maximum length of a line number in the current radix.
   \ It works for decimal, hex and binary.
@@ -43,7 +43,7 @@ unneeding .line# ?\ need /line# : .line# ( n -- ) /line# .r ;
 
   \ doc{
   \
-  \ .line# ( n -- ) "dot-line-hash"
+  \ .line# ( n -- ) "dot-line-number-sign"
   \
   \ Display line number _n_ right-aligned in a field whose
   \ width depends on the current radix (decimal, hex or
@@ -517,6 +517,7 @@ need list-lines
   \
   \ 2018-07-21: Improve documentation, linking `throw`.
   \
-  \ 2020-05-24: Fix typo.
+  \ 2020-05-24: Fix typo. Replace "hash" notation with "number
+  \ sign".
 
   \ vim: filetype=soloforth

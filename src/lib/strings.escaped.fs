@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005042128
+  \ Last modified: 202005241535
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -303,7 +303,7 @@ variable #esc-order  #esc-order off
 
   \ doc{
   \
-  \ #esc-order ( -- a ) "hash-esc-order"
+  \ #esc-order ( -- a ) "number-sign-esc-order"
   \
   \ A `variable`. _a_ is the address of a cell containing the
   \ number of word lists in the escaped strings search order.
@@ -546,5 +546,7 @@ need parse-char need char>string
   \ 2020-05-03: Fix documentation.
   \
   \ 2020-05-04: Fix documentation.
+  \
+  \ 2020-05-24: Replace "hash" notation with "number sign".
 
   \ vim: filetype=soloforth

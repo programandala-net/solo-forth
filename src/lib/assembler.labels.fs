@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005051305
+  \ Last modified: 202005241534
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -226,7 +226,7 @@ init-labels ' init-labels ' init-asm defer!
 
   \ doc{
   \
-  \ ?l# ( n -- ) "question-l-hash"
+  \ ?l# ( n -- ) "question-l-number-sign"
   \
   \ If assembler label _n_ is out of range, `throw` exception
   \ #-283.
@@ -269,7 +269,7 @@ init-labels ' init-labels ' init-asm defer!
 
   \ doc{
   \
-  \ resolve-al# ( orig b -- ) "resolve-a-l-hash"
+  \ resolve-al# ( orig b -- ) "resolve-a-l-number-sign"
   \
   \ Resolve an absolute reference at _orig_ to label _b_.
   \
@@ -281,7 +281,7 @@ init-labels ' init-labels ' init-asm defer!
 
   \ doc{
   \
-  \ resolve-rl# ( orig b -- ) "resolve-r-l-hash"
+  \ resolve-rl# ( orig b -- ) "resolve-r-l-number-sign"
   \
   \ Resolve a relative reference at _orig_ to label _b_.
   \
@@ -308,7 +308,7 @@ init-labels ' init-labels ' init-asm defer!
 
   \ doc{
   \
-  \ al#  ( -- ) "a-l-hash"
+  \ al#  ( -- ) "a-l-number-sign"
   \
   \ Create an absolute reference to an assembler label defined
   \ by `l:`. The label number has been compiled in the last
@@ -340,7 +340,7 @@ init-labels ' init-labels ' init-asm defer!
 
   \ doc{
   \
-  \ rl#  ( n -- a ) "r-l-hash"
+  \ rl#  ( n -- a ) "r-l-number-sign"
   \
   \ Create a relative reference to assembler label number _n_,
   \ defined by `l:`.  If label _n_ is already defined, _a_ is
@@ -517,5 +517,7 @@ previous
   \ 2018-07-21: Improve documentation, linking `throw`.
   \
   \ 2020-05-05: Fix typo in cross reference.
+  \
+  \ 2020-05-24: Replace "hash" notation with "number sign".
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005080039
+  \ Last modified: 202005241534
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -60,7 +60,7 @@ unneeding ?drive# ?(
 
   \ doc{
   \
-  \ ?drive# ( u -- ) "question-drive-hash"
+  \ ?drive# ( u -- ) "question-drive-number-sign"
   \
   \ If _u_ is greater than the maximum number of disk drives,
   \ `throw` an exception #-35 ("invalid block number").
@@ -383,5 +383,7 @@ unneeding get-block-drives ?( need block-drive@
   \ 2020-05-05: Improve documentation of `?set-drive`.
   \
   \ 2020-05-08: Move `b/sector` from the kernel.
+  \
+  \ 2020-05-24: Replace "hash" notation with "number sign".
 
   \ vim: filetype=soloforth

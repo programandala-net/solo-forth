@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005051320
+  \ Last modified: 202005241534
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -35,7 +35,7 @@ variable #indented
 
   \ doc{
   \
-  \ #indented ( -- a ) "hash-indented"
+  \ #indented ( -- a ) "number-sign-indented"
   \
   \ A `variable`. _a_ is the address of a cell containing the
   \ numbers of characters indented on the current line.
@@ -50,7 +50,7 @@ variable #ltyped
 
   \ doc{
   \
-  \ #ltyped ( -- a ) "l-typed-hash"
+  \ #ltyped ( -- a ) "l-typed-number-sign"
   \
   \ A `variable` . _a_ is the address of a cell containing the
   \ number of characters displayed by `ltype` on the current
@@ -295,5 +295,7 @@ need n>str
   \
   \ 2020-05-05: Document `#indented`, `indented+` and
   \ `ltype-indentation`. Fix cross references to `#ltyped`.
+  \
+  \ 2020-05-24: Replace "hash" notation with "number sign".
 
   \ vim: filetype=soloforth

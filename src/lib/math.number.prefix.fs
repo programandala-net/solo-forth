@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072207
+  \ Last modified: 202005241534
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -17,7 +17,8 @@
 
   \ XXX TODO -- update
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -80,7 +81,7 @@ create t# ( "name" -- n | d ) 36 c, x# immediate
 
   \ doc{
   \
-  \ c# ( "name" -- c ) "c-hash"
+  \ c# ( "name" -- c ) "c-number-sign"
   \
   \ Parse _name_ and return the code _c_ of the its first
   \ character.
@@ -104,5 +105,7 @@ create t# ( "name" -- n | d ) 36 c, x# immediate
   \ 2017-02-27: Improve documentation.
   \
   \ 2018-03-07: Add words' pronunciaton.
+  \
+  \ 2020-05-24: Replace "hash" notation with "number sign".
 
   \ vim: filetype=soloforth

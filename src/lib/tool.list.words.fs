@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005080128
+  \ Last modified: 202005241533
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -149,7 +149,7 @@ unneeding words# ?( need trail need name<name
 
   \ doc{
   \
-  \ words# ( -- n ) "words-hash"
+  \ words# ( -- n ) "words-number-sign"
   \
   \ Return number _n_ of words defined in the first word list
   \ of the search order.
@@ -179,8 +179,8 @@ unneeding words# ?( need trail need name<name
   \ 2017-02-01: Fix `words-like` with `lowers` (words are
   \ stored in lowercase).
   \
-  \ 2017-02-17: Update notation "behaviour" to "action".
-  \ Update cross references.
+  \ 2017-02-17: Update notation "behaviour" to "action". Update
+  \ cross references.
   \
   \ 2017-03-13: Improve documentation.
   \
@@ -194,12 +194,14 @@ unneeding words# ?( need trail need name<name
   \
   \ 2018-06-04: Fix documentation.
   \
-  \ 2018-06-04: Update: remove trailing closing paren from
-  \ word names.
+  \ 2018-06-04: Update: remove trailing closing paren from word
+  \ names.
   \
   \ 2020-02-27: Fix typo in documentation.
   \
   \ 2020-05-08: Update requirements: `.name` has been moved
   \ from the kernel to the library.
+  \
+  \ 2020-05-24: Replace "hash" notation with "number sign".
 
   \ vim: filetype=soloforth

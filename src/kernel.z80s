@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202005241401
+; Last modified: 202005241514
 
 include version.z80s
 
@@ -898,7 +898,7 @@ dpl_value:                                    ; +$22
   dw $0000
 csp_value:                                    ; +$24
   dw $0000
-hash_order_value:                             ; +$26
+number_sign_order_value:                             ; +$26
   dw $0000
 
 context_value:                                ; +$28 .. +$36
@@ -2111,7 +2111,7 @@ endif
 ;
 ; }doc
 
-  dw hash_order_,fetch_,dup_
+  dw number_sign_order_,fetch_,dup_
   _literal 0
   dw paren_question_do_,get_order.exit
   dw dup_,i_,minus_,one_minus_,cells_
@@ -2202,7 +2202,7 @@ get_order.exit:
   _literal 2
 set_order.do:
   dw dup_,question_order_
-  dw dup_,hash_order_,store_
+  dw dup_,number_sign_order_,store_
   _literal 0
   dw paren_question_do_,set_order.loop_exit
   dw context_,i_,cells_,plus_,store_
@@ -2530,11 +2530,11 @@ push_hl:
   _jp_next
 
 ; ----------------------------------------------
-  _constant_header default_bank_hash_,'default-bank#'
+  _constant_header default_bank_number_sign_,'default-bank#'
 
 ; doc{
 ;
-; default-bank# ( -- ca ) "default-bank-hash"
+; default-bank# ( -- ca ) "default-bank-number-sign"
 ;
 ; A `constant`. _ca_ is the address of a byte containing the value
 ; of the default `bank` paged in at $C000 .. $FFFF.  Its default
@@ -3978,7 +3978,7 @@ find_name_from.ip: equ $+1
 ;
 ; }doc
 
-  dw hash_order_,fetch_
+  dw number_sign_order_,fetch_
   _literal 0
   dw paren_question_do_,find_name.loop_exit ; do
 
@@ -7187,11 +7187,11 @@ do_user:
   db $24
 
 ; ----------------------------------------------
-  _user_variable_header hash_order_,'#order'
+  _user_variable_header number_sign_order_,'#order'
 
 ; doc{
 ;
-; #order ( -- a ) "hash-order"
+; #order ( -- a ) "number-sign-order"
 ;
 ; A `user` variable. _a_ is the address of a cell containing the
 ; number of word lists in the search `order`.
@@ -7280,11 +7280,11 @@ endif
   db bytes_per_terminal_input_buffer
 
 ; ----------------------------------------------
-  _variable_header hash_tib_,'#tib'
+  _variable_header number_sign_tib_,'#tib'
 
 ; doc{
 ;
-; #tib ( -- a ) "hash-t-i-b"
+; #tib ( -- a ) "number-sign-t-i-b"
 ;
 ; A `variable`. _a_ is the address of a cell containing the number
 ; of characters in the terminal input buffer.
@@ -9506,7 +9506,7 @@ simple_accept.end:
 
   dw tib_,slash_tib_
   dw two_dup_,blank_ ; clean the input buffer
-  dw accept_,hash_tib_,store_,space_
+  dw accept_,number_sign_tib_,store_,space_
   dw terminal_to_source_
   dw exit_
 
@@ -9545,11 +9545,11 @@ simple_accept.end:
   dw 0
 
 ; ----------------------------------------------
-  _variable_header hash_block_drives_,'#block-drives'
+  _variable_header number_sign_block_drives_,'#block-drives'
 
 ; doc{
 ;
-; #block-drives ( -- ca ) "hash-block-drives"
+; #block-drives ( -- ca ) "number-sign-block-drives"
 ;
 ; A character variable. _ca is the address of a byte containing
 ; the number of block drives defined in `block-drives`, i.e. the
@@ -9580,7 +9580,7 @@ simple_accept.end:
 ;
 ; }doc
 
-  dw blocks_slash_disk_,hash_block_drives_,c_fetch_,star_
+  dw blocks_slash_disk_,number_sign_block_drives_,c_fetch_,star_
   dw exit_
 
 ; ----------------------------------------------
@@ -10250,11 +10250,11 @@ far_place.copy_char:
   _jp_next
 
 ; ----------------------------------------------
-  _variable_header error_hash_,'error#'
+  _variable_header error_number_sign_,'error#'
 
 ; doc{
 ;
-; error# ( -- a ) "error-hash"
+; error# ( -- a ) "error-number-sign"
 ;
 ; A `variable`. _a_ is the address of a cell containing the number
 ; of the last error issued by `error`.
@@ -10355,7 +10355,7 @@ far_place.copy_char:
   ; XXX TODO -- Factor the `throw` part using an execution
   ; table. Maybe some memory can be saved.
 
-  dw dup_,error_hash_,store_ ; save the error number
+  dw dup_,error_number_sign_,store_ ; save the error number
   dw to_in_,fetch_,blk_,fetch_,error_pos_,two_store_
 
   dw dup_
@@ -10436,11 +10436,11 @@ endif
 ; }doc
 
 ; ----------------------------------------------
-  _constant_header hash_words_,'#words'
+  _constant_header number_sign_words_,'#words'
 
 ; doc{
 ;
-; #words ( -- n ) "hash-words"
+; #words ( -- n ) "number-sign-words"
 ;
 ; _n_ is the number of words currently defined in the system,
 ; which is updated by `header,`.
@@ -10519,7 +10519,7 @@ endif
 
   ; Update the word count
   _literal 1
-  _literal hash_words_dfa
+  _literal number_sign_words_dfa
   dw plus_store_
 
   dw exit_
@@ -11147,7 +11147,7 @@ endif
   dw source_id_,to_r_
   dw to_in_,fetch_,to_r_
   dw blk_,fetch_,to_r_
-  dw hash_tib_,fetch_,to_r_
+  dw number_sign_tib_,fetch_,to_r_
   dw to_r_ ; restore the return address
   ; dw question_r_stack_ ; XXX TMP -- for debugging
   dw exit_
@@ -11181,7 +11181,7 @@ endif
 ; }doc
 
   dw from_r_ ; save the return address
-  dw from_r_,hash_tib_,store_
+  dw from_r_,number_sign_tib_,store_
   dw from_r_,blk_,store_
   dw from_r_,to_in_,store_
   dw from_r_
@@ -12222,9 +12222,9 @@ endif
   ld (latest_wordlist_dfa),hl
 
   ; Restore the word count:
-cold.hash_words: equ $+1
+cold.number_sign_words: equ $+1
   ld hl,0
-  ld (hash_words_dfa),hl
+  ld (number_sign_words_dfa),hl
 
   ; Set `warn` and `init-asm` to their default action `noop`:
   ld hl,noop_
@@ -12265,7 +12265,7 @@ endif
 
   ; Restore default value of `#block-drives`:
   _literal 1
-  dw hash_block_drives_,c_store_
+  dw number_sign_block_drives_,c_store_
 
   ; Restore the default stringer:
   dw default_stringer_
@@ -12927,11 +12927,11 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header dot_throw_hash_,'.throw#'
+  _colon_header dot_throw_number_sign_,'.throw#'
 
 ; doc{
 ;
-; .throw# ( n -- ) "dot-throw-hash"
+; .throw# ( n -- ) "dot-throw-number-sign"
 ;
 ; Display the number of `throw` code _n_, as a decimal number,
 ; prefixed with a '#' and followed by a space.
@@ -12942,12 +12942,12 @@ endif
 ; }doc
 
   dw paren_dot_quote_
-  _string "\r#" ; carriage return and hash
+  _string "\r#" ; carriage return and number sign
   dw dec_dot_
   dw exit_
 
 ; ----------------------------------------------
-  _defer_header dot_throw_,'.throw',,dot_throw_hash_
+  _defer_header dot_throw_,'.throw',,dot_throw_number_sign_
 
 ; doc{
 ;
@@ -13343,7 +13343,7 @@ block.end:
 ; }doc
 
   dw blk_,off_,paren_source_id_,off_
-  dw tib_,hash_tib_,fetch_,set_source_
+  dw tib_,number_sign_tib_,fetch_,set_source_
   dw exit_
 
 ; ----------------------------------------------
@@ -13948,11 +13948,11 @@ emits.loop_exit:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header less_hash_,'<#'
+  _colon_header less_number_sign_,'<#'
 
 ; doc{
 ;
-; <# ( -- ) "less-hash"
+; <# ( -- ) "less-number-sign"
 ;
 ; Initialize the pictured numeric output process:
 ; Set `hld` to its initial value, right below `pad`.
@@ -13974,11 +13974,11 @@ emits.loop_exit:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header hash_greater_,'#>'
+  _colon_header number_sign_greater_,'#>'
 
 ; doc{
 ;
-; #> ( xd -- ca len ) "hash-greater"
+; #> ( xd -- ca len ) "number-sign-greater"
 ;
 ; End the pictured numeric output conversion that was started by
 ; `<#`: Drop _xd_ and make the pictured numeric output string
@@ -14066,11 +14066,11 @@ to_digit.end:
   _jp_next
 
 ; ----------------------------------------------
-  _colon_header hash_,'#'
+  _colon_header number_sign_,'#'
 
 ; doc{
 ;
-; # ( ud1 -- ud2 ) "hash"
+; # ( ud1 -- ud2 ) "number-sign"
 ;
 ; Divide _ud1_ by the number in `base`, giving the quotient
 ; _ud2_ and the remainder _n_. (_n_ is the least significant
@@ -14163,11 +14163,11 @@ to_digit.end:
   _jp_next
 
 ; ----------------------------------------------
-  _colon_header hash_s_,'#s'
+  _colon_header number_sign_s_,'#s'
 
 ; doc{
 ;
-; #s ( ud1 -- ud2 ) "hash-s"
+; #s ( ud1 -- ud2 ) "number-sign-s"
 ;
 ; Convert one digit of _ud1_ according to the rule for `#`.
 ; Continue conversion until the quotient is zero. _ud2_ is zero.
@@ -14184,9 +14184,9 @@ to_digit.end:
 ;
 ; }doc
 
-hash_s.begin:
-  dw hash_,two_dup_,or_
-  dw question_branch_,hash_s.begin
+number_sign_s.begin:
+  dw number_sign_,two_dup_,or_
+  dw question_branch_,number_sign_s.begin
   dw exit_
 
 ; ----------------------------------------------
@@ -14219,7 +14219,7 @@ hash_s.begin:
 ; }doc
 
   dw tuck_  ; save the high part of _d_ to calculate the sign
-  dw d_abs_,less_hash_,hash_s_,rot_,sign_,hash_greater_
+  dw d_abs_,less_number_sign_,number_sign_s_,rot_,sign_,number_sign_greater_
   dw exit_
 
 ; ----------------------------------------------
@@ -15671,7 +15671,7 @@ question_backslash.exit:
 
 backslash.interpreting:
   ; Interpreting
-  dw hash_tib_,fetch_,to_in_,store_
+  dw number_sign_tib_,fetch_,to_in_,store_
   dw exit_
 
 ; ----------------------------------------------
@@ -15834,9 +15834,9 @@ background_image:
 ; End
 
   ; Update the counter of words:
-  org hash_words_dfa
+  org number_sign_words_dfa
   dw word_count
-  org cold.hash_words
+  org cold.number_sign_words
   dw word_count
 
 end cold_entry
