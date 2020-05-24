@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005190020
+  \ Last modified: 202005241406
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -98,7 +98,7 @@ need ticks need timer
   \ The following table compares the block access speed on different
   \ platforms.
 
-  \ The ticks clock can not be used for the tests, because it's not
+  \ The ticks clock cannot be used for the tests, because it's not
   \ regulary updated by the DOS during disk operations. A chronometer
   \ watch was used instead.  The following line of code was executed with
   \ disk 1 (library) in the first drive and disk 2 (programs) in the
@@ -3362,5 +3362,7 @@ need bench{ need }bench.
   \
   \ 2020-05-19: Update: `2variable` has been moved to the
   \ library.
+  \
+  \ 2020-05-24: Fix typo.
 
   \ vim: filetype=soloforth

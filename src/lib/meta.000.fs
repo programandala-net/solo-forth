@@ -3,14 +3,14 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 202005241406
 
   \ ===========================================================
   \ Description
 
   \ Block 0 of the workbench disk.a
   \
-  \ By convention block 0 can not be loaded, and it's used only
+  \ By convention block 0 cannot be loaded, and it's used only
   \ for credits and information.
 
 ( Solo Forth worbench disk )

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005052014
+  \ Last modified: 202005241405
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1101,7 +1101,7 @@ create tmp-filename /filename allot
   \
   \ }doc
 
-  \ XXX REMARK -- The TR-DOS command `dos-find-file` can not
+  \ XXX REMARK -- The TR-DOS command `dos-find-file` cannot
   \ locate deleted files, because it ignores filenames with a
   \ byte 1 as first character, which is the deletion mark.
   \ That's why an alternative was needed.
@@ -1405,5 +1405,7 @@ need read-file-descriptor need write-file-descriptor
   \ 2020-05-05: Fix cross references. Document `>file`,
   \ `(>file`, `read-file-descriptor`, `write-file-descriptor`.
   \ `--dos-commands--`.
+  \
+  \ 2020-05-24: Fix typo.
 
   \ vim: filetype=soloforth

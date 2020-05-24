@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005190015
+  \ Last modified: 202005241405
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -70,7 +70,7 @@
   \ Does string _ca1 len1_ contain string _ca2 len2_?
   \
   \ ``contains`` is defined also in <strings.misc.fsb>, because
-  \ it can not be loaded by the applications from this block
+  \ it cannot be loaded by the applications from this block
   \ (because `unneeding` is not defined at this point).
   \ That's why `contains` is not included in the block header.
   \
@@ -873,5 +873,7 @@ unneeding need-here ?(
   \
   \ 2020-05-19: Update: `2variable` has been moved to the
   \ library; `create` is used instead.
+  \
+  \ 2020-05-24: Fix typo.
 
   \ vim: filetype=soloforth

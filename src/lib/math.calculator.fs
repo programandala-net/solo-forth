@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202005050044
+  \ Last modified: 202005241406
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -892,7 +892,7 @@ set-current  previous
   \ else`. Added `int`.
   \
   \ 2016-04-20: Improved `2dup`. Commented out `=`, `<>`, `<`,
-  \ `<=`, `>` and `>=`, which can not be used yet.
+  \ `<=`, `>` and `>=`, which cannot be used yet.
   \
   \ 2016-10-28: Fix block title that caused `>=` and other
   \ calculator operators be found by `need` instead of the

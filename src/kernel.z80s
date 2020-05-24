@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202005191935
+; Last modified: 202005241401
 
 include version.z80s
 
@@ -1907,11 +1907,16 @@ call_ix:
 ; A `constant`. _a_ is the address of a routine that does nothing,
 ; except executing a Z80 ``ret`` to return.
 ;
+; ``noop_`` is used as the default jump point of `circle-pixel`.
+;
 ; See: `noop`.
 ;
 ; }doc
 
   dw noop
+
+; XXX TODO -- `noop_` could be removed. `circle-pixel` could use
+; use a custom address.
 
 ; ----------------------------------------------
 if gplusdos
@@ -8977,7 +8982,7 @@ base_store:
 ; (;code ( -- ) ( R: a -- ) "paren-semicolon-code"
 ;
 ; Rewrite the code field of the most recently defined high-level
-; word (it can not be a `code` word) to point to the following
+; word (it cannot be a `code` word) to point to the following
 ; machine code sequence, which is at _a_.
 ;
 ; ``(;code`` is the run-time procedure compiled by `;code` and
@@ -9279,7 +9284,7 @@ minus_trailing.begin:
 
   ; XXX TODO --
   ;   `r@ count dup char+ r> + >r` is what `slit` does, but
-  ;   calling `slit` here can not work.
+  ;   calling `slit` here cannot work.
   ;   See `string-param` in the library for a possible factor
 
   dw exit_
@@ -10178,9 +10183,6 @@ far_lowers.end:
 ; Store the string _ca1 len1_ as a counted string at _ca2_.  The
 ; source and destination strings are permitted to overlap.
 ;
-; An ambiguous condition exists if _len1_ is greater than 255 or
-; the buffer at _ca2_ is less than _len1_+1 characters.
-;
 ; ``place`` is written in Z80. Its equivalent definition in
 ; Forth is the following:
 
@@ -10192,11 +10194,9 @@ far_lowers.end:
 ;
 ; }doc
 
-  ; XXX TODO -- Move to the library. Not used in the kernel. The
-  ; problem is the address of `move_block` has to be calculated
-  ; from `move` or get by a constant.
-
-  ; XXX TODO -- Fix the mention about the ambiguous condition.
+  ; XXX TODO -- `place` cannote be moved to the library because
+  ; it's used be `s,` Beside, the address of `move_block` should
+  ; be calculated from `move` or get by a constant.
 
   ; Credit:
   ; Code from DZX-Forth's `packed`.
@@ -11743,7 +11743,7 @@ do_vocabulary:
 
 ;
 ; If _f_ is not zero, parse and discard until "?)" is found or
-; until the end of the parse area is reached. ``?(`` can not be
+; until the end of the parse area is reached. ``?(`` cannot be
 ; used across blocks.
 ;
 ; ``?(`` is used for conditional compilation, as a simpler but
@@ -15357,8 +15357,8 @@ execute_hl:
 ;
 ; ``?exit`` is the conditional version of `exit`.
 ;
-; ``?exit`` can not be used within a `loop`. Use ``if unloop
-; exit then`` instead.
+; ``?exit`` cannot be used within a `loop`. Use ``if unloop exit
+; then`` instead.
 ;
 ; ``?exit`` can be used in interpretation mode to stop the
 ; interpretation of a block.

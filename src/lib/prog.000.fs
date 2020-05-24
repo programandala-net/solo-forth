@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804072017
+  \ Last modified: 202005241407
 
   \ ===========================================================
   \ Description

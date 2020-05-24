@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005182056
+  \ Last modified: 202005241407
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -649,7 +649,7 @@ need word
 
 need +thru need continued  1 2 +thru  blk @ 3 + continued
   \ Load the two following blocks and then continue loading
-  \ after them.  This is needed, because `-->` can not be used
+  \ after them.  This is needed, because `-->` cannot be used
   \ in those blocks.
 
 ( hayes-test )

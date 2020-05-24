@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005080134
+  \ Last modified: 202005241405
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1317,7 +1317,7 @@ unneeding sectors-used ?( need dos-in need dos-out
   \
   \ }doc
 
-  \ XXX FIXME -- This can not work, because G+DOS only updates
+  \ XXX FIXME -- This cannot work, because G+DOS only updates
   \ its internal variable $3DD8 when a catalogue is displayed.
   \ Routine `scan_cat` should be copied and modified here to
   \ calculate the number of sectors used.
@@ -2348,5 +2348,7 @@ need write-file need read-file need .ufia
   \
   \ 2020-05-08: Update requirements: `b/sector` was moved from
   \ the kernel to the library. Fix source line length.
+  \
+  \ 2020-05-24: Fix typo.
 
   \ vim: filetype=soloforth

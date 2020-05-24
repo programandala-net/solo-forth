@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005140027
+  \ Last modified: 202005241407
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -300,7 +300,7 @@ code (tape-file> ( -- )
   \ WARNING: If _len2_ is not zero or the exact length of the
   \ file, the ROM routine returns to BASIC with "Tape loading
   \ error". This crashes the system, because in Solo Forth the
-  \ lower screen has no lines, and BASIC can not display the
+  \ lower screen has no lines, and BASIC cannot display the
   \ message.
 
   \ See: `>tape-file`, `(tape-file>`
@@ -510,5 +510,7 @@ unneeding tape-file>display ?( need tape-file>
   \
   \ 2020-05-14: Tabulate the tape header table (this doesn't
   \ affect the final documentation).
+  \
+  \ 2020-05-24: Fix typo.
 
   \ vim: filetype=soloforth

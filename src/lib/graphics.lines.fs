@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005190018
+  \ Last modified: 202005241405
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -246,7 +246,7 @@ code rdraw ( gx gy -- )
   \
   \ rdraw ( gx gy -- )
   \
-  \ WARNING: ``rdraw`` is under development, can not be used
+  \ WARNING: ``rdraw`` is under development, cannot be used
   \ yet. See the source code for details.
   \
   \ Draw a line relative _gx gy_ to the current coordinates.
@@ -588,5 +588,7 @@ code ortholine ( gx gy gxinc gyinc len -- )
   \
   \ 2020-05-19: Update: `2variable` has been moved to the
   \ library.
+  \
+  \ 2020-05-24: Fix typo.
 
   \ vim: filetype=soloforth

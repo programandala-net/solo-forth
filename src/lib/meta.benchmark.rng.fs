@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005190023
+  \ Last modified: 202005241406
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -445,7 +445,7 @@ need tape-file>display
   ." to display them later." cr cr
 
   \  <------------------------------>
-  ." The process can not be stopped." cr cr
+  ." The process cannot be stopped." cr cr
 
   \  <------------------------------>
   ." Press 'q' to quit or any other" cr
@@ -927,7 +927,7 @@ need 16b-rng-px-bench need :noname
   \ Code from tt.pfe, Tetris for terminals, redone in
   \ ANSI-Forth.  Written 1994-04-05 by Dirk Uwe Zoller.
   \
-  \ Note: the seed can not be zero.
+  \ Note: the seed cannot be zero.
 
 need os-seed
 
@@ -1855,5 +1855,7 @@ need 8b-rng-px-bench need :noname
   \
   \ 2020-05-19: Update: `2variable` has been moved to the
   \ library.
+  \
+  \ 2020-05-24: Fix typo.
 
   \ vim: filetype=soloforth

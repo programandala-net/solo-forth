@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201807212114
+  \ Last modified: 202005241407
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -132,7 +133,7 @@ unneeding view ?( need locate need list
   \
   \ List the block where _name_ is defined, i.e. the first
   \ block where _name_ is in the index line (surrounded by
-  \ spaces). If _name_ can not be found, `throw` an exception
+  \ spaces). If _name_ cannot be found, `throw` an exception
   \ #-286 ("not located").
   \
   \ See: `locate`, `list`.
@@ -515,5 +516,7 @@ need list-lines
   \ 2018-03-14: Fix requirement of `index`.
   \
   \ 2018-07-21: Improve documentation, linking `throw`.
+  \
+  \ 2020-05-24: Fix typo.
 
   \ vim: filetype=soloforth

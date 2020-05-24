@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005090038
+  \ Last modified: 202005241406
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -201,7 +201,7 @@ DEPTH 0= ?T~ Error #19: testing DEPTH = 0
 
   \ 123 -1 ?~ Pass #21: testing ?~
   \ Y !   ~ equivalent to DROP
-  \ XXX FIXME -- This test can not work in a block?
+  \ XXX FIXME -- This test cannot work in a block?
 
 ~ Testing the remaining Core words used in the Hayes tester,
 ~ with the above definitions these are straightforward
@@ -1343,7 +1343,7 @@ T{ GS2 -> 123 123 123 123 123 }T -->
 T{ BL GS3 HELLO -> 5 CHAR H }T
 T{ CHAR " GS3 GOODBYE" -> 7 CHAR G }T
 
---> \ XXX TMP -- Skip the rest, which can not work in a block.
+--> \ XXX TMP -- Skip the rest, which cannot work in a block.
 
 T{ BL GS3
 DROP -> 0 }T            \ BLANK LINE RETURN ZERO-LENGTH STRING

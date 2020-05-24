@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202005051951
+; Last modified: 202005241403
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -529,7 +529,7 @@ dosior_hl_to_ior_hl:
 ; byte of _x_ is the track (0..79 for side 0; 80..159 for side
 ; 1); its low byte is the sector (0..15).
 ;
-; In TR-DOS, the first track of a block disk can not be used for
+; In TR-DOS, the first track of a block disk cannot be used for
 ; blocks.
 ;
 ; Definition:
@@ -797,7 +797,7 @@ if 0 ; XXX OLD
   ; files in it. In this case, the TR-DOS CLI is executed or
   ; garbage directory entries are displayed...
   ;
-  ; XXX REMARK -- This can not work anyway, because the LIST
+  ; XXX REMARK -- This cannot work anyway, because the LIST
   ; TR-DOS CLI command stops at address $11C3 with a jump to
   ; `exit_dos`.
 
@@ -1039,7 +1039,7 @@ endif ; defined trdos
 ; of lines of the lower screen before calling TR-DOS.
 ;
 ; The number of lines was the reason of the crash: TR-DOS throws
-; a disk error and BASIC can not print it. The disk error
+; a disk error and BASIC cannot print it. The disk error
 ; happens when `transfer-sectors` reads a sector from disk B.
 ; Choosing "abort" at the TR-DOS disk error message enters
 ; BASIC. Then Forth can be reentered using a warm restart.  The
@@ -1110,5 +1110,7 @@ endif ; defined trdos
 ;
 ; 2020-05-05: Delete old versions of `>file` and `(>file`: the
 ; new versions are already in the library. Fix cross reference.
+;
+; 2020-05-24: Fix typos.
 
 ; vim: filetype=z80:textwidth=64
