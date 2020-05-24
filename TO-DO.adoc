@@ -300,7 +300,7 @@ Benchmark `cells +` vs `swap array>`, used by `localized-string`
 
 === 2018-09-23
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 Use the circular string buffer as pictured output buffer.
 
@@ -733,7 +733,7 @@ Options:
 
 === 2018-03-07
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 Hide internal words of `menu` in a module.
 
@@ -961,11 +961,9 @@ Improve tab control.
 
 === 2020-05-03
 
-NOTE: Milestone: 0.14.0
-
 - Document also the main words of the sample games.
 - Finally, modify the Makefile to include all programs from the
-  library (<prog.*.fs>) to the glossary.
+  library (<prog.*.fs>) into the glossary.
 
 === 2020-03-03
 
@@ -999,27 +997,27 @@ NOTE: Milestone: 0.14.0
 
 === 2018-07-20
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 - Update the `make-thru-index` test in the manual.
 
 === 2018-04-12
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 Homogenize the position of the pronunciation in words that have
 several stack comments.
 
 === 2018-03-11
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 Add a section about how to use more than one block disk, and link to
 it.
 
 === 2018-03-09
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 Replace term "characters" with "bytes".
 
@@ -1236,7 +1234,7 @@ remove the fake ones from G+DOS and TR-DOS.
 
 === 2018-03-15
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 Improve `transfer-block` to preserve the current drive. Now the
 current drive is changed by `(>drive-block`, which is activated by
@@ -1251,9 +1249,6 @@ get-drive . \ but now the current drive is number 2
 ----
 
 === 2017-03-12, 2017-03-13
-
-// NOTE: Milestone: 0.14.0
-// XXX TODO -- Remove from 0.14.0
 
 Support block files?
 
@@ -1291,7 +1286,7 @@ Study if `flush` should be added to `set-drive`.
 
 === 2017-02-05
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 Unify G+DOS `transfer-sector` and TR-DOS `transfer-sectors`. Make
 their behaviour and names identical. Write the +3DOS version too.
@@ -1300,6 +1295,8 @@ their behaviour and names identical. Write the +3DOS version too.
 === G+DOS ===
 
 ==== 2018-07-21
+
+// XXX FIXME --
 
 NOTE: Milestone: 0.14.0
 
@@ -1314,7 +1311,7 @@ free memory below BASIC are not finished.
 
 ==== 2018-03-15
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 Transfer `ufia` to `ufia1` in `((cat` using hook `xfer`, instead of
 doing it in `(cat` using `>ufia1`. It seems safer.
@@ -1428,7 +1425,7 @@ returns to BASIC. This affects `set-drive`.
 
 ==== 2018-04-09
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 Use drive letters A..D, as used in filenames.
 
@@ -1487,7 +1484,7 @@ Move the Z80-symbol constants to the assembler word list.
 
 ==== 2018-03-28
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 Improve `read-line` with 2-character line terminators.
 
@@ -1496,7 +1493,9 @@ instead.
 
 ==== 2018-03-15
 
-NOTE: Milestone: 0.14.0
+// XXX FIXME --
+
+NOTE: Milestone: 0.15.0
 
 Fix: `2-block-drives` does not work. Blocks in the second drive can
 not be accessed (error #-1004, "no data"). It has to do with
@@ -1538,6 +1537,8 @@ Notes:
 == Errors
 
 === 2018-03-12
+
+// XXX FIXME --
 
 NOTE: Milestone: 0.14.0
 
@@ -1945,7 +1946,7 @@ make: *** No hay ninguna regla para construir el objetivo
 
 === 2018-03-13
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 Rewrite `m+` in Z80.
 
@@ -2513,18 +2514,12 @@ Combine <memory.bank.fs> and <memory.far.fs>.
 
 NOTE: Milestone: 0.14.0
 
-Move to the library: `bank`, `place`.
+Move to the library: `bank`.
 
 ==== 2018-03-21
 
 Improve needing of G+DOS directory descriptions no save blocks.
 First improve `need` to accept index lines longer than one block line.
-
-=== 2018-03-11
-
-NOTE: Milestone: 0.14.0
-
-Move `2variable` to the library.
 
 === 2017-03-28, 2017-09-09
 
@@ -2791,9 +2786,6 @@ Find better names for `0.r` and `0d.r`.
 Rename `c!exchange` to `c!@`?
 
 Rename `!exchange` to `!@`?
-
-// Optimizations {{{1
-== Optimizations
 
 // Parsing {{{1
 == Parsing
@@ -3221,10 +3213,6 @@ Rename `.unused` to `.free` (if other info is added).
 === 2016-11-25
 
 Write `ed:` after TurboForth.
-
-=== 2016-11-19
-
-Make `editor` defered, in order to load more than one editor at the same time.
 
 // User variables {{{1
 == User variables
