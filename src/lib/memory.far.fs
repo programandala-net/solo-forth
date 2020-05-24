@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005182301
+  \ Last modified: 202005190108
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -546,6 +546,9 @@ code c@bank ( ca n -- c ) D1 c, e-bank_ call,
   \ c@bank ( ca n -- c ) "c-fetch-bank"
   \
   \ Fetch _c_ from address _ca_ ($C000..$FFFF) of `bank` _n_.
+  \
+  \ ``c@bank`` is written in Z80. Its equivalent definition in
+  \ Forth is the following:
 
   \ ----
   \ : c@bank ( ca n -- c )
@@ -628,5 +631,7 @@ code c@bank ( ca n -- c ) D1 c, e-bank_ call,
   \
   \ 2020-05-18: Update: `+loop` was moved to the library. Move
   \ `np!` here from the kernel.
+  \
+  \ 2020-05-19: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202005191612
+; Last modified: 202005191935
 
 include version.z80s
 
@@ -615,7 +615,7 @@ _border_wait: macro _color
   endm
 
 _z80_border_wait: macro _color
-  if 1 ; debugging
+  if debugging
     local _wait
     push af
     ld a,_color
@@ -1090,7 +1090,7 @@ move_block_downwards:
 ; Multiplication primitives
 
 ; XXX TODO -- Improve -- the DZX-Forth routines are for 8080,
-; not Z80
+; not Z80.
 
 ; Credit:
 ; Code from DZX-Forth.
@@ -1308,9 +1308,8 @@ endif
 ;
 ; }doc
 
-  ; XXX TODO -- Move `code` and `end-code` to the library? They
-  ; are not used in the kernel, but they are used by 382 words
-  ; in 64 library modules.
+  ; XXX TODO -- `code` and `end-code` could be moved to the are
+  ; used by 382 words in 64 library modules.
 
   dw end_asm_,reveal_
   dw exit_
@@ -4231,7 +4230,8 @@ mode_32_emit.a:
 ; ----------------------------------------------
   _code_header emit_udg_,'emit-udg'
 
-  ; XXX TODO -- Move to the library.
+  ; XXX REMARK -- `emit-udg` cannot be moved to the library,
+  ; because `mode32-emit` jumps into `emit_udg.l`.
 
 ; doc{
 ;
@@ -4278,9 +4278,8 @@ emit_udg.address:
 ; ----------------------------------------------
   _code_header emit_udga_,'emit-udga'
 
-  ; XXX TMP -- Experimental.
-  ; XXX TODO -- Move to the library. But `emit_udg.address`
-  ; should be calculated from `emit-udg`.
+  ; XXX TODO -- Move to the library. Calculate
+  ; `emit_udg.address` from `emit-udg`.
 
 ; doc{
 ;
@@ -4673,7 +4672,9 @@ xkey.translate:
 ; }doc
 
   ; XXX TODO -- Make it compatible with the future multitasking
-  ; XXX TODO -- Move to the library.
+
+  ; XXX REMARK -- `discard-key` cannot be moved to the library,
+  ; because `key` and `xkey` call it.
 
   push ix ; make next `ret` jump to `next`
 
@@ -6021,12 +6022,19 @@ endif
 ; of it with _b_. Return false if the result is zero, else
 ; true.
 ;
+; ``c@and`` is written in Z80. Its equivalent definition in Forth
+; is the following:
+
+; ----
+; : c@and? ( b ca -- f ) c@ and 0<> ;
+; ----
+
 ; See: `c@and`.
 ;
 ; }doc
 
-  ; XXX TODO -- Move to the library, when possible. Used by
-  ; `lex?`.
+  ; XXX REMARK -- This word could be moved to the library, but
+  ; the alternative definition of `lex?` should be used.
 
   pop hl ; address
   pop de ; E = bitmask
@@ -7420,7 +7428,8 @@ source.other:
 ;
 ; }doc
 
-  ; XXX TODO -- Move to the library.
+  ; XXX TODO -- Move to the library? It uses no byte of
+  ; code/data space.
 
 ; ----------------------------------------------
   _code_header one_plus_,'1+'
@@ -7463,7 +7472,8 @@ source.other:
 ;
 ; }doc
 
-  ; XXX TODO -- Move to the library.
+  ; XXX TODO -- Move to the library? It uses no byte of
+  ; code/data space.
 
 ; ----------------------------------------------
   _code_header two_minus_,'2-'
@@ -8724,7 +8734,8 @@ endif
 ;
 ; }doc
 
-  ; XXX TODO -- Move to the library.
+  ; XXX REMARK -- `postpone` could be moved to the library, but
+  ; it's used by 156 words in 39 library modules.
 
   dw defined_ ; ( nt | 0 )
   dw dup_,question_defined_ ; error if not found
@@ -9198,8 +9209,8 @@ type.loop_exit:
 ;
 ; }doc
 
-  ; XXX REMARK -- Can not be moved to the library, because
-  ; `new-needed-word` needs it.
+  ; XXX REMARK -- `-trailing` cannot be moved to the library,
+  ; because `new-needed-word` needs it.
 
   pop de
   pop hl
@@ -10151,8 +10162,8 @@ far_lowers.end:
 ;
 ; }doc
 
-  ; XXX REMARK -- Can not be moved to the library, because it's
-  ; used by `needed`.
+  ; XXX REMARK -- `undefined?` cannot be moved to the library,
+  ; because it's used by `needed`.
 
   dw find_name_,zero_equals_
   dw exit_
@@ -10574,9 +10585,8 @@ if 1 ; assembler_core_in_kernel
 ;
 ; }doc
 
-  ; XXX TODO -- Move `code` and `end-code` to the library? They
-  ; are not used in the kernel, but they used by 382 words in 64
-  ; library modules.
+  ; XXX TODO -- `code` and `end-code` could be moved to the are
+  ; used by 382 words in 64 library modules.
 
   dw header_,asm_
   dw exit_
@@ -14360,6 +14370,13 @@ hash_s.begin:
 ; Display the 1-cell signed integer stored at _a_, using the
 ; format of `.`.
 ;
+; ``?`` is written in Z80. Its equivalent definition in Forth
+; is the following:
+
+; ----
+; : ? ( a -- ) @ . ;
+; ----
+
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-94
 ; (TOOLS), Forth-2012 (TOOLS).
 ;
@@ -14367,7 +14384,13 @@ hash_s.begin:
 ;
 ; }doc
 
-  ; XXX TODO -- Rewrite in Forth and move to the library.
+  ; XXX TODO -- `?` could be moved to the library, but only 5 B
+  ; would be saved. Rewritten in Forth (9 B) it would be a bit
+  ; slower. In Z80, only a jump into `.` would be required (8 B
+  ; in total). Anyway this code is a copy of `@`. The code could
+  ; be shared by converting it into a routine and adding `push
+  ; ix` and `call fetch.routine` at the start of `@` (5 more
+  ; bytes and less speed in `@` to save 2 bytes in `?`).
 
   pop hl
   ld e,(hl)
