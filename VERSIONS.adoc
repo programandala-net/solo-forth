@@ -376,6 +376,8 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
 - Rename `astack` `estack`, and so the related words.
 - Remove `?name-too-short`.  It was used only once, and it was too
   specific to be useful.
+- Remove the 5-second pause after displaying the background the first
+  time.
 
 // Version 0.14.0-pre.209  {{{1
 == Version 0.14.0-pre.209
