@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201807292046
+  \ Last modified: 202005252106
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -976,7 +977,7 @@ unneeding fm/mod ?(
   over 0<> over 0< and   \ quotient<0 and remainder<>0?
   if swap r> +           \ add divisor to remainder
      swap 1-             \ decrement quotient
-  else r> drop then ; ?)
+  else rdrop then ; ?)
 
   \ Credit:
   \
@@ -1409,5 +1410,7 @@ code join ( b1 b2 -- x )
   \ 2018-07-15: Add `min>top`, `max>top`, `pair=`.
   \
   \ 2018-07-29: Fix typo in documentation.
+  \
+  \ 2020-05-25: Replace `r> drop` with `rdrop`.
 
   \ vim: filetype=soloforth

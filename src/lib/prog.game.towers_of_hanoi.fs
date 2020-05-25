@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not ready yet
 
-  \ Last modified: 202005051253
+  \ Last modified: 202005252109
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -78,7 +78,7 @@ create PegStacks  30 chars allot
   BEGIN   r@ PegSP @ over <>
   WHILE   dup r@ PegStack - over c@ ( addr level diameter )
           r@ show-disk  char+
-  REPEAT  drop r> drop ;
+  REPEAT  drop rdrop ;
 
 -->
 
@@ -158,5 +158,7 @@ mode-64ao page
   \ 2020-05-04: Update: `mode-64` -> `mode-64ao`.
   \
   \ 2020-05-05: Fix requirement.
+  \
+  \ 2020-05-25: Replace `r> drop` with `rdrop`.
 
   \ vim: filetype=soloforth

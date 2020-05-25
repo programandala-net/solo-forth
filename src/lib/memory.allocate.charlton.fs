@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041305
+  \ Last modified: 202005252106
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -64,7 +64,7 @@
   \ Copyright Gordon Charlton, 1994-09-12.
 
   \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
-  \ 2015, 2016, 2017, 2018.
+  \ 2015, 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -229,7 +229,7 @@ variable nextnode
   \ to point to the node that points to the sentinel.
 
 : search ( a size -- a|0 )
-  >r begin 2@ swap R@ < invert until  r> drop  >prev @ ;
+  >r begin 2@ swap R@ < invert until  rdrop  >prev @ ;
 
   \ Search the nodelist, starting at the node specified
   \ (_a_), for a free node larger than or equal to the
@@ -695,5 +695,7 @@ set-current set-order
   \
   \ 2018-06-04: Update documentation: remove mentions of
   \ aligned addresses.
+  \
+  \ 2020-05-25: Replace `r> drop` with `rdrop`.
 
   \ vim: filetype=soloforth

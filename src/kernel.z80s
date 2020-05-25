@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202005241514
+; Last modified: 202005252117
 
 include version.z80s
 
@@ -9452,7 +9452,7 @@ simple_accept.printable:                               ; else
   dw zero_branch_,simple_accept.printable_end          ; if
   dw r_fetch_,over_,c_store_,char_plus_,r_fetch_,emit_
 simple_accept.printable_end:                           ; then
-  dw from_r_,drop_
+  dw r_drop_
 simple_accept.repeat:
   dw branch_,simple_accept.begin                       ; repeat
 simple_accept.end:

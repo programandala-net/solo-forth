@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005241406
+  \ Last modified: 202005252108
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -43,7 +43,7 @@ need ticks need timer
   ticks r@ 0 ?do missing$ 1-line-(located    drop loop timer
   cr ." multiline-(located "
   ticks r@ 0 ?do missing$ multiline-(located drop loop timer
-  r> drop ;
+  rdrop ;
 
   \                   Ticks
   \                   -------------------
@@ -143,7 +143,7 @@ need ticks need timer
   cr ." in>l2 " ticks r@ 0 ?do in>l2 drop        loop timer
   cr ." >in @ " ticks r@ 0 ?do >in @ >in @ 2drop loop timer
   cr ." dup   " ticks r@ 0 ?do >in @ dup   2drop loop timer
-  r> drop ;
+  rdrop ;
 
   \ 2018-03-11:
 
@@ -3351,8 +3351,8 @@ need bench{ need }bench.
   \ 2018-06-03: Simplify `located-bench`: use the code already
   \ defined in the `need` tool.
   \
-  \ 2018-06-04: Update: remove trailing closing paren from
-  \ word names.
+  \ 2018-06-04: Update: remove trailing closing paren from word
+  \ names.
   \
   \ 2018-06-10: Move the block access speed results from the
   \ manual.
@@ -3364,5 +3364,8 @@ need bench{ need }bench.
   \ library.
   \
   \ 2020-05-24: Fix typo.
+  \
+  \ 2020-05-25: Replace `r> drop` with `rdrop` (this does not
+  \ affect the timings).
 
   \ vim: filetype=soloforth

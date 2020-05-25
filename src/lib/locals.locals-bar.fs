@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804130056
+  \ Last modified: 202005252105
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -22,7 +22,7 @@
   \ 1996.
   \
   \ Marcos Cruz (programandala.net) adapted the code to Solo
-  \ Forth, 2018.
+  \ Forth, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -242,7 +242,7 @@ variable x  0 x !  -->
   111 222 333 locals| red green |
   cr red . rp@ . lp @ >r [ ' t2 ] literal catch \ save `lp`
   if r> lp ! cr ." error " rp@ .
-  else r> drop cr ." ok red " rp@ .
+  else rdrop cr ." ok red " rp@ .
   then red . ;
 
 : t6 ( n n n -- n )
@@ -269,5 +269,7 @@ variable x  0 x !  -->
   \ 2018-04-01: Fix index lines. Compact the code, saving two
   \ blocks. Update the layout and the source style; convert
   \ code to lowercase. Make `lchar` a byte variable.
+  \
+  \ 2020-05-25: Replace `r> drop` with `rdrop`.
 
   \ vim: filetype=soloforth

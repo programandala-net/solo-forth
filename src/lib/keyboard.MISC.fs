@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005190018
+  \ Last modified: 202005252105
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -176,7 +176,7 @@ noop noop noop noop noop noop noop noop noop noop noop noop [
     else  \ printable
           >r  2dup <>  \ more?
           if r@ over c!  char+  r@ emit
-          then r> drop
+          then rdrop
     then
   repeat  drop nip swap - ;
 
@@ -1767,5 +1767,7 @@ unneeding key-caps-lock ?\ 6 cconstant key-caps-lock
   \
   \ 2020-05-19: Update: `2variable` has been moved to the
   \ library.
+  \
+  \ 2020-05-25: Replace `r> drop` with `rdrop`.
 
   \ vim: filetype=soloforth
