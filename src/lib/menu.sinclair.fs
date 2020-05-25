@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005190019
+  \ Last modified: 202005242030
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -179,40 +179,218 @@ need .sinclair-stripes need 2variable
 
 2variable menu-xy
 
+  \ doc{
+  \
+  \ menu-xy ( -- a ) "menu-x-y"
+  \
+  \ A `2variable`. _a_ is the address of a double cell
+  \ containing the coordinates (column and row) of the current
+  \ `menu`. ``menu-xy`` is set by `set-menu`.
+  \
+  \ See: `menu-width`, `.menu-border`, `.menu-banner`.
+  \
+  \ }doc
+
 2variable menu-title
+
+  \ doc{
+  \
+  \ menu-title ( -- a )
+  \
+  \ A `2variable`. _a_ is the address of a double cell
+  \ containing the address and length of a string which is the
+  \ title of the current `menu`. ``menu-title`` is set by
+  \ `set-menu`.
+  \
+  \ See: `menu-width`, `menu-xy`, `menu-banner-attr`,
+  \ `.menu-banner`.
+  \
+  \ }doc
 
 variable actions-table
 
+  \ doc{
+  \
+  \ actions-table ( -- a )
+  \
+  \ A `variable`, _a_ is the address of a cell containing the
+  \ address of a cell array which holds the execution tokens of
+  \ the current `menu` options. ``actions-table`` is set by
+  \ `set-menu`.
+  \
+  \ See: `options-table`.
+  \
+  \ }doc
+
 variable options-table
+
+  \ doc{
+  \
+  \ options-table ( -- a )
+  \
+  \ A `variable`. _a_ is the address of a cell containing the
+  \ address of a cell array, which holds the counted strings of
+  \ the current `menu` options. ``options-table`` is set by
+  \ `set-menu`.
+  \
+  \ See: `actions-table`.
+  \
+  \ }doc
 
 create menu-width 0 c, create menu-options 0 c,
 
+  \ doc{
+  \
+  \ menu-width ( -- ca )
+  \
+  \ A `cvariable`. _ca_ is the address of a byte containing the
+  \ width of the current `menu` in characters. ``menu-width``
+  \ is set by `set-menu`.
+  \
+  \ See: `menu-title`, `menu-body-attr`, `menu-banner-attr`,
+  \ `menu-highlight-attr`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ menu-options ( -- ca )
+  \
+  \ A `cvariable`. _ca_ is the address of a byte containing the
+  \ current `menu` number of options. ``menu-options`` is set
+  \ by `set-menu`.
+  \
+  \ See: `menu-width`.
+  \
+  \ }doc
+
 create menu-banner-attr black papery white + brighty c,
+
+  \ doc{
+  \
+  \ menu-banner-attr ( -- ca )
+  \
+  \ A `cvariable`. _ca_ is the address of a byte containing the
+  \ attribute of the current `menu` banner. Its default value
+  \ is white ink on black paper, with bright.
+  \
+  \ See: `menu-body-attr`, `menu-highlight-attr`,
+  \ `.menu-banner`, `black`, `papery`, `white`, `brighty`.
+  \
+  \ }doc
 
 create menu-body-attr white papery brighty c,
 
+  \ doc{
+  \
+  \ menu-body-attr ( -- ca )
+  \
+  \ A `cvariable`. _ca_ is the address of a byte containing the
+  \ attribute of the current `menu` background. Its default
+  \ value is black ink on white paper, with bright.
+  \
+  \ See: `menu-banner-attr`, `menu-highlight-attr`,
+  \ `.menu-options`, `white`, `papery`, `brighty`.
+  \
+  \ }doc
+
 create menu-key-down '6' c,
+
+  \ doc{
+  \
+  \ menu-key-down ( -- ca )
+  \
+  \ A `cvariable`. _ca_ is the address of a byte containing the
+  \ key code used to move the current `menu` selection down.
+  \ Its default value is character '6'.
+  \
+  \ See: `menu-key-up`, `menu-key-choose`.
+  \
+  \ }doc
 
 create menu-key-up   '7' c,
 
+  \ doc{
+  \
+  \ menu-key-up ( -- ca )
+  \
+  \ A `cvariable`. _ca_ is the address of a byte containing the
+  \ key code used to move the current `menu` selection up.
+  \ Its default value is character '7'.
+  \
+  \ See: `menu-key-down`, `menu-key-choose`.
+  \
+  \ }doc
+
 create menu-key-choose 13 c,
+
+  \ doc{
+  \
+  \ menu-key-choose ( -- ca )
+  \
+  \ A `cvariable`. _ca_ is the address of a byte containing the
+  \ key code used to move the current `menu` selection down.
+  \ Its default value is 13, i.e. the enter key.
+  \
+  \ See: `menu-key-up`, `menu-key-down`.
+  \
+  \ }doc
 
 create menu-highlight-attr cyan papery brighty c,
 
+  \ doc{
+  \
+  \ menu-highlight-attr ( -- ca )
+  \
+  \ A `cvariable`. _ca_ is the address of a byte containing the
+  \ attribute used to highlight the current `menu` option. Its
+  \ default value is the combination of `cyan`, `papery` and
+  \ `brighty`, i.e. black ink on cyan bright paper.
+  \
+  \ See: `menu-banner-attr`.
+  \
+  \ }doc
+
 variable menu-rounding  menu-rounding on
+
+  \ doc{
+  \
+  \ menu-rounding ( -- a )
+  \
+  \ A `variable`. _a_ is the address of a cell containing a
+  \ flag. When the flag is non-zero, the top and the bottom
+  \ `menu` options are connected in a circular manner, i.e.
+  \ pressing `menu-key-up` at the top option leads to to the
+  \ botton option, and pressing `menu-key-down` at the bottom
+  \ option lead to the top.
+  \
+  \ See: `menu-key-choose`, `menu-highlight-attr`.
+  \
+  \ }doc
 
 -->
 
 ( menu )
 
-: .banner ( -- )
+: .menu-banner ( -- )
   menu-banner-attr c@ attr! overprint-off inverse-off
   menu-xy 2@
   2dup at-xy menu-title 2@ menu-width c@ type-left-field
        swap menu-width c@ +
        [ /sinclair-stripes 1+ ] cliteral - swap
        at-xy .sinclair-stripes ;
-  \ Display the banner of the current menu.
+
+  \ doc{
+  \
+  \ .menu-banner ( -- ) "dot-menu-banner"
+  \
+  \ Display the banner of the current `menu`.
+  \
+  \ See: `menu-banner-attr`, `menu-title`, `menu-width`,
+  \ `.sinclair-stripes`, `.menu`, `.menu-options`,
+  \ `.menu-border`, `type-left-field`, `menu-xy`.
+  \
+  \ }doc
 
 : (.option ( ca len -- ) menu-width c@ 1- type-left-field ;
   \ Display menu option _ca len_ at the current cursor
@@ -235,14 +413,24 @@ variable menu-rounding  menu-rounding on
 
 : menu-x-pixels ( -- n ) menu-width c@ 8* ;
 
-: .border ( -- )
+: .menu-border ( -- )
   menu-xy 2@ 1+
   2dup xy>gxy 2dup menu-x-pixels 1- under+ vertical-line
                                            vertical-line
        menu-options c@ + 1+ xy>gxy 1+ 1 0 menu-x-pixels
        ortholine ;
-  \ Draw a 1-pixel border around the menu options, preserving
-  \ the attributes.
+
+  \ doc{
+  \
+  \ .menu-border ( -- ) "dot-menu-border"
+  \
+  \ Draw a 1-pixel border around the current `menu` options,
+  \ preserving the attributes.
+  \
+  \ See: `.menu`, `.menu-options`, `.menu-banner`, `ortholine`,
+  \ `menu-xy`, `xy>gxy`.
+  \
+  \ }doc
 
   \ XXX TODO -- Reuse the result of the first `xy>gyx` for the
   \ horizontal line, the calculation will be faster.
@@ -251,16 +439,34 @@ variable menu-rounding  menu-rounding on
 
 ( menu )
 
-: .option ( n -- )
+: .menu-option ( n -- )
   dup at-option space options-table @ array> @ count (.option ;
-  \ Display menu option _n_ of the current menu.
 
-: .options ( -- )
+  \ doc{
+  \
+  \ .menu-option ( n -- ) "dot-menu-option"
+  \
+  \ Display menu option _n_ of the current `menu`.
+  \
+  \ See: `.menu-options`, `.menu`.
+  \
+  \ }doc
+
+: .menu-options ( a -- )
   menu-body-attr c@ attr!
-  menu-options c@ dup 0 ?do i .option loop
+  menu-options c@ dup 0 ?do i .menu-option loop
                       at-option menu-width c@ spaces ;
-  \ Display the options of the current menu, from texts table
-  \ _a_.
+
+  \ doc{
+  \
+  \ .menu-options ( -- ) "dot-menu-options"
+  \
+  \ Display the options of the current `menu`.
+  \
+  \ See: `.menu`, `.menu-option`, `.menu-border`,
+  \ `.menu-banner`.
+  \
+  \ }doc
 
 : option>attrs ( n -- ca len )
   option>xy xy>attra menu-width c@ ;
@@ -318,11 +524,13 @@ create current-option 0 c,
   \ Activate the current menu, which has been set by `set-menu`
   \ and displayed by `.menu`.
   \
-  \ See: `new-menu`.
+  \ See: `new-menu`,
+  \ `menu-key-up`, `menu-key-down`, `menu-key-choose`,
+  \ `options-table`, `actions-table`.
   \
   \ }doc
 
-: .menu ( -- ) .banner .options .border ;
+: .menu ( -- ) .menu-banner .menu-options .menu-border ;
 
   \ doc{
   \
@@ -331,7 +539,8 @@ create current-option 0 c,
   \ Display the current menu, which has been set by `set-menu`
   \ and can be activated by `menu`.
   \
-  \ See: `new-menu`.
+  \ See: `new-menu`, `.menu-banner`, `.menu-options`,
+  \ `.menu-border`.
   \
   \ }doc
 
@@ -344,13 +553,16 @@ create current-option 0 c,
   \
   \ set-menu ( a1 a2 ca len col row n1 n2 -- )
   \
-  \ Set the current menu to cursor coordinates _col row_,
-  \ _n2_ options, _n1_ characters width, title _ca len_,
-  \ actions table _a1_ (a cell array of _n2_ execution tokens)
-  \ and option texts table _a2_ (a cell array of _n2_ addresses
-  \ of counted strings).
+  \ Set the current menu to cursor coordinates _col row_, _n2_
+  \ options, _n1_ characters width, title _ca len_, actions
+  \ table _a1_ (a cell array of _n2_ execution tokens) and
+  \ option texts table _a2_ (a cell array of _n2_ addresses of
+  \ counted strings).
   \
-  \ See: `new-menu`, `.menu`, `menu`.
+  \ See: `new-menu`, `.menu`, `menu`, `menu-xy`, `menu-title`,
+  \ `actions-table`, `menu-options`, `menu-width`,
+  \ `menu-body-attr`, `menu-highlight-attr`,
+  \ `menu-banner-attr`.
   \
   \ }doc
 
@@ -427,5 +639,10 @@ create current-option 0 c,
   \
   \ 2020-05-19: Update: `2variable` has been moved to the
   \ library.
+  \
+  \ 2020-05-24: Rename `.option`, `.options`, `.border` and
+  \ `.banner` to `.menu-option`, `.menu-options`,
+  \ `.menu-border` and `.menu-banner`. Increase and improve
+  \ documentation.
 
   \ vim: filetype=soloforth
