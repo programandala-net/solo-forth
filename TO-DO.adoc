@@ -1302,13 +1302,6 @@ NOTE: Milestone: 0.14.0
 
 Fix `drive-unused`: it always returns 1444.
 
-==== 2018-04-07
-
-NOTE: Milestone: 0.14.0
-
-Restore `default_origin` in the main kernel; the file words that need
-free memory below BASIC are not finished.
-
 ==== 2018-03-15
 
 NOTE: Milestone: 0.15.0
@@ -1438,12 +1431,17 @@ Update `first-drive`.
 Use the 8 free sectors of the system track for 2 additional blocks.
 This requires changes in the fsb2-trd converter.
 
-==== 2017-03-12
+==== 2017-03-12, 2020-05-25
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
-Rename `read-file-descriptor` to `read-fda`.
-Rename `write-file-descriptor` to `write-fda`.
+- Rename `read-file-descriptor` to `read-fda`?
+- Rename `write-file-descriptor` to `write-fda`?
+
+The problem is "FDA" (File Descriptor Area) is the buffer where the
+file descriptor is hold. `read-fd` could be used instead, but "FD"
+looks like "floppy disk". `read-file-desc` looks like "file
+description", which is a different thing.
 
 ==== 2017-03-11
 
@@ -1480,6 +1478,7 @@ low-level words return it unchanged.
 Move the Z80-symbol constants to the assembler word list.
 
 // +3DOS {{{2
+
 === +3DOS ===
 
 ==== 2018-03-28
@@ -1490,18 +1489,6 @@ Improve `read-line` with 2-character line terminators.
 
 Replace temporary variables from `read-line`. Use locals or the stack
 instead.
-
-==== 2018-03-15
-
-// XXX FIXME --
-
-NOTE: Milestone: 0.15.0
-
-Fix: `2-block-drives` does not work. Blocks in the second drive can
-not be accessed (error #-1004, "no data"). It has to do with
-`set-drive` in `(>block-drive`. `set-drive` and `transfer-sector` are
-not fully finished. Search for `current_drive_method` in
-<src/kernel.plus3dos.z80s>.
 
 ==== 2018-03-13
 
@@ -1562,7 +1549,7 @@ Again, 666 should not be there.
 
 === 2018-03-12
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 Fix: Use standard exception code #-13 (undefined word) in
 `interpret-table` instead of more specific #-256 (not a word nor a
@@ -1570,7 +1557,7 @@ number).
 
 === 2017-05-05, 2018-06-16
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 Use term "throw code" instead of "exception code"?
 
@@ -1986,7 +1973,7 @@ versatile. Then document it.
 
 === 2017-05-05
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 Finish `crshift`.
 
@@ -2557,7 +2544,7 @@ Extract a common factor from `need-here` and `locate-needed`?
 
 === 2017-02-12, 2018-06-16
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 Idea for a faster version of `(located`: Load only the first sector of
 the blocks, and do the search directly in the buffer, without the
@@ -2582,7 +2569,7 @@ Many needed words are in the same block.
 
 === 2016-11-22, 2016-12-31, 2017-02-16, 2017-03-07, 2018-06-03
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 Write `needs` to do multiple `need` on one line of a block,
 saving space
@@ -2659,7 +2646,7 @@ Problem: this would force changes in fsb and fsb2.
 
 ==== Other
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 - Simple locals, by Wil Baden, 1987-01-01,
   <http://atariwiki.strotmann.de/wiki/Wiki.jsp?page=Local%20Variables>
@@ -2670,7 +2657,7 @@ Finish implementation of `(local)`, `locals|` and `{:`.
 
 === 2018-03-28
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 Split <locals.arguments.fs>: default usage, like variables, and
 `toarg` usage, like values. The problem now is the behaviour is
@@ -2719,14 +2706,14 @@ for the end user.
 
 === 2018-04-14
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
-Rename `cls-chars0` and `cls-chars1`.
-Rename `(load-program` to `load-program>`?
+- Rename `cls-chars0` and `cls-chars1`.
+- Rename `(load-program` to `load-program>`?
 
 === 2018-04-12
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 Rename `udg-at-xy-display` and `at-xy-display-udg`. "display"?
 
@@ -2739,7 +2726,7 @@ dash.
 
 === 2018-03-07
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 Look for better names for `private{` and `}private`. `private` and
 `end-private` are fine, except `private` is taken.
@@ -2861,7 +2848,7 @@ But this change would be incompatible with multitasking.
 
 === 2017-03-21
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 Add `+dup` and other missing members of the alternative sets.
 
@@ -2915,6 +2902,8 @@ Finish the conversion of 128K sound explosions. More details in the source.
 == Strings
 
 === 2018-03-28
+
+// XXX FIXME --
 
 NOTE: Milestone: 0.14.0
 
@@ -3078,6 +3067,8 @@ Make the tape words return a standard _ior_.
 
 === 2018-03-12
 
+// XXX FIXME --
+
 NOTE: Milestone: 0.14.0
 
 Fix:
@@ -3089,6 +3080,8 @@ Fix:
 Add the floating-point tests from the original Forth-2012 Test Suite.
 
 === 2018-03-11
+
+// XXX FIXME --
 
 NOTE: Milestone: 0.14.0
 
