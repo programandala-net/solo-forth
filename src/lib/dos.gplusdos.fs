@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005241405
+  \ Last modified: 202005251955
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -917,7 +917,8 @@ need ufia need get-drive
   \ }doc
 
 : set-filename ( ca len -- )
-  -filename /filename min nstr2 swap cmove get-drive dstr1 c! ;
+  -filename /filename min nstr2 swap cmove
+  get-drive throw dstr1 c! ;
 
   \ doc{
   \
@@ -1326,15 +1327,16 @@ unneeding drive-used ?( need get-drive need sectors-used
                         need b/sector
 
 : drive-used ( c -- n ior )
-  get-drive >r set-drive ?dup if rdrop dup exit then
+  get-drive ?dup ?exit >r
+  set-drive ?dup if rdrop exit then
   sectors-used b/sector * 1024 / r> set-drive ; ?)
 
   \ doc{
   \
   \ drive-used ( c -- n ior )
   \
-  \ Return used kibibytes _n_ in drive _c_, and the I/O result
-  \ code _ior_.
+  \ Return the number _n_ of used kibibytes in drive _c_, and
+  \ the I/O result code _ior_.
   \
   \ See: `drive-unused`, `unused`, `farunused`.
   \
@@ -2350,5 +2352,8 @@ need write-file need read-file need .ufia
   \ the kernel to the library. Fix source line length.
   \
   \ 2020-05-24: Fix typo.
+  \
+  \ 2020-05-25: Fix usage of `get-drive` in `set-filename` and
+  \ `drive-used`.
 
   \ vim: filetype=soloforth
