@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005251849
+  \ Last modified: 202005262211
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -798,40 +798,61 @@ need >filename need /base-filename need /filename-ext
   \
   \ /cat-entry ( -- n ) "slash-cat-entry"
   \
-  \ Return size _n_, in bytes, of every entry of the
-  \ `cat-buffer` used by `cat`.
+  \ A `cconstant`. Return size _n_, in bytes, of every entry of
+  \ the `cat-buffer` used by `(cat` and prepared by `>cat`.
   \
   \ See: `cat-entries`.
   \
   \ }doc
 
-create cat-entries 16 c,
+create cat-entries 4 c,
 
   \ doc{
   \
   \ cat-entries ( -- ca )
   \
-  \ A character variable. _ca_ is the address of a character
-  \ containing the number of entries (minimum 2) of the
-  \ `cat-buffer`, and used by `(cat`.  Its default value is 16.
+  \ A `cvariable`. _ca_ is the address of a character
+  \ containing the number of entries of the `cat-buffer` used
+  \ by `(cat`.  Its default value is 4. The length of each
+  \ entry is `/cat-entry` and cannot be changed.
   \
-  \ See: `/cat-entry`.
+  \ WARNING: Every time `cat` or `acat` are executed, a new
+  \ `cat-buffer` is allocated in the `stringer` by `>cat`.
+  \ Depending on the value of ``cat-entries``, this can
+  \ overwrite the current contents of the `stringer`, whose
+  \ maximum length is `/stringer`.
   \
   \ }doc
 
-defer cat-buffer ' pad ' cat-buffer defer!
+: /cat-buffer ( -- len ) cat-entries c@ 1+ /cat-entry * ;
+
+  \ doc{
+  \
+  \ /cat-buffer ( -- len ) "slash-cat-buffer"
+  \
+  \ Return the current length _len_ of the `cat-buffer`, using
+  \ the values of `cat-entries` and `/cat-entry`.
+  \
+  \ }doc
+
+variable cat-buffer
 
   \ doc{
   \
   \ cat-buffer ( -- a )
   \
-  \ A deferred word that returns the address _a_ of the
-  \ catalogue buffer, used by `(cat`, `.cat`, `.acat` and other
-  \ words.
+  \ A `variable`. _a_ is the address of a cell containing the
+  \ address of the buffer used by `(cat` , `.cat`, `.acat` and
+  \ other words.
   \
-  \ WARNING: By default, ``cat-buffer`` executes `pad`.
+  \ WARNING: Every time `cat` or `acat` are executed, the value
+  \ of ``cat-buffer`` is updated with the address of a new
+  \ space allocated in the `stringer` by `>cat`. Depending on
+  \ the value of `cat-entries`, the current contents of the
+  \ `stringer` (whose maximum length is `/stringer`) could be
+  \ overwritten.
   \
-  \ See: `cat-entries`, `/cat-entry`.
+  \ See: `/cat-entry`.
   \
   \ }doc
 
@@ -870,7 +891,7 @@ defer cat-buffer ' pad ' cat-buffer defer!
 
 ( (cat )
 
-: >cat-entry ( n -- ca ) /cat-entry * cat-buffer + ;
+: >cat-entry ( n -- ca ) /cat-entry * cat-buffer @ + ;
 
   \ doc{
   \
@@ -888,18 +909,32 @@ variable full-cat  full-cat on
   \
   \ full-cat ( -- a )
   \
-  \ _a_ is the address of a cell containing a flag. When the
-  \ flag is _true_, `cat`, `wcat`, `acat` and `wacat` display
-  \ also system files. When the flag is _false_, they don't.
-  \ Other values are not supported.
-  \ The default value is _true_.
+  \ A `variable` _a_ is the address of a cell containing a
+  \ flag. When the flag is _true_, `cat`, `wcat`, `acat` and
+  \ `wacat` display also system files. When the flag is
+  \ _false_, they don't. Other values are not supported. The
+  \ default value is _true_.
   \
   \ See: `>cat`.
   \
   \ }doc
 
+: allocate-cat ( -- )
+  /cat-buffer allocate-stringer cat-buffer ! ;
+
+  \ doc{
+  \
+  \ allocate-cat ( -- )
+  \
+  \ Allocate space in the `stringer` and update `cat-buffer`
+  \ with its address.
+  \
+  \ See: `/cat-buffer`.
+  \
+  \ }doc
+
 : >cat ( ca len -- ca1 ca2 x )
-  >filename cat-buffer dup /cat-entry erase
+  >filename allocate-cat cat-buffer @ dup /cat-buffer erase
             cat-entries c@ 1+ $100 * full-cat @ abs or ;
 
   \ doc{
@@ -922,7 +957,7 @@ variable full-cat  full-cat on
   \ }doc
 
 : more-cat ( -- )
-  cat-entries c@ >cat-entry cat-buffer /cat-entry move ;
+  cat-entries c@ >cat-entry cat-buffer @ /cat-entry move ;
 
   \ doc{
   \
@@ -1023,7 +1058,7 @@ need (cat need 3dup need 3drop
   \
   \ }doc
 
-: .cat ( n -- ) 1 ?do  i >cat-entry .cat-entry cr loop ;
+: .cat ( n -- ) 1 ?do i >cat-entry .cat-entry cr loop ;
 
   \ doc{
   \
@@ -1049,7 +1084,8 @@ need (cat need 3dup need 3drop
   \ Show a wild-card disk catalogue using the wild-card
   \ filename _ca len_.
   \
-  \ See: `cat`, `wacat`, `(cat`, `more-cat`, `set-drive`.
+  \ See: `cat`, `wacat`, `.cat`, `(cat`, `more-cat`,
+  \ `set-drive`.
   \
   \ }doc
 
@@ -1061,7 +1097,7 @@ need (cat need 3dup need 3drop
   \
   \ Show a disk catalogue of the current drive.
   \
-  \ See: `wcat`, `acat`, `(cat`, `set-drive`.
+  \ See: `wcat`, `acat`, `set-drive`.
   \
   \ }doc
 
@@ -1096,7 +1132,8 @@ need (cat need tab need 3dup need 3drop
   \ Show an abbreviated wild-card disk catalogue using the
   \ wild-card filename _ca len_.
   \
-  \ See: `acat`, `wcat`, `(cat`, `more-cat`, `set-drive`.
+  \ See: `acat`, `wcat`, `(cat`, `.acat`, `more-cat`,
+  \ `set-drive`.
   \
   \ }doc
 
@@ -1108,7 +1145,7 @@ need (cat need tab need 3dup need 3drop
   \
   \ Show an abbreviated disk catalogue of the current drive.
   \
-  \ See: `wacat`, `cat`, `(cat`, `set-drive`.
+  \ See: `wacat`, `cat`, `set-drive`.
   \
   \ }doc
 
@@ -1658,5 +1695,10 @@ need reposition-file need file-position
   \ 2020-02-27: Add pronunciation of `'ctrl-z'`.
   \
   \ 2020-05-05: Fix cross references and markup.
+  \
+  \ 2020-05-26: Rewrite the cat words to use the `stringer`
+  \ instead of the `pad`. News words needed: `allocate-cat` and
+  \ `/cat-buffer`. Improve documentation. Make `>cat` erase the
+  \ whole `cat-buffer`, not only the first entry.
 
   \ vim: filetype=soloforth

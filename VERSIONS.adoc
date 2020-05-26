@@ -309,6 +309,8 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
   affected.
 - Make ` `chars>string`, `>bstring` and `2>bstring` to use the
   `stringer` instead of `pad`.
+- Make +3DOS `cat-buffer` (used by `cat` and `acat`) use the
+  `stringer` instead of `pad`.
 
 // Other changes {{{2
 === Other changes

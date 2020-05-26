@@ -2915,7 +2915,6 @@ NOTE: Milestone: 0.14.0
 Don't use `pad`. Leave it for the user or the editors. The following
 words still use `pad`:
 
-- `cat-buffer` in <dos.plus3dos.fs>.
 - `<#`, `#>`. 
 
 === 2018-02-05
