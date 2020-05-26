@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005251955
+  \ Last modified: 202005261359
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1222,7 +1222,7 @@ unneeding find-file  ?( need file-status
   \
   \ }doc
 
-( file-dir# file-dirdesc tracks/cat tracks/disk )
+( file-dir# file-dirdesc tracks/cat tracks/disk sectors/disk )
 
 unneeding file-dir#  ?( need file-status need ufia
 
@@ -1276,10 +1276,12 @@ unneeding tracks/cat ?\ 4 cconstant tracks/cat
   \
   \ tracks/cat ( -- n ) "tracks-slash-cat"
   \
-  \ _n_ is the number of tracks used by the disk catalogue.
+  \ A `cconstant`, _n_ is the number of tracks used by the disk
+  \ catalogue (only one side of the disk is used for the
+  \ catalogue).
   \
-  \ See `tracks/disk`, `b/sector`, `sectors-used`,
-  \ `drive-unused`.
+  \ See `tracks/disk`, `sectors/disk`, `b/sector`,
+  \ `sectors-used`, `drive-unused`.
   \
   \ }doc
 
@@ -1289,23 +1291,114 @@ unneeding tracks/disk ?\ 80 cconstant tracks/disk
   \
   \ tracks/disk ( -- n ) "tracks-slash-disk"
   \
-  \ _n_ is the number of tracks of a disk.
+  \ A `cconstant`. _n_ is the number of tracks of a disk.
   \
-  \ WARNING: This is a constant. Solo Forth on G+DOS works only
-  \ with 80-track double-side disks.
-  \
-  \ See only: `tracks/cat`, `b/sector`, `sectors-used`,
+  \ See only: `tracks/cat`, `sectors/disk`,
+  \ `max-disk-capacity`, `b/sector`, `sectors-used`,
   \ `drive-unused`.
   \
   \ }doc
 
-( sectors-used drive-used drive-unused )
+unneeding sectors/disk ?( need tracks/disk
 
-  \ XXX UNDER DEVELOPMENT
+tracks/disk sectors/track * 2* constant sectors/disk ?)
 
-unneeding sectors-used ?( need dos-in need dos-out
+  \ doc{
+  \
+  \ sectors/disk ( -- n ) "sectors-slash-disk"
+  \
+  \ A `constant`. _n_ is the total number of sectors of a disk
+  \ (on both sides).
+  \
+  \ See only: `tracks/cat`, `tracks/disk`, `b/sector`,
+  \ `max-disk-capacity`, `sectors-used`, `drive-unused`.
+  \
+  \ }doc
 
-: sectors-used ( -- n ) dos-in $3DD8 @ dos-out ; ?)
+( sectors/cat sectors>capacity max-disk-capacity )
+
+unneeding sectors/cat ?( need tracks/cat
+
+tracks/cat sectors/track * cconstant sectors/cat ?)
+
+  \ doc{
+  \
+  \ sectors/cat ( -- n ) "sectors-slash-cat"
+  \
+  \ A `cconstant`, _n_ is the number of sectors used by the
+  \ disk catalogue (only one side of the disk is used for the
+  \ catalogue).
+  \
+  \ See `tracks/cat`, `tracks/disk`, `sectors/disk`,
+  \ `b/sector`, `sectors-used`, `drive-unused`.
+  \
+  \ }doc
+
+unneeding sectors>capacity ?( need sectors/disk
+
+: sectors>capacity ( n1 -- n2 )
+  [ sectors/disk blocks/disk / ] xliteral / ; ?)
+
+  \ doc{
+  \
+  \ sectors>capacity ( n1 -- n2 ) "sectors-to-capacity"
+  \
+  \ Convert number of disk sectors _n1_ to the equivalent
+  \ number of KiB _n2_, i.e. how much KiB can be stored in _n1_
+  \ sectors.
+  \
+  \ See `sectors/disk`, `blocks/disk`, `max-disk-capacity`,
+  \ `drive-unused`, `drive-used`.
+  \
+  \ }doc
+
+unneeding max-disk-capacity ?( need sectors/cat
+                               need sectors>capacity
+
+blocks/disk sectors/cat sectors>capacity -
+constant max-disk-capacity ?)
+
+  \ doc{
+  \
+  \ max-disk-capacity ( -- n )
+  \
+  \ A `constant`. _n_ is maximum number of KiB available for
+  \ files on a disk, i.e. the actual capacity excluding the
+  \ tracks used for the catalogue.
+  \
+  \ See only: `tracks/cat`, `tracks/disk`, `b/sector`,
+  \ `sectors-used`, `drive-unused`.
+  \
+  \ }doc
+
+( sectors-used@ sectors-used drive-used drive-unused )
+
+unneeding sectors-used@ ?( need dos-in need dos-out
+
+: sectors-used@ ( -- n ) dos-in $3DD8 @ dos-out ; ?)
+
+  \ doc{
+  \
+  \ sectors-used@ ( -- n )
+  \
+  \ _n_ is the number of sectors used in the drive most
+  \ recently catalogued, not including the tracks used by the
+  \ disk catalogue.
+  \
+  \ NOTE: G+DOS calculates the number of used sectors only
+  \ during a catalogue, and then saves it into a variable in
+  \ the Plus D memory. ``sectors-used@`` only fetchs the value.
+  \ Therefore the user must execute `cat` or `acat` before, in
+  \ order to update the value, or use `sectors-used` directly.
+  \
+  \ See: `drive-used`, `drive-unused`, `b/sectors`,
+  \ `tracks/cat`.
+  \
+  \ }doc
+
+unneeding sectors-used ?( need acat need sectors-used@
+
+: sectors-used ( -- n ) acat sectors-used@ ; ?)
 
   \ doc{
   \
@@ -1314,22 +1407,27 @@ unneeding sectors-used ?( need dos-in need dos-out
   \ _n_ is the number of sectors used in the current drive, not
   \ including the tracks used by the disk catalogue.
   \
-  \ See: `set-drive`, `drive-unused`, `tracks/cat`.
+  \ NOTE: In order to count the sectors used, G+DOS has to do a
+  \ catalogue. Therefore the execution of `sectors-used`
+  \ includes `acat`. This problem may be solved in a future
+  \ version of Solo Forth.
+  \
+  \ See: `sectors-used@`, `drive-used`, `drive-unused`,
+  \ `b/sectors`, `tracks/cat`.
   \
   \ }doc
 
-  \ XXX FIXME -- This cannot work, because G+DOS only updates
-  \ its internal variable $3DD8 when a catalogue is displayed.
-  \ Routine `scan_cat` should be copied and modified here to
-  \ calculate the number of sectors used.
+  \ XXX FIXME -- Use a modified version of G+DOS' `scan_cat`
+  \ routine in order to calculate the number of sectors
+  \ directly, without displaying a catalogue.
 
 unneeding drive-used ?( need get-drive need sectors-used
-                        need b/sector
+                        need sectors>capacity
 
 : drive-used ( c -- n ior )
   get-drive ?dup ?exit >r
   set-drive ?dup if rdrop exit then
-  sectors-used b/sector * 1024 / r> set-drive ; ?)
+  sectors-used sectors>capacity r> set-drive ; ?)
 
   \ doc{
   \
@@ -1338,13 +1436,21 @@ unneeding drive-used ?( need get-drive need sectors-used
   \ Return the number _n_ of used kibibytes in drive _c_, and
   \ the I/O result code _ior_.
   \
-  \ See: `drive-unused`, `unused`, `farunused`.
+  \ NOTE: In order to count the sectors used, G+DOS has to do a
+  \ catalogue. Therefore the execution of `drive-used` includes
+  \ `acat`. This problem may be solved in a future version of
+  \ Solo Forth.
+  \
+  \ See: `drive-unused`, `max-disk-capacity`, `sectors-used`,
+  \ `get-drive`, `set-drive`, `unused`, `farunused`.
   \
   \ }doc
 
-unneeding drive-unused ?( need drive-used
+unneeding drive-unused ?( need drive-used need tracks/cat
+                          need max-disk-capacity
 
-: drive-unused ( c -- n ior ) 1440 swap drive-used >r - r> ; ?)
+: drive-unused ( c -- n ior )
+  max-disk-capacity swap drive-used >r - r> ; ?)
 
   \ doc{
   \
@@ -1353,7 +1459,13 @@ unneeding drive-unused ?( need drive-used
   \ Return unused kibibytes _n_ in drive _c_, and the I/O
   \ result code _ior_.
   \
-  \ See: `drive-used`, `unused`, `farunused`.
+  \ NOTE: In order to count the sectors used, G+DOS has to do a
+  \ catalogue. Therefore the execution of `drive-unused`
+  \ includes `acat`. This problem may be solved in a future
+  \ version of Solo Forth.
+  \
+  \ See: `drive-used`,  `max-disk-capacity`, `sectors-used`,
+  \ `get-drive`, `set-drive`, `unused`, `farunused`.
   \
   \ }doc
 
@@ -2354,6 +2466,12 @@ need write-file need read-file need .ufia
   \ 2020-05-24: Fix typo.
   \
   \ 2020-05-25: Fix usage of `get-drive` in `set-filename` and
-  \ `drive-used`.
+  \ `drive-usd`.
+  \
+  \ 2020-05-26: Rename `sectors-used` to `sectors-used@`, and
+  \ write a new `sectors-used` that executes `acat`. Document
+  \ this limitation also in `drive-used` and `drive-unused`.
+  \ Fix the calculation in `drive-unused`. Add `sectors/disk`,
+  \ `sectors/cat`, `sectors>capacity`, `max-disk-capacity`.
 
   \ vim: filetype=soloforth

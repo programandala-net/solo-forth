@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-05-25
+:revdate: 2020-05-26
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1294,13 +1294,22 @@ their behaviour and names identical. Write the +3DOS version too.
 // G+DOS {{{2
 === G+DOS ===
 
-==== 2020-05-25
-
-// XXX FIXME --
+=== 2020-05-26
 
 NOTE: Milestone: 0.14.0
 
-Fix `drive-unused`: it always returns 1444.
+Fix `file-dir#`: _n_ is always zero. `file-status` does not update the
+whole UFIA?
+
+==== 2020-05-25
+
+NOTE: Milestone: 0.15.0
+
+Fix `sectors-unused` (on which depend `drive-unused` and
+`drive-used`): G+DOS only updates its internal variable $3DD8 when a
+catalogue is displayed. Therefore `acat` is used. In order to solve
+this problem, the `scan_cat` G+DOS routine should be copied and
+modified to calculate the number of sectors used.
 
 ==== 2018-03-15
 

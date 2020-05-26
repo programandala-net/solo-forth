@@ -1,6 +1,6 @@
 = Solo Forth version history
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-05-25
+:revdate: 2020-05-26
 :toc:
 
 // This file is part of Solo Forth
@@ -62,7 +62,6 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
 - Add `str<>`.
 - Add +3DOS `eof?`, `get-user` and `set-user`.
 - Add `clocal`, `2local`.
-- Draft G+DOS `sectors-used`, `drive-used`, `drive-unused`.
 - Add +3DOS `flush-drive`.
 - Add +3DOS `drive-unused`.
 - Add G+DOS `tracks/disk`, `tracks/cat`.
@@ -140,6 +139,9 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
   identifiers.
 - Add G+DOS `create-file`.
 - Add assembler `ldar,` and `ldra,`.
+- Add G+DOS `sectors-used`, `sectors-used@`, `drive-used`,
+  `drive-unused`, `sectors/disk`, `sectors/cat`, `sectors>capacity`
+  and `max-disk-capacity`.
 
 // Fixes {{{2
 === Fixes
