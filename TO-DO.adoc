@@ -2917,7 +2917,11 @@ Finish the conversion of 128K sound explosions. More details in the source.
 
 NOTE: Milestone: 0.14.0
 
-Don't use `pad`. Leave it alone for the application.
+Don't use `pad`. Leave it for the user or the editors. The following
+modules use it:
+
+- <strings.MISC.fs>
+- <dos.plus3dos.fs>
 
 === 2018-03-28
 

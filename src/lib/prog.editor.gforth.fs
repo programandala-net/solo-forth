@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202005241419
+  \ Last modified: 202005261702
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -446,7 +446,9 @@ create fbuf $100 allot
   \ il ( -- )
   \
   \ A command of `gforth-editor`:
-  \ Insert a line at the cursor position.
+  \ Insert the line stored into `pad` at the cursor position.
+  \
+  \ See: `c/l`, `ìnsert`.
   \
   \ }doc
 
@@ -563,5 +565,7 @@ forth definitions
   \
   \ 2020-05-24: Load `r#` and `top` in `forth-wordlist`,
   \ because they are shared with `specforth-editor`.
+  \
+  \ 2020-05-26: Improve documentation.
 
   \ vim: filetype=soloforth

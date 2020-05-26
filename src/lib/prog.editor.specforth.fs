@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005241534
+  \ Last modified: 202005261715
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -88,7 +88,7 @@ vocabulary specforth-editor ' specforth-editor is editor
   \ ``( n -- )``
   \ | Erase line _n_ with blanks.
 
-  \ | `find`
+  \ | `<<src-lib-prog-editor-specforth-fs, find>>`,
   \ ``( -- )``
   \ | Search for a match to the string at `pad`, from the
   \ cursor position until the end of block.  If no match found
@@ -640,7 +640,8 @@ also editor definitions
   \ `<<src-lib-prog-editor-specforth-fs, r>>`,
   \ `<<src-lib-prog-editor-specforth-fs, s>>`,
   \ `<<src-lib-prog-editor-specforth-fs, t>>`,
-  \ `<<src-lib-prog-editor-specforth-fs, x>>`, `find`.
+  \ `<<src-lib-prog-editor-specforth-fs, x>>`,
+  \ `<<src-lib-prog-editor-specforth-fs, find>>`.
   \
   \ }doc
 
@@ -680,8 +681,8 @@ also editor definitions
   \ b ( -- )
   \
   \ A command of `specforth-editor`: Used after
-  \ `<<src-lib-prog-editor-specforth-fs, f>>` to backup the
-  \ cursor by the length of the most recent text.
+  \ `<<src-lib-prog-editor-specforth-fs, f>>` to backup the cursor by
+  \ the length of the most recent text hold in `pad`.
   \
   \ See: `<<src-lib-prog-editor-specforth-fs, c>>`,
   \ `<<src-lib-prog-editor-specforth-fs, d>>`,
@@ -722,7 +723,8 @@ also editor definitions
   \ `<<src-lib-prog-editor-specforth-fs, p>>`,
   \ `<<src-lib-prog-editor-specforth-fs, r>>`,
   \ `<<src-lib-prog-editor-specforth-fs, s>>`,
-  \ `<<src-lib-prog-editor-specforth-fs, t>>`, `text`, `find`,
+  \ `<<src-lib-prog-editor-specforth-fs, t>>`, `text`,
+  \ `<<src-lib-prog-editor-specforth-fs, find>>`,
   \ `delete`.
   \
   \ }doc
@@ -847,3 +849,6 @@ only forth definitions
   \ 2020-05-24: Load `r#` and `top` in `forth-wordlist`, because they
   \ are shared with `gforth-editor`. Replace "hash" notation with
   \ "number sign".
+  \
+  \ 2020-05-26: Improve documentation. Make links to `find` explicit
+  \ (there's also the homonym standard word).
