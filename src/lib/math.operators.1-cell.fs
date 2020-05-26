@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005252106
+  \ Last modified: 202005261309
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -782,6 +782,8 @@ unneeding 2/ ?( code 2/ ( x1 -- x2 )
   \ Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
   \ Forth-2012 (CORE).
   \
+  \ See: `/`, `rshift`, `s>d`, `fm/mod`.
+  \
   \ }doc
 
 unneeding cell/ ?\ need alias need 2/  ' 2/ alias cell/
@@ -1412,5 +1414,7 @@ code join ( b1 b2 -- x )
   \ 2018-07-29: Fix typo in documentation.
   \
   \ 2020-05-25: Replace `r> drop` with `rdrop`.
+  \
+  \ 2020-05-26: Improve documentation of `2/`.
 
   \ vim: filetype=soloforth

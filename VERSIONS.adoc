@@ -382,6 +382,9 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
   specific to be useful.
 - Remove the 5-second pause after displaying the background the first
   time.
+- Deactivate the documentation about G+DOS `file-dir#` and
+  `file-dirdesc`, which don't work fine yet because of a limitation in
+  `(file-status`.
 
 // Version 0.14.0-pre.209  {{{1
 == Version 0.14.0-pre.209

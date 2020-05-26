@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005261359
+  \ Last modified: 202005261554
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1110,6 +1110,9 @@ code (file-status ( -- a ior )
   \ Otherwise _ior_ is the I/O result code.  and _a_ is
   \ undefined.
   \
+  \ NOTE: Only the 9-byte header in `ufia` is updated, i.e.
+  \ `hd00`, `hd0b`, `hd0d`, `hd0f` and `hd11`.
+  \
   \ ``(file-status`` is a low-level factor of `file-status`.
   \
   \ }doc
@@ -1125,11 +1128,13 @@ code (file-status ( -- a ior )
   \ is the address returned by `ufia`.  Otherwise _ior_ is the
   \ I/O result code ond _a_ is undefined.
   \
+  \ NOTE: Only the 9-byte header in `ufia` is updated, i.e.
+  \ `hd00`, `hd0b`, `hd0d`, `hd0f` and `hd11`.
+  \
   \ Origin: Forth-94 (FILE-EXT), Forth-2012 (FILE-EXT).
   \
   \ See: `file-exists?`, `file-start`, `file-length`,
-  \ `file-type`, `file-dirdesc`, `find-file`, `file-dir#`,
-  \ `file-dirdesc`.
+  \ `file-type`, `find-file`.
   \
   \ }doc
 
@@ -1229,12 +1234,11 @@ unneeding file-dir#  ?( need file-status need ufia
 : file-dir# ( ca len -- n ior )
   file-status nip fstr1 c@ swap ; ?)
 
-  \ XXX FIXME --  _n_ is always zero. `file-status` does not
-  \ update the whole UFIA?
+  \ XXX FIXME --  _n_ is always zero because `(file-status`
+  \ does not update the whole UFIA.
 
-  \ doc{
   \
-  \ file-dir# ( ca len -- n ior ) "file-dir-slash"
+  \ file-dir# ( ca len -- n ior ) "file-dir-number-sign"
   \
   \ Return the file directory number of the file named in the
   \ character string _ca len_. If the file was successfully
@@ -1242,19 +1246,21 @@ unneeding file-dir#  ?( need file-status need ufia
   \ Otherwise _ior_ is the I/O result code and _n_ is
   \ undefined.
   \
+  \ WARNING: _n_ is always zero because of a limitation in
+  \ `(file-status`. This problem may be solved in a future
+  \ version of Solo Forth.
+  \
   \ See: `file-status`.
   \
-  \ }doc
 
 unneeding file-dirdesc  ?( need file-status need ufia
 
 : file-dirdesc ( ca len -- n ior )
   file-status nip nstr1 c@ swap ; ?)
 
-  \ XXX FIXME --  _n_ is always zero. `file-status` does not
-  \ update the whole UFIA?
+  \ XXX FIXME --  _n_ is always zero because `file-status` does
+  \ not update the whole UFIA.
 
-  \ doc{
   \
   \ file-dirdesc ( ca len -- n ior ) "file-dir-desc"
   \
@@ -1264,19 +1270,20 @@ unneeding file-dirdesc  ?( need file-status need ufia
   \ directory identifier.  Otherwise _ior_ is the I/O result
   \ code and _n_ is undefined.
   \
-  \ WARNING: This word has a bug and _n_ is always zero.
+  \ WARNING: _n_ is always zero because of a limitation in
+  \ `(file-status`. This problem may be solved in a future
+  \ version of Solo Forth.
   \
   \ See: `file-status`.
   \
-  \ }doc
 
 unneeding tracks/cat ?\ 4 cconstant tracks/cat
 
   \ doc{
   \
-  \ tracks/cat ( -- n ) "tracks-slash-cat"
+  \ tracks/cat ( -- b ) "tracks-slash-cat"
   \
-  \ A `cconstant`, _n_ is the number of tracks used by the disk
+  \ A `cconstant`, _b_ is the number of tracks used by the disk
   \ catalogue (only one side of the disk is used for the
   \ catalogue).
   \
@@ -1289,9 +1296,9 @@ unneeding tracks/disk ?\ 80 cconstant tracks/disk
 
   \ doc{
   \
-  \ tracks/disk ( -- n ) "tracks-slash-disk"
+  \ tracks/disk ( -- b ) "tracks-slash-disk"
   \
-  \ A `cconstant`. _n_ is the number of tracks of a disk.
+  \ A `cconstant`. _b_ is the number of tracks of a disk.
   \
   \ See only: `tracks/cat`, `sectors/disk`,
   \ `max-disk-capacity`, `b/sector`, `sectors-used`,
@@ -1305,9 +1312,9 @@ tracks/disk sectors/track * 2* constant sectors/disk ?)
 
   \ doc{
   \
-  \ sectors/disk ( -- n ) "sectors-slash-disk"
+  \ sectors/disk ( -- u ) "sectors-slash-disk"
   \
-  \ A `constant`. _n_ is the total number of sectors of a disk
+  \ A `constant`. _u_ is the total number of sectors of a disk
   \ (on both sides).
   \
   \ See only: `tracks/cat`, `tracks/disk`, `b/sector`,
@@ -1323,9 +1330,9 @@ tracks/cat sectors/track * cconstant sectors/cat ?)
 
   \ doc{
   \
-  \ sectors/cat ( -- n ) "sectors-slash-cat"
+  \ sectors/cat ( -- b ) "sectors-slash-cat"
   \
-  \ A `cconstant`, _n_ is the number of sectors used by the
+  \ A `cconstant`, _b_ is the number of sectors used by the
   \ disk catalogue (only one side of the disk is used for the
   \ catalogue).
   \
@@ -1391,7 +1398,7 @@ unneeding sectors-used@ ?( need dos-in need dos-out
   \ Therefore the user must execute `cat` or `acat` before, in
   \ order to update the value, or use `sectors-used` directly.
   \
-  \ See: `drive-used`, `drive-unused`, `b/sectors`,
+  \ See: `drive-used`, `drive-unused`, `b/sector`,
   \ `tracks/cat`.
   \
   \ }doc
@@ -1413,7 +1420,7 @@ unneeding sectors-used ?( need acat need sectors-used@
   \ version of Solo Forth.
   \
   \ See: `sectors-used@`, `drive-used`, `drive-unused`,
-  \ `b/sectors`, `tracks/cat`.
+  \ `b/sector`, `tracks/cat`.
   \
   \ }doc
 
@@ -2473,5 +2480,8 @@ need write-file need read-file need .ufia
   \ this limitation also in `drive-used` and `drive-unused`.
   \ Fix the calculation in `drive-unused`. Add `sectors/disk`,
   \ `sectors/cat`, `sectors>capacity`, `max-disk-capacity`.
+  \ Deactivate documentation and cross-references of
+  \ `file-dir#` and `file-dirdesc`, which does not work fine
+  \ yet because of the limitations of `(file-status`.
 
   \ vim: filetype=soloforth

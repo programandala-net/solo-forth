@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005241534
+  \ Last modified: 202005261608
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -120,7 +120,7 @@ unneeding b/sector ?\ b/buf sectors/block / constant b/sector
   \
   \ b/sector ( -- n ) "b-slash-sector"
   \
-  \ A `constant`. _n_ is the number of bytes per sectors.
+  \ A `constant`. _n_ is the number of bytes per sector.
   \
   \ See: `sectors/block`, `sectors/track`.
   \
@@ -385,5 +385,7 @@ unneeding get-block-drives ?( need block-drive@
   \ 2020-05-08: Move `b/sector` from the kernel.
   \
   \ 2020-05-24: Replace "hash" notation with "number sign".
+  \
+  \ 2020-05-26: Fix typo.
 
   \ vim: filetype=soloforth

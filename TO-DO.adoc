@@ -1296,10 +1296,11 @@ their behaviour and names identical. Write the +3DOS version too.
 
 === 2020-05-26
 
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
-Fix `file-dir#`: _n_ is always zero. `file-status` does not update the
-whole UFIA?
+Fix `file-dir#` and `file-dirdesc`: they always return zero because of
+a limitation in `(file-status`, which does not update the whole
+`ufia`.
 
 ==== 2020-05-25
 
