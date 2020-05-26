@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005042153
+  \ Last modified: 202005261911
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -192,15 +192,12 @@ unneeding n>str
   \
   \ }doc
 
-( char>string chars>string >bstring c>bstring 2>bstring )
+( char>string chars>string >bstring 2>bstring )
 
 unneeding char>string ?(
 
 : char>string ( c -- ca len )
   1 allocate-stringer tuck c! 1 ; ?)
-
-  \ XXX TODO -- rename or write after `c>bstring`, which
-  \ does the same but in `pad`.
 
   \ doc{
   \
@@ -209,8 +206,8 @@ unneeding char>string ?(
   \ Convert the char _c_ to a string _ca len_ in the
   \ `stringer`.
   \
-  \ See: `chars>string`, `ruler`, `u>str`, `d>str`,
-  \ `ud>str`.
+  \ See: `chars>string`, `ruler`, `u>str`, `d>str`, `ud>str`,
+  \ `>bstring`, `2>bstring`.
   \
   \ }doc
 
@@ -218,66 +215,50 @@ unneeding chars>string ?(
 
 : chars>string ( c#1..c#n n -- ca len )
   dup if   dup allocate-stringer swap 2dup 2>r
-           \ ( c#1..c#n ca n )
+           \ ( c#1..c#n ca n ) ( R: ca n )
            bounds ?do i c! loop 2r>
-      else pad swap then ; ?)
+      else dup >stringer then ; ?)
 
   \ doc{
   \
   \ chars>string ( c#1..c#n n -- ca len ) "chars-to-string"
   \
-  \ Convert _n_ chars to a string _ca len_ in the `stringer`.
+  \ Convert _n_ chars to a string _ca len_ in the `stringer`,
+  \ being _c#1_ the last character of the string and _c#n_ the
+  \ first one.
   \
-  \ c#1..c#n :: chars to make the string with (_c1_ is the last one)
-  \ n :: number of chars
-  \
-  \ See: `ruler`, `s+`.
+  \ See: `char>string`, `2>bstring`, `>bstring`, `ruler`, `s+`.
   \
   \ }doc
 
-unneeding >bstring
-
-?\ : >bstring ( u -- ca len ) pad ! pad cell ;
+unneeding >bstring ?( : >bstring ( x -- ca len )
+                        cell allocate-stringer tuck ! cell ; ?)
 
   \ doc{
   \
   \ >bstring ( x -- ca len ) "to-b-string"
   \
-  \ Convert _x_ to a 1-cell binary string _ca len_ in `pad`.
-  \ _ca len_ contains _x_ "as is", as stored in memory.
+  \ Convert _x_ to a 1-cell binary string _ca len_ in the
+  \ `stringer`. _ca len_ contains _x_ "as is", as stored in
+  \ memory.
   \
-  \ See: `c>bstring`, `2>bstring`.
-  \
-  \ }doc
-
-unneeding c>bstring
-
-?\ : c>bstring ( c -- ca len ) pad c! pad 1 ;
-
-  \ doc{
-  \
-  \ c>bstring ( c -- ca len ) "c-to-b-string"
-  \
-  \ Convert _c_ to a 1-char binary string _ca len_ in `pad`,
-  \ _ca len_ contains _c_ "as is", as stored in memory.
-  \
-  \ See: `>bstring`, `2>bstring`.
+  \ See: `2>bstring`, `chars>string`, `char>string`.
   \
   \ }doc
 
-unneeding 2>bstring ?(
-
-: 2>bstring ( xd -- ca len )
-  pad 2! pad [ 2 cells ] literal ; ?)
+unneeding 2>bstring ?( : 2>bstring ( x1 x2 -- ca len )
+  [ 2 cells ] xliteral allocate-stringer dup >r 2! r>
+  [ 2 cells ] xliteral ; ?)
 
   \ doc{
   \
-  \ 2>bstring ( xd -- ca len ) "two-to-b-string"
+  \ 2>bstring ( x1 x2 -- ca len ) "two-to-b-string"
   \
-  \ Convert _xd_ to a 2-cell binary string in `pad`.
-  \ _ca len_ contains _xd_ "as is", as stored in memory.
+  \ Convert _xd_ to a 2-cell binary string in the `stringer`.
+  \ _ca len_ contains _x2 x1_, i.e. in the usual order in
+  \ memory.
   \
-  \ See: `>bstring`, `c>bstring`.
+  \ See: `>bstring`, `char>string`, `chars>string`.
   \
   \ }doc
 
@@ -1157,5 +1138,10 @@ unneeding replace
   \
   \ 2020-05-04: Move `insert`, `delete`, `replace` here from
   \ <prog.editor.gforth.fs>. Fix documentation.
+  \
+  \ 2020-05-26: Modify `chars>string`, `>bstring` and
+  \ `2>bstring` to use the `stringer` instead of `pad`. Remove
+  \ `c>bstring`, because `char>string` does the same. Improve
+  \ documentation.
 
   \ vim: filetype=soloforth

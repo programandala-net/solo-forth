@@ -550,11 +550,6 @@ Add default execution token to `switch:`.
 
 Document the variants of `of`.
 
-=== 2016-12-07
-
-Use `>bstring` (new name for `>cell-string`), `2>bstring`, `c>bstring`
-(already exists as `char>string`).
-
 === 2016-12-03
 
 Use a new kind of unconditional high-level branch at the end of `nest-source`
@@ -703,11 +698,11 @@ can be inconvenient.
 
 Keep notation ">str" coherent.
 
-Rename `name>string` `name>stringer`.
+Rename `name>string` to `name>stringer`.
 
-Rename `name>str` `name>string` (after Gforth)?
+Rename `name>str` to `name>string` (after Gforth)?
 
-Rename `line>string` `line>str`?
+Rename `line>string` to `line>str`?
 
 === 2017-12-12, 2017-12-18
 
@@ -2918,15 +2913,10 @@ Finish the conversion of 128K sound explosions. More details in the source.
 NOTE: Milestone: 0.14.0
 
 Don't use `pad`. Leave it for the user or the editors. The following
-modules use it:
+words still use `pad`:
 
-- <strings.MISC.fs>
-- <dos.plus3dos.fs>
-
-=== 2018-03-28
-
-Make `chars>string` return an empty string in the `stringer` instead
-of the `pad`. That is safer and more coherent.
+- `cat-buffer` in <dos.plus3dos.fs>.
+- `<#`, `#>`. 
 
 === 2018-02-05
 
@@ -3004,6 +2994,10 @@ every character...
 
 === 2017-04-17
 
+// XXX FIXME --
+
+NOTE: Milestone: 0.14.0
+
 Make `allocate-stringer` return an _ior_.
 
 === 2017-01-27
@@ -3016,11 +3010,6 @@ delimiter character, like `parse`. Then implement `.\(`.
 Improve `substitute` and `replaces` with a configurable search order, similar
 to that implemented for escaped strings.
 
-=== 2017-01-07
-
-Rename `char>string` or write after `c>bstring`, which
-does the same but in `pad`.
-
 === 2016-12-23
 
 Document `s\"` and `.\"`.
@@ -3029,24 +3018,6 @@ Document `s\"` and `.\"`.
 
 Remove bounds checking from `}` (Noble's arrays)
 and keep a copy of it as `?}`, for debugging.
-
-=== 2016-12-07
-
-NOTE: Milestone: 0.15.0
-
-Choose a clear convention for suffixes ">str" and ">string". Depending on the
-location of the string (circular string buffer, `pad` or another temporary
-area)? Another option: "stringer".
-
-`X>string` :: string in the circular string buffer
-`X>stringer` :: string in the circular string buffer
-`X>bstring` :: binary string in the circular string buffer
-`X>bstringer` :: binary string in the circular string buffer
-`X>#str` :: temporary string in the pictured numeric string buffer
-`X>padstr` :: temporary string in `pad`
-`X>bpadstr` :: temporary binary string in `pad`
-`X>padbstr` :: temporary binary string in `pad`
-`X>padzone` :: temporary binary string in `pad`
 
 === 2016-11-19
 

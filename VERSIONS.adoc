@@ -307,6 +307,8 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
 - Move `2variable` to the library.
 - Replace `r> drop` with `rdrop`, except in benchmarks that would be
   affected.
+- Make ` `chars>string`, `>bstring` and `2>bstring` to use the
+  `stringer` instead of `pad`.
 
 // Other changes {{{2
 === Other changes
@@ -385,6 +387,8 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
 - Deactivate the documentation about G+DOS `file-dir#` and
   `file-dirdesc`, which don't work fine yet because of a limitation in
   `(file-status`.
+- Remove `c>bstring` (improved to use the `stringer`, it did the same
+  than the current `char>string`).
 
 // Version 0.14.0-pre.209  {{{1
 == Version 0.14.0-pre.209
