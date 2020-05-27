@@ -3213,7 +3213,7 @@ paren_do.de_hl:
   and a
   sbc hl,de                     ; HL=init-limit
   ld a,h
-  xor $80                      ; flip most significant bit
+  xor $80                       ; flip most significant bit
   ld d,a
   ld e,l
   pop hl                        ; HL=rp@
@@ -5864,7 +5864,8 @@ endif
   ; Execution continues in `cs-swap`:
 
 ; ----------------------------------------------
-  _code_header cs_swap_,'cs-swap'
+  _code_header cs_swap_,'cs-swap',compile_only
+
 
 ; doc{
 ;
