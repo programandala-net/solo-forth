@@ -311,6 +311,9 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
   `stringer` instead of `pad`.
 - Make +3DOS `cat-buffer` (used by `cat` and `acat`) use the
   `stringer` instead of `pad`.
+- Add a new `?stringer` to throw an error if a string is longer than
+  the total capacity of the `stringer`. The old `stringer` was renamed
+  to `fit-stringer`.
 
 // Other changes {{{2
 === Other changes

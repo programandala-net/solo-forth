@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803240009
+  \ Last modified: 202005290031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -15,7 +15,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -69,7 +70,7 @@
 #-290 \ invalid UDG scan
 #-291 \ out of OS memory
 #-292 \ file access method not supported
-#-293 \
+#-293 \ string too long
 #-294 \
 #-295 \
 #-296 \
@@ -106,5 +107,7 @@
   \ 2018-03-23: Add codes #-291 and #-292, needed by an
   \ experimental implementation of the file word set on G+DOS,
   \ using opentype files.
+  \
+  \ 2020-05-29: Add code #-293, needed by `?stringer`.
 
   \ vim: filetype=soloforth

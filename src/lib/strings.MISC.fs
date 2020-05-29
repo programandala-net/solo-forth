@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005261911
+  \ Last modified: 202005292219
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -192,7 +192,7 @@ unneeding n>str
   \
   \ }doc
 
-( char>string chars>string >bstring 2>bstring )
+( char>string chars>string >bstring 2>bstring ?stringer )
 
 unneeding char>string ?(
 
@@ -259,6 +259,22 @@ unneeding 2>bstring ?( : 2>bstring ( x1 x2 -- ca len )
   \ memory.
   \
   \ See: `>bstring`, `char>string`, `chars>string`.
+  \
+  \ }doc
+
+unneeding ?stringer
+
+?\ : ?stringer ( len -- ) /stringer > #-293 ?throw ;
+
+  \ doc{
+  \
+  \ ?stringer ( len -- ) "question-stringer"
+  \
+  \ If _len_ is greater than `/stringer`, then `throw` error
+  \ #-293 (string too long). Otherwise do nothing.
+  \
+  \ ``?stringer`` is provided as an optional check. for
+  \ `allocate-string`.
   \
   \ }doc
 
@@ -1143,5 +1159,8 @@ unneeding replace
   \ `2>bstring` to use the `stringer` instead of `pad`. Remove
   \ `c>bstring`, because `char>string` does the same. Improve
   \ documentation.
+  \
+  \ 2020-05-29: Add `?stringer` (its homonym in the kernel has
+  \ been renamed `fit-stringer`).
 
   \ vim: filetype=soloforth

@@ -2993,15 +2993,6 @@ to reconfigure by the program, without wasting its original space) is
 to modify `find-name-from` to page in the default bank before fetching
 every character...
 
-=== 2017-04-17, 2020-05-29
-
-// XXX FIXME --
-
-NOTE: Milestone: 0.14.0
-
-Write `?stringer` as an optional checker.
-A mandatory check is a waste of resources.
-
 === 2017-01-27
 
 Generalize `parse-esc-string` and `(parse-esc-string)` to accept a
