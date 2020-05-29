@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202005261713
+; Last modified: 202005292202
 
 include version.z80s
 
@@ -2672,7 +2672,7 @@ push_hl:
 ; `default-stringer`.
 ;
 ; See: `!>`, `/stringer`, `empty-stringer`, `+stringer`,
-; `unused-stringer`, `?stringer`, `allocate-stringer`,
+; `unused-stringer`, `fit-stringer`, `allocate-stringer`,
 ; `>stringer`.
 ;
 ; }doc
@@ -2680,18 +2680,18 @@ push_hl:
   dw stringer
 
 ; ----------------------------------------------
-  _colon_header question_stringer_,'?stringer'
+  _colon_header fit_stringer_,'fit-stringer'
 
 ; doc{
 ;
-; ?stringer ( len -- ) "question-stringer"
+; fit-stringer ( len -- )
 ;
 ; Make sure there's room in the `stringer` for _len_ characters.
 ;
 ; Definition:
 
 ; ----
-; : ?stringer ( len -- )
+; : fit-stringer ( len -- )
 ;   dup unused-stringer > if empty-stringer then
 ;       negate +stringer +! ;
 ; ----
@@ -2700,19 +2700,11 @@ push_hl:
 ;
 ; }doc
 
-  ; XXX TODO -- Rename to `stringer-room`, `(allocate-stringer`
-  ; or something.
-  ;
-  ; XXX TODO -- Throw an error if _len_ is greater than
-  ; `/stringer`. Besides `allocate-stringer` should return a
-  ; _ior_.
-
   dw dup_,unused_stringer_,greater_than_
-  dw zero_branch_,question_stringer_.enough
-  ; not enough space
+  dw zero_branch_,fit_stringer_.allocate
   dw empty_stringer_
 
-question_stringer_.enough:
+fit_stringer_.allocate:
   dw negate_,plus_stringer_,plus_store_
   dw exit_
 
@@ -2723,25 +2715,24 @@ question_stringer_.enough:
 ;
 ; allocate-stringer ( len -- ca )
 
-; Allocate _len_ characters in the circular string buffer and
-; return the address _ca_ of the allocated space.
+; Allocate _len_ characters in the `stringer` and return the
+; address _ca_ of the allocated space. If _len_ is greater than
+; `unused-stringer`, `empty-stringer` is executed, no check is
+; done whether _len_ is greater than `/stringer` (the maximum
+; capacity of the buffer).
 ;
 ; Definition:
 
 ; ----
 ; : allocate-stringer ( len -- ca )
-;   ?stringer stringer unused-stringer + ;
+;   fit-stringer stringer unused-stringer + ;
 ; ----
 
-; See: `>stringer`, `stringer`, `?stringer`,
-; `unused-stringer`.
+; See: `>stringer`.
 ;
 ; }doc
 
-  ; XXX TODO -- Return a _ior_; _len_ could be too big for the
-  ; buffer.
-
-  dw question_stringer_
+  dw fit_stringer_
   dw stringer_,unused_stringer_,plus_
   dw exit_
 
@@ -14129,9 +14120,10 @@ to_digit.end:
   ; Credit:
   ; Code modified from Z88 CamelForth.
 
-; XXX TODO -- Compare with this version from Gforth:
-;
-; : ud/mod
+; XXX REMARK -- Benchmarked on 2016-03-15 with this version from
+; Gforth:
+
+; : ud/mod ( ud1 u2 -- u3 ud4 )
 ;   >r 0 r@ um/mod r> swap >r um/mod r> ;
 
   dw to_r_
