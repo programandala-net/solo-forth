@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202005292202
+; Last modified: 202005301354
 
 include version.z80s
 
@@ -7265,10 +7265,10 @@ endif
 ;
 ; /tib ( -- b ) "slash-t-i-b"
 ;
-; A `cconstant`. _b_ is the maximum size of the terminal
+; A `cconstant`. _b_ is the maximum size of `tib`, the terminal
 ; input buffer,
 ;
-; See: `tib`, `#tib`.
+; See: `#tib`.
 ;
 ; }doc
 
@@ -7282,12 +7282,12 @@ endif
 ; #tib ( -- a ) "number-sign-t-i-b"
 ;
 ; A `variable`. _a_ is the address of a cell containing the number
-; of characters in the terminal input buffer.
+; of characters in 'tib', the terminal input buffer.
 ;
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE EXT,
 ; obsolescent).
 ;
-; See: `tib`, `/tib`.
+; See: `/tib`.
 ;
 ; }doc
 
@@ -7330,7 +7330,8 @@ endif
 
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See: `input-buffer`, `set-source`, `blk`, `stream`.
+; See: `input-buffer`, `set-source`, `blk`, `stream`,
+; `nest-source`, `unnest-source`.
 ;
 ; }doc
 
@@ -9745,14 +9746,14 @@ fill.done:
 ; A 'cconstant`. _len_ is the length of the pictured
 ; output string buffer, which is located right below `pad`.
 ;
-; The default value of ``/hold`` is 68. It may be changed by
+; The default value of ``/hold`` is 80. It may be changed by
 ; `c!>`.
 ;
 ; See: `hld`, `<#`, `/pad`.
 ;
 ; }doc
 
-  db 68
+  db 80
 
 ; ----------------------------------------------
   _colon_header pad_,'pad'
@@ -11125,6 +11126,8 @@ endif
 ; _source-sys_ describes the current source specification for
 ; later use by `unnest-source`.
 ;
+; ``nest-source`` is a `compile-only` word.
+;
 ; Definition:
 
 ; ----
@@ -11138,6 +11141,8 @@ endif
 ;   >r ; compile-only
 ; ----
 
+; See: `#tib`, `blk`, `>in`, `(source-id`, `input-buffer`.
+;
 ; }doc
 
   dw from_r_ ; save the return address
@@ -11163,6 +11168,8 @@ endif
 ; Restore the source specification described by _source-sys_,
 ; which was left by `nest-source`.
 ;
+; ``unnest-source`` is a `compile-only` word.
+;
 ; Definition:
 
 ; ----
@@ -11176,14 +11183,15 @@ endif
 ;   >r ; compile-only
 ; ----
 
+; See: `#tib`, `blk`, `>in`, `(source-id`, `input-buffer`.
+
 ; }doc
 
   dw from_r_ ; save the return address
   dw from_r_,number_sign_tib_,store_
   dw from_r_,blk_,store_
   dw from_r_,to_in_,store_
-  dw from_r_
-  dw paren_source_id_,store_
+  dw from_r_,paren_source_id_,store_
   dw two_from_r_,input_buffer_,two_store_
   dw to_r_ ; restore the return address
   dw exit_
