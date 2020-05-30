@@ -1571,6 +1571,45 @@ xxx ?
 #-256
 ----
 
+DX-Forth has the same bug.
+
+pForth "explodes":
+
+----
+: t s" 333 XXX 666" evaluate ;    ok
+Stack<10>
+' t catch XXX  ? - unrecognized word!
+Violación de segmento
+----
+
+Gforth works fine:
+
+----
+: t s" 333 XXX 666" evaluate ;  ok
+' t catch  ok 1
+. -13  ok
+----
+
+The current definition of `evaluate` is the following:
+
+----
+: string>source ( ca len -- )
+  blk off (source-id on set-source ;
+
+: execute-parsing ( ca len xt -- )
+  nest-source >r string>source r> execute unnest-source ;
+
+: evaluate ( i*x ca len -- j*x )
+  ['] interpret execute-parsing ;
+----
+
+The new simpler version makes no difference:
+
+----
+: evaluate ( i*x ca len -- j*x )
+  nest-source string>source interpret unnest-source ;
+----
+
 === 2018-03-12
 
 NOTE: Milestone: 0.15.0

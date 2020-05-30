@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005241413
+  \ Last modified: 202005301555
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -117,11 +117,11 @@ unneeding execute-parsing ?( need need-here
   \
   \ execute-parsing ( ca len xt -- )
   \
-  \ Make _ca len_ the current input source, execute _xt_, then
-  \ restore the previous input source.
+  \ Make _ca len_ the current input source (using
+  \ `string>source`), execute _xt_, and then restore the
+  \ previous input source.
   \
-  \ See: `evaluate`, `interpret`, `string>source`,
-  \ `nest-source`.
+  \ See: `evaluate`, `interpret`, `nest-source`.
   \
   \ Origin: Gforth.
   \
@@ -323,11 +323,13 @@ unneeding word ?(
   \
   \ 2018-03-11: Fix requirement of `[char]`.
   \
-  \ 2018-06-04: Update: remove trailing closing paren from
-  \ word names.
+  \ 2018-06-04: Update: remove trailing closing paren from word
+  \ names.
   \
   \ 2018-07-21: Improve documentation, linking `throw`.
   \
   \ 2020-05-24: Improve documentation of `parse-all`.
+  \
+  \ 2020-05-30: Improve documentation of `execute-parsing`.
 
   \ vim: filetype=soloforth
