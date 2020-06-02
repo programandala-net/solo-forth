@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005252100
+  \ Last modified: 202006030129
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -242,12 +242,15 @@ s" Standard error codes" located errors-block !
 ( catch )
 
 : catch ( xt -- exception# | 0 )
+  nest-source   ( xt ) \ save source specification
   sp@ >r        ( xt ) \ save data stack pointer
   catcher @ >r  ( xt ) \ save previous catcher
   rp@ catcher ! ( xt ) \ set current catcher
   execute       ( )    \ `execute` returns if no `throw`
   r> catcher !  ( )    \ restore previous catcher
   rdrop         ( )    \ discard saved stack pointer
+  rdrop rdrop rdrop
+  rdrop rdrop rdrop    \ discard source specification
   0 ;           ( 0 )  \ normal completion, no error
 
   \ Credit:
@@ -261,8 +264,8 @@ s" Standard error codes" located errors-block !
   \
   \ Push an exception frame on the exception stack and then
   \ execute _xt_ (as with `execute`) in such a way that control
-  \ can be transferred to a point just after `catch` if `throw`
-  \ is executed during the execution of _xt_.
+  \ can be transferred to a point just after ``catch`` if
+  \ `throw` is executed during the execution of _xt_.
   \
   \ If the execution of _xt_ completes normally (i.e., the
   \ exception frame pushed by this `catch` is not popped by an
@@ -272,9 +275,13 @@ s" Standard error codes" located errors-block !
   \ Otherwise, the remainder of the execution semantics are
   \ given by `throw`.
   \
-  \ Origin: Forth-94 (EXCEPTION), Forth-2012 (EXCEPTION).
+  \ Solo Forth uses the return stack as exception stack. An
+  \ exception frame includes the source specification saved by
+  \ `nest-source`, the stack pointer returned by `sp@` and the
+  \ contents of the previous `catcher`, which item is pointed
+  \ by `catcher`.
   \
-  \ See: `catcher`.
+  \ Origin: Forth-94 (EXCEPTION), Forth-2012 (EXCEPTION).
   \
   \ }doc
 
@@ -346,6 +353,9 @@ s" Standard error codes" located errors-block !
   \ 2020-05-03: Improve documentation layout.
   \
   \ 2020-05-25: Improve `catch` with `rdrop`.
+  \
+  \ 2020-06-03: Fix `catch` by adding `nest-source`; update and
+  \ improve its documentation.
 
   \ vim: filetype=soloforth
 

@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202005301615
+; Last modified: 202006030138
 
 include version.z80s
 
@@ -5600,8 +5600,6 @@ true_if_cy:
 ;
 ; }doc
 
-  ; XXX FIXME -- Glosara corrupts the "See:" links above.
-
   ; Credit:
   ; Code adapted from Z88 CamelForth.
 
@@ -11034,6 +11032,13 @@ endif
 ;
 ; }doc
 
+  ; XXX TODO -- Simplify?: check only underflow; use `depth`.
+
+  ; XXX REMARK -- `sp@ sp0 @ swap <` cannot be replaced by `sp0
+  ; @ sp@ <`, because `sp@` must be first in order to not
+  ; include the cell added by `sp0 @`. `-cell` or `>=` could be
+  ; used to adjust the calculation as well.
+
   dw sp_fetch_,sp0_,fetch_
   dw swap_,less_than_
   _question_throw error.stack_underflow
@@ -15152,6 +15157,9 @@ mode_32_xy.end:
 ; ----------------------------------------------
   _code_header border_,'border'
 
+  ; XXX TODO -- Move to the library, but activate here for
+  ; debugging.
+
 ; doc{
 ;
 ; border ( n -- )
@@ -15413,15 +15421,13 @@ execute_hl:
 ; ----
 ; : throw ( k*x n -- k*x | i*x n )
 ;   ?dup if
-;     catcher @ ?dup 0=   \ no catcher?
-;     if error then       \ ``error`` does not return
-;     rp!                 \ restore previous return stack
-;     r> catcher !        ( n ) \ restore previous catcher
-;     r> swap >r          ( saved-SP ) ( R: n )
-;     sp! drop r>         ( n ) \ restore stack
-;     \ Return to the caller of ``catch`` because return stack is
-;     \ restored to the state that existed when ``catch`` began
-;     \ execution.
+;     catcher @ ?dup 0= \ no catcher?
+;     if error then     \ ``error`` does not return
+;     rp!               \ restore previous return stack
+;     r> catcher !      ( n ) \ restore previous catcher
+;     r> swap >r        ( saved-SP ) ( R: n )
+;     sp! drop r>       ( n ) \ restore stack
+;     unnest-source     \ restore previous source specification
 ;   then ;
 ; ----
 
@@ -15430,12 +15436,14 @@ execute_hl:
 ; }doc
 
   ; Credit:
-  ; Code from DZX-Forth.
+  ; Code adapted and improved from DZX-Forth.
   ; Comments from MPE Forth for TiniARM.
 
+  ; XXX TODO -- Use `0exit' instead of a branch:
   dw question_dup_
   dw zero_branch_,throw.end
-  dw catcher_,fetch_,question_dup_  ; catcher?
+  dw catcher_,fetch_
+  dw question_dup_  ; catcher?
   dw question_branch_,throw.catcher ; if so, branch
   dw error_ ; no return from `error`.
 
@@ -15444,10 +15452,7 @@ throw.catcher:
   dw from_r_,catcher_,store_  ; ( n ) restore previous catcher
   dw from_r_,swap_,to_r_      ; ( saved-SP ) ( R: n )
   dw sp_store_,drop_,from_r_  ; ( n ) restore stack
-
-  ; Return to the caller of `catch` because return stack is
-  ; restored to the state that existed when `catch` began
-  ; execution.
+  dw unnest_source_
 
 throw.end:
   dw exit_
