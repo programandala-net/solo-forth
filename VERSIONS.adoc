@@ -12,7 +12,7 @@
 // Version 0.14.0  {{{1
 == Version 0.14.0
 
-About to be released in 2020-05.
+About to be released in 2020-06.
 
 // Background image {{{2
 === Background image

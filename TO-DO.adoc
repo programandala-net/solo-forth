@@ -3020,15 +3020,13 @@ Make the tape words return a standard _ior_.
 // Tests {{{1
 == Tests
 
-=== 2018-03-12
+=== 2020-06-03
 
 // XXX FIXME --
 
 NOTE: Milestone: 0.14.0
 
-Fix:
-
-`m*/` does not passes the tests of Forth-2012 Test Suite.
+Fix: `m+` doesn't pass the Forth-2012 Test Suite.
 
 === 2018-03-12
 
@@ -3173,7 +3171,7 @@ in _A multi-tasking wordset for Standard Forth`, EuroForth 2017.
 === 2016-11-27
 
 Update the user variables that are initialized (`warnings` has been removed,
-but its is used by `lastblk`, which does not need initialization).
+but it is used by `lastblk`, which does not need initialization).
 
 === 2016-11-18
 

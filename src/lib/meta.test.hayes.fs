@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005241407
+  \ Last modified: 202006031544
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -872,7 +872,7 @@ decimal cr .( Test passed) cr
   \
   \ hayes-test ( -- )
   \
-  \ A non-existant word. ``hayes-test`` is used just for doing
+  \ An unexistent word. ``hayes-test`` is used just for doing
   \ ``need hayes-test`` in order to run the Hayes test, which
   \ tests the core words of an ANS Forth system.
   \
@@ -883,7 +883,7 @@ decimal cr .( Test passed) cr
   \ Some words are not tested: `key`, `quit`, `abort`, `abort"`
   \ `environment?`...
   \
-  \ See: `hayes-tester`.
+  \ See: `hayes-tester`, `ttester`, `forth2012-test-suite`.
   \
   \ }doc
 
@@ -917,5 +917,7 @@ decimal cr .( Test passed) cr
   \ the library.
   \
   \ 2020-05-18: Update: `+loop` was moved to the library.
+  \
+  \ 2020-06-03: Improve documentation.
 
   \ vim: filetype=soloforth

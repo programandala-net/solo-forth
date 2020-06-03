@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005241406
+  \ Last modified: 202006031648
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -1202,7 +1202,7 @@ T{ 4 GI6 -> 0 1 2 3 4 }T
 
 TESTING DO LOOP +LOOP I J UNLOOP LEAVE EXIT
 
-need do need j
+need do need j need +loop
 
 T{ : GD1 DO I LOOP ; -> }T
 T{ 4 1 GD1 -> 1 2 3 }T
@@ -1603,6 +1603,16 @@ T{ GDX -> 123 234 }T
 DECIMAL
 
 : forth2012-core-test ;
+
+  \ doc{
+  \
+  \ forth2012-core-test ( -- )
+  \
+  \ Do nothing. This word is used just for doing ``need
+  \ forth2012-core-test`` in order to run only the core test of
+  \ `forth2012-test-suite`.
+  \
+  \ }doc
 
 CR .( End of Core word set tests) CR
 
@@ -2489,6 +2499,18 @@ T{ 2 RND-TEST-BLOCK-SEQ DUP TT1 DUP DUP 1+ THRU 1- = -> TRUE }T
 
 BLOCK-ERRORS SET-ERROR-COUNT
 
+: forth2012-block-test ;
+
+  \ doc{
+  \
+  \ forth2012-block ( -- )
+  \
+  \ Do nothing. This word is used just for doing ``need
+  \ forth2012-block`` in order to run only the core test of
+  \ `forth2012-test-suite`.
+  \
+  \ }doc
+
 CR .( End of Block word tests) CR
 
 ( forth2012-coreext-test )
@@ -2935,7 +2957,7 @@ T{ MA? MA0 MA? MA1 MA? MA2 -> FALSE FALSE FALSE }T
 
   \ ===========================================================
 
-TESTING ?DO
+need +loop TESTING ?DO
 
 : QD ?DO I LOOP ;
 T{ 789 789 QD -> }T
@@ -3537,7 +3559,17 @@ T{ SSQ9 -> 11 22 33 }T
   \ ===========================================================
 CORE-EXT-ERRORS SET-ERROR-COUNT
 
-: forth2012-coreplus-test ;
+: forth2012-coreext-test ;
+
+  \ doc{
+  \
+  \ forth2012-coreext ( -- )
+  \
+  \ Do nothing. This word is used just for doing ``need
+  \ forth2012-coreext`` in order to run only the core test of
+  \ `forth2012-test-suite`.
+  \
+  \ }doc
 
 CR .( End of Core Extension word tests) CR
 
@@ -3592,7 +3624,7 @@ TESTING DO +LOOP with run-time increment, negative increment,
 TESTING infinite loop
   \ Credit: Contributed by Reinhold Straub
 
-need do
+need do need +loop
 
 VARIABLE ITERATIONS
 VARIABLE INCREMENT
@@ -3960,6 +3992,18 @@ T{ CREATE 2K 3 , 2K , MAKE-2CONST 2K -> ' 2K >BODY 3 }T
 
   \ XXX FIXME -- Left of the stack: -27983, -28743, -28729.
 
+: forth2012-coreplus-test ;
+
+  \ doc{
+  \
+  \ forth2012-coreplus ( -- )
+  \
+  \ Do nothing. This word is used just for doing ``need
+  \ forth2012-coreplus`` in order to run only the core test of
+  \ `forth2012-test-suite`.
+  \
+  \ }doc
+
 CR .( End of additional Core tests) CR
 
 ( forth2012-double-test )
@@ -4313,6 +4357,8 @@ T{ MIN-2INT MAX-2INT D= -> FALSE }T
 
   \ ===========================================================
 
+need 2variable
+
 TESTING 2LITERAL 2VARIABLE
 
 T{ : CD3 [ MAX-2INT ] 2LITERAL ; -> }T
@@ -4543,6 +4589,18 @@ T{ 2VAL -> 5555 6666 }T
 
 DOUBLE-ERRORS SET-ERROR-COUNT
 
+: forth2012-double-test ;
+
+  \ doc{
+  \
+  \ forth2012-double ( -- )
+  \
+  \ Do nothing. This word is used just for doing ``need
+  \ forth2012-double`` in order to run only the core test of
+  \ `forth2012-test-suite`.
+  \
+  \ }doc
+
 CR .( End of Double-Number word tests) CR
 
 ( forth2012-report-errors )
@@ -4621,7 +4679,7 @@ INIT-ERRORS -->
 
 : HLINE ( -- ) CR ." ---------------------------"  ;
 
-: FORTH2012-REPORT-ERRORS
+: FORTH2012-REPORT-ERRORS ( -- )
    HLINE CR 8 SPACES ." Error Report"
          CR ." Word Set" 13 SPACES ." Errors"
    HLINE -->
@@ -4642,6 +4700,17 @@ INIT-ERRORS -->
    S" String" STRING-ERRORS SHOW-ERROR-COUNT
    HLINE TOTAL-ERRORS @ S" Total" SHOW-ERROR-LINE
    HLINE CR CR ;
+
+: forth2012-report-errors ;
+
+  \ doc{
+  \
+  \ forth2012-report-errors ( -- )
+  \
+  \ Report the errors found duringn the latest execution of
+  \ `forth2012-test-suite`.
+  \
+  \ }doc
 
 ( forth2012-exception-test )
 
@@ -4770,6 +4839,18 @@ T{ 6 7 ' T9 C6 3 -> 6 7 13 3 }T
   \ uses #-256 instead of the standard #-13.
 
 EXCEPTION-ERRORS SET-ERROR-COUNT
+
+: forth2012-exception-test ;
+
+  \ doc{
+  \
+  \ forth2012-exception ( -- )
+  \
+  \ Do nothing. This word is used just for doing ``need
+  \ forth2012-exception`` in order to run only the core test of
+  \ `forth2012-test-suite`.
+  \
+  \ }doc
 
 CR .( End of Exception word tests) CR
 
@@ -4934,6 +5015,18 @@ T{ S41 F44 F22  C@ -> 31 }T
 T{ S41 F44 F23  C@ -> 32 }T
 
 FACILITY-ERRORS SET-ERROR-COUNT
+
+: forth2012-facility-test ;
+
+  \ doc{
+  \
+  \ forth2012-facility ( -- )
+  \
+  \ Do nothing. This word is used just for doing ``need
+  \ forth2012-facility`` in order to run only the core test of
+  \ `forth2012-test-suite`.
+  \
+  \ }doc
 
 CR .( End of Facility word tests) CR
 
@@ -5357,7 +5450,17 @@ TESTING The nested results
 
   \ End of warning
 
-FILE-ERRORS SET-ERROR-COUNT
+FILE-ERRORS SET-ERROR-COUNT  : forth2012-file-test ;
+
+  \ doc{
+  \
+  \ forth2012-file ( -- )
+  \
+  \ Do nothing. This word is used just for doing ``need
+  \ forth2012-file`` in order to run only the core test of
+  \ `forth2012-test-suite`.
+  \
+  \ }doc
 
 CR .( End of File-Access word set tests) CR
 
@@ -5604,6 +5707,18 @@ T{ : LT37 {: LT36 :} LT36 ; 69 LT37 LT36 -> 69 68 }T
 
 LOCALS-ERRORS SET-ERROR-COUNT    \ For final error report
 
+: forth2012-locals-test ;
+
+  \ doc{
+  \
+  \ forth2012-locals ( -- )
+  \
+  \ Do nothing. This word is used just for doing ``need
+  \ forth2012-locals`` in order to run only the core test of
+  \ `forth2012-test-suite`.
+  \
+  \ }doc
+
 CR .( End of Locals word set tests. ) .S
 
 ( forth2012-memory-test )
@@ -5746,6 +5861,18 @@ ADDR1 @ 50 CHECK-CELL-MEM
 
 MEMORY-ERRORS SET-ERROR-COUNT
 
+: forth2012-memory-test ;
+
+  \ doc{
+  \
+  \ forth2012-memory ( -- )
+  \
+  \ Do nothing. This word is used just for doing ``need
+  \ forth2012-memory`` in order to run only the core test of
+  \ `forth2012-test-suite`.
+  \
+  \ }doc
+
 CR .( End of Memory-Allocation word tests) CR
 
 ( forth2012-searchorder-test )
@@ -5795,7 +5922,7 @@ CR .( End of Memory-Allocation word tests) CR
   \       to ensure the search order is in a known state
   \ ===========================================================
 
-need ttester need forth2012-core-test need c"
+need ttester need forth2012-core-test need c" need +loop
 need forth2012-utilities-test need forth2012-report-errors
 
 ONLY FORTH DEFINITIONS  TESTING Search-order word set
@@ -5983,6 +6110,18 @@ CR .( at the head of the search order) CR
 T{ ALSOWID2 DEFINITIONS ORDER -> }T
 
 SEARCHORDER-ERRORS SET-ERROR-COUNT
+
+: forth2012-searchorder-test ;
+
+  \ doc{
+  \
+  \ forth2012-searchorder ( -- )
+  \
+  \ Do nothing. This word is used just for doing ``need
+  \ forth2012-searchorder`` in order to run only the core test
+  \ of `forth2012-test-suite`.
+  \
+  \ }doc
 
 CR .( End of Search Order word tests) CR
 
@@ -6402,7 +6541,17 @@ T{ $" a%mac3%b" 9 0 20 OVERLAPPED-SUBST 1
 t{ $" SUBST2" $CREATE 123 , -> }t
 t{ SUBST2 @ -> 123 }t
 
-STRING-ERRORS SET-ERROR-COUNT
+STRING-ERRORS SET-ERROR-COUNT : forth2012-string-test ;
+
+  \ doc{
+  \
+  \ forth2012-string ( -- )
+  \
+  \ Do nothing. This word is used just for doing ``need
+  \ forth2012-string`` in order to run only the core test of
+  \ `forth2012-test-suite`.
+  \
+  \ }doc
 
 CR .( End of String word tests) CR
 
@@ -6914,6 +7063,18 @@ T{ : SYN3 SYN2 LITERAL ; SYN3 -> 2345 }T -->
 
 TOOLS-ERRORS SET-ERROR-COUNT
 
+: forth2012-tools-test ;
+
+  \ doc{
+  \
+  \ forth2012-tools ( -- )
+  \
+  \ Do nothing. This word is used just for doing ``need
+  \ forth2012-tools`` in order to run only the core test of
+  \ `forth2012-test-suite`.
+  \
+  \ }doc
+
 CR .( End of Programming Tools word tests) CR
 
 ( forth2012-utilities-test )
@@ -7083,6 +7244,16 @@ T{ $2" nopqrstuvwxyz" SBUF1 COUNT S= -> TRUE  }T
 
 : forth2012-utilities-test ;
 
+  \ doc{
+  \
+  \ forth2012-utilities ( -- )
+  \
+  \ Do nothing. This word is used just for doing ``need
+  \ forth2012-utilities`` in order to run only the core test of
+  \ `forth2012-test-suite`.
+  \
+  \ }doc
+
 CR $" Test utilities loaded" TYPE CR
 
 ( forth2012-test-suite )
@@ -7105,6 +7276,28 @@ need forth2012-tools-test     need forth2012-searchorder-test
 need forth2012-string-test
 
 FORTH2012-REPORT-ERRORS
+
+  \ doc{
+  \
+  \ forth2012-test-suite ( -- )
+  \
+  \ An unexistent word. This word is used just for doing ``need
+  \ forth2012-test-suite`` in order to run the Forth-2012 Test
+  \ Suite.
+  \
+  \ The following partial tests are available:
+  \ `forth2012-file-test`, `forth2012-block-test`,
+  \ `forth2012-core-test`, `forth2012-coreext-test`,
+  \ `forth2012-coreplus-test`, `forth2012-double-test`,
+  \ `forth2012-exception-test`, `forth2012-facility-test`,
+  \ `forth2012-locals-test`, `forth2012-memory-test`,
+  \ `forth2012-report-errors, `forth2012-searchorder-test`,
+  \ `forth2012-string-test`, `forth2012-tools-test`,
+  \ `forth2012-utilities-test`.
+  \
+  \ See: `forth2012-report-errors`, `ttester`, `hayes-test`.
+  \
+  \ }doc
 
 cr .( Forth-2012 tests completed ) cr cr
 
@@ -7133,10 +7326,15 @@ cr .( Forth-2012 tests completed ) cr cr
   \
   \ 2018-04-15: Update notation ".." to "...".
   \
-  \ 2018-06-04: Update: remove trailing closing paren from
-  \ word names.
+  \ 2018-06-04: Update: remove trailing closing paren from word
+  \ names.
   \
   \ 2020-05-09: Update requirements: `depth` has been moved to
   \ the library.
+  \
+  \ 2020-06-03: Update requirements: `+loop`, `2variable`, are
+  \ in the library. Improve documentation. Generalize the
+  \ internal requirements, e.g. `forth2012-core-test`,
+  \ `forth2012-block-test`, etc.
 
   \ vim: filetype=soloforth

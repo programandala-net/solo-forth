@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005090036
+  \ Last modified: 202006031546
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -122,8 +122,8 @@ create actual-results $20 cells allot
   \ hayes-tester ( -- )
   \
   \ Do nothing. This word is used just for doing ``need
-  \ hayes-tester``, loading `{`, `->`, and `}`, which are used
-  \ by `hayes-test`.
+  \ hayes-tester`` in order to load `{`, `->`, and `}`, which
+  \ are used by `hayes-test`.
   \
   \ Usage example:
 
@@ -137,7 +137,7 @@ create actual-results $20 cells allot
   \ Use WHERE to see the error line.
   \ ....
 
-  \ See: `ttester`.
+  \ See: `ttester`, `forth2012-test-suite`.
   \
   \ }doc
 
@@ -158,5 +158,7 @@ create actual-results $20 cells allot
   \
   \ 2020-05-09: Update requirements: `depth` has been moved to
   \ the library.
+  \
+  \ 2020-06-03: Improve documentation.
 
   \ vim: filetype=soloforth
