@@ -316,6 +316,8 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
 - Add a new `?stringer` to throw an error if a string is longer than
   the total capacity of the `stringer`. The old `stringer` was renamed
   to `fit-stringer`.
+- Make `order,`, `@order`, `wordlists,` and `@wordlists` independent
+  from `marker`.
 
 // Other changes {{{2
 === Other changes

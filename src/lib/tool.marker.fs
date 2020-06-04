@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202005182306
+  \ Last modified: 202006040214
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -26,7 +26,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( anew marker )
+( anew wordlists, @wordlists order, @order )
 
 unneeding anew ?( need possibly need marker
 
@@ -40,8 +40,23 @@ unneeding anew ?( need possibly need marker
 
 : anew ( "name" -- ) >in @ possibly >in ! marker ; ?)
 
-unneeding marker ?exit
-
+  \ doc{
+  \
+  \ anew ( "name" -- )
+  \
+  \ Parse _name_. If _name_ is the name of a word in the
+  \ current search order, execute it. Then restore `>in` to its
+  \ value previous to the parsing of _name_ and execute
+  \ `marker`.
+  \
+  \ The function of ``anew`` is to execute a _name_ already
+  \ created by `marker` and then creating it again.
+  \
+  \ WARNING: ``anew`` is not fully tested yet.
+  \
+  \ See: `possibly`.
+  \
+  \ }doc
 
   \ XXX TODO -- save and restore also the nt associated (+4):
   \ |===
@@ -49,6 +64,8 @@ unneeding marker ?exit
   \ | +2 | _wid|0_, next wordlist in chain, or zero
   \ | +4 | _nt|0_, word list name pointer, or zero
   \ |===
+
+unneeding wordlists, unneeding @wordlists and ?(
 
 : wordlists, ( -- ) latest-wordlist @
                     begin dup cell- @ ( a nt ) , @ ?dup 0=
@@ -60,14 +77,18 @@ unneeding marker ?exit
   \ wordlists, ( -- ) "wordlists-comma"
   \
   \ Store the latest definition of every word list in the data
-  \ space.
+  \ space, updating `dp`.
+  \
+  \ ``wordlists,`` is a factor of `marker`.
+  \
+  \ See: `@wordlists`, `order,`.
   \
   \ }doc
 
 : @wordlists ( a -- ) latest-wordlist @ begin
                         2dup swap @ swap cell- !
                         swap cell+ swap @
-                      ?dup 0= until  drop ; -->
+                      ?dup 0= until  drop ; ?)
   \ XXX TODO -- adapt to `latest-wordlist`
 
   \ doc{
@@ -75,6 +96,43 @@ unneeding marker ?exit
   \ @wordlists ( a -- ) "fetch-wordlists"
   \
   \ Fetch the latest definition of every word list from _a_.
+  \
+  \ ``@wordlists`` is a factor of `unmarker`.
+  \
+  \ See: `wordlists,`, `latest-wordlist`, `@order`.
+  \
+  \ }doc
+
+unneeding order, unneeding @order and ?( need nn, need nn@
+                                         need get-order
+
+: order, ( -- ) get-order nn, ;
+
+  \ doc{
+  \
+  \ order, ( -- )
+  \
+  \ Compile the current search order by executing `get-order`
+  \ and `nn,`.
+  \
+  \ ``order,`` is a useful factor of `marker`.
+  \
+  \ See: `@order`, `wordlists,`.
+  \
+  \ }doc
+
+: @order ( a -- ) nn@ set-order ; ?)
+
+  \ doc{
+  \
+  \ @order ( a -- )
+  \
+  \ Restore the search order stored at _a_ by executing `nn@`
+  \ and `set-order`.
+  \
+  \ ``@order`` is a useful factor of `unmarker`.
+  \
+  \ See: `order,`, `@wordlists`.
   \
   \ }doc
 
@@ -85,9 +143,8 @@ unneeding marker ?exit
   \ Code partly inspired by m3forth's `marker`:
   \ https://github.com/oco2000/m3forth/blob/master/lib/include/core-ext.f
 
-need get-order need @+ need nn, need nn@ need there need np!
-
-: @order ( a -- ) nn@ set-order ;
+need @+ need there need np! need order, need @order
+need wordlists, need @wordlists
 
 : unmarker ( a -- )
   dup there @+ np! @+ last ! @+ lastxt !
@@ -106,32 +163,36 @@ need get-order need @+ need nn, need nn@ need there need np!
   \
   \ ``unmarker`` is a factor of `marker`.
   \
+  \ See: `np!`, `last`, `lastxt`, `latest-wordlist`,
+  \ `set-current`, `@order`, `@wordlists`.
+  \
   \ }doc
 
-: order, ( -- ) get-order nn, ;
-
-: marker, ( -- a )
-  here  np@ ,  last @ ,  lastxt @ ,  latest-wordlist @ ,
-        get-current ,  order,  wordlists, ;
+: marker, ( -- )
+  np@ , last @ , lastxt @ , latest-wordlist @ ,
+  get-current , order, wordlists, ;
 
   \ doc{
   \
-  \ marker, ( -- a ) "marker-comma"
+  \ marker, ( -- ) "marker-comma"
   \
   \ Store the names pointer, the latest definition pointers,
   \ the word lists pointer, the current compilation word list,
   \ the search order and the configuration of word lists at the
-  \ current data-space pointer, and return its address _a_, for
+  \ current data-space pointer, for
   \ later restoration by `unmarker`.
   \
   \ ``marker,`` is a factor of `marker`.
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
+  \ See: `np@`, `last`, `lastxt`, `latest-wordlist`,
+  \ `get-current`, `order,`, `wordlists,`.
+  \
   \ }doc
 
 : marker ( "name" -- )
-  marker, create ,  does> ( -- ) ( dfa ) @ unmarker ;
+  here marker, create , does> ( -- ) ( dfa ) @ unmarker ;
 
   \ doc{
   \
@@ -143,7 +204,12 @@ need get-order need @+ need nn, need nn@ need there need np!
   \ the configuration of word lists to the state they had just
   \ prior to the definition of "name".
   \
+  \ WARNING: This word still has some issues. It does not pass
+  \ `forth2012-test-suite`.
+  \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+  \
+  \ See: `marker,`, `unmarker`, `anew`.
   \
   \ }doc
 
@@ -183,5 +249,9 @@ need get-order need @+ need nn, need nn@ need there need np!
   \ the code, saving one block.
   \
   \ 2020-05-18: Update: `np!` has been moved to the library.
+  \
+  \ 2020-06-03: Improve documentation. Update source style.
+  \ Make `order,`, `@order`, `wordlists,` and `@wordlists`
+  \ independent.
 
   \ vim: filetype=soloforth
