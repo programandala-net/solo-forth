@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005080137
+  \ Last modified: 202006031638
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -995,6 +995,8 @@ unneeding possibly ?(
   \ Parse _name_.  If _name_ is the name of a word in the
   \ current search order, execute it; else do nothing.
   \
+  \ See: `exec`, `defined`, `name>`, `execute`, `anew`.
+  \
   \ }doc
 
 unneeding exec ?(
@@ -1010,7 +1012,7 @@ unneeding exec ?(
   \ current search order, `execute` it; else `throw` an
   \ exception #-13 ("undefined word").
   \
-  \ See: `defined`, `name>`.
+  \ See: `possibly`, `defined`, `name>`, `?throw`, `execute`.
   \
   \ }doc
 
@@ -1532,5 +1534,7 @@ unneeding warn-throw ?( need ?warn
   \
   \ 2020-05-08: Move `name>str`, `name>string` and `.name` from
   \ the kernel.
+  \
+  \ 2020-06-03: Improve documentation.
 
   \ vim: filetype=soloforth

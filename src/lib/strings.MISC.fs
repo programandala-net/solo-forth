@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005292219
+  \ Last modified: 202006032152
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -274,7 +274,7 @@ unneeding ?stringer
   \ #-293 (string too long). Otherwise do nothing.
   \
   \ ``?stringer`` is provided as an optional check. for
-  \ `allocate-string`.
+  \ `allocate-stringer`.
   \
   \ }doc
 
@@ -1162,5 +1162,7 @@ unneeding replace
   \
   \ 2020-05-29: Add `?stringer` (its homonym in the kernel has
   \ been renamed `fit-stringer`).
+  \
+  \ 2020-06-03: Fix cross-reference.
 
   \ vim: filetype=soloforth

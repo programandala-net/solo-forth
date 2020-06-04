@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005261716
+  \ Last modified: 202006040220
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -258,7 +258,7 @@ unneeding find-name-in
   \ return its _nt_, else return zero.
   \
   \ See: `search-wordlist`, `find-name-from`, `find-name`,
-  \ `<<src-lib-word-lists-fs, find>>`.
+  \ `<<src-lib-word_lists-fs, find>>`.
   \
   \ }doc
 
@@ -324,7 +324,7 @@ unneeding search-wordlist ?(
   \ Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
   \
   \ See: `find-name`, `find-name-from`, `find-name-in`,
-  \ `<<src-lib-word-lists-fs, find>>`.
+  \ `<<src-lib-word_lists-fs, find>>`.
   \
   \ }doc
 
@@ -392,5 +392,7 @@ unneeding search-wordlist ?(
   \
   \ 2020-05-26: Make links to `find` explicit (there's another
   \ `find` in the Specforth editor).
+  \
+  \ 2020-06-04: Fix cross references.
 
   \ vim: filetype=soloforth

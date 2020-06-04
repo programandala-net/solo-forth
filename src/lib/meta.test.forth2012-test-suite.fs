@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006031648
+  \ Last modified: 202006041845
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -2503,11 +2503,11 @@ BLOCK-ERRORS SET-ERROR-COUNT
 
   \ doc{
   \
-  \ forth2012-block ( -- )
+  \ forth2012-block-test ( -- )
   \
   \ Do nothing. This word is used just for doing ``need
-  \ forth2012-block`` in order to run only the core test of
-  \ `forth2012-test-suite`.
+  \ forth2012-block-test`` in order to run only the core test
+  \ of `forth2012-test-suite`.
   \
   \ }doc
 
@@ -3563,11 +3563,11 @@ CORE-EXT-ERRORS SET-ERROR-COUNT
 
   \ doc{
   \
-  \ forth2012-coreext ( -- )
+  \ forth2012-coreext-test ( -- )
   \
   \ Do nothing. This word is used just for doing ``need
-  \ forth2012-coreext`` in order to run only the core test of
-  \ `forth2012-test-suite`.
+  \ forth2012-coreext-test`` in order to run only the core test
+  \ of `forth2012-test-suite`.
   \
   \ }doc
 
@@ -3996,11 +3996,11 @@ T{ CREATE 2K 3 , 2K , MAKE-2CONST 2K -> ' 2K >BODY 3 }T
 
   \ doc{
   \
-  \ forth2012-coreplus ( -- )
+  \ forth2012-coreplus-test ( -- )
   \
   \ Do nothing. This word is used just for doing ``need
-  \ forth2012-coreplus`` in order to run only the core test of
-  \ `forth2012-test-suite`.
+  \ forth2012-coreplus-test`` in order to run only the core
+  \ test of `forth2012-test-suite`.
   \
   \ }doc
 
@@ -4593,11 +4593,11 @@ DOUBLE-ERRORS SET-ERROR-COUNT
 
   \ doc{
   \
-  \ forth2012-double ( -- )
+  \ forth2012-double-test ( -- )
   \
   \ Do nothing. This word is used just for doing ``need
-  \ forth2012-double`` in order to run only the core test of
-  \ `forth2012-test-suite`.
+  \ forth2012-double-test`` in order to run only the core test
+  \ of `forth2012-test-suite`.
   \
   \ }doc
 
@@ -4679,7 +4679,7 @@ INIT-ERRORS -->
 
 : HLINE ( -- ) CR ." ---------------------------"  ;
 
-: FORTH2012-REPORT-ERRORS ( -- )
+: forth2012-report-errors ( -- )
    HLINE CR 8 SPACES ." Error Report"
          CR ." Word Set" 13 SPACES ." Errors"
    HLINE -->
@@ -4701,13 +4701,11 @@ INIT-ERRORS -->
    HLINE TOTAL-ERRORS @ S" Total" SHOW-ERROR-LINE
    HLINE CR CR ;
 
-: forth2012-report-errors ;
-
   \ doc{
   \
   \ forth2012-report-errors ( -- )
   \
-  \ Report the errors found duringn the latest execution of
+  \ Report the errors found during the latest execution of
   \ `forth2012-test-suite`.
   \
   \ }doc
@@ -4844,11 +4842,11 @@ EXCEPTION-ERRORS SET-ERROR-COUNT
 
   \ doc{
   \
-  \ forth2012-exception ( -- )
+  \ forth2012-exception-test ( -- )
   \
   \ Do nothing. This word is used just for doing ``need
-  \ forth2012-exception`` in order to run only the core test of
-  \ `forth2012-test-suite`.
+  \ forth2012-exception-test`` in order to run only the core
+  \ test of `forth2012-test-suite`.
   \
   \ }doc
 
@@ -5020,11 +5018,11 @@ FACILITY-ERRORS SET-ERROR-COUNT
 
   \ doc{
   \
-  \ forth2012-facility ( -- )
+  \ forth2012-facility-test ( -- )
   \
   \ Do nothing. This word is used just for doing ``need
-  \ forth2012-facility`` in order to run only the core test of
-  \ `forth2012-test-suite`.
+  \ forth2012-facility-test`` in order to run only the core
+  \ test of `forth2012-test-suite`.
   \
   \ }doc
 
@@ -5454,10 +5452,10 @@ FILE-ERRORS SET-ERROR-COUNT  : forth2012-file-test ;
 
   \ doc{
   \
-  \ forth2012-file ( -- )
+  \ forth2012-file-test ( -- )
   \
   \ Do nothing. This word is used just for doing ``need
-  \ forth2012-file`` in order to run only the core test of
+  \ forth2012-file-test`` in order to run only the core test of
   \ `forth2012-test-suite`.
   \
   \ }doc
@@ -5711,11 +5709,11 @@ LOCALS-ERRORS SET-ERROR-COUNT    \ For final error report
 
   \ doc{
   \
-  \ forth2012-locals ( -- )
+  \ forth2012-locals-test ( -- )
   \
   \ Do nothing. This word is used just for doing ``need
-  \ forth2012-locals`` in order to run only the core test of
-  \ `forth2012-test-suite`.
+  \ forth2012-locals-test`` in order to run only the core test
+  \ of `forth2012-test-suite`.
   \
   \ }doc
 
@@ -5865,11 +5863,11 @@ MEMORY-ERRORS SET-ERROR-COUNT
 
   \ doc{
   \
-  \ forth2012-memory ( -- )
+  \ forth2012-memory-test ( -- )
   \
   \ Do nothing. This word is used just for doing ``need
-  \ forth2012-memory`` in order to run only the core test of
-  \ `forth2012-test-suite`.
+  \ forth2012-memory-test`` in order to run only the core test
+  \ of `forth2012-test-suite`.
   \
   \ }doc
 
@@ -6115,11 +6113,11 @@ SEARCHORDER-ERRORS SET-ERROR-COUNT
 
   \ doc{
   \
-  \ forth2012-searchorder ( -- )
+  \ forth2012-searchorder-test ( -- )
   \
   \ Do nothing. This word is used just for doing ``need
-  \ forth2012-searchorder`` in order to run only the core test
-  \ of `forth2012-test-suite`.
+  \ forth2012-searchorder-test`` in order to run only the core
+  \ test of `forth2012-test-suite`.
   \
   \ }doc
 
@@ -6545,11 +6543,11 @@ STRING-ERRORS SET-ERROR-COUNT : forth2012-string-test ;
 
   \ doc{
   \
-  \ forth2012-string ( -- )
+  \ forth2012-string-test ( -- )
   \
   \ Do nothing. This word is used just for doing ``need
-  \ forth2012-string`` in order to run only the core test of
-  \ `forth2012-test-suite`.
+  \ forth2012-string-test`` in order to run only the core test
+  \ of `forth2012-test-suite`.
   \
   \ }doc
 
@@ -7067,11 +7065,11 @@ TOOLS-ERRORS SET-ERROR-COUNT
 
   \ doc{
   \
-  \ forth2012-tools ( -- )
+  \ forth2012-tools-test ( -- )
   \
   \ Do nothing. This word is used just for doing ``need
-  \ forth2012-tools`` in order to run only the core test of
-  \ `forth2012-test-suite`.
+  \ forth2012-tools-test`` in order to run only the core test
+  \ of `forth2012-test-suite`.
   \
   \ }doc
 
@@ -7246,11 +7244,11 @@ T{ $2" nopqrstuvwxyz" SBUF1 COUNT S= -> TRUE  }T
 
   \ doc{
   \
-  \ forth2012-utilities ( -- )
+  \ forth2012-utilities-test ( -- )
   \
   \ Do nothing. This word is used just for doing ``need
-  \ forth2012-utilities`` in order to run only the core test of
-  \ `forth2012-test-suite`.
+  \ forth2012-utilities-test`` in order to run only the core
+  \ test of `forth2012-test-suite`.
   \
   \ }doc
 
@@ -7336,5 +7334,7 @@ cr .( Forth-2012 tests completed ) cr cr
   \ in the library. Improve documentation. Generalize the
   \ internal requirements, e.g. `forth2012-core-test`,
   \ `forth2012-block-test`, etc.
+  \
+  \ 2020-06-04: Fix cross references.
 
   \ vim: filetype=soloforth
