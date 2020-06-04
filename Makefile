@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202005052150.
+# Last modified: 202006041725.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -921,6 +921,7 @@ tmp/doc.gplusdos.files.txt: \
 	src/kernel.gplusdos.z80s \
 	$(app_prog_lib_files) \
 	$(editor_prog_lib_files) \
+	$(meta_test_lib_files) \
 	$(gplusdos_core_lib_files)
 	ls -1 $^ > $@
 
@@ -1002,6 +1003,7 @@ tmp/doc.plus3dos.files.txt: \
 	src/kernel.plus3dos.z80s \
 	$(app_prog_lib_files) \
 	$(editor_prog_lib_files) \
+	$(meta_test_lib_files) \
 	$(plus3dos_core_lib_files)
 	ls -1 $^ > $@
 
@@ -1079,6 +1081,7 @@ tmp/doc.trdos.files.txt: \
 	src/kernel.trdos.z80s \
 	$(app_prog_lib_files) \
 	$(editor_prog_lib_files) \
+	$(meta_test_lib_files) \
 	$(trdos_core_lib_files)
 	ls -1 $^ > $@
 
@@ -1451,6 +1454,8 @@ oldbackup:
 # 2020-05-04: Add the apps to the glossary (actually, only `edit-sound`).
 #
 # 2020-05-05: Add the editors to the glossary.
+#
+# 2020-06-04: Add the tests to the glossary.
 
 # ==============================================================
 
