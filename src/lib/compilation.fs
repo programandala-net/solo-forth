@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006031638
+  \ Last modified: 202006060002
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -647,7 +647,7 @@ need >>name need name>name need name>>
 unneeding name>string ?( need name>str
 
 : name>string ( nt -- ca len )
-  name>str allocate-stringer ( ca1 len ca )
+  name>str dup allocate-stringer ( ca1 len ca )
   2dup swap 2>r ( R: ca len ) -rot ( ca ca1 len )
   0 ?do ( ca ca1 )
     2dup farc@ swap i + c! char+
@@ -1536,5 +1536,7 @@ unneeding warn-throw ?( need ?warn
   \ the kernel.
   \
   \ 2020-06-03: Improve documentation.
+  \
+  \ 2020-06-06: Fix `name>string`.
 
   \ vim: filetype=soloforth
