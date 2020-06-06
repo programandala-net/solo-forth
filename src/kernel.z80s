@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202006061622
+; Last modified: 202006062345
 
 include version.z80s
 
@@ -14478,11 +14478,11 @@ if 0 ; debugging
   dw dot_r_
   _literal '>'
   dw emit_
-
   dw space_
+
   _literal 1
   dw less_than_
-  dw question_branch_,dot_s.end
+  dw question_exit_
 
   dw sp_fetch_,sp0_,fetch_,cell_minus_
   dw paren_do_,dot_s.loop_exit ; do
@@ -14493,7 +14493,6 @@ dot_s.dot:
   dw paren_plus_loop_ ; loop
 dot_s.loop_exit:
 
-dot_s.end:
   dw exit_
 
 endif
