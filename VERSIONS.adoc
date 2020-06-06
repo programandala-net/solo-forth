@@ -143,6 +143,7 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
   `drive-unused`, `sectors/disk`, `sectors/cat`, `sectors>capacity`
   and `max-disk-capacity`.
 - Add `/wordlist`, `wordlist>last`.
+- Add `dump-wordlists`, `dump-wordlists>`, `dump-wordlist`.
 
 // Fixes {{{2
 === Fixes
