@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006061413
+  \ Last modified: 202006061551
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,11 +33,11 @@ unneeding wordlist>link
   \
   \ wordlist>link ( wid -- a ) "wordlist-to-link"
   \
-  \ Return the link field address _a_ of word-list identifier
+  \ Return the link field address _a_ of the `wordlist` identifier
   \ _wid_, which holds the word-list identifier of the previous
   \ word list defined in the system.
   \
-  \ See: `wordlist`, `wordlist>name`.
+  \ See: `wordlist>name`, `wordlist>last`, `/wordlist`.
   \
   \ }doc
 
@@ -49,11 +49,11 @@ unneeding wordlist>name
   \
   \ wordlist>name ( wid -- a ) "wordlist-to-name"
   \
-  \ Return the address _a_ which holds the _nt_ of word-list
-  \ identifier _wid_ (or zero if the word list has no
-  \ associated name).
+  \ Return the address _a_ which holds the _nt_ of the
+  \ `wordlist` identifier _wid_ (or zero if the word list has
+  \ no associated name).
   \
-  \ See: `wordlist`, `wordlist>link`.
+  \ See: `wordlist>link`, `wordlist>last`, `/wordlist`.
   \
   \ }doc
 
@@ -88,7 +88,7 @@ unneeding wordlist-name! ?( need wordlist>name
   \
   \ }doc
 
-( +order -order /wordlist )
+( +order -order /wordlist wordlist>last )
 
 unneeding +order
 
@@ -148,6 +148,27 @@ unneeding /wordlist ?\ 3 cells cconstant /wordlist
   \
   \ A `cconstant`. _n_ is the length in bytes of a `wordlist`
   \ data structure, created by `wordlist,`.
+  \
+  \ }doc
+
+unneeding wordlist>last ?( need alias
+
+' noop alias wordlist>last ( wid -- a ) immediate ?)
+
+  \ doc{
+  \
+  \ wordlist>last ( wid -- a ) "wordlist-to-last"
+  \
+  \ Return the field address _a_ of `wordlist` identifier
+  \ _wid_, which holds the name token of the latest word
+  \ defined in _wid_.
+  \
+  \ As _a_ is the first field of a word-list structure,
+  \ ``wordlist>last`` is provided only for legibility. It is
+  \ an `immediate` `alias` of `noop`.
+  \
+  \ See: `wordlist>name`, `wordlist>link`, `/wordlist`, `last`,
+  \ `latest`.
   \
   \ }doc
 
@@ -406,6 +427,6 @@ unneeding search-wordlist ?(
   \
   \ 2020-06-04: Fix cross references.
   \
-  \ 2020-06-06: Add `/wordlist`.
+  \ 2020-06-06: Add `/wordlist`, `wordlist>last`.
 
   \ vim: filetype=soloforth

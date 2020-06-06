@@ -142,7 +142,7 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
 - Add G+DOS `sectors-used`, `sectors-used@`, `drive-used`,
   `drive-unused`, `sectors/disk`, `sectors/cat`, `sectors>capacity`
   and `max-disk-capacity`.
-- Add `/wordlist`.
+- Add `/wordlist`, `wordlist>last`.
 
 // Fixes {{{2
 === Fixes

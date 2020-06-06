@@ -2692,6 +2692,12 @@ for the end user.
 // Names {{{1
 == Names
 
+NOTE: Milestone: 0.14.0
+
+- Rename `latest-wordlist` to `last-wordlist`, because of the analogy
+  with `last` and `wordlist>last`, which return the address of the
+  value.
+
 === 2018-04-14
 
 NOTE: Milestone: 0.15.0
