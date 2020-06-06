@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202006061321
+; Last modified: 202006061622
 
 include version.z80s
 
@@ -11541,26 +11541,17 @@ endif
 ;
 ; wordlist, ( -- ) "wordlist-comma"
 ;
-; Compile the contents of a new word list. The data structure is
-; the following (`/wordlist` bytes long):
-
-; |===
-; | Cell | Description
-;
-; | 0    | _nt_ of the latest definition in the word list
-; | 1    | _wid_ of the previous word list, or zero
-; | 2    | _nt_ of the word list name, or zero
-; |===
+; Compile in data space the contents of a new word list.
 ;
 ; Definition:
 
 ; ----
 ; : wordlist, ( -- )
-;   here 0 , latest-wordlist @ , latest-wordlist !  0 , ;
+;   here 0 , latest-wordlist @ , latest-wordlist ! 0 , ;
 ; ----
 
-; See: `wordlist`, `latest-wordlist`, `wordlist>link`,
-; `wordlist>name`, `/wordlist`.
+; See: `wordlist`, `latest-wordlist`, `wordlist>last`,
+; `wordlist>link`, `wordlist>name`, `/wordlist`.
 
 ; }doc
 
@@ -11583,6 +11574,18 @@ endif
 ;
 ; wordlist ( -- wid )
 ;
+; Create a new word list and return its identifier _wid_, which
+; is the address of the following data structure (`/wordlist`
+; bytes long):
+
+; |===
+; | Cell | Description
+;
+; | 0    | _nt_ of the latest definition in the word list
+; | 1    | _wid_ of the previous word list, or zero
+; | 2    | _nt_ of the word-list name, or zero
+; |===
+;
 ; Definition:
 
 ; ----
@@ -11590,8 +11593,8 @@ endif
 ; ----
 
 ; See: `wordlist,`, `set-order`, `vocabulary`,
-; `latest-wordlist`, `/wordlist`, `wordlist>link`,
-; `wordlist>name`.
+; `latest-wordlist`, `wordlist>last`, `wordlist>link`,
+; `wordlist>name`, `/wordlist`.
 ;
 ; }doc
 

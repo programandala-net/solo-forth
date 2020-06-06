@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005261309
+  \ Last modified: 202006061312
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -45,7 +45,7 @@ code under+ ( n1|u1 x n2|u2 -- n3|u3 x )
   \
   \ under+ ( n1|u1 x n2|u2 -- n3|u3 x ) "under-plus"
   \
-  \ Add _n2|u2_ to _n1|u2_, giving the sum _n3|u3_.
+  \ Add _n2|u2_ to _n1|u1_, giving the sum _n3|u3_.
   \
   \ ``under+`` is written in Z80. Its definition in Forth is
   \ the following:
@@ -1416,5 +1416,7 @@ code join ( b1 b2 -- x )
   \ 2020-05-25: Replace `r> drop` with `rdrop`.
   \
   \ 2020-05-26: Improve documentation of `2/`.
+  \
+  \ 2020-06-06: Fix typo in documentation.
 
   \ vim: filetype=soloforth
