@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006040220
+  \ Last modified: 202006061319
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -88,7 +88,7 @@ unneeding wordlist-name! ?( need wordlist>name
   \
   \ }doc
 
-( +order -order )
+( +order -order /wordlist )
 
 unneeding +order
 
@@ -137,6 +137,17 @@ variable -order-wid
   \ the search order.
   \
   \ See: `+order`, `>order`, `set-order`, `order`.
+  \
+  \ }doc
+
+unneeding /wordlist ?\ 6 cells cconstant /wordlist
+
+  \ doc{
+  \
+  \ /wordlist ( -- n )
+  \
+  \ A `cconstant`. _n_ is the length in bytes of a `wordlist`
+  \ data structure, created by `wordlist,`.
   \
   \ }doc
 
@@ -394,5 +405,7 @@ unneeding search-wordlist ?(
   \ `find` in the Specforth editor).
   \
   \ 2020-06-04: Fix cross references.
+  \
+  \ 2020-06-06: Add `/wordlist`.
 
   \ vim: filetype=soloforth

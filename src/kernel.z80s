@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202006030138
+; Last modified: 202006061321
 
 include version.z80s
 
@@ -7204,7 +7204,7 @@ do_user:
 ; context ( -- a )
 ;
 ; A `user` variable.  _a_ is the address of an array of cells that
-; represent the search `order`; its maximum length is hold in
+; represents the search `order`; its maximum length is hold in
 ; the `max-order` constant, and its current length is hold in
 ; the `#order` variable.  _a_ holds the word list at the top of
 ; the search order.
@@ -7231,8 +7231,8 @@ endif
 ;
 ; latest-wordlist ( -- a )
 ;
-; A `variable`. _a_ is the address of a cell containing the latest
-; word list created.
+; A `variable`. _a_ is the address of a cell containing the data
+; field address of the latest word list created.
 ;
 ; See:  `wordlist`, `latest`.
 ;
@@ -7781,11 +7781,11 @@ source.other:
 ; true ( -- true )
 ;
 ; Return a true flag, a single-cell value with all its bits
-; set (equivalent to -1).
+; set (equivalent to `-1`).
 ;
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See: `false`, `-1`.
+; See: `false`.
 ;
 ; }doc
 
@@ -11541,9 +11541,9 @@ endif
 ;
 ; wordlist, ( -- ) "wordlist-comma"
 ;
-; Compile the contents of a new word list.
-; The structure is the following:
-;
+; Compile the contents of a new word list. The data structure is
+; the following (`/wordlist` bytes long):
+
 ; |===
 ; | Cell | Description
 ;
@@ -11560,7 +11560,7 @@ endif
 ; ----
 
 ; See: `wordlist`, `latest-wordlist`, `wordlist>link`,
-; `wordlist>name`.
+; `wordlist>name`, `/wordlist`.
 
 ; }doc
 
@@ -11590,7 +11590,8 @@ endif
 ; ----
 
 ; See: `wordlist,`, `set-order`, `vocabulary`,
-; `latest-wordlist`, `wordlist>link`, `wordlist>name`.
+; `latest-wordlist`, `/wordlist`, `wordlist>link`,
+; `wordlist>name`.
 ;
 ; }doc
 
