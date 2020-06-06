@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006061319
+  \ Last modified: 202006061413
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -140,7 +140,7 @@ variable -order-wid
   \
   \ }doc
 
-unneeding /wordlist ?\ 6 cells cconstant /wordlist
+unneeding /wordlist ?\ 3 cells cconstant /wordlist
 
   \ doc{
   \
