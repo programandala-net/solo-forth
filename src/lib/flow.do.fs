@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005182029
+  \ Last modified: 202006062350
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -142,12 +142,10 @@ unneeding #do ?(
 
   \ doc{
   \
-  \ #do
-  \   Compilation: ( -- do-sys )
-  \ "dash-do"
+  \ #do Compilation: ( -- do-sys ) "dash-do"
   \
-  \ Execute `0 ?do` and leave _do-sys_ to be consumed by `loop`
-  \ or `+loop`.
+  \ Execute ``0 ?do`` and leave _do-sys_ to be consumed by
+  \ `loop` or `+loop`.
   \
   \ ``#do`` is an `immediate` and `compile-only` word.
   \
@@ -212,5 +210,7 @@ unneeding +loop
   \ word names.
   \
   \ 2020-05-18: Move `+loop` here from the kernel.
+  \
+  \ 2020-06-06: Improve markup.
 
   \ vim: filetype=soloforth
