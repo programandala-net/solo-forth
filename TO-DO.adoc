@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-06-06
+:revdate: 2020-06-07
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -2652,8 +2652,8 @@ Split <locals.arguments.fs>: default usage, like variables, and
 changed by loading `toarg`, and that could be confusing if `arguments`
 is used in several words.
 
-// Forth modules {{{1
-== Forth modules
+// Modules {{{1
+== Modules
 
 === 2017-01-05
 
@@ -3032,6 +3032,15 @@ Make the tape words return a standard _ior_.
 // Tests {{{1
 == Tests
 
+=== 2020-06-07
+
+// XXX FIXME --
+
+NOTE: Milestone: 0.14.0
+
+Fix: load a version of `allocate` to test it with the Forth-2012 Test
+Suite.
+
 === 2020-06-03
 
 // XXX FIXME --
@@ -3056,14 +3065,6 @@ Tests not passed from Forth-2012 Test Suite:
 
 ----
 T{ 0 (\?) ! [?DEF] ?DEFTEST1 (\?) @ -> -1 }T
-----
-
-Tests not passed because of `marker`:
-
-----
-T{ MA1 MA2 MA1 -> 222 111 }T
-T{ MA? MA0 MA? MA1 MA? MA2 -> TRUE TRUE FALSE }T
-T{ MA? MA0 MA? MA1 MA? MA2 -> FALSE FALSE FALSE }T
 ----
 
 === 2018-03-10

@@ -3,9 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ XXX UNDER DEVELOPMENT
-
-  \ Last modified: 202006040214
+  \ Last modified: 202006072054
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -34,10 +32,6 @@ unneeding anew ?( need possibly need marker
   \
   \ Code adapted from Wil Baden.
 
-  \ XXX TODO -- test
-  \ XXX TODO -- use `save-input` and `restore-source` when
-  \ possible
-
 : anew ( "name" -- ) >in @ possibly >in ! marker ; ?)
 
   \ doc{
@@ -50,52 +44,43 @@ unneeding anew ?( need possibly need marker
   \ `marker`.
   \
   \ The function of ``anew`` is to execute a _name_ already
-  \ created by `marker` and then creating it again.
-  \
-  \ WARNING: ``anew`` is not fully tested yet.
+  \ created by `marker` and then create it again.
   \
   \ See: `possibly`.
   \
   \ }doc
 
-  \ XXX TODO -- save and restore also the nt associated (+4):
-  \ |===
-  \ | +0 | _nt_ of last definition
-  \ | +2 | _wid|0_, next wordlist in chain, or zero
-  \ | +4 | _nt|0_, word list name pointer, or zero
-  \ |===
-
-unneeding wordlists, unneeding @wordlists and ?(
+unneeding wordlists, unneeding @wordlists and ?( need @+
 
 : wordlists, ( -- ) latest-wordlist @
-                    begin dup cell- @ ( a nt ) , @ ?dup 0=
+                    begin @+ , @+ dup >r , @ , r> ?dup 0=
                     until ;
-  \ XXX TODO -- adapt to `latest-wordlist`
 
   \ doc{
   \
   \ wordlists, ( -- ) "wordlists-comma"
   \
-  \ Store the latest definition of every word list in the data
-  \ space, updating `dp`.
+  \ Store all of the current word lists in the data space,
+  \ updating `dp`.
   \
-  \ ``wordlists,`` is a factor of `marker`.
+  \ ``wordlists,`` is a factor of `marker,`.
   \
-  \ See: `@wordlists`, `order,`.
+  \ See: `@wordlists`, `order,`, `wordlist`.
   \
   \ }doc
 
-: @wordlists ( a -- ) latest-wordlist @ begin
-                        2dup swap @ swap cell- !
-                        swap cell+ swap @
-                      ?dup 0= until  drop ; ?)
-  \ XXX TODO -- adapt to `latest-wordlist`
+need /wordlist need nup need under+
+
+: @wordlists ( a -- ) latest-wordlist @ \ ( from to )
+                      begin nup /wordlist move dup cell+ @ ?dup
+                      while /wordlist under+
+                      repeat drop ; ?)
 
   \ doc{
   \
   \ @wordlists ( a -- ) "fetch-wordlists"
   \
-  \ Fetch the latest definition of every word list from _a_.
+  \ Fetch the `wordlist` definitions from _a_.
   \
   \ ``@wordlists`` is a factor of `unmarker`.
   \
@@ -155,39 +140,45 @@ need wordlists, need @wordlists
   \
   \ unmarker ( a -- )
   \
-  \ Set the data-space pointer to _a_ and restore the names
-  \ pointer, the latest definition pointers, the word lists
-  \ pointer, the compilation word list, the search order and
-  \ the configuration of word lists that were saved at _a_ by
-  \ `marker,`.
+  \ Restore the system to the state before the correspondig
+  \ `marker` was created. The data that describes the state of
+  \ the system was stored at _a_ by `marker,`. The restoration
+  \ process is the following:
+  \
+  \ First set the data-space pointer to _a_ (`there`), then
+  \ restore the data stored at _a_: the name-space pointer
+  \ (`np!`), the latest definition pointers (`last` and
+  \ `lastxt`), the word lists pointer (`latest-wordlist`), the
+  \ current compilation word list (`set-current`), the search
+  \ order (`@order`) and the word lists (`@wordlists`).
   \
   \ ``unmarker`` is a factor of `marker`.
-  \
-  \ See: `np!`, `last`, `lastxt`, `latest-wordlist`,
-  \ `set-current`, `@order`, `@wordlists`.
   \
   \ }doc
 
 : marker, ( -- )
-  np@ , last @ , lastxt @ , latest-wordlist @ ,
+  np@ , latest , latestxt , latest-wordlist @ ,
   get-current , order, wordlists, ;
 
   \ doc{
   \
   \ marker, ( -- ) "marker-comma"
   \
-  \ Store the names pointer, the latest definition pointers,
-  \ the word lists pointer, the current compilation word list,
-  \ the search order and the configuration of word lists at the
-  \ current data-space pointer, for
-  \ later restoration by `unmarker`.
+  \ Save the current state of the system before creating the
+  \ corresponding `marker` that will restore it with
+  \ `unmarker`. The data that describes the state of the system
+  \ is stored at the current data-space pointer (`here`), while
+  \ the data-space pointer itself is stored in the body of the
+  \ new `marker`. The saving process is the following:
+  \
+  \ Store at the current data-space pointer the names pointer
+  \ (`np@`), the latest definition pointers (`latest` and
+  \ `latestxt`), the word lists pointer (`latest-wordlist`),
+  \ the current compilation word list (`get-current`), the
+  \ search order (`order,`) and the word lists (`wordlists,`)
+  \ at the current data-space pointer.
   \
   \ ``marker,`` is a factor of `marker`.
-  \
-  \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
-  \
-  \ See: `np@`, `last`, `lastxt`, `latest-wordlist`,
-  \ `get-current`, `order,`, `wordlists,`.
   \
   \ }doc
 
@@ -198,14 +189,17 @@ need wordlists, need @wordlists
   \
   \ marker ( "name" -- )
   \
-  \ Create a definition "name". When "name" is executed, it
-  \ will restore the data-space pointer, the word lists
-  \ pointer, the compilation word list, the search order and
-  \ the configuration of word lists to the state they had just
-  \ prior to the definition of "name".
+  \ Create a definition _name_. When _name_ is executed, it
+  \ will restore all dictionary allocation and search order
+  \ pointers to the state they had just prior to the definition
+  \ of "name". Remove the definition of _name_ and all
+  \ subsequent definitions.
   \
-  \ WARNING: This word still has some issues. It does not pass
-  \ `forth2012-test-suite`.
+  \ The following data are preserved and restored: the
+  \ data-space pointer (`here`), the name-space pointer
+  \ (`np@`), the word lists pointer (`latest-wordlist`), the
+  \ compilation word list (`get-current`), the search order
+  \ (`order`) and the word lists (`dump-wordlists`).
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
@@ -253,5 +247,9 @@ need wordlists, need @wordlists
   \ 2020-06-03: Improve documentation. Update source style.
   \ Make `order,`, `@order`, `wordlists,` and `@wordlists`
   \ independent.
+  \
+  \ 2020-06-07: Finish/fix/test `marker` and its factors: now
+  \ `marker` passes the Forth-2012 Test Suite. Test `anew`.
+  \ Improve documentation.
 
   \ vim: filetype=soloforth
