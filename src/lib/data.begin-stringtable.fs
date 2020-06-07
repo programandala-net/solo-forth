@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201903151508
+  \ Last modified: 202006080047
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -17,7 +17,7 @@
   \ Copyright (C) 2007 Dick van Oudheusden
   \
   \ Marcos Cruz (programandala.net) adapted the code to Solo
-  \ Forth, 2015, 2016, 2017, 2018.
+  \ Forth, 2015, 2016, 2017, 2018, 2019, 2020.
 
   \ ===========================================================
   \ License
@@ -96,7 +96,7 @@ need array>
   \ compiled strings), which were left by `begin-stringtable`.
   \ Create the strings index by traversing the compiled strings
   \ and update its address in _a1_.
-	\
+  \
   \
   \ See `begin-stringtable` for a usage example.
   \
@@ -111,7 +111,9 @@ need array>
   \ General Public License v3.0.
   \
   \ 2018-05-01: Fix filename in the file header.
-	\
-	\ 2019-03-15: Improve documentation.
+  \
+  \ 2019-03-15: Improve documentation.
+  \
+  \ 2020-06-08: Fix format: replace tab characters with spaces.
 
   \ vim: filetype=soloforth
