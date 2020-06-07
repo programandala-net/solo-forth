@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-06-07
+:revdate: 2020-06-08
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -353,15 +353,6 @@ convention.
 
 // Interpreter/compiler {{{1
 == Interpreter/compiler
-
-=== 2020-05-30
-
-// XXX FIXME --
-
-NOTE: Milestone: 0.14.0
-
-Check: `nest-source` gets `source`, which is the result of a
-calculation, but `unnest-source` restores it into `input-buffer`.
 
 === 2017-12-14
 
@@ -3023,9 +3014,7 @@ Make the tape words return a standard _ior_.
 
 === 2020-06-03
 
-// XXX FIXME --
-
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 Fix: `m+` doesn't pass the Forth-2012 Test Suite.
 

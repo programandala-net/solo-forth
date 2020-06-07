@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202006072104
+; Last modified: 202006080036
 
 include version.z80s
 
@@ -11141,7 +11141,7 @@ endif
 ; ----
 ; : nest-source ( R: -- source-sys )
 ;   r>
-;   source 2>r
+;   input-buffer 2@ 2>r
 ;   source-id >r
 ;   >in @ >r
 ;   blk @ >r
@@ -11154,7 +11154,7 @@ endif
 ; }doc
 
   dw from_r_ ; save the return address
-  dw source_,two_to_r_
+  dw input_buffer_,two_fetch_,two_to_r_
   dw source_id_,to_r_
   dw to_in_,fetch_,to_r_
   dw blk_,fetch_,to_r_
