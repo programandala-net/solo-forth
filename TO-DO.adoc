@@ -1598,6 +1598,13 @@ New: `.files` (from Pygmy Forth).
 // Games {{{1
 == Games
 
+=== 2020-06-08
+
+NOTE: Milestone: 0.14.0
+
+Fix `tt`: the first time the game runs, the limits of the arena are
+not displayed.
+
 === 2016-12-27, 2017-01-13
 
 Extract the games, make them independent projects?
