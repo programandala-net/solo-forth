@@ -2895,17 +2895,6 @@ Finish the conversion of 128K sound explosions. More details in the source.
 // Strings {{{1
 == Strings
 
-=== 2018-03-28
-
-// XXX FIXME --
-
-NOTE: Milestone: 0.14.0
-
-Don't use `pad`. Leave it for the user or the editors. The following
-words still use `pad`:
-
-- `<#`, `#>`. 
-
 === 2018-02-05
 
 `edit-line`, after Gforth.
@@ -3032,15 +3021,6 @@ Make the tape words return a standard _ior_.
 // Tests {{{1
 == Tests
 
-=== 2020-06-07
-
-// XXX FIXME --
-
-NOTE: Milestone: 0.14.0
-
-Fix: load a version of `allocate` to test it with the Forth-2012 Test
-Suite.
-
 === 2020-06-03
 
 // XXX FIXME --
@@ -3055,9 +3035,7 @@ Add the floating-point tests from the original Forth-2012 Test Suite.
 
 === 2018-03-11
 
-// XXX FIXME --
-
-NOTE: Milestone: 0.14.0
+NOTE: Milestone: 0.15.0
 
 Fix:
 
@@ -3141,14 +3119,6 @@ Update the date with interrupts.
 
 // Tools {{{1
 == Tools
-
-=== 2020-06-04
-
-// XXX FIXME --
-
-NOTE: Milestone: 0.14.0
-
-Finish/fix `marker`.
 
 === 2018-03-23
 
