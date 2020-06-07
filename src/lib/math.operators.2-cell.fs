@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041124
+  \ Last modified: 202006080154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -498,11 +499,13 @@ code m+ ( d1|ud1 n -- d2|ud2 )
   exx, jpnext, end-code ?)
 
     \ exx,    \ save the Forth IP
-    \ b pop,  \ n
-    \ d pop,  \ d1 hi cell
-    \ h pop,  \ d1 lo cell
-    \ b addp, h push,
-    \ c? rif d incp, rthen d push,
+    \ b pop,  \ _n_
+    \ d pop,  \ _d1_ hi cell
+    \ h pop,  \ _d1_ lo cell
+    \ b addp, \ add _n_ to _d1_ lo cell
+    \ h push, \ return lo cell of _d2_
+    \ c? rif d incp, rthen \ increment _d2_ hi cell if needed
+    \ d push, \ return hi cell of _d2_
     \ exx,    \ restore the Forth IP
     \ jpnext, end-code
 
@@ -666,7 +669,9 @@ need 2nip need cell-bits
   \ 2018-03-12: Fix `d2/`. Fix `m*/`: replace the Gforth's code
   \ with the DZX-Forth's code. Fix `m+`.
   \
-  \ 2018-06-04: Update: remove trailing closing paren from
-  \ word names.
+  \ 2018-06-04: Update: remove trailing closing paren from word
+  \ names.
+  \
+  \ 2020-06-08: Improve internal documentation of `m+`.
 
   \ vim: filetype=soloforth
