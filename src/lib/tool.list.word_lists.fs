@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006061722
+  \ Last modified: 202006072012
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -72,10 +72,11 @@ unneeding .wordlist ?( need wordlist>name need .name
   \ }doc
 
 unneeding dump-wordlist ?( need .wordlist need wordlist>last
-                           need .name
+                           need .name need 0exit
 
 : dump-wordlist ( wid -- ) dup cr ." Word list: " .wordlist
-  cr ." Latest definition: " wordlist>last @ .name ; ?)
+  cr ." Latest definition: " wordlist>last @ ?dup 0exit
+  .name ; ?)
 
   \ doc{
   \
@@ -91,9 +92,7 @@ unneeding dump-wordlist ?( need .wordlist need wordlist>last
   \
   \ }doc
 
-unneeding order ?( need .context need .current
-
-: order ( -- )
+unneeding order ?( need .context need .current  : order ( -- )
   cr ." Search: " .context cr ." Compile: " .current ; ?)
 
   \ Display the search order currently in effect and the name
@@ -219,5 +218,8 @@ unneeding dump-wordlists ?( need dump-wordlists>
   \
   \ 2020-06-06: Add `dump-wordlists`, `dump-wordlists>` and
   \ `dump-wordlist`. Update source style.
+  \
+  \ 2020-06-07: Improve `dump-wordlist`: ignore empty latest
+  \ definition.
 
   \ vim: filetype=soloforth
