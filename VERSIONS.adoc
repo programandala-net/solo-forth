@@ -197,6 +197,7 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
 - Make `nest-source` save the contents of `input-buffer` instead of
   the output of `source`. The old behaviour didn't seem to cause any
   problem, but anyway it wasn't right.
+- Fix `far-localized,` and make it accessible.
 
 // Improvements {{{2
 === Improvements
