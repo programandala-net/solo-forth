@@ -1917,6 +1917,13 @@ make: *** No hay ninguna regla para construir el objetivo
 // Maths {{{1
 == Maths
 
+=== 2020-06-08
+
+NOTE: Milestone: 0.15.0
+
+Rewrite `m+` in Z80 (the version adapted from Z88 CamelForth doesn't
+pass the Forth-2012 Test Suite).
+
 === 2017-12-14
 
 From CHForth's <MISCUTIL.FRT>:
@@ -3012,14 +3019,6 @@ Make the tape words return a standard _ior_.
 
 // Tests {{{1
 == Tests
-
-=== 2020-06-03
-
-// XXX FIXME --
-
-NOTE: Milestone: 0.14.0
-
-Fix: `m+` doesn't pass the Forth-2012 Test Suite.
 
 === 2018-03-12
 

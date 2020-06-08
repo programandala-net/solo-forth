@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006080154
+  \ Last modified: 202006081158
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -487,25 +487,31 @@ unneeding d2/ ?( code d2/ ( xd1 -- xd2 )
 
 ( m+ m*/ )
 
-unneeding m+ ?( need assembler
+unneeding m+ ?\ : m+ ( d1|ud1 n -- d2|ud2 ) s>d d+ ;
+
+  \ unneeding m+ ?( need assembler
+
+  \ XXX TODO -- Rewrite `m+` in Z80. The following version,
+  \ adapted from Z88 CamelForth, doesn't pass the Forth-2012
+  \ Test Suite:
 
   \ Credit:
   \
   \ Code adapted from Z88 CamelForth.
 
-code m+ ( d1|ud1 n -- d2|ud2 )
-  exx, b pop, d pop, h pop,
-  b addp, h push, c? rif d incp, rthen d push,
-  exx, jpnext, end-code ?)
+  \ code m+ ( d1|ud1 n -- d2|ud2 )
+  \   exx, b pop, d pop, h pop,
+  \   b addp, h push, c? rif d incp, rthen d push,
+  \   exx, jpnext, end-code ?)
 
     \ exx,    \ save the Forth IP
     \ b pop,  \ _n_
-    \ d pop,  \ _d1_ hi cell
-    \ h pop,  \ _d1_ lo cell
-    \ b addp, \ add _n_ to _d1_ lo cell
-    \ h push, \ return lo cell of _d2_
-    \ c? rif d incp, rthen \ increment _d2_ hi cell if needed
-    \ d push, \ return hi cell of _d2_
+    \ d pop,  \ _d1hi_
+    \ h pop,  \ _d1lo_
+    \ b addp, \ add _n_ to _d1lo_
+    \ h push, \ return _d2lo_
+    \ c? rif d incp, rthen \ increment _d2hi_ if needed
+    \ d push, \ return _d2hi_
     \ exx,    \ restore the Forth IP
     \ jpnext, end-code
 
@@ -672,6 +678,8 @@ need 2nip need cell-bits
   \ 2018-06-04: Update: remove trailing closing paren from word
   \ names.
   \
-  \ 2020-06-08: Improve internal documentation of `m+`.
+  \ 2020-06-08: Fix `m+` by replacing it with a Forth version.
+  \ Improve the internal documentation of the Z80 version of
+  \ `m+`, which doesn't pass the Forth-2012 Test Suite. 
 
   \ vim: filetype=soloforth
