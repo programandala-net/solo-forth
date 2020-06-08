@@ -1917,12 +1917,6 @@ make: *** No hay ninguna regla para construir el objetivo
 // Maths {{{1
 == Maths
 
-=== 2018-03-13
-
-NOTE: Milestone: 0.15.0
-
-Rewrite `m+` in Z80.
-
 === 2017-12-14
 
 From CHForth's <MISCUTIL.FRT>:
@@ -3021,7 +3015,9 @@ Make the tape words return a standard _ior_.
 
 === 2020-06-03
 
-NOTE: Milestone: 0.15.0
+// XXX FIXME --
+
+NOTE: Milestone: 0.14.0
 
 Fix: `m+` doesn't pass the Forth-2012 Test Suite.
 
@@ -3127,9 +3123,18 @@ the table.
 Improve `see-colon-body`: make recursion work also with non-colon
 words.
 
-=== 2017-12-06
+=== 2017-12-06, 2020-06-08
+
+// XXX FIXME --
+
+NOTE: Milestone: 0.14.0
 
 Improve `where`: display also the numbers of line and column.
+
+Fix `where`: the position of '^' is calculated with the length of the
+string copied by the old `word`!
+
+Improve `where`: make it display also command line errors.
 
 === 2017-01-06
 
