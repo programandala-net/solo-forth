@@ -408,6 +408,7 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
   than the current `char>string`).
 - Rename `?stringer` to `fit-stringer`.
 - Move `?` to the library.
+- Rename `latest-wordlist` to `last-wordlist`.
 
 // Version 0.14.0-pre.209  {{{1
 == Version 0.14.0-pre.209

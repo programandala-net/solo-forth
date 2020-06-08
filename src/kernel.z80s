@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202006081622
+; Last modified: 202006081700
 
 include version.z80s
 
@@ -7219,7 +7219,7 @@ do_user:
   db $28
 
 ; ----------------------------------------------
-  _variable_header latest_wordlist_,'latest-wordlist'
+  _variable_header last_wordlist_,'last-wordlist'
 
 if 1 ; assembler_core_in_kernel
   dw assembler_wordlist_dfa
@@ -7229,7 +7229,7 @@ endif
 
 ; doc{
 ;
-; latest-wordlist ( -- a )
+; last-wordlist ( -- a )
 ;
 ; A `variable`. _a_ is the address of a cell containing the data
 ; field address of the latest word list created.
@@ -11547,21 +11547,21 @@ endif
 
 ; ----
 ; : wordlist, ( -- )
-;   here 0 , latest-wordlist @ , latest-wordlist ! 0 , ;
+;   here 0 , last-wordlist @ , last-wordlist ! 0 , ;
 ; ----
 
-; See: `wordlist`, `latest-wordlist`, `wordlist>last`,
+; See: `wordlist`, `last-wordlist`, `wordlist>last`,
 ; `wordlist>link`, `wordlist>name`, `/wordlist`.
 
 ; }doc
 
-  dw here_                           ; new value of `latest-wordlist`
+  dw here_                        ; new value of `last-wordlist`
+  _literal 
+  dw comma_                       ; latest definition in the word list
+  dw last_wordlist_,fetch_,comma_ ; previous word list
+  dw last_wordlist_,store_        ; update it
   _literal 0
-  dw comma_                          ; latest definition in the word list
-  dw latest_wordlist_,fetch_,comma_  ; previous word list
-  dw latest_wordlist_,store_         ; update it
-  _literal 0
-  dw comma_                           ; word list name
+  dw comma_                       ; word list name
   dw exit_
 
 ; ----------------------------------------------
@@ -11593,7 +11593,7 @@ endif
 ; ----
 
 ; See: `wordlist,`, `set-order`, `vocabulary`,
-; `latest-wordlist`, `wordlist>last`, `wordlist>link`,
+; `last-wordlist`, `wordlist>last`, `wordlist>link`,
 ; `wordlist>name`, `/wordlist`, `wordlists`, `dump-wordlists`.
 ;
 ; }doc
@@ -12237,7 +12237,7 @@ if 1 ; assembler_core_in_kernel
   ld (assembler_wordlist_dfa),hl
 endif
   ld hl,(latest_wordlist.init_value)
-  ld (latest_wordlist_dfa),hl
+  ld (last_wordlist_dfa),hl
 
   ; Restore the word count:
 cold.number_sign_words: equ $+1

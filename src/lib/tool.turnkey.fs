@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202005051300
+  \ Last modified: 202006081702
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -43,7 +43,7 @@
                 root-wordlist @      $06 +origin !
                 forth-wordlist @     $08 +origin !
                 assembler-wordlist @ $0A +origin !
-                latest-wordlist @    $0C +origin !
+                last-wordlist @      $0C +origin !
                 width @              $18 +origin !
                 latest               $1C +origin !
                 here                 $1E +origin !
@@ -153,5 +153,8 @@
   \ 2020-05-04: Improve and activate the documentation.
   \
   \ 2020-05-05: Fix cross reference. Improve documentation.
+  \
+  \ 2020-06-08: Update: rename `latest-wordlist` to
+  \ `last-wordlist`.
 
   \ vim: filetype=soloforth

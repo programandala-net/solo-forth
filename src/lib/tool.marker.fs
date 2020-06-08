@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006072054
+  \ Last modified: 202006081705
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -52,7 +52,7 @@ unneeding anew ?( need possibly need marker
 
 unneeding wordlists, unneeding @wordlists and ?( need @+
 
-: wordlists, ( -- ) latest-wordlist @
+: wordlists, ( -- ) last-wordlist @
                     begin @+ , @+ dup >r , @ , r> ?dup 0=
                     until ;
 
@@ -71,7 +71,7 @@ unneeding wordlists, unneeding @wordlists and ?( need @+
 
 need /wordlist need nup need under+
 
-: @wordlists ( a -- ) latest-wordlist @ \ ( from to )
+: @wordlists ( a -- ) last-wordlist @ \ ( from to )
                       begin nup /wordlist move dup cell+ @ ?dup
                       while /wordlist under+
                       repeat drop ; ?)
@@ -84,7 +84,7 @@ need /wordlist need nup need under+
   \
   \ ``@wordlists`` is a factor of `unmarker`.
   \
-  \ See: `wordlists,`, `latest-wordlist`, `@order`.
+  \ See: `wordlists,`, `last-wordlist`, `@order`.
   \
   \ }doc
 
@@ -133,7 +133,7 @@ need wordlists, need @wordlists
 
 : unmarker ( a -- )
   dup there @+ np! @+ last ! @+ lastxt !
-            @+ latest-wordlist ! @+ set-current
+            @+ last-wordlist ! @+ set-current
   dup dup @ 1+ cells + >r @order r> @wordlists ;
 
   \ doc{
@@ -148,7 +148,7 @@ need wordlists, need @wordlists
   \ First set the data-space pointer to _a_ (`there`), then
   \ restore the data stored at _a_: the name-space pointer
   \ (`np!`), the latest definition pointers (`last` and
-  \ `lastxt`), the word lists pointer (`latest-wordlist`), the
+  \ `lastxt`), the word lists pointer (`last-wordlist`), the
   \ current compilation word list (`set-current`), the search
   \ order (`@order`) and the word lists (`@wordlists`).
   \
@@ -157,7 +157,7 @@ need wordlists, need @wordlists
   \ }doc
 
 : marker, ( -- )
-  np@ , latest , latestxt , latest-wordlist @ ,
+  np@ , latest , latestxt , last-wordlist @ ,
   get-current , order, wordlists, ;
 
   \ doc{
@@ -173,7 +173,7 @@ need wordlists, need @wordlists
   \
   \ Store at the current data-space pointer the names pointer
   \ (`np@`), the latest definition pointers (`latest` and
-  \ `latestxt`), the word lists pointer (`latest-wordlist`),
+  \ `latestxt`), the word lists pointer (`last-wordlist`),
   \ the current compilation word list (`get-current`), the
   \ search order (`order,`) and the word lists (`wordlists,`)
   \ at the current data-space pointer.
@@ -197,7 +197,7 @@ need wordlists, need @wordlists
   \
   \ The following data are preserved and restored: the
   \ data-space pointer (`here`), the name-space pointer
-  \ (`np@`), the word lists pointer (`latest-wordlist`), the
+  \ (`np@`), the word lists pointer (`last-wordlist`), the
   \ compilation word list (`get-current`), the search order
   \ (`order`) and the word lists (`dump-wordlists`).
   \
@@ -251,5 +251,8 @@ need wordlists, need @wordlists
   \ 2020-06-07: Finish/fix/test `marker` and its factors: now
   \ `marker` passes the Forth-2012 Test Suite. Test `anew`.
   \ Improve documentation.
+  \
+  \ 2020-06-08: Update: rename `latest-wordlist` to
+  \ `last-wordlist`.
 
   \ vim: filetype=soloforth

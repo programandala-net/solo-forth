@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081220
+  \ Last modified: 202006081703
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -383,7 +383,7 @@ unneeding >name ?(
 need array> need name>> need name<name need wordlist>link
 
 : >name ( xt -- nt | 0 )
-  latest-wordlist @ ( xt wid|0 )
+  last-wordlist @ ( xt wid|0 )
   begin  dup
   while  tuck @ ( wid xt nt0 )
          begin  ?dup
@@ -534,7 +534,7 @@ need array> need name>> need name<name need wordlist>link
 
 : >oldest-name ( xt -- nt|0 )
   0 >r \ default result
-  latest-wordlist @ ( xt wid|0 )
+  last-wordlist @ ( xt wid|0 )
   begin  dup
   while  tuck @ ( wid xt nt1 )
 
@@ -1539,7 +1539,8 @@ unneeding warn-throw ?( need ?warn
   \
   \ 2020-06-06: Fix `name>string`.
   \
-  \ 2020-06-08: Improve documentation: make _true_ and
-  \ _false_ cross-references.
+  \ 2020-06-08: Improve documentation: make _true_ and _false_
+  \ cross-references. Update: rename `latest-wordlist` to
+  \ `last-wordlist`.
 
   \ vim: filetype=soloforth

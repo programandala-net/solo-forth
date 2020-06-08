@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006072012
+  \ Last modified: 202006081705
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -118,7 +118,7 @@ unneeding order ?( need .context need .current  : order ( -- )
 unneeding wordlists ?( need .wordlist need wordlist>link
 
 : wordlists ( -- )
-  latest-wordlist
+  last-wordlist
   begin @ ( wid|0) ?dup while dup .wordlist wordlist>link
   repeat ; ?)
 
@@ -133,7 +133,7 @@ unneeding wordlists ?( need .wordlist need wordlist>link
   \ word list listed is the most recently defined.
   \
   \ See: `.wordlist`, `words`, `wordlist-words`, `wordlist`,
-  \ `latest-wordlist`.
+  \ `last-wordlist`.
   \
   \ }doc
 
@@ -160,14 +160,14 @@ unneeding dump-wordlists> ?( need dump-wordlist
 unneeding dump-wordlists ?( need dump-wordlists>
 
 : dump-wordlists ( -- )
-  latest-wordlist @ dump-wordlists> ; ?)
+  last-wordlist @ dump-wordlists> ; ?)
 
   \ doc{
   \
   \ dump-wordlists ( -- )
   \
   \ Dump the data of all the word lists defined in the system,
-  \ starting from the `wordlist` pointed by `latest-wordlist`.
+  \ starting from the `wordlist` pointed by `last-wordlist`.
   \
   \ See: `dump-wordlist`, `dump-wordlists>`, `wordlists`.
   \
@@ -221,5 +221,8 @@ unneeding dump-wordlists ?( need dump-wordlists>
   \
   \ 2020-06-07: Improve `dump-wordlist`: ignore empty latest
   \ definition.
+  \
+  \ 2020-06-08: Update: rename `latest-wordlist` to
+  \ `last-wordlist`.
 
   \ vim: filetype=soloforth

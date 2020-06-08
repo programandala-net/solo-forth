@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804120048
+  \ Last modified: 202006081705
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -15,7 +15,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -31,16 +32,16 @@ need u.r
 : fyi. ( u -- ) cr 5 u.r space ;
 
 : fyi ( -- )
-  #words            fyi. ." #words"
-  here              fyi. ." here"
-  latest-wordlist @ fyi. ." latest-wordlist @"
-  limit @           fyi. ." limit @"
-  unused            fyi. ." unused"
-  np@               fyi. ." np@"
-  latest            fyi. ." latest"
-  current-latest    fyi. ." current-latest"
-  farlimit @        fyi. ." farlimit @"
-  farunused         fyi. ." farunused" cr ;
+  #words          fyi. ." #words"
+  here            fyi. ." here"
+  last-wordlist @ fyi. ." last-wordlist @"
+  limit @         fyi. ." limit @"
+  unused          fyi. ." unused"
+  np@             fyi. ." np@"
+  latest          fyi. ." latest"
+  current-latest  fyi. ." current-latest"
+  farlimit @      fyi. ." farlimit @"
+  farunused       fyi. ." farunused" cr ;
 
   \ doc{
   \
@@ -49,7 +50,7 @@ need u.r
   \ Display information about the current status of the Forth
   \ system.
   \
-  \ See: `#words`, `here`, `latest-wordlist`, `limit`,
+  \ See: `#words`, `here`, `last-wordlist`, `limit`,
   \ `unused`. `np@`, `latest`, `current-latest`, `farlimit`,
   \ `farunused`, `greeting`.
   \
@@ -72,6 +73,9 @@ need u.r
   \ 2018-03-09: Add words' pronunciaton. Improve documentation.
   \
   \ 2018-04-12: Fix links in documentation.
+  \
+  \ 2020-06-08: Update: rename `latest-wordlist` to
+  \ `last-wordlist`.
 
   \ vim: filetype=soloforth
 

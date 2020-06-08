@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005182306
+  \ Last modified: 202006081704
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -38,14 +38,14 @@
 
 need >>link need there need np!
 
-variable old-dp  variable old-latest-wordlist
+variable old-dp  variable old-last-wordlist
 variable old-np  variable old-limit   variable old-farlimit
 variable old-current-latest
 
 : transient ( u1 u2 -- )
   here old-dp !
   np@ old-np !    \ XXX TMP -- try 0, 2, 3
-  latest-wordlist @ old-latest-wordlist !
+  last-wordlist @ old-last-wordlist !
   current-latest old-current-latest !
   limit @ dup old-limit ! swap - dup limit ! there
   farlimit @ dup old-farlimit ! swap - dup farlimit ! np! ;
@@ -61,7 +61,7 @@ variable old-current-latest
   \ memory used by the transient code must be known in advance.
   \
   \ The inner operation is: Save the current values of `dp`,
-  \ `np` `current-latest`, `latest-wordlist`, `limit` and
+  \ `np` `current-latest`, `last-wordlist`, `limit` and
   \ `farlimit`; then reserve data and headers space as said and
   \ update `limit` and `farlimit` accordingly.
   \
@@ -116,7 +116,7 @@ variable old-current-latest
   \ }doc
 
 : forget-transient ( -- )
-  old-latest-wordlist @ latest-wordlist !
+  old-last-wordlist @ last-wordlist !
   old-current-latest @ old-np @ >>link far! ;
 
   \ XXX TODO -- `>>link far!` is what `unlink-internal` does;
@@ -133,7 +133,7 @@ variable old-current-latest
   \ more.
   \
   \ The inner operation is: Restore the old value of
-  \ `latest-wordlist`; store the _nt_ of the latest word
+  \ `last-wordlist`; store the _nt_ of the latest word
   \ created before compiling the transient code, into the _lfa_
   \ of the first word created after the transient code was
   \ finished by `end-transient`.
@@ -176,5 +176,8 @@ variable old-current-latest
   \ 2017-03-13: Improve documentation.
   \
   \ 2020-05-18: Update: `np!` has been moved to the library.
+  \
+  \ 2020-06-08: Update: rename `latest-wordlist` to
+  \ `last-wordlist`.
 
   \ vim: filetype=soloforth

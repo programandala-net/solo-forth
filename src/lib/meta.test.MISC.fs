@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081620
+  \ Last modified: 202006081702
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1021,13 +1021,13 @@ only forth definitions
 need order need wordlist-words need .wordname need .name
 
 : info ( -- )
-  cr ." here            =" here u.
-  cr ." np              =" np@ u.
-  cr ." latest-wordlist =" latest-wordlist @ u.
-  cr ." limit           =" limit @ u.
-  cr ." farlimit        =" farlimit @ u.
-  cr ." latest          =" latest dup u. .name
-  cr ." current-latest  =" current-latest dup u. .name
+  cr ." here           =" here u.
+  cr ." np             =" np@ u.
+  cr ." last-wordlist  =" last-wordlist @ u.
+  cr ." limit          =" limit @ u.
+  cr ." farlimit       =" farlimit @ u.
+  cr ." latest         =" latest dup u. .name
+  cr ." current-latest =" current-latest dup u. .name
   order
   cr ." Continue? (y/n)"
   begin  key dup 'n' = if  abort  then  'y' = until ;  -->
@@ -1046,11 +1046,11 @@ cr .( After forget-transient :)   info
 ( transient-test )
 
 : info ( -- )
-  cr ." here            =" here u.
-  cr ." np              =" np@ u.
-  cr ." latest-wordlist =" latest-wordlist @ u.
-  cr ." limit           =" limit @ u.
-  cr ." farlimit        =" farlimit @ u.
+  cr ." here          =" here u.
+  cr ." np            =" np@ u.
+  cr ." last-wordlist =" last-wordlist @ u.
+  cr ." limit         =" limit @ u.
+  cr ." farlimit      =" farlimit @ u.
   cr ." Press any key to continue" key drop ;
 
 need transient  cr .( Before transient :) info  100 transient
@@ -1797,5 +1797,6 @@ blk @ 1+ blk @ 2+ thru
   \ library.
   \
   \ 2020-06-08: Need `?`, which has been moved to the library.
+  \ Update: rename `latest-wordlist` to `last-wordlist`.
 
   \ vim: filetype=soloforth
