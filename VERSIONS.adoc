@@ -412,6 +412,7 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
 - Rename `?stringer` to `fit-stringer`.
 - Move `?` to the library.
 - Rename `latest-wordlist` to `last-wordlist`.
+- Delete <memory.bank.fs> and move its contents to <memory.far.fs>.
 
 // Version 0.14.0-pre.209  {{{1
 == Version 0.14.0-pre.209

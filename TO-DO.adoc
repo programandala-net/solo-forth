@@ -2463,12 +2463,6 @@ Study the way v.Forth manages the interrupts and adapt it.
 // Library {{{1
 == Library
 
-=== 2020-05-19
-
-NOTE: Milestone: 0.14.0
-
-Combine <memory.bank.fs> and <memory.far.fs>.
-
 === 2020-05-18
 
 NOTE: Milestone: 0.14.0

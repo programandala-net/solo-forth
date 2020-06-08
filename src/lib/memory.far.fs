@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005190108
+  \ Last modified: 202006090027
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -435,13 +435,12 @@ unneeding cmove<far ?(
   \
   \ }doc
 
-( !bank c!bank @bank c@bank )
+( !bank c!bank @bank c@bank /bank bank-start )
 
 unneeding !bank ?( need e-bank_
 
-code !bank ( x a n -- )
-  D1 c, e-bank_ call, E1 c, D1 c, 73 c, 23 c, 72 c,
-  ' default-bank jp, end-code ?)
+code !bank ( x a n -- ) D1 c, e-bank_ call, E1 c, D1 c, 73 c,
+  23 c, 72 c, ' default-bank jp, end-code ?)
   \ pop de
   \ call bank.e
   \ pop hl
@@ -559,6 +558,31 @@ code c@bank ( ca n -- c ) D1 c, e-bank_ call,
   \
   \ }doc
 
+unneeding /bank ?\ $4000 constant /bank
+
+  \ doc{
+  \
+  \ /bank ( -- n ) "slash-bank"
+  \
+  \ _n_ is the size in bytes of a memory bank: $4000.
+  \
+  \ See: `bank-start`.
+  \
+  \ }doc
+
+unneeding bank-start ?\ $C000 constant bank-start
+
+  \ doc{
+  \
+  \ bank-start ( -- a )
+  \
+  \ _a_ is the memory address where banks are paged in: $C000.
+  \
+  \ See: `/bank`, `bank`, `banks`, `far-banks`,
+  \ `default-bank`.
+  \
+  \ }doc
+
   \ ===========================================================
   \ Change log
 
@@ -633,5 +657,8 @@ code c@bank ( ca n -- c ) D1 c, e-bank_ call,
   \ `np!` here from the kernel.
   \
   \ 2020-05-19: Improve documentation.
+  \
+  \ 2020-06-09: Move `/bank` and `bank-start` from the
+  \ <memory.bank.fs> module.
 
   \ vim: filetype=soloforth
