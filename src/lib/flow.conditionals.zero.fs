@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 202006082147
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -23,7 +24,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( 0if 0while 0until 0exit )
+( 0if 0while 0until )
 
 unneeding 0if ?(
 : 0if
@@ -88,34 +89,6 @@ unneeding 0until ?(
   \
   \ }doc
 
-unneeding 0exit ?(
-code 0exit ( f -- ) ( R: nest-sys | -- nest-sys | )
-  E1 c,  78 04 + c,  B0 05 + c,  CA c, ' exit ,
-  jpnext, end-code ?)
-  \ pop hl
-  \ ld a,h
-  \ or l ; zero?
-  \ jp z,exit_ ; jump if zero
-  \ _jp_next
-
-  \ doc{
-  \
-  \ 0exit ( f -- ) ( R: nest-sys | -- nest-sys | ) "zero-exit"
-  \
-  \ If _f_ is zero, return control to the calling definition,
-  \ specified by _nest-sys_.
-  \
-  \ WARNING: ``0exit`` is not intended to be used within a
-  \ `loop`.  Use ``0= if unloop exit then`` instead.
-  \
-  \ ``0exit`` can be used in interpretation mode to stop the
-  \ interpretation of a block.
-  \
-  \ See: `?exit`, `exit`, `-exit` ,`+exit`, `0if`, `0while`,
-  \ `0until`.
-  \
-  \ }doc
-
   \ ===========================================================
   \ Change log
 
@@ -152,5 +125,7 @@ code 0exit ( f -- ) ( R: nest-sys | -- nest-sys | )
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2020-06-08: Move `0exit` to the kernel.
 
   \ vim: filetype=soloforth

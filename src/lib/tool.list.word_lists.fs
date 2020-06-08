@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081705
+  \ Last modified: 202006082154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -72,7 +72,7 @@ unneeding .wordlist ?( need wordlist>name need .name
   \ }doc
 
 unneeding dump-wordlist ?( need .wordlist need wordlist>last
-                           need .name need 0exit
+                           need .name
 
 : dump-wordlist ( wid -- ) dup cr ." Word list: " .wordlist
   cr ." Latest definition: " wordlist>last @ ?dup 0exit
@@ -223,6 +223,6 @@ unneeding dump-wordlists ?( need dump-wordlists>
   \ definition.
   \
   \ 2020-06-08: Update: rename `latest-wordlist` to
-  \ `last-wordlist`.
+  \ `last-wordlist`. Update: now `0exit` is in the kernel.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005241534
+  \ Last modified: 202006082153
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,7 +27,7 @@
 ( ltype )
 
 need column need last-row need /first-name need columns
-need 0exit need home? need seclusion
+need home? need seclusion
 
 seclusion
 
@@ -297,5 +297,7 @@ need n>str
   \ `ltype-indentation`. Fix cross references to `#ltyped`.
   \
   \ 2020-05-24: Replace "hash" notation with "number sign".
+  \
+  \ 2020-06-08: Update: now `0exit` is in the kernel.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081220
+  \ Last modified: 202006082154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -647,7 +647,7 @@ code rshift ( x1 u -- x2 )
   \
   \ }doc
 
-need 0exit need rshift need lshift
+need rshift need lshift
 
 : ?shift ( x n -- x | x' )
   ?dup 0exit dup 0< if abs rshift exit then lshift ;
@@ -1406,8 +1406,8 @@ code join ( b1 b2 -- x )
   \
   \ 2018-04-14: Fix and improve documentation.
   \
-  \ 2018-06-04: Update: remove trailing closing paren from
-  \ word names.
+  \ 2018-06-04: Update: remove trailing closing paren from word
+  \ names.
   \
   \ 2018-07-15: Add `min>top`, `max>top`, `pair=`.
   \
@@ -1419,7 +1419,7 @@ code join ( b1 b2 -- x )
   \
   \ 2020-06-06: Fix typo in documentation.
   \
-  \ 2020-06-08: Improve documentation: make _true_ and
-  \ _false_ cross-references.
+  \ 2020-06-08: Improve documentation: make _true_ and _false_
+  \ cross-references. Update: now `0exit` is in the kernel.
 
   \ vim: filetype=soloforth

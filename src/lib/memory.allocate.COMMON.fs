@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041305
+  \ Last modified: 202006082154
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -270,7 +270,7 @@ unneeding farlimit-heap ?( need /heap need heap
   \
   \ }doc
 
-unneeding bank-heap ?( need 0exit need alias
+unneeding bank-heap ?( need alias
 
 : bank-heap ( a n b -- a ) heap-bank c! to /heap to heap ;
 
@@ -359,5 +359,7 @@ unneeding set-heap
   \
   \ 2018-06-04: Update documentation: remove mentions of
   \ aligned addresses.
+  \
+  \ 2020-06-08: Update: now `0exit` is in the kernel.
 
   \ vim: filetype=soloforth

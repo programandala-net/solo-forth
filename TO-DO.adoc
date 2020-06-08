@@ -2467,8 +2467,6 @@ Study the way v.Forth manages the interrupts and adapt it.
 
 NOTE: Milestone: 0.14.0
 
-Move to the kernel: `0exit`.
-
 Combine <memory.bank.fs> and <memory.far.fs>.
 
 === 2020-05-18

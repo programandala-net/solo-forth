@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202006082134
+; Last modified: 202006082152
 
 include version.z80s
 
@@ -11773,18 +11773,15 @@ do_vocabulary:
 
 ; ----
 ; : ?( ( f "ccc<space><question><paren><space>" -- )
-;   0= ?exit begin  parse-name dup
-;            while  s" ?)" str= ?exit repeat 2drop ; immediate
+;   0exit begin  parse-name dup
+;         while  s" ?)" str= ?exit repeat 2drop ; immediate
 ; ----
 ;
 ; See: `?\`, `?-->`, `(`.
 ;
 ; }doc
 
-  ; XXX TODO -- Move `0exit` from the library to replace `0=
-  ; ?exit`? Same in `save-buffers`.
-
-  dw zero_equals_,question_exit_
+  dw zero_exit_
 question_paren.begin:
   dw parse_name_,dup_
   dw zero_branch_,question_paren.exit
@@ -13293,7 +13290,7 @@ block.end:
 
 ; ----
 ; : save-buffers ( -- )
-;   updated? 0= ?exit
+;   updated? 0exit
 ;   buffer-block dup write-block disk-buffer ! ;
 ; ----
 
@@ -13305,11 +13302,7 @@ block.end:
 ;
 ; }doc
 
-  ; XXX TODO -- Move `0exit` from the library to replace `0=
-  ; ?exit`? Same in `?(`.
-
-  dw updated_question_,zero_equals_ ; not updated?
-  dw question_exit_ ; exit if not updated
+  dw updated_question_,zero_exit_
   ; Updated
   dw buffer_block_,dup_,write_block_
   dw disk_buffer_,store_
@@ -15327,6 +15320,33 @@ execute_hl:
   jp (hl)
 
 ; ----------------------------------------------
+  _code_header zero_exit_,'0exit'
+
+; doc{
+;
+; 0exit ( f -- ) ( R: nest-sys | -- nest-sys | ) "zero-exit"
+;
+; If _f_ is zero, return control to the calling definition,
+; specified by _nest-sys_.
+;
+; WARNING: ``0exit`` is not intended to be used within a
+; `loop`.  Use ``0= if unloop exit then`` instead.
+;
+; ``0exit`` can be used in interpretation mode to stop the
+; interpretation of a block.
+;
+; See: `?exit`, `exit`, `-exit` ,`+exit`, `0if`, `0while`,
+; `0until`, `unloop`.
+;
+; }doc
+
+  pop hl
+  ld a,h
+  or l
+  jp z,exit_
+  _jp_next
+
+; ----------------------------------------------
   _code_header question_exit_,'?exit'
 
 ; doc{
@@ -15353,9 +15373,6 @@ execute_hl:
   or l
   jp nz,exit_
   _jp_next
-  ; XXX TODO -- Move above `exit`, invert the final condition
-  ; and save one jump?
-  ; XXX TODO -- Alternative: Use a relative jump.
 
 ; ----------------------------------------------
   _colon_header throw_,'throw'
@@ -15383,15 +15400,14 @@ execute_hl:
 
 ; ----
 ; : throw ( k*x n -- k*x | i*x n )
-;   ?dup if
-;     catcher @ ?dup 0= \ no catcher?
-;     if error then     \ ``error`` does not return
-;     rp!               \ restore previous return stack
-;     r> catcher !      ( n ) \ restore previous catcher
-;     r> swap >r        ( saved-SP ) ( R: n )
-;     sp! drop r>       ( n ) \ restore stack
-;     unnest-source     \ restore previous source specification
-;   then ;
+;   ?dup 0exit
+;   catcher @ ?dup 0= \ no catcher?
+;   if error then     \ ``error`` does not return
+;   rp!               \ restore previous return stack
+;   r> catcher !      ( n ) \ restore previous catcher
+;   r> swap >r        ( saved-SP ) ( R: n )
+;   sp! drop r>       ( n ) \ restore stack
+;   unnest-source ;   \ restore previous source specification
 ; ----
 
 ; Origin: Forth-94 (EXCEPTION), Forth-2012 (EXCEPTION).
@@ -15402,9 +15418,8 @@ execute_hl:
   ; Code adapted and improved from DZX-Forth.
   ; Comments from MPE Forth for TiniARM.
 
-  ; XXX TODO -- Use `0exit' instead of a branch:
   dw question_dup_
-  dw zero_branch_,throw.end
+  dw zero_exit_
   dw catcher_,fetch_
   dw question_dup_  ; catcher?
   dw question_branch_,throw.catcher ; if so, branch
@@ -15416,8 +15431,6 @@ throw.catcher:
   dw from_r_,swap_,to_r_      ; ( saved-SP ) ( R: n )
   dw sp_store_,drop_,from_r_  ; ( n ) restore stack
   dw unnest_source_
-
-throw.end:
   dw exit_
 
 ; ----------------------------------------------
@@ -15549,20 +15562,16 @@ throw.end:
 ; Definition:
 
 ; ----
-; : ?\ ( "ccc<eol>" -- ) if postpone \ then ; immediate
+; : ?\ ( "ccc<eol>" -- ) 0exit postpone \ ; immediate
 ; ----
 ;
 ; See: `?(`, `?-->`, `\`.
 ;
 ; }doc
 
-  dw zero_branch_,question_backslash.exit
+  dw zero_exit_
   dw backslash_
-question_backslash.exit:
   dw exit_
-
-  ; XXX TODO -- Use `0exit` to save the branch. But `0exit` is
-  ; in the library.
 
 ; ----------------------------------------------
   _colon_header to_in_slash_l_,'>in/l'

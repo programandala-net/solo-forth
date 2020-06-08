@@ -326,6 +326,8 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
   to `fit-stringer`.
 - Make `order,`, `@order`, `wordlists,` and `@wordlists` independent
   from `marker`.
+- Move `0exit` to the kernel; no data/code space needed, because of
+  the space saved by using this word instead of `0= ?exit` and `if`. 
 
 // Other changes {{{2
 === Other changes
