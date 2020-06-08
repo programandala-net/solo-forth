@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804152155
+  \ Last modified: 202006081220
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -462,7 +463,7 @@ code 2>true ( x1 x2 -- true ) E1 c, end-code
   \
   \ 2>true ( x1 x2 -- true ) "two-to-true"
   \
-  \ Replace _x1 x2_ with _true_.
+  \ Replace _x1 x2_ with `true`.
   \
   \ See: `2>false`, `>true`.
   \
@@ -476,7 +477,7 @@ code >true ( x -- true ) E1 c, ' true jp, end-code ?)
   \
   \ >true ( x -- true ) "to-true"
   \
-  \ Replace _x_ with _true_.
+  \ Replace _x_ with `true`.
   \
   \ See: `>false`, `2>true`.
   \
@@ -492,7 +493,7 @@ code 2>false ( x1 x2 -- false ) E1 c, end-code
   \
   \ 2>false ( x1 x2 -- false ) "two-to-false"
   \
-  \ Replace _x1 x2_ with _false_.
+  \ Replace _x1 x2_ with `false`.
   \
   \ See: `2>true`, `>false`.
   \
@@ -506,7 +507,7 @@ code >false ( x -- false ) E1 c, ' false jp, end-code ?)
   \
   \ >false ( x -- false ) "to-false"
   \
-  \ Replace _x_ with _false_.
+  \ Replace _x_ with `false`.
   \
   \ See: `>true`, `2>false`.
   \
@@ -584,5 +585,8 @@ code >false ( x -- false ) E1 c, ' false jp, end-code ?)
   \ 2018-03-07: Add words' pronunciaton.
   \
   \ 2018-04-15: Update notation ".." to "...".
+  \
+  \ 2020-06-08: Improve documentation: make _true_ and
+  \ _false_ cross-references.
 
   \ vim: filetype=soloforth

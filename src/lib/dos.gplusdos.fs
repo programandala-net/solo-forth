@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005261554
+  \ Last modified: 202006081220
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1149,7 +1149,7 @@ unneeding file-exists?  ?( need file-status
   \ file-exists? ( ca len -- f ) "file-exists-question"
   \
   \ If the file named in the character string _ca len_ is
-  \ found, _f_ is _true_. Otherwise _f_ is _false_.
+  \ found, _f_ is `true`. Otherwise _f_ is `false`.
   \
   \ See: `file-status`.
   \
@@ -2483,5 +2483,8 @@ need write-file need read-file need .ufia
   \ Deactivate documentation and cross-references of
   \ `file-dir#` and `file-dirdesc`, which does not work fine
   \ yet because of the limitations of `(file-status`.
+  \
+  \ 2020-06-08: Improve documentation: make _true_ and
+  \ _false_ cross-references.
 
   \ vim: filetype=soloforth

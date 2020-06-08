@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005042238
+  \ Last modified: 202006081220
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -54,7 +54,7 @@ need search-wordlist
   \ item? ( ca len wid -- false | xt true ) "item-question"
   \
   \ Is _ca len_ an item of the `associative-list` _wid_?  If so
-  \ return its _xt_ and _true_, else return _false_.
+  \ return its _xt_ and `true`, else return `false`.
   \
   \ See: `item`.  `entry:`, `centry:`, `2entry:`, `sentry:`,
   \ `items`.
@@ -206,5 +206,8 @@ unneeding items ?exit need alias need wordlist-words
   \ 2018-07-21: Improve documentation, linking `throw`.
   \
   \ 2020-05-04: Fix cross references.
+  \
+  \ 2020-06-08: Improve documentation: make _true_ and
+  \ _false_ cross-references.
 
   \ vim: filetype=soloforth

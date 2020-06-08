@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005190025
+  \ Last modified: 202006081220
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -88,8 +88,8 @@ variable substitute-error
   else  substitution-delimiter c>substitute-result
         str>substitute-result
         substitution-delimiter c>substitute-result  then  r> ;
-  \ Process the substitution _ca len_. Return _true_ if
-  \ found and substituted; return _false_ if not found.
+  \ Process the substitution _ca len_. Return `true` if
+  \ found and substituted; return `false` if not found.
 
 need >body
 
@@ -107,8 +107,8 @@ code substitution-delimiter? ( ca -- f )
   \ substitution-delimiter? ( ca -- f ) "substitution-delimiter-question"
   \
   \ Does _ca_ contains the character hold in the character
-  \ constant `substitution-delimiter`? If so return _true_,
-  \ else return _false_.
+  \ constant `substitution-delimiter`? If so return `true`,
+  \ else return `false`.
   \
   \ ``substitution-delimiter?`` is a factor of `substitute`.
   \
@@ -211,5 +211,8 @@ code substitution-delimiter? ( ca -- f )
   \
   \ 2020-05-19: Update: `2variable` has been moved to the
   \ library.
+  \
+  \ 2020-06-08: Improve documentation: make _true_ and
+  \ _false_ cross-references.
 
   \ vim: filetype=soloforth

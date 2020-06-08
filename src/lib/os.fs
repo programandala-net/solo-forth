@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803232359
+  \ Last modified: 202006081220
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2018.
+  \ Marcos Cruz (programandala.net), 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -111,7 +111,7 @@ unneeding stream? ?( need first-stream need last-stream
   \ stream? ( -- false | n true )
   \
   \ If there's a closed stream, return its number _n_ and
-  \ _true_; otherwise return _false_.
+  \ `true`; otherwise return `false`.
   \
   \ See: `os-strms`, `.os-strms`, `first-stream`,
   \ `last-stream`, `stream>`.
@@ -207,5 +207,8 @@ need os-chans need >graphic-ascii-char need nuf?
   \ 2018-03-23: Start. Add `.os-strms`, `.os-chans`, `chan>`,
   \ `chan>id`, `stream>`, `stream?`, `os-used`, `os-unused`,
   \ `?os-unused`.
+  \
+  \ 2020-06-08: Improve documentation: make _true_ and
+  \ _false_ cross-references.
 
   \ vim: filetype=soloforth

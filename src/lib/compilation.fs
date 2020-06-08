@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006060002
+  \ Last modified: 202006081220
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1164,7 +1164,7 @@ variable warnings  warnings on
   \ A `user` variable. _a_ is the address of a cell containing a
   \ flag. If it's zero, no warning is shown when a compiled
   \ word is not unique in the compilation word list.  Its
-  \ default value is _true_.
+  \ default value is `true`.
   \
   \ }doc
 
@@ -1538,5 +1538,8 @@ unneeding warn-throw ?( need ?warn
   \ 2020-06-03: Improve documentation.
   \
   \ 2020-06-06: Fix `name>string`.
+  \
+  \ 2020-06-08: Improve documentation: make _true_ and
+  \ _false_ cross-references.
 
   \ vim: filetype=soloforth

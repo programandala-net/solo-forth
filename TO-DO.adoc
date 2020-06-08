@@ -954,12 +954,6 @@ Improve tab control.
 // Documentation {{{1
 == Documentation
 
-=== 2020-06-06
-
-NOTE: Milestone: 0.14.0
-
-- Make "true" and "false" cross-references to `true` and `false`.
-
 === 2020-05-03
 
 - Document also the main words of the sample games.

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005182049
+  \ Last modified: 202006081220
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -249,7 +249,7 @@ create udg-blank '.' c,  create udg-dot 'X' c,
   \ udg-scan>number? ( ca len -- n true | false ) "u-d-g-scan-to-number-question"
   \
   \ Is UDG scan string _ca len_ a valid binary number?
-  \ If so, return _n_ and _true_; else return _false_.
+  \ If so, return _n_ and `true`; else return `false`.
   \ The string is processed by `udg-scan>binary` first.
   \
   \ See: `udg-scan>number`, `udg-dot`, `udg-blank`.
@@ -1215,5 +1215,8 @@ exx, jpnext, end-code
   \ 2020-05-04: Fix/improve documentation.
   \
   \ 2020-05-18: Update: `+loop` was moved to the library.
+  \
+  \ 2020-06-08: Improve documentation: make _true_ and
+  \ _false_ cross-references.
 
   \ vim: filetype=soloforth

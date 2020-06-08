@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005051303
+  \ Last modified: 202006081220
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -827,8 +827,8 @@ unneeding get-bright ?( need attr@ need bright-mask
   \
   \ get-bright ( -- f )
   \
-  \ If bright is active in the current attribute, return _true_,
-  \ else return _false_.
+  \ If bright is active in the current attribute, return `true`,
+  \ else return `false`.
   \
   \ See: `set-bright`, `attr@`, `bright.`, `get-paper`,
   \ `get-ink`, `get-flash`, `bright-mask`.
@@ -846,9 +846,9 @@ need bright-mask need attr@ need unbright-mask need attr!
   \
   \ set-bright ( f -- )
   \
-  \ If _f_ is _true_, turn bright on by setting the
+  \ If _f_ is `true`, turn bright on by setting the
   \ corresponding bit of the current attribute. If _f_ is
-  \ _false_, turn bright off by resetting the bit. Other
+  \ `false`, turn bright off by resetting the bit. Other
   \ non-zero values of _f_ will turn bright on or off depending
   \ on them having a common bit with `bright-mask`.
   \
@@ -895,8 +895,8 @@ unneeding get-flash ?( need attr@ need flash-mask
   \
   \ get-flash ( -- f )
   \
-  \ If flash is active in the current attribute, return _true_,
-  \ else return _false_.
+  \ If flash is active in the current attribute, return `true`,
+  \ else return `false`.
   \
   \ See: `set-flash`, `attr!`, `flash.`, `get-paper`,
   \ `get-ink`, `get-bright`, `flash-mask`.
@@ -914,9 +914,9 @@ need flash-mask need attr@ need unflash-mask need attr!
   \
   \ set-flash ( f -- )
   \
-  \ If _f_ is _true_, turn flash on by setting the
+  \ If _f_ is `true`, turn flash on by setting the
   \ corresponding bit of the current attribute. If _f_ is
-  \ _false_, turn flash off by resetting the bit. Other
+  \ `false`, turn flash off by resetting the bit. Other
   \ non-zero values of _f_ will turn flash on or off depending
   \ on them having a common bit with `flash-mask`.
   \
@@ -1331,5 +1331,8 @@ unneeding (0-1-8-color.
   \ 2020-02-27: Fix markup in documentation.
   \
   \ 2020-05-05: Fix typo en cross reference.
+  \
+  \ 2020-06-08: Improve documentation: make _true_ and
+  \ _false_ cross-references.
 
   \ vim: filetype=soloforth

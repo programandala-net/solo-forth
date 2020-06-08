@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005042034
+  \ Last modified: 202006081220
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -47,7 +47,7 @@ wordlist constant index-wordlist
   \ name-indexed? ( ca len -- false | block true ) "name-indexed-question"
   \
   \ Search the index for word _ca len_. If found, return
-  \ its _block_ and _true_, else return _false_.
+  \ its _block_ and `true`, else return `false`.
   \
   \ }doc
 
@@ -162,5 +162,8 @@ unneeding indexer-words ?( need wordlist-words need .wordname
   \ word names.
   \
   \ 2020-05-04: Fix documentation of `(index-block`.
+  \
+  \ 2020-06-08: Improve documentation: make _true_ and
+  \ _false_ cross-references.
 
   \ vim: filetype=soloforth

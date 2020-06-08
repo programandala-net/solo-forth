@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041331
+  \ Last modified: 202006081220
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -210,7 +211,7 @@ unneeding floored
   \
   \ floored ( -- f )
   \
-  \ _f_ is _true_ if floored division is the default.
+  \ _f_ is `true` if floored division is the default.
   \
   \ See: `environment?`.
   \
@@ -352,5 +353,8 @@ unneeding stack-cells
   \ 2018-04-11: Fix documentation.
   \
   \ 2018-06-04: Link `constant` in documentation.
+  \
+  \ 2020-06-08: Improve documentation: make _true_ and
+  \ _false_ cross-references.
 
   \ vim: filetype=soloforth

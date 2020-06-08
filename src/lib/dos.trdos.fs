@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005241405
+  \ Last modified: 202006081220
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -746,7 +746,7 @@ unneeding file-exists? ?( need file-status
   \ file-exists? ( ca len -- f ) "file-exists-question"
   \
   \ If the file named in the character string _ca len_ is
-  \ found, _f_ is _true_. Otherwise _f_ is _false_.
+  \ found, _f_ is `true`. Otherwise _f_ is `false`.
   \
   \ See: `file-status`.
   \
@@ -1407,5 +1407,8 @@ need read-file-descriptor need write-file-descriptor
   \ `--dos-commands--`.
   \
   \ 2020-05-24: Fix typo.
+  \
+  \ 2020-06-08: Improve documentation: make _true_ and
+  \ _false_ cross-references.
 
   \ vim: filetype=soloforth

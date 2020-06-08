@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005252106
+  \ Last modified: 202006081220
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -266,9 +266,9 @@ variable nextnode
 
 : fits ( size a -- f ) >size @ swap -  overhead  < ;
 
-  \ Returns _true_ if the size of the node specified is the
+  \ Returns `true` if the size of the node specified is the
   \ same as the specified size, or larger than it by less than
-  \ the size of the smallest possible node. Returns _false_
+  \ the size of the smallest possible node. Returns `false`
   \ otherwise.
 
 : togglesize ( a -- ) >size dup @  negate swap ! ;
@@ -697,5 +697,8 @@ set-current set-order
   \ aligned addresses.
   \
   \ 2020-05-25: Replace `r> drop` with `rdrop`.
+  \
+  \ 2020-06-08: Improve documentation: make _true_ and
+  \ _false_ cross-references.
 
   \ vim: filetype=soloforth

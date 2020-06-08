@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201807221229
+  \ Last modified: 202006081220
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -99,8 +100,8 @@ unneeding no? ?\ need y/n need "n" : no? ( -- f ) y/n "n" = ;
   \ no? ( -- f ) "no-question"
   \
   \ Wait for a valid `key` press for a `y/n` question
-  \ and return _true_ if it's the current value of `"n"`,
-  \ else return _false_.
+  \ and return `true` if it's the current value of `"n"`,
+  \ else return `false`.
   \
   \ See: `yes?`, `y/n?`.
   \
@@ -115,8 +116,8 @@ unneeding yes?
   \ yes? ( -- f ) "yes-question"
   \
   \ Wait for a valid `key` press for a `y/n` question and
-  \ return _true_ if it's the current value of `"y"`, else
-  \ return _false_.
+  \ return `true` if it's the current value of `"y"`, else
+  \ return `false`.
   \
   \ See: `no?`, `y/n?`.
   \
@@ -138,5 +139,8 @@ unneeding yes?
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-07-22: Fix pronunciation of `"y"` and `"n"`.
+  \
+  \ 2020-06-08: Improve documentation: make _true_ and
+  \ _false_ cross-references.
 
   \ vim: filetype=soloforth

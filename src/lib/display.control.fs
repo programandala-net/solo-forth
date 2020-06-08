@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005051325
+  \ Last modified: 202006081220
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -245,7 +245,7 @@ unneeding eol? ?( need newline need char-in-string?
   \ eol? ( c -- f ) "e-o-l-question"
   \
   \ If _c_ is one of the characters of `newline`
-  \ return _true_; otherwise return _false_.
+  \ return `true`; otherwise return `false`.
   \
   \ }doc
 
@@ -299,5 +299,8 @@ unneeding eol? ?( need newline need char-in-string?
   \ 2020-05-04: Improve documentation of `lf`.
   \
   \ 2020-05-05: Update cross reference `display` -> `terminal`.
+  \
+  \ 2020-06-08: Improve documentation: make _true_ and
+  \ _false_ cross-references.
 
   \ vim: filetype=soloforth

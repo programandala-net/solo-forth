@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005042225
+  \ Last modified: 202006081220
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -522,8 +522,8 @@ unneeding reset-bit? ?( need bit>mask
   \ c@and? ( b ca -- f )
   \
   \ Fetch the caracter at _ca_ and do a bit-by-bit logical
-  \ "and" of it with _b_. Return _false_ if the result
-  \ is zero, else _true_.
+  \ "and" of it with _b_. Return `false` if the result
+  \ is zero, else `true`.
 
 unneeding c@and ?(
 
@@ -965,5 +965,8 @@ code cexchange ( ca1 ca2 -- )
   \ 2020-05-02: Improve documentation.
   \
   \ 2020-05-04: Fix cross references.
+  \
+  \ 2020-06-08: Improve documentation: make _true_ and
+  \ _false_ cross-references.
 
   \ vim: filetype=soloforth

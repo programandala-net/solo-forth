@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005241405
+  \ Last modified: 202006081220
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -426,9 +426,9 @@ defer reneed ( "name" -- )  defer needed ( ca len -- )
   \ unneeding ( "name" -- f )
   \
   \ Parse _name_.  If there's no unresolved `need`, `needed`,
-  \ `reneed` or `reneeded`, return _false_.  Otherwise, if _name_
+  \ `reneed` or `reneeded`, return `false`.  Otherwise, if _name_
   \ is the needed word specified by the last execution of
-  \ `need` or `needed`, return _false_, else return _true_.
+  \ `need` or `needed`, return `false`, else return `true`.
   \
   \ See: `needing`.
   \
@@ -598,9 +598,9 @@ unneeding needing ?\ : needing ( "name" -- f ) unneeding 0= ;
   \ needing ( "name" -- f )
   \
   \ Parse _name_.  If there's no unresolved `need`, `needed`,
-  \ `reneed` or `reneeded`, return _true_.  Otherwise, if _name_
+  \ `reneed` or `reneeded`, return `true`.  Otherwise, if _name_
   \ is the needed word specified by the last execution of
-  \ `need` or `needed`, return _true_, else return _false_.
+  \ `need` or `needed`, return `true`, else return `false`.
   \
   \ See: `unneeding`.
   \
@@ -617,7 +617,7 @@ unneeding locate ?(
   \
   \ Locate the first block whose header contains _name_
   \ (surrounded by spaces), and return its number _block_. If
-  \ not found, return _false_.  The search is case-sensitive.
+  \ not found, return `false`.  The search is case-sensitive.
   \
   \ Only the blocks delimited by `first-locatable` and
   \ `last-locatable` are searched.
@@ -875,5 +875,8 @@ unneeding need-here ?(
   \ library; `create` is used instead.
   \
   \ 2020-05-24: Fix typo.
+  \
+  \ 2020-06-08: Improve documentation: make _true_ and
+  \ _false_ cross-references.
 
   \ vim: filetype=soloforth

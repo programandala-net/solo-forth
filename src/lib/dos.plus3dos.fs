@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005262211
+  \ Last modified: 202006081220
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -332,7 +332,7 @@ create file-ids #file-ids allot  file-ids #file-ids erase
   \ file-id ( -- fid true | false )
   \
   \ If there is a file identifier not used yet, return it _fid_
-  \ and _true_; otherwise return _false_.
+  \ and `true`; otherwise return `false`.
   \
   \ See: `#file-ids`, file-ids`.
   \
@@ -910,10 +910,10 @@ variable full-cat  full-cat on
   \ full-cat ( -- a )
   \
   \ A `variable` _a_ is the address of a cell containing a
-  \ flag. When the flag is _true_, `cat`, `wcat`, `acat` and
+  \ flag. When the flag is `true`, `cat`, `wcat`, `acat` and
   \ `wacat` display also system files. When the flag is
-  \ _false_, they don't. Other values are not supported. The
-  \ default value is _true_.
+  \ `false`, they don't. Other values are not supported. The
+  \ default value is `true`.
   \
   \ See: `>cat`.
   \
@@ -1700,5 +1700,8 @@ need reposition-file need file-position
   \ instead of the `pad`. News words needed: `allocate-cat` and
   \ `/cat-buffer`. Improve documentation. Make `>cat` erase the
   \ whole `cat-buffer`, not only the first entry.
+  \
+  \ 2020-06-08: Improve documentation: make _true_ and
+  \ _false_ cross-references.
 
   \ vim: filetype=soloforth
