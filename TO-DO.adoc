@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-06-08
+:revdate: 2020-06-09
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -3100,19 +3100,6 @@ the table.
 
 Improve `see-colon-body`: make recursion work also with non-colon
 words.
-
-=== 2017-12-06, 2020-06-08
-
-// XXX FIXME --
-
-NOTE: Milestone: 0.14.0
-
-Improve `where`: display also the numbers of line and column.
-
-Fix `where`: the position of '^' is calculated with the length of the
-string copied by the old `word`!
-
-Improve `where`: make it display also command line errors.
 
 === 2017-01-06
 

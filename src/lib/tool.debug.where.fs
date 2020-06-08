@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201809242120
+  \ Last modified: 202006090021
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -15,7 +15,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -33,8 +34,8 @@
   dup if
     ." Block #" dup dec. cr
     swap c/l /mod c/l * rot block + c/l type cr
-    here c@ - spaces '^' emit
-  else  2drop  then ;
+    parsed-name @ - spaces '^' emit
+  else 2drop then ;
 
   \ doc{
   \
@@ -73,5 +74,9 @@
   \ 2017-05-07: Improve documentation.
   \
   \ 2018-09-24: Improve documentation. Simplify with `dec.`.
+  \
+  \ 2020-06-09: Fix the error position marker displayed by
+  \ `where`: replace `here c@` (the value left by `word` in the
+  \ old fig-Forth model) with `parsed-name @`.
 
   \ vim: filetype=soloforth
