@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202006081700
+; Last modified: 202006082134
 
 include version.z80s
 
@@ -11556,7 +11556,7 @@ endif
 ; }doc
 
   dw here_                        ; new value of `last-wordlist`
-  _literal 
+  _literal 0
   dw comma_                       ; latest definition in the word list
   dw last_wordlist_,fetch_,comma_ ; previous word list
   dw last_wordlist_,store_        ; update it
