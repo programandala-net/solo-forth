@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081220
+  \ Last modified: 202006081623
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -507,7 +507,7 @@ unneeding reset-bit? ?( need bit>mask
   \
   \ }doc
 
-( c@and ctoggle coff con c? 2? )
+( c@and ctoggle coff con ? c? 2? )
 
   \ Credit:
   \
@@ -630,6 +630,22 @@ unneeding con
   \ cell, but its 8-bit equivalent $FF.
   \
   \ See: `coff`, `on`.
+  \
+  \ }doc
+
+unneeding ? ?\ : ? ( a -- ) @ . ;
+
+  \ doc{
+  \
+  \ ? ( a -- ) "question"
+  \
+  \ Display the 1-cell signed integer stored at _a_, using the
+  \ format of `.`.
+  \
+  \ Origin: fig-Forth, Forth-79 (Required Word Set), Forth-94
+  \ (TOOLS), Forth-2012 (TOOLS).
+  \
+  \ See: `c?`, `2?`, `@`.
   \
   \ }doc
 
@@ -893,9 +909,9 @@ code cexchange ( ca1 ca2 -- )
   \
   \ 2016-05-09: Add `align`, `aligned`.
   \
-  \ 2016-05-10: Remove the dependency on the assembler.
-  \ Compact the blocks. Remove unfinished words from cmForth.
-  \ Rename `@cell+` to `@+`. Add `2@+`.
+  \ 2016-05-10: Remove the dependency on the assembler. Compact
+  \ the blocks. Remove unfinished words from cmForth. Rename
+  \ `@cell+` to `@+`. Add `2@+`.
   \
   \ 2016-08-01: Fix header line.
   \
@@ -966,7 +982,10 @@ code cexchange ( ca1 ca2 -- )
   \
   \ 2020-05-04: Fix cross references.
   \
-  \ 2020-06-08: Improve documentation: make _true_ and
-  \ _false_ cross-references.
+  \ 2020-06-08: Improve documentation: make _true_ and _false_
+  \ cross-references.
+  \
+  \ 2020-06-08: Add `?`, moved from the kernel and rewritten in
+  \ Forth.
 
   \ vim: filetype=soloforth

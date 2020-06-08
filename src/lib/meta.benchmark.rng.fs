@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005241406
+  \ Last modified: 202006081620
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -182,7 +182,7 @@ create sample  /sample allot
 
 need set-pixel need ud. need fast-pixels need u% need 3dup
 need 2rdrop need display>tape-file need dticks need delapsed
-need dticks>ms
+need dticks>ms need ?
 
 256 192 * constant #pixels
   \ Number of pixels of the screen.
@@ -1857,5 +1857,7 @@ need 8b-rng-px-bench need :noname
   \ library.
   \
   \ 2020-05-24: Fix typo.
+  \
+  \ 2020-06-08: Need `?`, which has been moved to the library.
 
   \ vim: filetype=soloforth

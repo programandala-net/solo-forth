@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006031546
+  \ Last modified: 202006081616
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -36,7 +36,7 @@
 
 ( hayes-tester )
 
-need where need do need depth
+need where need do need depth need ?
 
 variable verbose  verbose on
   \ Set this flag to true for more verbose output;
@@ -160,5 +160,7 @@ create actual-results $20 cells allot
   \ the library.
   \
   \ 2020-06-03: Improve documentation.
+  \
+  \ 2020-06-08: Need `?`, which has been moved to the library.
 
   \ vim: filetype=soloforth

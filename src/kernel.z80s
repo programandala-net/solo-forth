@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202006081220
+; Last modified: 202006081622
 
 include version.z80s
 
@@ -14378,46 +14378,6 @@ number_sign_s.begin:
 
   dw zero_d_dot_r_,space_
   dw exit_
-
-; ----------------------------------------------
-  _code_header question_,'?'
-
-; doc{
-;
-; ? ( a -- ) "question"
-;
-; Display the 1-cell signed integer stored at _a_, using the
-; format of `.`.
-;
-; ``?`` is written in Z80. Its equivalent definition in Forth
-; is the following:
-
-; ----
-; : ? ( a -- ) @ . ;
-; ----
-
-; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-94
-; (TOOLS), Forth-2012 (TOOLS).
-;
-; See: `c?`, `2?`, `@`.
-;
-; }doc
-
-  ; XXX TODO -- `?` could be moved to the library, but only 5 B
-  ; would be saved. Rewritten in Forth (9 B) it would be a bit
-  ; slower. In Z80, only a jump into `.` would be required (8 B
-  ; in total). Anyway this code is a copy of `@`. The code could
-  ; be shared by converting it into a routine and adding `push
-  ; ix` and `call fetch.routine` at the start of `@` (5 more
-  ; bytes and less speed in `@` to save 2 bytes in `?`).
-
-  pop hl
-  ld e,(hl)
-  inc hl
-  ld d,(hl)
-  push de
-
-  ; Execution continues into `.`:
 
 ; ----------------------------------------------
   _colon_header dot_,'.'

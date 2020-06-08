@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005190023
+  \ Last modified: 202006081620
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -247,7 +247,7 @@ need {if
   \ Forth Programming", published on Forth Dimensions (volume
   \ 18, number 4, pp 5-14), 1996-12.
 
-need {do need {if-test
+need {do need {if-test need ?
 
 variable x 5 6553 * x !
 variable y 5 6551 * y !
@@ -559,7 +559,7 @@ run
 ( local-test )
 
 need local need clocal need 2local need cvariable need rnd
-need c? need 2? need 2variable
+need c? need 2? need 2variable need ?
 
 variable tmp cvariable ctmp 2variable 2tmp
 
@@ -582,7 +582,7 @@ variable tmp cvariable ctmp 2variable 2tmp
 
 ( anon-test )
 
-need anon  here anon> ! 5 cells allot
+need anon  here anon> ! 5 cells allot need ?
 
 : run5  ( x[n-1]..x[0] n -- )
   set-anon cr
@@ -1795,5 +1795,7 @@ blk @ 1+ blk @ 2+ thru
   \
   \ 2020-05-19: Update: `2variable` has been moved to the
   \ library.
+  \
+  \ 2020-06-08: Need `?`, which has been moved to the library.
 
   \ vim: filetype=soloforth

@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201806041108
+  \ Last modified: 202006081617
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -16,7 +16,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ Credit
@@ -51,7 +52,7 @@
 only forth definitions
 
 need columns need rows need udg-group need rnd need ?? need 8*
-3 constant /kk need pressed?
+3 constant /kk need pressed? need ?
 
 need cvariable need 2/ need gxy>scra
 need g-emit-udg need ctoggle need g-at-xy
@@ -540,5 +541,7 @@ run-message
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2020-06-08: Need `?`, which has been moved to the library.
 
   \ vim: filetype=soloforth

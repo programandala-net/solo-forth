@@ -406,6 +406,7 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
 - Remove `c>bstring` (improved to use the `stringer`, it did the same
   than the current `char>string`).
 - Rename `?stringer` to `fit-stringer`.
+- Move `?` to the library.
 
 // Version 0.14.0-pre.209  {{{1
 == Version 0.14.0-pre.209
