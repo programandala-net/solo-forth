@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2018-03-28
+" Updated:  2020-06-08
 "
 " See change log at the end of the file.
 
@@ -614,9 +614,9 @@ syn keyword soloforthWordlists forth-wordlist
 syn keyword soloforthWordlists get-current
 syn keyword soloforthWordlists get-order
 syn keyword soloforthWordlists last
+syn keyword soloforthWordlists last-wordlist
 syn keyword soloforthWordlists lastxt
 syn keyword soloforthWordlists latest
-syn keyword soloforthWordlists latest-wordlist
 syn keyword soloforthWordlists latestxt
 syn keyword soloforthWordlists only
 syn keyword soloforthWordlists previous
@@ -1206,6 +1206,8 @@ let b:current_syntax = "soloforth"
 " 2018-01-03: Update `1literal` to `xliteral`, `]1l` to `]xl`.
 "
 " 2018-03-28: Add `0leave`.
+"
+" 2020-06-08: Update: `latest-wordlist` to `last-wordlist`.
 
 " --------------------------------------------------------------
 
