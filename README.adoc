@@ -1,13 +1,13 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-05-25
+:revdate: 2020-06-09
 :toc:
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202005251819
+// Last modified: 202006091722
 
 // Description {{{1
 == Description
@@ -393,7 +393,7 @@ following:
 // end::run_scorpion[]
 
 // ZX Spectrum +3/+3e {{{2
-== ZX Spectrum +3/+3e
+=== ZX Spectrum +3/+3e
 
 // XXX REMARK -- A problem with Asciidoctor makes the rendering of the
 // ZX Spectrum +3e link text fail. It seems the error condition has to
