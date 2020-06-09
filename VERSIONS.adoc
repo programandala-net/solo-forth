@@ -329,6 +329,7 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
   from `marker`.
 - Move `0exit` to the kernel; no data/code space needed, because of
   the space saved by using this word instead of `0= ?exit` and `if`. 
+- Make paren comments multiline in the Vim syntax file.
 
 // Other changes {{{2
 === Other changes

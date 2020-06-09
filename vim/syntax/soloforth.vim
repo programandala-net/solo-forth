@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2020-06-08
+" Updated:  2020-06-09
 "
 " See change log at the end of the file.
 
@@ -33,7 +33,6 @@ endif
 syn sync ccomment
 syn sync maxlines=200
 
-" F+D Forth is case insensitive:
 syn case ignore
 
 " Some special, non-Forth keywords
@@ -59,7 +58,7 @@ endif
 " syn keyword soloforthHardware bleep
 " syn keyword soloforthHardware link
 
-" XXX OLD
+" XXX TODO
 "syn keyword soloforthFlow abort"
 
 syn keyword soloforthCharacterInput #tib
@@ -860,7 +859,7 @@ syn region soloforthString start=+\<.\\\"+ end=+"+ end=+$+
 
 " Comments
 
-syn match soloforthComment '\<(\s[^)]*)' contains=soloforthTodo
+syn match soloforthComment '\<(\s\_.\{-})' contains=soloforthTodo
 syn match soloforthComment '\<\\\>.*$' contains=soloforthTodo
 
 " Comment regions have to come after the highlighting for numbers otherwise they have no effect:
@@ -1208,6 +1207,8 @@ let b:current_syntax = "soloforth"
 " 2018-03-28: Add `0leave`.
 "
 " 2020-06-08: Update: `latest-wordlist` to `last-wordlist`.
+"
+" 2020-06-09: Improve: make paren comments multiline.
 
 " --------------------------------------------------------------
 

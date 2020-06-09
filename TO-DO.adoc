@@ -156,7 +156,7 @@ Adapt `inline` from Richard W.M. Jones' Jonesforth
 HIDE =NEXT
 ----
 
-`;code` is standard and can not be reused, but anyway a simpler syntax
+`;code` is standard and cannot be reused, but anyway a simpler syntax
 is possible and desirable, because `inline` must be used with all
 words:
 
@@ -1697,7 +1697,7 @@ Rename `border` to `set-border` and add `get-border`.
 
 === 2017-02-08
 
-Make `circle-pixel` throw an error by default. It can not be a
+Make `circle-pixel` throw an error by default. It cannot be a
 deferred word, because it must return the address of a routine.
 
 === 2017-02-06
@@ -1748,7 +1748,7 @@ Write `g-xy-attr@  ( gx gy -- b )` and `g-xy-attr!  ( b gx gy -- )`.
 Write `xy-attr@  ( col row -- b )` and `xy-attr!  ( b col row -- )`.
 
 Problem: The fetch functions are provided already by `xy>attr ( x y --
-b)` and `gxy>attr ( x y -- b)`, but the name notation used can not be
+b)` and `gxy>attr ( x y -- b)`, but the name notation used cannot be
 extended to the store variants. Instead, `xy>attr c!` and `gxy>attr
 c!` can be used.
 
@@ -1901,7 +1901,7 @@ does nothing, as expected.
 
 === 2019-03-14
 
-TR-DOS can not be built:
+TR-DOS cannot be built:
 
 ....
 make: *** No hay ninguna regla para construir el objetivo
@@ -2469,6 +2469,8 @@ Study the way v.Forth manages the interrupts and adapt it.
 
 === 2020-05-18
 
+NOTE: Milestone: 0.15.0
+
 Move `bank` to the library?
 
 ==== 2018-03-21
@@ -2982,7 +2984,7 @@ Z88 CamelForth does it. Also DX-Forth has this feature.
 Fix `tape-file>`: when the file length attribute is not zero (zero
 means undefined) or the real file lenght to be loaded, the ROM routine
 returns to BASIC with "Tape loading error". This crashes the system
-(because the message can not be printed, because the lower screen has
+(because the message cannot be printed, because the lower screen has
 no lines).
 
 The simplest solution seems to remove the parameter and always use 0
@@ -3144,10 +3146,6 @@ Change: compare the user variables with those of Spectrum Forth-83.
 
 // Vim support {{{1
 == Vim support
-
-=== 2017-02-22
-
-Fix coloring of paren comments: make it multiline.
 
 === 2017-02-27
 
