@@ -101,7 +101,7 @@ syn keyword soloforthConversion hold
 syn keyword soloforthConversion number?
 syn keyword soloforthConversion sign
 syn keyword soloforthDefine '
-syn keyword soloforthDefine (user)
+syn keyword soloforthDefine (user
 syn keyword soloforthDefine +field
 syn keyword soloforthDefine ,
 syn keyword soloforthDefine /user
@@ -179,7 +179,7 @@ syn keyword soloforthDefine value
 syn keyword soloforthDefine variable
 syn keyword soloforthDefine word
 syn keyword soloforthDefine xliteral
-syn keyword soloforthFiles (load)
+syn keyword soloforthFiles (load
 syn keyword soloforthFiles +load
 syn keyword soloforthFiles +thru
 syn keyword soloforthFiles -->
@@ -219,6 +219,7 @@ syn keyword soloforthFiles locate
 syn keyword soloforthFiles located
 syn keyword soloforthFiles need
 syn keyword soloforthFiles needed
+syn keyword soloforthFiles needing
 syn keyword soloforthFiles read-block
 syn keyword soloforthFiles read-mode
 syn keyword soloforthFiles reload
@@ -231,6 +232,7 @@ syn keyword soloforthFiles thru
 syn keyword soloforthFiles transfer-block
 syn keyword soloforthFiles transfer-mode
 syn keyword soloforthFiles transfer-sector
+syn keyword soloforthFiles unneeding
 syn keyword soloforthFiles update
 syn keyword soloforthFiles updated?
 syn keyword soloforthFiles where
@@ -244,6 +246,7 @@ syn keyword soloforthFlow -if
 syn keyword soloforthFlow -until
 syn keyword soloforthFlow -while
 syn keyword soloforthFlow 0branch
+syn keyword soloforthFlow 0exit
 syn keyword soloforthFlow 0leave
 syn keyword soloforthFlow ?branch
 syn keyword soloforthFlow ?do
@@ -294,15 +297,15 @@ syn keyword soloforthFlow until
 syn keyword soloforthFlow warm
 syn keyword soloforthFlow while
 syn keyword soloforthForth !csp
-syn keyword soloforthForth (+loop)
-syn keyword soloforthForth (.")
-syn keyword soloforthForth (;code)
-syn keyword soloforthForth (?do)
-syn keyword soloforthForth (abort)
-syn keyword soloforthForth (do)
-syn keyword soloforthForth (find)
-syn keyword soloforthForth (loop)
-syn keyword soloforthForth (number)
+syn keyword soloforthForth (+loop
+syn keyword soloforthForth (."
+syn keyword soloforthForth (;code
+syn keyword soloforthForth (?do
+syn keyword soloforthForth (abort
+syn keyword soloforthForth (do
+syn keyword soloforthForth (find
+syn keyword soloforthForth (loop
+syn keyword soloforthForth (number
 syn keyword soloforthForth +origin
 syn keyword soloforthForth .error-word
 syn keyword soloforthForth ;code
@@ -333,6 +336,7 @@ syn keyword soloforthForth error#
 syn keyword soloforthForth error-pos
 syn keyword soloforthForth executing?
 syn keyword soloforthForth farunused
+syn keyword soloforthForth input-buffer
 syn keyword soloforthForth line>string
 syn keyword soloforthForth link>name
 syn keyword soloforthForth name<name
@@ -350,10 +354,12 @@ syn keyword soloforthForth noop
 syn keyword soloforthForth noop_
 syn keyword soloforthForth pad
 syn keyword soloforthForth refill
+syn keyword soloforthForth set-source
 syn keyword soloforthForth source
 syn keyword soloforthForth source-id
 syn keyword soloforthForth state
 syn keyword soloforthForth stream
+syn keyword soloforthForth terminal>source
 syn keyword soloforthForth unnest-source
 syn keyword soloforthForth unused
 syn keyword soloforthForth warnings
@@ -594,7 +600,7 @@ syn keyword soloforthString upper
 syn keyword soloforthString uppers
 syn keyword soloforthTool ms
 syn keyword soloforthWordlists #words
-syn keyword soloforthWordlists (find-name)
+syn keyword soloforthWordlists (find-name
 syn keyword soloforthWordlists -order
 syn keyword soloforthWordlists .name
 syn keyword soloforthWordlists >order
@@ -881,9 +887,6 @@ syn match soloforthCharOps '\<\[char\]\s\+\S\+\>'
 
 syn match soloforthComment '\<\.(\s[^)]*)'
 
-syn match soloforthFiles "\<\[needed]\>"
-syn match soloforthFiles "\<\[unneeded]\>"
-
 syn match soloforthDefine "\<\[if]\>"
 syn match soloforthDefine "\<\[defined]\>"
 syn match soloforthDefine "\<\[undefined]\>"
@@ -936,8 +939,8 @@ let b:current_syntax = "soloforth"
 "
 " 2015-06-07: Updated.
 "
-" 2015-06-20: Updated: `label`, `s"`, `sliteral`, `slit`, `s,`,
-" `scr/disk`, `?-->`, `?\`, `cells`, `cell`, `cell+`, `cswap`.
+" 2015-06-20: Updated: `label`, `s"`, `sliteral`, `slit`, `s,`, `scr/disk`,
+" `?-->`, `?\`, `cells`, `cell`, `cell+`, `cswap`.
 "
 " 2015-06-23: Updated.
 "
@@ -947,32 +950,27 @@ let b:current_syntax = "soloforth"
 "
 " 2015-07-11: Updated.
 "
-" 2015-07-17: Updated: `np`, `np0`, `np@`, `cfap>lfa`, `!bank`,
-" `c!bank`, `>mark`, `>resolve`...
+" 2015-07-17: Updated: `np`, `np0`, `np@`, `cfap>lfa`, `!bank`, `c!bank`,
+" `>mark`, `>resolve`...
 "
 " 2015-07-22: Updated: `exhaust`, `rdrop`, `2rdrop`.
 "
 " 2015-07-22: Updated: `l/scr'.
 "
-" 2015-07-23: Updated: `fetchhl'. 'fetchhl,', 'next,',
-" 'pushhl,', 'pushde,'.
+" 2015-07-23: Updated: `fetchhl'. 'fetchhl,', 'next,', 'pushhl,', 'pushde,'.
 "
 " 2015-07-24: Updated: `parse-name` instead of `parse-word`.
 "
 " 2015-08-11: Added `compile,`.
 "
-" 2015-08-12: Updated: `?terminal` -> `break-key?`. Added
-" `nfa>string`, `upper`, `uppers`, `trail`. Removed `-find`,
-" `forget`.  More changes.
+" 2015-08-12: Updated: `?terminal` -> `break-key?`. Added `nfa>string`,
+" `upper`, `uppers`, `trail`. Removed `-find`, `forget`.  More changes.
 "
-" 2015-08-14: Updated: `pushde` -> pushhlde`, `pushde,` ->
-" pushhlde,`
+" 2015-08-14: Updated: `pushde` -> pushhlde`, `pushde,` -> pushhlde,`
 "
-" 2015-08-15: Fixed: `blank`. Updated after the changes in the
-" disk buffers.
+" 2015-08-15: Fixed: `blank`. Updated after the changes in the disk buffers.
 "
-" 2015-08-21: Updated with search order words defined in the
-" kernel.
+" 2015-08-21: Updated with search order words defined in the kernel.
 "
 " 2015-08-23: Updated.
 "
@@ -988,15 +986,13 @@ let b:current_syntax = "soloforth"
 "
 " 2015-09-12: Updated, user area words.
 "
-" 2015-09-13: Updated: `umin`, `umax`; `require` and family
-" renamed to `need`.
+" 2015-09-13: Updated: `umin`, `umax`; `require` and family renamed to `need`.
 "
 " 2015-09-19: Updated.
 "
 " 2015-09-22: Updated.
 "
-" 2015-09-24: Updated: number prefixes "#", "$" and "%";
-" `>number`, `number?`.
+" 2015-09-24: Updated: number prefixes "#", "$" and "%"; `>number`, `number?`.
 "
 " 2015-09-26: Updated.
 "
@@ -1010,8 +1006,7 @@ let b:current_syntax = "soloforth"
 "
 " 2015-10-14: Updated: `catch`, `throw`, `abort"`, `?throw`.
 "
-" 2015-10-16: Updated: `2,`, `smove`, `2r@`, `roll`... Fixed
-" `@p`, `!p`.
+" 2015-10-16: Updated: `2,`, `smove`, `2r@`, `roll`... Fixed `@p`, `!p`.
 "
 " 2015-10-21: Upadted: `compile-only`.
 "
@@ -1067,28 +1062,23 @@ let b:current_syntax = "soloforth"
 "
 " 2016-03-15: Added `evaluate`.
 "
-" 2016-03-19: Added `there`, `system-bank`, `default-bank`,
-" `bank`, `bank-start`.  Renamed the words related to the names
-" bank.
+" 2016-03-19: Added `there`, `system-bank`, `default-bank`, `bank`,
+" `bank-start`.  Renamed the words related to the names bank.
 "
 " 2016-03-24: Added `:noname`.
 "
-" 2016-04-10: Added `display`, `default-mode`, `save-mode` and
-" `restore-mode`.
+" 2016-04-10: Added `display`, `default-mode`, `save-mode` and `restore-mode`.
 "
 " 2016-04-18: Removed `not`.
 "
-" 2016-04-21: Updated the kernel words related to user data
-" space.
+" 2016-04-21: Updated the kernel words related to user data space.
 "
-" 2016-04-24: Add `2literal`, `2lit`, `docolon`, `code-field,`,
-" `noname?`, `last`, `lastxt`, `latestxt`.
+" 2016-04-24: Add `2literal`, `2lit`, `docolon`, `code-field,`, `noname?`,
+" `last`, `lastxt`, `latestxt`.
 "
-" 2016-04-27: Remove `defined?`, add `?defined`. Add
-" `.error-word`.
+" 2016-04-27: Remove `defined?`, add `?defined`. Add `.error-word`.
 "
-" 2016-04-29: Add `nest-source`, `unnest-source`,
-" `block>source`.
+" 2016-04-29: Add `nest-source`, `unnest-source`, `block>source`.
 "
 " 2016-05-04: Add `channel`, `printing`, `/hold`; remove `out`.
 "
@@ -1096,21 +1086,19 @@ let b:current_syntax = "soloforth"
 "
 " 2016-10-16: Add `ms`.
 "
-" 2016-11-16: Update `hp` (formerly `np`) and related words.
-" Add the far-memory words defined in the kernel.
+" 2016-11-16: Update `hp` (formerly `np`) and related words. Add the
+" far-memory words defined in the kernel.
 "
 " 2016-11-20: Add `blocks`.
 "
-" 2016-11-23: Add `align` and `aligned`. Update bit-manipulation
-" words.
+" 2016-11-23: Add `align` and `aligned`. Update bit-manipulation words.
 "
 " 2016-11-24: Add `-exit`.
 "
-" 2016-11-25: Add `[:`, `;]`. Fix keywords matched with `syn
-" match`.
+" 2016-11-25: Add `[:`, `;]`. Fix keywords matched with `syn match`.
 "
-" 2016-11-28: Add `lastblk`, Forth-2012 structures. Add
-" `[needed]`, `[unneeded]`, `?)`.
+" 2016-11-28: Add `lastblk`, Forth-2012 structures. Add `[needed]`,
+" `[unneeded]`, `?)`.
 "
 " 2016-12-03: Add `within`, `between`.
 "
@@ -1123,8 +1111,7 @@ let b:current_syntax = "soloforth"
 "
 " 2016-12-16: Add `,"`.
 "
-" 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext` to
-" `jpnext,`.
+" 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext` to `jpnext,`.
 "
 " 2016-12-22: Add `.\"`.
 "
@@ -1134,57 +1121,54 @@ let b:current_syntax = "soloforth"
 "
 " 2016-12-27: Add `farunused`.
 "
-" 2017-01-05: Update the assembler words. The first version of
-" the assembler has been removed from the system.
+" 2017-01-05: Update the assembler words. The first version of the assembler
+" has been removed from the system.
 "
 " 2017-01-06: Update `voc-link` to `latest-wordlist`.
 "
-" 2017-01-20: Add `word-length-mask`, `>>name`, `name>>`,
-" `name<name`, `name>str`, `name>name`, `#words`.
+" 2017-01-20: Add `word-length-mask`, `>>name`, `name>>`, `name<name`,
+" `name>str`, `name>name`, `#words`.
 "
 " 2017-01-22: Add `1literal`.
 "
-" 2017-01-23: Add `replaces`, `unescape`, `substitute`,
-" `1/string`.
+" 2017-01-23: Add `replaces`, `unescape`, `substitute`, `1/string`.
 "
-" 2017-01-31: Add `attr-cls`, `]l`, `]1l`, `]2l`, `]cl`. Rename
-" `paper` to `paper.`, etc.
+" 2017-01-31: Add `attr-cls`, `]l`, `]1l`, `]2l`, `]cl`. Rename `paper` to
+" `paper.`, etc.
 "
-" 2017-02-01: Add `lower`, `lowers`, `farlowers`,
-" `lower-routine`, `noop-routine`.
+" 2017-02-01: Add `lower`, `lowers`, `farlowers`, `lower-routine`,
+" `noop-routine`.
 "
 " 2017-02-12: Add `file-status`.
 "
 " 2017-02-22: Add `str=`.
 "
-" 2017-02-26: Rename "hp" notation to "np", after the changes in
-" the kernel.
+" 2017-02-26: Rename "hp" notation to "np", after the changes in the kernel.
 "
 " 2017-02-27: Add `ldi,` and `ldd,`.
 "
 " 2017-02-28: Update file header.
 "
-" 2017-03-04: Change "-routine" suffix to "_", aftert the new
-" naming convention.
+" 2017-03-04: Change "-routine" suffix to "_", aftert the new naming
+" convention.
 "
-" 2017-03-12: Update the names of `stringer` words and add the
-" missing ones.
+" 2017-03-12: Update the names of `stringer` words and add the missing ones.
 "
-" 2017-03-13: Update names including "rec" to "sector(s)";
-" update names including "blk" to "block(s)". Add comment
-" regions for `0 ?(` and `0 [if]`, adapted from <gforth.vim>.
+" 2017-03-13: Update names including "rec" to "sector(s)"; update names
+" including "blk" to "block(s)". Add comment regions for `0 ?(` and `0 [if]`,
+" adapted from <gforth.vim>.
 "
 " 2017-03-14: Remove `attr`.
 "
 " 2017-03-22: Add `sll,`, `sllx,`.
 "
-" 2017-03-25: Add `rename-file`, `delete-file`, `dump`, `l:`,
-" `al#`, `rl#`. Remove old `;s`.
+" 2017-03-25: Add `rename-file`, `delete-file`, `dump`, `l:`, `al#`, `rl#`.
+" Remove old `;s`.
 "
 " 2017-04-04: Add `fm/mod`.
 "
-" 2017-04-16: Improve the patterns of numbers: only one optional
-" decimal point at the end.
+" 2017-04-16: Improve the patterns of numbers: only one optional decimal point
+" at the end.
 "
 " 2017-05-05: Add `abort-message`.
 "
@@ -1208,7 +1192,9 @@ let b:current_syntax = "soloforth"
 "
 " 2020-06-08: Update: `latest-wordlist` to `last-wordlist`.
 "
-" 2020-06-09: Improve: make paren comments multiline.
+" 2020-06-09: Improve: make paren comments multiline; remove the ending paren
+" from paren words. Add `set-source`, `input-buffer`, `needing`, `unneeding`,
+" `terminal>source`, `0exit`.
 
 " --------------------------------------------------------------
 
