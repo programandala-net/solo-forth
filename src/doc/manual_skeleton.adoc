@@ -1,7 +1,7 @@
 = Solo Forth: Version {version} for {dosname}
 :author: Marcos Cruz (programandala.net)
 :producer: Marcos Cruz (programandala.net)
-:revdate: 2020-05-26
+:revdate: 2020-06-09
 :doctype: book
 :lang: en
 :toc:
@@ -18,7 +18,7 @@ endif::[]
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202005261435
+// Last modified: 202006091737
 
 ifdef::backend-html5[]
 toc::[]
@@ -980,7 +980,7 @@ programmers already acquainted with Forth and GNU/Linux systems can
 extract all the required information from the <Makefile> of Solo
 Forth.
 
-The only difference between <<_how_to_rebuild_solo_forth,building Solo Forth>> and
+The only difference between <<_rebuild,building Solo Forth>> and
 building a Forth program is the content of disk 0 (the boot disk), if
 needed, and the library modules included in the library disk,
 which usually also contains the source of the program at the end.  If the program
@@ -1014,6 +1014,7 @@ program development with Solo Forth.
 // to your home <~/.vim/> directory.
 
 // How to rebuild Solo Forth {{{1
+[#_rebuild]
 == How to rebuild Solo Forth
 
 If you modify the sources, you have to build new disk images for your
@@ -1085,7 +1086,7 @@ The way errors are displayed is configurable.  By default only the exception
 code is displayed by an uncatched `throw`, because the default action of
 `.throw`, which is a deferred word, is `.throw#`.  In order to display also the
 error description, the alternative action `.throw-message` must be loaded from
-the <<_how_to_use_the_library,library>> with ``need .throw-message``.
+the <<_library,library>> with ``need .throw-message``.
 
 ifdef::plus3dos[]
 
