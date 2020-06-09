@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202006082152
+; Last modified: 202006090118
 
 include version.z80s
 
@@ -2562,10 +2562,10 @@ push_hl:
 ;
 ; Page in the 16-KiB memory bank _+n_ at $C000 .. $FFFF.
 ;
-; The range of _n_ depends on the computer:
+; The range of _+n_ depends on the computer:
 
 ; |===
-; | Computer        | Memory banks
+; | Computer          | Memory banks
 ;
 ; | ZX Spectrum 128  >| 0 .. 7
 ; | ZX Spectrum +2   >| 0 .. 7
@@ -8121,7 +8121,7 @@ ram_kib: equ banks*16+(8*(gplusdos and 1))
 
 bank.default:
 
-  ; Page in the default memory bank.
+  ; Page in the default memory bank at $C000..$FFFF.
 
   ; Output:
   ;   A E corrupted
@@ -8137,14 +8137,15 @@ address_of_default_bank: equ $+1
 
 bank.e:
 
-  ; Page in the memory bank hold in the E register.
+  ; Page in the memory bank hold in the E register at
+  ; $C000..$FFFF.
 
   ; Input:
   ;   E = bank number
-  ;       On 128 KiB computers:  0 .. 7
-  ;       On 256 KiB computers:  0 .. 15
-  ;       On 512 KiB computers:  0 .. 31
-  ;       On 1024 Kib computers: 0 .. 63
+  ;       On 128-KiB computers:  0 .. 7
+  ;       On 256-KiB computers:  0 .. 15
+  ;       On 512-KiB computers:  0 .. 31
+  ;       On 1024-Kib computers: 0 .. 63
   ; Output:
   ;   A = corrupted
   ;   D = corrupted (only on Pentagon 512 and Pentagon 1024)
@@ -8155,16 +8156,18 @@ bank.e:
   ; address is calculated using an offset from the execution
   ; token of `default-bank`.
 
-  ; The ZX Spectrum 128 uses bits 0 .. 2 of port $EFF7 to select
-  ; the memory bank (0 .. 7) to page in addresses $C000 .. $FFFF.
-  ; The Pentagon 512 and the Pentagon 1024 use additional bits
-  ; to form the number of the memory bank, as follows:
+  ; The 128-KiB ZX Spectrum and Pentagon computers use bits 0 ..
+  ; 2 of port $EFF7 to select the memory bank (0 .. 7) to page
+  ; in at addresses $C000 .. $FFFF. The Pentagon 512 and the
+  ; Pentagon 1024 use additional bits to form the number of the
+  ; memory bank, as follows:
 
-  ;                  Bits written to the port  Page range
-  ;                  ------------------------  ----------
-  ; ZX Spectrum 128  .. .. .. .. .. D2 D1 D0   0 .. 7
-  ; Pentagon 512     D7 D6 .. .. .. D2 D1 D0   0 .. 31
-  ; Pentagon 1024    D7 D6 D5 .. .. D2 D1 D0   0 .. 63
+  ;                           Bits written to the port  Page range
+  ;                           ------------------------  ----------
+  ; ZX Spectrum 128/+2/+3     .. .. .. .. .. D2 D1 D0   0 .. 7
+  ; Pentagon 128              .. .. .. .. .. D2 D1 D0   0 .. 7
+  ; Pentagon 512              D7 D6 .. .. .. D2 D1 D0   0 .. 31
+  ; Pentagon 1024             D7 D6 D5 .. .. D2 D1 D0   0 .. 63
 
 if pentagon=512 or pentagon=1024
 
@@ -8342,6 +8345,10 @@ endif ; pentagon=512 or pentagon=1024
   ld (hl),e
   call bank.default
   _jp_next
+
+; XXX REMARK -- `farc!` could be moved to the library, because
+; it's not used in the kernel, but `farc@` is, and it makes
+; sense to keep both of them together.
 
 ; ----------------------------------------------
   _code_header far_fetch_,'far@'
