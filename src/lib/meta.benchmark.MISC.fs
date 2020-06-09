@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005252108
+  \ Last modified: 202006092155
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -243,18 +243,17 @@ need timer
   \ 20000      664     700    430    345
   \ 65535     2176    2292   1432   1131
 
-( negate-+-bench )
+( negate-+-bench dnegate-d+-bench )
+
+unneeding negate-+-bench ?( need ticks need timer
 
   \ 2017-12-12
 
-need ticks need timer
-
 : run ( n -- )
-  >r
-  cr ." negate + "
-  ticks r@ 0 ?do 0 negate 0 + drop loop timer
-  cr ." swap - "
-  ticks r> 0 ?do 0 0 swap -   drop loop timer ;
+  >r cr ." negate + "
+     ticks r@ 0 ?do 0 negate 0 + drop loop timer
+     cr ." swap - "
+     ticks r> 0 ?do 0 0 swap -   drop loop timer ; ?)
 
   \        Ticks
   \        ------------------
@@ -264,18 +263,15 @@ need ticks need timer
   \ 20000       186       182
   \ 65535       609       597
 
-( dnegate-d+-bench )
+unneeding dnegate-d+-bench ?( need d- need dticks need dtimer
 
   \ 2017-12-12
 
-need d- need dticks need dtimer
-
 : run ( n -- )
-  >r
-  cr ." dnegate d+ "
-  dticks r@ 0 ?do 0. dnegate 0. d+ 2drop loop dtimer
-  cr ." 2swap d- "
-  dticks r> 0 ?do 0. 0. 2swap d-   2drop loop dtimer ;
+  >r cr ." dnegate d+ "
+     dticks r@ 0 ?do 0. dnegate 0. d+ 2drop loop dtimer
+     cr ." 2swap d- "
+     dticks r> 0 ?do 0. 0. 2swap d-   2drop loop dtimer ; ?)
 
   \        Ticks
   \        ------------------
@@ -2457,31 +2453,29 @@ need bench{ need 0if
   \ bench2a  245 (`0if`:    76%)
   \ bench3   528
 
-( 2swap-bench )
+( 2swap-bench dnegate-bench )
+
+unneeding 2swap-bench ?( need bench{
 
   \ 2015-11-24
 
-need bench{
-
 : 2swap-bench ( -- )
-  32767 0 bench{ 2dup ?do  2swap  loop  }bench. 2drop ;
+  32767 0 bench{ 2dup ?do  2swap  loop  }bench. 2drop ; ?)
 
   \ Code                          Ticks for 32767 iterations
   \ -----                         --------------------------
   \ From DZX-Forth                271 (5 s) (1.00)
   \ Adapted from Z88 CamelForth   243 (4 s) (0.89)
 
-( dnegate-bench )
+unneeding dnegare-bench ?( need bench{
 
   \ 2015-11-24
-
-need bench{
 
 : dnegate-bench ( -- )
   32767 0 bench{ 2dup ?do  dnegate  loop  }bench. 2drop ;
 
 : dnegate-bench2 ( -- )
-  32767 0 bench{ 2dup ?do  dnegate2  loop  }bench. 2drop ;
+  32767 0 bench{ 2dup ?do  dnegate2  loop  }bench. 2drop ; ?)
 
   \ Code                          Ticks for 32767 iterations
   \ -----                         --------------------------
@@ -3367,5 +3361,7 @@ need bench{ need }bench.
   \
   \ 2020-05-25: Replace `r> drop` with `rdrop` (this does not
   \ affect the timings).
+  \
+  \ 2020-06-09: Compact the code, saving 2 blocks.
 
   \ vim: filetype=soloforth
