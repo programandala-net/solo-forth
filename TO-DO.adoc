@@ -2463,15 +2463,17 @@ Study the way v.Forth manages the interrupts and adapt it.
 // Library {{{1
 == Library
 
+=== 2020-06-09
+
+`farc!` is not used used in the kernel.
+
 === 2020-05-18
 
-NOTE: Milestone: 0.14.0
-
-Move to the library: `bank`.
+Move `bank` to the library?
 
 ==== 2018-03-21
 
-Improve needing of G+DOS directory descriptions no save blocks.
+Improve needing of G+DOS directory descriptions to save blocks.
 First improve `need` to accept index lines longer than one block line.
 
 === 2017-03-28, 2017-09-09
