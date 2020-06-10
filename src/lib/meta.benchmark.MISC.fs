@@ -163,18 +163,19 @@ need ticks need timer
   \  1000     12    9
   \ 10000    113   90
 
-( cells-+-bench )
+( cells-+-bench 0>-bench )
+
+unneeding cells-+-bench ?(
 
 need ticks need timer need array> need array<
 
 : run ( n -- )
-  >r
-  cr ." cells +     "
-  ticks r@ 0 ?do 0 1 cells +     drop loop timer
-  cr ." swap array> "
-  ticks r@ 0 ?do 0 1 swap array> drop loop timer
-  cr ." swap array< "
-  ticks r> 0 ?do 0 1      array< drop loop timer ;
+  >r cr ." cells +     "
+     ticks r@ 0 ?do 0 1 cells +     drop loop timer
+     cr ." swap array> "
+     ticks r@ 0 ?do 0 1 swap array> drop loop timer
+     cr ." swap array< "
+     ticks r> 0 ?do 0 1      array< drop loop timer ; ?)
 
   \ 2018-02-20:
 
@@ -188,16 +189,12 @@ need ticks need timer need array> need array<
   \ 20000      180          182    150
   \ 65535      589          597    491
 
-( 0>-bench )
+unneeding 0>-bench ?( need ticks need timer
 
-need ticks need timer
-
-: run ( n -- )
-  >r
-  cr ." 0< "
-  ticks r@ 0 ?do 1 0< drop -1 0< drop loop timer
-  cr ." 0> "
-  ticks r> 0 ?do 1 0> drop -1 0> drop loop timer ;
+: run ( n -- )     >r
+  cr ." 0< " ticks r@ 0 ?do 1 0< drop -1 0< drop loop timer
+  cr ." 0> " ticks r> 0 ?do 1 0> drop -1 0> drop loop timer ;
+  ?)
 
   \ 2017-12-31:
 
@@ -472,16 +469,17 @@ need .2x1-udg need .2x1-udg-fast need bench{ need }bench.
   \ code word that uses duplicated code instead of a loop, to
   \ display the two columns of the UDG block.
 
-( sqrt-bench )
+( sqrt-bench orthodraw-bench ortholine-bench )
 
-need baden-sqrt need newton-sqrt need bench{ need }bench.
+need bench{ need }bench.
 
-: run ( u -- )
-  cls ." Results for " dup u. ." iterations"
+unneeding sqrt-bench ?( need baden-sqrt need newton-sqrt
+
+: run ( u -- ) cls ." Results for " dup u. ." iterations"
   dup cr ." baden-sqrt :" cr space
   bench{ 0 ?do i abs baden-sqrt  drop loop }bench.
       cr ." newton-sqrt   :" cr space
-  bench{ 0 ?do i abs newton-sqrt drop loop }bench. ;
+  bench{ 0 ?do i abs newton-sqrt drop loop }bench. ; ?)
 
   \ 2017-03-29:
 
@@ -498,16 +496,14 @@ need baden-sqrt need newton-sqrt need bench{ need }bench.
   \ [1] Loop parameter compiled with `literal`.
   \ [2] Loop parameter compiled with `cliteral`.
 
-( orthodraw-bench ortholine-bench )
+unneeding orthodraw-bench unneeding ortholine-bench and ?(
+  need orthodraw need ortholine
 
-need orthodraw need ortholine need bench{ need }bench.
-
-: run ( u -- )
-  cls ." Results for " dup u. ." iterations"
+: run ( u -- ) cls ." Results for " dup u. ." iterations"
   dup cr ." orthodraw :" cr space
   bench{ 0 ?do  0 0 1 1 100 orthodraw loop }bench.
       cr ." ortholine :" cr space
-  bench{ 0 ?do  0 0 1 1 100 ortholine  loop }bench. ;
+  bench{ 0 ?do  0 0 1 1 100 ortholine  loop }bench. ; ?)
 
   \ 2017-03-29:
 
@@ -1122,13 +1118,12 @@ need bench{ need }bench. need adraw176 need aline176
 
   \ 2016-11-28
 
-need bench{ need }bench.
+need bench{ need }bench. need case
 
   \ Implementation of `+field` from the Forth-2012
   \ documentation:
 
-: +field-cr ( n1 n2 "name" -- n3 )
-  create  over , +  does> @ + ;
+: +field-cr ( n1 n2 "name" -- n3 ) create over , + does> @ + ;
 
   \ The zero-field improved implementation,
   \ is a version without local variables
@@ -1148,19 +1143,11 @@ need bench{ need }bench.
   \   then
   \   postpone ; n1 n2 + ;
 
-: +field-co ( n1 n2 "name" -- n3 )
-  :
+: +field-co ( n1 n2 "name" -- n3 ) :
   over ?dup if    postpone literal postpone +
-            else  immediate  then  postpone ;  + ;
+            else  immediate  then  postpone ; + ;
 
--->
-
-( +field-bench )
-
-need case
-
-: +field-ca ( n1 n2 "name" -- n3 )
-  :
+: +field-ca ( n1 n2 "name" -- n3 ) :
   over case
   0                   of  immediate                      endof
   1                   of  postpone 1+                    endof
@@ -1171,8 +1158,7 @@ need case
 
   \ Fields from offset 0:
 
-$0000 1 +field-cr 0f-cr drop
-$0000 1 +field-co 0f-co drop
+$0000 1 +field-cr 0f-cr drop  $0000 1 +field-co 0f-co drop
 $0000 1 +field-ca 0f-ca drop  -->
 
 ( +field-bench )
@@ -1180,24 +1166,17 @@ $0000 1 +field-ca 0f-ca drop  -->
   \ Fields from offset greater than 0,
   \ with standard field size:
 
-$0001 1 +field-cr 1f-cr drop
-$0001 1 +field-co 1f-co drop
-$0001 1 +field-ca 1f-ca drop
-$0002 1 +field-cr 2f-cr drop
-$0002 1 +field-co 2f-co drop
-$0002 1 +field-ca 2f-ca drop
-$0004 1 +field-cr 4f-cr drop
-$0004 1 +field-co 4f-co drop
+$0001 1 +field-cr 1f-cr drop  $0001 1 +field-co 1f-co drop
+$0001 1 +field-ca 1f-ca drop  $0002 1 +field-cr 2f-cr drop
+$0002 1 +field-co 2f-co drop  $0002 1 +field-ca 2f-ca drop
+$0004 1 +field-cr 4f-cr drop  $0004 1 +field-co 4f-co drop
 $0004 1 +field-ca 4f-ca drop
 
   \ Fields from offset greater than 0,
   \ with non-standard field size:
 
-$0005 1 +field-cr 5f-cr drop
-$0005 1 +field-co 5f-co drop
-$0005 1 +field-ca 5f-ca drop  -->
-
-( +field-bench )
+$0005 1 +field-cr 5f-cr drop  $0005 1 +field-co 5f-co drop
+$0005 1 +field-ca 5f-ca drop
 
 : run ( u -- )
   cls ." +field benchmark"
@@ -1205,7 +1184,10 @@ $0005 1 +field-ca 5f-ca drop  -->
   cr ." Field 0:"     cr ." - 'create'    "
   dup bench{ 0 ?do  0 0f-cr drop  loop }bench.
                       cr ." - '+'         "
-  dup bench{ 0 ?do  0 0f-co drop  loop }bench.
+  dup bench{ 0 ?do  0 0f-co drop  loop }bench. -->
+
+( 2Y+field-bench )
+
                       cr ." - 'case'      "
   dup bench{ 0 ?do  0 0f-ca drop  loop }bench.
   cr ." Field non-0:" cr ." - +1 'create' "
@@ -1213,25 +1195,22 @@ $0005 1 +field-ca 5f-ca drop  -->
                       cr ." - +1 '+'      "
   dup bench{ 0 ?do  0 1f-co drop  loop }bench.
                       cr ." - +1 'case'   "
-  dup bench{ 0 ?do  0 1f-ca drop  loop }bench.  -->
-
-( +field-bench )
-
+  dup bench{ 0 ?do  0 1f-ca drop  loop }bench.
                       cr ." - +2 'create' "
   dup bench{ 0 ?do  0 2f-cr drop  loop }bench.
                       cr ." - +2 '+'      "
   dup bench{ 0 ?do  0 2f-co drop  loop }bench.
                       cr ." - +2 'case'   "
-  dup bench{ 0 ?do  0 2f-ca drop  loop }bench.
+  dup bench{ 0 ?do  0 2f-ca drop  loop }bench. -->
+
+( 2Y+field-bench )
+
                       cr ." - +4 'create' "
   dup bench{ 0 ?do  0 4f-cr drop  loop }bench.
                       cr ." - +4 '+'      "
   dup bench{ 0 ?do  0 4f-co drop  loop }bench.
                       cr ." - +4 'case'   "
-  dup bench{ 0 ?do  0 4f-ca drop  loop }bench.  -->
-
-( +field-bench )
-
+  dup bench{ 0 ?do  0 4f-ca drop  loop }bench.
                       cr ." - +5 'create' "
   dup bench{ 0 ?do  0 5f-cr drop  loop }bench.
                       cr ." - +5 '+'      "
@@ -3077,8 +3056,7 @@ need bench{ need }bench.
 
 : o-d0= ( d -- f ) or 0= ;  : +-d0= ( d -- f ) + 0= ;
 
-code c1-d0= ( d -- f )
-  E1 c, D1 c, 19 c, 78 04 + c, B0 05 + c,
+code c1-d0= ( d -- f ) E1 c, D1 c, 19 c, 78 04 + c, B0 05 + c,
   \ pop hl
   \ pop de
   \ add hl,de
@@ -3088,8 +3066,7 @@ code c1-d0= ( d -- f )
   \ jp z,true_
   \ jp false_
 
-code c2-d0= ( d -- f )
-  E1 c, D1 c, 19 c, 78 04 + c, B0 05 + c,
+code c2-d0= ( d -- f ) E1 c, D1 c, 19 c, 78 04 + c, B0 05 + c,
   \ pop hl
   \ pop de
   \ add hl,de
@@ -3101,43 +3078,32 @@ code c2-d0= ( d -- f )
   \ push hl
   \ _jp_next
 
--->
-
-( d0=-bench )
-
 : run-true ( -- ) cr ." d0= benchmark with true results" cr
-  65535 dup cr ." or:"
-            bench{ 0 ?do 0 0 o-d0= drop loop }bench.
-        dup cr ."  +:"
-            bench{ 0 ?do 0 0 +-d0= drop loop }bench.
+  65535 dup cr ." or:" bench{ 0 ?do 0 0 o-d0= drop loop }bench.
+        dup cr ."  +:" bench{ 0 ?do 0 0 +-d0= drop loop }bench.
         dup cr ." c1:"
-            bench{ 0 ?do 0 0 c1-d0= drop loop }bench.
+              bench{ 0 ?do 0 0 c1-d0= drop loop }bench.
             cr ." c2:"
-            bench{ 0 ?do 0 0 c2-d0= drop loop }bench. ; -->
+              bench{ 0 ?do 0 0 c2-d0= drop loop }bench. ; -->
 
 ( d0=-bench )
 
 : run-false ( -- ) cr ." d0= benchmark with false results" cr
-  65535 dup cr ." or:"
-            bench{ 0 ?do 0 1 o-d0= drop loop }bench.
-        dup cr ."  +:"
-            bench{ 0 ?do 0 1 +-d0= drop loop }bench.
+  65535 dup cr ." or:" bench{ 0 ?do 0 1 o-d0= drop loop }bench.
+        dup cr ."  +:" bench{ 0 ?do 0 1 +-d0= drop loop }bench.
         dup cr ." c1:"
-            bench{ 0 ?do 0 1 c1-d0= drop loop }bench.
+              bench{ 0 ?do 0 1 c1-d0= drop loop }bench.
             cr ." c2:"
-            bench{ 0 ?do 0 1 c2-d0= drop loop }bench. ; -->
+              bench{ 0 ?do 0 1 c2-d0= drop loop }bench. ;
 
-( d0=-bench )
-
-: run-alt ( -- ) cr ." d0= benchmark with alternate results" cr
-  65535 dup cr ." or:"
-            bench{ 0 ?do 0 i 1 and o-d0= drop loop }bench.
-        dup cr ."  +:"
-            bench{ 0 ?do 0 i 1 and +-d0= drop loop }bench.
-        dup cr ." c1:"
-            bench{ 0 ?do 0 i 1 and c1-d0= drop loop }bench.
-            cr ." c2:"
-            bench{ 0 ?do 0 i 1 and c2-d0= drop loop }bench. ;
+: run-alt ( -- )
+  cr ." d0= benchmark with alternate results" cr 65535
+  dup cr ." or:" bench{ 0 ?do 0 i 1 and o-d0= drop loop }bench.
+  dup cr ."  +:" bench{ 0 ?do 0 i 1 and +-d0= drop loop }bench.
+  dup cr ." c1:"
+      bench{ 0 ?do 0 i 1 and c1-d0= drop loop }bench.
+      cr ." c2:"
+      bench{ 0 ?do 0 i 1 and c2-d0= drop loop }bench. ;
 
   \ 2017-05-06:
   \
@@ -3363,5 +3329,7 @@ need bench{ need }bench.
   \ affect the timings).
   \
   \ 2020-06-09: Compact the code, saving 2 blocks.
+  \
+  \ 2020-06-10: Compact the code, saving 6 more blocks.
 
   \ vim: filetype=soloforth
