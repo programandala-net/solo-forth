@@ -7,17 +7,17 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202006091737
+// Last modified: 202006092330
 
 // Description {{{1
 == Description
 
 // tag::description[]
 
-Solo Forth is a standard Forth system for the ZX Spectrum 128 and
+Solo Forth is a Forth system for the ZX Spectrum 128 and
 compatible computers, with disk drives and +3DOS, G+DOS, or TR-DOS.
 
-Solo Forth can not run on the original ZX Spectrum 48, but could be
+Solo Forth cannot run on the original ZX Spectrum 48, but could be
 used to develop programs for it.
 
 Solo Forth can be used as a stand-alone Forth system (either on an
@@ -125,18 +125,18 @@ http://programandala.net/en.program.black_flag.html[Black Flag].
 |===
 | Computer        | Disk interface        | DOS
 
-| Pentagon 1024   |                       | TR-DOS
 | Pentagon 128    |                       | TR-DOS
 | Pentagon 512    |                       | TR-DOS
+| Pentagon 1024   |                       | TR-DOS
 | Scorpion ZS 256 |                       | TR-DOS
+| ZX Spectrum 128 | Beta 128              | TR-DOS
+| ZX Spectrum 128 | Plus D                | G+DOS
 | ZX Spectrum +2  | Beta 128              | TR-DOS
 | ZX Spectrum +2  | Plus D                | G+DOS
 | ZX Spectrum +2A | (External disk drive) | +3DOS
 | ZX Spectrum +2B | (External disk drive) | +3DOS
 | ZX Spectrum +3  |                       | +3DOS
 | ZX Spectrum +3e |                       | +3DOS
-| ZX Spectrum 128 | Beta 128              | TR-DOS
-| ZX Spectrum 128 | Plus D                | G+DOS
 |===
 
 // end::platforms[]
@@ -276,7 +276,7 @@ http://programandala.net/en.program.black_flag.html[Black Flag].
 | disks       | gplusdos     | G+DOS disk images
 | disks       | plus3dos     | +3DOS disk images
 | disks       | trdos        | TR-DOS disk images
-| doc         |              | Documentation: PDF and HTML manuals
+| doc         |              | Manuals in DocBook, EPUB, HTML and PDF
 | make        |              | Files used by ``make`` to build the system
 | screenshots |              | Version screenshots
 | src         |              | Sources
@@ -394,34 +394,6 @@ following:
 
 // end::run_scorpion[]
 
-// ZX Spectrum +3/+3e {{{2
-=== ZX Spectrum +3/+3e
-
-// XXX REMARK -- A problem with Asciidoctor makes the rendering of the
-// ZX Spectrum +3e link text fail. It seems the error condition has to
-// do with a combination of "+" be at start of a new line, and the
-// presence of the link attribute. The result is the "+3e" part is
-// omited. Using ``{sp}`` to prevent the text from being splitted
-// fixes the problem.
-
-// tag::run_plus3[]
-
-// XXX REMARK -- This tag does not include the title, because this is
-// the only entry for +3DOS, and the computers are mentioned in item
-// 1:
-
-1. Run a ZX Spectrum emulator and select a ZX Spectrum +3 (or
-   http://www.worldofspectrum.org/zxplus3e/[ZX
-   Spectrum{sp}+3e,role="external"])footnote:plus3dosdiskformat[Make
-   sure the disk drives are configured as double-sided and 80-track].
-2. “Insert” the disk image file <disks/plus3dos/disk_0_boot.180.dsk>
-   (or <disks/plus3dos/disk_0_boot.720.dsk>, depending on the capacity
-   of the drive) as disk 'A'.
-3. Choose “Loader” from the computer start menu. Solo Forth will be
-   loaded from disk.
-
-// end::run_plus3[]
-
 // tag::run_128_with_betadisk[]
 
 // ZX Spectrum 128/+2 with the Beta 128 interface {{{2
@@ -460,6 +432,34 @@ following:
 
 // end::run_128_with_plusd[]
 
+// ZX Spectrum +3/+3e {{{2
+=== ZX Spectrum +3/+3e
+
+// tag::run_plus3[]
+
+// XXX REMARK -- A problem with Asciidoctor makes the rendering of the
+// ZX Spectrum +3e link text fail. It seems the error condition has to
+// do with a combination of "+" be at start of a new line, and the
+// presence of the link attribute. The result is the "+3e" part is
+// omited. Using ``{sp}`` to prevent the text from being splitted
+// fixes the problem.
+
+// XXX REMARK -- This tag does not include the title, because this is
+// the only entry for +3DOS, and the computers are mentioned in item
+// 1:
+
+1. Run a ZX Spectrum emulator and select a ZX Spectrum +3 (or
+   http://www.worldofspectrum.org/zxplus3e/[ZX
+   Spectrum{sp}+3e,role="external"])footnote:plus3dosdiskformat[Make
+   sure the disk drives are configured as double-sided and 80-track].
+2. “Insert” the disk image file <disks/plus3dos/disk_0_boot.180.dsk>
+   (or <disks/plus3dos/disk_0_boot.720.dsk>, depending on the capacity
+   of the drive) as disk 'A'.
+3. Choose “Loader” from the computer start menu. Solo Forth will be
+   loaded from disk.
+
+// end::run_plus3[]
+
 // How to use the library {{{1
 [#_library]
 == How to use the library
@@ -475,7 +475,7 @@ following:
 2. “Insert” the file <disks/plus3dos/disk_1_library.dsk> as disk B.
    `'b' set-drive throw` to make drive 'B' the current one.
 3. Type `1 load` to load block 1 from the library disk. By convention,
-   block 0 can not be loaded (it is used for comments), and block 1 is
+   block 0 cannot be loaded (it is used for comments), and block 1 is
    used as a loader.  In Solo Forth, block 1 contains `2 load`, in
    order to load the `need` tool from block 2.
 4. Type `need name`, were “name” is the name of the word or tool you
@@ -493,7 +493,7 @@ following:
   disk 2 of the Plus D disk interface. Type `2 set-drive throw` to
   make drive 2 the current one.
 3. Type `1 load` to load block 1 from the library disk. By convention,
-   block 0 can not be loaded (it is used for comments), and block 1 is
+   block 0 cannot be loaded (it is used for comments), and block 1 is
    used as a loader.  In Solo Forth, block 1 contains `2 load`, in
    order to load the `need` tool from block 2.
 4. Type `need name`, were “name” is the name of the word or tool you
@@ -518,7 +518,7 @@ following:
    instead of 0..3 may be implemented in a future version of Solo
    Forth, either by default or as an option.] the current one.
 3. Type `1 load` to load block 1 from the library disk. By convention,
-   block 0 can not be loaded (it is used for comments), and block 1 is
+   block 0 cannot be loaded (it is used for comments), and block 1 is
    used as a loader.  In Solo Forth, block 1 contains `2 load`, in
    order to load the `need` tool from block 2.  Type `need
    set-block-drives` to load the word `set-block-drives` from the

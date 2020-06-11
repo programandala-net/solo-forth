@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081220
+  \ Last modified: 202006110017
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1300,9 +1300,8 @@ unneeding tracks/disk ?\ 80 cconstant tracks/disk
   \
   \ A `cconstant`. _b_ is the number of tracks of a disk.
   \
-  \ See only: `tracks/cat`, `sectors/disk`,
-  \ `max-disk-capacity`, `b/sector`, `sectors-used`,
-  \ `drive-unused`.
+  \ See: `tracks/cat`, `sectors/disk`, `max-disk-capacity`,
+  \ `b/sector`, `sectors-used`, `drive-unused`.
   \
   \ }doc
 
@@ -1317,7 +1316,7 @@ tracks/disk sectors/track * 2* constant sectors/disk ?)
   \ A `constant`. _u_ is the total number of sectors of a disk
   \ (on both sides).
   \
-  \ See only: `tracks/cat`, `tracks/disk`, `b/sector`,
+  \ See: `tracks/cat`, `tracks/disk`, `b/sector`,
   \ `max-disk-capacity`, `sectors-used`, `drive-unused`.
   \
   \ }doc
@@ -1373,7 +1372,7 @@ constant max-disk-capacity ?)
   \ files on a disk, i.e. the actual capacity excluding the
   \ tracks used for the catalogue.
   \
-  \ See only: `tracks/cat`, `tracks/disk`, `b/sector`,
+  \ See: `tracks/cat`, `tracks/disk`, `b/sector`,
   \ `sectors-used`, `drive-unused`.
   \
   \ }doc
@@ -2486,5 +2485,7 @@ need write-file need read-file need .ufia
   \
   \ 2020-06-08: Improve documentation: make _true_ and
   \ _false_ cross-references.
+  \
+  \ 2020-06-11: Fix typos in documentation.
 
   \ vim: filetype=soloforth

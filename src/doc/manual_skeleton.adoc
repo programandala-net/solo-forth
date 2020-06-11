@@ -18,7 +18,7 @@ endif::[]
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202006091737
+// Last modified: 202006092325
 
 ifdef::backend-html5[]
 toc::[]
@@ -26,6 +26,13 @@ endif::[]
 ifdef::backend-pdf[]
 toc::[]
 endif::[]
+
+// =============================================================
+
+
+NOTE: English is only my third language in fluency, so please excuse
+any mistakes. Any kind of correction will be appreciated. Contact:
+http://programandala.net[programandala.net].
 
 // =============================================================
 
@@ -579,7 +586,7 @@ ifdef::trdos[]
 
 WARNING: Disks 1a, 1b, 2 and 3 are Forth block disks: They contain the
 source Forth blocks directly on the disk sectors, without any file
-system.  Therefore their contents can not be accessed with ordinary
+system.  Therefore their contents cannot be accessed with ordinary
 DOS commands.
 
 endif::trdos[]
@@ -598,7 +605,7 @@ ifndef::trdos[]
 
 WARNING: Disks 1, 2 and 3 are Forth block disks: They contain the
 source Forth blocks directly on the disk sectors, without any file
-system.  Therefore their contents can not be accessed with ordinary
+system.  Therefore their contents cannot be accessed with ordinary
 DOS commands.
 
 endif::trdos[]
@@ -614,7 +621,7 @@ The DSK disk image format, used for +3DOS and other systems,
 contains a lot of metadata to describe the
 format of the disk, the tracks and the sectors...
 
-On +3DOS, sector 0 of track 0 can not be used for Forth blocks,
+On +3DOS, sector 0 of track 0 cannot be used for Forth blocks,
 because it must contain the disk specification, even for sector-level
 access.  Since the size of a sector is 512 B, only one Forth block is
 lost because of this restriction.
@@ -661,21 +668,22 @@ endif::trdos[]
 [#_run]
 == How to run
 
-ifdef::trdos[]
-include::doc.README.linked.adoc[tags=run_pentagon]
-include::doc.README.linked.adoc[tags=run_scorpion]
-endif::trdos[]
 ifdef::plus3dos[]
 include::doc.README.linked.adoc[tags=run_plus3]
 endif::plus3dos[]
-ifdef::trdos[]
-include::doc.README.linked.adoc[tags=run_128_with_betadisk]
-endif::trdos[]
+
 ifdef::gplusdos[]
 include::doc.README.linked.adoc[tags=run_128_with_plusd]
 endif::gplusdos[]
 
+ifdef::trdos[]
+include::doc.README.linked.adoc[tags=run_pentagon]
+include::doc.README.linked.adoc[tags=run_scorpion]
+include::doc.README.linked.adoc[tags=run_128_with_betadisk]
+endif::trdos[]
+
 // How to use the library {{{1
+[#_library]
 == How to use the library
 
 ifdef::plus3dos[]

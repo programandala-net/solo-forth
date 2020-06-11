@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006041845
+  \ Last modified: 202006102136
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -7289,9 +7289,8 @@ FORTH2012-REPORT-ERRORS
   \ `forth2012-coreplus-test`, `forth2012-double-test`,
   \ `forth2012-exception-test`, `forth2012-facility-test`,
   \ `forth2012-locals-test`, `forth2012-memory-test`,
-  \ `forth2012-report-errors, `forth2012-searchorder-test`,
-  \ `forth2012-string-test`, `forth2012-tools-test`,
-  \ `forth2012-utilities-test`.
+  \ `forth2012-searchorder-test`, `forth2012-string-test`,
+  \ `forth2012-tools-test`, `forth2012-utilities-test`.
   \
   \ See: `forth2012-report-errors`, `ttester`, `hayes-test`.
   \
@@ -7336,5 +7335,7 @@ cr .( Forth-2012 tests completed ) cr cr
   \ `forth2012-block-test`, etc.
   \
   \ 2020-06-04: Fix cross references.
+  \
+  \ 2020-06-10: Fix cross reference.
 
   \ vim: filetype=soloforth
