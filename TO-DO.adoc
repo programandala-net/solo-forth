@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-06-09
+:revdate: 2020-06-11
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -954,16 +954,45 @@ Improve tab control.
 // Documentation {{{1
 == Documentation
 
+=== 2020-06-11
+
+NOTE: Milestone: 0.14.0
+
+- Preserve the .adoc extension in the target files.
+- Add cross-references to `associative-case:`; see related words.
+- Cross-reference `ink-mask` in `attr>ink`.
+- Cross-reference `paper-mask` and `rshift` in `attr>paper`.
+- Add `assembler` to the description of the assembler control-flow
+  structures. Also "Compile the Z80 jumps required".
+- Add cross-references to: `far@+`, `farc+!`, `farc@+`, `fardump`,
+  `farwdump`, `fars,`, `fconstant`, `fill`, etc.
+- Fix description of `g-emit_`: "_a_ is the address of..." or better
+  "Return address _a_ of...". Check similar words.
+- Search for words without cross-references in order to complete them.
+- Fix "written code writte" in `gil-allocate` and family.
+- Cross-reference "constant" in `ufia`.
+- Cross-reference `here` in `unused`. Search for similar cases: words
+  that have definitions.
+- Cross-reference all words used in the definitions included in the glossary?
+- Cross-reference all Z80 conditions in assembler control-flow
+  structures.
+- Make cross-references to `{` and `}` explicit.
+- Replace `This is` with the corresponding word.
+- Replace "A character variable" with "A `cvariable`".
+- Fix markup of _a_ in `#block-drives`.
+
+=== 2020-06-10
+
+NOTE: Milestone: 0.14.0
+
+Resize the columns of the editor commands tables to make the stack
+notes of their commands fit.
+
 === 2020-05-03
 
 - Document also the main words of the sample games.
 - Finally, modify the Makefile to include all programs from the
   library (<prog.*.fs>) into the glossary.
-
-=== 2020-03-03
-
-Note: «English isn’t my first language, so please excuse any mistakes,
-etc.» Corrections, contact.
 
 === 2020-02-29
 
@@ -971,8 +1000,6 @@ etc.» Corrections, contact.
   especially in tables.
 - Homogenize the transcription of names' "<" ("less-than", "from",
   "backwards").  and ">" ("greater-than", "to", "forwards").
-- Pass `version` as a parameter to Asciidoctor calls in Makefile,
-  instead of replacing a markup in the source..
 
 === 2020-02-27
 
@@ -984,7 +1011,7 @@ Add this sections to the manual:
 
 === 2018-07-20
 
-NOTE: Milestone: 0.15.0
+NOTE: Milestone: 0.14.0
 
 - Update the `make-thru-index` test in the manual.
 
