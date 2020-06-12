@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-06-11
+:revdate: 2020-06-12
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -954,6 +954,16 @@ Improve tab control.
 // Documentation {{{1
 == Documentation
 
+=== 2020-06-12
+
+NOTE: Milestone: 0.14.0
+
+- Convert the commands into cross-references, e.g. make `need
+  make-thru-index` 2 cross-references to its words.
+- Mention `load-program` in "How to write Forth programs".
+- Fix column widths in "Commands to rebuild the manual" and other
+  tables.
+
 === 2020-06-11
 
 NOTE: Milestone: 0.14.0
@@ -962,8 +972,9 @@ NOTE: Milestone: 0.14.0
 - Add cross-references to `associative-case:`; see related words.
 - Cross-reference `ink-mask` in `attr>ink`.
 - Cross-reference `paper-mask` and `rshift` in `attr>paper`.
-- Add `assembler` to the description of the assembler control-flow
-  structures. Also "Compile the Z80 jumps required".
+- Add `assembler` to the description of all assembler words.
+- Add "Compile the Z80 jumps required" to assembler control-flow
+  words.
 - Add cross-references to: `far@+`, `farc+!`, `farc@+`, `fardump`,
   `farwdump`, `fars,`, `fconstant`, `fill`, etc.
 - Fix description of `g-emit_`: "_a_ is the address of..." or better
@@ -973,7 +984,8 @@ NOTE: Milestone: 0.14.0
 - Cross-reference "constant" in `ufia`.
 - Cross-reference `here` in `unused`. Search for similar cases: words
   that have definitions.
-- Cross-reference all words used in the definitions included in the glossary?
+- Cross-reference all words used in the definitions included in the
+  glossary?
 - Cross-reference all Z80 conditions in assembler control-flow
   structures.
 - Make cross-references to `{` and `}` explicit.
