@@ -1016,12 +1016,6 @@ Add this sections to the manual:
   flow structures, etc.
 - A description of the library modules.
 
-=== 2018-07-20
-
-NOTE: Milestone: 0.14.0
-
-- Update the `make-thru-index` test in the manual.
-
 === 2018-04-12
 
 NOTE: Milestone: 0.15.0

@@ -1,7 +1,7 @@
 = Solo Forth: Version {version} for {dosname}
 :author: Marcos Cruz (programandala.net)
 :producer: Marcos Cruz (programandala.net)
-:revdate: 2020-06-09
+:revdate: 2020-06-11
 :doctype: book
 :lang: en
 :toc:
@@ -18,7 +18,7 @@ endif::[]
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202006092325
+// Last modified: 202006112325
 
 ifdef::backend-html5[]
 toc::[]
@@ -727,23 +727,23 @@ How to use the library index:
 The indexer creates an index (actually, a Forth word list whose
 definitions use no code or data space) and changes the default
 behaviour of `need` and related words to use it. Then ``need name``
-will automatically start loading the first block where the word “name”
-is defined.
+will automatically start loading the first block where the “name”
+is defined
 
-:indexnote: Test done on Solo Forth 0.12.0 on ZX Spectrum 128.
-
-[cols="6,11,11,7,18"]
-.Time and memory required to make the library index{blank}footnote:[pass:a[{indexnote}]]
+[cols="11,6,>8,>8,>6,>6"]
+.Time and name-space memory required to make the library index
 |===
-| DOS     | First block | Last block | Seconds | Bytes of far memory
+| Computer        | DOS    | Block drives | Library blocks | Seconds | Bytes
 
-| G+DOS   |           5 |        799 |     154 |               13498
-| TR-DOS  |           5 |        635 |     135 |               13027
+| ZX Spectrum 128 | G+DOS  | 1            | 791 (8..799)   | 357     | 19515
+| ZX Spectrum +3  | +3DOS  | 1            | 710 (8..718)   | 323     | 18636
+| Pentagon 128    | TR-DOS | 2            | 1263 (8..1271) | 255     | 18437
+| Scorpion ZS 256 | TR-DOS | 2            | 1263 (8..1271) | 291     | 18437
 |===
 
-NOTE: The far memory is the virtual 64-KiB space formed by 4
-configurable memory banks. No code or data space is used by the
-indexer.
+NOTE: The name space is in far memory, a virtual 64-KiB space formed
+by 4 configurable memory banks (see `far-banks`). No code or data
+space is used by the indexer.
 
 An alternative indexer is under development. It's activated with
 `use-fly-index` and does not make and index in advance: Instead, it
