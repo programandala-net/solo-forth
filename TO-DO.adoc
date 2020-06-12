@@ -284,11 +284,6 @@ to implement a debugger or multitasking.
 // Benchmarks {{{1
 == Benchmarks
 
-=== 2017-12-07
-
-Benchmark variables before and after moving the Z80 labels `do_create`
-and `do_variable` to the `next` entry of the inner interpreter.
-
 === 2019-03-15
 
 Benchmark `cells +` vs `swap array>`, used by `localized-string`

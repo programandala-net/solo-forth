@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202006120027
+; Last modified: 202006122138
 
 include version.z80s
 
@@ -1894,9 +1894,7 @@ far.hl.mod:
 ; }doc
 
 jp_next:
-do_create:    ; XXX TODO -- move to the `next` entry
-do_variable:  ; XXX TODO -- move to the `next` entry
-call_ix:
+call_ix: ; for clarity; used by +3DOS' `dos.ix` routine
 
   _jp_next
 
@@ -15301,6 +15299,8 @@ two_fetch.hl:
   ; Inner interpreter:
 
 next:
+do_create:
+do_variable:
 
   ; Execute the word whose xt is in the address pointed by the
   ; BC register:
