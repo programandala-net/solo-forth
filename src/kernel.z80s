@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202006090118
+; Last modified: 202006120027
 
 include version.z80s
 
@@ -14788,9 +14788,9 @@ system_stack_pointer:
 ;
 ; A `variable`. _a_ is the address of a cell containing the
 ; address above the highest address usable by the name space
-; (the name space is the region addressed by `np`). Its default
-; value, which is restored by `cold`, is $0000 in G+DOS and
-; TR-DOS, and $C000 on +3DOS.
+; (the region addressed by `np`). Its default value, which is
+; restored by `cold`, is $0000 in G+DOS and TR-DOS, and $C000 on
+; +3DOS.
 ;
 ; ``farlimit`` can be modified by a program in order to reserve
 ; a far-memory zone for special purposes.
