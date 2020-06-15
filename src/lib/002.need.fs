@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081220
+  \ Last modified: 202006152036
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -293,7 +293,7 @@ defer located ( ca len -- block | 0 )
   \ Only the blocks delimited by `first-locatable` and
   \ `last-locatable` are searched`.
   \
-  \ This is a deferred word whose default action is
+  \ ``located`` is a deferred word whose default action is
   \ `(located`.
   \
   \ See: `need-from`.
@@ -343,7 +343,7 @@ defer reneeded ( ca len -- )
   \ len_ (surrounded by spaces).  If not found, `throw` an
   \ exception #-268 ("needed, but not located").
   \
-  \ This is a deferred word whose default action is
+  \ ``reneeded`` is a deferred word whose default action is
   \ `locate-reneeded`.
   \
   \ See: `make-thru-index`.
@@ -360,8 +360,8 @@ defer reneeded ( ca len -- )
   \ len_ (surrounded by spaces), and `load` it. If not found,
   \ `throw` an exception #-268 ("needed, but not located").
   \
-  \ This is the default action of the deferred word
-  \ `reneeded`.
+  \ ``locate-reneeded`` is the default action of the deferred
+  \ word `reneeded`.
   \
   \ See: `make-thru-index`.
   \
@@ -376,7 +376,7 @@ defer reneed ( "name" -- )  defer needed ( ca len -- )
   \ Load the first block whose header contains _name_
   \ (surrounded by spaces).
   \
-  \ This is a deferred word whose default action is
+  \ ``reneed`` is a deferred word whose default action is
   \ `locate-reneed`.
   \
   \ See: `make-thru-index`.
@@ -390,10 +390,10 @@ defer reneed ( "name" -- )  defer needed ( ca len -- )
   \ If the string _ca len_ is not the name of a word found in
   \ the current search order, load the first block where _ca
   \ len_ is included in the block header (surrounded by
-  \ spaces).  If not found, `throw` an exception #-268 ("needed,
-  \ but not located").
+  \ spaces).  If not found, `throw` an exception #-268
+  \ ("needed, but not located").
   \
-  \ This is a deferred word whose default action is
+  \ ``needed`` is a deferred word whose default action is
   \ `locate-needed`.
   \
   \ See: `make-thru-index`.
@@ -411,7 +411,8 @@ defer reneed ( "name" -- )  defer needed ( ca len -- )
   \ (surrounded by spaces), and load it.  If not found, `throw`
   \ an exception #-268 ("needed, but not located").
   \
-  \ This is the default action of the deferred word `reneed`.
+  \ ``locate-reneed`` is the default action of the deferred
+  \ word `reneed`.
   \
   \ See: `make-thru-index`.
   \
@@ -466,7 +467,8 @@ defer reneed ( "name" -- )  defer needed ( ca len -- )
   \ spaces), and load it.  If not found, `throw` an exception
   \ #-268 ("needed, but not located").
   \
-  \ This is the default action of the deferred word `needed`.
+  \ ``locate-needed`` is the default action of the deferred
+  \ word `needed`.
   \
   \ See: `make-thru-index`.
   \
@@ -483,7 +485,7 @@ defer need ( "name" -- )
   \ header (surrounded by spaces), and load it.  If not found,
   \ `throw` an exception #-268 ("needed, but not located").
   \
-  \ This is a deferred word whose default action is
+  \ ``need`` is a deferred word whose default action is
   \ `locate-need`.
   \
   \ See: `make-thru-index`.
@@ -501,7 +503,8 @@ defer need ( "name" -- )
   \ header (surrounded by spaces), and load it.  If not found,
   \ `throw` an exception #-268 ("needed, but not located").
   \
-  \ This is the default action of the deferred word `need`.
+  \ ``locate-need`` is the default action of the deferred word
+  \ `need`.
   \
   \ See: `make-thru-index`.
   \
@@ -683,9 +686,9 @@ unneeding need-here ?(
   \ If _name_ is not a word found in the current search order,
   \ load the current block.
   \
-  \ This is a faster alternative to `need`, when the needed
-  \ word is in the same block, and conditional compilation is
-  \ used with `?\`, `?(` or `[if]`.
+  \ ``need-here`` is a faster alternative to `need`, when the
+  \ needed word is in the same block, and conditional
+  \ compilation is used with `?\`, `?(` or `[if]`.
   \
   \ }doc
 
@@ -878,5 +881,7 @@ unneeding need-here ?(
   \
   \ 2020-06-08: Improve documentation: make _true_ and
   \ _false_ cross-references.
+  \
+  \ 2020-06-15: Improve documentation.
 
   \ vim: filetype=soloforth

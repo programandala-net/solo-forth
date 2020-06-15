@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005042341
+  \ Last modified: 202006152046
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -68,7 +68,7 @@ create slow-gxy>scra_ ( -- a ) asm
   \ PIXEL-ADD ROM routine ($22AA), to let the range of the y
   \ coordinate be 0..191 instead of 0..175.
   \
-  \ This is the default action of `gxy>scra_`.
+  \ ``slow-gxy>scra_`` is the default action of `gxy>scra_`.
   \
   \ When `fast-gxy>scra_` (which is faster but bigger, and
   \ requires the assembler) is needed, the application must use
@@ -573,7 +573,7 @@ unneeding pixels ?\ defer pixels ( -- n )
   \ pixels ( -- u )
   \
   \ Return the number _u_ of pixels that are set on the screen.
-  \ This is a deferred word set by `fast-pixels` or
+  \ ``pixels`` is a deferred word set by `fast-pixels` or
   \ `slow-pixels`.
   \
   \ See: `bits`.
@@ -627,7 +627,7 @@ code fast-pixels ( -- n )
   \ fast-pixels ( -- n )
   \
   \ Return the number _n_ of pixels set on the screen.
-  \ This is the default action of `pixels`.
+  \ ``fast-pixels`` is the default action of `pixels`.
   \
   \ See: `slow-pixels`, `bits`.
   \
@@ -646,9 +646,9 @@ unneeding slow-pixels ?( need bits need pixels
   \ slow-pixels ( -- n )
   \
   \ Return the number _u_ of pixels that are set on the screen.
-  \ This is the alternative action of the deferred word
-  \ `pixels`. ``slow-pixels`` simply executes `bits` with the
-  \ screen address and length on the stack.
+  \ ``slow-pixels`` is the alternative action of the deferred
+  \ word `pixels`. ``slow-pixels`` simply executes `bits` with
+  \ the screen address and length on the stack.
   \
   \ See: `fast-pixels`.
   \
@@ -894,5 +894,7 @@ need gxy>attra
   \ underscore.
   \
   \ 2020-05-04: Fix cross reference. Improve documentation.
+  \
+  \ 2020-06-15: Improve documentation.
 
   \ vim: filetype=soloforth

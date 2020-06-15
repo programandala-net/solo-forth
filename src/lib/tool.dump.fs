@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005182059
+  \ Last modified: 202006152113
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -81,6 +81,8 @@ unneeding fardump ?( need 16hex. need fartype-ascii
   \ Show the contents of _len_ bytes from far-memory address
   \ _ca_.
   \
+  \ See: `farwdump`, `dump`.
+  \
   \ }doc
 
 unneeding farwdump ?( need 16hex. need ?leave
@@ -97,6 +99,8 @@ unneeding farwdump ?( need 16hex. need ?leave
   \
   \ Show the contents of _len_ cells from far-memory address
   \ _a_.
+  \
+  \ See: `fardump`, `wdump`.
   \
   \ }doc
 
@@ -132,5 +136,7 @@ unneeding farwdump ?( need 16hex. need ?leave
   \ removed. Compact the code, saving another block.
   \
   \ 2020-05-18: Update: `+loop` was moved to the library.
+  \
+  \ 2020-06-15: Improve documentation.
 
   \ vim: filetype=soloforth

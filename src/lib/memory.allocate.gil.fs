@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201806041306
+  \ Last modified: 202006152237
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -17,7 +17,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ Credit
@@ -196,7 +197,7 @@ wordlist dup constant gil-heap-wordlist dup set-current >order
   \ code for `allocate`.
   \
   \ ``gil-allocate`` is the action of `allocate` in the `heap`
-  \ implementation based on written code written by Javier Gil,
+  \ implementation based on code written by Javier Gil,
   \ whose words are defined in `gil-heap-wordlist`.
   \
   \ See: `gil-free`.
@@ -217,7 +218,7 @@ wordlist dup constant gil-heap-wordlist dup set-current >order
   \ `gil-allocate`.
   \
   \ ``gil-free`` is the action of `free` in the `heap`
-  \ implementation based on written code written by Javier Gil,
+  \ implementation based on code written by Javier Gil,
   \ whose words are defined in `gil-heap-wordlist`.
   \
   \ }doc
@@ -297,6 +298,8 @@ previous ?)
   \
   \ 2018-06-04: Update documentation: remove mentions of
   \ aligned addresses.
+  \
+  \ 2020-06-15: Improve documentation.
 
   \ vim: filetype=soloforth
 

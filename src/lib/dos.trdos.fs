@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081220
+  \ Last modified: 202006152045
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -60,7 +60,7 @@ $18 cconstant dos-read-system-track
   \
   \ --dos-commands-- ( -- )
   \
-  \ Do nothing. This word is used only in ``need
+  \ Do nothing. ``--dos-commands--`` is used only in ``need
   \ --dos-commands--`` in order to load all of the TR-DOS
   \ command constants:
 
@@ -90,6 +90,8 @@ $18 cconstant dos-read-system-track
 
   \ These constants are used to make the TR-DOS calls more
   \ legible in `code` words.
+  \
+  \ See: `need`.
   \
   \ }doc
 
@@ -1410,5 +1412,7 @@ need read-file-descriptor need write-file-descriptor
   \
   \ 2020-06-08: Improve documentation: make _true_ and
   \ _false_ cross-references.
+  \
+  \ 2020-06-15: Improve documentation.
 
   \ vim: filetype=soloforth

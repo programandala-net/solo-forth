@@ -964,29 +964,18 @@ NOTE: Milestone: 0.14.0
 NOTE: Milestone: 0.14.0
 
 - Preserve the .adoc extension in the target files.
-- Add cross-references to `associative-case:`; see related words.
-- Cross-reference `ink-mask` in `attr>ink`.
-- Cross-reference `paper-mask` and `rshift` in `attr>paper`.
 - Add `assembler` to the description of all assembler words.
 - Add "Compile the Z80 jumps required" to assembler control-flow
   words.
-- Add cross-references to: `far@+`, `farc+!`, `farc@+`, `fardump`,
-  `farwdump`, `fars,`, `fconstant`, `fill`, etc.
-- Fix description of `g-emit_`: "_a_ is the address of..." or better
-  "Return address _a_ of...". Check similar words.
+- Improve: "_a_ is the address of..." -> "Return address _a_ of...".
 - Search for words without cross-references in order to complete them.
-- Fix "written code writte" in `gil-allocate` and family.
-- Cross-reference "constant" in `ufia`.
-- Cross-reference `here` in `unused`. Search for similar cases: words
-  that have definitions.
+- Search for words that have definitions whose main words are not
+  cross-references.
 - Cross-reference all words used in the definitions included in the
   glossary?
 - Cross-reference all Z80 conditions in assembler control-flow
   structures.
 - Make cross-references to `{` and `}` explicit.
-- Replace `This is` with the corresponding word.
-- Replace "A character variable" with "A `cvariable`".
-- Fix markup of _a_ in `#block-drives`.
 
 === 2020-06-10
 

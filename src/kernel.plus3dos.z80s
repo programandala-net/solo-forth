@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202005251818
+; Last modified: 202006152028
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -65,8 +65,8 @@ dos.tos:
   ; routine to be run.  All registers are passed intact to the
   ; DOS routine and are returned from it.
 
-  ; This is used when the IX register is a parameter of the DOS
-  ; routine.
+  ; This routine is used when the IX register is a parameter of
+  ; the DOS routine.
 
   ; The stack must be somewhere in central 32K (conforming to
   ; DOS requirements).
@@ -125,8 +125,8 @@ dos_out:
 
 dos.ix.preserve_ip:
 
-  ; This is used when the BC register (the Forth IP) is not a
-  ; parameter of the DOS routine.
+  ; This routine is used when the BC register (the Forth IP) is
+  ; not a parameter of the DOS routine.
 
   ; IX holds the address of the DOS routine to be run. All
   ; other registers are passed intact to the DOS routine and
@@ -1147,5 +1147,7 @@ endif ; defined plus3dos
 ;
 ; 2020-05-24: Add missing pronunciations. Replace "hash"
 ; notation with "number sign".
+;
+; 2020-06-15: Improve internal documentation.
 
 ; vim: filetype=z80:textwidth=64

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006031715
+  \ Last modified: 202006152108
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -448,7 +448,7 @@ BASE !
   \
   \ ttester ( -- )
   \
-  \ Do nothing. This word is used just for doing ``need
+  \ Do nothing. ``ttester`` is used just for doing ``need
   \ ttester``, loading `t{`, `->`, `}t` and other words, which
   \ are used by `hayes-test` and `forth2012-test-suite`..
   \
@@ -492,5 +492,7 @@ BASE !
   \ the library.
   \
   \ 2020-06-03: Improve documentation.
+  \
+  \ 2020-06-15: Improve documentation.
 
   \ vim: filetype=soloforth

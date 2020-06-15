@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803082255
+  \ Last modified: 202006152231
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -184,8 +185,9 @@ create g-emit_ ( -- a ) asm
   \
   \ g-emit_ ( -- a ) "g-emit-underscore"
   \
-  \ Address of a machine code routine that prints an 8x8 bits
-  \ character at graphic coordinates. Used by `g-emit-udg`.
+  \ _a_ is the address of a machine code routine that prints an
+  \ 8x8 bits character at graphic coordinates. Used by
+  \ `g-emit-udg`.
   \
   \ Input registers:
   \
@@ -247,5 +249,7 @@ create g-emit_ ( -- a ) asm
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-08: Add words' pronunciaton.
+  \
+  \ 2020-06-15: Improve documentation.
 
   \ vim: filetype=soloforth

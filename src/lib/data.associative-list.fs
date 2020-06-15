@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081220
+  \ Last modified: 202006152022
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -43,7 +43,7 @@ need search-wordlist
   \ Create a new associative list "name".
   \
   \ See: `entry:`, `centry:`, `2entry:`, `sentry:`, `item`,
-  \ `item?`, `items`, `associative:`.
+  \ `item?`, `items`, `associative:`, `associative-case:`.
   \
   \ }doc
 
@@ -209,5 +209,7 @@ unneeding items ?exit need alias need wordlist-words
   \
   \ 2020-06-08: Improve documentation: make _true_ and
   \ _false_ cross-references.
+  \
+  \ 2020-06-15: Improve documentation: add cross-references.
 
   \ vim: filetype=soloforth

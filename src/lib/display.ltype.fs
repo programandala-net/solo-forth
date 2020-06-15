@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006082153
+  \ Last modified: 202006152043
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -159,10 +159,10 @@ defer (lcr ( -- ) ' cr ' (lcr defer! -->
   \
   \ (lcr ( -- ) "paren-l-c-r"
   \
-  \ A deferred word whose default action is `cr`.  This is the
-  \ actual carriage return done by `lcr`, before updating the
-  \ data of the left-justified displaying system.  ``(lcr`` is
-  \ a hook for the application, for special cases.
+  \ A deferred word whose default action is `cr`.  ``(lcr`` is
+  \ the actual carriage return done by `lcr`, before updating
+  \ the data of the left-justified displaying system.  ``(lcr``
+  \ is a hook for the application, for special cases.
   \
   \ See: `ltype`.
   \
@@ -299,5 +299,7 @@ need n>str
   \ 2020-05-24: Replace "hash" notation with "number sign".
   \
   \ 2020-06-08: Update: now `0exit` is in the kernel.
+  \
+  \ 2020-06-15: Improve documentation.
 
   \ vim: filetype=soloforth

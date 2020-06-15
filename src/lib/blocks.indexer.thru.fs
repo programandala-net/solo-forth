@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005042036
+  \ Last modified: 202006152038
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -43,11 +43,11 @@ need evaluate need catch need use-default-located
   \ thru-index-reneeded ( ca len-- )
   \
   \ Search the index word list for word _ca len_. If found,
-  \ load the block it's associated to.  If not found, `throw` an
-  \ exception #-277 ("needed, but not indexed").
+  \ load the block it's associated to.  If not found, `throw`
+  \ an exception #-277 ("needed, but not indexed").
   \
-  \ This is an alternative action of the deferred word
-  \ `reneeded`.
+  \ ``thru-index-reneeded`` is an alternative action of the
+  \ deferred word `reneeded`.
   \
   \ }doc
 
@@ -63,8 +63,8 @@ need evaluate need catch need use-default-located
   \ found, `throw` an exception #-277 ("needed, but not
   \ indexed").
   \
-  \ This is an alternative action of the deferred word
-  \ `reneed`.
+  \ ``thru-index-reneed`` is an alternative action of the
+  \ deferred word `reneed`.
   \
   \ }doc
 
@@ -83,8 +83,8 @@ need evaluate need catch need use-default-located
   \ If not found, `throw` an exception #-277 ("needed, but not
   \ indexed").
   \
-  \ This is an alternative action of the deferred word
-  \ `needed`.
+  \ ``thru-index-needed`` is an alternative action of the
+  \ deferred word `needed`.
   \
   \ }doc
 
@@ -101,7 +101,8 @@ need evaluate need catch need use-default-located
   \ If not found, `throw` an exception #-277 ("needed, but not
   \ indexed").
   \
-  \ This is an alternative action of the deferred word `need`.
+  \ ``thru-index-need`` is an alternative action of the
+  \ deferred word `need`.
   \
   \ }doc
 
@@ -247,5 +248,7 @@ need evaluate need catch need use-default-located
   \ 2018-07-21: Improve documentation, linking `throw`.
   \
   \ 2020-05-04: Improve documentation.
+  \
+  \ 2020-06-15: Improve documentation.
 
   \ vim: filetype=soloforth

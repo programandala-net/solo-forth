@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005080128
+  \ Last modified: 202006152110
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -103,7 +103,7 @@ variable see-address
   \
   \ see-usage ( -- )
   \
-  \ Display the usage of `see`. This word is executed when
+  \ Display the usage of `see`. ``see-usage`` is executed when
   \ `manual-see` contains non-zero.
   \
   \ }doc
@@ -410,5 +410,7 @@ need see
   \
   \ 2020-05-08: Update requirements: `.name` has been moved
   \ from the kernel to the library.
+  \
+  \ 2020-06-15: Improve documentation.
 
   \ vim: filetype=soloforth

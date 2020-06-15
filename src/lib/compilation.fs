@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081703
+  \ Last modified: 202006152039
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1026,7 +1026,7 @@ unneeding eval ?( need evaluate
   \
   \ Parse and `evaluate` _name_.
   \
-  \ This is a common factor of `[const]`, `[2const]` and
+  \ ``eval`` is a common factor of `[const]`, `[2const]` and
   \ `[cconst]`.
   \
   \ See: `parse-name`.
@@ -1542,5 +1542,7 @@ unneeding warn-throw ?( need ?warn
   \ 2020-06-08: Improve documentation: make _true_ and _false_
   \ cross-references. Update: rename `latest-wordlist` to
   \ `last-wordlist`.
+  \
+  \ 2020-06-15: Improve documentation.
 
   \ vim: filetype=soloforth

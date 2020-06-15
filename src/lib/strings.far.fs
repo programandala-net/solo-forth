@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201807250056
+  \ Last modified: 202006152211
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -34,7 +35,9 @@ unneeding far,"
   \ far," ( "ccc<quote>" -- ) "far-comma-quote"
   \
   \ Parse "ccc" delimited by a double-quote and compile the
-  \ string in far memory.
+  \ string in `far` memory.
+  \
+  \ See: `fars,`, `parse`, `,"`. `s,`, `far-banks`.
   \
   \ }doc
 
@@ -46,8 +49,9 @@ unneeding fars, ?( need farplace need farallot
   \
   \ fars, ( ca len -- ) "fars-comma"
   \
-  \ Compile a string in far memory.
+  \ Compile a string in `far` memory.
   \
+  \ See: `farplace`, `farallot`, `np@`, `s,`.
   \
   \ }doc
 
@@ -327,6 +331,8 @@ code faruppers ( ca len -- )
   \ 2018-03-09: Add words' pronunciaton.
   \
   \ 2018-07-25: Use `char+` in `fars,`.
+  \
+  \ 2020-06-15: Improve documentation.
 
   \ vim: filetype=soloforth
 

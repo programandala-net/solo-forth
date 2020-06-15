@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041324
+  \ Last modified: 202006152025
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -51,7 +52,7 @@ create ocr-first bl c,
   \
   \ ocr-first ( -- ca ) "o-c-r-first"
   \
-  \ A character variable. _ca_ is the address of a byte
+  \ A `cvariable`. _ca_ is the address of a byte
   \ containing the code of the first printable character in the
   \ character set used by `ocr`, pointed by `ocr-font`.  By
   \ default it contais `bl`, the code of the space character.
@@ -69,7 +70,7 @@ create ocr-chars 127 bl - c,
   \
   \ ocr-chars ( -- ca ) "o-c-r-chars"
   \
-  \ A character variable. _ca_ is the address of a byte
+  \ A `cvariable`. _ca_ is the address of a byte
   \ containing the number of characters used by `ocr`, from the
   \ address pointed by `ocr-font`. By default it contais 95,
   \ the number of printable ASCII characters in the ROM
@@ -255,5 +256,8 @@ unneeding udg-ocr ?( need ocr need os-udg
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-06-04: Link `variable` in documentation.
+  \
+  \ 2020-06-15: Improve documentation: Add cross-references to
+  \ `cvariable`.
 
   \ vim: filetype=soloforth

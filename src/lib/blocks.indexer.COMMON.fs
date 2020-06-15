@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081220
+  \ Last modified: 202006152037
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -83,7 +83,7 @@ variable indexed-block
   \ Index block _u_, evaluating its header line.  The only word
   \ list in the search order must be `index-wordlist`.
   \
-  \ This is a common factor of `index-block` and
+  \ ``(index-block`` is a common factor of `index-block` and
   \ `(make-thru-index`.
   \
   \ }doc
@@ -165,5 +165,7 @@ unneeding indexer-words ?( need wordlist-words need .wordname
   \
   \ 2020-06-08: Improve documentation: make _true_ and
   \ _false_ cross-references.
+  \
+  \ 2020-06-15: Improve documentation.
 
   \ vim: filetype=soloforth

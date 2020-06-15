@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802051725
+  \ Last modified: 202006152022
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -65,7 +65,7 @@
   \ 30 unzx .    \ prints 2
   \ ----
 
-  \ See: `associative-list`.
+  \ See: `associative-list`, `associative-case:`.
   \
   \ }doc
 
@@ -83,5 +83,7 @@
   \
   \ 2018-02-05: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2020-06-15: Improve documentation: add cross-references.
 
   \ vim: filetype=soloforth

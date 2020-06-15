@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005241534
+  \ Last modified: 202006152050
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -86,10 +86,12 @@ create t# ( "name" -- n | d ) 36 c, x# immediate
   \ Parse _name_ and return the code _c_ of the its first
   \ character.
   \
-  \ This is a short and state-smart alternative to the standard
-  \ words `char` and `[char]`.
+  \ ``c#`` is a short and state-smart alternative to the
+  \ standard words `char` and `[char]`.
   \
   \ ``c#`` is an `immediate` word.
+  \
+  \ See: `state`.
   \
   \ }doc
 
@@ -107,5 +109,7 @@ create t# ( "name" -- n | d ) 36 c, x# immediate
   \ 2018-03-07: Add words' pronunciaton.
   \
   \ 2020-05-24: Replace "hash" notation with "number sign".
+  \
+  \ 2020-06-15: Improve documentation.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081623
+  \ Last modified: 202006152055
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -211,9 +211,9 @@ unneeding @+
   \
   \ @+ ( a -- a' x ) "fetch-plus"
   \
-  \ Fetch _x_ from _a_. Return _a'_, which is _a_
-  \ incremented by one cell.
-  \ This is handy for stepping through cell arrays.
+  \ Fetch _x_ from _a_. Return _a'_, which is _a_ incremented
+  \ by one cell. This is handy for stepping through cell
+  \ arrays.
   \
   \ See: `@`, `2@+`, `c@+`.
   \
@@ -227,9 +227,9 @@ unneeding 2@+
   \
   \ 2@+ ( a -- a' xd ) "two-fetch-plus"
   \
-  \ Fetch _xd_ from _a_. Return _a'_, which is _a_
-  \ incremented by two cells.
-  \ This is handy for stepping through double-cell arrays.
+  \ Fetch _xd_ from _a_. Return _a'_, which is _a_ incremented
+  \ by two cells. This is handy for stepping through
+  \ double-cell arrays.
   \
   \ See: `2@`, `@+`, `c@+`.
   \
@@ -245,7 +245,7 @@ unneeding c@+ ?\ need alias ' count alias c@+ ( ca -- ca' c )
   \ _ca_ incremented by one character.  This is handy for
   \ stepping through character arrays.
   \
-  \ This word is an `alias` of `count`.
+  \ ``c@+`` is an `alias` of `count`.
   \
   \ See: `c@`, `2@+`, `@+`.
   \
@@ -987,5 +987,7 @@ code cexchange ( ca1 ca2 -- )
   \
   \ 2020-06-08: Add `?`, moved from the kernel and rewritten in
   \ Forth.
+  \
+  \ 2020-06-15: Improve documentation.
 
   \ vim: filetype=soloforth

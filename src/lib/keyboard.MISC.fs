@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081220
+  \ Last modified: 202006152049
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -869,8 +869,8 @@ $10 $7FFE 2constant kk-b  -->
   \
   \ #kk ( -- n ) "dash-k-k"
   \
-  \ A `cconstant`. _n_ is the number of keyboard keys. This is
-  \ the number of physical rubber keys on the keyboard of the
+  \ A `cconstant`. _n_ is the number of keyboard keys, i.e. the
+  \ number of physical rubber keys on the keyboard of the
   \ original ZX Spectrum: 40.
   \
   \ See: `kk-ports`, `kk-chars`, `kk-0#`, `kk-0`, `kk-1#`,
@@ -1772,5 +1772,7 @@ unneeding key-caps-lock ?\ 6 cconstant key-caps-lock
   \
   \ 2020-06-08: Improve documentation: make _true_ and
   \ _false_ cross-references.
+  \
+  \ 2020-06-15: Improve documentation.
 
   \ vim: filetype=soloforth

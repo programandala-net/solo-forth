@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802041946
+  \ Last modified: 202006152022
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -64,6 +64,8 @@ need create:
   \ last.  Numbers can be in any order except 0 must be last.
   \ An actual zero or a no match causes the default to be
   \ executed.  Numbers can't be constants.
+  \
+  \ See: `associative:`, `associative-list`.
 
   \ }doc
 
@@ -78,5 +80,7 @@ need create:
   \
   \ 2018-02-04: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2020-06-15: Improve documentation: add cross-references.
 
   \ vim: filetype=soloforth

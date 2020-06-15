@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006082154
+  \ Last modified: 202006152053
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -281,7 +281,7 @@ unneeding 8* ?( code 8* ( x1 -- x2 ) e1 c, 29 c, 29 c, 29 c,
   \ most-significant bit, filling the vacated least-significant
   \ bit with zero.
   \
-  \ This is the same as ``3 lshift`` or ``2* 2* 2*``, but
+  \ ``8*`` is equivalent to ``3 lshift`` or ``2* 2* 2*``, but
   \ faster.
   \
   \ See: `2*`, `3*`, `lshift`, `8+`, `8-`, `*`.
@@ -303,9 +303,9 @@ unneeding 8+ ?( code 8+ ( n1 -- n2 ) E1 c, 11 c, 0008 , 19 c,
   \ Add 8 to _n1_, according to the operation of `+`, giving
   \ _n2_.
   \
-  \ This is the same as ``8 +`` but faster.
+  \ ``8+`` is equivalent to ``8 +`` but faster.
   \
-  \ See: `8-`, `1+`, `2+`, `8*`.
+  \ See: `8-`, `1+`, `2+`, `8*`, `+`.
   \
   \ }doc
 
@@ -326,9 +326,9 @@ unneeding 8- ?( code 8- ( n1 -- n2 )
   \ Subtract 8 from _n1_, according to the operation of `-`,
   \ giving _n2_.
   \
-  \ This is the same as ``8 -`` but faster.
+  \ ``8-`` is equivalent to ``8 -`` but faster.
   \
-  \ See: `8+`, `1-`, `2-`, `8*`.
+  \ See: `8+`, `1-`, `2-`, `8*`, `-`.
   \
   \ }doc
 
@@ -350,7 +350,7 @@ code 3* ( x1 -- x2 )
   \
   \ Multiply _n1_ by 3 giving _n2_.
   \
-  \ This is the same as ``3 *`` or ``dup dup + +``, but
+  \ ``3*`` is equivalent to ``3 *`` or ``dup dup + +``, but
   \ faster.
   \
   \ See: `2*`, `8*`, `*`, `+`.
@@ -577,10 +577,10 @@ code 0max ( n -- n | 0 )
   \
   \ 0max ( n -- n | 0 ) "zero-max"
   \
-  \ If _n_ is negative, return 0; else return _n_.  This is a
-  \ faster alternative to the idiom ``0 max``.
+  \ If _n_ is negative, return 0; else return _n_.  ``0max`` is
+  \ a faster alternative to the idiom ``0 max``.
   \
-  \ See: `max`, `min`.
+  \ See: `max`, `min`, `0`.
   \
   \ }doc
 
@@ -776,13 +776,13 @@ unneeding 2/ ?( code 2/ ( x1 -- x2 )
   \ least-significant bit, leaving the most-significant bit
   \ unchanged.
   \
-  \ This is the same as ``s>d 2 fm/mod swap drop``. It is not
+  \ ``2/`` is equivalent to ``s>d 2 fm/mod swap drop``. ``2/`` is not
   \ the same as ``2 /``, nor is it the same as ``1 rshift``.
   \
   \ Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
   \ Forth-2012 (CORE).
   \
-  \ See: `/`, `rshift`, `s>d`, `fm/mod`.
+  \ See: `/`, `rshift`, `s>d`, `fm/mod`, `2`.
   \
   \ }doc
 
@@ -1421,5 +1421,7 @@ code join ( b1 b2 -- x )
   \
   \ 2020-06-08: Improve documentation: make _true_ and _false_
   \ cross-references. Update: now `0exit` is in the kernel.
+  \
+  \ 2020-06-15: Improve documentation.
 
   \ vim: filetype=soloforth

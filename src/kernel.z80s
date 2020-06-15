@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202006122138
+; Last modified: 202006152239
 
 include version.z80s
 
@@ -146,17 +146,6 @@ developing: equ true
 
 default_origin:                   equ $5E00
 
-if trdos
-
-  ; TR-DOS needs $70 bytes of RAM for its system variables.  It
-  ; also uses a $100-byte buffer when accessing the disk.  This
-  ; buffer is allocated dynamically. Therefore, the default
-  ; origin of the Forth system must be moved up $170 bytes:
-
-  origin:                         equ default_origin+$170
-
-else
-
 if gplusdos
 
   ; XXX REMARK -- G+DOS needs 787 bytes for every output
@@ -166,11 +155,22 @@ if gplusdos
 
   origin:                         equ default_origin
 
-else
+endif
+
+if plus3dos
 
   origin:                         equ default_origin
 
 endif
+
+if trdos
+
+  ; TR-DOS needs $70 bytes of RAM for its system variables.  It
+  ; also uses a $100-byte buffer when accessing the disk.  This
+  ; buffer is allocated dynamically. Therefore, the default
+  ; origin of the Forth system must be moved up $170 bytes:
+
+  origin:                         equ default_origin+$170
 
 endif
 
@@ -1311,8 +1311,9 @@ endif
 ;
 ; }doc
 
-  ; XXX TODO -- `code` and `end-code` could be moved to the are
-  ; used by 382 words in 64 library modules.
+  ; XXX TODO -- `code` and `end-code` could be moved to the
+  ; library but they are used by 382 words in 64 library
+  ; modules.
 
   dw end_asm_,reveal_
   dw exit_
@@ -1747,7 +1748,7 @@ question_previous_bank:
 ;
 ; bank-index ( -- ca )
 ;
-; A character variable. _ca_ is the address of a byte containing
+; A `cvariable`. _ca_ is the address of a byte containing
 ; the bank index (0 .. 3) calculated by the latest execution of
 ; `far`.
 ;
@@ -2993,9 +2994,9 @@ fit_stringer_.allocate:
 ; not zero, the following in-line address is copied to IP to
 ; branch forward or backward.
 ;
-; NOTE: This is not Forth-83's ``?branch``, which is equivalent
-; to fig-Forth's ``0branch``, which is a more logical name to
-; represent the action: branch if zero. Solo Forth borrows
+; NOTE: This ``?branch`` is not Forth-83's ``?branch``, which is
+; equivalent to fig-Forth's ``0branch``, which is a more logical
+; name for the "branch if zero" action. Solo Forth borrows
 ; `0branch` from fig-Forth, and completes the branches after a
 ; logical naming convention shared with optional control flow
 ; words, e.g. `?exit`, `0exit`, `-exit`...
@@ -4108,7 +4109,7 @@ skip.end:
 ;
 ; current-channel ( -- ca )
 ;
-; A character variable. _ca_ is the address of a byte containing
+; A `cvariable`. _ca_ is the address of a byte containing
 ; the number of the latest output channel set by `channel`.
 ;
 ; }doc
@@ -4141,7 +4142,7 @@ skip.end:
 ;
 ; last-font-char ( -- ca )
 ;
-; A character variable. _ca_ is the address of a byte
+; A `cvariable`. _ca_ is the address of a byte
 ; containing the code of the last character displayed from the
 ; current font by the current action of `emit` and by `g-emit`.
 ; Higher characters are managed apart, displayed by `emit-udg`
@@ -4571,7 +4572,7 @@ endif
 ;
 ; cursor-char ( -- ca )
 ;
-; A character variable. _ca_ is the address of a byte containing
+; A `cvariable`. _ca_ is the address of a byte containing
 ; the character code of the cursor used by `xkey`.  Note this is
 ; a character variable, thus it has to be fetched with `c@` and
 ; modified with `c!`.
@@ -6498,8 +6499,8 @@ c_fetch.hl:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See: `2constant`, `cconstant`, `!>`, `const`, `[const]`,
-; `value`, `variable`.
+; See: `2constant`, `cconstant`, `fconstant`, `!>`, `const`,
+; `[const]`, `value`, `variable`.
 ;
 ; }doc
 
@@ -6817,9 +6818,9 @@ do_user:
 ;
 ; +origin ( n -- a ) "plus-origin"
 ;
-; Leave the memory address relative by _n_ bytes to the origin
-; parameter area.  ``+origin`` is used to access or modify the
-; boot-up parameters at the origin area.
+; Leave the memory address _a_ relative by _n_ bytes to the
+; origin parameter area.  ``+origin`` is used to access or
+; modify the boot-up parameters at the origin area.
 ;
 ; See the details in the source of the kernel.
 ;
@@ -7349,12 +7350,12 @@ source.other:
 ;
 ; Add 2 to _n1_, according to the operation of `+`, giving _n2_.
 ;
-; This is the same as ``2 +`` but faster.
+; ``2+`` is equivalent to ``2 +`` but faster.
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set).
 ;
-; See: `2-`, `1+`, `8+`, `c@2+`.
+; See: `2-`, `1+`, `8+`, `c@2+`, `2`, `+`.
 ;
 ; }doc
 
@@ -7393,12 +7394,12 @@ source.other:
 ; Subtract 1 from _n1_, according to the operation of `-`,
 ; giving _n2_.
 ;
-; This is the same as ``1 -`` but faster.
+; ``1-`` is equivalent to ``1 -`` but faster.
 ;
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set).
 ;
-; See: `1+`, `2-`, `8-`, `c@1-`.
+; See: `1+`, `2-`, `8-`, `c@1-`, `1`, `-`.
 ;
 ; }doc
 
@@ -7437,12 +7438,12 @@ source.other:
 ;
 ; Add 1 to _n1_, according to the operation of `+`, giving _n2_.
 ;
-; This is the same as ``1 +`` but faster.
+; ``1+`` is equivalent to ``1 +`` but faster.
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set).
 ;
-; See: `1-`, `2+`, `8+`, `c@1+`.
+; See: `1-`, `2+`, `8+`, `c@1+`, `1`, `+`.
 ;
 ; }doc
 
@@ -7482,12 +7483,12 @@ source.other:
 ; Subtract 2 from _n1_, according to the operation of `-`,
 ; giving _n2_.
 ;
-; This is the same as ``2 -`` but faster.
+; ``2-`` is equivalent to ``2 -`` but faster.
 ;
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set).
 ;
-; See: `2+`, `1-`, `8-`, `c@2-`.
+; See: `2+`, `1-`, `8-`, `c@2-`, `2`, `-`.
 ;
 ; }doc
 
@@ -7618,7 +7619,7 @@ source.other:
 ; : s, ( ca len -- ) tuck here place char+ allot ;
 ; ----
 
-; See: `c,`, `here`, `cmove`, `allot`, `count`.
+; See: `c,`, `here`, `cmove`, `allot`, `count`, `fars,`.
 ;
 ; }doc
 
@@ -9304,7 +9305,7 @@ minus_trailing.begin:
 ; : ," ( -- ) '"' parse s, ;
 ; ----
 
-; See: `parse`, `s,`.
+; See: `parse`, `s,`, `far,"`.
 ;
 ; }doc
 
@@ -9553,7 +9554,7 @@ simple_accept.end:
 ;
 ; #block-drives ( -- ca ) "number-sign-block-drives"
 ;
-; A character variable. _ca is the address of a byte containing
+; A `cvariable`. _ca_ is the address of a byte containing
 ; the number of block drives defined in `block-drives`, i.e. the
 ; number of drives that are used for blocks.  ``#block-drives``
 ; could be modified manually, provided also `block-drives` is
@@ -9656,6 +9657,8 @@ refill.not_loading:
 ; Origin: fig-Forth, Forth-83 (Required Word Set), Forth-94
 ; (CORE), Forth-2012 (CORE).
 ;
+; See: `erase`, `farfill`, `move`.
+;
 ; }doc
 
   exx                 ; save the Forth IP
@@ -9692,6 +9695,8 @@ fill.done:
 ;
 ; Origin: fig-Forth, Forth-83 (Controlled Reference Words), Forth-94
 ; (CORE EXT), Forth-2012 (CORE EXT).
+;
+; See: `fill`, `move`.
 ;
 ; }doc
 
@@ -13263,7 +13268,7 @@ block.end:
 ;
 ; Origin: eForth.
 ;
-; NOTE: This word is called ``><`` in Forth-79 (Word Reference
+; NOTE: ``flip`` is called ``><`` in Forth-79 (Word Reference
 ; Set) and Forth-83 (Uncontrolled Reference Words), ``swab`` in
 ; LaForth (c. 1980) and ``cswap`` in other Forth systems.
 ;
@@ -14372,6 +14377,8 @@ number_sign_s.begin:
 ; (Double Number Extension Word Set), Forth-94 (DOUBLE),
 ; Forth-2012 (DOUBLE).
 ;
+; See: `ud.`, `.`, `f.`.
+;
 ; }doc
 
   dw zero_d_dot_r_,space_
@@ -14387,7 +14394,7 @@ number_sign_s.begin:
 ; Display signed integer _n_ according to current `base`,
 ; followed by one blank.
 ;
-; See: `?`.
+; See: `?`, `u.`, `d.`, `f.`.
 ;
 ; }doc
 
@@ -14820,7 +14827,8 @@ system_stack_pointer:
 
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
-; See: `limit`, `farunused`, `os-unused`, `fyi`, `greeting`.
+; See: `limit`, `here`, `farunused`, `os-unused`, `fyi`,
+; `greeting`.
 ;
 ; }doc
 

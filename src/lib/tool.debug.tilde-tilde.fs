@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005190025
+  \ Last modified: 202006152110
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -45,7 +45,7 @@ variable ~~? ~~? on  create ~~y 0 c,
   \
   \ ~~y ( -- ca ) "tilde-tilde-y"
   \
-  \ A character variable. _ca_ is the address of a character
+  \ A `cvariable`. _ca_ is the address of a character
   \ containing the row the debugging information compiled by
   \ `~~` will be printed at.  Its default value is zero.
   \
@@ -57,7 +57,7 @@ create ~~resume-key bl c,  create ~~quit-key 'q' c,
   \
   \ ~~quit-key ( -- ca ) "tilde-tilde-quit-key"
   \
-  \ A character variable. _ca_ is the address of a character
+  \ A `cvariable`. _ca_ is the address of a character
   \ containing the key code used to quit at the debugging
   \ points compiled by `~~`. If its value is not zero,
   \ `~~control` will wait for a key press in order to quit the
@@ -71,7 +71,7 @@ create ~~resume-key bl c,  create ~~quit-key 'q' c,
   \
   \ ~~resume-key ( -- ca ) "tilde-tilde-resume-key"
   \
-  \ A character variable. _ca_ is the address of a character
+  \ A `cvariable`. _ca_ is the address of a character
   \ containing the key code used to resume execution at the
   \ debugging points compiled by `~~`.  If ``~~resume-key``
   \ contains zero, `~~control` will not wait for a key.  If
@@ -133,8 +133,8 @@ defer ~~info ( nt line block -- )  ' (~~info ' ~~info defer!
   \ ~~press? ( c ca -- f ) "tilde-tilde-press-question"
   \
   \ Is the character stored at _ca_ not zero and equal to _c_?
-  \ This is a factor of `~~control` used to check key presses,
-  \ in the code compiled by `~~`.
+  \ ``~~press?`` is a factor of `~~control` used to check key
+  \ presses, in the code compiled by `~~`.
   \
   \ }doc
 
@@ -183,8 +183,8 @@ defer ~~before-info ( -- )  defer ~~after-info ( -- )
   \ ~~before-info ( -- ) "tilde-tilde-before-info"
   \
   \ Executed at the start of the debugging code compiled by
-  \ `~~`.  This is a deferred word. Its default action is
-  \ `~~save-xy`, which saves the cursor coordinates.
+  \ `~~`.  ``~~before-info`` is a deferred word. Its default
+  \ action is `~~save-xy`, which saves the cursor coordinates.
   \
   \ See: `~~after-info`, `~~save-xy`.
   \
@@ -195,7 +195,7 @@ defer ~~before-info ( -- )  defer ~~after-info ( -- )
   \ ~~after-info ( -- ) "tilde-tilde-after-info"
   \
   \ Executed at the end of the debugging code compiled by `~~`.
-  \ This is a deferred word. Its default action is
+  \ ``~~after-info`` is a deferred word. Its default action is
   \ `~~restore-xy`, which restores the cursor coordinates.
   \
   \ See: `~~before-info`, `~~restore-xy`.
@@ -210,7 +210,7 @@ defer ~~before-info ( -- )  defer ~~after-info ( -- )
   \
   \ ~~save-xy ( -- ) "tilde-tilde-save-x-y"
   \
-  \ Save the cursor coordinates.  This is the default
+  \ Save the cursor coordinates.  ``~~save-xy`` is the default
   \ action of `~~before-info`.
   \
   \ ``~~save-xy`` is part of the `~~` tool.
@@ -227,8 +227,8 @@ defer ~~before-info ( -- )  defer ~~after-info ( -- )
   \
   \ ~~restore-xy ( -- ) "tilde-tilde-restore-x-y"
   \
-  \ Restore the cursor coordinates.  This is the default
-  \ action of `~~after-info`.
+  \ Restore the cursor coordinates.  ``~~restore-xy`` is the
+  \ default action of `~~after-info`.
   \
   \ ``~~restore-xy`` is part of the `~~` tool.
   \
@@ -301,14 +301,14 @@ defer ~~before-info ( -- )  defer ~~after-info ( -- )
   \ 2016-12-04: Add `~~app-info`. Need `.s` (it's still in the
   \ kernel, but only during development).
   \
-  \ 2016-12-24: Improve `~~info` to produce clearer output.
-  \ Set default quit and resume keys: `q` and space. Remove
-  \ `~~x`, which is not useful because two full lines are used.
+  \ 2016-12-24: Improve `~~info` to produce clearer output. Set
+  \ default quit and resume keys: `q` and space. Remove `~~x`,
+  \ which is not useful because two full lines are used.
   \
   \ 2017-01-17: Improve documentation.
   \
-  \ 2017-02-17: Update notation "behaviour" to "action".
-  \ Update cross references.
+  \ 2017-02-17: Update notation "behaviour" to "action". Update
+  \ cross references.
   \
   \ 2017-02-27: Improve documentation.
   \
@@ -343,5 +343,8 @@ defer ~~before-info ( -- )  defer ~~after-info ( -- )
   \
   \ 2020-05-19: Update: `2variable` has been moved to the
   \ library.
+  \
+  \ 2020-06-15: Improve documentation: Add cross-references to
+  \ `cvariable`; replace "This is" with the corresponding word.
 
   \ vim: filetype=soloforth

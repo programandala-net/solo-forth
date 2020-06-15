@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005051433
+  \ Last modified: 202006152041
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -448,8 +448,8 @@ create xy>attra_ ( -- a ) asm
   \ xy>attra_ ( -- a ) "x-y-to-attribute-a-underscore"
   \
   \ Return the address _a_ of a Z80 routine that calculates the
-  \ attribute address of a cursor position.  This is a modified
-  \ version of the ROM routine at 0x2583.
+  \ attribute address of a cursor position.  This routine is a
+  \ modified version of the ROM routine at 0x2583.
   \
   \ Input:
   \
@@ -574,5 +574,7 @@ code xy>attra ( col row -- a )
   \ for cursor coordinates.
   \
   \ 2020-05-05: Fix typos.
+  \
+  \ 2020-06-15: Improve documentation.
 
   \ vim: filetype=soloforth

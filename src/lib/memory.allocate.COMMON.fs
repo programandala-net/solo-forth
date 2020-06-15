@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006082154
+  \ Last modified: 202006152026
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -62,7 +62,7 @@ create heap-bank ( -- ca ) 0 c,
   \
   \ heap-bank  ( -- ca )
   \
-  \ A character variable _ca_ that contains the memory bank
+  \ A `cvariable` _ca_ that contains the memory bank
   \ used to store the `heap`, when the memory heap was created
   \ by `bank-heap` or `farlimit-heap`. If the heap was created
   \ by `allot-heap` or `limit-heap`, ``heap-bank`` contains
@@ -346,8 +346,8 @@ unneeding set-heap
   \ `bank-heap`, `heap-bank`, `heap-in`, `heap-out`,
   \ `limit-heap`...
   \
-  \ 2017-04-09: Add `farlimit-heap`. Improve documentation.
-  \ Add `get-heap` and `set-heap`.
+  \ 2017-04-09: Add `farlimit-heap`. Improve documentation. Add
+  \ `get-heap` and `set-heap`.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
@@ -361,5 +361,8 @@ unneeding set-heap
   \ aligned addresses.
   \
   \ 2020-06-08: Update: now `0exit` is in the kernel.
+  \
+  \ 2020-06-15: Improve documentation: Add cross-reference to
+  \ `cvariable`.
 
   \ vim: filetype=soloforth

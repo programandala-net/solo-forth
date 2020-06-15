@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081220
+  \ Last modified: 202006152019
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -311,7 +311,7 @@ code attr>paper ( b1 -- b2 )
   \ : attr>paper ( b1 -- b2 ) paper-mask and 3 rshift ;
   \ ----
 
-  \ See: `attr>ink`, `papery`.
+  \ See: `attr>ink`, `papery`, `paper-mask`, `rshift`.
   \
   \ }doc
 
@@ -337,7 +337,7 @@ code attr>ink ( b1 -- b2 )
   \ : attr>ink ( b1 -- b2 ) ink-mask and ;
   \ ----
 
-  \ See: `attr>paper`.
+  \ See: `attr>paper`, `ink-mask`.
   \
   \ }doc
 
@@ -1334,5 +1334,7 @@ unneeding (0-1-8-color.
   \
   \ 2020-06-08: Improve documentation: make _true_ and
   \ _false_ cross-references.
+  \
+  \ 2020-06-15: Improve documentation: add cross-references.
 
   \ vim: filetype=soloforth

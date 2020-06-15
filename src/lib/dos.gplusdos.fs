@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006110017
+  \ Last modified: 202006152236
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -287,7 +287,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ its own buffers `ufia1` and `ufia2` for internal
   \ operations.
   \
-  \ ``ufia`` is a constant. Its default value is `ufia0`, and
+  \ ``ufia`` is a `constant`. Its default value is `ufia0`, and
   \ can be set with `default-ufia`. The value is changed with
   \ `!>` by some words.
 
@@ -2487,5 +2487,7 @@ need write-file need read-file need .ufia
   \ _false_ cross-references.
   \
   \ 2020-06-11: Fix typos in documentation.
+  \
+  \ 2020-06-15: Improve documentation.
 
   \ vim: filetype=soloforth

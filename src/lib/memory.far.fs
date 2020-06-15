@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006090027
+  \ Last modified: 202006152107
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -54,7 +54,7 @@ unneeding far-hl_ ?\ ' far 2+ @ constant far-hl_
   \ Address of the ``far.hl`` routine of the kernel, which
   \ converts the far-memory address ($0000..$FFFF) hold in the
   \ HL register to its actual equivalent ($C000..$FFFF) and
-  \ pages in the corresponding memory bank.
+  \ page in the corresponding memory bank.
   \
   \ This is the routine called by `far`. ``far-hl_`` is used in
   \ `code` words.
@@ -280,10 +280,10 @@ unneeding farfill ?(
   \ farfill ( ca len b -- ) "far-fill"
   \
   \ If _len_ is not zero, store _b_ in each of _len_
-  \ consecutive characters of far memory beginning at _a_.
+  \ consecutive characters of `far` memory beginning at _a_.
   \
   \ See: `farerase`, `farallot`, `far-n,`, `farc!`,
-  \ `far-banks`.
+  \ `far-banks`, `fill`.
   \
   \ }doc
 
@@ -296,7 +296,7 @@ unneeding farerase
   \ farerase ( ca len -- ) "far-erase"
   \
   \ If _len_ is greater than zero, clear all bits in each of
-  \ _len_ consecutive address units of far memory beginning at
+  \ _len_ consecutive address units of `far` memory beginning at
   \ _ca_.
   \
   \ See: `farfill`, `farallot`, `far-n,`, `farc!`, `far-banks`.
@@ -308,8 +308,28 @@ unneeding farerase
 unneeding far2@
 ?\ : far2@ ( a -- d ) dup cell+ far@ swap far@ ;
 
+  \ doc{
+  \
+  \ far2@ ( a -- d ) "far-two-fetch"
+  \
+  \ Fetch _d_ from far-memory address _a_.
+  \
+  \ See: `far2!`, `far2@+`, `far@`, `farc@`, `far-banks`, `2@`.
+  \
+  \ }doc
+
 unneeding far2!
 ?\ : far2! ( d a -- ) swap over far! cell+ far! ;
+
+  \ doc{
+  \
+  \ far2! ( d a -- ) "far-two-store"
+  \
+  \ Store _d_ into far-memory address _a_.
+  \
+  \ See: `far2@`, `far!`, `farc!`, `far-banks`, `2!`.
+  \
+  \ }doc
 
 unneeding far@+
 ?\ : far@+ ( a -- a' x ) dup cell+ swap far@ ;
@@ -321,6 +341,8 @@ unneeding far@+
   \ Fetch _x_ from far-memory address _a_. Return _a'_, which
   \ is _a_ incremented by one cell.  This is handy for stepping
   \ through cell arrays.
+  \
+  \ See: `farc@+`, `far@+`, `far2@+,` `@+`, `far-banks`.
   \
   \ }doc
 
@@ -335,6 +357,8 @@ unneeding farc@+
   \ _ca'_, which is _ca_ incremented by one character.  This
   \ is handy for stepping through character arrays.
   \
+  \ See: `far@+`, `far-banks`.
+  \
   \ }doc
 
 unneeding far+!
@@ -347,6 +371,8 @@ unneeding far+!
   \ Add _n|u_ to the single-cell number at far-memory address
   \ _a_.
   \
+  \ See: `farc+!`, `+!`, `farc!`, `far-banks`.
+  \
   \ }doc
 
 unneeding farc+!
@@ -356,7 +382,9 @@ unneeding farc+!
   \
   \ farc+! ( c ca - ) "far-c-plus-store"
   \
-  \ Add _c_ to the char at far-memory address _ca_
+  \ Add _c_ to the char at far-memory address _ca_.
+  \
+  \ See: `far+!`, `c+!`, `farc!`, `far-banks`.
   \
   \ }doc
 
@@ -370,6 +398,8 @@ unneeding 2@+ ?exit need far2@
   \ Fetch _xd_ from _a_. Return _a'_, which is _a_ incremented
   \ by two cells.  This is handy for stepping through
   \ double-cell arrays.
+  \
+  \ See: `far@+`, `farc@+`, `far2@`, `2@+`. `far-banks`.
   \
   \ }doc
 
@@ -660,5 +690,7 @@ unneeding bank-start ?\ $C000 constant bank-start
   \
   \ 2020-06-09: Move `/bank` and `bank-start` from the
   \ <memory.bank.fs> module.
+  \
+  \ 2020-06-15: Improve documentation.
 
   \ vim: filetype=soloforth

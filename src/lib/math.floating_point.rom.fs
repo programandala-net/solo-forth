@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202005182051
+  \ Last modified: 202006152229
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -106,7 +106,7 @@ need float need float-
   \
   \ fp0  ( -- a ) "f-p-zero"
   \
-  \ _a_ is the address of a cell containing the bottom address
+  \ Return address _a_ of a cell containing the bottom address
   \ of the floating-point stack. _a_ is the STKBOT variable of
   \ the OS.
   \
@@ -123,8 +123,9 @@ need float need float-
   \
   \ fp  ( -- a ) "f-p"
   \
-  \ _a_ is the address of a cell containing the floating-point
-  \ stack pointer. _a_ is the STKEND variable of the OS.
+  \ Return the address _a_ of a cell containing the
+  \ floating-point stack pointer. _a_ is the STKEND variable of
+  \ the OS.
   \
   \ NOTE: The floating-point stack (which is the OS calculator
   \ stack) grows towards higher memory, and ``fp`` points to
@@ -140,7 +141,7 @@ need float need float-
   \
   \ (fp@ ( -- fa ) "paren-f-p-fetch"
   \
-  \ _fa_ is the address above the top of the floating-point
+  \ Return the address _fa_ above the top of the floating-point
   \ stack. ``(fp@``  is a factor of `fp@`.
   \
   \ See: `fp`.
@@ -153,7 +154,8 @@ need float need float-
   \
   \ fp@ ( -- fa ) "f-p-fetch"
   \
-  \ _fa_ is the address of the top of the floating-point stack.
+  \ Return the address _fa_ of the top of the floating-point
+  \ stack.
   \
   \ See: `fp`.
   \
@@ -708,6 +710,8 @@ code f! ( fa -- ) ( F: r -- )
   \
   \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
   \
+  \ See: `f@`, `f,`, `!`, `2!`, `c!`.
+  \
   \ }doc
 
 code f@ ( fa -- ) ( F: -- r )
@@ -724,6 +728,8 @@ code f@ ( fa -- ) ( F: -- r )
   \ _r_ is the value stored at _fa_.
   \
   \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
+  \
+  \ See: `f!`, `@`, `2@`, `c@`.
   \
   \ }doc
 
@@ -742,9 +748,11 @@ need float need f! need f@
   \
   \ Origin: Gforth.
   \
+  \ See: `f!`.
+  \
   \ }doc
 
-: fconstant ( "name" -- ) ( F: r -- ) create  f,  does>  f@ ;
+: fconstant ( "name" -- ) ( F: r -- ) create f, does> f@ ;
 
   \ doc{
   \
@@ -755,9 +763,28 @@ need float need f! need f@
   \
   \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
   \
+  \ See: `constant`, `2constant`, `cconstant`, `fvariable`.
+  \
   \ }doc
 
-: fvariable ( "name" -- ) create  float allot ;
+: fvariable ( "name" -- ) create float allot ;
+
+  \ doc{
+  \
+  \ fvariable ( "name" -- ) ( F: -- ) "f-constant"
+  \
+  \ Parse _name_. `create` a definition for _name_, which is
+  \ referred to as a "floating-point variable". `allot` a
+  \ `float` of data space, the data field of _name_, to hold
+  \ the contents of the variable. When _name_ is later
+  \ executed, the address of its data field is placed on the
+  \ data stack.
+  \
+  \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
+  \
+  \ See: `constant`, `2constant`, `cconstant`, `fconstant`.
+  \
+  \ }doc
 
 ( facos fasin fatan fcos fsin ftan )
 
@@ -861,7 +888,7 @@ code (f. ( F: r -- ) C5 c, CD c, 2DE3 , C1 c, jpnext, end-code
   \
   \ f. ( F: r -- )
   \
-  \ See: `.fs`.
+  \ See: `.`, `d.`, `.fs`.
   \
   \ }doc
   \
@@ -935,7 +962,6 @@ code floor ( F: r1 -- r2 )
   \ See: `ftrunc`, `fround`.
   \
   \ }doc
-
 
 code ftrunc ( F: r1 -- r2 )
   calculator |truncate end-calculator jpnext, end-code
@@ -1161,5 +1187,7 @@ unneeding dfaligned
   \ 2020-05-05: Fix documentation markup.
   \
   \ 2020-05-18: Update: `+loop` was moved to the library.
+  \
+  \ 2020-06-15: Improve documentation.
 
   \ vim: filetype=soloforth
