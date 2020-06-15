@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006152036
+  \ Last modified: 202006160034
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -138,10 +138,12 @@ defer unlocated ( block -- )
   \
   \ unlocated ( block -- )
   \
-  \ Deferred word called in the loop of `located`, when the
+  \ A deferred word called in the loop of `located`, when the
   \ word searched for is not located in _block_.  Its default
   \ action is `drop`, which is changed by `use-fly-index`
   \ in order to index the blocks on the fly.
+  \
+  \ See: `defer`.
   \
   \ }doc
 
@@ -267,9 +269,9 @@ defer (located ' 1-line-(located ' (located defer!  -->
   \ Only the blocks delimited by `first-locatable` and
   \ `last-locatable` are searched.
   \
-  \ ``(located`` is a deferred word. Its default value is
+  \ ``(located`` is a deferred word. Its default action is
   \ `multiline-(located`, which is under development; its
-  \ alternative old value is `1-line-(located`.
+  \ alternative old action is `1-line-(located`.
   \
   \ ``(located`` is the default action of `located`, which is
   \ changed by `use-fly-index`.
@@ -879,9 +881,11 @@ unneeding need-here ?(
   \
   \ 2020-05-24: Fix typo.
   \
-  \ 2020-06-08: Improve documentation: make _true_ and
-  \ _false_ cross-references.
+  \ 2020-06-08: Improve documentation: make _true_ and _false_
+  \ cross-references.
   \
   \ 2020-06-15: Improve documentation.
+  \
+  \ 2020-06-16: Improve documentation on deferred words.
 
   \ vim: filetype=soloforth

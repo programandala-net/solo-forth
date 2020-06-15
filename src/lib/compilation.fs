@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006152039
+  \ Last modified: 202006160052
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -871,7 +871,7 @@ unneeding no-exit ?\ : no-exit ( -- ) cell negate allot ;
   \ used after a colon definition that contains and end-less
   \ loop, or exits only through an explicit `exit`, `quit` or
   \ other means. In such cases the `exit` compiled by `;` can
-  \ never be reached, so its space is wasted. 
+  \ never be reached, so its space is wasted.
   \
   \ Usage examples:
 
@@ -1230,12 +1230,14 @@ unneeding warn.throw ?( need ?warn
   \
   \ warn.throw ( ca len -- ca len ) "warn-dot-throw"
   \
-  \ Alternative action for the deferred word `warn`.  If the
-  \ contents of the user variable `warnings` is not zero and
-  \ the word name _ca len_ is already defined in the current
-  \ compilation word list, display a `throw` exception #-257
-  \ ("warning: is not unique") without actually throwing an
-  \ exception.
+  \ If the contents of the user variable `warnings` is not zero
+  \ and the word name _ca len_ is already defined in the
+  \ current compilation word list, display a `throw` exception
+  \ #-257 ("warning: is not unique") without actually throwing
+  \ an exception.
+  \
+  \ ``warn.throw`` is an alternative action of the deferred
+  \ word `warn`.
   \
   \ See: `warnings`, `warn-throw`, `warn.message`, `?warn`.
   \
@@ -1252,10 +1254,12 @@ unneeding warn.message ?( need ?warn need >name need .name
   \
   \ warn.message ( ca len -- ca len ) "warn-dot-message"
   \
-  \ Alternative action for the deferred word `warn`.  If the
-  \ contents of the user variable `warnings` is not zero and
-  \ the word name _ca len_ is already defined in the current
-  \ compilation word list, display a warning message.
+  \ If the contents of the user variable `warnings` is not zero
+  \ and the word name _ca len_ is already defined in the
+  \ current compilation word list, display a warning message.
+  \
+  \ ``warn.message`` is an alternative action of the deferred
+  \ word `warn`.
   \
   \ See: `warnings`, `warn.throw`, `warn-throw`, `?warn`.
   \
@@ -1272,11 +1276,13 @@ unneeding warn-throw ?( need ?warn
   \
   \ warn-throw ( ca len -- ca len )
   \
-  \ Alternative action for the deferred word `warn`.  If the
-  \ contents of the user variable `warnings` is not zero and
-  \ the word name _ca len_ is already defined in the current
-  \ compilation word list, `throw` an exception #-257 instead
-  \ of printing a warning message.
+  \ If the contents of the user variable `warnings` is not zero
+  \ and the word name _ca len_ is already defined in the
+  \ current compilation word list, `throw` an exception #-257
+  \ instead of printing a warning message.
+  \
+  \ ``warn-throw`` is the default action of the deferred word
+  \ `warn`.
   \
   \ See: `warnings`, `warn.throw`, `warn.message`, `?warn`.
   \
@@ -1544,5 +1550,7 @@ unneeding warn-throw ?( need ?warn
   \ `last-wordlist`.
   \
   \ 2020-06-15: Improve documentation.
+  \
+  \ 2020-06-16: Improve documentation.
 
   \ vim: filetype=soloforth
