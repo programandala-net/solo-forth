@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-06-12
+:revdate: 2020-06-16
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1042,15 +1042,13 @@ created in them, with a note: "not available".
 
 Remove "implementation-dependent". See `:`.
 
-=== 2017-12-14
+=== 2017-12-12, 2020-06-16
 
-Remove "colon-sys" or add it everywhere: `:`, `;`...
-It's not used in Solo Forth.
+NOTE: Milestone: 0.14.0
 
-=== 2017-12-12
-
-Add cross-referentes to `defer` to all deferred words. Already done in
-the kernel.
+Add cross-references to `defer` to all deferred words. Already done in
+the kernel. Better yet: add "(see `defere`)" after "is a deferred
+word".
 
 === 2017-12-11
 
@@ -1091,12 +1089,14 @@ notations.
 Include the description of the attribute OS variables into the related
 words, or into a section of the manual.
 
-=== 2017-05-04
+=== 2017-05-04, 2020-06-16
+
+NOTE: Milestone: 0.14.0
 
 Add the following note to state-smart words:
 
 ____
-WARNING: ``XXX`` is a state-smart word.
+WARNING: ``XXX`` is a state-smart word (see `state`).
 ____
 
 === 2017-04-27
@@ -1119,42 +1119,35 @@ Section about the AY-3-8912 sound generator, using the description
 from the ZX Spectrum 128 ROM0 disassembly.  Replace the extracts
 included in the glossary with a link to the section.
 
-=== 2017-02-27
+=== 2017-02-27, 2020-06-16
 
-Document
-<flow.select.fs>,
-<flow.dijktstra.fs>,
-`is`, `[is]`, `<is>`.
+NOTE: Milestone: 0.15.0
 
-=== 2017-02-27
-
-Markup the credit notices and add them to an annex of the manual.
+- Finish and document <flow.select.fs>.
+- Add usage examples to <flow.dijktstra.fs>.
 
 === 2017-02-27
 
-Create <doc/extra/> to holed external useful documents about Forth and
+Mark the credit notices and add them to an annex of the manual.
+
+=== 2017-02-27
+
+Create <doc/extra/> to hold external useful documents about Forth and
 ZX Spectrum.
 
 === 2017-02-24
 
 Add attributes to block quotes. See <sound.48.fs>.
 
-=== 2017-02-24
+=== 2017-02-24, 2020-06-16
 
-Update "Warning:" and "Note:" to Asciidoctor markup "WARNING:" and
-"NOTE:" where appropiate.
+NOTE: Milestone: 0.14.0
 
-=== 2017-02-21, 2017-03-11
-
-Make one single manual, not one for each DOS. The issue about cross
-references of homonymous words has been be solved, but all such links
-need to be updated with the filename.
+Update "Note:" to Asciidoctor markup "NOTE:" where appropiate.
 
 === 2017-02-17
 
-Include the execution table in the documentation of `interpret-table`.
-
-=== 2017-02-17
+NOTE: Milestone: 0.14.0
 
 In glossary entries, change "its equivalent code" to "its equivalent
 definition".  The reason is "Definition:" is used as heading in normal
@@ -1216,6 +1209,8 @@ Adapt the markups of Z88 CamelForth to extract the glossary from the
 source.
 
 === 2017-11-06
+
+NOTE: Milestone: 0.14.0
 
 Change notation `"name"` to `_name_` in descriptions.
 
@@ -1534,6 +1529,7 @@ Notes:
 - `>file` works.
 - `file>` works.
 
+
 // Errors {{{1
 == Errors
 
@@ -1555,6 +1551,8 @@ Use term "throw code" instead of "exception code"?
 
 === 2016-11-27
 
+NOTE: Milestone: 0.14.0
+
 Rename?:
 
 - `warn.throw` to `error-code-warn`
@@ -1569,7 +1567,7 @@ Idea: Add `where` to the default exception message. In order to save space,
 === 2015-09-20
 
 Idea:
-____
+....
 
 The correlation between DX-Forth exception code and DOS error code
 is given below:
@@ -1587,7 +1585,7 @@ is given below:
 
 Note: To convert an exception code in the range -257 to -511 to its
 corresponding DOS error code, use: 255 AND
-____
+....
 
 === 2015-10-18
 
