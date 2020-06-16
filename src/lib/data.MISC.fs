@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005190011
+  \ Last modified: 202006161654
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -190,12 +190,12 @@ need alias ' @ alias link@ ( node1 -- node2 )
   \
   \ Before:
   \
-  \ - head --> old_node
+  \ - head -> old_node
   \
   \ After:
   \
-  \ - head --> new_node
-  \ - new_node --> old_node
+  \ - head -> new_node
+  \ - new_node -> old_node
   \
   \ See: `link@`.
   \
@@ -250,5 +250,7 @@ need alias ' @ alias link@ ( node1 -- node2 )
   \ 2020-05-04: Fix cross reference.
   \
   \ 2020-05-19: Move `2variable` from the kernel.
+  \
+  \ 2020-06-16: Fix markup of arrows.
 
   \ vim: filetype=soloforth

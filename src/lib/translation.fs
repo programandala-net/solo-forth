@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081643
+  \ Last modified: 202006161653
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -59,7 +59,7 @@ unneeding lang ?\ 0 cconstant lang  \ current language
   \
   \ lang ( -- b )
   \
-  \ A `cconstant` containint the number _b_ of the current
+  \ A `cconstant` containing the number _b_ of the current
   \ language, used by translation tools `localized-word`,
   \ `localized-string` and `localized-character`.
   \
@@ -254,5 +254,7 @@ need localized, need lang need array> need far>stringer
   \ 2020-06-08: Fix `far-localized,`. Document `localized,` and
   \ `far-localized,`. Make `far-localized,` accessible, even if
   \ it's not used yet.
+  \
+  \ 2020-06-16: Fix typo.
 
   \ vim: filetype=soloforth
