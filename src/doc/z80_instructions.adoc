@@ -3,7 +3,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202005181146
+// Last modified: 202006161631
 // See change log at the end of the file
 
 // Credits:
@@ -400,7 +400,7 @@ numbers).
 | A        | 7
 |===
 +
-Note the Solo Forth's Z80 assembler treats ``(HL)`` as a register
+Note the Solo Forth's Z80 `assembler` treats ``(HL)`` as a register
 named `m`, with value 6.
 
 // =============================================================
@@ -417,5 +417,8 @@ named `m`, with value 6.
 // 2020-04-05: Fix markup.
 //
 // 2020-05-18: Add cross references.
+//
+// 2020-06-16: Make "assembler" a cross-reference.
+
 
 // vim: filetype=asciidoc

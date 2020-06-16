@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202006152239
+; Last modified: 202006161533
 
 include version.z80s
 
@@ -2369,7 +2369,8 @@ if 1 ; assembler_core_in_kernel
 ; assembler-wordlist ( -- wid )
 ;
 ; Return _wid_, the identifier of the word list that includes
-; the words defined as part of the `assembler`.
+; the words defined as part of the `assembler`
+; (see the main ones in section <<_z80_instructions>>).
 ;
 ; See: `wordlist`, `set-order`, `forth-wordlist`,
 ; `root-wordlist`.

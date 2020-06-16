@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005181715
+  \ Last modified: 202006161505
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -50,10 +50,15 @@ assembler-wordlist wordlist>vocabulary assembler
   \ assembler ( -- )
   \
   \ Replace the first word list in the search order with
-  \ `assembler-wordlist`.
+  \ `assembler-wordlist`, which contains the assembler words
+  \ (see the main ones in section <<_z80_instructions>>).
   \
   \ ``need assembler`` will load the assembler from the
-  \ library.
+  \ library, except the absolute-jump control-flow structures
+  \ (`aif`, `athen`, `aelse`, `abegin`, `awhile`, `auntil`,
+  \ `aagain`, `arepeat`), labels (`l:`, `rl#`, `al#`, etc.)
+  \ macros (`macro`, `endm`) and some specific words
+  \ (`execute-hl,`, `call-xt,`, `hook,`, `prt,`).
   \
   \ Origin: Forth-79 (Assembler Word Set), Forth-83 (Assembler
   \ Extension Word Set), Forth-94 (TOOLS EXT), Forth-2012
@@ -77,7 +82,7 @@ need ?rel need inverse-cond
   \ b ( -- reg )
   \
   \ Return the identifier _reg_ of Z80 register "B", which is
-  \ interpreted as register pair "BC" by assembler words that
+  \ interpreted as register pair "BC" by `assembler` words that
   \ use register pairs (for example `ldp,`).
   \
   \ See: `<<src-lib-assembler-fs,a>>`,
@@ -92,7 +97,8 @@ need ?rel need inverse-cond
   \
   \ c ( -- reg )
   \
-  \ Return the identifier _reg_ of Z80 register "C".
+  \ Return the identifier _reg_ of Z80 register "C",
+  \ used by the `assembler`.
   \
   \ See: `<<src-lib-assembler-fs,a>>`,
   \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,d>>`,
@@ -107,7 +113,7 @@ need ?rel need inverse-cond
   \ d ( -- reg )
   \
   \ Return the identifier _reg_ of Z80 register "D", which is
-  \ interpreted as register pair "DE" by assembler words that
+  \ interpreted as register pair "DE" by `assembler` words that
   \ use register pairs (for example `ldp,`).
   \
   \ See: `<<src-lib-assembler-fs,a>>`,
@@ -122,7 +128,8 @@ need ?rel need inverse-cond
   \
   \ e ( -- reg )
   \
-  \ Return the identifier _reg_ of Z80 register "E".
+  \ Return the identifier _reg_ of Z80 register "E",
+  \ used by the `assembler`.
   \
   \ See: `<<src-lib-assembler-fs,a>>`,
   \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,c>>`,
@@ -137,7 +144,7 @@ need ?rel need inverse-cond
   \ h ( -- reg )
   \
   \ Return the identifier _reg_ of Z80 register "H", which is
-  \ interpreted as register pair "HL" by assembler words that
+  \ interpreted as register pair "HL" by `assembler` words that
   \ use register pairs (for example `ldp,`).
   \
   \ See: `<<src-lib-assembler-fs,a>>`,
@@ -152,7 +159,8 @@ need ?rel need inverse-cond
   \
   \ l ( -- reg )
   \
-  \ Return the identifier _reg_ of Z80 register "L".
+  \ Return the identifier _reg_ of Z80 register "L",
+  \ used by the `assembler`.
   \
   \ See: `<<src-lib-assembler-fs,a>>`,
   \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,c>>`,
@@ -168,7 +176,7 @@ need ?rel need inverse-cond
   \
   \ Return the identifier _reg_ of Z80 pseudo-register "(HL)",
   \ i.e. the byte stored in the memory address pointed by
-  \ register pair "HL".
+  \ register pair "HL"; used by the `assembler`.
   \
   \ See: `<<src-lib-assembler-fs,a>>`,
   \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,c>>`,
@@ -183,7 +191,7 @@ need ?rel need inverse-cond
   \ a ( -- reg )
   \
   \ Return the identifier _reg_ of Z80 register "A", which is
-  \ interpreted as register pair "AF" by assembler words that
+  \ interpreted as register pair "AF" by `assembler` words that
   \ use register pairs (for example `push,` and `pop,`).
   \
   \ See: `<<src-lib-assembler-fs,b>>`,
@@ -200,7 +208,8 @@ need ?rel need inverse-cond
   \
   \ sp ( -- regp ) "s-p"
   \
-  \ Return the identifier _reg_ of Z80 register "sp".
+  \ Return the identifier _reg_ of Z80 register "sp",
+  \ used by the `assembler`.
   \
   \ See: `<<src-lib-assembler-fs,a>>`,
   \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,c>>`,
@@ -218,7 +227,8 @@ DD cconstant ix-op  FD cconstant iy-op
   \
   \ ix ( -- regpi ) "i-x"
   \
-  \ _regpi_ is the identifier of Z80 register "ix".
+  \ _regpi_ is the identifier of Z80 register "ix",
+  \ used by the `assembler`.
   \
   \ See: `<<src-lib-assembler-fs,a>>`,
   \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,c>>`,
@@ -234,7 +244,8 @@ DD cconstant ix-op  FD cconstant iy-op
   \
   \ iy ( -- regpi ) "i-y"
   \
-  \ _regpi_ is the identifier of Z80 register "iy".
+  \ _regpi_ is the identifier of Z80 register "iy",
+  \ used by the `assembler`.
   \
   \ See: `<<src-lib-assembler-fs,a>>`,
   \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,c>>`,
@@ -1831,7 +1842,7 @@ F2 cconstant p?   FA cconstant m?
   \
   \ rresolve ( orig dest -- ) "r-resolve"
   \
-  \ Resolve a relative branch.
+  \ Resolve an `assembler` relative branch.
   \
   \ See: `<rresolve`, `>rresolve`, `?rel`.
   \
@@ -1843,7 +1854,7 @@ F2 cconstant p?   FA cconstant m?
   \
   \ >rresolve ( orig -- ) "greater-than-r-resolve"
   \
-  \ Resolve a forward relative branch.
+  \ Resolve an `assembler` forward relative branch.
   \
   \ See: `<rresolve`, `rresolve`.
   \
@@ -1855,7 +1866,7 @@ F2 cconstant p?   FA cconstant m?
   \
   \ <rresolve ( dest -- ) "less-than-r-resolve"
   \
-  \ Resolve a backward relative branch.
+  \ Resolve an `assembler` backward relative branch.
   \
   \ See: `>rresolve`, `rresolve`.
   \
@@ -1884,7 +1895,7 @@ F2 cconstant p?   FA cconstant m?
   \
   \ (rif ( op -- orig cs-id ) "paren-r-if"
   \
-  \ Common factor of `rif` and `relse`.
+  \ ``(rif`` is a factor of `rif` and `relse`.
   \
   \ }doc
 
@@ -1894,8 +1905,8 @@ F2 cconstant p?   FA cconstant m?
   \
   \ rif ( op -- orig cs-id ) "r-if"
   \
-  \ Part of the relative-address control-flow structure ``rif``
-  \ .. `relse` .. `rthen`.
+  \ Part of the `assembler` relative-address control-flow
+  \ structure ``rif`` .. `relse` .. `rthen`.
   \
   \ See: `aif`, `rbegin`, `jp>jr`.
   \
@@ -1907,8 +1918,8 @@ F2 cconstant p?   FA cconstant m?
   \
   \ rthen ( orig cs-id -- ) "r-then"
   \
-  \ Part of the relative-address control-flow structure `rif`
-  \ .. `relse` .. ``rthen``.
+  \ Part of the `assembler` relative-address control-flow
+  \ structure `rif` .. `relse` .. ``rthen``.
   \
   \ See: `athen`, `>rresolve`.
   \
@@ -1922,8 +1933,8 @@ F2 cconstant p?   FA cconstant m?
   \
   \ relse ( orig cs-id -- orig cs-id ) "r-else"
   \
-  \ Part of the relative-address control-flow structure `rif`
-  \ .. ``relse`` .. `rthen`.
+  \ Part of the `assembler` relative-address control-flow
+  \ structure `rif` .. ``relse`` .. `rthen`.
   \
   \ See: `aelse`, `(rif`.
   \
@@ -1935,9 +1946,9 @@ F2 cconstant p?   FA cconstant m?
   \
   \ rbegin ( -- dest cs-id ) "r-begin"
   \
-  \ Part of the relative-address control-flow structures
-  \ ``rbegin`` .. `ragain`, ``rbegin`` .. `runtil` and
-  \ ``rbegin`` .. `rwhile` ..  `rrepeat`.
+  \ Part of the `assembler` relative-address control-flow
+  \ structures ``rbegin`` .. `ragain`, ``rbegin`` .. `runtil`
+  \ and ``rbegin`` .. `rwhile` ..  `rrepeat`.
   \
   \ See: `abegin`.
   \
@@ -1949,8 +1960,8 @@ F2 cconstant p?   FA cconstant m?
   \
   \ rwhile ( op -- orig cs-id ) "r-while"
   \
-  \ Part of the relative-address control-flow structures
-  \ ``rbegin`` .. `rwhile` ..  `rrepeat`.
+  \ Part of the `assembler` relative-address control-flow
+  \ structures ``rbegin`` .. `rwhile` ..  `rrepeat`.
   \
   \ See: `awhile`.
   \
@@ -1974,8 +1985,8 @@ F2 cconstant p?   FA cconstant m?
   \
   \ runtil ( dest cs-id op -- ) "r-until"
   \
-  \ Part of the relative-address control-flow structure
-  \ `rbegin` .. ``runtil``.
+  \ Part of the `assembler` relative-address control-flow
+  \ structure `rbegin` .. ``runtil``.
   \
   \ See: `auntil`, `(runtil`, `jp>jr`.
   \
@@ -1988,8 +1999,8 @@ F2 cconstant p?   FA cconstant m?
   \
   \ ragain ( dest cs-id -- ) "r-again"
   \
-  \ Part of the relative-address control-flow structure
-  \ `rbegin` .. `ragain`.
+  \ Part of the `assembler` relative-address control-flow
+  \ structure `rbegin` .. `ragain`.
   \
   \ See: `aagain`, `(runtil`.
   \
@@ -2001,8 +2012,8 @@ F2 cconstant p?   FA cconstant m?
   \
   \ rrepeat ( dest cs-id1 orig cs-id2 --) "r-repeat"
   \
-  \ Part of the relative-address control-flow structure
-  \ `rbegin` .. `rwhile` ..  `rrepeat`.
+  \ Part of the `assembler` relative-address control-flow
+  \ structure `rbegin` .. `rwhile` ..  `rrepeat`.
   \
   \ See: `arepeat`.
   \
@@ -2015,8 +2026,8 @@ F2 cconstant p?   FA cconstant m?
   \
   \ rstep ( dest cs-id -- ) "r-step"
   \
-  \ Part of the relative-address control-flow structure
-  \ `rbegin` .. ``rstep``.
+  \ Part of the `assembler` relative-address control-flow
+  \ structure `rbegin` .. ``rstep``.
   \
   \ See: `(runtil`.
   \
@@ -2038,7 +2049,7 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ (aif ( op -- orig cs-id ) "paren-a-if"
   \
-  \ Common factor of `aif` and `aelse`.
+  \ ``(aif`` is a factor of `aif` and `aelse`.
   \
   \ }doc
 
@@ -2048,8 +2059,8 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ aif ( op -- orig cs-id ) "a-if"
   \
-  \ Part of the absolute-address control-flow structure ``aif``
-  \ .. `aelse` .. `athen`.
+  \ Part of the `assembler` absolute-address control-flow
+  \ structure ``aif`` .. `aelse` .. `athen`.
   \
   \ See: `rif`.
   \
@@ -2061,8 +2072,8 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ athen ( orig cs-id -- ) "a-then"
   \
-  \ Part of the absolute-address control-flow structure `aif`
-  \ .. `aelse` .. ``athen``.
+  \ Part of the `assembler` absolute-address control-flow
+  \ structure `aif` .. `aelse` .. ``athen``.
   \
   \ See: `rthen`.
   \
@@ -2076,8 +2087,8 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ aelse ( orig cs-id -- orig cs-id ) "a-else"
   \
-  \ Part of the absolute-address control-flow structure `aif`
-  \ .. ``aelse`` .. `athen`.
+  \ Part of the `assembler` absolute-address control-flow
+  \ structure `aif` .. ``aelse`` .. `athen`.
   \
   \ See: `relse`.
   \
@@ -2089,8 +2100,8 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ abegin ( -- dest cs-id ) "a-begin"
   \
-  \ Part of the absolute-address control-flow structure
-  \ ``abegin`` .. `awhile` ..  `arepeat`.
+  \ Part of the `assembler` absolute-address control-flow
+  \ structure ``abegin`` .. `awhile` ..  `arepeat`.
   \
   \ See: `rbegin`.
   \
@@ -2102,8 +2113,8 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ awhile ( op -- orig cs-id ) "a-while"
   \
-  \ Part of the absolute-address control-flow structure
-  \ `abegin` .. ``awhile`` ..  `arepeat`.
+  \ Part of the `assembler` absolute-address control-flow
+  \ structure `abegin` .. ``awhile`` ..  `arepeat`.
   \
   \ See: `rwhile`.
   \
@@ -2126,8 +2137,8 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ auntil ( dest cs-id op -- ) "a-until"
   \
-  \ Part of the absolute-address control-flow structure
-  \ `abegin` .. ``auntil``.
+  \ Part of the `assembler` absolute-address control-flow
+  \ structure `abegin` .. ``auntil``.
   \
   \ See: `runtil`.
   \
@@ -2140,8 +2151,8 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ aagain ( dest cs-id -- ) "a-again"
   \
-  \ Part of the absolute-address control-flow structure
-  \ `abegin` .. `aagain`.
+  \ Part of the `assembler` absolute-address control-flow
+  \ structure `abegin` .. `aagain`.
   \
   \ See: `ragain`.
   \
@@ -2153,8 +2164,8 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ arepeat ( dest cs-id1 orig cs-id2 ) "a-repeat"
   \
-  \ Part of the absolute-address control-flow structure
-  \ `abegin` .. `awhile` ..  ``arepeat``.
+  \ Part of the `assembler` absolute-address control-flow
+  \ structure `abegin` .. `awhile` ..  ``arepeat``.
   \
   \ See: `rrepeat`.
   \
@@ -2170,7 +2181,7 @@ unneeding inverse-cond ?\ : inverse-cond ( op1 -- op2) 8 xor ;
   \
   \ inverse-cond ( op1 -- op2 )
   \
-  \ Convert an assembler condition flag (actually, an absolute
+  \ Convert an `assembler` condition flag (actually, an absolute
   \ jump opcode) to its opposite.
   \
   \ Examples: The opcode returned by `c?` is converted to the
@@ -2184,7 +2195,7 @@ unneeding >amark ?\ : >amark ( -- a ) here 2- ;
   \
   \ >amark ( -- a ) "greater-than-a-mark"
   \
-  \ Leave the address of an assembler absolute forward
+  \ Leave the address of an `assembler` absolute forward
   \ reference.
   \
   \ }doc
@@ -2197,7 +2208,7 @@ unneeding >aresolve ?( need >amark
   \
   \ >aresolve ( a -- ) "greater-than-a-resolve"
   \
-  \ Resolve an assembler absolute forward reference.
+  \ Resolve an `assembler` absolute forward reference.
   \
   \ See: `>amark`.
   \
@@ -2211,7 +2222,7 @@ unneeding ?rel
   \
   \ ?rel ( n -- ) "question-rel"
   \
-  \ If assembler relative branch _n_ is too long, `throw`
+  \ If `assembler` relative branch _n_ is too long, `throw`
   \ exception #-269 (relative jump too long).
   \
   \ }doc
@@ -2488,5 +2499,7 @@ set-current
   \ 2020-05-05: Fix cross references.
   \
   \ 2020-05-18: Add explicit cross references.
+  \
+  \ 2020-06-16: Improve documentation.
 
   \ vim: filetype=soloforth
