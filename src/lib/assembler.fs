@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006161505
+  \ Last modified: 202006161825
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -81,9 +81,10 @@ need ?rel need inverse-cond
   \
   \ b ( -- reg )
   \
-  \ Return the identifier _reg_ of Z80 register "B", which is
-  \ interpreted as register pair "BC" by `assembler` words that
-  \ use register pairs (for example `ldp,`).
+  \ Return the identifier _reg_ of the Z80 `assembler` register
+  \ "B", which is interpreted as register pair "BC" by
+  \ `assembler` words that use register pairs (for example
+  \ `ldp,`).
   \
   \ See: `<<src-lib-assembler-fs,a>>`,
   \ `<<src-lib-assembler-fs,c>>`, `<<src-lib-assembler-fs,d>>`,
@@ -97,8 +98,8 @@ need ?rel need inverse-cond
   \
   \ c ( -- reg )
   \
-  \ Return the identifier _reg_ of Z80 register "C",
-  \ used by the `assembler`.
+  \ Return the identifier _reg_ of the Z80 `assembler` register
+  \ "C".
   \
   \ See: `<<src-lib-assembler-fs,a>>`,
   \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,d>>`,
@@ -112,9 +113,10 @@ need ?rel need inverse-cond
   \
   \ d ( -- reg )
   \
-  \ Return the identifier _reg_ of Z80 register "D", which is
-  \ interpreted as register pair "DE" by `assembler` words that
-  \ use register pairs (for example `ldp,`).
+  \ Return the identifier _reg_ of the Z80 `assembler` register
+  \ "D", which is interpreted as register pair "DE" by
+  \ `assembler` words that use register pairs (for example
+  \ `ldp,`).
   \
   \ See: `<<src-lib-assembler-fs,a>>`,
   \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,c>>`,
@@ -128,8 +130,8 @@ need ?rel need inverse-cond
   \
   \ e ( -- reg )
   \
-  \ Return the identifier _reg_ of Z80 register "E",
-  \ used by the `assembler`.
+  \ Return the identifier _reg_ of the Z80 `assembler` register
+  \ "E".
   \
   \ See: `<<src-lib-assembler-fs,a>>`,
   \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,c>>`,
@@ -143,9 +145,10 @@ need ?rel need inverse-cond
   \
   \ h ( -- reg )
   \
-  \ Return the identifier _reg_ of Z80 register "H", which is
-  \ interpreted as register pair "HL" by `assembler` words that
-  \ use register pairs (for example `ldp,`).
+  \ Return the identifier _reg_ of the Z80 `assembler` register
+  \ "H", which is interpreted as register pair "HL" by
+  \ `assembler` words that use register pairs (for example
+  \ `ldp,`).
   \
   \ See: `<<src-lib-assembler-fs,a>>`,
   \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,c>>`,
@@ -159,8 +162,8 @@ need ?rel need inverse-cond
   \
   \ l ( -- reg )
   \
-  \ Return the identifier _reg_ of Z80 register "L",
-  \ used by the `assembler`.
+  \ Return the identifier _reg_ of the Z80 `assembler` register
+  \ "L".
   \
   \ See: `<<src-lib-assembler-fs,a>>`,
   \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,c>>`,
@@ -174,9 +177,9 @@ need ?rel need inverse-cond
   \
   \ m ( -- reg )
   \
-  \ Return the identifier _reg_ of Z80 pseudo-register "(HL)",
-  \ i.e. the byte stored in the memory address pointed by
-  \ register pair "HL"; used by the `assembler`.
+  \ Return the identifier _reg_ of Z80 `assembler`
+  \ pseudo-register "(HL)", i.e. the byte stored in the memory
+  \ address pointed by register pair "HL".
   \
   \ See: `<<src-lib-assembler-fs,a>>`,
   \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,c>>`,
@@ -190,9 +193,10 @@ need ?rel need inverse-cond
   \
   \ a ( -- reg )
   \
-  \ Return the identifier _reg_ of Z80 register "A", which is
-  \ interpreted as register pair "AF" by `assembler` words that
-  \ use register pairs (for example `push,` and `pop,`).
+  \ Return the identifier _reg_ of the Z80 `assembler` register
+  \ "A", which is interpreted as register pair "AF" by
+  \ `assembler` words that use register pairs (for example
+  \ `push,` and `pop,`).
   \
   \ See: `<<src-lib-assembler-fs,b>>`,
   \ `<<src-lib-assembler-fs,c>>`, `<<src-lib-assembler-fs,d>>`,
@@ -208,8 +212,8 @@ need ?rel need inverse-cond
   \
   \ sp ( -- regp ) "s-p"
   \
-  \ Return the identifier _reg_ of Z80 register "sp",
-  \ used by the `assembler`.
+  \ Return the identifier _reg_ of the Z80 `assembler` register
+  \ "SP".
   \
   \ See: `<<src-lib-assembler-fs,a>>`,
   \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,c>>`,
@@ -227,8 +231,8 @@ DD cconstant ix-op  FD cconstant iy-op
   \
   \ ix ( -- regpi ) "i-x"
   \
-  \ _regpi_ is the identifier of Z80 register "ix",
-  \ used by the `assembler`.
+  \ _regpi_ is the identifier of the Z80 `assembler` register
+  \ "IX".
   \
   \ See: `<<src-lib-assembler-fs,a>>`,
   \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,c>>`,
@@ -244,8 +248,8 @@ DD cconstant ix-op  FD cconstant iy-op
   \
   \ iy ( -- regpi ) "i-y"
   \
-  \ _regpi_ is the identifier of Z80 register "iy",
-  \ used by the `assembler`.
+  \ _regpi_ is the identifier of the Z80 `assembler` register
+  \ "IY".
   \
   \ See: `<<src-lib-assembler-fs,a>>`,
   \ `<<src-lib-assembler-fs,b>>`, `<<src-lib-assembler-fs,c>>`,
@@ -310,7 +314,8 @@ DD cconstant ix-op  FD cconstant iy-op
   \
   \ (jr, ( a op -- ) "paren-j-r-comma"
   \
-  \ Compile a relative jump _op_ to absolute address _a_.
+  \ Compile an `assembler` relative jump _op_ to absolute
+  \ address _a_.
   \
   \ ``(jr,`` is a factor of `jr,`.
   \
@@ -357,7 +362,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ nop, ( -- ) "nop-comma"
   \
-  \ Compile the Z80 instruction ``NOP``.
+  \ Compile the Z80 `assembler` instruction ``NOP``.
   \
   \ }doc
 
@@ -365,7 +370,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ stap, ( regp -- ) "s-t-a-p-comma"
   \
-  \ Compile the Z80 instruction ``LD (_regp_),A``.
+  \ Compile the Z80 `assembler` instruction ``LD (_regp_),A``.
   \
   \ See: `ftap,`.
   \
@@ -375,7 +380,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ incp, ( regp -- ) "inc-p-comma"
   \
-  \ Compile the Z80 instruction ``INC _regp_``.
+  \ Compile the Z80 `assembler` instruction ``INC _regp_``.
   \
   \ See: `decp,`, `inc,`.
   \
@@ -385,7 +390,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ inc, ( reg -- ) "inc-comma"
   \
-  \ Compile the Z80 instruction ``INC _reg_``.
+  \ Compile the Z80 `assembler` instruction ``INC _reg_``.
   \
   \ See: `dec,`, `incp,`.
   \
@@ -395,7 +400,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ dec, ( reg -- ) "dec-comma"
   \
-  \ Compile the Z80 instruction ``DEC _reg_``.
+  \ Compile the Z80 `assembler` instruction ``DEC _reg_``.
   \
   \ See: `decp,`, `inc,`.
   \
@@ -405,7 +410,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ rlca, ( -- ) "r-l-c-a-comma"
   \
-  \ Compile the Z80 instruction ``RLCA``.
+  \ Compile the Z80 `assembler` instruction ``RLCA``.
   \
   \ See: `rrca,`, `rlc,`, `rl,`, `rla,`, `rld,`.
   \
@@ -415,7 +420,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ exaf, ( -- ) "ex-a-f-comma"
   \
-  \ Compile the Z80 instruction ``EX AF, AF'``.
+  \ Compile the Z80 `assembler` instruction ``EX AF, AF'``.
   \
   \ See: `exx,`, `exde,`.
   \
@@ -425,7 +430,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ addp, ( regp -- ) "add-p-comma"
   \
-  \ Compile the Z80 instruction ``ADD HL,_regp_``.
+  \ Compile the Z80 `assembler` instruction ``ADD HL,_regp_``.
   \
   \ See: `add,`.
   \
@@ -435,7 +440,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ ftap, ( repg -- ) "f-t-a-p-comma"
   \
-  \ Compile the Z80 instruction ``LD A,(_regp_)``.
+  \ Compile the Z80 `assembler` instruction ``LD A,(_regp_)``.
   \
   \ See: `stap,`.
   \
@@ -445,7 +450,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ decp, ( regp -- ) "dec-p-comma"
   \
-  \ Compile Z80 instruction ``DEC _regp_``.
+  \ Compile the Z80 `assembler` instruction ``DEC _regp_``.
   \
   \ See: `incp,`, `dec,`.
   \
@@ -455,7 +460,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ rrca, ( -- ) "r-r-c-a-comma"
   \
-  \ Compile the Z80 instruction ``RRCA``.
+  \ Compile the Z80 `assembler` instruction ``RRCA``.
   \
   \ See: `rlca,`, `rrc,`, `rr,`, `rra,`.
   \
@@ -465,8 +470,8 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ djnz, ( a -- ) "d-j-n-z-comma"
   \
-  \ Compile the Z80 instruction ``DJNZ n``, being _n_ an offset
-  \ from the current address to address _a_.
+  \ Compile the Z80 `assembler` instruction ``DJNZ n``, being
+  \ _n_ an offset from the current address to address _a_.
   \
   \ See: `?jr,`, `dec,`.
   \
@@ -476,7 +481,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ rla, ( -- ) "r-l-a-comma"
   \
-  \ Compile the Z80 instruction ``RLA``.
+  \ Compile the Z80 `assembler` instruction ``RLA``.
   \
   \ See: `rra,`, `rl,`, `rlc,`, `rlca,`, `rld,`.
   \
@@ -486,8 +491,8 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ jr, ( a -- ) "j-r-comma"
   \
-  \ Compile the Z80 instruction ``JR n``, being _n_ an offset
-  \ from the current address to address _a_.
+  \ Compile the Z80 `assembler` instruction ``JR n``, being _n_
+  \ an offset from the current address to address _a_.
   \
   \ See: `?jr,`, `djnz,`, `jp,`.
   \
@@ -497,7 +502,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ rra, ( -- ) "r-r-a-comma"
   \
-  \ Compile the Z80 instruction ``RRA``.
+  \ Compile the Z80 `assembler` instruction ``RRA``.
   \
   \ See: `rla,`, `rr,` `rrc,`, `rrca,`.
   \
@@ -507,8 +512,9 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ sthl, ( a -- ) "s-t-h-l-comma"
   \
-  \ Compile the Z80 instruction ``LD (a),HL``, i.e. store the
-  \ contents of register pair "HL" into memory address _a_.
+  \ Compile the Z80 `assembler` instruction ``LD (a),HL``, i.e.
+  \ store the contents of register pair "HL" into memory
+  \ address _a_.
   \
   \ See: `fthl,`, `stp,`.
   \
@@ -518,7 +524,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ daa, ( -- ) "d-a-a-comma"
   \
-  \ Compile Z80 instruction ``DAA``.
+  \ Compile the Z80 `assembler` instruction ``DAA``.
   \
   \ }doc
 
@@ -526,8 +532,9 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ fthl, ( a -- ) "f-t-h-l-comma"
   \
-  \ Compile the Z80 instruction ``LD HL,(a)``, i.e. fetch the
-  \ contents of memory address _a_ into register pair "HL".
+  \ Compile the Z80 `assembler` instruction ``LD HL,(a)``, i.e.
+  \ fetch the contents of memory address _a_ into register pair
+  \ "HL".
   \
   \ See: `sthl,`, `ftp,`.
   \
@@ -537,7 +544,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ cpl, ( -- ) "c-p-l-comma"
   \
-  \ Compile Z80 instruction ``CPL``.
+  \ Compile the Z80 `assembler` instruction ``CPL``.
   \
   \ See: `scf,`, `ccf,`, `neg,`, `and,`, `cp,`.
   \
@@ -547,7 +554,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ sta, ( a -- ) "s-t-a-comma"
   \
-  \ Compile the Z80 instruction ``LD (a),A``,
+  \ Compile the Z80 `assembler` instruction ``LD (a),A``,
   \ i.e. store the contents of register "A" into memory address
   \ _a_.
   \
@@ -559,7 +566,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ scf, ( -- ) "s-c-f-comma"
   \
-  \ Compile Z80 instruction ``SCF``.
+  \ Compile the Z80 `assembler` instruction ``SCF``.
   \
   \ See: `cpl,`, `ccf,`, `neg,`, `set,`, `and,`.
   \
@@ -569,8 +576,8 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ fta, ( a -- ) "f-t-a-comma"
   \
-  \ Compile the Z80 instruction ``LD A,(a)``, i.e. fetch the
-  \ contents of memory address _a_ into register "A".
+  \ Compile the Z80 `assembler` instruction ``LD A,(a)``, i.e.
+  \ fetch the contents of memory address _a_ into register "A".
   \
   \ See: `sta,`, `ld,`, `ld#,`.
   \
@@ -580,7 +587,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ ccf, ( -- ) "c-c-f-comma"
   \
-  \ Compile the Z80 instruction ``CCF``.
+  \ Compile the Z80 `assembler` instruction ``CCF``.
   \
   \ See: `cpl,`, `scf,`, `neg,`, `bit,`, `set,`, `cp,`.
   \
@@ -590,7 +597,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ halt, ( -- ) "halt-comma"
   \
-  \ Compile the Z80 instruction ``HALT``.
+  \ Compile the Z80 `assembler` instruction ``HALT``.
   \
   \ See: `im1,`, `im2,`, `di,`, `ei,`.
   \
@@ -600,7 +607,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ add, ( reg -- ) "add-comma"
   \
-  \ Compile the Z80 instruction ``ADD _reg_``.
+  \ Compile the Z80 `assembler` instruction ``ADD _reg_``.
   \
   \ See: `sub,`, `sbc,`, `addp,`.
   \
@@ -610,7 +617,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ adc, ( reg -- ) "a-d-c-comma"
   \
-  \ Compile the Z80 instruction ``ADC _reg_``.
+  \ Compile the Z80 `assembler` instruction ``ADC _reg_``.
   \
   \ See: `add,`, `sub,`, `sbc,`, `addp,`.
   \
@@ -620,7 +627,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ sub, ( reg -- ) "sub-comma"
   \
-  \ Compile the Z80 instruction ``SUB _reg_``.
+  \ Compile the Z80 `assembler` instruction ``SUB _reg_``.
   \
   \ See: `sbc,`, `add,`, `adc,`, `subp,`.
   \
@@ -630,7 +637,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ sbc, ( reg -- ) "s-b-c-comma"
   \
-  \ Compile the Z80 instruction ``SBC _reg_``.
+  \ Compile the Z80 `assembler` instruction ``SBC _reg_``.
   \
   \ See: `sub,`, `adc,`, `add,`, `subp,`.
   \
@@ -640,7 +647,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ cp, ( reg -- ) "c-p-comma"
   \
-  \ Compile the Z80 instruction ``CP _reg_``.
+  \ Compile the Z80 `assembler` instruction ``CP _reg_``.
   \
   \ See: `tstp,`, `cpl,`.
   \
@@ -650,7 +657,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ pop, ( regp -- ) "pop-comma"
   \
-  \ Compile the Z80 instruction ``PUSH _regp_``.
+  \ Compile the Z80 `assembler` instruction ``PUSH _regp_``.
   \
   \ See: `pop,`, `ret,`, `sp`.
   \
@@ -660,7 +667,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ push, ( regp -- ) "push-comma"
   \
-  \ Compile the Z80 instruction ``PUSH _regp_``.
+  \ Compile the Z80 `assembler` instruction ``PUSH _regp_``.
   \
   \ See: `push,`, `ret,`, `sp`.
   \
@@ -670,7 +677,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ add#, ( b -- ) "add-number-sign-comma,"
   \
-  \ Compile the Z80 instruction ``ADD A,_b_``.
+  \ Compile the Z80 `assembler` instruction ``ADD A,_b_``.
   \
   \ }doc
 
@@ -678,7 +685,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ rst, ( b -- ) "r-s-t-comma"
   \
-  \ Compile the Z80 instruction ``RST _b_``.
+  \ Compile the Z80 `assembler` instruction ``RST _b_``.
   \
   \ }doc
 
@@ -686,7 +693,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ ret, ( -- ) "ret-comma"
   \
-  \ Compile the Z80 instruction ``RET``.
+  \ Compile the Z80 `assembler` instruction ``RET``.
   \
   \ See: `?ret,`, `call,`, `pop,`.
   \
@@ -696,7 +703,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ adc#, ( b -- ) "a-d-c-number-sign-comma"
   \
-  \ Compile the Z80 instruction ``ADC A,_b_``.
+  \ Compile the Z80 `assembler` instruction ``ADC A,_b_``.
   \
   \ }doc
 
@@ -704,7 +711,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ out, ( b -- ) "out-comma"
   \
-  \ Compile Z80 instruction ``OUT (b),A``.
+  \ Compile the Z80 `assembler` instruction ``OUT (b),A``.
   \
   \ See: `in,`, `outbc,`.
   \
@@ -714,7 +721,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ outbc, ( reg -- ) "out-b-c-comma"
   \
-  \ Compile Z80 instruction ``OUT (C),_reg_``.
+  \ Compile the Z80 `assembler` instruction ``OUT (C),_reg_``.
   \
   \ See: `inbc,`, `out,`.
   \
@@ -724,7 +731,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ sub#, ( b -- ) "sub-number-sign-comma"
   \
-  \ Compile the Z80 instruction ``SUB _b_``.
+  \ Compile the Z80 `assembler` instruction ``SUB _b_``.
   \
   \ }doc
 
@@ -732,7 +739,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ exx, ( -- ) "ex-x-comma"
   \
-  \ Compile the Z80 instruction ``EXX``.
+  \ Compile the Z80 `assembler` instruction ``EXX``.
   \
   \ See: `exde,`, `exaf,`.
   \
@@ -742,7 +749,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ in, ( b -- ) "in-comma"
   \
-  \ Compile the Z80 instruction ``IN A,(b)``.
+  \ Compile the Z80 `assembler` instruction ``IN A,(b)``.
   \
   \ See: `out,`, `inbc,`.
   \
@@ -752,7 +759,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ inbc, ( reg -- ) "in-b-c-comma"
   \
-  \ Compile the Z80 instruction ``IN _reg_,(C)``.
+  \ Compile the Z80 `assembler` instruction ``IN _reg_,(C)``.
   \
   \ See: `outbc,` `in,`.
   \
@@ -762,7 +769,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ sbc#, ( b -- ) "s-b-c-number-sign-comma"
   \
-  \ Compile the Z80 instruction ``SBC A,_b_``.
+  \ Compile the Z80 `assembler` instruction ``SBC A,_b_``.
   \
   \ }doc
 
@@ -770,7 +777,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ exsp, ( -- ) "ex-s-p-comma"
   \
-  \ Compile the Z80 instruction ``EX (SP),HL``.
+  \ Compile the Z80 `assembler` instruction ``EX (SP),HL``.
   \
   \ }doc
 
@@ -778,7 +785,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ and#, ( b -- ) "and-number-sign-comma"
   \
-  \ Compile the Z80 instruction ``AND _b_``.
+  \ Compile the Z80 `assembler` instruction ``AND _b_``.
   \
   \ See: `or#,`, `xor#,`, `sub#,`.
   \
@@ -788,7 +795,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ jphl, ( -- ) "j-p-h-l-comma"
   \
-  \ Compile the Z80 instruction ``JP (HL)``.
+  \ Compile the Z80 `assembler` instruction ``JP (HL)``.
   \
   \ See: `jpix,`.
   \
@@ -798,7 +805,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ exde, ( -- ) "ex-de-comma"
   \
-  \ Compile the Z80 instruction ``EX DE,HL``.
+  \ Compile the Z80 `assembler` instruction ``EX DE,HL``.
   \
   \ See: `exaf,`, `exx,`.
   \
@@ -808,7 +815,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ xor#, ( b -- ) "x-or-number-sign-comma"
   \
-  \ Compile the Z80 instruction ``XOR _b_``.
+  \ Compile the Z80 `assembler` instruction ``XOR _b_``.
   \
   \ See: `or#,`, `and#,`, `add#,`, `sub#,`.
   \
@@ -818,7 +825,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ di, ( -- ) "d-i-comma"
   \
-  \ Compile the Z80 instruction ``DI``.
+  \ Compile the Z80 `assembler` instruction ``DI``.
   \
   \ See: `ei,`, `im1,`, `im2,`, `halt,`.
   \
@@ -828,7 +835,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ or#, ( b -- ) "or-number-sign-comma"
   \
-  \ Compile the Z80 instruction ``OR _b_``.
+  \ Compile the Z80 `assembler` instruction ``OR _b_``.
   \
   \ See: `xor#,`, `and#,`, `add#,`.
   \
@@ -840,7 +847,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ ldsp, ( -- ) "l-d-s-p-comma"
   \
-  \ Compile the Z80 instruction ``LD SP,HL``.
+  \ Compile the Z80 `assembler` instruction ``LD SP,HL``.
   \
   \ }doc
 
@@ -848,7 +855,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ ei, ( -- ) "e-i-comma"
   \
-  \ Compile the Z80 instruction ``EI``.
+  \ Compile the Z80 `assembler` instruction ``EI``.
   \
   \ See: `di,`, `im1,`, `im2,`, `halt,`.
   \
@@ -858,7 +865,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ cp#, ( b -- ) "c-p-number-sign-comma"
   \
-  \ Compile the Z80 instruction ``CP _b_``.
+  \ Compile the Z80 `assembler` instruction ``CP _b_``.
   \
   \ }doc
 
@@ -866,7 +873,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ rlc, ( reg -- ) "r-l-c-comma"
   \
-  \ Compile the Z80 instruction ``RLC _reg_``.
+  \ Compile the Z80 `assembler` instruction ``RLC _reg_``.
   \
   \ See: `rrc,`, `rlca,`, `rl,`, `rla,`.
   \
@@ -876,7 +883,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ rrc, ( reg -- ) "r-r-c-comma"
   \
-  \ Compile the Z80 instruction ``RRC _reg_``.
+  \ Compile the Z80 `assembler` instruction ``RRC _reg_``.
   \
   \ See: `rlc,`, `rr,`, `rra,`, `rrca,`.
   \
@@ -886,7 +893,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ rl, ( reg -- ) "r-l-comma"
   \
-  \ Compile the Z80 instruction ``RL _reg_``.
+  \ Compile the Z80 `assembler` instruction ``RL _reg_``.
   \
   \ See: `rr,`, `rla,`, `rlc,`, `rlca,`.
   \
@@ -896,7 +903,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ rr, ( reg -- ) "r-r-comma"
   \
-  \ Compile the Z80 instruction ``RR _reg_``.
+  \ Compile the Z80 `assembler` instruction ``RR _reg_``.
   \
   \ See: `rl,`, `rra,`, `rrc,`, `rrca,`.
   \
@@ -906,7 +913,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ sla, ( reg -- ) "s-l-a-comma"
   \
-  \ Compile the Z80 instruction ``SLA _reg_``.
+  \ Compile the Z80 `assembler` instruction ``SLA _reg_``.
   \
   \ }doc
 
@@ -914,7 +921,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ sra, ( reg -- ) "s-r-a-comma"
   \
-  \ Compile the Z80 instruction ``SRA _reg_``.
+  \ Compile the Z80 `assembler` instruction ``SRA _reg_``.
   \
   \ }doc
 
@@ -922,7 +929,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ sll, ( reg -- ) "s-l-l-comma"
   \
-  \ Compile the Z80 instruction ``SLL _reg_``.
+  \ Compile the Z80 `assembler` instruction ``SLL _reg_``.
   \
   \ }doc
 
@@ -930,7 +937,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ srl, ( reg -- ) "s-r-l-comma"
   \
-  \ Compile the Z80 instruction ``SRL _reg_``.
+  \ Compile the Z80 `assembler` instruction ``SRL _reg_``.
   \
   \ }doc
 
@@ -938,7 +945,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ bit, ( reg b -- ) "bit-comma"
   \
-  \ Compile the Z80 instruction ``BIT _b_,_reg_``.
+  \ Compile the Z80 `assembler` instruction ``BIT _b_,_reg_``.
   \
   \ See: `res,`, `set,`, `cp#,`.
   \
@@ -948,7 +955,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ res, ( reg b -- ) "res-comma"
   \
-  \ Compile the Z80 instruction ``RES _b_,_reg_``.
+  \ Compile the Z80 `assembler` instruction ``RES _b_,_reg_``.
   \
   \ See: `bit,`, `set,`, `sub#,`.
   \
@@ -958,7 +965,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ set, ( reg b -- ) "set-comma"
   \
-  \ Compile the Z80 instruction ``SET _b_,_reg_``.
+  \ Compile the Z80 `assembler` instruction ``SET _b_,_reg_``.
   \
   \ See: `bit,`, `res,`, `add#,`.
   \
@@ -968,7 +975,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ ldi, ( -- ) "l-d-i-comma"
   \
-  \ Compile the Z80 instruction ``LDI``.
+  \ Compile the Z80 `assembler` instruction ``LDI``.
   \
   \ See: `ldd,`, `ldir,`.
   \
@@ -978,7 +985,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ ldir, ( -- ) "l-d-i-r-comma"
   \
-  \ Compile the Z80 instruction ``LDIR``.
+  \ Compile the Z80 `assembler` instruction ``LDIR``.
   \
   \ See: `lddr,`, `ldi,`.
   \
@@ -988,7 +995,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ ldd, ( -- ) "l-d-d-comma"
   \
-  \ Compile the Z80 instruction ``LDD``.
+  \ Compile the Z80 `assembler` instruction ``LDD``.
   \
   \ See: `ldi,`, `lddr,`.
   \
@@ -998,7 +1005,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ lddr, ( -- ) "l-d-d-r-comma"
   \
-  \ Compile the Z80 instruction ``LDDR``.
+  \ Compile the Z80 `assembler` instruction ``LDDR``.
   \
   \ See: `ldir,`, `ldd,`.
   \
@@ -1008,7 +1015,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ neg, ( -- ) "neg-comma"
   \
-  \ Compile the Z80 instruction ``NEG``.
+  \ Compile the Z80 `assembler` instruction ``NEG``.
   \
   \ See: `cpl,`, `scf,`, `ccf,`.
   \
@@ -1018,7 +1025,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ ldai, ( -- ) "l-d-a-i-comma"
   \
-  \ Compile the Z80 instruction ``LD A,I``.
+  \ Compile the Z80 `assembler` instruction ``LD A,I``.
   \
   \ See: `ldia,`, `ldar,`, `ld,`.
   \
@@ -1028,7 +1035,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ ldia, ( -- ) "l-d-i-a-comma"
   \
-  \ Compile the Z80 instruction ``LD I,A``.
+  \ Compile the Z80 `assembler` instruction ``LD I,A``.
   \
   \ See: `ldai,`, `ldra,`, `ld,`.
   \
@@ -1038,7 +1045,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ ldar, ( -- ) "l-d-a-r-comma"
   \
-  \ Compile the Z80 instruction ``LD A,R``.
+  \ Compile the Z80 `assembler` instruction ``LD A,R``.
   \
   \ See: `ldra,`, `ldai,`, `ld,`.
   \
@@ -1048,7 +1055,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ ldra, ( -- ) "l-d-r-a-comma"
   \
-  \ Compile the Z80 instruction ``LD R,A``.
+  \ Compile the Z80 `assembler` instruction ``LD R,A``.
   \
   \ See: `ldar,`, `ldir,`, `ld,`.
   \
@@ -1058,7 +1065,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ im1, ( -- ) "i-m-one-comma"
   \
-  \ Compile the Z80 instruction ``IM 1``.
+  \ Compile the Z80 `assembler` instruction ``IM 1``.
   \
   \ See: `im2,`, `di,`, `ei,`, `halt,`.
   \
@@ -1068,7 +1075,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ im2, ( -- ) "i-m-two-comma"
   \
-  \ Compile the Z80 instruction ``IM 2``.
+  \ Compile the Z80 `assembler` instruction ``IM 2``.
   \
   \ See: `im1,`, `di,`, `ei,`, `halt,`.
   \
@@ -1078,7 +1085,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ cpir, ( -- ) "c-p-i-r-comma"
   \
-  \ Compile the Z80 instruction ``CPIR``.
+  \ Compile the Z80 `assembler` instruction ``CPIR``.
   \
   \ See: `cp,`, `ldir,`, `djnz,`.
   \
@@ -1088,7 +1095,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ rld, ( -- ) "r-l-d-comma"
   \
-  \ Compile the Z80 instruction ``RLD``.
+  \ Compile the Z80 `assembler` instruction ``RLD``.
   \
   \ See: `rla,`, `rlca,`, `rra,`.
   \
@@ -1098,7 +1105,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ and, ( reg -- ) "and-comma"
   \
-  \ Compile the Z80 instruction ``AND _reg_``.
+  \ Compile the Z80 `assembler` instruction ``AND _reg_``.
   \
   \ See: `xor,`, `or,`.
   \
@@ -1108,7 +1115,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ or, ( reg -- ) "or-comma"
   \
-  \ Compile the Z80 instruction ``OR _reg_``.
+  \ Compile the Z80 `assembler` instruction ``OR _reg_``.
   \
   \ See: `and,`, `xor,`.
   \
@@ -1118,7 +1125,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ xor, ( reg -- ) "x-or-comma"
   \
-  \ Compile the Z80 instruction ``XOR _reg_``.
+  \ Compile the Z80 `assembler` instruction ``XOR _reg_``.
   \
   \ See: `and,`, `or,`.
   \
@@ -1137,7 +1144,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ jpix, ( -- ) "j-p-i-x-comma"
   \
-  \ Compile the Z80 instruction ``JP (IX)``.
+  \ Compile the Z80 `assembler` instruction ``JP (IX)``.
   \
   \ See: `jphl,`.
   \
@@ -1149,7 +1156,8 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ ldp#, ( 16b regp -- ) "l-d-p-number-sign-comma"
   \
-  \ Compile the Z80 instruction ``LD _regp_,_16b_``.
+  \ Compile the Z80 `assembler` instruction ``LD
+  \ _regp_,_16b_``.
   \
   \ See: `ldp,`, `ld#,`.
   \
@@ -1161,7 +1169,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ ld#, ( 8b reg -- ) "l-d-number-sign-comma"
   \
-  \ Compile the Z80 instruction ``LD _reg_,_8b_``.
+  \ Compile the Z80 `assembler` instruction ``LD _reg_,_8b_``.
   \
   \ See: `ld,`, `ldp#,`.
   \
@@ -1173,7 +1181,8 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ ld, ( reg1 reg2 -- ) "l-d-comma"
   \
-  \ Compile the Z80 instruction ``LD _reg2_,_reg1_``.
+  \ Compile the Z80 `assembler` instruction ``LD
+  \ _reg2_,_reg1_``.
   \
   \ See: `ld#,`, `ldp,`.
   \
@@ -1185,7 +1194,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ sbcp, ( regp -- ) "s-b-c-p-comma"
   \
-  \ Compile the Z80 instruction ``SBC HL,_regp_``.
+  \ Compile the Z80 `assembler` instruction ``SBC HL,_regp_``.
   \
   \ See: `subp,`, `sbc,`.
   \
@@ -1197,7 +1206,8 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ adcp, ( regp1 regp2 -- ) "a-d-c-p-comma"
   \
-  \ Compile the Z80 instruction ``ADC _regp2_,_regp1_``.
+  \ Compile the Z80 `assembler` instruction ``ADC
+  \ _regp2_,_regp1_``.
   \
   \ See: `adcp,`.
   \
@@ -1209,9 +1219,9 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ stp, ( a regp -- ) "s-t-p-comma"
   \
-  \ Compile the Z80 instruction ``LD (_a_),_regp_``, i.e.
-  \ store the contents of pair register _regp_ into memory
-  \ address _a_.
+  \ Compile the Z80 `assembler` instruction ``LD
+  \ (_a_),_regp_``, i.e. store the contents of pair register
+  \ _regp_ into memory address _a_.
   \
   \ NOTE: For the "HL" register there is a specific word:
   \ `fthl,`, which compiles shorten and faster code.
@@ -1226,9 +1236,9 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ ftp, ( a regp -- ) "f-t-p-comma"
   \
-  \ Compile the Z80 instruction ``LD _regp_,(a)``, i.e.  fetch
-  \ the contents of pair register _regp_ from memory address
-  \ _a_.
+  \ Compile the Z80 `assembler` instruction ``LD _regp_,(a)``,
+  \ i.e.  fetch the contents of pair register _regp_ from
+  \ memory address _a_.
   \
   \ NOTE: For the "HL" register has a specific word: `fthl,`,
   \ which compiles shorten and faster code.
@@ -1243,7 +1253,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ addix, ( regp -- ) "add-i-x-comma"
   \
-  \ Compile the Z80 instruction ``ADD IX,_regp_``.
+  \ Compile the Z80 `assembler` instruction ``ADD IX,_regp_``.
   \
   \ See: `addiy,`, `addp,`.
   \
@@ -1255,7 +1265,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ addiy, ( regp -- ) "add-i-y-comma"
   \
-  \ Compile the Z80 instruction ``ADD IY,_regp_``.
+  \ Compile the Z80 `assembler` instruction ``ADD IY,_regp_``.
   \
   \ See: `addiy,`, `addp,`.
   \
@@ -1269,7 +1279,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ clr, ( reg -- ) "c-l-r-comma"
   \
-  \ Compile the Z80 instruction ``LD _reg_,0``.
+  \ Compile the Z80 `assembler` instruction ``LD _reg_,0``.
   \
   \ See: `clrp,`, `ld#,`.
   \
@@ -1281,7 +1291,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ clrp, ( regp -- ) "c-l-r-p-comma"
   \
-  \ Compile the Z80 instruction ``LD _regp_,0``.
+  \ Compile the Z80 `assembler` instruction ``LD _regp_,0``.
   \
   \ See: `clr,`, `ldp#,`.
   \
@@ -1293,8 +1303,8 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ ldp, ( regp1 regp2 -- ) "l-d-p-comma"
   \
-  \ Compile the Z80 instructions required to load register pair
-  \ _regp2_ with register pair _regp1_.
+  \ Compile the Z80 `assembler` instructions required to load
+  \ register pair _regp2_ with register pair _regp1_.
   \
   \ Example: ``b d ldp,`` compiles the Z80 instructions ``LD
   \ D,B`` and ``LD E,C``.
@@ -1309,8 +1319,8 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ subp, ( regp -- ) "sub-p-comma"
   \
-  \ Compile the Z80 instructions required to subtract register
-  \ pair _regp_ from register pair "HL".
+  \ Compile the Z80 `assembler` instructions required to
+  \ subtract register pair _regp_ from register pair "HL".
   \
   \ Example: ``d subp,`` compiles the Z80 instructions ``AND
   \ A`` (to reset the carry flag) and ``SBC DE``.
@@ -1325,8 +1335,9 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ tstp, ( regp -- ) "t-s-t-p-comma"
   \
-  \ Compile the Z80 instructions required to test the register
-  \ pair _regp_ for zero.  Register "A" is modified.
+  \ Compile the Z80 `assembler` instructions required to test
+  \ the register pair _regp_ for zero.  Register "A" is
+  \ modified.
   \
   \ Example: ``b tstp,`` compiles the Z80 instructions ``LD
   \ A,B`` and ``OR C``.
@@ -1349,7 +1360,8 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ addx, ( disp regpi -- ) "add-x-comma"
   \
-  \ Compile the Z80 instruction ``ADD A,(_regpi_+_disp_)``.
+  \ Compile the Z80 `assembler` instruction ``ADD
+  \ A,(_regpi_+_disp_)``.
   \
   \ See: `adcx,`, `subx,`.
   \
@@ -1359,7 +1371,8 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ adcx, ( disp regpi --  ) "a-d-c-x-comma"
   \
-  \ Compile the Z80 instruction ``ADC A,(_regpi_+_disp_)``.
+  \ Compile the Z80 `assembler` instruction ``ADC
+  \ A,(_regpi_+_disp_)``.
   \
   \ See: `addx,`, `sbcx,`.
   \
@@ -1369,7 +1382,8 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ subx, ( disp regpi --  ) "sub-x-comma"
   \
-  \ Compile the Z80 instruction ``SUB (_regpi_+_disp_)``.
+  \ Compile the Z80 `assembler` instruction ``SUB
+  \ (_regpi_+_disp_)``.
   \
   \ See: `sbcx,`, `addx,`.
   \
@@ -1379,7 +1393,8 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ sbcx, ( disp regpi --  ) "s-b-c-x-comma"
   \
-  \ Compile the Z80 instruction ``SBC (_regpi_+_disp_)``.
+  \ Compile the Z80 `assembler` instruction ``SBC
+  \ (_regpi_+_disp_)``.
   \
   \ See: `subx,`, `adcx,`.
   \
@@ -1389,7 +1404,8 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ andx, ( disp regpi --  ) "and-x-comma"
   \
-  \ Compile the Z80 instruction ``AND (_regpi_+_disp_)``.
+  \ Compile the Z80 `assembler` instruction ``AND
+  \ (_regpi_+_disp_)``.
   \
   \ See: `xorx,`, `orx,`, `cpx,`.
   \
@@ -1399,7 +1415,8 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ xorx, ( disp regpi --  ) "x-or-x-comma"
   \
-  \ Compile the Z80 instruction ``XOR (_regpi_+_disp_)``.
+  \ Compile the Z80 `assembler` instruction ``XOR
+  \ (_regpi_+_disp_)``.
   \
   \ See: `xorx,`, `orx,`, `cpx,`.
   \
@@ -1409,7 +1426,8 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ orx, ( disp regpi --  ) "or-x-comma"
   \
-  \ Compile the Z80 instruction ``OR (_regpi_+_disp_)``.
+  \ Compile the Z80 `assembler` instruction ``OR
+  \ (_regpi_+_disp_)``.
   \
   \ See: `andx,`, `xorx,`, `cpx,`.
   \
@@ -1419,7 +1437,8 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ cpx, ( disp regpi --  ) "c-p-x-comma"
   \
-  \ Compile the Z80 instruction ``CP (_regpi_+_disp_)``.
+  \ Compile the Z80 `assembler` instruction ``CP
+  \ (_regpi_+_disp_)``.
   \
   \ See: `addx,`, `adcx,`, `subx,`, `sbcx,`, `andx,`, `xorx,`,
   \ `orx,`, `incx,`, `decx,`.
@@ -1430,7 +1449,8 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ incx, ( disp regpi --  ) "inc-x-comma"
   \
-  \ Compile the Z80 instruction ``INC (_regp_+_disp_)``.
+  \ Compile the Z80 `assembler` instruction ``INC
+  \ (_regp_+_disp_)``.
   \
   \ See: `decx,`, `addx,`, `adcx,`.
   \
@@ -1440,7 +1460,8 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ decx, ( disp regpi --  ) "dec-x-comma"
   \
-  \ Compile the Z80 instruction ``DEC (_regp_+_disp_)``.
+  \ Compile the Z80 `assembler` instruction ``DEC
+  \ (_regp_+_disp_)``.
   \
   \ See: `addx,`, `subx,`, `sbcx,`.
   \
@@ -1450,7 +1471,8 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ rlcx, ( disp regpi --  ) "r-l-c-x-comma"
   \
-  \ Compile the Z80 instruction ``RLC (_regpi_+_disp_)``.
+  \ Compile the Z80 `assembler` instruction ``RLC
+  \ (_regpi_+_disp_)``.
   \
   \ See: `rrcx,`, `rlx,`, `rrx,`, `slax,`, `srax,`, `sllx,`,
   \ `srlx,`, `bitx,`, `resx,`, `setx,`.
@@ -1461,7 +1483,8 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ rrcx, ( disp regpi --  ) "r-r-c-x-comma"
   \
-  \ Compile the Z80 instruction ``RRC (_regpi_+_disp_)``.
+  \ Compile the Z80 `assembler` instruction ``RRC
+  \ (_regpi_+_disp_)``.
   \
   \ See: `rlcx,`, `rlx,`, `rrx,`, `slax,`, `srax,`, `sllx,`,
   \ `srlx,`, `bitx,`, `resx,`, `setx,`.
@@ -1472,7 +1495,8 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ rlx, ( disp regpi --  ) "r-l-x-comma"
   \
-  \ Compile the Z80 instruction ``RL (_regpi_+_disp_)``.
+  \ Compile the Z80 `assembler` instruction ``RL
+  \ (_regpi_+_disp_)``.
   \
   \ See: `rlcx,`, `rrcx,`, `rrx,`, `slax,`, `srax,`, `sllx,`,
   \ `srlx,`, `bitx,`, `resx,`, `setx,`.
@@ -1483,7 +1507,8 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ rrx, ( disp regpi --  ) "r-r-x-comma"
   \
-  \ Compile the Z80 instruction ``RR (_regpi_+_disp_)``.
+  \ Compile the Z80 `assembler` instruction ``RR
+  \ (_regpi_+_disp_)``.
   \
   \ See: `rlcx,`, `rrcx,`, `rlx,`, `slax,`, `srax,`, `sllx,`,
   \ `srlx,`, `bitx,`, `resx,`, `setx,`.
@@ -1494,7 +1519,8 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ slax, ( disp regpi --  ) "s-l-a-x-comma"
   \
-  \ Compile the Z80 instruction ``SLA (_regpi_+_disp_)``.
+  \ Compile the Z80 `assembler` instruction ``SLA
+  \ (_regpi_+_disp_)``.
   \
   \ See: `rlcx,`, `rrcx,`, `rlx,`, `rrx,`, `srax,`, `sllx,`,
   \ `srlx,`, `bitx,`, `resx,`, `setx,`.
@@ -1505,7 +1531,8 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ srax, ( disp regpi --  ) "s-r-a-x-comma"
   \
-  \ Compile the Z80 instruction ``SRA (_regpi_+_disp_)``.
+  \ Compile the Z80 `assembler` instruction ``SRA
+  \ (_regpi_+_disp_)``.
   \
   \ See: `rlcx,`, `rrcx,`, `rlx,`, `rrx,`, `slax,`, `sllx,`,
   \ `srlx,`, `bitx,`, `resx,`, `setx,`.
@@ -1516,7 +1543,8 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ sllx, ( disp regpi --  ) "s-l-l-x-comma"
   \
-  \ Compile the Z80 instruction ``SLL (_regpi_+_disp_)``.
+  \ Compile the Z80 `assembler` instruction ``SLL
+  \ (_regpi_+_disp_)``.
   \
   \ See: `rlcx,`, `rrcx,`, `rlx,`, `rrx,`, `slax,`, `srax,`,
   \ `srlx,`, `bitx,`, `resx,`, `setx,`.
@@ -1527,7 +1555,8 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ srlx, ( disp regpi --  ) "s-r-l-x-comma"
   \
-  \ Compile the Z80 instruction ``SRL (_regpi_+_disp_)``.
+  \ Compile the Z80 `assembler` instruction ``SRL
+  \ (_regpi_+_disp_)``.
   \
   \ See: `rlcx,`, `rrcx,`, `rlx,`, `rrx,`, `slax,`, `srax,`,
   \ `sllx,`, `bitx,`, `resx,`, `setx,`.
@@ -1538,7 +1567,8 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ bitx, ( disp regpi b --  ) "bit-x-comma"
   \
-  \ Compile the Z80 instruction ``BIT _b_,(_regpi_+_disp_)``.
+  \ Compile the Z80 `assembler` instruction ``BIT
+  \ _b_,(_regpi_+_disp_)``.
   \
   \ See: `resx,`, `setx,`, `cpx,`.
   \
@@ -1548,7 +1578,8 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ resx, ( disp regpi b --  ) "res-x-comma"
   \
-  \ Compile the Z80 instruction ``RES _b_,(_regpi_+_disp_)``.
+  \ Compile the Z80 `assembler` instruction ``RES
+  \ _b_,(_regpi_+_disp_)``.
   \
   \ See: `bitx,`, `setx,`, `subx,`, `sbcx,`, `andx,`, `xorx,`,
   \ `orx,`, `decx,`.
@@ -1559,7 +1590,8 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ setx, ( disp regpi b --  ) "set-x-comma"
   \
-  \ Compile the Z80 instruction ``SET _b_,(_regpi_+_disp_)``.
+  \ Compile the Z80 `assembler` instruction ``SET
+  \ _b_,(_regpi_+_disp_)``.
   \
   \ See: `bitx,`, `resx,`, `addx,`, `adcx,`, `andx,`, `xorx,`,
   \ `orx,`, `incx,`.
@@ -1572,7 +1604,7 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ ftx, ( disp regpi reg -- ) "f-t-x-comma"
   \
-  \ Compile the Z80 instruction ``LD
+  \ Compile the Z80 `assembler` instruction ``LD
   \ _reg_,(_regpi_+_disp_)``.
   \
   \ See: `stx,`.
@@ -1585,7 +1617,8 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ stx, ( reg disp regpi -- ) "s-t-x-comma"
   \
-  \ Compile the Z80 instruction ``LD (_regpi_+_disp_),_reg_``.
+  \ Compile the Z80 `assembler` instruction ``LD
+  \ (_regpi_+_disp_),_reg_``.
   \
   \ See: `st#x,`, `ftx,`.
   \
@@ -1597,7 +1630,8 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ st#x, ( 8b disp regpi -- ) "s-t-number-sign-x-comma"
   \
-  \ Compile the Z80 instruction ``LD (_regpi_+_disp_),_8b_``.
+  \ Compile the Z80 `assembler` instruction ``LD
+  \ (_regpi_+_disp_),_8b_``.
   \
   \ See: `stx,`.
   \
@@ -1609,9 +1643,9 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ ftpx, ( disp regpi regp -- ) "f-t-p-x-comma"
   \
-  \ Compile the Z80 instructions required to fetch register
-  \ pair _regp_ from the address pointed by _regpi_ plus
-  \ _disp_.
+  \ Compile the Z80 `assembler` instructions required to fetch
+  \ register pair _regp_ from the address pointed by _regpi_
+  \ plus _disp_.
   \
   \ Example: ``16 ix h ftpx,`` will compile the Z80
   \ instructions ``LD L,(IX+16)`` and ``LD H,(IX+17)``.
@@ -1626,9 +1660,9 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ stpx, ( disp regpi regp -- ) "s-t-p-x-comma"
   \
-  \ Compile the Z80 instructions required to store register
-  \ pair _regp_ into the address pointed by _regpi_ plus
-  \ _disp_.
+  \ Compile the Z80 `assembler` instructions required to store
+  \ register pair _regp_ into the address pointed by _regpi_
+  \ plus _disp_.
   \
   \ Example: ``16 ix h stpx,`` will compile the Z80
   \ instructions ``LD (IX+16),L`` and ``LD (IX+17),H``.
@@ -1653,10 +1687,10 @@ F2 cconstant p?   FA cconstant m?
   \
   \ z? ( -- op ) "z-question"
   \
-  \ Return the opcode _op_ of the Z80 instruction ``jp z``, to
-  \ be used as condition and consumed by `?ret,`, `?jp,`,
-  \ `?call,`, `?jr,`, `aif`, `rif`, `awhile`, `rwhile`, `auntil`
-  \ or `runtil`.
+  \ Return the opcode _op_ of the Z80 `assembler` instruction
+  \ ``jp z``, to be used as condition and consumed by `?ret,`,
+  \ `?jp,`, `?call,`, `?jr,`, `aif`, `rif`, `awhile`, `rwhile`,
+  \ `auntil` or `runtil`.
   \
   \ See: `nz?`, `c?`, `nc?`, `po?`, `pe?`, `p?`, `m?`.
   \
@@ -1666,9 +1700,9 @@ F2 cconstant p?   FA cconstant m?
   \
   \ nz? ( -- op ) "n-z-question"
   \
-  \ Return the opcode _op_ of the Z80 instruction ``jp nz``, to
-  \ be used as condition and consumed by `?ret,`, `?jp,`,
-  \ `?call,`, `?jr,`, `aif`, `rif`, `awhile`, `rwhile`,
+  \ Return the opcode _op_ of the Z80 `assembler` instruction
+  \ ``jp nz``, to be used as condition and consumed by `?ret,`,
+  \ `?jp,`, `?call,`, `?jr,`, `aif`, `rif`, `awhile`, `rwhile`,
   \ `auntil` or `runtil`.
   \
   \ See: `z?`, `c?`, `nc?`, `po?`, `pe?`, `p?`, `m?`.
@@ -1679,9 +1713,9 @@ F2 cconstant p?   FA cconstant m?
   \
   \ c? ( -- op ) "c-question"
   \
-  \ Return the opcode _op_ of the Z80 instruction ``jp c``, to
-  \ be used as condition and consumed by `?ret,`, `?jp,`,
-  \ `?call,`, `?jr,`, `aif`, `rif`, `awhile`, `rwhile`,
+  \ Return the opcode _op_ of the Z80 `assembler` instruction
+  \ ``jp c``, to be used as condition and consumed by `?ret,`,
+  \ `?jp,`, `?call,`, `?jr,`, `aif`, `rif`, `awhile`, `rwhile`,
   \ `auntil` or `runtil`.
   \
   \ See: `z?`, `nz?`, `nc?`, `po?`, `pe?`, `p?`, `m?`.
@@ -1692,10 +1726,10 @@ F2 cconstant p?   FA cconstant m?
   \
   \ nc? ( -- op ) "n-c-question"
   \
-  \ Return the opcode _op_ of the Z80 instruction ``jp nc``,
-  \ to be used as condition and consumed by
-  \ `?ret,`, `?jp,`, `?call,`, `?jr,`, `aif`, `rif`, `awhile`,
-  \ `rwhile`, `auntil` or `runtil`.
+  \ Return the opcode _op_ of the Z80 `assembler` instruction
+  \ ``jp nc``, to be used as condition and consumed by `?ret,`,
+  \ `?jp,`, `?call,`, `?jr,`, `aif`, `rif`, `awhile`, `rwhile`,
+  \ `auntil` or `runtil`.
   \
   \ See: `z?`, `nz?`, `c?`, `po?`, `pe?`, `p?`, `m?`.
   \
@@ -1705,9 +1739,9 @@ F2 cconstant p?   FA cconstant m?
   \
   \ po? ( -- op ) "p-o-question"
   \
-  \ Return the opcode _op_ of the Z80 instruction ``jp op``,
-  \ to be used as condition and consumed by
-  \ `?ret,`, `?jp,`, `?call,`, `aif`, `awhile` or `auntil`.
+  \ Return the opcode _op_ of the Z80 `assembler` instruction
+  \ ``jp op``, to be used as condition and consumed by `?ret,`,
+  \ `?jp,`, `?call,`, `aif`, `awhile` or `auntil`.
   \
   \ See: `z?`, `nz?`, `c?`, `nc?`, `pe?`, `p?`, `m?`.
   \
@@ -1717,9 +1751,9 @@ F2 cconstant p?   FA cconstant m?
   \
   \ pe? ( -- op ) "p-e-question"
   \
-  \ Return the opcode _op_ of the Z80 instruction ``jp pe``,
-  \ to be used as condition and consumed by
-  \ `?ret,`, `?jp,`, `?call,`, `aif`, `awhile` or `auntil`.
+  \ Return the opcode _op_ of the Z80 `assembler` instruction
+  \ ``jp pe``, to be used as condition and consumed by `?ret,`,
+  \ `?jp,`, `?call,`, `aif`, `awhile` or `auntil`.
   \
   \ See: `z?`, `nz?`, `c?`, `nc?`, `po?`, `p?`, `m?`.
   \
@@ -1729,9 +1763,9 @@ F2 cconstant p?   FA cconstant m?
   \
   \ p? ( -- op ) "p-question"
   \
-  \ Return the opcode _op_ of the Z80 instruction ``jp p``,
-  \ to be used as condition and consumed by
-  \ `?ret,`, `?jp,`, `?call,`, `aif`, `awhile` or `auntil`.
+  \ Return the opcode _op_ of the Z80 `assembler` instruction
+  \ ``jp p``, to be used as condition and consumed by `?ret,`,
+  \ `?jp,`, `?call,`, `aif`, `awhile` or `auntil`.
   \
   \ See: `z?`, `nz?`, `c?`, `nc?`, `po?`, `pe?`, `m?`.
   \
@@ -1741,9 +1775,9 @@ F2 cconstant p?   FA cconstant m?
   \
   \ m? ( -- op ) "m-question"
   \
-  \ Return the opcode _op_ of the Z80 instruction ``jp m``,
-  \ to be used as condition and consumed by
-  \ `?ret,`, `?jp,`, `?call,`, `aif`, `awhile` or `auntil`.
+  \ Return the opcode _op_ of the Z80 `assembler` instruction
+  \ ``jp m``, to be used as condition and consumed by `?ret,`,
+  \ `?jp,`, `?call,`, `aif`, `awhile` or `auntil`.
   \
   \ See: `z?`, `nz?`, `c?`, `nc?`, `po?`, `pe?`, `p?`.
   \
@@ -1757,11 +1791,11 @@ F2 cconstant p?   FA cconstant m?
   \
   \ jp>jr ( op1 -- op2 ) "j-p-greater-than-j-r"
   \
-  \ Convert an absolute-jump opcode to its relative-jump
-  \ equivalent.  Throw error #-273 if the jump condition is
-  \ invalid.
+  \ Convert an absolute-jump Z80 `assembler` opcode to its
+  \ relative-jump equivalent.  Throw error #-273 if the jump
+  \ condition is invalid.
   \
-  \ ``jp>jr`` is a common factor of `?jr,`, `rif` and `runtil`.
+  \ ``jp>jr`` is a factor of `?jr,`, `rif` and `runtil`.
   \
   \ }doc
 
@@ -1771,9 +1805,10 @@ F2 cconstant p?   FA cconstant m?
   \
   \ ?ret, ( op -- ) "question-ret-comma"
   \
-  \ Compile a Z80 conditional return instruction, being _op_
-  \ the identifier of the condition, which has been put on the
-  \ stack by `nz?`, `c?`, `nc?`, `po?`, `pe?`, `p?`, or `m?`.
+  \ Compile a Z80 `assembler` conditional return instruction,
+  \ being _op_ the identifier of the condition, which has been
+  \ put on the stack by `nz?`, `c?`, `nc?`, `po?`, `pe?`, `p?`,
+  \ or `m?`.
   \
   \ See: `ret,`, `?jp,`, `?call,`.
   \
@@ -1785,10 +1820,10 @@ F2 cconstant p?   FA cconstant m?
   \
   \ ?jp, ( a op -- ) "question-j-p-comma"
   \
-  \ Compile a Z80 conditional absolute jump instruction to
-  \ address _a_, being _op_ the identifier of the condition,
-  \ which has been put on the stack by `nz?`, `c?`, `nc?`,
-  \ `po?`, `pe?`, `p?`, or `m?`.
+  \ Compile a Z80 `assembler` conditional absolute jump
+  \ instruction to address _a_, being _op_ the identifier of
+  \ the condition, which has been put on the stack by `nz?`,
+  \ `c?`, `nc?`, `po?`, `pe?`, `p?`, or `m?`.
   \
   \ See: `jp,`, `?jr,`, `?ret,`, `?call,`.
   \
@@ -1800,10 +1835,10 @@ F2 cconstant p?   FA cconstant m?
   \
   \ ?call, ( a op -- ) "question-call-comma"
   \
-  \ Compile a Z80 conditional absolute call instruction to
-  \ address _a_, being _op_ the identifier of the condition,
-  \ which has been put on the stack by `nz?`, `c?`, `nc?`,
-  \ `po?`, `pe?`, `p?`, or `m?`.
+  \ Compile a Z80 `assembler` conditional absolute call
+  \ instruction to address _a_, being _op_ the identifier of
+  \ the condition, which has been put on the stack by `nz?`,
+  \ `c?`, `nc?`, `po?`, `pe?`, `p?`, or `m?`.
   \
   \ See: `call,`, `?ret,`, `?jp,`.
   \
@@ -1815,9 +1850,10 @@ F2 cconstant p?   FA cconstant m?
   \
   \ ?jr, ( a op -- ) "question-j-r-comma"
   \
-  \ Compile a Z80 conditional relative jump instruction to
-  \ address _a_, being _op_ the identifier of the condition,
-  \ which has been put on the stack by `nz?`, `c?`, or `nc?`.
+  \ Compile a Z80 `assembler` conditional relative jump
+  \ instruction to address _a_, being _op_ the identifier of
+  \ the condition, which has been put on the stack by `nz?`,
+  \ `c?`, or `nc?`.
   \
   \ See: `jr,`, `?jp,`, `djnz,`, `jp>jr`, `(jr,`.
   \
@@ -1831,8 +1867,8 @@ F2 cconstant p?   FA cconstant m?
   \
   \ >rmark ( -- orig ) "greater-than-r-mark"
   \
-  \ Leave the origin address of a forward relative branch
-  \ just compiled, to be resolved by `>rresolve`.
+  \ Leave the origin address of an `assembler` forward relative
+  \ branch just compiled, to be resolved by `>rresolve`.
   \
   \ }doc
 
@@ -1883,9 +1919,9 @@ F2 cconstant p?   FA cconstant m?
   \
   \ rahead ( -- orig ) "r-ahead"
   \
-  \ Create a relative branch forward.
-  \ Leave the origin address of a forward relative branch
-  \ just compiled, to be resolved by `>rresolve`.
+  \ Create an `assembler` relative branch forward. Leave the
+  \ origin address of a forward relative branch just compiled,
+  \ to be resolved by `>rresolve`.
   \
   \ }doc
 
@@ -1895,7 +1931,7 @@ F2 cconstant p?   FA cconstant m?
   \
   \ (rif ( op -- orig cs-id ) "paren-r-if"
   \
-  \ ``(rif`` is a factor of `rif` and `relse`.
+  \ ``(rif`` is a factor of `assembler` `rif` and `relse`.
   \
   \ }doc
 
@@ -1905,8 +1941,8 @@ F2 cconstant p?   FA cconstant m?
   \
   \ rif ( op -- orig cs-id ) "r-if"
   \
-  \ Part of the `assembler` relative-address control-flow
-  \ structure ``rif`` .. `relse` .. `rthen`.
+  \ ``rif`` is part of the `assembler` relative-address
+  \ control-flow structure ``rif`` .. `relse` .. `rthen`.
   \
   \ See: `aif`, `rbegin`, `jp>jr`.
   \
@@ -1918,8 +1954,8 @@ F2 cconstant p?   FA cconstant m?
   \
   \ rthen ( orig cs-id -- ) "r-then"
   \
-  \ Part of the `assembler` relative-address control-flow
-  \ structure `rif` .. `relse` .. ``rthen``.
+  \ ``rthen`` is part of the `assembler` relative-address
+  \ control-flow structure `rif` .. `relse` .. ``rthen``.
   \
   \ See: `athen`, `>rresolve`.
   \
@@ -1933,8 +1969,8 @@ F2 cconstant p?   FA cconstant m?
   \
   \ relse ( orig cs-id -- orig cs-id ) "r-else"
   \
-  \ Part of the `assembler` relative-address control-flow
-  \ structure `rif` .. ``relse`` .. `rthen`.
+  \ ``relse`` is part of the `assembler` relative-address
+  \ control-flow structure `rif` .. ``relse`` .. `rthen`.
   \
   \ See: `aelse`, `(rif`.
   \
@@ -1946,9 +1982,9 @@ F2 cconstant p?   FA cconstant m?
   \
   \ rbegin ( -- dest cs-id ) "r-begin"
   \
-  \ Part of the `assembler` relative-address control-flow
-  \ structures ``rbegin`` .. `ragain`, ``rbegin`` .. `runtil`
-  \ and ``rbegin`` .. `rwhile` ..  `rrepeat`.
+  \ ``rbegin`` is part of the `assembler` relative-address
+  \ control-flow structures ``rbegin`` .. `ragain`, ``rbegin``
+  \ .. `runtil` and ``rbegin`` .. `rwhile` ..  `rrepeat`.
   \
   \ See: `abegin`.
   \
@@ -1960,8 +1996,9 @@ F2 cconstant p?   FA cconstant m?
   \
   \ rwhile ( op -- orig cs-id ) "r-while"
   \
-  \ Part of the `assembler` relative-address control-flow
-  \ structures ``rbegin`` .. `rwhile` ..  `rrepeat`.
+  \ ``rwhile`` is part of the `assembler` relative-address
+  \ control-flow structures ``rbegin`` .. `rwhile` ..
+  \ `rrepeat`.
   \
   \ See: `awhile`.
   \
@@ -1973,9 +2010,9 @@ F2 cconstant p?   FA cconstant m?
   \
   \ (runtil ( dest cs-id op -- ) "paren-r-until"
   \
-  \ Compile a relative conditional jump Z80 instruction _op_.
-  \ ``(runtil`` is common factor of `runtil`, `ragain` and
-  \ `rstep`.
+  \ Compile a relative conditional jump Z80 `assembler`
+  \ instruction _op_. ``(runtil`` is a factor of `runtil`,
+  \ `ragain` and `rstep`.
   \
   \ }doc
 
@@ -1985,8 +2022,8 @@ F2 cconstant p?   FA cconstant m?
   \
   \ runtil ( dest cs-id op -- ) "r-until"
   \
-  \ Part of the `assembler` relative-address control-flow
-  \ structure `rbegin` .. ``runtil``.
+  \ ``runtil`` is part of the `assembler` relative-address
+  \ control-flow structure `rbegin` .. ``runtil``.
   \
   \ See: `auntil`, `(runtil`, `jp>jr`.
   \
@@ -1999,8 +2036,8 @@ F2 cconstant p?   FA cconstant m?
   \
   \ ragain ( dest cs-id -- ) "r-again"
   \
-  \ Part of the `assembler` relative-address control-flow
-  \ structure `rbegin` .. `ragain`.
+  \ ``ragain`` is part of the `assembler` relative-address
+  \ control-flow structure `rbegin` .. `ragain`.
   \
   \ See: `aagain`, `(runtil`.
   \
@@ -2012,8 +2049,8 @@ F2 cconstant p?   FA cconstant m?
   \
   \ rrepeat ( dest cs-id1 orig cs-id2 --) "r-repeat"
   \
-  \ Part of the `assembler` relative-address control-flow
-  \ structure `rbegin` .. `rwhile` ..  `rrepeat`.
+  \ ``rrepeat`` is part of the `assembler` relative-address
+  \ control-flow structure `rbegin` .. `rwhile` ..  `rrepeat`.
   \
   \ See: `arepeat`.
   \
@@ -2026,8 +2063,8 @@ F2 cconstant p?   FA cconstant m?
   \
   \ rstep ( dest cs-id -- ) "r-step"
   \
-  \ Part of the `assembler` relative-address control-flow
-  \ structure `rbegin` .. ``rstep``.
+  \ ``rstep`` is part of the `assembler` relative-address
+  \ control-flow structure `rbegin` .. ``rstep``.
   \
   \ See: `(runtil`.
   \
@@ -2059,8 +2096,8 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ aif ( op -- orig cs-id ) "a-if"
   \
-  \ Part of the `assembler` absolute-address control-flow
-  \ structure ``aif`` .. `aelse` .. `athen`.
+  \ ``aif`` is part of the `assembler` absolute-address
+  \ control-flow structure ``aif`` .. `aelse` .. `athen`.
   \
   \ See: `rif`.
   \
@@ -2072,8 +2109,8 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ athen ( orig cs-id -- ) "a-then"
   \
-  \ Part of the `assembler` absolute-address control-flow
-  \ structure `aif` .. `aelse` .. ``athen``.
+  \ ``athen`` is part of the `assembler` absolute-address
+  \ control-flow structure `aif` .. `aelse` .. ``athen``.
   \
   \ See: `rthen`.
   \
@@ -2087,8 +2124,8 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ aelse ( orig cs-id -- orig cs-id ) "a-else"
   \
-  \ Part of the `assembler` absolute-address control-flow
-  \ structure `aif` .. ``aelse`` .. `athen`.
+  \ ``aelse`` is part of the `assembler` absolute-address
+  \ control-flow structure `aif` .. ``aelse`` .. `athen`.
   \
   \ See: `relse`.
   \
@@ -2100,8 +2137,9 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ abegin ( -- dest cs-id ) "a-begin"
   \
-  \ Part of the `assembler` absolute-address control-flow
-  \ structure ``abegin`` .. `awhile` ..  `arepeat`.
+  \ ``abegin`` is part of the `assembler` absolute-address
+  \ control-flow structure ``abegin`` .. `awhile` ..
+  \ `arepeat`.
   \
   \ See: `rbegin`.
   \
@@ -2113,8 +2151,9 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ awhile ( op -- orig cs-id ) "a-while"
   \
-  \ Part of the `assembler` absolute-address control-flow
-  \ structure `abegin` .. ``awhile`` ..  `arepeat`.
+  \ ``awhile`` is part of the `assembler` absolute-address
+  \ control-flow structure `abegin` .. ``awhile`` ..
+  \ `arepeat`.
   \
   \ See: `rwhile`.
   \
@@ -2126,8 +2165,8 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ (auntil ( dest cs-id op ) "paren-a-until"
   \
-  \ Compile an absolute conditional jump.  ``(auntil`` is
-  \ common factor of `auntil` and `aagain`.
+  \ Compile an absolute conditional jump.  ``(auntil`` is a
+  \ factor of `auntil` and `aagain`.
   \
   \ }doc
 
@@ -2137,8 +2176,8 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ auntil ( dest cs-id op -- ) "a-until"
   \
-  \ Part of the `assembler` absolute-address control-flow
-  \ structure `abegin` .. ``auntil``.
+  \ ``auntil`` is part of the `assembler` absolute-address
+  \ control-flow structure `abegin` .. ``auntil``.
   \
   \ See: `runtil`.
   \
@@ -2151,8 +2190,8 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ aagain ( dest cs-id -- ) "a-again"
   \
-  \ Part of the `assembler` absolute-address control-flow
-  \ structure `abegin` .. `aagain`.
+  \ ``aagain`` is part of the `assembler` absolute-address
+  \ control-flow structure `abegin` .. `aagain`.
   \
   \ See: `ragain`.
   \
@@ -2164,8 +2203,9 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ arepeat ( dest cs-id1 orig cs-id2 ) "a-repeat"
   \
-  \ Part of the `assembler` absolute-address control-flow
-  \ structure `abegin` .. `awhile` ..  ``arepeat``.
+  \ ``arepeat`` is part of the `assembler` absolute-address
+  \ control-flow structure `abegin` .. `awhile` ..
+  \ ``arepeat``.
   \
   \ See: `rrepeat`.
   \
@@ -2181,8 +2221,8 @@ unneeding inverse-cond ?\ : inverse-cond ( op1 -- op2) 8 xor ;
   \
   \ inverse-cond ( op1 -- op2 )
   \
-  \ Convert an `assembler` condition flag (actually, an absolute
-  \ jump opcode) to its opposite.
+  \ Convert an `assembler` condition flag (actually, an
+  \ absolute jump opcode) to its opposite.
   \
   \ Examples: The opcode returned by `c?` is converted to the
   \ opcode returned by `nc?`; `nz?` to `z?`, etc.
@@ -2251,9 +2291,11 @@ variable unresolved> ( -- a ) unresolved0> unresolved> !
   \ `unresolved0>`, which is an 8-cell array.
   \
   \ The cell array pointed by ``unresolved>`` is used to store
-  \ unresolved addresses during the compilation of code words.
-  \ This method is a simpler alternative to labels created by
-  \ `l:`.
+  \ `unresolved` addresses during the compilation of `code`
+  \ words. This method is a simpler alternative to the
+  \ `assembler` `labels` created by `l:`.
+  \
+  \ See `unresolved` for a usage example.
   \
   \ }doc
 
@@ -2263,8 +2305,25 @@ variable unresolved> ( -- a ) unresolved0> unresolved> !
   \
   \ unresolved ( n -- a )
   \
-  \ _a_ is the address of element _n_ of the cell array pointed
-  \ by `unresolved>`.
+  \ Convert element _n_ of the cell array pointed by
+  \ `unresolved>` to its address _a_. ``unresolved>`` is used
+  \ to store unresolved addresses during the compilation of
+  \ `code` words, as a simpler alternative to the `assembler`
+  \ `labels` created by `l:`.
+  \
+  \ Usage examples (extracted from `ocr`):
+  \
+  \ ----
+  \ 0 d stp, >amark 0 unresolved !
+  \   \ modify the code to get the screen address later
+  \ \ (...)
+  \  0 d ldp#, \ restore the screen address
+  \  >amark 0 unresolved @ !
+  \
+  \ here jr, >rmark 2 unresolved !
+  \ \ (...)
+  \ 2 unresolved @ >rresolve
+  \ ----
   \
   \ }doc
 
@@ -2297,7 +2356,7 @@ macro execute-hl, ( -- )
   \ Compile an `execute` with the _xt_ hold in the HL register.
   \ ``execute-hl,`` is used to call Forth words from Z80.
   \
-  \ See: `call-xt,`, `call`.
+  \ See: `call-xt,`, `call`, `call,`, `assembler`.
   \
   \ }doc
 
@@ -2307,15 +2366,15 @@ macro call-xt, ( xt -- ) 21 c, , execute-hl, endm
   \
   \ call-xt, ( xt -- ) "call-x-t-comma"
   \
-  \ Compile a Z80 call to _xt_, by compiling the Z80
-  \ instruction that loads the HL register with _xt_, and then
-  \ executing `execute-hl,` to compile the rest of the
+  \ Compile a Z80 `assembler` call to _xt_, by compiling the
+  \ Z80 instruction that loads the HL register with _xt_, and
+  \ then executing `execute-hl,` to compile the rest of the
   \ necessary code.
   \
   \ ``call-xt,`` is the low-level equivalent of `execute`: it's
   \ used to call a colon word from a code word.
   \
-  \ See: `call`.
+  \ See: `call`, `call,`.
   \
   \ }doc
 
@@ -2334,8 +2393,8 @@ unneeding hook, ?\ $CF m4 hook,
   \
   \ hook, ( -- ) "hook-comma"
   \
-  \ Compile the Z80 instruction ``rst $08``. Therefore
-  \ ``hook,`` is equivalent to ``$08 rst,``.
+  \ Compile the Z80 `assembler` instruction ``rst $08``.
+  \ Therefore ``hook,`` is equivalent to ``$08 rst,``.
   \
   \ See: `rst,`, `prt,`.
   \
@@ -2348,8 +2407,8 @@ unneeding prt, ?\ $D7 m1 prt,
   \
   \ prt, ( -- ) "p-r-t-comma"
   \
-  \ Compile the Z80 instruction ``rst $16``. Therefore
-  \ ``prt,`` is equivalent to ``$16 rst,``.
+  \ Compile the Z80 `assembler` instruction ``rst $16``.
+  \ Therefore ``prt,`` is equivalent to ``$16 rst,``.
   \
   \ See: `rst,`, `hook,`.
   \

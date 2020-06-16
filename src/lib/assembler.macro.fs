@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005172336
+  \ Last modified: 202006161814
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================--
   \ License
@@ -57,6 +58,8 @@ previous
   \
   \ ``endm`` is an `immediate` word.
   \
+  \ See: `end-asm`, `code`.
+  \
   \ }doc
 
   \ ===========================================================--
@@ -82,6 +85,8 @@ previous
   \ words that need it.
   \
   \ 2020-05-17: Improve documentation.
+  \
+  \ 2020-06-16: Improve documentation.
 
   \ vim: filetype=soloforth
 

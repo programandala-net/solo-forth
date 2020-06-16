@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006161652
+  \ Last modified: 202006161756
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -59,7 +59,7 @@ create max-labels 8 c,  create max-l-refs 16 c,
 
   \ doc{
   \
-  \ max-labels  ( -- ca )
+  \ max-labels ( -- ca )
   \
   \ _ca_ is the address of a byte containing the maximum number
   \ (count) of `assembler` `labels` that can be defined by
@@ -90,7 +90,7 @@ create max-labels 8 c,  create max-l-refs 16 c,
 
   \ doc{
   \
-  \ max-l-refs  ( -- ca )
+  \ max-l-refs ( -- ca )
   \
   \ _ca_ is the address of a byte containing the maximum number
   \ (count) of unresolved `assembler` label references that can
@@ -160,7 +160,7 @@ variable labels  variable l-refs
 
   \ doc{
   \
-  \ labels  ( -- a )
+  \ labels ( -- a )
   \
   \ A `variable`. _a_ is the address of a cell containing the
   \ address of the labels table, which is allocated in the
@@ -177,7 +177,7 @@ variable labels  variable l-refs
 
   \ doc{
   \
-  \ l-refs  ( -- a )
+  \ l-refs ( -- a )
   \
   \ A `variable`. _a_ is the address of a cell containing the
   \ address of the label references table, which is allocated
@@ -309,7 +309,7 @@ init-labels ' init-labels ' init-asm defer!
 
   \ doc{
   \
-  \ al#  ( -- ) "a-l-number-sign"
+  \ al# ( -- ) "a-l-number-sign"
   \
   \ Create an absolute reference to an `assembler` label defined
   \ by `l:`. The label number has been compiled in the last
@@ -341,7 +341,7 @@ init-labels ' init-labels ' init-asm defer!
 
   \ doc{
   \
-  \ rl#  ( n -- a ) "r-l-number-sign"
+  \ rl# ( n -- a ) "r-l-number-sign"
   \
   \ Create a relative reference to `assembler` label number _n_,
   \ defined by `l:`.  If label _n_ is already defined, _a_ is
@@ -398,7 +398,7 @@ init-labels ' init-labels ' init-asm defer!
 
   \ doc{
   \
-  \ l!  ( x n -- ) "l-store"
+  \ l! ( x n -- ) "l-store"
   \
   \ If `assembler` label _n_ has been defined in the current
   \ definition, `throw` exception #-284 (assembly label number
@@ -415,7 +415,7 @@ init-labels ' init-labels ' init-asm defer!
 
   \ doc{
   \
-  \ l:  ( n -- ) "l-colon"
+  \ l: ( n -- ) "l-colon"
   \
   \ If `assembler` label _n_ has been defined in the current
   \ definition, `throw` exception #-284 (assembly label number
@@ -425,6 +425,8 @@ init-labels ' init-labels ' init-asm defer!
   \ `al#`.
   \
   \ See: `l!`, `.l`, `labels`, `l-refs`, `init-labels`.
+  \
+  \ See also `unresolved` for an alternative method.
   \
   \ }doc
 

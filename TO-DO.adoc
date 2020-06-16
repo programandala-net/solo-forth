@@ -964,10 +964,8 @@ NOTE: Milestone: 0.14.0
 NOTE: Milestone: 0.14.0
 
 - Preserve the .adoc extension in the target files.
-- Add `assembler` to the description of all assembler words.
 - Add "Compile the Z80 jumps required" to assembler control-flow
   words.
-- Improve: "_a_ is the address of..." -> "Return address _a_ of...".
 - Search for words without cross-references in order to complete them.
 - Search for words that have definitions whose main words are not
   cross-references.
@@ -975,7 +973,12 @@ NOTE: Milestone: 0.14.0
   glossary?
 - Cross-reference all Z80 conditions in assembler control-flow
   structures.
-- Make cross-references to `{` and `}` explicit.
+
+NOTE: Milestone: 0.15.0
+
+- Improve: "_a_ is the address of..." -> "Return address _a_ of...".
+- Make cross-references to `{` and `}` (Hayest test) explicit?
+
 
 === 2020-06-10
 
