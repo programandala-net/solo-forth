@@ -342,7 +342,7 @@ unneeding far@+
   \ is _a_ incremented by one cell.  This is handy for stepping
   \ through cell arrays.
   \
-  \ See: `farc@+`, `far@+`, `far2@+,` `@+`, `far-banks`.
+  \ See: `farc@+`, `far@+`, `far2@+`, `@+`, `far-banks`.
   \
   \ }doc
 
@@ -692,5 +692,7 @@ unneeding bank-start ?\ $C000 constant bank-start
   \ <memory.bank.fs> module.
   \
   \ 2020-06-15: Improve documentation.
+  \
+  \ 2020-06-16: Fix cross-reference.
 
   \ vim: filetype=soloforth

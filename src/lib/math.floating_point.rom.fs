@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202006152229
+  \ Last modified: 202006161547
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -721,7 +721,7 @@ code f@ ( fa -- ) ( F: -- r )
               2AB6 call, \ STK_STORE ROM routine
   exx, jpnext, end-code
 
-  \ doc
+  \ doc{
   \
   \ f@ ( fa -- ) ( F: -- r )
   \
@@ -1189,5 +1189,7 @@ unneeding dfaligned
   \ 2020-05-18: Update: `+loop` was moved to the library.
   \
   \ 2020-06-15: Improve documentation.
+  \
+  \ 2020-06-16: Fix markup in documentation.
 
   \ vim: filetype=soloforth
