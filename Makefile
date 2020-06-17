@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202006041725.
+# Last modified: 202006171709.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -233,6 +233,9 @@ trdosdbk: \
 
 .PHONY: epub
 epub: gplusdosepub plus3dosepub trdosepub
+
+.PHONY: epuba
+epuba: gplusdosepuba plus3dosepuba trdosepuba
 
 .PHONY: gplusdosepub
 gplusdosepub: gplusdosepuba gplusdosepubd
@@ -895,7 +898,8 @@ doc/gplusdos_solo_forth_manual.epub: \
 		--attribute=dosname=G+DOS \
 		--attribute=epub-chapter-level=2 \
 		--attribute=version=$(version) \
-		--out-file=$@ $<
+		--out-file=$@ $< \
+		2> tmp/doc.gplusdos.unknown_anchors.log
 
 doc/gplusdos_solo_forth_manual.pdf: \
 	tmp/doc.gplusdos.manual.adoc \
@@ -977,7 +981,8 @@ doc/plus3dos_solo_forth_manual.epub: \
 		--attribute=dosname=+3DOS \
 		--attribute=epub-chapter-level=2 \
 		--attribute=version=$(version) \
-		--out-file=$@ $<
+		--out-file=$@ $< \
+		2> tmp/doc.plus3dos.unknown_anchors.log
 
 doc/plus3dos_solo_forth_manual.pdf: \
 	tmp/doc.plus3dos.manual.adoc \
@@ -1055,7 +1060,8 @@ doc/trdos_solo_forth_manual.epub: \
 		--attribute=dosname=TRDOS \
 		--attribute=epub-chapter-level=2 \
 		--attribute=version=$(version) \
-		--out-file=$@ $<
+		--out-file=$@ $< \
+		2> tmp/doc.trdos.unknown_anchors.log
 
 doc/trdos_solo_forth_manual.pdf: \
 	tmp/doc.trdos.manual.adoc \
@@ -1456,6 +1462,10 @@ oldbackup:
 # 2020-05-05: Add the editors to the glossary.
 #
 # 2020-06-04: Add the tests to the glossary.
+#
+# 2020-06-17: Save error output of Asciidoctor EPUB3 to log files, to detect
+# wrong cross-references. Add rule "epuba" to build the EPUBs only with
+# Asciidoctor EPUB3.
 
 # ==============================================================
 
