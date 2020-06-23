@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-06-16
+:revdate: 2020-06-23
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -3014,6 +3014,20 @@ Make the tape words return a standard _ior_.
 
 // Tests {{{1
 == Tests
+
+=== 2020-06-23
+
+NOTE: Milestone: 0.14.0
+
+Fix:
+
+....
+This line: T{ -7 S>D 3 SM/REM -> 1 -2 }T
+
+should be: T{ -7 S>D 3 SM/REM -> -1 -2 }T
+....
+
+See <https://forth-standard.org/standard/core/SMDivREM>.
 
 === 2018-03-12
 
