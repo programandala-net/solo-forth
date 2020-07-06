@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006161825
+  \ Last modified: 202006171721
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1675,7 +1675,7 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
 
 ( assembler )
 
-  \ Conditions (Z80 opcodes for the required absolute jump
+  \ Conditions (Z80 opcodes for the required absolute-jump
   \ instruction)
 
 C2 cconstant nz?  CA cconstant z?
@@ -1820,7 +1820,7 @@ F2 cconstant p?   FA cconstant m?
   \
   \ ?jp, ( a op -- ) "question-j-p-comma"
   \
-  \ Compile a Z80 `assembler` conditional absolute jump
+  \ Compile a Z80 `assembler` conditional absolute-jump
   \ instruction to address _a_, being _op_ the identifier of
   \ the condition, which has been put on the stack by `nz?`,
   \ `c?`, `nc?`, `po?`, `pe?`, `p?`, or `m?`.
@@ -1944,7 +1944,7 @@ F2 cconstant p?   FA cconstant m?
   \ ``rif`` is part of the `assembler` relative-address
   \ control-flow structure ``rif`` .. `relse` .. `rthen`.
   \
-  \ See: `aif`, `rbegin`, `jp>jr`.
+  \ See: `aif`, `rbegin`, `jp>jr`, `inverse-cond`.
   \
   \ }doc
 
@@ -2025,7 +2025,7 @@ F2 cconstant p?   FA cconstant m?
   \ ``runtil`` is part of the `assembler` relative-address
   \ control-flow structure `rbegin` .. ``runtil``.
   \
-  \ See: `auntil`, `(runtil`, `jp>jr`.
+  \ See: `auntil`, `(runtil`, `jp>jr`, `inverse-cond`.
   \
   \ }doc
 
@@ -2086,7 +2086,19 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ (aif ( op -- orig cs-id ) "paren-a-if"
   \
+  \ Compile the `assembler` absolute-jump instruction _op_ and
+  \ put the location of a new unresolved forward reference
+  \ _orig_ and the `assembler` control-structure identifier
+  \ _cs_id_ onto the stack, to be consumed by `aelse` or
+  \ `athen`.
+  \
+  \ _op_ was left by any of the following `assembler`
+  \ conditions: `nz?`, `z?`, `nc?`, `c?`, `po?`, `pe?`, `p?`,
+  \ `m?`.
+  \
   \ ``(aif`` is a factor of `aif` and `aelse`.
+  \
+  \ See: `>mark`.
   \
   \ }doc
 
@@ -2096,10 +2108,20 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ aif ( op -- orig cs-id ) "a-if"
   \
-  \ ``aif`` is part of the `assembler` absolute-address
-  \ control-flow structure ``aif`` .. `aelse` .. `athen`.
+  \ Compile the `assembler` absolute-jump instruction _op_ and
+  \ put the location of a new unresolved forward reference
+  \ _orig_ and the control-structure identifier _cs_id_ onto
+  \ the stack, to be consumed by `aelse` or `athen`.
   \
-  \ See: `rif`.
+  \ _op_ was left by any of the following `assembler`
+  \ conditions: `nz?`, `z?`, `nc?`, `c?`, `po?`, `pe?`, `p?`,
+  \ `m?`.
+  \
+  \ ``aif`` is part of the `assembler` absolute-address
+  \ control-flow structure ``aif`` .. `aelse` .. `athen`,
+  \ equivalent to Forth `if` .. `else` .. `then`.
+  \
+  \ See: `rif`, `(aif`, `inverse-cond`.
   \
   \ }doc
 
@@ -2109,25 +2131,43 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ athen ( orig cs-id -- ) "a-then"
   \
-  \ ``athen`` is part of the `assembler` absolute-address
-  \ control-flow structure `aif` .. `aelse` .. ``athen``.
+  \ Check the `assembler` control-structure identifier _cs_id_,
+  \ then resolve the location of the unresolved forward
+  \ reference _orig_; both parameters were left by `aif` or
+  \ `aelse`.
   \
-  \ See: `rthen`.
+  \ ``athen`` is part of the `assembler` absolute-address
+  \ control-flow structure `aif` .. `aelse` .. ``athen``,
+  \ equivalent to Forth `if` .. `else` .. `then`.
+  \
+  \ See: `rthen`, `?pairs`, `>resolve`.
   \
   \ }doc
 
-: aelse ( orig cs-id -- orig cs-id )
+: aelse ( orig1 cs-id -- orig2 cs-id )
   $08 ?pairs $C3 (aif rot swap athen $08 ;
   \ Note: $C3 is the opcode of `jp`.
 
   \ doc{
   \
-  \ aelse ( orig cs-id -- orig cs-id ) "a-else"
+  \ aelse ( orig1 cs-id -- orig2 cs-id ) "a-else"
+  \
+  \ Check the `assembler` control-structure identifier _cs_id_
+  \ and resolve the forward reference _orig1_, both left by
+  \ `aif`; then compile an unconditional Z80 `assembler`
+  \ absolute-address jump, putting its unresolved forward
+  \ reference _orig2_ and `assembler` control-structure
+  \ identifier _cs-id_, to be resolved by `athen`.
+  \
+  \ Also put the location of a new unresolved forward reference
+  \ _orig2_ and the control-structure identifier _cs_id_ onto
+  \ the stack, to be consumed by `athen`.
   \
   \ ``aelse`` is part of the `assembler` absolute-address
-  \ control-flow structure `aif` .. ``aelse`` .. `athen`.
+  \ control-flow structure `aif` .. ``aelse`` .. `athen`,
+  \ equivalent to Forth `if` .. `else` .. `then`.
   \
-  \ See: `relse`.
+  \ See: `relse`, `?pairs`, `(aif`.
   \
   \ }doc
 
@@ -2165,8 +2205,10 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ (auntil ( dest cs-id op ) "paren-a-until"
   \
-  \ Compile an absolute conditional jump.  ``(auntil`` is a
-  \ factor of `auntil` and `aagain`.
+  \ Compile an `assembler` absolute conditional jump opcode
+  \ _op_.
+  \
+  \ ``(auntil`` is a factor of `auntil` and `aagain`.
   \
   \ }doc
 
@@ -2179,7 +2221,7 @@ assembler-wordlist >order set-current   need inverse-cond
   \ ``auntil`` is part of the `assembler` absolute-address
   \ control-flow structure `abegin` .. ``auntil``.
   \
-  \ See: `runtil`.
+  \ See: `runtil`, `(auntil`, `inverse-cond`.
   \
   \ }doc
 
@@ -2221,11 +2263,15 @@ unneeding inverse-cond ?\ : inverse-cond ( op1 -- op2) 8 xor ;
   \
   \ inverse-cond ( op1 -- op2 )
   \
-  \ Convert an `assembler` condition flag (actually, an
-  \ absolute jump opcode) to its opposite.
+  \ Convert an `assembler` condition flag _op1_ (actually a
+  \ jump opcode) to its opposite _op2_.
   \
   \ Examples: The opcode returned by `c?` is converted to the
-  \ opcode returned by `nc?`; `nz?` to `z?`, etc.
+  \ opcode returned by `nc?`, `nz?` to `z?`, `po?` to `pe?`,
+  \ `p?` to `m?; and vice versa.
+  \
+  \ ``inverse-cond`` is used by `rif`, `runtil`, `aif` and
+  \ `auntil`.
   \
   \ }doc
 
@@ -2560,5 +2606,8 @@ set-current
   \ 2020-05-18: Add explicit cross references.
   \
   \ 2020-06-16: Improve documentation.
+  \
+  \ 2020-06-17: Improve documentation of the `aif` control-flow
+  \ structure.
 
   \ vim: filetype=soloforth
