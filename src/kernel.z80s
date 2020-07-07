@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202006161533
+; Last modified: 202007080003
 
 include version.z80s
 
@@ -1573,6 +1573,10 @@ endif
 ; called "far memory". Every byte holds the bank number used for
 ; a 16-KiB range of addresses, as follows:
 
+; ifndef::plus3dos[]
+
+; // XXX REMARK -- G+DOS or TR-DOS
+
 ; |===
 ; | Offset | Address range   | Bank
 ;
@@ -1582,13 +1586,35 @@ endif
 ; | +3     | $C000 .. $FFFF  | 6
 ; |===
 
-; WARNING: On +3DOS bank 6 is used for disk cache and RAM disk,
-; and the default value of `farlimit` is $C000 instead of $0000.
-; Therefore, the name space is 16 KiB smaller on +3DOS.
-;
 ; See: `bank`, `banks`, `bank-index`, `far`, `far@`, `farc@`,
 ; `far!`, `farc!`, `farcount`, `farplace`, `fartype`,
 ; `faruppers`, `farlimit`.
+;
+; endif::[]
+
+; ifdef::plus3dos[]
+
+; // XXX REMARK -- +3DOS
+
+; |===
+; | Offset | Address range   | Bank
+;
+; | +0     | $0000 .. $3FFF  | 1
+; | +1     | $4000 .. $7999  | 3
+; | +2     | $8000 .. $BFFF  | 4
+; | +3     | $C000 .. $FFFF  | 6 (not used on +3DOS)
+; |===
+
+; WARNING: Bank 6 is used by +3DOS for disk cache and RAM disk,
+; and the default value of `farlimit` is $C000 instead of $0000.
+; Therefore, the name space is 16 KiB smaller on +3DOS than on
+; G+DOS or TR-DOS.
+
+; See: `bank`, `banks`, `bank-index`, `far`, `far@`, `farc@`,
+; `far!`, `farc!`, `farcount`, `farplace`, `fartype`,
+; `faruppers`, `default-1346`.
+;
+; endif::plus3dos[]
 ;
 ; }doc
 
@@ -14795,7 +14821,7 @@ system_stack_pointer:
 ; A `variable`. _a_ is the address of a cell containing the
 ; address above the highest address usable by the name space
 ; (the region addressed by `np`). Its default value, which is
-; restored by `cold`, is $0000 in G+DOS and TR-DOS, and $C000 on
+; restored by `cold`, is $0000 on G+DOS and TR-DOS, and $C000 on
 ; +3DOS.
 ;
 ; ``farlimit`` can be modified by a program in order to reserve
@@ -14803,11 +14829,27 @@ system_stack_pointer:
 ;
 ; Origin: Fig-Forth's ``limit`` constant.
 ;
-; See: `farunused`, `limit`, `far-banks`, `fyi`. `greeting`.
+
+; ifndef::plus3dos[]
 ;
+; See: `farunused`, `limit`, `far-banks`, `fyi`, `greeting`.
+;
+; endif::[]
+
+; ifdef::plus3dos[]
+;
+; See: `farunused`, `limit`, `far-banks`, `default-1346`,
+; `fyi`, `greeting`.
+;
+; endif::[]
+
 ; }doc
 
-  dw 0
+if plus3dos
+  dw $C000 ; use 48 KiB of far memory (16 KiB are used for cache and RAM disk)
+else
+  dw $0000 ; use 64 KiB of far memory
+endif
 
 ; ----------------------------------------------
   _colon_header unused_,'unused'
