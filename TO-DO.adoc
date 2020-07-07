@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-06-23
+:revdate: 2020-07-07
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1034,12 +1034,13 @@ NOTE: Milestone: 0.15.0
 
 - Finish documentation of `menu`.
 
-=== 2018-03-04
+=== 2018-03-04, 2020-07-07
 
-How a link to `default-1346` (a +3DOS-only word) can be included in
-the documentation of `far-banks` (a DOS-independent word)? The link
-would be broken in G+DOS and TR-DOS. Fake glossary entries could be
-created in them, with a note: "not available".
+NOTE: Milestone: 0.14.0
+
+Use Asciidoctor `ifdef::[]` to customize the documentation of
+`far-banks` (e.g. add a link to `default-1346`), `farlimit`, etc.,
+depending on the current DOS.
 
 === 2017-12-14
 
@@ -1050,7 +1051,7 @@ Remove "implementation-dependent". See `:`.
 NOTE: Milestone: 0.14.0
 
 Add cross-references to `defer` to all deferred words. Already done in
-the kernel. Better yet: add "(see `defere`)" after "is a deferred
+the kernel. Better yet: add "(see `defer`)" after "is a deferred
 word".
 
 === 2017-12-11
