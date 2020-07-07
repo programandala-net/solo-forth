@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804111740
+  \ Last modified: 202007080016
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -226,11 +227,11 @@ unneeding is ?( need [is] need <is>
   \
   \ Set _name_, which was defined by `defer`, to execute _xt_.
   \
-  \ WARNING: ``is`` is a state-smart word.
+  \ WARNING: ``is`` is a state-smart word (see `state`).
   \
   \ Origin: Forth-2012 (CORE EXT).
   \
-  \ See: `[is]`, `<is>`, `state`.
+  \ See: `[is]`, `<is>`.
   \
   \ }doc
 
@@ -261,5 +262,7 @@ unneeding is ?( need [is] need <is>
   \ 2018-03-08: Add words' pronunciaton.
   \
   \ 2018-04-11: Document `is`, `[is]`, and `<is>`.
+  \
+  \ 2020-07-08: Improve documentation.
 
   \ vim: filetype=soloforth

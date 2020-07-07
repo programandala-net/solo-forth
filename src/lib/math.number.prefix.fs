@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006152050
+  \ Last modified: 202007080018
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -77,7 +77,7 @@ create t# ( "name" -- n | d ) 36 c, x# immediate
 
 : c# ( "name" -- c )
   parse-name drop c@
-  compiling? if  postpone literal  then ; immediate
+  compiling? if postpone literal then ; immediate
 
   \ doc{
   \
@@ -91,7 +91,7 @@ create t# ( "name" -- n | d ) 36 c, x# immediate
   \
   \ ``c#`` is an `immediate` word.
   \
-  \ See: `state`.
+  \ WARNING: ``c#`` is a state-smart word (see: `state`).
   \
   \ }doc
 
@@ -111,5 +111,7 @@ create t# ( "name" -- n | d ) 36 c, x# immediate
   \ 2020-05-24: Replace "hash" notation with "number sign".
   \
   \ 2020-06-15: Improve documentation.
+  \
+  \ 2020-07-08: Improve documentation.
 
   \ vim: filetype=soloforth

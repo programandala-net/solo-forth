@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005190016
+  \ Last modified: 202007080016
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -57,9 +57,9 @@ unneeding :noname ?(
   \
   \ :noname ( -- xt ) "colon-no-name"
   \
-  \ Create an execution token _xt_. Enter compilation state and
-  \ start the current definition, which can be executed later
-  \ by using _xt_.
+  \ Create an execution token _xt_. Enter compilation `state`
+  \ and start the current definition, which can be executed
+  \ later by using _xt_.
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
@@ -183,5 +183,7 @@ unneeding nextname ?( need 2variable 2variable nextname-string
   \
   \ 2020-05-19: Update: `2variable` has been moved to the
   \ library.
+  \
+  \ 2020-07-08: Improve documentation.
 
   \ vim: filetype=soloforth

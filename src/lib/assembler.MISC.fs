@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005090035
+  \ Last modified: 202007080015
 
   \ ===========================================================
   \ Description
@@ -159,7 +159,7 @@ unneeding ;code ?(
   \
   \ Append the run-time semantics  below  to the  current
   \ definition. End  the  current definition, allow it to be
-  \ found  in the dictionary, and enter interpretation  state.
+  \ found  in the dictionary, and enter interpretation `state`.
   \
   \ Enter `assembler` mode by executing `asm`, until `end-code`
   \ is executed.
@@ -248,5 +248,7 @@ unneeding ;code ?(
   \
   \ 2020-05-09: Update requirements: `depth` has been moved to
   \ the library.
+  \
+  \ 2020-07-08: Improve documentation.
 
   \ vim: filetype=soloforth

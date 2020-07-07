@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202007080003
+; Last modified: 202007080015
 
 include version.z80s
 
@@ -2446,7 +2446,7 @@ endif
 ; If compiling, compile the parsed string and return it at
 ; run-time as _ca len_.
 ;
-; WARNING: ``parse-string`` is a state-smart word.
+; WARNING: ``parse-string`` is a state-smart word (see `state`).
 ;
 ; Definition:
 

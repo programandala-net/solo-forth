@@ -1082,16 +1082,6 @@ notations.
 Include the description of the attribute OS variables into the related
 words, or into a section of the manual.
 
-=== 2017-05-04, 2020-06-16
-
-NOTE: Milestone: 0.14.0
-
-Add the following note to state-smart words:
-
-____
-WARNING: ``XXX`` is a state-smart word (see `state`).
-____
-
 === 2017-04-27
 
 Fix: The glossary cross references to Forth words that contain a backslash, or
