@@ -954,7 +954,6 @@ NOTE: Milestone: 0.14.0
 - Convert the commands into cross-references, e.g. make `need
   make-thru-index` 2 cross-references to its words? Problem: the style
   would be affected.
-- Mention `load-program` in "How to write Forth programs".
 - Fix column widths in "Commands to rebuild the manual" and other
   tables.
 

@@ -1,7 +1,7 @@
 = Solo Forth: Version {version} for {dosname}
 :author: Marcos Cruz (programandala.net)
 :producer: Marcos Cruz (programandala.net)
-:revdate: 2020-06-11
+:revdate: 2020-07-07
 :doctype: book
 :lang: en
 :toc:
@@ -989,10 +989,10 @@ extract all the required information from the <Makefile> of Solo
 Forth.
 
 The only difference between <<_rebuild,building Solo Forth>> and
-building a Forth program is the content of disk 0 (the boot disk), if
-needed, and the library modules included in the library disk,
+building a Forth program is the content of disk 0 (the boot disk),
+if needed, and the library modules included in the library disk,
 which usually also contains the source of the program at the end.  If the program
-does not need to use the disk at run-time, you can simply copy the
+doesn't need to use the disk at run-time, you can simply copy the
 default disk 0, and boot it to `load` your program from block 1 of your
 customized disk 1, with a simple ``1 load``. When the loading
 finishes, you can save a system snapshot, in SZX format, using the
@@ -1011,7 +1011,8 @@ more complex game projects are being developed at the same time:
   Waste Invaders in GitHub]).
 
 They are not finished yet, but they can be useful as examples of
-program development with Solo Forth.
+program development with Solo Forth. See how the useful `load-program`
+is used in block 1 of their sources.
 
 // == Vim support
 //
