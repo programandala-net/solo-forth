@@ -231,12 +231,6 @@ new definition, making it a colon definition.
 
 ____
 
-=== 2017-03-26, 2017-12-05
-
-NOTE: Milestone: 0.15.0
-
-Document the instructions.
-
 === 2017-03-12
 
 Make index register instructions optional. All of them:
@@ -271,6 +265,8 @@ NOTE: Milestone: 0.15.0
 Move private words of `l:` to a word list.
 
 === 2017-02-21, 2017-12-10
+
+NOTE: Milestone: 0.15.0
 
 Rewrite `execute-hl` with Z80 opcodes.
 
@@ -946,6 +942,14 @@ Improve tab control.
 
 // Documentation {{{1
 == Documentation
+
+=== 2020-07-08
+
+NOTE: Milestone: 0.14.0
+
+Table cells justification and columns percentage width are ignored by
+Asciidoctor EPUB3. They are correct in the PDF made by Asciidoctor
+PDF. For example, see `specforth-editor` and `banks`.
 
 === 2020-06-12, 2020-07-07
 
@@ -2853,7 +2857,7 @@ Write `sound-write-port` and `sound-register-port` in Z80.
 
 === 2017-05-05
 
-Include the Note Frequencies table into the manual.
+Include the Note Frequencies table into the manual. See <sound.48.fs>.
 
 === 2017-01-24
 
