@@ -2688,8 +2688,8 @@ Rename `udg-at-xy-display` and `at-xy-display-udg`. "display"?
 
 NOTE: Milestone: 0.15.0
 
-Homogenize usage of prefix "far". In some words it's separated by a
-dash.
+Homogenize the usage of prefix "far". In some words it's separated by
+a dash.
 
 === 2018-03-07
 
@@ -2992,20 +2992,6 @@ Make the tape words return a standard _ior_.
 
 // Tests {{{1
 == Tests
-
-=== 2020-06-23
-
-NOTE: Milestone: 0.14.0
-
-Fix:
-
-....
-This line: T{ -7 S>D 3 SM/REM -> 1 -2 }T
-
-should be: T{ -7 S>D 3 SM/REM -> -1 -2 }T
-....
-
-See <https://forth-standard.org/standard/core/SMDivREM>.
 
 === 2018-03-12
 

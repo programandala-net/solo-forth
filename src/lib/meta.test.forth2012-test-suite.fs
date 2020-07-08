@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006102136
+  \ Last modified: 202007081234
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -820,7 +820,7 @@ T{  7 S>D  3 SM/REM -> 1 2 }T -->
 ( forth2012-core-test )
 
 T{  7 S>D -3 SM/REM -> 1 -2 }T
-T{ -7 S>D  3 SM/REM -> -1 -2 }T
+T{ -7 S>D  3 SM/REM -> 1 -2 }T
 T{ -7 S>D -3 SM/REM -> -1 2 }T
 T{ MAX-INT S>D 1 SM/REM -> 0 MAX-INT }T
 T{ MIN-INT S>D 1 SM/REM -> 0 MIN-INT }T
@@ -7337,5 +7337,7 @@ cr .( Forth-2012 tests completed ) cr cr
   \ 2020-06-04: Fix cross references.
   \
   \ 2020-06-10: Fix cross reference.
+  \
+  \ 2020-07-08: Fix one `sm/rem` test.
 
   \ vim: filetype=soloforth
