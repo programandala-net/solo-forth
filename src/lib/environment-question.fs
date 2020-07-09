@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081220
+  \ Last modified: 202007100058
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -55,7 +55,8 @@ wordlist constant environment-wordlist ( -- wid )
   \ about the query.
   \
 
-  \ [cols="16,8,8,32" caption="Environmental Query Strings"]
+  \ [cols="16,8,8,32"]
+  \ .Environmental Query String
   \ |===
   \ | String   | Value data type  | Constant? | Meaning
 
@@ -356,5 +357,7 @@ unneeding stack-cells
   \
   \ 2020-06-08: Improve documentation: make _true_ and
   \ _false_ cross-references.
+  \
+  \ 2020-07-10: Fix title markup of the `environment?` table.
 
   \ vim: filetype=soloforth

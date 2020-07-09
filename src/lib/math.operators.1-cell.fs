@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006152053
+  \ Last modified: 202007100035
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1000,14 +1000,15 @@ unneeding fm/mod ?(
   \ the remainder _n2_. Input and output stack arguments are
   \ signed.
 
-  \ [caption="Floored Division Example"]
+  \ [cols=">,>,>,>"]
+  \ .Floored Division Example
   \ |===
-  \ | Dividend   | Divisor  | Remainder  | Quotient
+  \ | Dividend  | Divisor | Remainder | Quotient
 
-  \ >|       10  >|      7  >|        3  >|        1
-  \ >|      -10  >|      7  >|        4  >|       -2
-  \ >|       10  >|     -7  >|       -4  >|       -2
-  \ >|      -10  >|     -7  >|       -3  >|        1
+  \ |       10  |      7  |        3  |        1
+  \ |      -10  |      7  |        4  |       -2
+  \ |       10  |     -7  |       -4  |       -2
+  \ |      -10  |     -7  |       -3  |        1
   \ |===
 
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
@@ -1423,5 +1424,8 @@ code join ( b1 b2 -- x )
   \ cross-references. Update: now `0exit` is in the kernel.
   \
   \ 2020-06-15: Improve documentation.
+  \
+  \ 2020-07-10: Improve layout of the `fm/mod` table and fix
+  \ its title markup.
 
   \ vim: filetype=soloforth

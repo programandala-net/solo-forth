@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006152045
+  \ Last modified: 202007100029
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -115,6 +115,7 @@ fda $0F + constant fda-filetrack ?)
   \ Return the address _ca_ of TR-DOS File Descriptor Area,
   \ which has the following structure:
 
+  \ [cols="7,6,19,42"]
   \ |===
   \ | Offset | Bytes | Address returned by | Contents
   \
@@ -1414,5 +1415,7 @@ need read-file-descriptor need write-file-descriptor
   \ _false_ cross-references.
   \
   \ 2020-06-15: Improve documentation.
+  \
+  \ 2020-07-10: Improve layout of the `fda` table.
 
   \ vim: filetype=soloforth

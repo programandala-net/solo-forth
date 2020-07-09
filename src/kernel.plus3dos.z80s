@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202007072203
+; Last modified: 202007100047
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -1018,13 +1018,14 @@ set_drive.end:
   ; The original default configuration of +3DOS is the
   ; following:
 
+  ; [cols="<,>*"]
   ; |===
-  ; | Usage     | First buffer | Number of buffers | KiB
+  ; | Usage    | First buffer | Number of buffers | KiB
   ;
-  ; | Cache    >|          32 >|                8 >|  4
-  ; | RAM disk >|          40 >|               88 >| 44
+  ; | Cache    |           32 |                 8 |   4
+  ; | RAM disk |           40 |                88 |  44
   ;
-  ; | Total     |             >|              176 >| 48
+  ; | Total    |              |               176 |  48
   ; |===
 
   ;
@@ -1033,12 +1034,12 @@ set_drive.end:
   ; modified by ``default-1346`` the following way:
 
   ; |===
-  ; | Usage     | First buffer | Number of buffers | KiB
+  ; | Usage    >| First buffer >| Number of buffers >| KiB
   ;
-  ; | Cache    >|          96 >|                8 >|  4
-  ; | RAM disk >|         104 >|               24 >| 12
+  ; | Cache    >|           96 >|                 8 >|   4
+  ; | RAM disk >|          104 >|                24 >|  12
   ;
-  ; | Total     |             >|               32 >| 16
+  ; | Total     |              >|                32 >|  16
   ; |===
 
   ; ``default-1346`` is executed by `cold`.
@@ -1152,5 +1153,7 @@ endif ; defined plus3dos
 ; 2020-06-15: Improve internal documentation.
 ;
 ; 2020-07-07: Improve documentation of `default-1346`.
+;
+; 2020-07-09: Improve the markup of the `default-1346` table.
 
 ; vim: filetype=z80:textwidth=64

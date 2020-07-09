@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005261715
+  \ Last modified: 202007100039
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -55,6 +55,7 @@ vocabulary specforth-editor ' specforth-editor is editor
   \ `editor`.
 
   \ .Specforth block editor commands
+  \ [cols="30,70"]
   \ |===
   \ | Word | Description
 
@@ -852,3 +853,5 @@ only forth definitions
   \
   \ 2020-05-26: Improve documentation. Make links to `find` explicit
   \ (there's also the homonym standard word).
+  \
+  \ 2020-07-10: Improve layout of tables.

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006152236
+  \ Last modified: 202007092140
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -291,48 +291,50 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ can be set with `default-ufia`. The value is changed with
   \ `!>` by some words.
 
+  \ [cols=">,>,<"]
+  \ .UFIA structure
   \ |===
-  \ | Offset | Bytes | Meaning
+  \ <| Offset <| Bytes | Meaning
   \
-  \ |      0 |     1 | Drive number (1, 2 or '*' ($2A) for current)
-  \ |      1 |     1 | Directory entry number
-  \ |      2 |     1 | Stream number
-  \ |      3 |     1 | Device density type ('d'=DD, 'D'=SD)
-  \ |      4 |     1 | Directory description
-  \ |      5 |    10 | File name (padded with spaces)
-  \ |     15 |     1 | File type
-  \ |     16 |     2 | Length of file
-  \ |     18 |     2 | Start address
-  \ |     20 |     2 | Length of a BASIC program
-  \ |     22 |     2 | Autostart line of a BASIC program
+  \ |     +0 |     1 | Drive number (1, 2 or '*' ($2A) for current)
+  \ |     +1 |     1 | Directory entry number
+  \ |     +2 |     1 | Stream number
+  \ |     +3 |     1 | Device density type ('d'=DD, 'D'=SD)
+  \ |     +4 |     1 | Directory description (see next table)
+  \ |     +5 |    10 | File name (padded with spaces)
+  \ |    +15 |     1 | File type
+  \ |    +16 |     2 | Length of file
+  \ |    +18 |     2 | Start address
+  \ |    +20 |     2 | Length of a BASIC program
+  \ |    +22 |     2 | Autostart line of a BASIC program
   \ |===
+
+  \ .Directory description codes
+  \ |===
+  \ | Code | Type                | CAT string | ROM-ID
+  \
+  \ | 0    | ERASED (free entry) | n/a        | n/a
+  \ | 1    | BASIC               | BAS        | 0
+  \ | 2    | NUMBER ARRAY        | D.ARRAY    | 1
+  \ | 3    | STRING ARRAY        | $.ARRAY    | 2
+  \ | 4    | CODE                | CDE        | 3
+  \ | 5    | 48K SNAPSHOT        | SNP 48k    | n/a
+  \ | 6    | MICRODRIVE          | MD.FILE    | n/a
+  \ | 7    | SCREEN$             | SCREEN$    | n/a
+  \ | 8    | SPECIAL             | SPECIAL    | n/a
+  \ | 9    | 128K SNAPSHOT       | SNP 128k   | n/a
+  \ | 10   | OPENTYPE            | OPENTYPE   | n/a
+  \ | 11   | EXECUTE             | EXECUTE    | n/a
+  \ |===
+
+  \ NOTE: The original UFIA field names are used, except
+  \ `device`, whose original name is "lstr1":
 
   \ See: `/ufia`, `>ufiax`, `dstr1`, `fstr1`, `sstr1`,
   \ `device`, `nstr1`, `nstr2`, `hd00`, `hd0b`, `hd0d`, `hd0f`,
   \ `hd11`.
   \
   \ }doc
-
-  \ XXX TODO --
-  \ |===
-  \ Code          Type                   CAT string   ROM-ID
-  \
-  \  0            ERASED (free entry)    (NA)         NA
-  \  1            BASIC                  BAS          0
-  \  2            NUMBER ARRAY           D.ARRAY      1
-  \  3            STRING ARRAY           $.ARRAY      2
-  \  4            CODE                   CDE          3
-  \  5            48K SNAPSHOT           SNP 48k      NA
-  \  6            MICRODRIVE             MD.FILE      NA
-  \  7            SCREEN$                SCREEN$      NA
-  \  8            SPECIAL                SPECIAL      NA
-  \  9            128K SNAPSHOT          SNP 128k     NA
-  \ 10            OPENTYPE               OPENTYPE     NA
-  \ 11            EXECUTE                EXECUTE      NA
-  \ |===
-
-  \ Note: The original UFIA field names are used, except
-  \ `device`, whose original name is "lstr1":
 
 : dstr1  ( -- ca ) ufia ~dstr1  ; \ drive: 1, 2 or '*'
 : fstr1  ( -- ca ) ufia ~fstr1  ; \ file directory number
@@ -2489,5 +2491,7 @@ need write-file need read-file need .ufia
   \ 2020-06-11: Fix typos in documentation.
   \
   \ 2020-06-15: Improve documentation.
+  \
+  \ 2020-07-09: Improve the documentation of `ufia`.
 
   \ vim: filetype=soloforth
