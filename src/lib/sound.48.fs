@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005042231
+  \ Last modified: 202007081411
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -407,7 +407,7 @@ need beep>dhz need dhz>bleep
 
   \
   \ Convert _duration1_ and _pitch1_ of `beep`, which are
-  \ equivalent to the parameters used by Sinclar BASIC's
+  \ equivalent to the parameters used by Sinclair BASIC's
   \ ``BEEP`` command, to _pitch2_ and _duration2_, which are
   \ the parameters required by `bleep`.
   \
@@ -431,7 +431,7 @@ unneeding beep ?( need beep>bleep need bleep
   \ beep ( duration pitch -- )
   \
   \ Produce a tone in the internal beeper, with parameters that
-  \ are equivalent to those of the homonymous Sinclar BASIC
+  \ are equivalent to those of the homonymous Sinclair BASIC
   \ command:
   \
   \ _duration_ is in miliseconds (instead of seconds used by
@@ -640,5 +640,7 @@ code white-noise ( u -- )
   \ 2018-06-04: Link `cconstant` in documentation.
   \
   \ 2020-05-04: Fix cross reference.
+  \
+  \ 2020-07-08: Fix typos in documentation.
 
   \ vim: filetype=soloforth
