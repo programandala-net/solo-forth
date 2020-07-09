@@ -947,9 +947,11 @@ Improve tab control.
 
 NOTE: Milestone: 0.14.0
 
-Table cells justification and columns percentage width are ignored by
-Asciidoctor EPUB3. They are correct in the PDF made by Asciidoctor
-PDF. For example, see `specforth-editor` and `banks`.
+- Table cells justification (both notations: `cols` and `>|`) and
+  columns percentage width are ignored by Asciidoctor EPUB3. They are
+  correct in the PDF made by Asciidoctor PDF. For example, see
+  `specforth-editor` and `banks`.
+- Compress the PDF manuals.
 
 === 2020-06-12, 2020-07-07
 
