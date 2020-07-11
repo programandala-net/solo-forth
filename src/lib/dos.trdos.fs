@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007100029
+  \ Last modified: 202007112236
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -116,6 +116,7 @@ fda $0F + constant fda-filetrack ?)
   \ which has the following structure:
 
   \ [cols="7,6,19,42"]
+  \ .Structure of the File Descriptor Area.
   \ |===
   \ | Offset | Bytes | Address returned by | Contents
   \
@@ -264,6 +265,7 @@ unneeding /filename ?\ 9 cconstant /filename
   \ is 9.  In TR-DOS, the last character of the filename
   \ (character offset 8) is the filetype:
 
+  \ .Meaning of the last character of a filename.
   \ |===
   \ | Character | Filetype
   \
@@ -588,6 +590,7 @@ code (file> ( ca len -- ior )
 
   \ Now there are several ways to load that file from disk:
 
+  \ .Usage examples of ``file>``.
   \ |===
   \ | Example                        | Result
   \
@@ -1417,5 +1420,7 @@ need read-file-descriptor need write-file-descriptor
   \ 2020-06-15: Improve documentation.
   \
   \ 2020-07-10: Improve layout of the `fda` table.
+  \
+  \ 2020-07-11: Add title to tables.
 
   \ vim: filetype=soloforth

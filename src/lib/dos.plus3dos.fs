@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081220
+  \ Last modified: 202007112234
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -312,9 +312,12 @@ create file-ids #file-ids allot  file-ids #file-ids erase
   \ _ca_ is the address of a byte table containing the status
   \ of the file identifiers:
   \
+  \ .Meaning of the bytes hold in the ``file-ids`` table.
   \ |===
-  \ | $00 | Not used
-  \ | $FF | Used
+  \ | Byte | Meaning
+  \
+  \ | $00  | Not used
+  \ | $FF  | Used
   \ |===
   \
   \ See: `#file-ids`, `file-id`.
@@ -1703,5 +1706,7 @@ need reposition-file need file-position
   \
   \ 2020-06-08: Improve documentation: make _true_ and
   \ _false_ cross-references.
+  \
+  \ 2020-07-11: Add title to table.
 
   \ vim: filetype=soloforth

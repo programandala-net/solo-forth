@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-07-10
+:revdate: 2020-07-11
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -942,12 +942,6 @@ Improve tab control.
 
 // Documentation {{{1
 == Documentation
-
-=== 2020-07-10
-
-NOTE: Milestone: 0.14.0
-
-Add missing titles to tables.
 
 === 2020-07-08
 

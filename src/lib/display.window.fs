@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005182105
+  \ Last modified: 202007112231
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -39,19 +39,11 @@ cconstant /window
   \
   \ /window ( -- n ) "slash-window"
   \
-  \ _n_ is the size in bytes of a `window` data structure:
-
-  \ |===
-  \ | Byte offset | Description
+  \ A `cconstant`. _n_ is the size in bytes of a `window` data
+  \ structure.
   \
-  \ | +0          | x cursor coordinate
-  \ | +1          | y cursor coordinate
-  \ | +2          | window left x coordinate on screen
-  \ | +3          | window top y coordinate on screen
-  \ | +4          | width in columns
-  \ | +5          | heigth in rows
-  \ |===
-
+  \ See: `current-window`.
+  \
   \ }doc
 
 variable current-window
@@ -62,6 +54,8 @@ variable current-window
   \
   \ A `variable`. _a_ is the address of a cell containing the
   \ address of the `current-window`.
+  \
+  \ See: `wx`, `wy`, `wx0`, `wy0`, `wcolums`, `wrows`.
   \
   \ }doc
 
@@ -160,8 +154,21 @@ variable current-window
   \ row_, with a width _columns_ and a height _rows_ (both in
   \ characters).  The internal cursor position of the window in
   \ set to its top left corner.  _a_ is the address of the
-  \ window data structure, which is described in `/window`.
+  \ window data structure, which is `/window` bytes long and
+  \ has the following structure:
+
+  \ .Data structure created by `window`:
+  \ |===
+  \ | Byte offset | Description
   \
+  \ | +0          | x cursor coordinate
+  \ | +1          | y cursor coordinate
+  \ | +2          | window left x coordinate on screen
+  \ | +3          | window top y coordinate on screen
+  \ | +4          | width in columns
+  \ | +5          | heigth in rows
+  \ |===
+
   \ Windows do not use standard output words like `emit` and
   \ `type`. Instead, they use specific words named with the "w"
   \ prefix: `wemit`, `wtype`, `wcls`, etc.
@@ -602,5 +609,9 @@ unneeding wltype ?( need wtyped need wfreecolumns
   \ `mode-42` -> `mode-42pw`.
   \
   \ 2020-05-18: Update: `+loop` was moved to the library.
+  \
+  \ 2020-07-11: Add title to the window structure table and
+  \ move it from `/window` to `window`. Add new
+  \ cross-references.
 
 \ vim: filetype=soloforth

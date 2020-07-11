@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202007100055
+; Last modified: 202007112223
 
 include version.z80s
 
@@ -1577,6 +1577,7 @@ endif
 
 ; // XXX REMARK -- G+DOS or TR-DOS
 
+; .Far-memory banks.
 ; |===
 ; | Offset | Address range   | Bank
 ;
@@ -1596,6 +1597,7 @@ endif
 
 ; // XXX REMARK -- +3DOS
 
+; .Far-memory banks.
 ; |===
 ; | Offset | Address range   | Bank
 ;
@@ -2591,6 +2593,7 @@ push_hl:
 ; The range of _+n_ depends on the computer:
 
 ; [cols="<,>"]
+; .Range of memory banks per computer.
 ; |===
 ; | Computer               | Memory banks
 ;
@@ -4208,6 +4211,7 @@ skip.end:
 ; effect of changing the value of `last-font-char`:
 
 ; [cols="1,9"]
+; .Effect of ``mode-32-emit`` depending on the value of `last-font-char`.
 ; |===
 ; | Value | Effect
 ;
@@ -8073,6 +8077,7 @@ u_less_than.de_hl:
 ; banks:
 
 ; [cols="<,>"]
+; .Number of memory banks per computer.
 ; |===
 ; | Computer               | Banks
 ;
@@ -9558,9 +9563,12 @@ simple_accept.end:
 ;
 ; Identify the input source as follows:
 ;
+; .Values returned by ``source-id``.
 ; |===
-; |  0 | User input device
-; | -1 | String via `evaluate`
+; | Value | Input source
+;
+; |  0    | User input device
+; | -1    | String via `evaluate`
 ; |===
 ;
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
@@ -11255,6 +11263,7 @@ endif
 ; vectors.  The structure and contents of the execution table is
 ; the following:
 
+; .Structure of ``interpret-table``.
 ; |===
 ; | Cell offset | Execution token or zero | Condition
 ;
@@ -11613,6 +11622,7 @@ endif
 ; is the address of the following data structure (`/wordlist`
 ; bytes long):
 
+; .Data structure created by ``wordlist``.
 ; |===
 ; | Cell | Description
 ;

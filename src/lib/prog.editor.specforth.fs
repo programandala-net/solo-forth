@@ -54,8 +54,8 @@ vocabulary specforth-editor ' specforth-editor is editor
   \ ``specforth-editor`` is loaded, it becomes the action of
   \ `editor`.
 
-  \ .Specforth block editor commands
   \ [cols="30,70"]
+  \ .Specforth block editor commands
   \ |===
   \ | Word | Description
 
@@ -855,3 +855,5 @@ only forth definitions
   \ (there's also the homonym standard word).
   \
   \ 2020-07-10: Improve layout of tables.
+  \
+  \ 2020-07-11: Modify markup of table title.

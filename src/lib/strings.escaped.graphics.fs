@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202002270124
+  \ Last modified: 202007112253
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -57,6 +57,7 @@ wordlist dup constant esc-block-chars-wordlist
   \ tools:
   \
 
+  \ .Escaped characters defined in ``esc-block-chars-wordlist``.
   \ |===
   \ | Escaped notation  | Default character code
   \
@@ -219,5 +220,7 @@ set-current
   \ 2018-06-04:  Link `variable` in documentation.
   \
   \ 2020-02-27: Fix markup in documentation.
+  \
+  \ 2020-07-11: Add title to table.
 
   \ vim: filetype=soloforth

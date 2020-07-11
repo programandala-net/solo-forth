@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007100037
+  \ Last modified: 202007112247
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -52,6 +52,7 @@ unneeding os-chans ?\ #23631 constant os-chans
   \ table. Each element of the table has the following
   \ structure:
 
+  \ .Structure of a system channel.
   \ |===
   \ | Offset (bytes) | Content
   \
@@ -64,6 +65,7 @@ unneeding os-chans ?\ #23631 constant os-chans
   \ following:
 
   \ [cols=">,<"]
+  \ .Default system channel data table.
   \ |===
   \ | Offset (bytes) | Content
   \
@@ -191,6 +193,7 @@ unneeding os-strms ?\ #23568 constant os-strms
   \ it, as follows:
 
   \ [cols=">,>,<"]
+  \ .Structure of the system streams table.
   \ |===
   \ | Offset (cells) | Stream | Content
   \
@@ -375,5 +378,7 @@ unneeding os-stkend ?\ #23653 constant os-stkend
   \ 2020-05-05: Fix typo in cross reference.
   \
   \ 2020-07-10: Improve alignment of tables.
+  \
+  \ 2020-07-11: Add title to tables.
 
   \ vim: filetype=soloforth

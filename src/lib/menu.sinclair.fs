@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005242030
+  \ Last modified: 202007112244
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -107,6 +107,7 @@ here - abs 2constant sinclair-stripes$ ( -- ca len ) ?)
   \ Return a string _ca len_ containing the following character
   \ codes:
 
+  \ .Characters of ``sinclair-stripes$``.
   \ |===
   \ | Code(s) | Meaning
   \
@@ -644,5 +645,7 @@ create current-option 0 c,
   \ `.banner` to `.menu-option`, `.menu-options`,
   \ `.menu-border` and `.menu-banner`. Increase and improve
   \ documentation.
+  \
+  \ 2020-07-11: Add title to table.
 
   \ vim: filetype=soloforth

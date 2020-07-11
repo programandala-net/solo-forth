@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202004270016
+  \ Last modified: 202007112225
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -130,12 +130,14 @@ rthen e rr, exsp, h push, d sbcp, d pop, ldir,
   \ ``dzx7s`` is the smallest but slowest version of the
   \ decompressor. `dzx7t` and `dzx7m` are bigger but faster:
 
+  \ [cols="<,>*"]
+  \ .Comparation of ZX7 decompressors.
   \ |===
-  \ | Decompressor >| Size in bytes >| Relative speed
+  \ | Decompressor | Size in bytes | Relative speed
   \
-  \ | dzx7s        >| 87            >| 100
-  \ | dzx7t        >| 97            >| 125
-  \ | dzx7m        >| 251           >| 130
+  \ | dzx7s        | 87            | 100
+  \ | dzx7t        | 97            | 125
+  \ | dzx7m        | 251           | 130
   \ |===
 
   \ For more information, see
@@ -579,5 +581,7 @@ also assembler max-labels c! previous
   \
   \ 2020-04-27: Fix the markup of World of Spectrum links in
   \ the documentation.
+  \
+  \ 2020-07-11: Add title to table.
 
   \ vim: filetype=soloforth

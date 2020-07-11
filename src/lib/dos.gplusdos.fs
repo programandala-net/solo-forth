@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007092140
+  \ Last modified: 202007112232
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1068,6 +1068,7 @@ code (file> ( ca len -- ior )
   \
   \ Now there are several ways to load the file from disk:
 
+  \ .Usage examples of ``file>``.
   \ |===
   \ | Example                        | Result
   \
@@ -2493,5 +2494,7 @@ need write-file need read-file need .ufia
   \ 2020-06-15: Improve documentation.
   \
   \ 2020-07-09: Improve the documentation of `ufia`.
+  \
+  \ 2020-07-11: Add title to table.
 
   \ vim: filetype=soloforth

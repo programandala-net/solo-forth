@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005241535
+  \ Last modified: 202007112251
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -56,6 +56,7 @@ dup >order set-current case-sensitive @ case-sensitive on
   \ Conversion rules:
 
   \ [cols="8,8,16"]
+  \ .Escaped characters defined in ``esc-standard-chars-wordlist``.
   \ |===
   \ | Escaped | Name | ASCII characters
   \
@@ -548,5 +549,7 @@ need parse-char need char>string
   \ 2020-05-04: Fix documentation.
   \
   \ 2020-05-24: Replace "hash" notation with "number sign".
+  \
+  \ 2020-07-11: Add title to table.
 
   \ vim: filetype=soloforth

@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202007100038
+  \ Last modified: 202007112248
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -43,8 +43,8 @@ vocabulary gforth-editor ' gforth-editor is editor
   \ editor. When ``gforth-editor`` is loaded, it becomes the
   \ action of `editor`.
 
-  \ .Gforth block editor commands
   \ [cols="30,70"]
+  \ .Gforth block editor commands
   \ |===
   \ | Word | Description
   \
@@ -613,5 +613,7 @@ forth definitions
   \ 2020-06-10: Improve documentation.
   \
   \ 2020-07-10: Improve layout of tables.
+  \
+  \ 2020-07-11: Modify markup of table title.
 
   \ vim: filetype=soloforth

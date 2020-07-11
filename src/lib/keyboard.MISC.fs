@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006152049
+  \ Last modified: 202007112242
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1408,6 +1408,7 @@ create kk-chars '1' c,  '2' c,  '3' c,  '4' c,  '5' c,
   \ character per key) and it's organized by keyboard rows, as
   \ follows:
 
+  \ .Keyboard matrix pointed by ``kk-chars``.
   \ |===
   \ | 1          | 2            | 3 | 4 | 5 |
   \ | q          | w            | e | r | t |
@@ -1423,13 +1424,14 @@ create kk-chars '1' c,  '2' c,  '3' c,  '4' c,  '5' c,
   \ configuration of `last-font-char` are used for the keys
   \ whose names are not a printable character, as follows:
 
+  \ .Items of ``kk-chars`` used as names of special keys.
   \ |===
-  \ | Byte offset in table `kk-chars` | UDG code | Key
+  \ | Byte offset | UDG code | Key
   \
-  \ | 15                              | 128      | Caps Shift
-  \ | 30                              | 129      | Enter
-  \ | 35                              | 130      | Space
-  \ | 36                              | 131      | Symbol Shift
+  \ | 15          | 128      | Caps Shift
+  \ | 30          | 129      | Enter
+  \ | 35          | 130      | Space
+  \ | 36          | 131      | Symbol Shift
   \ |===
 
   \ The application should define those UDG with proper icons
@@ -1774,5 +1776,7 @@ unneeding key-caps-lock ?\ 6 cconstant key-caps-lock
   \ _false_ cross-references.
   \
   \ 2020-06-15: Improve documentation.
+  \
+  \ 2020-07-11: Add title to tables. Improve documentation.
 
   \ vim: filetype=soloforth
