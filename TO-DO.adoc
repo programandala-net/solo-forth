@@ -953,9 +953,6 @@ NOTE: Milestone: 0.14.0
 
 NOTE: Milestone: 0.14.0
 
-- Convert the commands into cross-references, e.g. make `need
-  make-thru-index` 2 cross-references to its words? Problem: the style
-  would be affected.
 - Fix column widths in "Commands to rebuild the manual" and other
   tables.
 
@@ -978,13 +975,6 @@ NOTE: Milestone: 0.15.0
 
 - Improve: "_a_ is the address of..." -> "Return address _a_ of...".
 - Make cross-references to `{` and `}` (Hayest test) explicit?
-
-=== 2020-06-10
-
-NOTE: Milestone: 0.14.0
-
-Resize the columns of the editor commands tables to make the stack
-notes of their commands fit.
 
 === 2020-05-03
 
