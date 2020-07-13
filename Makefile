@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202006171709.
+# Last modified: 202007131930.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -338,15 +338,18 @@ pdf: gplusdospdf plus3dospdf trdospdf
 
 .PHONY: gplusdospdf
 gplusdospdf: \
-		doc/gplusdos_solo_forth_manual.pdf
+		doc/gplusdos_solo_forth_manual.pdf.zip \
+		doc/gplusdos_solo_forth_manual.pdf.gz
 
 .PHONY: plus3dospdf
 plus3dospdf: \
-		doc/plus3dos_solo_forth_manual.pdf
+		doc/plus3dos_solo_forth_manual.pdf.zip \
+		doc/plus3dos_solo_forth_manual.pdf.gz
 
 .PHONY: trdospdf
 trdospdf: \
-		doc/trdos_solo_forth_manual.pdf
+		doc/trdos_solo_forth_manual.pdf.zip \
+		doc/trdos_solo_forth_manual.pdf.gz
 
 # ==============================================================
 # Debug {{{1
@@ -813,7 +816,7 @@ backgrounds/current.scr: backgrounds/current.pbm
 	zip -9 $@ $<
 
 %.gz: %
-	gzip -9 --force $<
+	gzip -9 --force --keep $<
 
 %.html: %.adoc
 	asciidoctor --out-file=$@ $<
@@ -1466,6 +1469,8 @@ oldbackup:
 # 2020-06-17: Save error output of Asciidoctor EPUB3 to log files, to detect
 # wrong cross-references. Add rule "epuba" to build the EPUBs only with
 # Asciidoctor EPUB3.
+#
+# 2020-07-13: Fix compressed versions of PDF: make gzip keep the input files.
 
 # ==============================================================
 

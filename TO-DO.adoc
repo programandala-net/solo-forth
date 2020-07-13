@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-07-12
+:revdate: 2020-07-13
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -951,12 +951,6 @@ NOTE: Milestone: 0.14.0
 - Add titles to the exception codes tables (built in Makefile).
 - Improve documentation of `|else` and `|then`: mention the ROM
   calculator.
-
-=== 2020-07-08
-
-NOTE: Milestone: 0.14.0
-
-- Compress the PDF manuals.
 
 === 2020-06-12, 2020-07-07
 
