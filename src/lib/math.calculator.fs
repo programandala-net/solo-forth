@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202005241406
+  \ Last modified: 202007131955
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -495,7 +495,7 @@ get-current  calculator-wordlist set-current
   \ Compile the ``st-mem`` ROM `calculator` command for memory
   \ number _n_ (0..5).
   \
-  \ NOTE: ``st-mem`` copies the floating-point stack TOS to the
+  \ NOTE: ``st-mem`` copies the floating-point TOS to the
   \ the calculator memory number _n_, but does not remove it
   \ from the floating-point stack.
   \
@@ -753,7 +753,7 @@ get-current  calculator-wordlist set-current
   \ |0branch ( -- ) "bar-zero-branch"
   \
   \ Compile ROM `calculator` commands `|0=` and `|?branch` to
-  \ do a jump when the TOS of the calculator stack is zero.
+  \ do a jump when the floating-point TOS is zero.
   \
   \ See: `|branch`, `|?branch`.
   \
@@ -846,9 +846,11 @@ get-current  calculator-wordlist set-current
   \
   \ |if ( -- orig ) "bar-if"
   \
-  \ Compile a ROM `calculator` conditional `|0branch` and put
-  \ the address _orig_ of its destination address on the stack,
-  \ to be resolved by `|else` or `|then`.
+  \ Compile a ROM `calculator` conditional `|0branch` and
+  \ return the address _orig_ of its destination address, to be
+  \ resolved by `|else` or `|then`.
+  \
+  \ See: `|>mark`.
   \
   \ }doc
 
@@ -858,9 +860,12 @@ get-current  calculator-wordlist set-current
   \
   \ |else ( orig1 -- orig2 ) "bar-else"
   \
-  \ Put the location of a new unresolved forward reference
-  \ _orig2_ onto the stack, to be resolved by `|then`.  Resolve
-  \ the forward reference _orig1_, left by `|if`.
+  \ Compile a ROM `calculator` unconditional `|branch` and
+  \ return the address _orig2_ of its destination address, to
+  \ be resolved by `|then`; then resolve the forward reference
+  \ _orig1_, left by `|if`.
+  \
+  \ See: `|>mark`, `|>resolve`.
   \
   \ }doc
 
@@ -871,7 +876,9 @@ get-current  calculator-wordlist set-current
   \ |then ( orig -- ) "bar-then"
   \
   \ Resolve the forward reference _orig_, left by `|else` or
-  \ `|if`.
+  \ `|if`, the `calculator` conditional control-flow structure.
+  \
+  \ See: `|>resolve`.
   \
   \ }doc
 
@@ -910,5 +917,7 @@ set-current  previous
   \ 2018-04-14: Fix markup in documentation.
   \
   \ 2020-05-05: Fix cros references.
+  \
+  \ 2020-07-13: Improve documentation.
 
   \ vim: filetype=soloforth
