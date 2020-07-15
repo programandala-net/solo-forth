@@ -3,13 +3,13 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 201807222008
+// Last modified: 202007120102
 // See change log at the end of the file
 
 === Z80 flags notation
 
-.Z80 flags notation
 [cols="1,4,1",id="_stacknotationforz80flags"]
+.Z80 flags notation
 |===
 | Symbol | Description          | bit
 
@@ -27,3 +27,5 @@
 // 2017-03-11: Start.
 //
 // 2018-07-22: Adjust the width of table columns.
+//
+// 2020-07-12: Modify the markup of the table title.

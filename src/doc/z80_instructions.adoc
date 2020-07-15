@@ -3,7 +3,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202006161631
+// Last modified: 202007152209
 // See change log at the end of the file
 
 // Credits:
@@ -25,9 +25,10 @@
 :a: *
 :u: -
 
-[cols="<,<,>,<,>,<,<"]
+[cols="<11,<11,>4,<12,>5,<6,<20"]
+.Z80 instructions and their equivalent Forth commands
 |===
-| Z80 instruction   | Equivalent Forth command                                         | Size | Object code           | Clock | ``SZHPNC``             | Effect
+| Z80 instruction   | Forth command                                                    | Size | Object code           | Clock | ``SZHPNC``             | Effect
 
 | ``ADC A,(HL)``    | `<<src-lib-assembler-fs,m>>` `<<src-lib-assembler-fs,a>>` `adc,` | 1    | ``8E``                | 7     | ``{a}{a}{a}V0{a}``     | ``A=A+[HL]+CY``
 | ``ADC A,(IX+n)``  | ``_n_`` `ix` `adcx,`                                             | 3    | ``DD 8E xx``          | 19    | ``{a}{a}{a}V0{a}``     | ``A=A+[IX+n]+CY``
@@ -306,13 +307,13 @@
 | ``RRCA``          | `rrca,`                                                          | 1    | ``0F``                | 4     | ``{u}{u}0{u}0{a}``     | ``A=>>{A}``
 | ``RRD``           | n/a                                                              | 2    | ``ED 67``             | 18    | ``{a}{a}0P0{u}``       | ``{A,[HL]}=4->{A,[HL]}``
 | ``RST 0``         | ``0`` `rst,`                                                     | 1    | ``C7``                | 11    | ``{u}{u}{u}{u}{u}{u}`` | ``-SP,-SP,[SP+1,SP]=PC,PC=00``
+| ``RST 8H``        | ``$8`` `rst,`                                                    | 1    | ``CF``                | 11    | ``{u}{u}{u}{u}{u}{u}`` | ``-SP,-SP,[SP+1,SP]=PC,PC=08``
 | ``RST 10H``       | ``$10`` `rst,`                                                   | 1    | ``D7``                | 11    | ``{u}{u}{u}{u}{u}{u}`` | ``-SP,-SP,[SP+1,SP]=PC,PC=10``
 | ``RST 18H``       | ``$18`` `rst,`                                                   | 1    | ``DF``                | 11    | ``{u}{u}{u}{u}{u}{u}`` | ``-SP,-SP,[SP+1,SP]=PC,PC=18``
 | ``RST 20H``       | ``$20`` `rst,`                                                   | 1    | ``E7``                | 11    | ``{u}{u}{u}{u}{u}{u}`` | ``-SP,-SP,[SP+1,SP]=PC,PC=20``
 | ``RST 28H``       | ``$28`` `rst,`                                                   | 1    | ``EF``                | 11    | ``{u}{u}{u}{u}{u}{u}`` | ``-SP,-SP,[SP+1,SP]=PC,PC=28``
 | ``RST 30H``       | ``$30`` `rst,`                                                   | 1    | ``F7``                | 11    | ``{u}{u}{u}{u}{u}{u}`` | ``-SP,-SP,[SP+1,SP]=PC,PC=30``
 | ``RST 38H``       | ``$38`` `rst,`                                                   | 1    | ``FF``                | 11    | ``{u}{u}{u}{u}{u}{u}`` | ``-SP,-SP,[SP+1,SP]=PC,PC=38``
-| ``RST 8H``        | ``$8`` `rst,`                                                    | 1    | ``CF``                | 11    | ``{u}{u}{u}{u}{u}{u}`` | ``-SP,-SP,[SP+1,SP]=PC,PC=08``
 | ``SBC (HL)``      | `<<src-lib-assembler-fs,m>>` `sbc,`                              | 1    | ``9E``                | 7     | ``{a}{a}{a}V1{a}``     | ``A=A-[HL]-CY ``
 | ``SBC A,(IX+n)``  | ``_n_`` `ix` `sbcx,`                                             | 3    | ``DD 9E xx``          | 19    | ``{a}{a}{a}V1{a}``     | ``A=A-[IX+n]-CY``
 | ``SBC A,(IY+n)``  | ``_n_`` `iy` `sbcx,`                                             | 3    | ``FD 9E xx``          | 19    | ``{a}{a}{a}V1{a}``     | ``A=A-[IY+n]-CY``
@@ -367,6 +368,7 @@ SZHPNC:: How the different Z80 flags (bits of the "F" register) are
 affected (*S*=Sign, *Z*=Zero, *H*=Half Carry, *P*=Parity/Overflow,
 *N*=Add/Subtract, *C*=Carry ):
 +
+.Flag effect symbols
 |===
 | Symbol  | Meaning
 
@@ -388,6 +390,7 @@ numbers).
 
 ``r`` :: Register. Can be "B", "C", "D", "E", "H", "L" or "A".
 +
+.Register values in opcodes
 |===
 | Register | Value of ``r`` in the object code
 
@@ -400,7 +403,7 @@ numbers).
 | A        | 7
 |===
 +
-Note the Solo Forth's Z80 `assembler` treats ``(HL)`` as a register
+NOTE: The Solo Forth's Z80 `assembler` treats ``(HL)`` as a register
 named `m`, with value 6.
 
 // =============================================================
@@ -419,6 +422,8 @@ named `m`, with value 6.
 // 2020-05-18: Add cross references.
 //
 // 2020-06-16: Make "assembler" a cross-reference.
-
+//
+// 2020-07-15: Add titles to tables. Improve tables layout. Fix
+// position of `$8 rst,`.
 
 // vim: filetype=asciidoc

@@ -943,19 +943,20 @@ Improve tab control.
 // Documentation {{{1
 == Documentation
 
+=== 2020-07-15
+
+NOTE: Milestone: 0.14.0
+
+- Duplicate the Z80 instructions table with only two columns in order
+  to make it fit in EPUB. Problem: The EPUB made from DocBook cannot
+  be distinguised by an Asciidoctor condition; a specific version with
+  an attribute would be needed.
+
 === 2020-07-12
 
 NOTE: Milestone: 0.14.0
 
 - Mark external links with an icon or "(www)".
-- Add titles to the exception codes tables (built in Makefile).
-
-=== 2020-06-12, 2020-07-07
-
-NOTE: Milestone: 0.14.0
-
-- Fix column widths in "Commands to rebuild the manual" and other
-  tables.
 
 === 2020-06-11
 
