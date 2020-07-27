@@ -952,11 +952,11 @@ NOTE: Milestone: 0.14.0
   be distinguised by an Asciidoctor condition; a specific version with
   an attribute would be needed.
 
-=== 2020-07-12
+=== 2020-07-12, 2020-07-27
 
 NOTE: Milestone: 0.14.0
 
-- Mark external links with an icon or "(www)".
+- Mark external links with an icon or "(www)" or Unicode arrow (↗).
 
 === 2020-06-11
 
