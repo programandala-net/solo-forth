@@ -1,12 +1,19 @@
 = Solo Forth: Version {version} for {dosname}
 :author: Marcos Cruz
 :producer: Marcos Cruz
-:revdate: 2020-07-15
+:revdate: 2020-07-27
 :doctype: book
 :lang: en
+ifdef::backend-html5[]
 :toc:
 :toclevels: 2
 :toc-placement!:
+endif::[]
+ifdef::backend-pdf[]
+:toc:
+:toclevels: 2
+:toc-placement!:
+endif::[]
 :linkattrs:
 :keywords: Forth, programming, ZX Spectrum, computer
 :username:
