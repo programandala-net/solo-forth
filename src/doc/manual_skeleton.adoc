@@ -1,6 +1,6 @@
 = Solo Forth: Version {version} for {dosname}
-:author: Marcos Cruz (programandala.net)
-:producer: Marcos Cruz (programandala.net)
+:author: Marcos Cruz
+:producer: Marcos Cruz
 :revdate: 2020-07-15
 :doctype: book
 :lang: en
