@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006152026
+  \ Last modified: 202007280014
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -82,8 +82,8 @@ defer heap-in ( -- ) ' noop ' heap-in defer!
   \ `farlimit-heap`, page in its bank, which is stored at
   \ `heap-bank`; else do nothing.
   \
-  \ ``heap-in`` is a deferred word whose default action is
-  \ `noop`. Its alternative action is `(heap-in`.
+  \ ``heap-in`` is a deferred word (see `defer`) whose default
+  \ action is `noop`. Its alternative action is `(heap-in`.
   \
   \ See: `heap-out`.
   \
@@ -99,8 +99,8 @@ defer heap-out ( -- ) ' noop ' heap-out defer!
   \ `farlimit-heap`, page in the default memory bank instead;
   \ else do nothing.
   \
-  \ ``heap-out`` is a deferred word whose default action is
-  \ `noop`. Its alternative action is `default-bank`.
+  \ ``heap-out`` is a deferred word (see `defer`) whose default
+  \ action is `noop`. Its alternative action is `default-bank`.
   \
   \ See: `heap-in`.
   \
@@ -116,15 +116,15 @@ defer allocate ( u -- a ior )
   \ pointer is unaffected by this operation. The initial
   \ content of the allocated space is undefined.
   \
-  \ If the allocation succeeds, _a_ is the starting
-  \ address of the allocated space and _ior_ is zero.
+  \ If the allocation succeeds, _a_ is the starting address of
+  \ the allocated space and _ior_ is zero.
   \
   \ If the operation fails, _a_ does not represent a valid
   \ address and _ior_ is the I/O result code.
   \
-  \ ``allocate`` is a deferred word whose action can be
-  \ `charlton-allocate` or `gil-allocate`, depending on the
-  \ `heap` implementation used by the application.
+  \ ``allocate`` is a deferred word (see `defer`) whose action
+  \ can be `charlton-allocate` or `gil-allocate`, depending on
+  \ the `heap` implementation used by the application.
   \
   \ Origin: Forth-94 (MEMORY), Forth-2012 (MEMORY).
   \
@@ -144,24 +144,24 @@ defer resize ( a1 -- a2 ior )
   \ smaller than the current size of the region. The data-space
   \ pointer is unaffected by this operation.
   \
-  \ If the operation succeeds, _a2_ is  the starting
-  \ address of _u_ bytes of allocated  memory and _ior_ is
-  \ zero.  _a2_ may be,  but need not be,  the same as _a1_.
-  \ If they are  not the same,  the values contained in the
-  \ region at _a1_ are copied to _a2_, up to the minimum size
-  \ of either of  the two regions. If they are the same, the
-  \ values contained in the region are preserved to the minimum
-  \ of _u_ or the original size. If _a2_ is not the same as
-  \ _a1_, the region of memory at _a1_ is returned to the
-  \ system according to the operation of `free`.
+  \ If the operation succeeds, _a2_ is  the starting address of
+  \ _u_ bytes of allocated  memory and _ior_ is zero.  _a2_ may
+  \ be,  but need not be,  the same as _a1_. If they are  not
+  \ the same,  the values contained in the region at _a1_ are
+  \ copied to _a2_, up to the minimum size of either of  the
+  \ two regions. If they are the same, the values contained in
+  \ the region are preserved to the minimum of _u_ or the
+  \ original size. If _a2_ is not the same as _a1_, the region
+  \ of memory at _a1_ is returned to the system according to
+  \ the operation of `free`.
   \
   \ If the operation fails, _a2_ equals _a1_, the region of
   \ memory at _a1_ is unaffected, and  ior is the I/O result
   \ code.
   \
-  \ ``resize`` is a deferred word whose action can be
-  \ `charlton-resize`, depending on the `heap` implementation
-  \ used by the application.
+  \ ``resize`` is a deferred word (see `defer`) whose action
+  \ can be `charlton-resize`, depending on the `heap`
+  \ implementation used by the application.
   \
   \ Origin: Forth-94 (MEMORY), Forth-2012 (MEMORY).
   \
@@ -183,8 +183,8 @@ defer free ( a -- ior )
   \ If the operation succeeds, _ior_ is zero. If the operation
   \ fails, _ior_ is the I/O result code.
   \
-  \ ``free`` is a deferred word whose action can be
-  \ `charlton-free` or `gil-free`, depending on the `heap`
+  \ ``free`` is a deferred word (see `defer`) whose action can
+  \ be `charlton-free` or `gil-free`, depending on the `heap`
   \ implementation used by the application.
   \
   \ Origin: Forth-94 (MEMORY), Forth-2012 (MEMORY).
@@ -202,9 +202,10 @@ defer empty-heap ( -- )
   \ Empty the current `heap`, which was created by
   \ `allot-heap`, `limit-heap`, `bank-heap` or `farlimit-heap`.
   \
-  \ ``empty-heap`` is a deferred word whose action can be
-  \ `charlton-empty-heap` or `gil-empty-heap`, depending on the
-  \ `heap` implementation used by the application.
+  \ ``empty-heap`` is a deferred word (see `defer`) whose
+  \ action can be `charlton-empty-heap` or `gil-empty-heap`,
+  \ depending on the `heap` implementation used by the
+  \ application.
   \
   \ }doc
 
@@ -364,5 +365,7 @@ unneeding set-heap
   \
   \ 2020-06-15: Improve documentation: Add cross-reference to
   \ `cvariable`.
+  \
+  \ 2020-07-28: Improve documentation of deferred words.
 
   \ vim: filetype=soloforth

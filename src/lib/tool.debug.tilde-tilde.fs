@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006152110
+  \ Last modified: 202007280015
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -110,7 +110,7 @@ defer ~~info ( nt line block -- )  ' (~~info ' ~~info defer!
   \
   \ Show the debugging info compiled by `~~` and the current
   \ contents of the data stack. ``~~info`` is a deferred word
-  \ whose default action is `(~~info`.
+  \ (see `defer`) whose default action is `(~~info`.
   \
   \ }doc
 
@@ -183,8 +183,9 @@ defer ~~before-info ( -- )  defer ~~after-info ( -- )
   \ ~~before-info ( -- ) "tilde-tilde-before-info"
   \
   \ Executed at the start of the debugging code compiled by
-  \ `~~`.  ``~~before-info`` is a deferred word. Its default
-  \ action is `~~save-xy`, which saves the cursor coordinates.
+  \ `~~`.  ``~~before-info`` is a deferred word (see `defer`).
+  \ Its default action is `~~save-xy`, which saves the cursor
+  \ coordinates.
   \
   \ See: `~~after-info`, `~~save-xy`.
   \
@@ -195,8 +196,9 @@ defer ~~before-info ( -- )  defer ~~after-info ( -- )
   \ ~~after-info ( -- ) "tilde-tilde-after-info"
   \
   \ Executed at the end of the debugging code compiled by `~~`.
-  \ ``~~after-info`` is a deferred word. Its default action is
-  \ `~~restore-xy`, which restores the cursor coordinates.
+  \ ``~~after-info`` is a deferred word (see `defer`). Its
+  \ default action is `~~restore-xy`, which restores the cursor
+  \ coordinates.
   \
   \ See: `~~before-info`, `~~restore-xy`.
   \
@@ -346,5 +348,7 @@ defer ~~before-info ( -- )  defer ~~after-info ( -- )
   \
   \ 2020-06-15: Improve documentation: Add cross-references to
   \ `cvariable`; replace "This is" with the corresponding word.
+  \
+  \ 2020-07-28: Improve documentation of deferred words.
 
   \ vim: filetype=soloforth

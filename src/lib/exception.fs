@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006030129
+  \ Last modified: 202007280012
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -222,11 +222,12 @@ s" Standard error codes" located errors-block !
   \
   \ .throw-message ( n -- ) "dot-throw-message"
   \
-  \ Alternative action of the deferred word `.throw`: Display
-  \ the description of the `throw` exception code _n_.  The
-  \ variable `errors-block` contains the number of the first
-  \ block where messages are hold. If `errors-block` contains
-  \ zero, only the error number is displayed.
+  \ Alternative action of the deferred word `.throw` (see
+  \ `defer`): Display the description of the `throw` exception
+  \ code _n_.  The variable `errors-block` contains the number
+  \ of the first block where messages are hold. If
+  \ `errors-block` contains zero, only the error number is
+  \ displayed.
   \
   \ For convenience, loading ``.throw-message`` makes it the
   \ action of `.throw`.
@@ -356,6 +357,8 @@ s" Standard error codes" located errors-block !
   \
   \ 2020-06-03: Fix `catch` by adding `nest-source`; update and
   \ improve its documentation.
+  \
+  \ 2020-07-28: Improve documentation of deferred words.
 
   \ vim: filetype=soloforth
 

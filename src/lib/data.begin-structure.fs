@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041302
+  \ Last modified: 202007280010
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -41,9 +42,10 @@ unneeding +field ?\ defer +field ( n1 n2 "name" -- n3 )
   \
   \ Add _n1_ to _a1_ giving _a2_.
   \
-  \ In Solo Forth, ``+field`` is an unitialized deferred word,
-  \ for which three implementations are provided:
-  \ `+field-unopt`, `+field-opt-0` and `+field-opt-0124`.
+  \ In Solo Forth, ``+field`` is an unitialized deferred word
+  \ (see `defer`), for which three implementations are
+  \ provided: `+field-unopt`, `+field-opt-0` and
+  \ `+field-opt-0124`.
   \
   \ Origin: Forth-2012 (FACILITY EXT).
   \
@@ -342,5 +344,7 @@ unneeding +field-opt-0124 ?( need case need +field
   \ 2018-03-13: Improve documentation.
   \
   \ 2018-06-04: Fix typo in documentation.
+  \
+  \ 2020-07-28: Improve documentation of deferred words.
 
   \ vim: filetype=soloforth

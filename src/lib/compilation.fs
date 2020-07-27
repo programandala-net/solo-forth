@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006160052
+  \ Last modified: 202007280009
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1237,7 +1237,7 @@ unneeding warn.throw ?( need ?warn
   \ an exception.
   \
   \ ``warn.throw`` is an alternative action of the deferred
-  \ word `warn`.
+  \ word `warn` (see `defer`).
   \
   \ See: `warnings`, `warn-throw`, `warn.message`, `?warn`.
   \
@@ -1259,7 +1259,7 @@ unneeding warn.message ?( need ?warn need >name need .name
   \ current compilation word list, display a warning message.
   \
   \ ``warn.message`` is an alternative action of the deferred
-  \ word `warn`.
+  \ word `warn` (see `defer`).
   \
   \ See: `warnings`, `warn.throw`, `warn-throw`, `?warn`.
   \
@@ -1282,7 +1282,7 @@ unneeding warn-throw ?( need ?warn
   \ instead of printing a warning message.
   \
   \ ``warn-throw`` is the default action of the deferred word
-  \ `warn`.
+  \ `warn` (see `defer`).
   \
   \ See: `warnings`, `warn.throw`, `warn.message`, `?warn`.
   \
@@ -1552,5 +1552,7 @@ unneeding warn-throw ?( need ?warn
   \ 2020-06-15: Improve documentation.
   \
   \ 2020-06-16: Improve documentation.
+  \
+  \ 2020-07-28: Improve documentation of deferred words.
 
   \ vim: filetype=soloforth

@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-07-15
+:revdate: 2020-07-28
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1028,14 +1028,6 @@ NOTE: Milestone: 0.15.0
 === 2017-12-14
 
 Remove "implementation-dependent". See `:`.
-
-=== 2017-12-12, 2020-06-16
-
-NOTE: Milestone: 0.14.0
-
-Add cross-references to `defer` to all deferred words. Already done in
-the kernel. Better yet: add "(see `defer`)" after "is a deferred
-word".
 
 === 2017-12-11
 

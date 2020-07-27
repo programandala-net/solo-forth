@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006152038
+  \ Last modified: 202007280009
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -47,7 +47,7 @@ need evaluate need catch need use-default-located
   \ an exception #-277 ("needed, but not indexed").
   \
   \ ``thru-index-reneeded`` is an alternative action of the
-  \ deferred word `reneeded`.
+  \ deferred word `reneeded` (see `defer`).
   \
   \ }doc
 
@@ -64,7 +64,7 @@ need evaluate need catch need use-default-located
   \ indexed").
   \
   \ ``thru-index-reneed`` is an alternative action of the
-  \ deferred word `reneed`.
+  \ deferred word `reneed` (see `defer`).
   \
   \ }doc
 
@@ -84,7 +84,7 @@ need evaluate need catch need use-default-located
   \ indexed").
   \
   \ ``thru-index-needed`` is an alternative action of the
-  \ deferred word `needed`.
+  \ deferred word `needed` (see `defer`).
   \
   \ }doc
 
@@ -102,7 +102,7 @@ need evaluate need catch need use-default-located
   \ indexed").
   \
   \ ``thru-index-need`` is an alternative action of the
-  \ deferred word `need`.
+  \ deferred word `need` (see `defer`).
   \
   \ }doc
 
@@ -250,5 +250,7 @@ need evaluate need catch need use-default-located
   \ 2020-05-04: Improve documentation.
   \
   \ 2020-06-15: Improve documentation.
+  \
+  \ 2020-07-28: Improve documentation of deferred words.
 
   \ vim: filetype=soloforth

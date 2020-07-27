@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072206
+  \ Last modified: 202007280014
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -17,7 +17,8 @@
   \ Wil Baden, published on Forth Dimensions (volume 20, number
   \ 3 page 26, 1998-10).
 
-  \ Adapted by Marcos Cruz (programandala.net), 2016, 2017, 2018.
+  \ Adapted by Marcos Cruz (programandala.net), 2016, 2017,
+  \ 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -35,14 +36,16 @@ unneeding classic-number-point? ?(
 
   \ doc{
   \
-  \ classic-number-point? ( c -- f ) "classic-number-point-question"
+  \ classic-number-point? ( c -- f )
+  \ "classic-number-point-question"
   \
   \ Is character _c_ a classic number point?  Allowed points
   \ are: comma, hyphen, period, slash and colon.
   \
   \ ``classic-number-point?`` is an alternative action for the
-  \ deferred word `number-point?`, which is used in `number?`,
-  \ and whose default action is `standard-number-point?`.
+  \ deferred word `number-point?` (see `defer`), which is used
+  \ in `number?`, and whose default action is
+  \ `standard-number-point?`.
   \
   \ See: `extended-number-point?`.
   \
@@ -55,15 +58,17 @@ unneeding extended-number-point? ?(
 
   \ doc{
   \
-  \ extended-number-point? ( c -- f ) "extended-number-point-question"
+  \ extended-number-point? ( c -- f )
+  \ "extended-number-point-question"
   \
   \ Is character _c_ an extended number point?  Allowed points
   \ are: plus sign, comma, hyphen, period, slash and colon,
   \ after _Forth Programmer's Handbook_.
   \
   \ ``extended-number-point?`` is an alternative action for the
-  \ deferred word `number-point?`, which is used in `number?`,
-  \ and whose default action is `standard-number-point?`.
+  \ deferred word `number-point?`, (see `defer`) which is used
+  \ in `number?`, and whose default action is
+  \ `standard-number-point?`.
   \
   \ See: `classic-number-point?`.
   \
@@ -88,6 +93,8 @@ unneeding extended-number-point? ?(
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
   \
   \ 2018-03-07: Add words' pronunciation.
+  \
+  \ 2020-07-28: Improve documentation of deferred words.
 
   \ vim: filetype=soloforth
 

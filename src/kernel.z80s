@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202007112223
+; Last modified: 202007280006
 
 include version.z80s
 
@@ -2012,11 +2012,9 @@ endif
 ;
 ; init-asm ( -- )
 ;
-; A deferred word called by `asm`.  Its action is set by the
-; assembler labels module in order to init the labels.  Its
-; default action is `noop`.
-;
-; See: `defer`.
+; A deferred word (see `defer`) called by `asm`.  Its action is
+; set by the assembler labels module in order to init the
+; labels.  Its default action is `noop`.
 ;
 ; }doc
 
@@ -3610,12 +3608,11 @@ to_number.end:
 ; number-point? ( c -- f ) "number-point-question"
 ;
 ; _f_ is true if character _c_ is a valid point in a number.
-; ``number-point?`` is a deferred word used in `number?`. Its
-; default action is `standard-number-point?`, which only allows
-; the period.
+; ``number-point?`` is a deferred word (see `defer`) used in
+; `number?`. Its default action is `standard-number-point?`,
+; which only allows the period.
 ;
-; See: `classic-number-point?`, `extended-number-point?`,
-; `dpl`, `defer`.
+; See: `classic-number-point?`, `extended-number-point?`, `dpl`.
 ;
 ; }doc
 
@@ -3630,7 +3627,8 @@ to_number.end:
 ; The only allowed point is period.
 ;
 ; ``standard-number-point?`` is the default action of the
-; deferred word `number-point?`, which is used in `number?`.
+; deferred word `number-point?` (see `defer`), which is used in
+; `number?`.
 
 ; Definition:
 
@@ -3638,8 +3636,7 @@ to_number.end:
 ; : standard-number-point? ( c -- f ) '.' = ;
 ; ----
 
-; See: `classic-number-point?`, `extended-number-point?`,
-; `defer`.
+; See: `classic-number-point?`, `extended-number-point?`.
 ;
 ; }doc
 
@@ -4177,7 +4174,7 @@ skip.end:
 ; current font by the current action of `emit` and by `g-emit`.
 ; Higher characters are managed apart, displayed by `emit-udg`
 ; (depending on the actual implementation of `emit`, which is a
-; deferred word) or `g-emit-udg`.
+; deferred word; see `defer`) or `g-emit-udg`.
 ;
 ; At the moment, only `mode-32-emit` and `g-emit` check this
 ; value.  Eventually, also the alternative modes will use it.
@@ -4343,13 +4340,13 @@ emit_udg.address:
 ; current display mode, display it.  If _x_ is a control
 ; character used by the current display mode, manage it.
 ;
-; ``emit`` is a deferred word whose default action is
-; `mode-32-emit`.
+; ``emit`` is a deferred word (see `defer`) whose default action
+; is `mode-32-emit`.
 ;
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See: `current-mode`, `emit-udg`, `g-emit-udg`, `defer`.
+; See: `current-mode`, `emit-udg`, `g-emit-udg`.
 ;
 ; }doc
 
@@ -4542,7 +4539,7 @@ endif
 ;
 ; _f_ is true if the default break key (Shift+Space) is pressed.
 ; ``default-break-key?`` is the default action of the deferred
-; word `break-key?`.
+; word `break-key?` (see `defer`).
 ;
 ; }doc
 
@@ -4558,9 +4555,10 @@ endif
 ; break-key? ( -- f ) "break-key-question"
 ;
 ; _f_ is true if the break key is pressed. ``break-key?`` is a
-; deferred word whose default action is `default-break-key?`.
+; deferred word (see `defer`) whose default action is
+; `default-break-key?`.
 ;
-; See: `key?`, `defer`.
+; See: `key?`.
 ;
 ; }doc
 
@@ -4730,7 +4728,8 @@ wait_for_key:
 ; (cr ( -- ) "paren-c-r"
 ;
 ; Transmit a carriage return to the selected output device.
-; ``(cr`` is the default action of the deferred word `cr`.
+; ``(cr`` is the default action of the deferred word `cr` (see
+; `defer`).
 ;
 ; }doc
 
@@ -4747,12 +4746,11 @@ wait_for_key:
 ;
 ; Transmit a carriage return to the selected output device.
 ;
-; ``cr`` is a deferred word whose default action is `(cr`.
+; ``cr`` is a deferred word (see `defer`) whose default action
+; is `(cr`.
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
-;
-; See: `defer`.
 ;
 ; }doc
 
@@ -9397,14 +9395,12 @@ minus_trailing.begin:
 ;
 ; _len2_ is the length of the string stored at _ca1_.
 ;
-; In Solo Forth ``accept`` is a deferred word. Its default
-; action is `simple-accept`, which provides only the basic
-; editing options. Alternative definitions are provided in the
-; library.
+; In Solo Forth ``accept`` is a deferred word (see `defer`). Its
+; default action is `simple-accept`, which provides only the
+; basic editing options. Alternative definitions are provided in
+; the library.
 ;
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
-;
-; See: `defer`.
 ;
 ; }doc
 
@@ -9428,7 +9424,7 @@ minus_trailing.begin:
 ; _len2_ is the length of the string stored at _ca1_.
 ;
 ; ``simple-accept`` is the default action of the deferred word
-; `accept`.
+; `accept` (see `defer`).
 ;
 ; Definition:
 
@@ -9996,12 +9992,12 @@ parse.end:
 ;
 ; header ( "name" | -- )
 ;
-; A deferred word that creates a dictionary header.  Its default
-; action is `input-stream-header`, and it's set by
-; `default-header`. Its alternative temporary action is
+; A deferred word (see `defer`) that creates a dictionary
+; header.  Its default action is `input-stream-header`, and it's
+; set by `default-header`. Its alternative temporary action is
 ; `nextname-header`.
 ;
-; See: `header,`, `defer`.
+; See: `header,`.
 ;
 ; }doc
 
@@ -10470,11 +10466,10 @@ endif
 ; If so, and if the content of `warnings` is not zero, do a
 ; configurable action, usually issue a warning message.
 ;
-; ``warn`` is a deferred word which is called by `header,` and
-; whose default action is `noop`. Alternative actions are
-; provided by `warn.message`, `warn.throw` and `warn-throw`.
-;
-; See: `defer`.
+; ``warn`` is a deferred word (see `defer`) which is called by
+; `header,` and whose default action is `noop`. Alternative
+; actions are provided by `warn.message`, `warn.throw` and
+; `warn-throw`.
 ;
 ; }doc
 
@@ -11860,10 +11855,8 @@ question_paren.exit:
 ;
 ; ok ( -- )
 ;
-; A deferred word called by `quit` after interpreting a command.
-; Its default action is the word `.ok`.
-;
-; See: `defer`.
+; A deferred word (see `defer`) called by `quit` after
+; interpreting a command. Its default action is the word `.ok`.
 ;
 ; }doc
 
@@ -11919,7 +11912,7 @@ quit.begin:
 ;
 ; `throw` `error` #-261 ("deferred word is uninitialized".
 ; ``(defer`` is the default action of the uninitialized
-; deferred words.
+; deferred words (see `defer`).
 ;
 ; Definition:
 
@@ -11927,8 +11920,6 @@ quit.begin:
 ; : (defer ( -- ) #-261 error ;
 ; ----
 
-; See: `defer`.
-;
 ; }doc
 
   _literal error.deferred_word_uninitialized
@@ -12102,10 +12093,10 @@ endif
 ;
 ; boot ( -- )
 ;
-; A deferred word executed by `abort`. By default it does
-; nothing. It is changed by `turnkey`.
+; A deferred word (see `defer`) executed by `abort`. By default
+; it does nothing. It is changed by `turnkey`.
 ;
-; See: `cold`, `defer`.
+; See: `cold`.
 ;
 ; }doc
 
@@ -12718,10 +12709,10 @@ endif
 ; remainder _n2_ and signed quotient _n3_ from a double number
 ; dividend _d_ and divisor _n1_.
 ;
-; ``m/`` is a deferred word whose default action is `sm/rem`, so
-; it does a symmetric division (the  remainder takes its sign
-; from the dividend), as in fig-Forth and Forth-79.  It can be
-; set to execute `fm/mod` instead.
+; ``m/`` is a deferred word (see `defer`) whose default action
+; is `sm/rem`, so it does a symmetric division (the  remainder
+; takes its sign from the dividend), as in fig-Forth and
+; Forth-79.  It can be set to execute `fm/mod` instead.
 ;
 ; ``m/`` is executed by all other division operators.  Therefore
 ; setting it to execute either `sm/rem` or `fm/mod` will change
@@ -12740,8 +12731,6 @@ endif
 ; (`sm/rem`).
 ;
 ; Origin: fig-Forth.
-;
-; See: `defer`.
 ;
 ; }doc
 
@@ -13017,12 +13006,10 @@ endif
 ; Display a message giving information about the condition
 ; associated with the `throw` code _n_.
 ;
-; ``.throw`` is executed by `error`. It's a deferred word whose
-; default action is `.throw#`, which displays only the number.
-; An alternative action is `.throw-message`, which displays also
-; the description.
-;
-; See: `defer`.
+; ``.throw`` is executed by `error`. It's a deferred word (see
+; `defer`) whose default action is `.throw#`, which displays
+; only the number. An alternative action is `.throw-message`,
+; which displays also the description.
 ;
 ; }doc
 
@@ -13128,11 +13115,9 @@ endif
 ; Convert block _u1_ to its equivalent _u2_ in its corresponding
 ; disk drive, which is set the current drive.
 ;
-; ``>drive-block`` is a deferred word whose default action is
-; `noop`.  Its action is set to `(>drive-block` when
-; `block-drives` is loaded.
-;
-; See: `defer`.
+; ``>drive-block`` is a deferred word (see `defer`) whose
+; default action is `noop`.  Its action is set to
+; `(>drive-block` when `block-drives` is loaded.
 ;
 ; }doc
 
@@ -14685,9 +14670,10 @@ system_stack_pointer:
 ;
 ; default-mode ( -- )
 ;
-; A deferred word that activates the default screen mode. It's
-; set to `noop` until the first mode change is done. Then it's
-; vectored to `mode-32`.  It's used by `bye` and `cold`.
+; A deferred word (see `defer`) that activates the default
+; screen mode. It's set to `noop` until the first mode change is
+; done. Then it's vectored to `mode-32`.  It's used by `bye` and
+; `cold`.
 ;
 ; See: `reset-default-mode`, `defer`, `default-display`,
 ; `default-font`, `default-colors`.
@@ -15034,9 +15020,10 @@ attr_cls.a: ; alternative entry point used by `cls`
 ; Set the cursor position at the top left position (column 0,
 ; row 0).
 ;
-; ``home`` is a deferred word, whose default action is `(home`.
+; ``home`` is a deferred word (see `defer`), whose default
+; action is `(home`.
 ;
-; See: `at-xy`, `home?`, `defer`.
+; See: `at-xy`, `home?`.
 ;
 ; }doc
 
@@ -15068,12 +15055,12 @@ attr_cls.a: ; alternative entry point used by `cls`
 ; Set the cursor coordinates to column _col_ and row _row_.  The
 ; upper left corner is column zero, row zero.
 ;
-; ``at-xy`` is a deferred word whose default action is
-; `mode-32-at-xy`.
+; ``at-xy`` is a deferred word (see `defer`) whose default
+; action is `mode-32-at-xy`.
 ;
 ; Origin: Forth-94 (FACILITY), Forth-2012 (FACILITY).
 ;
-; See: `home`, `defer`.
+; See: `home`.
 ;
 ; }doc
 
@@ -15133,9 +15120,10 @@ mode_32_xy.end:
 ;
 ; Return the current column and row of the text cursor.
 ;
-; ``xy`` is a deferred word whose default action is `mode-32-xy`.
+; ``xy`` is a deferred word (see `defer`) whose default action
+; is `mode-32-xy`.
 ;
-; See: `at-xy`, `defer`.
+; See: `at-xy`.
 ;
 ; }doc
 

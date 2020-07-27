@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007100035
+  \ Last modified: 202007280014
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -944,8 +944,8 @@ unneeding sqrt ?\ defer sqrt ( n1 -- n2 )
   \ sqrt ( n1 -- n2 ) "square-root"
   \
   \ Calculate integer square root _n2_ of radicand _n1_.
-  \ ``sqrt`` is a deferred word which can execute `baden-sqrt`
-  \ or `newton-sqrt`.
+  \ ``sqrt`` is a deferred word (see `defer`) which can execute
+  \ `baden-sqrt` or `newton-sqrt`.
   \
   \ }doc
 
@@ -1427,5 +1427,7 @@ code join ( b1 b2 -- x )
   \
   \ 2020-07-10: Improve layout of the `fm/mod` table and fix
   \ its title markup.
+  \
+  \ 2020-07-28: Improve documentation of deferred words.
 
   \ vim: filetype=soloforth

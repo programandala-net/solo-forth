@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005241533
+  \ Last modified: 202007280016
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -34,11 +34,11 @@ unneeding .word ?( need tab need .name  defer .word ( nt -- )
   \
   \ .word ( nt -- ) "dot-word"
   \
-  \ A deferred word whose default action is `(.word`. This
-  \ word is used by `words`, `words-like` and `wordlist-words`,
-  \ therefore their output can be changed by the user in
-  \ special cases, for example when more details are needed for
-  \ debugging.
+  \ A deferred word (see `defer`) whose default action is
+  \ `(.word`. This word is used by `words`, `words-like` and
+  \ `wordlist-words`, therefore their output can be changed by
+  \ the user in special cases, for example when more details
+  \ are needed for debugging.
   \
   \ }doc
 
@@ -60,8 +60,8 @@ unneeding .wordname ?( need u.r need .name
   \
   \ .wordname ( nt -- ) "dot-wordname"
   \
-  \ An alternative action for the deferred word `.word`,
-  \ which is used by `words`, `words-like` and
+  \ An alternative action for the deferred word `.word` (see
+  \ `defer`), which is used by `words`, `words-like` and
   \ `wordlist-words`.  ``.wordname`` prints _nt_ and its
   \ correspondent name.
   \
@@ -203,5 +203,7 @@ unneeding words# ?( need trail need name<name
   \ from the kernel to the library.
   \
   \ 2020-05-24: Replace "hash" notation with "number sign".
+  \
+  \ 2020-07-28: Improve documentation of deferred words.
 
   \ vim: filetype=soloforth
