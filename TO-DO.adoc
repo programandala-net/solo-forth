@@ -8,6 +8,15 @@
 // Assembler {{{1
 == Assembler
 
+=== 2020-07-28
+
+NOTE: Milestone: 0.14.0
+
+- Make the relative control-flow structures optional and individually
+  loadable.
+- Simplify: Remove the `?pairs` checking, or make unchecked optional
+  versions of the control-flow structures.
+
 === 2020-02-29
 
 Replace `im1,` and `im2,` with `im,`; or add `im0` with the `m8`
@@ -962,19 +971,19 @@ NOTE: Milestone: 0.14.0
 
 NOTE: Milestone: 0.14.0
 
-- Preserve the .adoc extension in the target files.
+- Preserve the .adoc extension in the target files?
 - Add "Compile the Z80 jumps required" to assembler control-flow
   words.
-- Search for words without cross-references in order to complete them.
-- Search for words that have definitions whose main words are not
-  cross-references.
-- Cross-reference all words used in the definitions included in the
-  glossary?
 - Cross-reference all Z80 conditions in assembler control-flow
   structures.
 
 NOTE: Milestone: 0.15.0
 
+- Search for words without cross-references in order to complete them.
+- Search for words that have definitions whose main words are not
+  cross-references.
+- Cross-reference all words used in the definitions included in the
+  glossary?
 - Improve: "_a_ is the address of..." -> "Return address _a_ of...".
 - Make cross-references to `{` and `}` (Hayest test) explicit?
 
