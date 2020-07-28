@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803022237
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -246,7 +246,7 @@ forth-wordlist set-current
   \ ' train-sound >body edit-sound
   \ ----
   \
-  \ See: `sound`, `play`.
+  \ See also: `sound`, `play`.
   \
   \ }doc
 

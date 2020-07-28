@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081704
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -111,7 +111,7 @@ variable old-current-latest
   \ The inner operation is: Restore the old values of `dp`,
   \ `np`, `limit` and `farlimit`.
   \
-  \ See: `forget-transient`.
+  \ See also: `forget-transient`.
   \
   \ }doc
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804121315
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -33,7 +33,7 @@ unneeding seconds ?\ need ms : seconds ( u -- ) 1000 * ms ;
   \
   \ Wait at least _u_ seconds.
   \
-  \ See: `?seconds`, `ms`, `ticks`.
+  \ See also: `?seconds`, `ms`, `ticks`.
   \
   \ }doc
 
@@ -47,7 +47,7 @@ unneeding ?seconds ?( need ?ticks-pause need ticks/second
   \
   \ Wait at least _u_ seconds or until a key is pressed.
   \
-  \ See: `seconds`, `ms`, `?ticks-pause`.
+  \ See also: `seconds`, `ms`, `?ticks-pause`.
   \
   \ }doc
 
@@ -75,7 +75,7 @@ code ms ( u -- )
   \ Origin: Forth-94 (FACILITY EXT), Forth-202 (FACILITY
   \ EXT).
   \
-  \ See: `seconds`, `ticks-pause`.
+  \ See also: `seconds`, `ticks-pause`.
   \
   \ }doc
 
@@ -99,7 +99,7 @@ unneeding ticks ?( need os-frames
   \
   \ Origin: Comus.
   \
-  \ See: `set-ticks`, `reset-ticks`, `ticks/second`,
+  \ See also: `set-ticks`, `reset-ticks`, `ticks/second`,
   \ `ticks>seconds`, `ms>ticks`, `os-frames`, `bench{`.
   \
   \ }doc
@@ -120,7 +120,7 @@ unneeding dticks ?( need os-frames
   \ increased by the OS interrupts routine every 20th ms. The
   \ counter is a 24-bit value.
   \
-  \ See: `ticks`, `set-dticks`, `reset-dticks`,
+  \ See also: `ticks`, `set-dticks`, `reset-dticks`,
   \ `ticks/second`, `dticks>seconds`, `bench{`.
   \
   \ }doc
@@ -135,7 +135,7 @@ unneeding set-ticks ?( need os-frames
   \
   \ Set the system clock to _n_ ticks.
   \
-  \ See: `set-dticks`, `ticks`, `reset-ticks`,
+  \ See also: `set-dticks`, `ticks`, `reset-ticks`,
   \ `ticks/second`, `bench{`.
   \
   \ }doc
@@ -151,7 +151,7 @@ unneeding set-dticks ?( need os-frames
   \
   \ Set the system clock to _d_ ticks.
   \
-  \ See: `set-ticks`, `dticks`, `reset-dticks`,
+  \ See also: `set-ticks`, `dticks`, `reset-dticks`,
   \ `ticks/second`, `bench{`.
   \
   \ }doc
@@ -166,7 +166,7 @@ unneeding reset-ticks
   \
   \ Reset the low 16 bits of the OS clock to zero ticks.
   \
-  \ See: `ticks`, `set-dticks`, `ticks/second`, `bench{`.
+  \ See also: `ticks`, `set-dticks`, `ticks/second`, `bench{`.
   \
   \ }doc
 
@@ -180,7 +180,7 @@ unneeding reset-dticks
   \
   \ Reset the system clock to zero ticks.
   \
-  \ See: `reset-ticks`, `dticks`, `set-dticks`, `ticks/second`,
+  \ See also: `reset-ticks`, `dticks`, `set-dticks`, `ticks/second`,
   \ `bench{`.
   \
   \ }doc
@@ -196,7 +196,7 @@ unneeding ms/tick ?\ 20 cconstant ms/tick
   \
   \ Return the duration _n_ of one clock tick in miliseconds.
   \
-  \ See: ticsk/second`, `ticks`.
+  \ See also: ticsk/second`, `ticks`.
   \
   \ }doc
 
@@ -210,7 +210,7 @@ unneeding ticks/second ?( need ms/tick
   \
   \ Return the number _n_ of clock ticks per second.
   \
-  \ See: `ms/tick`, `dticks>seconds`, `dticks>cs`,
+  \ See also: `ms/tick`, `dticks>seconds`, `dticks>cs`,
   \ `dticks>ms`, `ticks`.
   \
   \ }doc
@@ -225,7 +225,7 @@ unneeding dticks>cs ?( need ms/tick need d*
   \
   \ Convert clock ticks _d1_ to centiseconds _d2_.
   \
-  \ See: `ticks>cs`, `dticks>seconds`, `dticks>ms`,
+  \ See also: `ticks>cs`, `dticks>seconds`, `dticks>ms`,
   \ `ticks/second`, `ticks`.
   \
   \ }doc
@@ -240,7 +240,7 @@ unneeding dticks>ms ?( need ms/tick need d*
   \
   \ Convert clock ticks _d1_ to milliseconds _d2_.
   \
-  \ See: `ticks>ms`, `dticks>seconds`, `dticks>cs`,
+  \ See also: `ticks>ms`, `dticks>seconds`, `dticks>cs`,
   \ `ticks/second`, `ticks`.
   \
   \ }doc
@@ -255,7 +255,7 @@ unneeding dticks>seconds ?( need ticks/second need m/
   \
   \ Convert clock ticks _d_ to seconds _n_.
   \
-  \ See: `ticks>seconds`, `dticks>cs`, `dticks>ms`,
+  \ See also: `ticks>seconds`, `dticks>cs`, `dticks>ms`,
   \ `ticks/second`, `ticks`.
   \
   \ }doc
@@ -273,7 +273,7 @@ unneeding ms>ticks ?( need ms/tick
   \ Convert _n1_ milisecnods to the corresponding number _n2_
   \ of `ticks`.
   \
-  \ See: `ms/tick`.
+  \ See also: `ms/tick`.
   \
   \ }doc
 
@@ -288,7 +288,7 @@ unneeding elapsed ?( need ticks
   \ For the time _u1_ in `ticks` return the elapsed time _u2_
   \ since then, also in `ticks`.
   \
-  \ See: `timer`, `delapsed`, `ticks>seconds`, `ticks>cs`,
+  \ See also: `timer`, `delapsed`, `ticks>seconds`, `ticks>cs`,
   \ `ticks>ms`.
   \
   \ }doc
@@ -304,7 +304,7 @@ unneeding delapsed ?( need dticks
   \ For the time _d1_ in `dticks` return the elapsed time _d2_
   \ since then, also in `dticks`.
   \
-  \ See: `dtimer`, `elapsed`, `dticks>seconds`, `dticks>cs`,
+  \ See also: `dtimer`, `elapsed`, `dticks>seconds`, `dticks>cs`,
   \ `dticks>ms`.
   \
   \ }doc
@@ -320,7 +320,7 @@ unneeding timer ?\ need elapsed : timer ( u -- ) elapsed u. ;
   \
   \ Origin: Comus.
   \
-  \ See: `dtimer`, `elapsed`, `ticks>seconds`, `ticks>cs`,
+  \ See also: `dtimer`, `elapsed`, `ticks>seconds`, `ticks>cs`,
   \ `ticks>ms`.
   \
   \ }doc
@@ -336,7 +336,7 @@ unneeding dtimer
   \ For the time _d_ in `dticks` display the elapsed time
   \ since then, also in `dticks`.
   \
-  \ See: `timer`, `delapsed`.
+  \ See also: `timer`, `delapsed`.
   \
   \ }doc
 
@@ -357,7 +357,7 @@ unneeding past? ?\ need ticks : past? ( u -- f ) ticks u< ;
 
   \ Origin: lina.
   \
-  \ See: `dpast?`, `elapsed`, `timer`.
+  \ See also: `dpast?`, `elapsed`, `timer`.
   \
   \ }doc
 
@@ -386,7 +386,7 @@ unneeding dpast? ?( need dticks need d0<
 
   \ Origin: lina's ``past?``.
   \
-  \ See: `past?`, `delapsed`, `dtimer`.
+  \ See also: `past?`, `delapsed`, `dtimer`.
   \
   \ }doc
 
@@ -402,7 +402,7 @@ unneeding ticks>cs ?( need ms/tick
   \
   \ Convert clock `ticks` _n1_ to centiseconds _n2_.
   \
-  \ See: `dticks>cs`, `ticks>seconds`, `ticks>ms`,
+  \ See also: `dticks>cs`, `ticks>seconds`, `ticks>ms`,
   \ `ticks/second`.
   \
   \ }doc
@@ -417,7 +417,7 @@ unneeding ticks>ms ?( need ms/tick
   \
   \ Convert clock ticks _n1_ to milliseconds _n2_.
   \
-  \ See: `ms>ticks`, `dticks>ms`, `ticks>seconds`, `ticks>cs`,
+  \ See also: `ms>ticks`, `dticks>ms`, `ticks>seconds`, `ticks>cs`,
   \ `ticks/second`, `ticks`.
   \
   \ }doc
@@ -432,7 +432,7 @@ unneeding ticks>seconds ?( need ticks/second
   \
   \ Convert clock ticks _n1_ to seconds _n2_.
   \
-  \ See: `dticks>seconds`, `ticks>cs`, `ticks>ms`,
+  \ See also: `dticks>seconds`, `ticks>cs`, `ticks>ms`,
   \ `ticks/second`, `ticks`.
   \
   \ }doc
@@ -454,7 +454,7 @@ unneeding ?ticks-pause ?( need ticks
   \ Stop execution during at least _u_ clock ticks, or until a
   \ key is pressed.
   \
-  \ See: `ticks-pause`, `basic-pause`, `?seconds`,
+  \ See also: `ticks-pause`, `basic-pause`, `?seconds`,
   \ `ticks/second`.
   \
   \ }doc
@@ -472,7 +472,7 @@ unneeding ticks-pause ?( need ticks
   \
   \ Stop execution during at least _u_ clock ticks.
   \
-  \ See: `?ticks-pause`, `basic-pause`, `seconds`, `ms`,
+  \ See also: `?ticks-pause`, `basic-pause`, `seconds`, `ms`,
   \ `ticks/second`.
   \
   \ }doc
@@ -511,7 +511,7 @@ unneeding basic-pause ?( need ?ticks-pause need new-key
   \ ``basic-pause`` is a convenience that works like Sinclair
   \ BASIC's ``PAUSE``.
   \
-  \ See: `ticks-pause`, `?ticks-pause`, `?seconds`,
+  \ See also: `ticks-pause`, `?ticks-pause`, `?seconds`,
   \ `ticks/second`.
   \
   \ }doc
@@ -536,7 +536,7 @@ unneeding leapy-year? ?(
   \
   \ Is _n_ a leapy year?
   \
-  \ See: `set-date`.
+  \ See also: `set-date`.
   \
   \ }doc
 
@@ -566,7 +566,7 @@ unneeding date ?\ create date 1 c, 1 c, 2016 ,
   \ +2 year  (1 cell)
   \ ....
   \
-  \ See: `set-date`, `get-date`.
+  \ See also: `set-date`, `get-date`.
   \
   \ }doc
 
@@ -583,7 +583,7 @@ unneeding get-date ?(
   \ can be changed with `set-date`. The date is not updated by
   \ the system.
   \
-  \ See: `set-date`, `date`, `time&date`, `.date`.
+  \ See also: `set-date`, `date`, `time&date`, `.date`.
   \
   \ }doc
 
@@ -600,7 +600,7 @@ unneeding set-date ?(
   \ can be fetch with `get-date`. The date is not updated by
   \ the system.
   \
-  \ See: `get-date`, `date`, `.date`, `leapy-year?`.
+  \ See also: `get-date`, `date`, `.date`, `leapy-year?`.
   \
   \ }doc
 
@@ -626,7 +626,7 @@ unneeding get-time ?( need ticks need ticks/second
   \ seconds or 5592 minutes or 93 hours), then it starts again
   \ from zero.
   \
-  \ See: `set-time`, `time&date`, `.time`.
+  \ See also: `set-time`, `time&date`, `.time`.
   \
   \ }doc
 
@@ -642,7 +642,7 @@ unneeding set-time ?( need ud* need set-ticks
   \
   \ Set the current time.
   \
-  \ See: `get-time`.
+  \ See also: `get-time`.
   \
   \ }doc
 
@@ -656,7 +656,7 @@ unneeding reset-time ?( need reset-ticks need alias
   \
   \ Reset the current time to 00:00:00.
   \
-  \ See: `get-time`.
+  \ See also: `get-time`.
   \
   \ }doc
 
@@ -672,7 +672,7 @@ unneeding .time ?( need .00
   \
   \ Display the given time in ISO 8601 extended format.
   \
-  \ See: `.date`, `.time&date`, `time&date`, `.00`.
+  \ See also: `.date`, `.time&date`, `time&date`, `.00`.
   \
   \ }doc
 
@@ -686,7 +686,7 @@ unneeding .date ?( need .0000 need .00
   \
   \ Display the given time in ISO 8601 extended format.
   \
-  \ See: `.time`, `.time&date`, `time&date`, `.0000`, `.00`.
+  \ See also: `.time`, `.time&date`, `time&date`, `.0000`, `.00`.
   \
   \ }doc
 
@@ -702,7 +702,7 @@ unneeding .time&date ?( need .date need .time
   \ Display the given time and date in ISO 8601 extended
   \ format.
   \
-  \ See: `.date`, `.time`, `time&date`.
+  \ See also: `.date`, `.time`, `time&date`.
   \
   \ }doc
 
@@ -720,7 +720,7 @@ unneeding time&date ?( need get-time need get-date
   \
   \ Origin: Forth-94 (FACILITY EXT), Forth-201 (FACILITY EXT).
   \
-  \ See: `get-time`, `get-date`, `set-time`, `set-date`,
+  \ See also: `get-time`, `get-date`, `set-time`, `set-date`,
   \ `.time&date`.
   \
   \ }doc
@@ -744,7 +744,7 @@ need reset-dticks need dticks need dticks>cs
   \
   \ Start timing, setting the clock ticks to zero.
   \
-  \ See: `}bench`, `reset-dticks`.
+  \ See also: `}bench`, `reset-dticks`.
   \
   \ }doc
 
@@ -756,7 +756,7 @@ need reset-dticks need dticks need dticks>cs
   \
   \ Return the current value of the clock ticks.
   \
-  \ See: `bench{`, `dticks`, `bench.`, `}bench.`.
+  \ See also: `bench{`, `dticks`, `bench.`, `}bench.`.
   \
   \ }doc
 
@@ -771,7 +771,7 @@ need reset-dticks need dticks need dticks>cs
   \ Display the timing result _d_, which is a number of
   \ clock ticks, in ticks and seconds.
   \
-  \ See: `bench{`, `}bench`, `}bench.`.
+  \ See also: `bench{`, `}bench`, `}bench.`.
   \
   \ }doc
 
@@ -783,7 +783,7 @@ need reset-dticks need dticks need dticks>cs
   \
   \ Stop timing and display the result.
   \
-  \ See: `bench{`, `}bench`, `bench.`.
+  \ See also: `bench{`, `}bench`, `bench.`.
   \
   \ }doc
 
@@ -797,7 +797,7 @@ need reset-dticks need dticks need dticks>cs
   \ Execute _n_ times the benchmark _xt_ and return the timer
   \ result _d_.
   \
-  \ See: `bench{`, `}bench`, `benched.`.
+  \ See also: `bench{`, `}bench`, `benched.`.
   \
   \ }doc
 
@@ -811,7 +811,7 @@ need reset-dticks need dticks need dticks>cs
   \ Execute _n_ times the benchmark _xt_ and display the
   \ result.
   \
-  \ See: `bench{`, `}bench.`, `benched`.
+  \ See also: `bench{`, `}bench.`, `benched`.
   \
   \ }doc
 

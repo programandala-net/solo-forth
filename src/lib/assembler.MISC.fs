@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007080015
+  \ Last modified: 202007282031
 
   \ ===========================================================
   \ Description
@@ -51,7 +51,7 @@ previous set-current ?)
   \ ``pushhlde`` is useful for exiting from a `code` word using
   \ an absolute conditional jump.
   \
-  \ See: `pusha`, `pushhl`.
+  \ See also: `pusha`, `pushhl`.
   \
   \ }doc
 
@@ -115,7 +115,7 @@ need depth need 16hex. need 8hex.
 
   \ Origin: Pygmy Forth.
   \
-  \ See: `dump`, `wdump`, `assembler`.
+  \ See also: `dump`, `wdump`, `assembler`.
   \
   \ }doc
 
@@ -211,7 +211,7 @@ unneeding ;code ?(
   \ (Assembler Extension Word Set), Forth-94 (TOOLS EXT),
   \ Forth-2012 (TOOLS EXT).
   \
-  \ See: `(;code`, `does>`, `asm`, `create`.
+  \ See also: `(;code`, `does>`, `asm`, `create`.
   \
   \ }doc
 

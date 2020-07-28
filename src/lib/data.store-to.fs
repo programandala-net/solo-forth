@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -71,7 +71,7 @@ unneeding !> ?(
   \
   \ Origin: IsForth.
   \
-  \ See: `c!>`, `2!>`.
+  \ See also: `c!>`, `2!>`.
   \
   \ }doc
 
@@ -115,7 +115,7 @@ unneeding 2!> ?(
   \
   \ Origin: IsForth's ``!>``.
   \
-  \ See: `!>`, `c!>`.
+  \ See also: `!>`, `c!>`.
   \
   \ }doc
 
@@ -160,7 +160,7 @@ unneeding c!> ?(
   \
   \ Origin: IsForth's ``!>``.
   \
-  \ See: `!>`, `2!>`.
+  \ See also: `!>`, `2!>`.
   \
   \ }doc
 

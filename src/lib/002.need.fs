@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007280008
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -62,7 +62,7 @@
   \ Is name _ca len_ in the header of block _u_? The current
   \ source is preserved with `nest-source` and `unnest-source`.
   \
-  \ See: `(in-block-header?`.
+  \ See also: `(in-block-header?`.
 
 ( ... )
 
@@ -89,7 +89,7 @@ variable last-locatable  blocks/disk 1- last-locatable !
   \ number of the first block to be searched by `located` and
   \ its descendants.
   \
-  \ See: `last-locatable`, `need-from`.
+  \ See also: `last-locatable`, `need-from`.
   \
   \ }doc
 
@@ -101,7 +101,7 @@ variable last-locatable  blocks/disk 1- last-locatable !
   \ default number of the first block to be searched by
   \ `located` and its descendants.
   \
-  \ See: `first-locatable`.
+  \ See also: `first-locatable`.
   \
   \ }doc
 
@@ -114,7 +114,7 @@ variable last-locatable  blocks/disk 1- last-locatable !
   \ its descendants. Its default value is the last block of the
   \ disk.
   \
-  \ See: `first-locatable`.
+  \ See also: `first-locatable`.
   \
   \ }doc
 
@@ -274,7 +274,7 @@ defer (located ' 1-line-(located ' (located defer!  -->
   \ ``(located`` is the default action of `located`, which is
   \ changed by `use-fly-index`.
   \
-  \ See: `default-first-locatable`.
+  \ See also: `default-first-locatable`.
   \
   \ }doc
 
@@ -296,7 +296,7 @@ defer located ( ca len -- block | 0 )
   \ ``located`` is a deferred word (see `defer`) whose default
   \ action is `(located`.
   \
-  \ See: `need-from`.
+  \ See also: `need-from`.
   \
   \ }doc
 
@@ -346,7 +346,7 @@ defer reneeded ( ca len -- )
   \ ``reneeded`` is a deferred word (see `defer`) whose default
   \ action is `locate-reneeded`.
   \
-  \ See: `make-thru-index`.
+  \ See also: `make-thru-index`.
   \
   \ }doc
 
@@ -363,7 +363,7 @@ defer reneeded ( ca len -- )
   \ ``locate-reneeded`` is the default action of the deferred
   \ word `reneeded` (see `defer`).
   \
-  \ See: `make-thru-index`.
+  \ See also: `make-thru-index`.
   \
   \ }doc
 
@@ -379,7 +379,7 @@ defer reneed ( "name" -- )  defer needed ( ca len -- )
   \ ``reneed`` is a deferred word (see `defer`) whose default
   \ action is `locate-reneed`.
   \
-  \ See: `make-thru-index`.
+  \ See also: `make-thru-index`.
   \
   \ }doc
 
@@ -396,7 +396,7 @@ defer reneed ( "name" -- )  defer needed ( ca len -- )
   \ ``needed`` is a deferred word (see `defer`) whose default
   \ action is `locate-needed`.
   \
-  \ See: `make-thru-index`.
+  \ See also: `make-thru-index`.
   \
   \ }doc
 
@@ -414,7 +414,7 @@ defer reneed ( "name" -- )  defer needed ( ca len -- )
   \ ``locate-reneed`` is the default action of the deferred
   \ word `reneed` (see `defer`).
   \
-  \ See: `make-thru-index`.
+  \ See also: `make-thru-index`.
   \
   \ }doc
 
@@ -431,7 +431,7 @@ defer reneed ( "name" -- )  defer needed ( ca len -- )
   \ is the needed word specified by the last execution of
   \ `need` or `needed`, return `false`, else return `true`.
   \
-  \ See: `needing`.
+  \ See also: `needing`.
   \
   \ }doc
 
@@ -470,7 +470,7 @@ defer reneed ( "name" -- )  defer needed ( ca len -- )
   \ ``locate-needed`` is the default action of the deferred
   \ word `needed` (see `defer`).
   \
-  \ See: `make-thru-index`.
+  \ See also: `make-thru-index`.
   \
   \ }doc
 
@@ -488,7 +488,7 @@ defer need ( "name" -- )
   \ ``need`` is a deferred word (see `defer`) whose default
   \ action is `locate-need`.
   \
-  \ See: `make-thru-index`.
+  \ See also: `make-thru-index`.
   \
   \ }doc
 
@@ -506,7 +506,7 @@ defer need ( "name" -- )
   \ ``locate-need`` is the default action of the deferred word
   \ `need` (see `defer`).
   \
-  \ See: `make-thru-index`.
+  \ See also: `make-thru-index`.
   \
   \ }doc
 
@@ -588,7 +588,7 @@ need use-default-need need  use-default-located
   \ The alternative actions are set by `use-thru-index` and
   \ `use-fly-index`.
   \
-  \ See: `use-default-need`, `use-default-located`.
+  \ See also: `use-default-need`, `use-default-located`.
   \
   \ }doc
 
@@ -605,7 +605,7 @@ unneeding needing ?\ : needing ( "name" -- f ) unneeding 0= ;
   \ is the needed word specified by the last execution of
   \ `need` or `needed`, return `true`, else return `false`.
   \
-  \ See: `unneeding`.
+  \ See also: `unneeding`.
   \
   \ }doc
 
@@ -625,7 +625,7 @@ unneeding locate ?(
   \ Only the blocks delimited by `first-locatable` and
   \ `last-locatable` are searched.
   \
-  \ See: `located`.
+  \ See also: `located`.
   \
   \ }doc
 

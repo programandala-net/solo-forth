@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005051429
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -180,7 +180,7 @@ variable mode-32iso-font  rom-font bl 8 * + mode-32iso-font !
   \ only the font address, and reserving the full UDG set for
   \ graphics.
   \
-  \ See: `current-mode`, `set-font`, `set-mode-output`,
+  \ See also: `current-mode`, `set-font`, `set-mode-output`,
   \ `columns`, `rows`, `mode-32-xy`, `mode-32-at-xy`, `>form`.
   \
   \ }doc

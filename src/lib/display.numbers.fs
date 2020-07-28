@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005042027
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -42,7 +42,7 @@ unneeding ud.r
   \ greater than _n_, all digits are displayed with no leading
   \ spaces in a field as wide as necessary.
   \
-  \ See: `u.r`, `d.`, `ud.`.
+  \ See also: `u.r`, `d.`, `ud.`.
   \
   \ }doc
 
@@ -70,7 +70,7 @@ unneeding u.r ?( need u>ud need ud.r
   \ than _n_, an error condition exists, which depends on the
   \ system.], Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See: `ud.r`, `.r`, `u.`.
+  \ See also: `ud.r`, `.r`, `u.`.
   \
   \ }doc
 
@@ -87,7 +87,7 @@ unneeding ud. ?( need ud.r
   \
   \ Display an usigned double number _ud_.
   \
-  \ See: `ud.r`, `d.`, `u.`.
+  \ See also: `ud.r`, `d.`, `u.`.
   \
   \ }doc
 
@@ -108,7 +108,7 @@ unneeding holds ?(
   \
   \ Origin: Forth-2012 (CORE EXT).
   \
-  \ See: `hold`.
+  \ See also: `hold`.
   \
   \ }doc
 
@@ -120,7 +120,7 @@ unneeding .00 ?\ : .00 ( +n -- ) s>d <# # # #> type ;
   \
   \ Display _+n_ with two digits.
   \
-  \ See: `.0000`, `.time`, `.date`.
+  \ See also: `.0000`, `.time`, `.date`.
   \
   \ }doc
 
@@ -132,7 +132,7 @@ unneeding .0000 ?\ : .0000 ( +n -- ) s>d <# # # # # #> type ;
   \
   \ Display _+n_ with four digits.
   \
-  \ See: `.00`, `.date`.
+  \ See also: `.00`, `.date`.
   \
   \ }doc
 
@@ -155,7 +155,7 @@ unneeding bin.
   \ Display _n_ as an unsigned binary number, followed by
   \ one space.
   \
-  \ See: `dec.`, `hex.`, `u.`, `.`.
+  \ See also: `dec.`, `hex.`, `u.`, `.`.
   \
   \ }doc
 
@@ -169,7 +169,7 @@ unneeding hex.
   \ Display _n_ as an unsigned hexadecimal number, followed by
   \ one space.
   \
-  \ See: `dec.`, `bin.`, `u.`, `.`.
+  \ See also: `dec.`, `bin.`, `u.`, `.`.
   \
   \ }doc
 
@@ -194,7 +194,7 @@ variable base'  : base> ( -- ) base' @ base ! ; ?)
   \ A temporary variable used by `<hex`, `hex>`, `<bin` and
   \ `bin>`.  to store the current value of `base`.
   \
-  \ See: `abase`.
+  \ See also: `abase`.
   \
   \ }doc
 
@@ -217,7 +217,7 @@ unneeding (d.
   \ Convert _d_ to an unsigned number in the current `base`,
   \ with _n_ digits, as string _ca len_.
   \
-  \ See: `(dbin.`, `(dhex.`.
+  \ See also: `(dbin.`, `(dhex.`.
   \
   \ }doc
 
@@ -234,7 +234,7 @@ unneeding <hex unneeding hex> and ?( need base' need base>
   \
   \ Origin: lina.
   \
-  \ See: `<bin`.
+  \ See also: `<bin`.
   \
   \ }doc
 
@@ -257,7 +257,7 @@ unneeding (dhex. dup ?\ need <hex need (d.
   \
   \ Display _d_ as an unsigned hexadecimal number with _n_ digits.
   \
-  \ See: `(dbin.`, `32hex.`, `16hex.`, `8hex.`, `hex.`.
+  \ See also: `(dbin.`, `32hex.`, `16hex.`, `8hex.`, `hex.`.
   \
   \ }doc
 
@@ -270,7 +270,7 @@ unneeding 32hex.
   \
   \ Display _d_ as an unsigned 32-bit hexadecimal number.
   \
-  \ See: `32bin.`, `16hex.`, `8hex.`, `hex.`, `hex`.
+  \ See also: `32bin.`, `16hex.`, `8hex.`, `hex.`, `hex`.
   \
   \ }doc
 
@@ -283,7 +283,7 @@ unneeding 16hex.
   \
   \ Display _d_ as an unsigned 16-bit hexadecimal number.
   \
-  \ See: `16bin.`, `32hex.`, `8hex.`, `hex.`, `hex`.
+  \ See also: `16bin.`, `32hex.`, `8hex.`, `hex.`, `hex`.
   \
   \ }doc
 
@@ -296,7 +296,7 @@ unneeding 8hex.
   \
   \ Display _d_ as an unsigned 8-bit hexadecimal number.
   \
-  \ See: `8bin.`, `16hex.`, `hex.`, `hex`.
+  \ See also: `8bin.`, `16hex.`, `hex.`, `hex`.
   \
   \ }doc
 
@@ -314,7 +314,7 @@ unneeding binary ?\ : binary ( -- ) 2 base ! ;
   \
   \ Set contents of `base` to two.
   \
-  \ See: `decimal`, `hex`.
+  \ See also: `decimal`, `hex`.
   \
   \ }doc
 
@@ -330,7 +330,7 @@ need base' need base> need binary
   \ saving the current value of `base` to `base'` and executing
   \ `binary`. The zone is finished by `bin>`.
   \
-  \ See: `<hex`.
+  \ See also: `<hex`.
   \
   \ }doc
 
@@ -354,7 +354,7 @@ unneeding (dbin. dup
   \
   \ Display _d_ as an unsigned binary number with _n_ digits.
   \
-  \ See: `(dhex.`, `32bin.`, `16bin.`, `8bin.`, `bin.`.
+  \ See also: `(dhex.`, `32bin.`, `16bin.`, `8bin.`, `bin.`.
   \
   \ }doc
 
@@ -367,7 +367,7 @@ unneeding 32bin.
   \
   \ Display _d_ as an unsigned 32-bit binary number.
   \
-  \ See: `32hex.`, `16bin.`, `8bin.`, `bin.`, `binary`.
+  \ See also: `32hex.`, `16bin.`, `8bin.`, `bin.`, `binary`.
   \
   \ }doc
 
@@ -380,7 +380,7 @@ unneeding 16bin.
   \
   \ Display _n_ as an unsigned 16-bit binary number.
   \
-  \ See: `16bin.`, `32bin.`, `8bin.`, `bin.`, `binary`.
+  \ See also: `16bin.`, `32bin.`, `8bin.`, `bin.`, `binary`.
   \
   \ }doc
 
@@ -393,7 +393,7 @@ unneeding 8bin.
   \
   \ Display _n_ as an unsigned 8-bit binary number.
   \
-  \ See: `8hex.`, `32bin.`, `16bin.`, `bin.`, `binary`.
+  \ See also: `8hex.`, `32bin.`, `16bin.`, `bin.`, `binary`.
   \
   \ }doc
 

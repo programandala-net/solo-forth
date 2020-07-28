@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006152042
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -41,7 +41,7 @@ code get-font ( -- a )
   \ by fetching the system variable `os-chars`.  _a_ is the
   \ bitmap address of character 0.
   \
-  \ See: `set-font`, `default-font`.
+  \ See also: `set-font`, `default-font`.
   \
   \ }doc
 
@@ -57,7 +57,7 @@ unneeding rom-font ?\ 15360 constant rom-font
   \ first printable character. _a_ is the default value of
   \ `os-chars`.
   \
-  \ See: `default-font`, `set-font`, `get-font`,
+  \ See also: `default-font`, `set-font`, `get-font`,
   \ `outlet-autochars`.
   \
   \ }doc
@@ -161,7 +161,7 @@ code outlet-autochars ( a -- )
   \ outlet-font outlet-autochars
   \ ----
 
-  \ See: `set-font`, `rom-font`.
+  \ See also: `set-font`, `rom-font`.
   \
   \ }doc
 

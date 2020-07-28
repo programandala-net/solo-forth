@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005241407
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -122,7 +122,7 @@ create tape-header  /tape-header 2 * allot
   \ | IX+$10       | IX+$21        | hi            | -        | -           | -     | ...i.e. without variables
   \ |===
 
-  \ See: `tape-filename`, `tape-filetype`, `tape-start`,
+  \ See also: `tape-filename`, `tape-filetype`, `tape-start`,
   \ `tape-length`, `any-tape-filename`, `?set-tape-filename`.
   \
   \ }doc
@@ -136,7 +136,7 @@ create tape-header  /tape-header 2 * allot
   \ _n_ is the maximum length of a tape filename, which is 10
   \ characters.
   \
-  \ See: `tape-filename`. `/filename`.
+  \ See also: `tape-filename`. `/filename`.
   \
   \ }doc
 
@@ -149,7 +149,7 @@ tape-header constant tape-filetype ( -- ca ) 3 tape-filetype c!
   \ Address of the file type (one byte) in `tape-header`.
   \ Its default value is 3 (code file).
   \
-  \ See: `last-tape-filetype`.
+  \ See also: `last-tape-filetype`.
   \
   \ }doc
 
@@ -161,7 +161,7 @@ tape-header 1+ constant tape-filename ( -- ca )
   \
   \ Address of the filename in `tape-header`.
   \
-  \ See: `/tape-filename`, `set-tape-filename`,
+  \ See also: `/tape-filename`, `set-tape-filename`,
   \ `last-tape-filename`.
   \
   \ }doc
@@ -174,7 +174,7 @@ tape-header 11 + constant tape-length ( -- a )
   \
   \ Address of the file length in `tape-header`.
   \
-  \ See: `last-tape-length`.
+  \ See also: `last-tape-length`.
   \
   \ }doc
 
@@ -186,7 +186,7 @@ tape-header 13 + constant tape-start ( -- a )
   \
   \ Address of the file start in `tape-header`.
   \
-  \ See: `last-tape-start`.
+  \ See also: `last-tape-start`.
   \
   \ }doc
 
@@ -303,7 +303,7 @@ code (tape-file> ( -- )
   \ lower screen has no lines, and BASIC cannot display the
   \ message.
 
-  \ See: `>tape-file`, `(tape-file>`
+  \ See also: `>tape-file`, `(tape-file>`
   \ ifdef::plus3dos[.]
   \ ifdef::gplusdos,trdos[, `>file`.]
   \
@@ -353,7 +353,7 @@ code (>tape-file ( -- )
   \ Write a memory region _ca1 len1_ into a tape file _ca2
   \ len2_.
   \
-  \ See: `tape-file>`, `(>tape-file`
+  \ See also: `tape-file>`, `(>tape-file`
   \ ifdef::plu3dos[.]
   \ ifdef::gplusdos,trdos[, `>file`.]
   \
@@ -378,7 +378,7 @@ tape-header /tape-header + constant last-tape-header ( -- ca )
   \ It can be used by the application to know the details of
   \ the last tape file that was loaded.
   \
-  \ See: `last-tape-filename`, `last-tape-filetype`,
+  \ See also: `last-tape-filename`, `last-tape-filetype`,
   \ `last-tape-start`, `last-tape-length`.
   \
   \ }doc
@@ -391,7 +391,7 @@ last-tape-header constant last-tape-filetype ( -- ca )
   \
   \ Address of the file type (one byte) in `last-tape-header`.
   \
-  \ See: `tape-filetype`.
+  \ See also: `tape-filetype`.
   \
   \ }doc
 
@@ -403,7 +403,7 @@ last-tape-header 1+ constant last-tape-filename ( -- ca )
   \
   \ Address of the filename in `last-tape-header`.
   \
-  \ See: `/tape-filename`, `tape-filename`.
+  \ See also: `/tape-filename`, `tape-filename`.
   \
   \ }doc
 
@@ -415,7 +415,7 @@ last-tape-header 11 + constant last-tape-length ( -- a )
   \
   \ Address of the file length in `last-tape-header`.
   \
-  \ See: `tape-length`.
+  \ See also: `tape-length`.
   \
   \ }doc
 
@@ -427,7 +427,7 @@ last-tape-header 13 + constant last-tape-start ( -- a ) ?)
   \
   \ Address of the file start in `last-tape-header`.
   \
-  \ See: `tape-start`.
+  \ See also: `tape-start`.
   \
   \ }doc
 
@@ -442,7 +442,7 @@ unneeding display>tape-file ?( need >tape-file
   \
   \ Write the display memory into a tape file _ca len_.
   \
-  \ See: `tape-file>display`, `>tape-file`.
+  \ See also: `tape-file>display`, `>tape-file`.
   \
   \ }doc
 
@@ -456,7 +456,7 @@ unneeding tape-file>display ?( need tape-file>
   \
   \ Read tape file _ca len_ into the display memory.
   \
-  \ See: `display>tape-file`, `>tape-file`.
+  \ See also: `display>tape-file`, `>tape-file`.
   \
   \ }doc
 

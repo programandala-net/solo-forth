@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005182050
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -73,7 +73,7 @@ variable anon> ( -- a )
   \
   \ See `set-anon` for a usage example.
   \
-  \ See: `arguments`, `local`.
+  \ See also: `arguments`, `local`.
   \
   \ }doc
 

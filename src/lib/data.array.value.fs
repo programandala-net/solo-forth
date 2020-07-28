@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005042226
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -68,7 +68,7 @@ unneeding avalue ?( need array>
   \
   \ Return contents _x_ of element _n_.
   \
-  \ See: `ato`, `+ato`.
+  \ See also: `ato`, `+ato`.
   \
   \ }doc
 
@@ -92,7 +92,7 @@ unneeding 2avalue ?( need 2array>
   \
   \ Return contents _xd_ of element _n_.
   \
-  \ See: `2ato`.
+  \ See also: `2ato`.
   \
   \ }doc
 
@@ -115,7 +115,7 @@ unneeding cavalue ?( need align
   \
   \ Return contents _c_ of element _n_.
   \
-  \ See: `cato`, `+cato`.
+  \ See also: `cato`, `+cato`.
   \
   \ }doc
 
@@ -132,7 +132,7 @@ unneeding ato ?( need >body
   \ Store _x_ into element _n_ of 1-dimension single-cell
   \ values array _xt_.
   \
-  \ See: `ato`.
+  \ See also: `ato`.
   \
   \ }doc
 
@@ -149,7 +149,7 @@ unneeding ato ?( need >body
   \
   \ ``ato`` is an `immediate` word.
   \
-  \ See: `avalue`, `(ato`.
+  \ See also: `avalue`, `(ato`.
   \
   \ }doc
 
@@ -164,7 +164,7 @@ unneeding +ato ?( need >body
   \ Add _n1_ to element _n2_ of 1-dimension single-cell
   \ values array _xt_.
   \
-  \ See: `avalue`, `+ato`.
+  \ See also: `avalue`, `+ato`.
   \
   \ }doc
 
@@ -181,7 +181,7 @@ unneeding +ato ?( need >body
   \
   \ ``+ato`` is an `immediate` word.
   \
-  \ See: `avalue`, `(+ato`.
+  \ See also: `avalue`, `(+ato`.
   \
   \ }doc
 
@@ -196,7 +196,7 @@ unneeding 2ato ?( need >body
   \ Store _xd_ into element _n_ of 1-dimension double-cell
   \ values array _xt_.
   \
-  \ See: `2ato`.
+  \ See also: `2ato`.
   \
   \ }doc
 
@@ -213,7 +213,7 @@ unneeding 2ato ?( need >body
   \
   \ ``2ato`` is an `immediate` word.
   \
-  \ See: `2avalue`, `(2ato`.
+  \ See also: `2avalue`, `(2ato`.
   \
   \ }doc
 
@@ -230,7 +230,7 @@ unneeding cato ?( need >body
   \ Store _c_ into element _n_ of 1-dimension character
   \ values array _xt_.
   \
-  \ See: `cato`.
+  \ See also: `cato`.
   \
   \ }doc
 
@@ -247,7 +247,7 @@ unneeding cato ?( need >body
   \
   \ ``cato`` is an `immediate` word.
   \
-  \ See: `cavalue`, `(cato`.
+  \ See also: `cavalue`, `(cato`.
   \
   \ }doc
 
@@ -262,7 +262,7 @@ unneeding +cato ?(
   \ Add _c_ to element _n_ of 1-dimension character values
   \ array _xt_.
   \
-  \ See: `cavalue`, `+cato`.
+  \ See also: `cavalue`, `+cato`.
   \
   \ }doc
 
@@ -279,7 +279,7 @@ unneeding +cato ?(
   \
   \ ``+cato`` is an `immediate` word.
   \
-  \ See: `cavalue`, `(+cato`.
+  \ See also: `cavalue`, `(+cato`.
   \
   \ }doc
 

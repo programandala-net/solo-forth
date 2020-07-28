@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006152022
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -65,7 +65,7 @@ need create:
   \ An actual zero or a no match causes the default to be
   \ executed.  Numbers can't be constants.
   \
-  \ See: `associative:`, `associative-list`.
+  \ See also: `associative:`, `associative-list`.
 
   \ }doc
 

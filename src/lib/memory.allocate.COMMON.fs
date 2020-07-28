@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007280014
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -40,7 +40,7 @@ need value
   \ `limit-heap`, `bank-heap`, or `farlimit-heap`. Then it must
   \ be initialized by `empty-heap`.
   \
-  \ See: `/heap`, `get-heap`.
+  \ See also: `/heap`, `get-heap`.
   \
   \ }doc
 
@@ -52,7 +52,7 @@ need value
   \
   \ Size of the current `heap`, in bytes.
   \
-  \ See: `get-heap`.
+  \ See also: `get-heap`.
   \
   \ }doc
 
@@ -68,7 +68,7 @@ create heap-bank ( -- ca ) 0 c,
   \ by `allot-heap` or `limit-heap`, ``heap-bank`` contains
   \ zero.
   \
-  \ See: `heap-in`, `heap-out`, `get-heap`.
+  \ See also: `heap-in`, `heap-out`, `get-heap`.
   \
   \ }doc
 
@@ -85,7 +85,7 @@ defer heap-in ( -- ) ' noop ' heap-in defer!
   \ ``heap-in`` is a deferred word (see `defer`) whose default
   \ action is `noop`. Its alternative action is `(heap-in`.
   \
-  \ See: `heap-out`.
+  \ See also: `heap-out`.
   \
   \ }doc
 
@@ -102,7 +102,7 @@ defer heap-out ( -- ) ' noop ' heap-out defer!
   \ ``heap-out`` is a deferred word (see `defer`) whose default
   \ action is `noop`. Its alternative action is `default-bank`.
   \
-  \ See: `heap-in`.
+  \ See also: `heap-in`.
   \
   \ }doc
 
@@ -128,7 +128,7 @@ defer allocate ( u -- a ior )
   \
   \ Origin: Forth-94 (MEMORY), Forth-2012 (MEMORY).
   \
-  \ See: `free`, `resize`, `empty-heap`.
+  \ See also: `free`, `resize`, `empty-heap`.
   \
   \ }doc
 
@@ -165,7 +165,7 @@ defer resize ( a1 -- a2 ior )
   \
   \ Origin: Forth-94 (MEMORY), Forth-2012 (MEMORY).
   \
-  \ See: `allocate`, `free`, `empty-heap`.
+  \ See also: `allocate`, `free`, `empty-heap`.
   \
   \ }doc
 
@@ -189,7 +189,7 @@ defer free ( a -- ior )
   \
   \ Origin: Forth-94 (MEMORY), Forth-2012 (MEMORY).
   \
-  \ See: `allocate`, `resize`, `empty-heap`.
+  \ See also: `allocate`, `resize`, `empty-heap`.
   \
   \ }doc
 
@@ -223,7 +223,7 @@ unneeding allot-heap ?( need /heap need heap
   \ Create a `heap` of _n_ bytes in the data space.  Return its
   \ address _a_.
   \
-  \ See: `limit-heap`, `bank-heap`, `farlimit-heap`,
+  \ See also: `limit-heap`, `bank-heap`, `farlimit-heap`,
   \ `empty-heap`.
   \
   \ }doc
@@ -240,7 +240,7 @@ unneeding limit-heap ?( need /heap need heap
   \ Create a `heap` of _n_ bytes right above `limit` and return
   \ its address _a_. `limit` is moved down _n_ bytes.
   \
-  \ See: `allot-heap`, `bank-heap`, `farlimit-heap`,
+  \ See also: `allot-heap`, `bank-heap`, `farlimit-heap`,
   \ `empty-heap`.
   \
   \ }doc
@@ -267,7 +267,7 @@ unneeding farlimit-heap ?( need /heap need heap
   \ check that the _n_ bytes below `farlimit` belong to one
   \ memory bank.
   \
-  \ See: `allot-heap`, `bank-heap`, `limit-heap`, `empty-heap`.
+  \ See also: `allot-heap`, `bank-heap`, `limit-heap`, `empty-heap`.
   \
   \ }doc
 
@@ -286,7 +286,7 @@ unneeding bank-heap ?( need alias
   \ `allocate`, `resize` and `free` page in bank _b_ at the
   \ start and restore the default bank at the end.
   \
-  \ See: `heap-in`, `heap-out`, `allot-heap`, `limit-heap`,
+  \ See also: `heap-in`, `heap-out`, `allot-heap`, `limit-heap`,
   \ `farlimit-heap`, `empty-heap`.
   \
   \ }doc

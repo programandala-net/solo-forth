@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007280013
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -49,7 +49,7 @@ defer gxy>scra_ ( -- a )
   \ ($22AA), to let the range of the y coordinate be 0..191
   \ instead of 0..175.
   \
-  \ See: `gxy176>scra_`, `xy>scra_`.
+  \ See also: `gxy176>scra_`, `xy>scra_`.
   \
   \ }doc
 
@@ -87,7 +87,7 @@ create slow-gxy>scra_ ( -- a ) asm
   \ - A = position of the pixel in the byte address (0..7),
   \       note: position 0=bit 7, position 7=bit 0.
 
-  \ See: `gxy176>scra_`.
+  \ See also: `gxy176>scra_`.
   \
   \ }doc
 
@@ -156,7 +156,7 @@ create fast-gxy>scra_ ( -- a ) asm
   \ - A = position of the pixel in the byte address (0..7),
   \       note: position 0=bit 7, position 7=bit 0.
 
-  \ See: `gxy176>scra_`.
+  \ See also: `gxy176>scra_`.
   \
   \ }doc
 
@@ -191,7 +191,7 @@ create gxy176>scra_ ( -- a ) asm
   \ - A = position of the pixel in the byte address (0..7),
   \       note: position 0=bit 7, position 7=bit 0.
 
-  \ See: `gxy176>scra`, `gxy>scra_`.
+  \ See also: `gxy176>scra`, `gxy>scra_`.
   \
   \ }doc
 
@@ -221,7 +221,7 @@ code gxy176>scra ( gx gy -- n a )
   \ Return screen address _a_ and pixel position _n_ (0..7) of
   \ pixel coordinates _gx_ (0..255) and _gy_ (0..175).
   \
-  \ See: `gxy176>scra_`, `gxy>scra`, `xy>scra`.
+  \ See also: `gxy176>scra_`, `gxy>scra`, `xy>scra`.
   \
   \ }doc
 
@@ -250,7 +250,7 @@ code gxy>scra ( gx gy -- n a )
   \ Return screen address _a_ and pixel position _n_ (0..7) of
   \ pixel coordinates _gx_ (0..255) and _gy_ (0..191).
   \
-  \ See: `gxy>scra_`, `gxy176>scra`, `xy>scra`.
+  \ See also: `gxy>scra_`, `gxy176>scra`, `xy>scra`.
   \
   \ }doc
 
@@ -283,7 +283,7 @@ code plot ( gx gy -- )
   \ current graphic coordinates.  _gx_ is 0..255; _gy_ is
   \ 0..191.
   \
-  \ See: `set-pixel`, `plot176`, `xy>gxy`.
+  \ See also: `set-pixel`, `plot176`, `xy>gxy`.
   \
   \ }doc
 
@@ -317,7 +317,7 @@ code plot176 ( gx gy -- )
   \ WARNING: If parameters are out of range, the ROM will throw
   \ a BASIC error, and the system will crash.
   \
-  \ See: `set-pixel176`, `plot`, `xy>gxy176`.
+  \ See also: `set-pixel176`, `plot`, `xy>gxy176`.
   \
   \ }doc
 
@@ -348,7 +348,7 @@ code set-pixel ( gx gy -- )
   \ the current graphic coordinates.  _gx_ is 0..255; _gy_ is
   \ 0..191.
   \
-  \ See:  `plot`, `plot176`, `reset-pixel`,
+  \ See also:  `plot`, `plot176`, `reset-pixel`,
   \ `toggle-pixel`, `xy>gxy`.
   \
   \ }doc
@@ -379,7 +379,7 @@ code set-pixel176 ( gx gy -- )
   \ pixel rows of the screen (the lower 16 pixel rows are not
   \ used).  _gx_ is 0..255; _gy_ is 0..175.
   \
-  \ See:  `set-save-pixel176`, `set-pixel`, `plot`,
+  \ See also:  `set-save-pixel176`, `set-pixel`, `plot`,
   \ `plot176`, `reset-pixel`, `toggle-pixel`, `reset-pixel176`,
   \ `toggle-pixel176`, `xy>gxy176`.
   \
@@ -415,7 +415,7 @@ code set-save-pixel176 ( gx gy -- )
   \ 0..175.  ``set-save-pixel176`` updates the graphic
   \ coordinates (contrary to `set-pixel176`).
   \
-  \ See:  `set-pixel`, `plot`, `plot176`, `reset-pixel`,
+  \ See also:  `set-pixel`, `plot`, `plot176`, `reset-pixel`,
   \ `toggle-pixel`, `reset-pixel176`, `toggle-pixel176`.
   \
   \ }doc
@@ -446,7 +446,7 @@ code reset-pixel ( gx gy -- )
   \ or the current graphic coordinates.  _gx_ is 0..255; _gy_
   \ is 0..191.
   \
-  \ See: `set-pixel`, `toggle-pixel`, `reset-pixel176`.
+  \ See also: `set-pixel`, `toggle-pixel`, `reset-pixel176`.
   \
   \ }doc
 
@@ -475,7 +475,7 @@ code reset-pixel176 ( gx gy -- )
   \ pixel rows of the screen (the lower 16 pixel rows are not
   \ used).  _gx_ is 0..255; _gy_ is 0..175.
   \
-  \ See: `set-pixel176`, `toggle-pixel176`, `reset-pixel`,
+  \ See also: `set-pixel176`, `toggle-pixel176`, `reset-pixel`,
   \ `set-pixel`, `toggle-pixel`, `plot`, `plot176`.
   \
   \ }doc
@@ -506,7 +506,7 @@ code toggle-pixel ( gx gy -- )
   \ or the current graphic coordinates.  _gx_ is 0..255; _gy_
   \ is 0..191.
   \
-  \ See: `set-pixel`, `reset-pixel`, `toggle-pixel176`,
+  \ See also: `set-pixel`, `reset-pixel`, `toggle-pixel176`,
   \ `set-pixel176`, `reset-pixel176`, `plot`, `plot176`.
   \
   \ }doc
@@ -536,7 +536,7 @@ code toggle-pixel176 ( gx gy -- )
   \ 176 pixel rows of the screen (the lower 16 pixel rows are
   \ not used).  _gx_ is 0..255; _gy_ is 0..175.
   \
-  \ See: `toggle-pixel`, `set-pixel`, `reset-pixel`,
+  \ See also: `toggle-pixel`, `set-pixel`, `reset-pixel`,
   \ `set-pixel176`, `reset-pixel176`, `plot`, `plot176`.
   \
   \ }doc
@@ -577,7 +577,7 @@ unneeding pixels ?\ defer pixels ( -- n )
   \ ``pixels`` is a deferred word (see `defer`) set by
   \ `fast-pixels` or `slow-pixels`.
   \
-  \ See: `bits`.
+  \ See also: `bits`.
   \
   \ }doc
 
@@ -630,7 +630,7 @@ code fast-pixels ( -- n )
   \ Return the number _n_ of pixels set on the screen.
   \ ``fast-pixels`` is the default action of `pixels`.
   \
-  \ See: `slow-pixels`, `bits`.
+  \ See also: `slow-pixels`, `bits`.
   \
   \ }doc
 
@@ -652,7 +652,7 @@ unneeding slow-pixels ?( need bits need pixels
   \ executes `bits` with the screen address and length on the
   \ stack.
   \
-  \ See: `fast-pixels`.
+  \ See also: `fast-pixels`.
   \
   \ }doc
 
@@ -713,7 +713,7 @@ unneeding x>gx
   \
   \ Convert cursor column _col_ to graphic x coordinate _gx_.
   \
-  \ See: `y>gy`, `gx>x`.
+  \ See also: `y>gy`, `gx>x`.
   \
   \ }doc
 
@@ -727,7 +727,7 @@ unneeding y>gy
   \
   \ Convert cursor coordinate _row_ to graphic coordinate _gy_.
   \
-  \ See: `x>gx`, `gy>y`.
+  \ See also: `x>gx`, `gy>y`.
   \
   \ }doc
 
@@ -739,7 +739,7 @@ unneeding gx>x ?\ : gx>x ( gx -- x ) 8 / ;
   \
   \ Convert graphic coordinate _gx_ to cursor column _col_.
   \
-  \ See: `gy>y`, `x>gx`.
+  \ See also: `gy>y`, `x>gx`.
   \
   \ }doc
 
@@ -752,7 +752,7 @@ unneeding gy>y ?\ : gy>y ( gy -- y ) #191 swap - 8 / ;
   \ Convert graphic y coordinate _gy_ to cursor coordinate
   \ _row_.
   \
-  \ See: `gx>x`, `y>gy`.
+  \ See also: `gx>x`, `y>gy`.
   \
   \ }doc
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006062350
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -46,7 +46,7 @@ unneeding do ?(
   \
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
   \
-  \ See: `?do`, `-do`.
+  \ See also: `?do`, `-do`.
   \
   \ }doc
 
@@ -158,7 +158,7 @@ unneeding #do ?(
   \ 4 times \ prints 0 1 2 3
   \ ----
 
-  \ See: `?do`, `do`, `-do`.
+  \ See also: `?do`, `do`, `-do`.
   \
   \ Origin: Comus.
   \
@@ -186,7 +186,7 @@ unneeding +loop
   \ Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
   \ Forth-2012 (CORE).
   \
-  \ See: `loop`.
+  \ See also: `loop`.
   \
   \ }doc
 

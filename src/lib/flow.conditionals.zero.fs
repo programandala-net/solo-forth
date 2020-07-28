@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006082147
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -43,7 +43,7 @@ unneeding 0if ?(
   \
   \ ``0if`` is an `immediate` and `compile-only` word.
   \
-  \ See: `if`, `-if`, `+if`, `0while`, `0until`, `0exit`.
+  \ See also: `if`, `-if`, `+if`, `0while`, `0until`, `0exit`.
   \
   \ }doc
 
@@ -64,7 +64,7 @@ unneeding 0while ?( need 0if need cs-swap
   \
   \ ``0while`` is an `immediate` and `compile-only` word.
   \
-  \ See: `while`, `-while`, `+while`, `0if`, `0until`, `0exit`.
+  \ See also: `while`, `-while`, `+while`, `0if`, `0until`, `0exit`.
   \
   \ }doc
 
@@ -85,7 +85,7 @@ unneeding 0until ?(
   \
   \ ``0until`` is an `immediate` and `compile-only` word.
   \
-  \ See: `until`, `-until`, `+until`, `0if`, `0while`, `0exit`.
+  \ See also: `until`, `-until`, `+until`, `0if`, `0while`, `0exit`.
   \
   \ }doc
 

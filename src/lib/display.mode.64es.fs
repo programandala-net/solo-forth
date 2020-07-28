@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005051424
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -367,7 +367,7 @@ need mode-64-font
   \ WARNING: ``mode-64es`` is under development. See the source
   \ code for details.
   \
-  \ See: `current-mode`, `mode-64ao`.
+  \ See also: `current-mode`, `mode-64ao`.
   \
   \ }doc
 

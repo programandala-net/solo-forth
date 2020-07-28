@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005190024
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -41,7 +41,7 @@ unneeding rnd ?( need 2variable
   \
   \ Generate a single-cell random number _x_.
   \
-  \ See: `random`, `random-within`, `fast-rnd`.
+  \ See also: `random`, `random-within`, `fast-rnd`.
   \
   \ }doc
 
@@ -55,7 +55,7 @@ unneeding random ?( need rnd
   \
   \ Return a random number _n2_ from 0 to _n1_ minus 1.
   \
-  \ See: `rnd`, `random-within`, `fast-random`.
+  \ See also: `rnd`, `random-within`, `fast-random`.
   \
   \ }doc
 
@@ -104,7 +104,7 @@ code fast-rnd ( -- u )
   \ that has a cycle of 65536 (so it will hit every single
   \ number): ``f(n+1)=241f(n)+257``.
   \
-  \ See: `fast-random`, `rnd`.
+  \ See also: `fast-random`, `rnd`.
   \
   \ }doc
 
@@ -118,7 +118,7 @@ unneeding fast-random ?( need fast-rnd
   \
   \ Return a random number _n2_ from 0 to _n1_ minus 1.
   \
-  \ See: `fast-rnd`, `random`.
+  \ See also: `fast-rnd`, `random`.
   \
   \ }doc
 
@@ -180,7 +180,7 @@ unneeding random-within ?( need random
   \ Return a random number _n3_ from _n1_ (min) to _n2-1_
   \ (max).
   \
-  \ See: `random-between`, `random`, `within`.
+  \ See also: `random-between`, `random`, `within`.
   \
   \ }doc
 
@@ -194,7 +194,7 @@ unneeding random-between ?( need random-within
   \
   \ Return a random number _n3_ from _n1_ (min) to _n2_ (max).
   \
-  \ See: `random-within`, `random`, `between`.
+  \ See also: `random-within`, `random`, `between`.
   \
   \ }doc
 
@@ -247,7 +247,7 @@ code crnd ( -- b )
   \
   \ Return a random 8-bit number _b_ (0..255).
   \
-  \ See: `rnd`.
+  \ See also: `rnd`.
   \
   \ }doc
 
@@ -260,7 +260,7 @@ unneeding -1|1
   \
   \ Return a random number: -1 or 1.
   \
-  \ See: `-1..1`, `rnd`, `fast-random`.
+  \ See also: `-1..1`, `rnd`, `fast-random`.
   \
   \ }doc
 
@@ -273,7 +273,7 @@ unneeding -1..1
   \
   \ Return a random number: -1, 0 or 1.
   \
-  \ See: `-1|1`, `rnd`, `fast-random`.
+  \ See also: `-1|1`, `rnd`, `fast-random`.
   \
   \ }doc
 
@@ -286,7 +286,7 @@ unneeding randomize
   \
   \ Set the seed used by `fast-rnd` and `fast-random` to _n_.
   \
-  \ See: `randomize0`.
+  \ See also: `randomize0`.
   \
   \ }doc
 
@@ -302,7 +302,7 @@ unneeding randomize0 ?( need os-frames need randomize
   \ Set the seed used by `fast-rnd` and `fast-random` to _n_;
   \ if _n_ is zero use the system frames counter instead.
   \
-  \ See: `randomize`.
+  \ See also: `randomize`.
   \
   \ }doc
 

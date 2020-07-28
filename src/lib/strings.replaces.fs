@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005041929
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -39,7 +39,7 @@ unneeding substitute-wordlist
   \
   \ Word list for substitution names and replacement texts.
   \
-  \ See: `replaces`.
+  \ See also: `replaces`.
   \
   \ }doc
 
@@ -63,7 +63,7 @@ need substitute-wordlist need nextname
   \ ``(substitution`` is a common factor of `substitution` and
   \ `xt-substitution`.
   \
-  \ See: `substitution`, `xt-substitution`, `replaces`.
+  \ See also: `substitution`, `xt-substitution`, `replaces`.
   \
   \ }doc
 
@@ -83,7 +83,7 @@ need (substitution need /counted-string
   \ storage space.  Return the address of the buffer for the
   \ substitution text.
   \
-  \ See: `replaces`.
+  \ See also: `replaces`.
   \
   \ }doc
 
@@ -103,7 +103,7 @@ need substitute-wordlist need search-wordlist
   \ Given a string _ca len_, find its substitution.  Return
   \ _xt_ and _f_ if found, or just zero if not found.
   \
-  \ See: `replaces`.
+  \ See also: `replaces`.
   \
   \ }doc
 
@@ -140,7 +140,7 @@ need slit-substitution
   \
   \ Origin: Forth-2012 (STRING EXT).
   \
-  \ See: `substitute`, `unescape`, `substitution`,
+  \ See also: `substitute`, `unescape`, `substitution`,
   \ `find-substitution`, `substitute-wordlist`, `replace`.
   \
   \ }doc

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005042336
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -58,7 +58,7 @@ unneeding faravariable ?( need farallot need array>
   \
   \ Return far-memory address _a_ of element _n_.
   \
-  \ See: `far2avariable`, `farcavariable`, `avariable`.
+  \ See also: `far2avariable`, `farcavariable`, `avariable`.
   \
   \ }doc
 
@@ -82,7 +82,7 @@ unneeding far2avariable ?( need farallot need 2array>
   \
   \ Return far-memory address _a_ of element _n_.
   \
-  \ See: `faravariable`, `farcavariable`, `2avariable`.
+  \ See also: `faravariable`, `farcavariable`, `2avariable`.
   \
   \ }doc
 
@@ -106,7 +106,7 @@ unneeding farcavariable ?( need farallot
   \
   \ Return far-memory address _ca_ of element _n_.
   \
-  \ See: `faravariable`, `far2avariable`, `cavariable`.
+  \ See also: `faravariable`, `far2avariable`, `cavariable`.
   \
   \ }doc
 

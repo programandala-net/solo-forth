@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041324
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -44,7 +44,7 @@ unneeding toarg ?( need arguments ' @ arg-default-action !
   \ Loading ``toarg`` makes `@` the default action of
   \ `arguments` locals, which is hold in `arg-default-action`.
   \
-  \ See: `+toarg`.
+  \ See also: `+toarg`.
   \
   \ }doc
 
@@ -62,7 +62,7 @@ unneeding +toarg ?( need arguments ' @ arg-default-action !
   \ Loading ``+toarg`` makes `@` the default action of
   \ `arguments` locals, which is hold in `arg-default-action`.
   \
-  \ See: `toarg`.
+  \ See also: `toarg`.
   \
   \ }doc
 
@@ -90,7 +90,7 @@ variable arg-default-action arg-default-action off
   \ `arg-action` by `arguments`, and also every time a local
   \ variable is used.
   \
-  \ See: `arg-action`.
+  \ See also: `arg-action`.
   \
   \ }doc
 
@@ -205,7 +205,7 @@ $0A arg: l5 $0C arg: l6 $0E arg: l7 $10 arg: l8 $12 arg: l9 -->
 
   \ ``arguments`` is a `compile-only` word.
   \
-  \ See: `local`, `anon`.
+  \ See also: `local`, `anon`.
   \
   \ }doc
 

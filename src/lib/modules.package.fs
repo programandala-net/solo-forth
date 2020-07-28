@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804152100
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -162,7 +162,7 @@ need latest>wordlist need +order need -order need nextname
 
   \ Origin: SwiftForth.
   \
-  \ See: `internal`, `isolate`, `module`, `privatize`,
+  \ See also: `internal`, `isolate`, `module`, `privatize`,
   \ `seclusion`.
   \
   \ }doc
@@ -181,7 +181,7 @@ need latest>wordlist need +order need -order need nextname
   \
   \ Origin: SwiftForth.
   \
-  \ See: `end-package`, `private`.
+  \ See also: `end-package`, `private`.
   \
   \ }doc
 
@@ -200,7 +200,7 @@ need latest>wordlist need +order need -order need nextname
   \
   \ Origin: SwiftForth.
   \
-  \ See: `end-package`, `public`.
+  \ See also: `end-package`, `public`.
   \
   \ }doc
 
@@ -217,7 +217,7 @@ need latest>wordlist need +order need -order need nextname
   \
   \ Origin: SwiftForth.
   \
-  \ See: `public`, `private`.
+  \ See also: `public`, `private`.
   \
   \ }doc
 

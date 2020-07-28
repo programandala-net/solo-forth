@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007280016
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -98,7 +98,7 @@ unneeding words ?( need trail need more-words?
   \ Origin: Forth-83 (Uncontrolled Reference Words), Forth-94
   \ (TOOLS), Forth-2012 (TOOLS).
   \
-  \ See: `wordlist-words`, `wordlists`.
+  \ See also: `wordlist-words`, `wordlists`.
   \
   \ }doc
 
@@ -112,7 +112,7 @@ unneeding wordlist-words  ?( need words
   \
   \ List the definition names in word list _wid_.
   \
-  \ See: `words`, `wordlists`.
+  \ See also: `words`, `wordlists`.
   \
   \ }doc
 

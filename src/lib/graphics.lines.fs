@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005241405
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -69,7 +69,7 @@ code rdraw176 ( gx gy -- )
   \ ``rdraw176`` is equivalent to Sinclair BASIC's ``DRAW``
   \ command.
   \
-  \ See: `adraw176`.
+  \ See also: `adraw176`.
   \
   \ }doc
 
@@ -84,7 +84,7 @@ unneeding y1 unneeding incy and and and ?( need 2variable
   \
   \ A `2variable` used by `adraw176` and `aline176`.
   \
-  \ See: `y1`, `incx`, `incy`.
+  \ See also: `y1`, `incx`, `incy`.
   \
   \ }doc
 
@@ -94,7 +94,7 @@ unneeding y1 unneeding incy and and and ?( need 2variable
   \
   \ A `2variable` used by `adraw176` and `aline176`.
   \
-  \ See: `x1`, `incx`, `incy`.
+  \ See also: `x1`, `incx`, `incy`.
   \
   \ }doc
 
@@ -104,7 +104,7 @@ unneeding y1 unneeding incy and and and ?( need 2variable
   \
   \ A `2variable` used by `adraw176` and `aline176`.
   \
-  \ See: `incy`, `x1`, `y1`.
+  \ See also: `incy`, `x1`, `y1`.
   \
   \ }doc
 
@@ -114,7 +114,7 @@ unneeding y1 unneeding incy and and and ?( need 2variable
   \
   \ A `2variable` used by `adraw176` and `aline176`.
   \
-  \ See: `incx`, `x1`, `y1`.
+  \ See also: `incx`, `x1`, `y1`.
   \
   \ }doc
 
@@ -255,7 +255,7 @@ code rdraw ( gx gy -- )
   \ NOTE: ``rdraw`` is a modified version of the DRAW-LINE ROM
   \ routine.
   \
-  \ See: `rdraw176`, `adraw176`.
+  \ See also: `rdraw176`, `adraw176`.
   \
 
 ( adraw176 )
@@ -298,7 +298,7 @@ need x1 need incx need y1 need incy
   \ rows of the screen (the lower 16 pixel rows are not used).
   \ _gx_ is 0..255; _gy_ is 0..175.
   \
-  \ See: `rdraw176`.
+  \ See also: `rdraw176`.
   \
   \ }doc
 
@@ -345,7 +345,7 @@ need x1 need incx need y1 need incy
   \
   \ ``aline176`` is faster than `adraw176`.
   \
-  \ See: `rdraw176`.
+  \ See also: `rdraw176`.
   \
   \ }doc
 
@@ -414,7 +414,7 @@ code orthodraw ( gx gy gxinc gyinc len -- )
   \ are updated.  That's what makes ``orthodraw`` much slower
   \ than `ortholine`.
   \
-  \ See: `adraw176`, `rdraw176`.
+  \ See also: `adraw176`, `rdraw176`.
   \
   \ }doc
 

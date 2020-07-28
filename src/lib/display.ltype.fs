@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007280012
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -40,7 +40,7 @@ variable #indented
   \ A `variable`. _a_ is the address of a cell containing the
   \ numbers of characters indented on the current line.
   \
-  \ See: `#ltyped`, `indented+`.
+  \ See also: `#ltyped`, `indented+`.
   \
   \ }doc
 
@@ -56,7 +56,7 @@ variable #ltyped
   \ number of characters displayed by `ltype` on the current
   \ row.
   \
-  \ See: `ltyped`, `#indented`.
+  \ See also: `ltyped`, `#indented`.
   \
   \ }doc
 
@@ -91,7 +91,7 @@ variable #ltyped
   \ Display character _c_ as part of the left-justified displaying
   \ system.
   \
-  \ See: `ltype`, `lspace`.
+  \ See also: `ltype`, `lspace`.
   \
   \ }doc
 
@@ -102,7 +102,7 @@ variable #ltyped
   \ Display a space as part of the left-justified printing
   \ system.
   \
-  \ See: `lemit`, `ltype`.
+  \ See also: `lemit`, `ltype`.
   \
   \ }doc
 
@@ -114,7 +114,7 @@ variable #ltyped
   \
   \ Set `#ltyped` and `#indented` to zero.
   \
-  \ See: `ltyped`.
+  \ See also: `ltyped`.
   \
   \ }doc
 
@@ -149,7 +149,7 @@ variable #ltyped
   \ Is the cursor neither at the home position nor at the start of a
   \ line?  ``lcr?`` is part of the left-justified displaying system.
   \
-  \ See: `lcr`, `ltype`.
+  \ See also: `lcr`, `ltype`.
   \
   \ }doc
 
@@ -165,7 +165,7 @@ defer (lcr ( -- ) ' cr ' (lcr defer! -->
   \ system.  ``(lcr`` is a hook for the application, for
   \ special cases.
   \
-  \ See: `ltype`.
+  \ See also: `ltype`.
   \
   \ }doc
 
@@ -181,7 +181,7 @@ defer (lcr ( -- ) ' cr ' (lcr defer! -->
   \ start of a line, move it to the next row. ``lcr`` is part
   \ of the left-justified displaying system.
   \
-  \ See: `lcr?`, `(lcr`, `ltype`.
+  \ See also: `lcr?`, `(lcr`, `ltype`.
   \
   \ }doc
 
@@ -241,7 +241,7 @@ create lwidth columns c,
   \ Display character string _ca len_ left-justified from the
   \ current cursor position.
   \
-  \ See: `lwidth`.
+  \ See also: `lwidth`.
   \
   \ }doc
 

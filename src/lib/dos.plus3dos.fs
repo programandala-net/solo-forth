@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007112234
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -34,7 +34,7 @@ unneeding /filename ?\ 16 cconstant /filename
   \ Return the maximum length of a +3DOS filename, including
   \ drive, user area and filename extension.
   \
-  \ See: `/base-filename`, `>filename`.
+  \ See also: `/base-filename`, `>filename`.
   \
   \ }doc
 
@@ -47,7 +47,7 @@ unneeding /base-filename ?\ 8 cconstant /base-filename
   \ Return the maximum length of a +3DOS base filename, i.e.,
   \ a filename without drive, user area and extension.
   \
-  \ See: `/filename-ext`, `/filename`, `>filename`.
+  \ See also: `/filename-ext`, `/filename`, `>filename`.
   \
   \ }doc
 
@@ -60,7 +60,7 @@ unneeding /filename-ext ?\ 3 cconstant /filename-ext
   \ Return the maximum length of a +3DOS filename extension
   \ excluding the dot.
   \
-  \ See: `/filename`, `/base-filename`.
+  \ See also: `/filename`, `/base-filename`.
   \
   \ }doc
 
@@ -77,7 +77,7 @@ unneeding >filename ?( need /filename
   \ Convert the filename _ca1 len1_ to a $FF-terminated string
   \ at _ca2_ in the `stringer`.
   \
-  \ See: `/filename`.
+  \ See also: `/filename`.
   \
   \ }doc
 
@@ -129,7 +129,7 @@ unneeding rename-file ?( need >filename need (rename-file
   \
   \ Origin: Forth-94 (FILE EXT), Forth-2012 (FILE EXT).
   \
-  \ See: `(rename-file`, `delete-file`.
+  \ See also: `(rename-file`, `delete-file`.
   \
   \ }doc
 
@@ -172,7 +172,7 @@ code get-1346 ( -- n1 n2 n3 n4 )
   \ _n4_ :: number of RAM disk sector buffers
 
   \
-  \ See: `set-1346`, `default-1346`, `bank`.
+  \ See also: `set-1346`, `default-1346`, `bank`.
   \
   \ }doc
 
@@ -211,7 +211,7 @@ code set-1346 ( n1 n2 n3 n4 -- )
   \ _n4_ :: number of RAM disk sector buffers
 
   \
-  \ See: `get-1346`, `default-1346`, `bank`.
+  \ See also: `get-1346`, `default-1346`, `bank`.
   \
   \ }doc
 
@@ -233,7 +233,7 @@ unneeding 2-block-drives ?( need set-block-drives
   \ Note: For convenience, when this word is loaded, it's also
   \ executed.
   \
-  \ See: `set-block-drives`.
+  \ See also: `set-block-drives`.
   \
   \ }doc
 
@@ -281,7 +281,7 @@ unneeding delete-file ?( need >filename need (delete-file
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
-  \ See: `(delete-file`, `rename-file`.
+  \ See also: `(delete-file`, `rename-file`.
   \
   \ }doc
 
@@ -296,7 +296,7 @@ unneeding file-id ?(
   \ _n_ is the total number of file identifiers that can be
   \ used.
   \
-  \ See: `file-ids`, `file-id`.
+  \ See also: `file-ids`, `file-id`.
   \
   \ }doc
 
@@ -320,7 +320,7 @@ create file-ids #file-ids allot  file-ids #file-ids erase
   \ | $FF  | Used
   \ |===
   \
-  \ See: `#file-ids`, `file-id`.
+  \ See also: `#file-ids`, `file-id`.
   \
   \ }doc
 
@@ -337,7 +337,7 @@ create file-ids #file-ids allot  file-ids #file-ids erase
   \ If there is a file identifier not used yet, return it _fid_
   \ and `true`; otherwise return `false`.
   \
-  \ See: `#file-ids`, file-ids`.
+  \ See also: `#file-ids`, file-ids`.
   \
   \ }doc
 
@@ -355,7 +355,7 @@ unneeding r/o ?\ %001 cconstant r/o
   \
   \ Return the "read only" file access method _fam_.
   \
-  \ See: `w/o`, `r/w`, `s/r`, `bin`,
+  \ See also: `w/o`, `r/w`, `s/r`, `bin`,
   \ `create-file`, `open-file`.
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
@@ -370,7 +370,7 @@ unneeding w/o ?\ %010 cconstant w/o
   \
   \ Return the "write only" file access method _fam_.
   \
-  \ See: `r/o`, `r/w`, `s/r`, `bin`,
+  \ See also: `r/o`, `r/w`, `s/r`, `bin`,
   \ `create-file`, `open-file`.
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
@@ -385,7 +385,7 @@ unneeding r/w ?\ %011 cconstant r/w
   \
   \ Return the "read/write" file access method _fam_.
   \
-  \ See: `r/o`, `w/o`, `s/r`, `bin`,
+  \ See also: `r/o`, `w/o`, `s/r`, `bin`,
   \ `create-file`, `open-file`.
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
@@ -400,7 +400,7 @@ unneeding s/r ?\ %101 cconstant s/r
   \
   \ Return the "shared read" file access method _fam_.
   \
-  \ See: `r/o`, `w/o`, `r/w`, `bin`,
+  \ See also: `r/o`, `w/o`, `r/w`, `bin`,
   \ `create-file`, `open-file`.
   \
   \ }doc
@@ -415,7 +415,7 @@ unneeding bin ?\ need alias ' noop alias bin immediate
   \ "binary", i.e., not line oriented, file access method,
   \ giving file access method _fam2_.
   \
-  \ See: `r/o`, `w/o`, `r/w`, `s/r`,
+  \ See also: `r/o`, `w/o`, `r/w`, `s/r`,
   \ `create-file`, `open-file`.
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
@@ -443,7 +443,7 @@ code headed ( fam1 -- fam2 )
   \ : headed ( fam1 -- fam2 ) 128 and ;
   \ ----
 
-  \ See: `bin`, `r/o`, `w/o`, `r/w`, `s/r`,
+  \ See also: `bin`, `r/o`, `w/o`, `r/w`, `s/r`,
   \ `create-file`, `open-file`.
   \
   \ }doc
@@ -570,7 +570,7 @@ code (create-file ( ca fam fid -- fid ior )
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
-  \ See: `open-file`,  `r/o`, `w/o`, `r/w`, `s/r`, `bin`.
+  \ See also: `open-file`,  `r/o`, `w/o`, `r/w`, `s/r`, `bin`.
   \
   \ }doc
 
@@ -628,7 +628,7 @@ code (open-file ( ca fam fid -- fid ior )
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
-  \ See: `close-file`, `create-file`, `r/o`, `w/o`, `r/w`,
+  \ See also: `close-file`, `create-file`, `r/o`, `w/o`, `r/w`,
   \ `s/r`, `bin`.
   \
   \ }doc
@@ -669,7 +669,7 @@ code (close-file ( fid -- ior )
   \ Close the file identified by _fid_ and return the I/O
   \ result code _ior_.
   \
-  \ See: `open-file`, `create-file`, `(close-file`.
+  \ See also: `open-file`, `create-file`, `(close-file`.
   \
   \ }doc
 
@@ -700,7 +700,7 @@ code file-position ( fid -- ud ior )
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
-  \ See: `reposition-file`, `file-size`, `open-file`,
+  \ See also: `reposition-file`, `file-size`, `open-file`,
   \ `create-file`.
   \
   \ }doc
@@ -730,7 +730,7 @@ code reposition-file ( ud fid -- ior )
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
-  \ See: `file-position`, `open-file`, `create-file`.
+  \ See also: `file-position`, `open-file`, `create-file`.
   \
   \ }doc
 
@@ -762,7 +762,7 @@ code file-size ( fid -- d )
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
-  \ See: `file-position`, `open-file`.
+  \ See also: `file-position`, `open-file`.
   \
   \ }doc
 
@@ -786,7 +786,7 @@ unneeding eof? ?( need file-size need file-position need d=
   \ end of the file, i.e. does its file position equals its
   \ file size?
   \
-  \ See: `file-size`, `file-position`, `create-file`,
+  \ See also: `file-size`, `file-position`, `create-file`,
   \ `open-file`.
   \
   \ }doc
@@ -804,7 +804,7 @@ need >filename need /base-filename need /filename-ext
   \ A `cconstant`. Return size _n_, in bytes, of every entry of
   \ the `cat-buffer` used by `(cat` and prepared by `>cat`.
   \
-  \ See: `cat-entries`.
+  \ See also: `cat-entries`.
   \
   \ }doc
 
@@ -855,7 +855,7 @@ variable cat-buffer
   \ `stringer` (whose maximum length is `/stringer`) could be
   \ overwritten.
   \
-  \ See: `/cat-entry`.
+  \ See also: `/cat-entry`.
   \
   \ }doc
 
@@ -870,7 +870,7 @@ variable cat-buffer
   \ _ca_. A dot separator is printed first, which is not
   \ included in the string at _ca_.
   \
-  \ See: `.filename`.
+  \ See also: `.filename`.
   \
   \ }doc
 
@@ -888,7 +888,7 @@ variable cat-buffer
   \ filename from the filename extension is not included in the
   \ string at _ca_, but it's printed.
   \
-  \ See: `.filename-ext`.
+  \ See also: `.filename-ext`.
   \
   \ }doc
 
@@ -902,7 +902,7 @@ variable cat-buffer
   \
   \ Convert `cat-buffer` entry _n_ to its address _ca_.
   \
-  \ See: `/cat-entry`.
+  \ See also: `/cat-entry`.
   \
   \ }doc
 
@@ -918,7 +918,7 @@ variable full-cat  full-cat on
   \ `false`, they don't. Other values are not supported. The
   \ default value is `true`.
   \
-  \ See: `>cat`.
+  \ See also: `>cat`.
   \
   \ }doc
 
@@ -932,7 +932,7 @@ variable full-cat  full-cat on
   \ Allocate space in the `stringer` and update `cat-buffer`
   \ with its address.
   \
-  \ See: `/cat-buffer`.
+  \ See also: `/cat-buffer`.
   \
   \ }doc
 
@@ -955,7 +955,7 @@ variable full-cat  full-cat on
   \ included (configurable by `full-cat`)
   \ _x_ (high byte) :: size of the buffer in entries, plus one (>=2)
 
-  \ See: `wcat`, `cat`, `cat-entries`.
+  \ See also: `wcat`, `cat`, `cat-entries`.
   \
   \ }doc
 
@@ -972,7 +972,7 @@ variable full-cat  full-cat on
   \
   \ ``more-cat`` is a factor of `wcat`.
   \
-  \ See: `(cat`.
+  \ See also: `(cat`.
   \
   \ }doc
 
@@ -987,7 +987,7 @@ variable full-cat  full-cat on
   \
   \ ``more-cat?`` is a factor of `wcat` and `wacat`.
   \
-  \ See: `(cat`.
+  \ See also: `(cat`.
   \
   \ }doc
 
@@ -1028,7 +1028,7 @@ code (cat ( ca1 ca2 x -- n ior )
   \ replaced by entry _n_ (task done by `more-cat`) to fetch
   \ the next part of the directory.
   \
-  \ See: `cat-buffer`, `cat-entries`, `/cat-entry`.
+  \ See also: `cat-buffer`, `cat-entries`, `/cat-entry`.
   \
   \ }doc
 
@@ -1057,7 +1057,7 @@ need (cat need 3dup need 3drop
   \
   \ ``.cat-entry`` is a factor of `.cat`.
   \
-  \ See: `.filename`.
+  \ See also: `.filename`.
   \
   \ }doc
 
@@ -1071,7 +1071,7 @@ need (cat need 3dup need 3drop
   \
   \ ``.cat`` is a factor of `wcat`.
   \
-  \ See: `.cat-entry`, `.acat`.
+  \ See also: `.cat-entry`, `.acat`.
   \
   \ }doc
 
@@ -1087,7 +1087,7 @@ need (cat need 3dup need 3drop
   \ Show a wild-card disk catalogue using the wild-card
   \ filename _ca len_.
   \
-  \ See: `cat`, `wacat`, `.cat`, `(cat`, `more-cat`,
+  \ See also: `cat`, `wacat`, `.cat`, `(cat`, `more-cat`,
   \ `set-drive`.
   \
   \ }doc
@@ -1100,7 +1100,7 @@ need (cat need 3dup need 3drop
   \
   \ Show a disk catalogue of the current drive.
   \
-  \ See: `wcat`, `acat`, `set-drive`.
+  \ See also: `wcat`, `acat`, `set-drive`.
   \
   \ }doc
 
@@ -1119,7 +1119,7 @@ need (cat need tab need 3dup need 3drop
   \
   \ ``.acat`` is a factor of `wacat`.
   \
-  \ See: `.filename`, `.cat`.
+  \ See also: `.filename`, `.cat`.
   \
   \ }doc
 
@@ -1135,7 +1135,7 @@ need (cat need tab need 3dup need 3drop
   \ Show an abbreviated wild-card disk catalogue using the
   \ wild-card filename _ca len_.
   \
-  \ See: `acat`, `wcat`, `(cat`, `.acat`, `more-cat`,
+  \ See also: `acat`, `wcat`, `(cat`, `.acat`, `more-cat`,
   \ `set-drive`.
   \
   \ }doc
@@ -1148,7 +1148,7 @@ need (cat need tab need 3dup need 3drop
   \
   \ Show an abbreviated disk catalogue of the current drive.
   \
-  \ See: `wacat`, `cat`, `set-drive`.
+  \ See also: `wacat`, `cat`, `set-drive`.
   \
   \ }doc
 
@@ -1187,7 +1187,7 @@ code bank-write-file ( ca len fid +n -- ior )
   \ memory bank _+n_ is paged in addresses $C000..$FFFF.
   \ Return I/O result code _ior_.
   \
-  \ See: `write-file`, `write-byte`, `bank`, `create-file`,
+  \ See also: `write-file`, `write-byte`, `bank`, `create-file`,
   \ `open-file`.
   \
   \ }doc
@@ -1212,7 +1212,7 @@ code write-file ( ca len fid -- ior )
   \ identified by _fid_ starting at its current position.
   \ Return I/O result code _ior_.
   \
-  \ See: `bank-write-file`, `write-byte`, `create-file`,
+  \ See also: `bank-write-file`, `write-byte`, `create-file`,
   \ `open-file`.
   \
   \ }doc
@@ -1259,7 +1259,7 @@ code read-file  ( ca len1 fid -- len2 ior )
   \ At the conclusion of the operation, `file-position` returns
   \ the next file position after the last character read.
   \
-  \ See: `bank-read-file`, `read-byte`, `open-file`,
+  \ See also: `bank-read-file`, `read-byte`, `open-file`,
   \ `write-file`.
   \
   \ }doc
@@ -1349,7 +1349,7 @@ code bank-read-file  ( ca len fid +n -- ior )
   \ At the conclusion of the operation, `file-position` returns
   \ the next file position after the last character read.
   \
-  \ See: `bank-read-file`, `read-byte`, `open-file`,
+  \ See also: `bank-read-file`, `read-byte`, `open-file`,
   \ `write-file`.
   \
   \ }doc
@@ -1380,7 +1380,7 @@ code read-byte ( fid -- c ior )
   \ Read byte _c_ from file _fid_, returning I/O result code
   \ _ior_.  If _ior_ is non-zero, _c_ is undetermined.
   \
-  \ See: `write-byte`, `reposition-file`, `file-position`.
+  \ See also: `write-byte`, `reposition-file`, `file-position`.
   \
   \ }doc
 
@@ -1400,7 +1400,7 @@ code write-byte ( c fid -- ior )
   \ Write byte _c_ to file _fid_, returning I/O result code
   \ _ior_.
   \
-  \ See: `read-byte`, `reposition-file`, `file-position`.
+  \ See also: `read-byte`, `reposition-file`, `file-position`.
   \
   \ }doc
 
@@ -1430,7 +1430,7 @@ unneeding write-line ?( need newline
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
-  \ See: `write-file`, `write-byte`, `read-line`,
+  \ See also: `write-file`, `write-byte`, `read-line`,
   \ `create-file`, `open-file`.
   \
   \ }doc
@@ -1500,7 +1500,7 @@ variable read-line-len
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
-  \ See: `read-file`, `read-byte`, `write-line`, `create-file`,
+  \ See also: `read-file`, `read-byte`, `write-line`, `create-file`,
   \ `open-file`.
   \
   \ }doc
@@ -1530,7 +1530,7 @@ code flush-drive ( c -- ior )
   \ This word ensures that the disk is up to date. It can be
   \ called at any time, even when files are open.
   \
-  \ See: `set-drive`, `close-file`.
+  \ See also: `set-drive`, `close-file`.
   \
   \ }doc
 
@@ -1553,7 +1553,7 @@ code drive-unused ( c -- n ior )
   \ Return unused kibibytes _n_ in drive _c_, and the I/O
   \ result code _ior_.
   \
-  \ See: `unused`, `farunused`.
+  \ See also: `unused`, `farunused`.
   \
   \ }doc
 
@@ -1580,7 +1580,7 @@ code get-user ( -- n ior )
   \ by all filenames that do not specify a user number.  _ior_
   \ is the I/O result code.
   \
-  \ See: `set-user`, `get-drive`.
+  \ See also: `set-user`, `get-drive`.
   \
   \ }doc
 
@@ -1603,7 +1603,7 @@ code set-user ( n -- ior )
   \ by all filenames that do not specify a user number.  _ior_
   \ is the I/O result code.
   \
-  \ See: `get-user`, `set-drive`.
+  \ See also: `get-user`, `set-drive`.
   \
   \ }doc
 

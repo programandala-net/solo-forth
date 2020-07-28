@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041129
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -106,7 +106,7 @@ need cs-mark need cond need thens
   \ 0 test 127 test 128 test
   \ ----
 
-  \ See: `endselect`, `cond`, `equal`, `range`, `when`.
+  \ See also: `endselect`, `cond`, `equal`, `range`, `when`.
   \
   \ }doc
 
@@ -138,7 +138,7 @@ need cs-mark need cond need thens
   \   Compilation: ( C: cs-mark orig#1 ... orig#n -- )
   \   Run-time:    ( xxx ) \ XXX TODO --
   \
-  \ See: `select`.
+  \ See also: `select`.
   \
   \ }doc
 
@@ -154,7 +154,7 @@ need cs-mark need cond need thens
   \   Compilation: ( C: xxx ) \ XXX TODO --
   \   Run-time:    ( xxx ) \ XXX TODO --
   \
-  \ See: `select`.
+  \ See also: `select`.
   \
   \ }doc
 
@@ -170,7 +170,7 @@ need cs-mark need cond need thens
   \   Compilation: ( C: -- orig )
   \   Run-time:    ( x0 x1 -- x0 )
   \
-  \ See: `select`.
+  \ See also: `select`.
   \
   \ }doc
 
@@ -182,7 +182,7 @@ need cs-mark need cond need thens
   \
   \ The run-time procedure compiled by `range`.
   \
-  \ See: `select`.
+  \ See also: `select`.
   \
   \ }doc
 
@@ -197,7 +197,7 @@ need cs-mark need cond need thens
   \   Compilation: ( C: -- orig )
   \   Run-time:    ( x0 x1 x2 -- x0 f )
   \
-  \ See: `select`.
+  \ See also: `select`.
   \
   \ }doc
 

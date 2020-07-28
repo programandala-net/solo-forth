@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703132012
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -63,7 +63,7 @@ code get-inkey ( -- c | 0 )
   \ ``get-inkey`` reads the keyboard, so it works even when the
   \ keyboard is not read by an interrupts routine.
   \
-  \ See: `inkey`, `key`.
+  \ See also: `inkey`, `key`.
   \
   \ }doc
 

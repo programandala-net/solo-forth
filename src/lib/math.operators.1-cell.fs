@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007280014
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -56,7 +56,7 @@ code under+ ( n1|u1 x n2|u2 -- n3|u3 x )
 
   \ Origin: Comus.
   \
-  \ See: `+under` ,`+`.
+  \ See also: `+under` ,`+`.
   \
   \ }doc
 
@@ -90,7 +90,7 @@ code +under ( n1|u1 n2|u2 x -- n3|u3 x )
 
   \ Origin: Comus.
   \
-  \ See: `under+`, `+`.
+  \ See also: `under+`, `+`.
   \
   \ }doc
 
@@ -107,7 +107,7 @@ unneeding % ?\ need */ : % ( n1 n2 -- n3 ) 100 swap */ ;
   \
   \ _n1_ is percentage _n3_ of _n2_.
   \
-  \ See: `u%`, `*/`.
+  \ See also: `u%`, `*/`.
   \
   \ }doc
 
@@ -121,7 +121,7 @@ unneeding u%
   \
   \ _u1_ is percentage _u3_ of _u2_.
   \
-  \ See: `%`, `um*`, `um/mod`.
+  \ See also: `%`, `um*`, `um/mod`.
   \
   \ }doc
 
@@ -134,7 +134,7 @@ unneeding u>ud ?\ need alias  ' 0 alias u>ud ( u -- ud )
   \ Extend a single unsigned number _u_ to form a double
   \ unsigned number _ud_. ``u>ud`` is just an alias of `0`.
   \
-  \ See: `s>d`.
+  \ See also: `s>d`.
   \
   \ }doc
 
@@ -159,7 +159,7 @@ unneeding within
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See: `between`, `polarity`.
+  \ See also: `between`, `polarity`.
   \
   \ }doc
 
@@ -182,7 +182,7 @@ unneeding between
   \ _n1|u1_ or _n1|u1_ < _n3|u3_)) is true, returning `false`
   \ otherwise.
   \
-  \ See: `within`, `polarity`.
+  \ See also: `within`, `polarity`.
   \
   \ }doc
 
@@ -201,7 +201,7 @@ unneeding gcd
   \
   \ _n3_ is the greatest common divisor of _n1_ and _n2_.
   \
-  \ See: `/`, `mod`.
+  \ See also: `/`, `mod`.
   \
   \ }doc
 
@@ -232,7 +232,7 @@ code odd? ( n -- f ) E1 c, CB c, 40 05 + c, CA c, ' false ,
   \ : odd? ( n -- f ) 1 and 0<> ;
   \ ----
 
-  \ See: `odd?`.
+  \ See also: `odd?`.
   \
   \ }doc
 
@@ -258,7 +258,7 @@ code even? ( n -- f ) E1 c, CB c, 40 05 + c, CA c, ' true ,
   \ : even? ( n -- f ) 1 and 0= ;
   \ ----
 
-  \ See: `odd?`.
+  \ See also: `odd?`.
   \
   \ }doc
 
@@ -284,7 +284,7 @@ unneeding 8* ?( code 8* ( x1 -- x2 ) e1 c, 29 c, 29 c, 29 c,
   \ ``8*`` is equivalent to ``3 lshift`` or ``2* 2* 2*``, but
   \ faster.
   \
-  \ See: `2*`, `3*`, `lshift`, `8+`, `8-`, `*`.
+  \ See also: `2*`, `3*`, `lshift`, `8+`, `8-`, `*`.
   \
   \ }doc
 
@@ -305,7 +305,7 @@ unneeding 8+ ?( code 8+ ( n1 -- n2 ) E1 c, 11 c, 0008 , 19 c,
   \
   \ ``8+`` is equivalent to ``8 +`` but faster.
   \
-  \ See: `8-`, `1+`, `2+`, `8*`, `+`.
+  \ See also: `8-`, `1+`, `2+`, `8*`, `+`.
   \
   \ }doc
 
@@ -328,7 +328,7 @@ unneeding 8- ?( code 8- ( n1 -- n2 )
   \
   \ ``8-`` is equivalent to ``8 -`` but faster.
   \
-  \ See: `8+`, `1-`, `2-`, `8*`, `-`.
+  \ See also: `8+`, `1-`, `2-`, `8*`, `-`.
   \
   \ }doc
 
@@ -353,7 +353,7 @@ code 3* ( x1 -- x2 )
   \ ``3*`` is equivalent to ``3 *`` or ``dup dup + +``, but
   \ faster.
   \
-  \ See: `2*`, `8*`, `*`, `+`.
+  \ See also: `2*`, `8*`, `*`, `+`.
   \
   \ }doc
 
@@ -401,7 +401,7 @@ code polarity ( n -- -1 | 0 | 1 )
   \ : polarity ( n -- -1|0|1 ) -1 max 1 min ;
   \ ----
 
-  \ See: `<=>`, `negate`, `within`, `between`.
+  \ See also: `<=>`, `negate`, `within`, `between`.
   \
   \ }doc
 
@@ -417,7 +417,7 @@ unneeding <=>
   \ If _n1_ is less than _n2_, return negative one.
   \ If _n1_ is greater than _n2_, return positive one.
   \
-  \ See: `polarity`, `<`, `=`, `>`.
+  \ See also: `polarity`, `<`, `=`, `>`.
   \
   \ }doc
 
@@ -435,7 +435,7 @@ unneeding min>top
   \
   \ Make sure the top of stack is the lesser of _n1_ and _n2_.
   \
-  \ See: `max>top`, `pair=`.
+  \ See also: `max>top`, `pair=`.
   \
   \ }doc
 
@@ -453,7 +453,7 @@ unneeding max>top
   \
   \ Make sure the top of stack is the greater of _n1_ and _n2_.
   \
-  \ See: `min>top`, `pair=`.
+  \ See also: `min>top`, `pair=`.
   \
   \ }doc
 
@@ -473,7 +473,7 @@ unneeding pair= ?( need max>top
   \ x4_, i.e. both components of the each pair are in the other
   \ pair, no matter the order.
   \
-  \ See: `str<>`, `min>top`, `max>top`.
+  \ See also: `str<>`, `min>top`, `max>top`.
   \
   \ }doc
 
@@ -488,7 +488,7 @@ unneeding u<= ?\ : u<= ( u1 u2 -- f ) u> 0= ;
   \ _f_ is `true` if and only if _u1_ is less than or equal
   \ to _u2_.
   \
-  \ See: `u>=`, `<=`, `0<=`.
+  \ See also: `u>=`, `<=`, `0<=`.
   \
   \ }doc
 
@@ -501,7 +501,7 @@ unneeding u>= ?\ : u>= ( u1 u2 -- f ) u< 0= ;
   \ _f_ is `true` if and only if _u1_ is greater than or
   \ equal to _u2_.
   \
-  \ See: `u<=`, `>=`, `0>=`.
+  \ See also: `u<=`, `>=`, `0>=`.
   \
   \ }doc
 
@@ -514,7 +514,7 @@ unneeding <= ?\ : <= ( n1 n2 -- f ) > 0= ;
   \ _f_ is `true` if and only if _n1_ is less than or
   \ equal to _n2_.
   \
-  \ See: `>=`, `u<=`, `0<=`.
+  \ See also: `>=`, `u<=`, `0<=`.
   \
   \ }doc
 
@@ -527,7 +527,7 @@ unneeding >= ?\ : >= ( n1 n2 -- f ) < 0= ;
   \ _f_ is `true` if and only if _n1_ is greater than or
   \ equal to _n2_.
   \
-  \ See: `<=`, `u>=`, `0>=`.
+  \ See also: `<=`, `u>=`, `0>=`.
   \
   \ }doc
 
@@ -540,7 +540,7 @@ unneeding 0>= ?\ : 0>= ( n0 -- f ) 0< 0= ;
   \ _f_ is `true` if and only if _n_ is greater than or equal
   \ to zero.
   \
-  \ See: `0<=`, `>=`, `u>=`.
+  \ See also: `0<=`, `>=`, `u>=`.
   \
   \ }doc
 
@@ -553,7 +553,7 @@ unneeding 0<= ?\ : 0<= ( n -- f ) 0> 0= ;
   \ _f_ is `true` if and only if _n_ is less than or equal to
   \ zero.
   \
-  \ See: `0>=`, `<=`, `u<=`.
+  \ See also: `0>=`, `<=`, `u<=`.
   \
   \ }doc
 
@@ -580,7 +580,7 @@ code 0max ( n -- n | 0 )
   \ If _n_ is negative, return 0; else return _n_.  ``0max`` is
   \ a faster alternative to the idiom ``0 max``.
   \
-  \ See: `max`, `min`, `0`.
+  \ See also: `max`, `min`, `0`.
   \
   \ }doc
 
@@ -613,7 +613,7 @@ code lshift ( x1 u -- x2 )
   \
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
   \
-  \ See: `rshift`, `?shift`, `clshift`.
+  \ See also: `rshift`, `?shift`, `clshift`.
   \
   \ }doc
 
@@ -643,7 +643,7 @@ code rshift ( x1 u -- x2 )
   \
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
   \
-  \ See: `lshift`, `?shift`.
+  \ See also: `lshift`, `?shift`.
   \
   \ }doc
 
@@ -691,7 +691,7 @@ code clshift ( b1 u -- b2 )
   \ giving _b2_. Put zeroes into the least significant  bits
   \ vacated by the shift.
   \
-  \ See: `lshift`.
+  \ See also: `lshift`.
   \
   \ }doc
 
@@ -751,7 +751,7 @@ code bits ( ca len -- u )
   \ Count the number _u_ of bits that are set in memory zone
   \ _ca len_.
   \
-  \ See: `pixels`.
+  \ See also: `pixels`.
   \
   \ }doc
 
@@ -782,7 +782,7 @@ unneeding 2/ ?( code 2/ ( x1 -- x2 )
   \ Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
   \ Forth-2012 (CORE).
   \
-  \ See: `/`, `rshift`, `s>d`, `fm/mod`, `2`.
+  \ See also: `/`, `rshift`, `s>d`, `fm/mod`, `2`.
   \
   \ }doc
 
@@ -799,7 +799,7 @@ unneeding cell/ ?\ need alias need 2/  ' 2/ alias cell/
   \ Divide _n1_ by the size of a cell, returning the result
   \ _n2_.
   \
-  \ See: `cell`, `cells`, `cell+`, `cell-`.
+  \ See also: `cell`, `cells`, `cell+`, `cell-`.
   \
   \ }doc
 
@@ -846,7 +846,7 @@ need sqrt need d2* need cell-bits
   \
   \ Loading ``baden-sqrt`` makes it the action of `sqrt`.
   \
-  \ See: `(baden-sqrt`.
+  \ See also: `(baden-sqrt`.
   \
   \ }doc
 
@@ -869,7 +869,7 @@ unneeding /-rem ?( need sm/rem
   \ Divide _n1_ by _n2_ (doing a symmetric division), giving the
   \ remainder _n3_ and the symmetric quotient _n4_.
   \
-  \ See: `/mod`, `/_mod`, `sm/rem`.
+  \ See also: `/mod`, `/_mod`, `sm/rem`.
   \
   \ }doc
 
@@ -884,7 +884,7 @@ unneeding /- ?( need /-rem
   \ Divide _n1_ by _n2_ (doing a symmetric division), giving the
   \ symmetric quotient _n4_.
   \
-  \ See: `/-rem`, `/`, `/_`, `sm/rem`.
+  \ See also: `/-rem`, `/`, `/_`, `sm/rem`.
   \
   \ }doc
 
@@ -899,7 +899,7 @@ unneeding -rem ?( need /-rem
   \ Divide _n1_ by _n2_ (doing a symmetric division), giving the
   \ remainder _n3_.
   \
-  \ See: `/-rem`, `/`, `/_mod`.
+  \ See also: `/-rem`, `/`, `/_mod`.
   \
   \ }doc
 
@@ -915,7 +915,7 @@ unneeding */-rem ?( need sm/rem
   \ _d_.  Divide _d_ by _n3_ (doing a symmetric division), giving
   \ the remainder _n4_ and the symmetric quotient _n5_.
   \
-  \ See: `*/mod`, `*/_mod`, `sm/rem`.
+  \ See also: `*/mod`, `*/_mod`, `sm/rem`.
   \
   \ }doc
 
@@ -931,7 +931,7 @@ unneeding ?( need */-rem
   \ _d_.  Divide _d_ by _n3_ (doing a symmetric division),
   \ giving the symmetric quotient _n4_.
   \
-  \ See: `*/-rem`, `*/`, `*/_`, `sm/rem`.
+  \ See also: `*/-rem`, `*/`, `*/_`, `sm/rem`.
   \
   \ }doc
 
@@ -1013,7 +1013,7 @@ unneeding fm/mod ?(
 
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
   \
-  \ See: `sm/rem`, `m/`.
+  \ See also: `sm/rem`, `m/`.
   \
   \ }doc
 
@@ -1032,7 +1032,7 @@ unneeding */ ?\ : */ ( n1 n2 n3 -- n4 ) */mod nip ;
   \ Origin: fig-Forth, Forth-79 (Required Word Set), Forth-94
   \ (CORE), Forth-2012 (CORE).
   \
-  \ See: `*/mod`, `m*/`, `*`, `/`, `*/_`, `*/-`.
+  \ See also: `*/mod`, `m*/`, `*`, `/`, `*/_`, `*/-`.
   \
   \ }doc
 
@@ -1055,7 +1055,7 @@ unneeding /_mod ?( need fm/mod
   \ Divide _n1_ by _n2_ (doing a floored division), giving the
   \ remainder _n3_ and the floored quotient _n4_.
   \
-  \ See: `/mod`, `/-rem`, `fm/mod`.
+  \ See also: `/mod`, `/-rem`, `fm/mod`.
   \
   \ }doc
 
@@ -1068,7 +1068,7 @@ unneeding /_ ?\ need /_mod : /_ ( n1 n2 -- n3 ) /_mod nip ;
   \ Divide _n1_ by _n2_ (doing a floored division), giving the
   \ floored quotient _n4_.
   \
-  \ See: `/_mod`, `/`, `/-`, `fm/mod`.
+  \ See also: `/_mod`, `/`, `/-`, `fm/mod`.
   \
   \ }doc
 
@@ -1083,7 +1083,7 @@ unneeding _mod ?( need /_mod
   \ Divide _n1_ by _n2_ (doing a floored division), giving the
   \ remainder _n3_.
   \
-  \ See: `/_mod`, `/`, `-rem`.
+  \ See also: `/_mod`, `/`, `-rem`.
   \
   \ }doc
 
@@ -1099,7 +1099,7 @@ unneeding */_mod ?( need fm/mod
   \ _d_.  Divide _d_ by _n3_ (doing a floored division), giving
   \ the remainder _n4_ and the floored quotient _n5_.
   \
-  \ See: `*/mod`, `*/_`, `*/-rem`, `fm/mod`.
+  \ See also: `*/mod`, `*/_`, `*/-rem`, `fm/mod`.
   \
   \ }doc
 
@@ -1115,7 +1115,7 @@ unneeding */_ ?( need */_mod
   \ _d_.  Divide _d_ by _n3_ (doing a floored division), giving
   \ the floored quotient _n4_.
   \
-  \ See: `*/_mod`, `*/`, `*/-`, `fm/mod`.
+  \ See also: `*/_mod`, `*/`, `*/-`, `fm/mod`.
   \
   \ }doc
 
@@ -1141,7 +1141,7 @@ unneeding any? ?( need roll  variable (any?
   \
   \ Origin: John A. Peters' tools for CP/M F83 2.1.1, 1984.
   \
-  \ See: `either`, `neither`, `ifelse`.
+  \ See also: `either`, `neither`, `ifelse`.
   \
   \ }doc
 
@@ -1162,7 +1162,7 @@ unneeding either
   \
   \ Origin: IsForth.
   \
-  \ See: `neither`, `ifelse`, `any?`.
+  \ See also: `neither`, `ifelse`, `any?`.
   \
   \ }doc
 
@@ -1183,7 +1183,7 @@ unneeding neither
   \
   \ Origin: IsForth.
   \
-  \ See: `either`, `ifelse`, `any?`.
+  \ See also: `either`, `ifelse`, `any?`.
   \
   \ }doc
 
@@ -1232,7 +1232,7 @@ code split ( x -- b1 b2 )
   \
   \ Origin: IsForth, CHForth.
   \
-  \ See: `join`, `flip`.
+  \ See also: `join`, `flip`.
   \
   \ }doc
 
@@ -1256,7 +1256,7 @@ code join ( b1 b2 -- x )
   \
   \ Origin: IsForth.
   \
-  \ See: `split`, `flip`.
+  \ See also: `split`, `flip`.
   \
   \ }doc
 

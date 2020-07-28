@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201807212114
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -39,7 +39,7 @@ unneeding number
   \ invalid character, `throw` an exception #-275 ("wrong
   \ number").
   \
-  \ See: `number?`, `>number`.
+  \ See also: `number?`, `>number`.
   \
   \ }doc
 
@@ -51,7 +51,7 @@ unneeding cell-bits ?\ 16 cconstant cell-bits
   \
   \ A `cconstant`. _n_ is the number of bits in a cell.
   \
-  \ See: `cell`, `environment?`.
+  \ See also: `cell`, `environment?`.
   \
   \ }doc
 

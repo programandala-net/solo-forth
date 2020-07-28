@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007280009
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -126,7 +126,7 @@ need evaluate need catch need use-default-located
   \ The default action of all said words can be restored by
   \ `use-no-index`.
   \
-  \ See: `use-fly-index`.
+  \ See also: `use-fly-index`.
   \
   \ }doc
 
@@ -149,7 +149,7 @@ need evaluate need catch need use-default-located
   \
   \ ``(make-thru-index`` is a factor of `make-thru-index`.
   \
-  \ See: `use-thru-index`.
+  \ See also: `use-thru-index`.
   \
   \ }doc
 

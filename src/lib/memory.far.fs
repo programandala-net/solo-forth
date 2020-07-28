@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006152107
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -197,7 +197,7 @@ unneeding default-bank_
   \
   \ Output of the routine: A and E corrupted.
   \
-  \ See: `e-bank_`.
+  \ See also: `e-bank_`.
   \
   \ }doc
 
@@ -216,7 +216,7 @@ unneeding e-bank_
   \ - Input: E = bank
   \ - Output: A corrupted
   \
-  \ See: `default-bank_`.
+  \ See also: `default-bank_`.
   \
   \ }doc
 
@@ -235,7 +235,7 @@ unneeding farallot ?\ : farallot ( n -- ) np +! ;
   \ headers space. If _n_ is zero, leave the headers-space
   \ pointer unchanged.
   \
-  \ See: `farfill`, `far-banks`.
+  \ See also: `farfill`, `far-banks`.
   \
   \ }doc
 
@@ -249,7 +249,7 @@ unneeding far, ?( need farallot
   \
   \ Compile _x_ in far-memory headers space.
   \
-  \ See: `far-n,`, `,`, `farallot`.
+  \ See also: `far-n,`, `,`, `farallot`.
   \
   \ }doc
 
@@ -266,7 +266,7 @@ unneeding far-n, ?( need far,
   \ space, being _x[1]_ the first one stored and _x[u]_ the
   \ last one.
   \
-  \ See: `far,`, `n,`, `farallot`.
+  \ See also: `far,`, `n,`, `farallot`.
   \
   \ }doc
 
@@ -282,7 +282,7 @@ unneeding farfill ?(
   \ If _len_ is not zero, store _b_ in each of _len_
   \ consecutive characters of `far` memory beginning at _a_.
   \
-  \ See: `farerase`, `farallot`, `far-n,`, `farc!`,
+  \ See also: `farerase`, `farallot`, `far-n,`, `farc!`,
   \ `far-banks`, `fill`.
   \
   \ }doc
@@ -299,7 +299,7 @@ unneeding farerase
   \ _len_ consecutive address units of `far` memory beginning at
   \ _ca_.
   \
-  \ See: `farfill`, `farallot`, `far-n,`, `farc!`, `far-banks`.
+  \ See also: `farfill`, `farallot`, `far-n,`, `farc!`, `far-banks`.
   \
   \ }doc
 
@@ -314,7 +314,7 @@ unneeding far2@
   \
   \ Fetch _d_ from far-memory address _a_.
   \
-  \ See: `far2!`, `far2@+`, `far@`, `farc@`, `far-banks`, `2@`.
+  \ See also: `far2!`, `far2@+`, `far@`, `farc@`, `far-banks`, `2@`.
   \
   \ }doc
 
@@ -327,7 +327,7 @@ unneeding far2!
   \
   \ Store _d_ into far-memory address _a_.
   \
-  \ See: `far2@`, `far!`, `farc!`, `far-banks`, `2!`.
+  \ See also: `far2@`, `far!`, `farc!`, `far-banks`, `2!`.
   \
   \ }doc
 
@@ -342,7 +342,7 @@ unneeding far@+
   \ is _a_ incremented by one cell.  This is handy for stepping
   \ through cell arrays.
   \
-  \ See: `farc@+`, `far@+`, `far2@+`, `@+`, `far-banks`.
+  \ See also: `farc@+`, `far@+`, `far2@+`, `@+`, `far-banks`.
   \
   \ }doc
 
@@ -357,7 +357,7 @@ unneeding farc@+
   \ _ca'_, which is _ca_ incremented by one character.  This
   \ is handy for stepping through character arrays.
   \
-  \ See: `far@+`, `far-banks`.
+  \ See also: `far@+`, `far-banks`.
   \
   \ }doc
 
@@ -371,7 +371,7 @@ unneeding far+!
   \ Add _n|u_ to the single-cell number at far-memory address
   \ _a_.
   \
-  \ See: `farc+!`, `+!`, `farc!`, `far-banks`.
+  \ See also: `farc+!`, `+!`, `farc!`, `far-banks`.
   \
   \ }doc
 
@@ -384,7 +384,7 @@ unneeding farc+!
   \
   \ Add _c_ to the char at far-memory address _ca_.
   \
-  \ See: `far+!`, `c+!`, `farc!`, `far-banks`.
+  \ See also: `far+!`, `c+!`, `farc!`, `far-banks`.
   \
   \ }doc
 
@@ -399,7 +399,7 @@ unneeding 2@+ ?exit need far2@
   \ by two cells.  This is handy for stepping through
   \ double-cell arrays.
   \
-  \ See: `far@+`, `farc@+`, `far2@`, `2@+`. `far-banks`.
+  \ See also: `far@+`, `farc@+`, `far2@`, `2@+`. `far-banks`.
   \
   \ }doc
 
@@ -494,7 +494,7 @@ code !bank ( x a n -- ) D1 c, e-bank_ call, E1 c, D1 c, 73 c,
   \ : !bank ( x a n -- ) bank ! default-bank ;
   \ ----
 
-  \ See: `@bank`, `c!bank`.
+  \ See also: `@bank`, `c!bank`.
   \
   \ }doc
 
@@ -522,7 +522,7 @@ code c!bank ( c ca n -- ) D1 c, e-bank_ call,
   \ : c!bank ( c ca n -- ) bank c! default-bank ;
   \ ----
 
-  \ See: `c@bank`, `!bank`.
+  \ See also: `c@bank`, `!bank`.
   \
   \ }doc
 
@@ -554,7 +554,7 @@ code @bank ( a n -- x )
   \ : @bank ( a n -- x ) bank @ default-bank ;
   \ ----
 
-  \ See: `!bank`, `c@bank`.
+  \ See also: `!bank`, `c@bank`.
   \
   \ }doc
 
@@ -584,7 +584,7 @@ code c@bank ( ca n -- c ) D1 c, e-bank_ call,
   \   bank c@ default-bank ;
   \ ----
 
-  \ See: `c!bank`, `@bank`.
+  \ See also: `c!bank`, `@bank`.
   \
   \ }doc
 
@@ -596,7 +596,7 @@ unneeding /bank ?\ $4000 constant /bank
   \
   \ _n_ is the size in bytes of a memory bank: $4000.
   \
-  \ See: `bank-start`.
+  \ See also: `bank-start`.
   \
   \ }doc
 
@@ -608,7 +608,7 @@ unneeding bank-start ?\ $C000 constant bank-start
   \
   \ _a_ is the memory address where banks are paged in: $C000.
   \
-  \ See: `/bank`, `bank`, `banks`, `far-banks`,
+  \ See also: `/bank`, `bank`, `banks`, `far-banks`,
   \ `default-bank`.
   \
   \ }doc

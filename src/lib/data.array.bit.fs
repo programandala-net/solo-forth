@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802051709
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -79,7 +79,7 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
   \
   \ Return bitmak _b_ and address _ca_ of bit _n_ of the array.
   \
-  \ See: `@bit`, `!bit`, `bits>bytes`, `bitmasks`.
+  \ See also: `@bit`, `!bit`, `bits>bytes`, `bitmasks`.
   \
   \ }doc
 
@@ -92,7 +92,7 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
   \ Store flag _f_ in an element of a bit-array, represented by
   \ address _ca_ and bitmask _b_.
   \
-  \ See: `@bit`, `bit-array`.
+  \ See also: `@bit`, `bit-array`.
   \
   \ }doc
 
@@ -107,7 +107,7 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
   \
   \ ``@bit`` is an alias of `c@and?`.
   \
-  \ See: `!bit`, `bit-array`.
+  \ See also: `!bit`, `bit-array`.
   \
   \ }doc
 

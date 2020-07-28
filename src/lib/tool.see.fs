@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006152110
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -121,7 +121,7 @@ variable manual-see manual-see on
   \ done by `see` can be controlled manually with some keys,
   \ which are displayed at the start of the process.
   \
-  \ See: `see-usage`.
+  \ See also: `see-usage`.
   \
   \ }doc
 
@@ -157,7 +157,7 @@ variable manual-see manual-see on
   \ Decode the colon word's definition whose body is _dfa_.
   \ ``see-colon-body`` is a factor of `see-colon`.
   \
-  \ See: `see`, `see-colon-body>`, `see-xt`, `see-usage`.
+  \ See also: `see`, `see-colon-body>`, `see-xt`, `see-usage`.
   \
   \ }doc
 
@@ -212,7 +212,7 @@ variable manual-see manual-see on
   \
   \ Decode the colon word's definition _nt_.
   \
-  \ See: `see`, `see-name`, `see-colon-body`.
+  \ See also: `see`, `see-name`, `see-colon-body`.
   \
   \ }doc
 
@@ -254,7 +254,7 @@ variable manual-see manual-see on
   \ The listing can be paused with the space bar, then stopped
   \ with the return key or resumed with any other key.
   \
-  \ See: `see`, `see-name`, `see-colon`.
+  \ See also: `see`, `see-name`, `see-colon`.
   \
   \ }doc
 
@@ -268,7 +268,7 @@ variable manual-see manual-see on
   \
   \ ``see-name`` is a factor of `see`.
   \
-  \ See: `see`, `see-xt`, `see-colon`.
+  \ See also: `see`, `see-xt`, `see-colon`.
   \
   \ }doc
 
@@ -283,7 +283,7 @@ variable manual-see manual-see on
   \
   \ Origin: Forth-94 (TOOLS), Forth-2012 (TOOLS).
   \
-  \ See: `see-name`, `see-xt`, `see-colon`, `see-colon-body`,
+  \ See also: `see-name`, `see-xt`, `see-colon`, `see-colon-body`,
   \ `see-colon-body>`.
   \
   \ }doc
@@ -304,7 +304,7 @@ need see
   \ that use `exit` in the midle of the definition, because
   \ `see` stops at the first `exit` found.
   \
-  \ See: `see-colon-body`, `see-xt`, `see-name`.
+  \ See also: `see-colon-body`, `see-xt`, `see-name`.
   \
   \ }doc
 

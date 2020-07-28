@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -35,7 +35,7 @@ unneeding g-xy ?( need os-coordx need os-coordy
   \
   \ Return the current graphic coordinates _gx gy_.
   \
-  \ See: `g-x`, `g-y`, `g-at-xy`.
+  \ See also: `g-x`, `g-y`, `g-at-xy`.
   \
   \ }doc
 
@@ -48,7 +48,7 @@ unneeding g-x
   \
   \ Return the current graphic x coordinate _gx_.
   \
-  \ See: `g-xy`, `g-y`, `g-at-xy`.
+  \ See also: `g-xy`, `g-y`, `g-at-xy`.
   \
   \ }doc
 
@@ -61,7 +61,7 @@ unneeding g-y
   \
   \ Return the current graphic y coordinate _gy_.
   \
-  \ See: `g-xy`, `g-x`, `g-at-xy`.
+  \ See also: `g-xy`, `g-x`, `g-at-xy`.
   \
   \ }doc
 
@@ -74,7 +74,7 @@ unneeding g-at-xy dup ?\ need os-coordx need os-coordy
   \
   \ Set the current graphic coordinates _gx gy_.
   \
-  \ See: `g-xy`, `g-at-y`, `g-at-x`, `g-home`.
+  \ See also: `g-xy`, `g-at-y`, `g-at-x`, `g-home`.
   \
   \ }doc
 
@@ -88,7 +88,7 @@ unneeding g-at-x
   \ Set the current graphic x coordinate _gx_, without changing
   \ the current graphic y coordinate.
   \
-  \ See: `g-at-xy`, `g-at-y`.
+  \ See also: `g-at-xy`, `g-at-y`.
   \
   \ }doc
 
@@ -102,7 +102,7 @@ unneeding g-at-y
   \ Set the current graphic y coordinate _gy_, without changing
   \ the current graphic x coordinate.
   \
-  \ See: `g-at-xy`, `g-at-x`.
+  \ See also: `g-at-xy`, `g-at-x`.
   \
   \ }doc
 
@@ -115,7 +115,7 @@ unneeding g-home
   \
   \ Set the graphic coordinates to 0, 0.
   \
-  \ See: `g-at-xy`.
+  \ See also: `g-at-xy`.
   \
   \ }doc
 

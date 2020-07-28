@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -94,7 +94,7 @@ need search-wordlist need nextname need >bstring
   \
   \ Execute the switch _switch_ for the key _x_.
   \
-  \ See: `switch:`.
+  \ See also: `switch:`.
   \
   \ }doc
 
@@ -109,7 +109,7 @@ need search-wordlist need nextname need >bstring
   \ Start the definition of a switch clause _x_ for switch
   \ _switch_.
   \
-  \ See: `switch:`, `switch`.
+  \ See also: `switch:`, `switch`.
   \
   \ }doc
 
@@ -128,7 +128,7 @@ need search-wordlist need nextname need >bstring
   \
   \ Execute the switch _switch_ for the key _c_.
   \
-  \ See: `switch:`, `:cclause`.
+  \ See also: `switch:`, `:cclause`.
   \
   \ }doc
 
@@ -143,7 +143,7 @@ need search-wordlist need nextname need >bstring
   \ Start the definition of a switch clause _c_ for switch
   \ _switch_.
   \
-  \ See: `switch:`, `cswitch`.
+  \ See also: `switch:`, `cswitch`.
   \
   \ }doc
 
@@ -160,7 +160,7 @@ need search-wordlist need nextname need 2>bstring
   \
   \ Execute the switch _switch_ for the key _xd_.
   \
-  \ See: `switch:`, `:2clause`.
+  \ See also: `switch:`, `:2clause`.
   \
   \ }doc
 
@@ -175,7 +175,7 @@ need search-wordlist need nextname need 2>bstring
   \ Start the definition of a switch clause _xd_ for switch
   \ _switch_.
   \
-  \ See: `switch:`, `2switch`.
+  \ See also: `switch:`, `2switch`.
   \
   \ }doc
 

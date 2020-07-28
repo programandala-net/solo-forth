@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005051312
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -50,7 +50,7 @@ variable mode-64-font
   \ on, for example to use a new font, `mode-64ao` must be
   \ executed again in order to make the change effective.
   \
-  \ See: `mini-64cpl-font`, `nbot-64cpl-font`,
+  \ See also: `mini-64cpl-font`, `nbot-64cpl-font`,
   \ `omn1-64cpl-font`, `omn2-64cpl-font`, `owen-64cpl-font`.
   \
   \ }doc
@@ -142,7 +142,7 @@ decimal
   \
   \ This font is included also in disk 0 as "mini.f64".
   \
-  \ See: `nbot-64cpl-font`, `omn1-64cpl-font`,
+  \ See also: `nbot-64cpl-font`, `omn1-64cpl-font`,
   \ `omn2-64cpl-font`, `owen-64cpl-font`.
   \
   \ }doc
@@ -233,7 +233,7 @@ decimal
   \
   \ This font is included also in disk 0 as "nbot.f64".
   \
-  \ See: `mini-64cpl-font`, `omn1-64cpl-font`,
+  \ See also: `mini-64cpl-font`, `omn1-64cpl-font`,
   \ `omn2-64cpl-font`, `owen-64cpl-font`.
   \
   \ }doc
@@ -326,7 +326,7 @@ decimal
   \
   \ This font is included also in disk 0 as "omn1.f64".
   \
-  \ See: `mini-64cpl-font`, `nbot-64cpl-font`,
+  \ See also: `mini-64cpl-font`, `nbot-64cpl-font`,
   \ `omn2-64cpl-font`, `owen-64cpl-font`.
   \
   \ }doc
@@ -417,7 +417,7 @@ decimal
   \
   \ This font is included also in disk 0 as "omn2.f64".
   \
-  \ See: `mini-64cpl-font`, `nbot-64cpl-font`,
+  \ See also: `mini-64cpl-font`, `nbot-64cpl-font`,
   \ `omn1-64cpl-font`, `owen-64cpl-font`.
   \
   \ }doc
@@ -509,7 +509,7 @@ decimal
   \
   \ This font is included also in disk 0 as "owen.f64".
   \
-  \ See: `mini-64cpl-font`, `nbot-64cpl-font`,
+  \ See also: `mini-64cpl-font`, `nbot-64cpl-font`,
   \ `omn1-64cpl-font`, `omn2-64cpl-font`.
   \
   \ }doc

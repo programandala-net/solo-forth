@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006152025
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -42,7 +42,7 @@ variable ocr-font  $3D00 ocr-font !
   \ The configuration of `ocr`, including this variable, can be
   \ changed by `ascii-ocr` and `udg-ocr`.
   \
-  \ See: `ocr-chars`, `ocr-first`.
+  \ See also: `ocr-chars`, `ocr-first`.
   \
   \ }doc
 
@@ -60,7 +60,7 @@ create ocr-first bl c,
   \ The configuration of `ocr`, including this variable, can be
   \ changed by `ascii-ocr` and `udg-ocr`.
   \
-  \ See: `ocr-chars`, `ocr-font`.
+  \ See also: `ocr-chars`, `ocr-font`.
   \
   \ }doc
 
@@ -79,7 +79,7 @@ create ocr-chars 127 bl - c,
   \ The configuration of `ocr`, including this variable, can be
   \ changed by `ascii-ocr` and `udg-ocr`.
   \
-  \ See: `ocr-first`, `ocr-font`.
+  \ See also: `ocr-first`, `ocr-font`.
   \
   \ }doc
 
@@ -170,7 +170,7 @@ code ocr ( col line -- n )
   \ Note: The name `ocr` stands for "Optical Character
   \ Recognition".
   \
-  \ See: `udg-ocr`, `ascii-ocr`.
+  \ See also: `udg-ocr`, `ascii-ocr`.
   \
   \ }doc
 
@@ -189,7 +189,7 @@ unneeding ascii-ocr ?( need ocr need os-chars
   \ Set `ocr` to work with the current ASCII charset, pointed
   \ by `os-chars`.
   \
-  \ See: `ocr-font`, `ocr-first`, `ocr-chars`,
+  \ See also: `ocr-font`, `ocr-first`, `ocr-chars`,
   \ `udg-ocr`, `set-font`.
   \
   \ }doc
@@ -206,7 +206,7 @@ unneeding udg-ocr ?( need ocr need os-udg
   \ Set `ocr` to work with the first _n_ chars of the current
   \ UDG set, pointed by `os-udg`.
   \
-  \ See: `ocr-font`, `ocr-first`, `ocr-chars`,
+  \ See also: `ocr-font`, `ocr-first`, `ocr-chars`,
   \ `ascii-ocr`, `set-udg`.
   \
   \ }doc

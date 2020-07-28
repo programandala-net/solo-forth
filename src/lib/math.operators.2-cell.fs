@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081158
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -40,7 +40,7 @@ unneeding ud*
   \
   \ Multiply _ud1_ by _ud2_ giving the product _ud3_.
   \
-  \ See: `d*`, `um*`, `m*`, `*`.
+  \ See also: `d*`, `um*`, `m*`, `*`.
   \
   \ }doc
 
@@ -62,7 +62,7 @@ unneeding d* ?(
   \
   \ Multiply _d1|ud1_ by _d2|ud2_ giving the product _d3|ud3_.
   \
-  \ See: `ud*`, `um*`, `m*`, `*`.
+  \ See also: `ud*`, `um*`, `m*`, `*`.
   \
   \ }doc
 
@@ -107,7 +107,7 @@ unneeding dxor
   \
   \ _xd3_ is the bit-by-bit exclusive-or of _xd1_ and _xd2_.
   \
-  \ See: `xor`, `dor`, `dand`.
+  \ See also: `xor`, `dor`, `dand`.
   \
   \ }doc
 
@@ -121,7 +121,7 @@ unneeding dor
   \
   \ _xd3_ is the bit-by-bit inclusive-or of _xd1_ and _xd2_.
   \
-  \ See: `or`, `dxor`, `dand`.
+  \ See also: `or`, `dxor`, `dand`.
   \
   \ }doc
 
@@ -135,7 +135,7 @@ unneeding dand
   \
   \ _xd3_ is the bit-by-bit logical "and" of _xd1_ and _xd2_.
   \
-  \ See: `and`, `dor`, `dxor`.
+  \ See also: `and`, `dor`, `dxor`.
   \
   \ }doc
 
@@ -159,7 +159,7 @@ unneeding d10*
   \
   \ Multiply _ud1_ per 10, resulting _ud2_.
   \
-  \ See: `d2*`, `d*`, `2*`, `8*`.
+  \ See also: `d2*`, `d*`, `2*`, `8*`.
   \
   \ }doc
 
@@ -214,7 +214,7 @@ need tum* need t+ need t- need tum/ need d2* need lshift
   \ Divide _ud1_ by _ud2_, giving the remainder _ud3_ and
   \ the quotient _ud4_.
   \
-  \ See: `um/mod`, `/mod` ,`*/mod`.
+  \ See also: `um/mod`, `/mod` ,`*/mod`.
   \
   \ }doc
 
@@ -252,7 +252,7 @@ code d0= ( d -- f )
   \ : d0= ( d -- f ) + 0= ;
   \ ----
 
-  \ See: `0=`.
+  \ See also: `0=`.
   \
   \ }doc
 
@@ -264,7 +264,7 @@ unneeding d0< ?\ : d0< ( d -- f ) nip 0< ;
   \
   \ _f_ is true if and only if _d_ is less than zero.
   \
-  \ See: `0<`.
+  \ See also: `0<`.
   \
   \ }doc
 
@@ -283,7 +283,7 @@ unneeding d< ?( need 2nip
   \ Number Extension Word Set), Forth-94 (DOUBLE EXT),
   \ Forth-2012 (DOUBLE EXT).
   \
-  \ See: `du<`, `<`, `dmin`.
+  \ See also: `du<`, `<`, `dmin`.
   \
   \ }doc
 
@@ -305,7 +305,7 @@ unneeding du< ?(
   \ Number Extension Word Set), Forth-94 (DOUBLE EXT),
   \ Forth-2012 (DOUBLE EXT).
   \
-  \ See: `d<`, `<`, `dmin`.
+  \ See also: `d<`, `<`, `dmin`.
   \
   \ }doc
 
@@ -320,7 +320,7 @@ unneeding d= ?\ need d<> : d= ( xd1 xd2 -- f ) d<> 0= ;
   \
   \ _f_ is true if and only if _xd1_ is equal to _xd2_.
   \
-  \ See: `=`.
+  \ See also: `=`.
   \
   \ }doc
 
@@ -336,7 +336,7 @@ unneeding d<>
   \ _f_ is true if and only if _xd1_ is not bit-for-bit the
   \ same as _xd2_.
   \
-  \ See: `<>`.
+  \ See also: `<>`.
   \
   \ }doc
 
@@ -360,7 +360,7 @@ unneeding dmin ?(
   \ Number Extension Word Set), Forth-94 (DOUBLE), Forth-2012
   \ (DOUBLE).
   \
-  \ See: `dmax`, `min`, `umin`.
+  \ See also: `dmax`, `min`, `umin`.
   \
   \ }doc
 
@@ -383,7 +383,7 @@ unneeding dmax ?(
   \ Number Extension Word Set), Forth-94 (DOUBLE), Forth-2012
   \ (DOUBLE).
   \
-  \ See: `dmin`, `max`, `umax`.
+  \ See also: `dmin`, `max`, `umax`.
   \
   \ }doc
 
@@ -418,7 +418,7 @@ unneeding d- ?( code d- ( d1|ud1 d2|ud2 -- d3|ud3 )
   \ Number Extension Word Set), Forth-94 (DOUBLE), Forth-2012
   \ (DOUBLE).
   \
-  \ See: `d+`, `-`, `dmin`.
+  \ See also: `d+`, `-`, `dmin`.
   \
   \ }doc
 
@@ -449,7 +449,7 @@ unneeding d2* ?( code d2* ( xd1 -- xd2 )
   \
   \ Origin: Forth-94 (DOUBLE), Forth-2012 (DOUBLE).
   \
-  \ See: `d2/`, `2*`, `lshift`.
+  \ See also: `d2/`, `2*`, `lshift`.
   \
   \ }doc
 
@@ -481,7 +481,7 @@ unneeding d2/ ?( code d2/ ( xd1 -- xd2 )
   \
   \ Origin: Forth-94 (DOUBLE), Forth-2012 (DOUBLE).
   \
-  \ See: `d2*`, `2/`, `rshift`.
+  \ See also: `d2*`, `2/`, `rshift`.
   \
   \ }doc
 
@@ -530,7 +530,7 @@ unneeding m+ ?\ : m+ ( d1|ud1 n -- d2|ud2 ) s>d d+ ;
 
   \ Origin: Forth-94 (DOUBLE) Forth-2012 (DOUBLE).
   \
-  \ See: `+`, `d+`.
+  \ See also: `+`, `d+`.
   \
   \ }doc
 
@@ -576,7 +576,7 @@ unneeding m*/ ?(
   \
   \ Origin: Forth-94 (DOUBLE), Forth-2012 (DOUBLE).
   \
-  \ See: `*/`, `m*`.
+  \ See also: `*/`, `m*`.
   \
   \ }doc
 
@@ -617,7 +617,7 @@ need 2nip need cell-bits
   \
   \ Calculate integer square root _d2_ of radicand _d1_.
   \
-  \ See: `sqrt`.
+  \ See also: `sqrt`.
 
   \ ===========================================================
   \ Change log

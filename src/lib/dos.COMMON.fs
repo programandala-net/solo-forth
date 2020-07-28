@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005261608
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -49,7 +49,7 @@ unneeding drive ?\ : drive ( c1 -- c2 ) first-drive + ;
   \ 1 drive set-drive \ on any DOS -- portable code
   \ ----
 
-  \ See: `set-drive`, `first-drive`, `max-drives`.
+  \ See also: `set-drive`, `first-drive`, `max-drives`.
   \
   \ }doc
 
@@ -65,7 +65,7 @@ unneeding ?drive# ?(
   \ If _u_ is greater than the maximum number of disk drives,
   \ `throw` an exception #-35 ("invalid block number").
   \
-  \ See: `(>drive-block`, `block-drives`, `?block-drive`,
+  \ See also: `(>drive-block`, `block-drives`, `?block-drive`,
   \ `?drives`.
   \
   \ }doc
@@ -81,7 +81,7 @@ unneeding ?block-drive
   \ If _u_ is `not-block-drive`, `throw` an exception #-35
   \ ("invalid block number").
   \
-  \ See: `(>drive-block`, `block-drives`, `?drive#`, `?drives`.
+  \ See also: `(>drive-block`, `block-drives`, `?drive#`, `?drives`.
   \
   \ }doc
 
@@ -122,7 +122,7 @@ unneeding b/sector ?\ b/buf sectors/block / constant b/sector
   \
   \ A `constant`. _n_ is the number of bytes per sector.
   \
-  \ See: `sectors/block`, `sectors/track`.
+  \ See also: `sectors/block`, `sectors/track`.
   \
   \ }doc
 
@@ -181,7 +181,7 @@ need ?set-drive
   \ ``(>drive-block`` becomes the action of `>drive-block`
   \ after `block-drives` has been loaded.
   \
-  \ See: `?drive#`, `?block-drive`, `set-drive`,
+  \ See also: `?drive#`, `?block-drive`, `set-drive`,
   \ `set-block-drives`.
   \
   \ }doc
@@ -215,7 +215,7 @@ unneeding -block-drives ?( need block-drives
   \ Fill `block-drives` with `not-block-drive`, making no disk
   \ drive be used as block drive.
   \
-  \ See: `set-block-drives`, `get-block-drives`.
+  \ See also: `set-block-drives`, `get-block-drives`.
   \
   \ }doc
 
@@ -230,7 +230,7 @@ unneeding block-drive@ ?( need block-drives
   \ Get drive _c_ (DOS dependent) currently used as block drive
   \ number _n_ (0 index).
   \
-  \ See: `block-drive!`, `get-block-drives`.
+  \ See also: `block-drive!`, `get-block-drives`.
   \
   \ }doc
 
@@ -245,7 +245,7 @@ unneeding block-drive@ ?( need block-drives
   \ Set drive _c_ (DOS dependent) as block drive number _n_ (0
   \ index).
   \
-  \ See: `block-drive@`, `set-block-drives`.
+  \ See also: `block-drive@`, `set-block-drives`.
   \
   \ }doc
 
@@ -262,7 +262,7 @@ unneeding ?drives
   \ If _n_ is greater than the maximum number of disk drives,
   \ `throw` an exception #-287 ("wrong number of drives").
   \
-  \ See: `set-block-drives`.  `?block-drive`, `?drive#`.
+  \ See also: `set-block-drives`.  `?block-drive`, `?drive#`.
   \
   \ }doc
 
@@ -292,7 +292,7 @@ need ?drives need -block-drives need block-drive!
   \ last block available on the new configuration, but
   \ `first-locatable` is not modified.
   \
-  \ See: `-block-drives`, `#block-drives`, `block-drive!`,
+  \ See also: `-block-drives`, `#block-drives`, `block-drive!`,
   \ `get-block-drives`.
   \
   \ }doc
@@ -310,7 +310,7 @@ unneeding get-block-drives ?( need block-drive@
   \ Get the current configuration of block drives, as
   \ configured by `set-block-drives`.
   \
-  \ See: `2-block-drives`, `-block-drives`, `#block-drives`,
+  \ See also: `2-block-drives`, `-block-drives`, `#block-drives`,
   \ `block-drive!`.
   \
   \ }doc

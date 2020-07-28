@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007280012
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -36,7 +36,7 @@ unneeding ?compiling
   \ If not compiling, `throw` exception #-14 ("interpreting a
   \ compile-only word").
   \
-  \ See: `compile-only`, `?executing`.
+  \ See also: `compile-only`, `?executing`.
   \
   \ }doc
 
@@ -50,7 +50,7 @@ unneeding ?executing
   \ If not executing, `throw` exception #-263 ("execution
   \ only").
   \
-  \ See: `?compiling`.
+  \ See also: `?compiling`.
   \
   \ }doc
 
@@ -77,7 +77,7 @@ unneeding abort" ?(
   \ ``(abort"`` is the run-time procedure compiled by
   \ `abort"`.
   \
-  \ See: `throw`.
+  \ See also: `throw`.
   \
   \ }doc
 
@@ -101,7 +101,7 @@ unneeding abort" ?(
   \ Word Set), Forth-94 (EXCEPTION EXT), Forth-2012 (EXCEPTION
   \ EXT).
   \
-  \ See: `abort-message`, `abort`, `throw`, `warning"`.
+  \ See also: `abort-message`, `abort`, `throw`, `warning"`.
   \
   \ }doc
 
@@ -175,7 +175,7 @@ unneeding warning?( ?( need string-parameter
   \ +n2 =      1 ...   146
   \ ----
 
-  \ See: `error>line`.
+  \ See also: `error>line`.
   \
   \ }doc
 
@@ -190,7 +190,7 @@ unneeding warning?( ?( need string-parameter
   \ Convert error code _-n1_ to line _n2_ relative to the block
   \ that contains the error messages.
   \
-  \ See: `error>ordinal`.
+  \ See also: `error>ordinal`.
   \
   \ }doc
 
@@ -210,7 +210,7 @@ s" Standard error codes" located errors-block !
   \ first block that contains "Standard error codes" in its
   \ first line.
   \
-  \ See: `.throw-message`.
+  \ See also: `.throw-message`.
   \
   \ }doc
 
@@ -236,7 +236,7 @@ s" Standard error codes" located errors-block !
   \ read from the library every time. Therefore the library
   \ must be accessible.
   \
-  \ See: `.throw#`, `error>line`.
+  \ See also: `.throw#`, `error>line`.
   \
   \ }doc
 

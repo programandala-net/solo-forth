@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006152231
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -44,7 +44,7 @@ code (g-emit ( c -- )
   \ The character is printed with overprinting (equivalent to
   \ ``1 overprint``).
   \
-  \ See: `g-emit`, `g-emit_`.
+  \ See also: `g-emit`, `g-emit_`.
   \
   \ }doc
 
@@ -67,7 +67,7 @@ need g-emit-udg need (g-emit need g-emitted
   \ The character is printed with overprinting (equivalent to
   \ ``1 overprint``).
   \
-  \ See: `g-emit-udg`, `(g-emit`, `g-type`.
+  \ See also: `g-emit-udg`, `(g-emit`, `g-type`.
   \
   \ }doc
 
@@ -83,7 +83,7 @@ unneeding g-type  ?( need g-emit
   \ If _len_ is greater than zero, display the character string
   \ _ca len_ at the current graphic coordinates.
   \
-  \ See: `g-emit`.
+  \ See also: `g-emit`.
   \
   \ }doc
 
@@ -101,7 +101,7 @@ unneeding g-cr ?( need g-y need g-at-xy need pixels-scroll-up
   \
   \ Move the graphic coordinates to the next character row.
   \
-  \ See: `g-at-xy`, `g-emit`.
+  \ See also: `g-at-xy`, `g-emit`.
   \
   \ }doc
 
@@ -141,7 +141,7 @@ code g-emit-udg ( c -- )
   \ The UDG character is printed with overprinting (equivalent
   \ to ``1 overprint``).
   \
-  \ See: `g-emit`, `g-emit_`.
+  \ See also: `g-emit`, `g-emit_`.
   \
   \ }doc
 
@@ -198,7 +198,7 @@ create g-emit_ ( -- a ) asm
   \
   \ Modifies: AF BC HL IX DE
   \
-  \ See: `g-emit`.
+  \ See also: `g-emit`.
   \
   \ }doc
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006152211
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -37,7 +37,7 @@ unneeding far,"
   \ Parse "ccc" delimited by a double-quote and compile the
   \ string in `far` memory.
   \
-  \ See: `fars,`, `parse`, `,"`. `s,`, `far-banks`.
+  \ See also: `fars,`, `parse`, `,"`. `s,`, `far-banks`.
   \
   \ }doc
 
@@ -51,7 +51,7 @@ unneeding fars, ?( need farplace need farallot
   \
   \ Compile a string in `far` memory.
   \
-  \ See: `farplace`, `farallot`, `np@`, `s,`.
+  \ See also: `farplace`, `farallot`, `np@`, `s,`.
   \
   \ }doc
 
@@ -70,7 +70,7 @@ unneeding farsconstant ?( need fars,
   \ When _name_ is executed, it returns the string _ca len_ in
   \ far memory as _ca2 len_.
   \
-  \ See: `far>sconstant`.
+  \ See also: `far>sconstant`.
   \
   \ }doc
 
@@ -86,7 +86,7 @@ unneeding far>stringer ?( need cmove<far
   \ Save the string _ca1 len1_, which is in far memory, to the
   \ `stringer` and return it as _ca2 len1_.
   \
-  \ See: `>stringer`.
+  \ See also: `>stringer`.
   \
   \ }doc
 
@@ -107,7 +107,7 @@ need farsconstant need far>stringer
   \ When _name_ is executed, it returns the string _ca len_ in
   \ the `stringer` as _ca2 len_.
   \
-  \ See: `farsconstant`.
+  \ See also: `farsconstant`.
   \
   \ }doc
 
@@ -190,7 +190,7 @@ need farsconstants, need array> need farsconstants>
   \ 3 digitname cr fartype cr
   \ ----
 
-  \ See: `sconstants`, `far>sconstants`.
+  \ See also: `sconstants`, `far>sconstants`.
   \
   \ }doc
 
@@ -233,7 +233,7 @@ need array> need farsconstants> need far>stringer
   \ 3 digitname cr type cr
   \ ----
 
-  \ See: `sconstants`, `farsconstants`.
+  \ See also: `sconstants`, `farsconstants`.
   \
   \ }doc
 
@@ -282,7 +282,7 @@ code faruppers ( ca len -- )
   \ Convert string _ca len_, which is stored in far memory, to
   \ uppercase.
   \
-  \ See: `uppers`, `far-banks`.
+  \ See also: `uppers`, `far-banks`.
   \
   \ }doc
 

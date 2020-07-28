@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005241405
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -39,7 +39,7 @@ unneeding ?-->
   \
   \ ``?-->`` is an `immediate` word.
   \
-  \ See: `-->`, `?(`, `?\`.
+  \ See also: `-->`, `?(`, `?\`.
   \
   \ }doc
 
@@ -73,7 +73,7 @@ unneeding flush
   \ Origin: Forth-83 (Required Word Set), Forth-94 (BLOCK),
   \ Forth-2012 (BLOCK).
   \
-  \ See: `empty-buffers`.
+  \ See also: `empty-buffers`.
   \
   \ }doc
 
@@ -92,7 +92,7 @@ unneeding thru
   \ (Controlled Reference Words), Forth-94 (BLOCK EXT),
   \ Forth-2012 (BLOCK EXT).
   \
-  \ See: `load`, `+thru`.
+  \ See also: `load`, `+thru`.
   \
   \ }doc
 
@@ -109,7 +109,7 @@ unneeding continued ?\ : continued ( u -- ) ?loading (load ;
   \ Origin: Forth-79 (Reference Word Set), Forth-83 (Appendix
   \ B. Uncontrolled Reference Words).
   \
-  \ See: `-->`, `load`.
+  \ See also: `-->`, `load`.
   \
   \ }doc
 
@@ -128,7 +128,7 @@ unneeding ?load
   \
   \ Origin: Pygmy Forth.
   \
-  \ See: `load`.
+  \ See also: `load`.
   \
   \ }doc
 
@@ -141,7 +141,7 @@ unneeding reload
   \
   \ Load the most recently loaded block.
   \
-  \ See: `load`, `lastblk`.
+  \ See also: `load`, `lastblk`.
   \
   \ }doc
 
@@ -170,7 +170,7 @@ unneeding +load  unneeding +thru  and
   \
   \ Load the block that is _n_ blocks from the current one.
   \
-  \ See: `load`, `blk`, `+thru`.
+  \ See also: `load`, `blk`, `+thru`.
   \
   \ }doc
 
@@ -184,7 +184,7 @@ unneeding +thru
   \ Load consecutively the blocks that are _u1_ blocks through
   \ _u2_ blocks from the current one.
   \
-  \ See: `+load`, `blk`, `load`.
+  \ See also: `+load`, `blk`, `load`.
   \
   \ }doc
 
@@ -216,7 +216,7 @@ unneeding lineblock>source unneeding lineload and
   \ Set block _u_ as the current source, starting from its
   \ line _n_.
   \
-  \ See: `block>source`.
+  \ See also: `block>source`.
   \
   \ }doc
 
@@ -234,7 +234,7 @@ unneeding lineload ?(
   \
   \ Origin: Forth-83 (Uncontrolled Reference Words).
   \
-  \ See: `load`.
+  \ See also: `load`.
   \
   \ }doc
 
@@ -261,7 +261,7 @@ variable loading-program
   \ Mark the end of a program that is being loaded by
   \ `load-program`.
   \
-  \ See: `loading-program`.
+  \ See also: `loading-program`.
   \
   \ }doc
 
@@ -299,7 +299,7 @@ variable loading-program
   \ happened (`lastblk`) is not the continuation of the
   \ previous block.
   \
-  \ See: `loading-program`.
+  \ See also: `loading-program`.
   \
   \ }doc
 
@@ -322,7 +322,7 @@ variable loading-program
   \ by spaces), and continues until the last block of the disk
   \ or until `end-program` is executed.
   \
-  \ See: `loading-program`, `(load-program`.
+  \ See also: `loading-program`, `(load-program`.
   \
   \ }doc
 

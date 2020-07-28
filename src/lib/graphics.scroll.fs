@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -57,7 +57,7 @@ create (pixel-pan-right ( -- a ) asm
   \ is called in a loop. Therefore the calling code must save
   \ the BC register.
   \
-  \ See: `pixel-pan-right`, `pixel-scroll-up`.
+  \ See also: `pixel-pan-right`, `pixel-scroll-up`.
   \
   \ }doc
 
@@ -126,7 +126,7 @@ create (pixel-scroll-up ( -- a ) asm
   \ is called in a loop. Therefore the calling code must save
   \ the BC register.
   \
-  \ See: `pixel-scroll-up`.
+  \ See also: `pixel-scroll-up`.
   \
   \ }doc
 
@@ -145,7 +145,7 @@ code pixel-scroll-up ( -- )
   \ is a wrapper that calls `(pixel-scroll-up` saving the BC
   \ register.
   \
-  \ See: `pixel-pan-right`, `pixels-scroll-up`.
+  \ See also: `pixel-pan-right`, `pixels-scroll-up`.
   \
   \ }doc
 
@@ -160,7 +160,7 @@ unneeding pixels-scroll-up ?( need pixel-scroll-up
   \
   \ Scroll the whole screen _u_ pixels up.
   \
-  \ See: `pixel-scroll-up`, `pixels-pan-right`.
+  \ See also: `pixel-scroll-up`, `pixels-pan-right`.
   \
   \ }doc
 

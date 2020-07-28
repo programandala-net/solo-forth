@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006152048
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -34,7 +34,7 @@ unneeding /udg ?\ 8 cconstant /udg
   \
   \ _b_ is the size of a UDG (User Defined Graphic), in bytes.
   \
-  \ See: `udg-width`, `udg!`, `/udg*`, `/udg+`.
+  \ See also: `udg-width`, `udg!`, `/udg*`, `/udg+`.
   \
   \ }doc
 
@@ -49,7 +49,7 @@ unneeding /udg* ?\ need 8* need alias ' 8* alias /udg*
   \ ``/udg*`` is equivalent to ``/udg *`` but faster: it's an
   \ `alias` of `8*`.
   \
-  \ See: `/udg+`.
+  \ See also: `/udg+`.
   \
   \ }doc
 
@@ -67,7 +67,7 @@ unneeding /udg+ ?\ need 8+ need alias ' 8+ alias /udg+
   \ ``/udg+`` is equivalent to ``/udg +`` but faster: it's an
   \ `alias` of `8+`.
   \
-  \ See: `/udg*`.
+  \ See also: `/udg*`.
   \
   \ }doc
 
@@ -80,7 +80,7 @@ unneeding udg-width ?\ 8 cconstant udg-width
   \ _b_ is the width of a UDG (User Defined Graphic), in
   \ pixels.
   \
-  \ See: `/udg`, `udg!`.
+  \ See also: `/udg`, `udg!`.
   \
   \ }doc
 
@@ -95,7 +95,7 @@ unneeding udg> ?( need /udg* need get-udg
   \ Convert UDG number _n_ (0..255) to the address _a_ of its
   \ bitmap, pointed by `os-udg`.
   \
-  \ See: `udg!`, `udg:`, `/udg*`, `get-udg`.
+  \ See also: `udg!`, `udg:`, `/udg*`, `get-udg`.
   \
   \ }doc
 
@@ -111,7 +111,7 @@ unneeding udg! ?( need udg> need +loop
   \ the UDG font pointed by `os-udg`.  _b0_ is the first (top)
   \ scan.  _b7_ is the last (bottom) scan.
   \
-  \ See: `udg:`, `udg>`.
+  \ See also: `udg:`, `udg>`.
   \
   \ }doc
 
@@ -127,7 +127,7 @@ unneeding udg: ?( need udg!
   \ store the 8-byte bitmap _b0..b7_ into that UDG char.  _b0_
   \ is the first (top) scan.  _b7_ is the last (bottom) scan.
   \
-  \ See: `udg!`, `udg>`.
+  \ See also: `udg!`, `udg>`.
   \
   \ }doc
 
@@ -187,7 +187,7 @@ here anon> ! 3 cells allot
   \ ..XXXX.. ..XXXX.. ..XXXX.. ..XXXX.. ..XXXX..
   \ ----
   \
-  \ See: `udg-block`.
+  \ See also: `udg-block`.
   \
   \ }doc
 
@@ -206,7 +206,7 @@ create udg-blank '.' c,  create udg-dot 'X' c,
   \ `,udg-block` and others as a grid blank. By default it's
   \ '.'.
   \
-  \ See: `udg-dot`, `udg-scan>binary`.
+  \ See also: `udg-dot`, `udg-scan>binary`.
   \
   \ }doc
 
@@ -219,7 +219,7 @@ create udg-blank '.' c,  create udg-dot 'X' c,
   \ `,udg-block` and others as a grid blank. By default it's
   \ 'X'.
   \
-  \ See: `udg-blank`, `udg-scan>binary`.
+  \ See also: `udg-blank`, `udg-scan>binary`.
   \
   \ }doc
 
@@ -236,7 +236,7 @@ create udg-blank '.' c,  create udg-dot 'X' c,
   \ Convert the characters `udg-blank` and `udg-dot` found in
   \ UDG scan string _ca len_ to '0' and '1' respectively.
   \
-  \ See: `udg-scan>number?`.  `udg-group`, `udg-block`,
+  \ See also: `udg-scan>number?`.  `udg-group`, `udg-block`,
   \ `,udg-block`.
   \
   \ }doc
@@ -252,7 +252,7 @@ create udg-blank '.' c,  create udg-dot 'X' c,
   \ If so, return _n_ and `true`; else return `false`.
   \ The string is processed by `udg-scan>binary` first.
   \
-  \ See: `udg-scan>number`, `udg-dot`, `udg-blank`.
+  \ See also: `udg-scan>number`, `udg-dot`, `udg-blank`.
   \
   \ }doc
 
@@ -268,7 +268,7 @@ create udg-blank '.' c,  create udg-dot 'X' c,
   \ result _n_.  Otherwise `throw` exception #-290 (invalid UDG
   \ scan).
   \
-  \ See: `udg-scan>number?`, `udg-dot`, `udg-blank`.
+  \ See also: `udg-scan>number?`, `udg-dot`, `udg-blank`.
   \
   \ }doc
 
@@ -338,7 +338,7 @@ here anon> ! 2 cells allot
   \ ``(udg-block`` is a common factor of `udg-block` and
   \ `,udg-block`, whose documentation include usage examples.
   \
-  \ See: `csprite`, `udg-group`.
+  \ See also: `csprite`, `udg-group`.
   \
   \ }doc
 
@@ -399,7 +399,7 @@ unneeding udg-block ?( need udg> need (udg-block
   \ cr .mass
   \ ----
 
-  \ See: `,udg-block`, `csprite`, `udg-group`.
+  \ See also: `,udg-block`, `csprite`, `udg-group`.
   \
   \ }doc
 
@@ -444,7 +444,7 @@ unneeding ,udg-block ?( need /udg* need (udg-block
   \ cr .tank cr
   \ ----
 
-  \ See: `udg-block`, `csprite`, `udg-group`, `emit-udga`.
+  \ See also: `udg-block`, `csprite`, `udg-group`, `emit-udga`.
   \
   \ }doc
 
@@ -572,7 +572,7 @@ move ?)
   \ 0, while in Sinclair BASIC it points to bitmap of UDG
   \ 144.
   \
-  \ See: `block-chars`, `set-udg`, `rom-font`.
+  \ See also: `block-chars`, `set-udg`, `rom-font`.
   \
   \ }doc
 
@@ -609,7 +609,7 @@ $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! #128 udg> 8 erase
   \ they have in Sinclair BASIC.  The current value of `os-udg`
   \ is used.
   \
-  \ See: `make-block-chars`, `set-udg`, `udg!`,
+  \ See also: `make-block-chars`, `set-udg`, `udg!`,
   \ `default-udg-chars`.
   \
   \ }doc
@@ -632,7 +632,7 @@ code set-udg ( a -- ) E1 c, 22 c, os-udg , jpnext, end-code ?)
   \ 0..255), by changing the system variable `os-udg`.  _a_
   \ must be the bitmap address of character 0.
   \
-  \ See: `get-udg`, `set-font`.
+  \ See also: `get-udg`, `set-font`.
   \
   \ }doc
 
@@ -651,7 +651,7 @@ code get-udg ( -- a ) 2A c, os-udg , E5 c, jpnext, end-code ?)
   \ 0..255), by fetching the system variable `os-udg`.  _a_
   \ is the bitmap address of character 0.
   \
-  \ See: `set-udg`.
+  \ See also: `set-udg`.
   \
   \ }doc
 
@@ -667,7 +667,7 @@ unneeding type-udg
   \ string _ca len_. All characters of the string are printed
   \ with `emit-udg`.
   \
-  \ See: `type`.
+  \ See also: `type`.
   \
   \ }doc
 
@@ -812,7 +812,7 @@ unused code at-xy-display-udg ( c col row -- )
   \ coordinates are not updated and the screen attributtes are
   \ not changed (only the character bitmap is displayed).
   \
-  \ See: `udg-at-xy-display`.
+  \ See also: `udg-at-xy-display`.
   \
   \ }doc
 
@@ -860,7 +860,7 @@ unused code udg-at-xy-display ( col row c -- )
   \ attributtes are not changed (only the character bitmap is
   \ displayed).
   \
-  \ See: `at-xy-display-udg`.
+  \ See also: `at-xy-display-udg`.
   \
   \ }doc
 
@@ -1080,7 +1080,7 @@ exx, jpnext, end-code
   \
   \ Display the UDG defined at _a_.
   \
-  \ See: `emit-udg`.
+  \ See also: `emit-udg`.
   \
 
   \ ===========================================================

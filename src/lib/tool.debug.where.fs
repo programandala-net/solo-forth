@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006090021
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -47,7 +47,7 @@
   \
   \ Origin: Forth-79 (Reference Word Set).
   \
-  \ See: `error-pos`, `error`.
+  \ See also: `error-pos`, `error`.
   \
   \ }doc
 

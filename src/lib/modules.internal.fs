@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005030016
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -52,7 +52,7 @@ unneeding internal unneeding end-internal and ?( need alias
   \ `end-internal`. Then those definitions can be unlinked by
   \ `unlink-internal` or hidden by `hide-internal`.
   \
-  \ See: `isolate`, `module`, `package`, `privatize`,
+  \ See also: `isolate`, `module`, `package`, `privatize`,
   \ `seclusion`.
   \
   \ }doc

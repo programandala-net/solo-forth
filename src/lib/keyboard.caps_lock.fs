@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202002271822
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -37,7 +37,7 @@ need os-flags2 need ctoggle need cset need creset
   \ Return address _ca_ of system variable FLAGS2 and bitmask
   \ _b_ of the bit that controls the status of capslock.
   \
-  \ See: `set-capslock`, `unset-capslock`, `capslock?`,
+  \ See also: `set-capslock`, `unset-capslock`, `capslock?`,
   \ `os-flags2`.
   \
   \ }doc
@@ -50,7 +50,7 @@ need os-flags2 need ctoggle need cset need creset
   \
   \ Toggle capslock.
   \
-  \ See: `set-capslock`, `unset-capslock`, `capslock?`,
+  \ See also: `set-capslock`, `unset-capslock`, `capslock?`,
   \ `capslock`, `ctoggle`.
   \
   \ }doc
@@ -63,7 +63,7 @@ need os-flags2 need ctoggle need cset need creset
   \
   \ Set capslock.
   \
-  \ See: `unset-capslock`, `capslock?`, `toggle-capslock`,
+  \ See also: `unset-capslock`, `capslock?`, `toggle-capslock`,
   \ `capslock`, `cset`.
   \
   \ }doc
@@ -76,7 +76,7 @@ need os-flags2 need ctoggle need cset need creset
   \
   \ Unset capslock.
   \
-  \ See: `set-capslock`, `capslock?`, `toggle-capslock`,
+  \ See also: `set-capslock`, `capslock?`, `toggle-capslock`,
   \ `capslock`, `creset`.
   \
   \ }doc
@@ -89,7 +89,7 @@ need os-flags2 need ctoggle need cset need creset
   \
   \ Is capslock set?
   \
-  \ See: `set-capslock`, `unset-capslock`, `toggle-capslock`,
+  \ See also: `set-capslock`, `unset-capslock`, `toggle-capslock`,
   \ `capslock`, `c@and?`.
   \
   \ }doc

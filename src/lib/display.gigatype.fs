@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005050013
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -392,7 +392,7 @@ need xy>scra need array>
   \   key drop home ;
   \ ----
 
-  \ See: `gigatype-title`, `set-font`, `(gigatype`,
+  \ See also: `gigatype-title`, `set-font`, `(gigatype`,
   \ `type`.
   \
   \ }doc
@@ -829,7 +829,7 @@ need gigatype need 2/
   \ mode is `mode-32` (32 characters per line), which is the
   \ default one.
   \
-  \ See: `gigatype-style`, `type-center-field`.
+  \ See also: `gigatype-style`, `type-center-field`.
   \
   \ }doc
 

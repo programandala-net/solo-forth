@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005042211
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -132,7 +132,7 @@ unneeding :switch ?( need switcher need <switch
   \
   \ Origin: SwiftForth.
   \
-  \ See: `<switch`, `[switch`, `switcher`.
+  \ See also: `<switch`, `[switch`, `switcher`.
   \
   \ }doc
 
@@ -156,7 +156,7 @@ unneeding [+switch
   \
   \ Origin: SwiftForth.
   \
-  \ See: `runs`, `run:`.
+  \ See also: `runs`, `run:`.
   \
   \ }doc
 
@@ -210,7 +210,7 @@ unneeding [switch ?( need switcher
   \
   \ Origin: SwiftForth.
   \
-  \ See: `runs`, `run:`.
+  \ See also: `runs`, `run:`.
   \
   \ }doc
 
@@ -226,7 +226,7 @@ unneeding [switch ?( need switcher
   \
   \ Origin: SwiftForth.
   \
-  \ See: `[switch`, `[+switch`, `runs`, `run:`.
+  \ See also: `[switch`, `[+switch`, `runs`, `run:`.
   \
   \ }doc
 
@@ -244,7 +244,7 @@ unneeding runs ?( need <switch
   \
   \ Origin: SwiftForth.
   \
-  \ See: `[switch`, `switch]`.
+  \ See also: `[switch`, `switch]`.
   \
   \ }doc
 
@@ -265,7 +265,7 @@ unneeding run: ?( need evaluate need <switch need :noname
   \
   \ Origin: SwiftForth.
   \
-  \ See: `switch]`.
+  \ See also: `switch]`.
   \
   \ }doc
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803231815
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -36,7 +36,7 @@ unneeding ascii-char? ?\ : ascii-char? ( c -- f ) 127 < ;
   \ Is character _c_ an ASCII character, i.e. in the range
   \ 0..126?
   \
-  \ See: `graphic-ascii-char?`, `control-char?`.
+  \ See also: `graphic-ascii-char?`, `control-char?`.
   \
   \ }doc
 
@@ -49,7 +49,7 @@ unneeding control-char? ?\ : control-char? ( c -- f ) bl < ;
   \ Is character _c_ a control character, i.e. in the range
   \ 0..31?
   \
-  \ See: `ascii-char?`.
+  \ See also: `ascii-char?`.
   \
   \ }doc
 
@@ -66,7 +66,7 @@ unneeding graphic-ascii-char? ?( need within
   \ Is _c_ a printable ASCII character, i.e. in the range
   \ 32..126?
   \
-  \ See: `ascii-char?`, `>graphic-ascii-char`.
+  \ See also: `ascii-char?`, `>graphic-ascii-char`.
   \
   \ }doc
 
@@ -96,7 +96,7 @@ unneeding >graphic-ascii-char ?( need graphic-ascii-char?
   \ it, else return the character returned by
   \ `default-graphic-ascii-char`.
   \
-  \ See: `graphic-ascii-char?`.
+  \ See also: `graphic-ascii-char?`.
   \
   \ }doc
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802171407
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -53,7 +53,7 @@ code get-key? ( -- f )
   \ An alternative to `key?`. It works also when the system
   \ interrupts are off. Variant with relative jumps.
   \
-  \ See: `key?`, `fast-get-key?`.
+  \ See also: `key?`, `fast-get-key?`.
   \
   \ }doc
 
@@ -84,7 +84,7 @@ code fast-get-key? ( -- f )
   \ An alternative to `key?`. It works also when the system
   \ interrupts are off. Faster variant with absolute jumps.
   \
-  \ See: `get-key?`.
+  \ See also: `get-key?`.
   \
   \ }doc
 

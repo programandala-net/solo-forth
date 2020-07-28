@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201807212109
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -131,7 +131,7 @@ unneeding 1array ?( need } need align
   \ Define a 1-dimension array _name_ with _n1_ items of
   \ _n2_ bytes each.
   \
-  \ See: `}`, `array>items`, `2array`.
+  \ See also: `}`, `array>items`, `2array`.
   \
   \ }doc
 
@@ -145,7 +145,7 @@ unneeding } ?( need <=
   \
   \ Convert address of array _a_ to its number of items _n_.
   \
-  \ See: `1array`.
+  \ See also: `1array`.
   \
   \ }doc
 
@@ -163,7 +163,7 @@ unneeding } ?( need <=
   \ 1-cell array _a1_.  Otherwise `throw` an exception #-272
   \ ("array index out of range").
   \
-  \ See: `1array`, `array>items`.
+  \ See also: `1array`, `array>items`.
   \
   \ }doc
 
@@ -179,7 +179,7 @@ unneeding 2array ?( need } need align
   \ Define a 2-dimension array _name_ with _n1 x n2_ items of
   \ _n3_ bytes each.
   \
-  \ See: `}}`, `1array`.
+  \ See also: `}}`, `1array`.
   \
   \ }doc
 
@@ -194,7 +194,7 @@ unneeding 2array ?( need } need align
   \ Return address _a2_ of the _n1,n2_ item of the 2-dimension
   \ array _a1_.  Data  stored row-wise.
   \
-  \ See: `2array`.
+  \ See also: `2array`.
   \
   \ }doc
 

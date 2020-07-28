@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072234
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -64,7 +64,7 @@ code @p ( a -- b )
   \
   \ Input byte _b_ from port _a_.
   \
-  \ See: `!p`, `@`, `c@`.
+  \ See also: `!p`, `@`, `c@`.
   \
   \ }doc
 
@@ -104,7 +104,7 @@ code !p ( b a -- ) D9 c, C1 c, E1 c, ED c, 69 c, D9 c,
   \
   \ Output byte _b_ to port _a_.
   \
-  \ See: `@p`, `!`, `c!`.
+  \ See also: `@p`, `!`, `c!`.
   \
   \ }doc
 

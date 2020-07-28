@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072311
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -50,7 +50,7 @@ unneeding const ?(
   \
   \ Origin: IsForth.
   \
-  \ See: `[const]`, `cconst`, `2const`.
+  \ See also: `[const]`, `cconst`, `2const`.
   \
   \ }doc
 
@@ -71,7 +71,7 @@ unneeding cconst ?(
   \
   \ Origin: IsForth's `const`.
   \
-  \ See: `[cconst]`, `const`, `2const`.
+  \ See also: `[cconst]`, `const`, `2const`.
   \
   \ }doc
 
@@ -92,7 +92,7 @@ unneeding 2const ?(
   \
   \ Origin: IsForth's `const`.
   \
-  \ See: `[2const]`, `const`, `cconst`.
+  \ See also: `[2const]`, `const`, `cconst`.
   \
   \ }doc
 

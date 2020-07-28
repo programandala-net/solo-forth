@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006152041
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -34,7 +34,7 @@ unneeding column ?\ : column ( -- col ) xy drop ;
   \
   \ Current column (x coordinate).
   \
-  \ See: `row`, `last-column`, `columns`.
+  \ See also: `row`, `last-column`, `columns`.
   \
   \ }doc
 
@@ -47,7 +47,7 @@ unneeding last-column
   \
   \ Last column (x coordinate) in the current screen mode.
   \
-  \ See: `last-row`, `columns`, `column`.
+  \ See also: `last-row`, `columns`, `column`.
   \
   \ }doc
 
@@ -59,7 +59,7 @@ unneeding row ?\ : row ( -- row ) xy nip ;
   \
   \ Current row (y coordinate).
   \
-  \ See: `column`, `last-row`, `rows`.
+  \ See also: `column`, `last-row`, `rows`.
   \
   \ }doc
 
@@ -72,7 +72,7 @@ unneeding last-row
   \
   \ Last row (y coordinate) in the current screen mode.
   \
-  \ See: `last-column`, `row`, `rows`.
+  \ See also: `last-column`, `row`, `rows`.
   \
   \ }doc
 
@@ -85,7 +85,7 @@ unneeding at-x ?\ need row  : at-x ( col -- ) row at-xy ;
   \ Set the cursor at the given column (x coordinate) _col_ and
   \ the current row (y coordinate).
   \
-  \ See: `at-y`, `at-xy`, `row`, `column`.
+  \ See also: `at-y`, `at-xy`, `row`, `column`.
   \
   \ }doc
 
@@ -99,7 +99,7 @@ unneeding at-y
   \ Set the cursor at the current column (x coordinate) and the
   \ given row (y coordinate) _row_.
   \
-  \ See: `at-x`, `at-xy`, `row`, `column`.
+  \ See also: `at-x`, `at-xy`, `row`, `column`.
   \
   \ }doc
 
@@ -112,7 +112,7 @@ unneeding xy>r ?\ : xy>r ( R: -- col row ) r> xy 2>r >r ;
   \
   \ Save the current cursor coordinates to the return stack.
   \
-  \ See: `r>xy`, `save-mode`.
+  \ See also: `r>xy`, `save-mode`.
   \
   \ }doc
 
@@ -125,7 +125,7 @@ unneeding r>xy ?\ : r>xy ( R: col row -- ) r> 2r> at-xy >r ;
   \ Restore the current cursor coordinates from the return
   \ stack.
   \
-  \ See: `xy>r`, `restore-mode`.
+  \ See also: `xy>r`, `restore-mode`.
   \
   \ }doc
 
@@ -137,7 +137,7 @@ unneeding home? ?\ need xy : home? ( -- f ) xy + 0= ;
   \
   \ Is the cursor at home position (column 0, row 0)?
   \
-  \ See: `xy`, `home`.
+  \ See also: `xy`, `home`.
   \
   \ }doc
 
@@ -189,7 +189,7 @@ create xy>scra_ ( -- a ) asm
   \
   \ - DE = screen address
   \
-  \ See: `xy>scra`, `gxy>scra_`.
+  \ See also: `xy>scra`, `gxy>scra_`.
   \
   \ }doc
 
@@ -221,7 +221,7 @@ code xy>scra ( col row -- a )
   \ Convert cursor coordinates _col row_ to their correspondent
   \ screen address _a_.
   \
-  \ See: `xy>scra_` , `gxy>scra`.
+  \ See also: `xy>scra_` , `gxy>scra`.
   \
   \ }doc
 
@@ -274,7 +274,7 @@ create xy>scra_ ( -- a ) asm
   \
   \ - HL = screen address
   \
-  \ See: `xy>scra`, `gxy>scra_`.
+  \ See also: `xy>scra`, `gxy>scra_`.
 
 unneeding xy>scra ?( need assembler need xy>scra_
 
@@ -295,7 +295,7 @@ code xy>scra ( col row -- a )
   \ Convert cursor coordinates _col row_ to their correspondent
   \ screen address _a_.
   \
-  \ See: `xy>scra_` , `gxy>scra`.
+  \ See also: `xy>scra_` , `gxy>scra`.
 
 ( xy>gxy x>gx y>gy xy>gxy176 )
 
@@ -328,7 +328,7 @@ code xy>gxy ( col row -- gx gy )
   \ _gx gy_.  _col_ is 0..31, _row_ is 0..23, _gx_ is 0..255
   \ and _gy_ is 0..191.
   \
-  \ See: `xy>attra`, `xy>attr`, `xy>gxy176`, `plot`,
+  \ See also: `xy>attra`, `xy>attr`, `xy>gxy176`, `plot`,
   \ `set-pixel`.
   \
   \ }doc
@@ -349,7 +349,7 @@ unneeding x>gx ?( need alias need 8*
   \
   \ ``x>gx`` is an `alias` of `8*`.
   \
-  \ See: `xy>gxy`, `xy>gxy176`.
+  \ See also: `xy>gxy`, `xy>gxy176`.
   \
   \ }doc
   \
@@ -377,7 +377,7 @@ code y>gy ( row -- gx )
   \ Convert cursor coordinate _row_ (0..23) to graphic
   \ coordinate _gy_ (0..191).
   \
-  \ See: `xy>gxy`, `x>gx`.
+  \ See also: `xy>gxy`, `x>gx`.
   \
   \ }doc
   \
@@ -417,7 +417,7 @@ code xy>gxy176 ( col row -- gx gy )
   \ ``xy>gxy176`` is provided to make it easier to adapt
   \ Sinclair BASIC programs.
   \
-  \ See: `xy>gxy`, `plot176`, `set-pixel176`.
+  \ See also: `xy>gxy`, `plot176`, `set-pixel176`.
   \
   \ }doc
 
@@ -459,7 +459,7 @@ create xy>attra_ ( -- a ) asm
   \
   \ - HL = address of the attribute in the screen
   \
-  \ See: `xy>attra`, `xy>attr`, `xy>gxy`.
+  \ See also: `xy>attra`, `xy>attr`, `xy>gxy`.
   \
   \ }doc
 
@@ -484,7 +484,7 @@ code xy>attr ( col row -- b )
   \ Return the color attribute _b_ of the given cursor
   \ coordinates _col row_.
   \
-  \ See: `xy>attra`, `xy>attra_`, `xy>gxy`.
+  \ See also: `xy>attra`, `xy>attra_`, `xy>gxy`.
   \
   \ }doc
 
@@ -506,7 +506,7 @@ code xy>attra ( col row -- a )
   \ Return the color attribute address _a_ of the given cursor
   \ coordinates _col row_.
   \
-  \ See: `xy>attr`, `xy>attra_`, `xy>gxy`.
+  \ See also: `xy>attr`, `xy>attra_`, `xy>gxy`.
   \
   \ }doc
 

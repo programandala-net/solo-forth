@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006161814
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -42,7 +42,7 @@
   \   \ the Plus D memory.
   \ ----
 
-  \ See: `endm`, `asm`, `code`.
+  \ See also: `endm`, `asm`, `code`.
   \
   \ }doc
 
@@ -58,7 +58,7 @@ previous
   \
   \ ``endm`` is an `immediate` word.
   \
-  \ See: `end-asm`, `code`.
+  \ See also: `end-asm`, `code`.
   \
   \ }doc
 

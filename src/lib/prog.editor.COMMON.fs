@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007280015
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -42,7 +42,7 @@ variable r#
   \
   \ Origin: fig-Forth's user variable ``r#``.
   \
-  \ See: `top`.
+  \ See also: `top`.
   \
   \ }doc
 

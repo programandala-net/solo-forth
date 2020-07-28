@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803112107
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -40,7 +40,7 @@ unneeding cvalue ?( need to need ;code
   \ _name_ is later executed, _c_ will be placed on the stack.
   \ `to` can be used to assign a new value to _name_.
   \
-  \ See: `value`, `2value`, `cconstant`, `cvariable`, `cval`.
+  \ See also: `value`, `2value`, `cconstant`, `cvariable`, `cval`.
   \
   \ }doc
 
@@ -61,7 +61,7 @@ unneeding value ?( need to need ;code
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See: `cvalue`, `2value`, `constant`, `variable`, `val`.
+  \ See also: `cvalue`, `2value`, `constant`, `variable`, `val`.
   \
   \ }doc
 
@@ -82,7 +82,7 @@ unneeding 2value ?( need to need ;code
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See: `cvalue`, `value`, `2constant`, `2variable`, `2val`.
+  \ See also: `cvalue`, `value`, `2constant`, `2variable`, `2val`.
   \
   \ }doc
 
@@ -124,7 +124,7 @@ create to> ' c! , ' ! , ' 2! ,
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See: `!>`, `c!>`, `2!>`, `toval`, `ctoval`, `2toval`.
+  \ See also: `!>`, `c!>`, `2!>`, `toval`, `ctoval`, `2toval`.
   \
   \ }doc
 

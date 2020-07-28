@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804121307
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -57,7 +57,7 @@ need alias
   \
   \ ``ifcase`` is an `immediate` and `compile-only` word.
   \
-  \ See: `othercase`.
+  \ See also: `othercase`.
   \
   \ }doc
 
@@ -81,7 +81,7 @@ need alias
   \
   \ ``exitcase`` is an `immediate` and `compile-only` word.
   \
-  \ See: `ifcase`, `othercase`.
+  \ See also: `ifcase`, `othercase`.
   \
   \ }doc
 
@@ -108,7 +108,7 @@ need alias
   \   othercase say-other ;
   \ ----
   \
-  \ See: `ifcase`, `exitcase`, `othercase`, `case`.
+  \ See also: `ifcase`, `exitcase`, `othercase`, `case`.
   \
   \ }doc
 
@@ -121,7 +121,7 @@ need alias
   \ Mark the default option of a `thiscase` structure that
   \ checked _x_.
   \
-  \ See: `ifcase`, `exitcase`.
+  \ See also: `ifcase`, `exitcase`.
   \
   \ }doc
 

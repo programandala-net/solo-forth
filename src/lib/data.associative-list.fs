@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006152022
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -42,7 +42,7 @@ need search-wordlist
   \
   \ Create a new associative list "name".
   \
-  \ See: `entry:`, `centry:`, `2entry:`, `sentry:`, `item`,
+  \ See also: `entry:`, `centry:`, `2entry:`, `sentry:`, `item`,
   \ `item?`, `items`, `associative:`, `associative-case:`.
   \
   \ }doc
@@ -56,7 +56,7 @@ need search-wordlist
   \ Is _ca len_ an item of the `associative-list` _wid_?  If so
   \ return its _xt_ and `true`, else return `false`.
   \
-  \ See: `item`.  `entry:`, `centry:`, `2entry:`, `sentry:`,
+  \ See also: `item`.  `entry:`, `centry:`, `2entry:`, `sentry:`,
   \ `items`.
   \
   \ }doc
@@ -71,7 +71,7 @@ need search-wordlist
   \ return its value _i*x_; else `throw` an exception #-13
   \ ("undefined word").
   \
-  \ See: `item?`.  `entry:`, `centry:`, `2entry:`, `sentry:`,
+  \ See also: `item?`.  `entry:`, `centry:`, `2entry:`, `sentry:`,
   \ `items`.
   \
   \ }doc
@@ -107,7 +107,7 @@ need create-entry  unneeding entry: ?(
   \ Create a cell entry "name" in the `associative-list`
   \ _wid_, with value _x_.
   \
-  \ See: `centry:`, `2entry:`, `sentry:`, `create-entry`.
+  \ See also: `centry:`, `2entry:`, `sentry:`, `create-entry`.
   \
   \ }doc
 
@@ -122,7 +122,7 @@ unneeding centry: ?(
   \ Create a character entry "name" in the `associative-list`
   \ _wid_, with value _c_.
   \
-  \ See: `entry:`, `2entry:`, `sentry:`, `create-entry`.
+  \ See also: `entry:`, `2entry:`, `sentry:`, `create-entry`.
   \
   \ }doc
 
@@ -137,7 +137,7 @@ unneeding 2entry: ?(
   \ Create a double-cell entry "name" in the `associative-list`
   \ _wid_, with value _dx_.
   \
-  \ See: `entry:`, `centry:`, `sentry:`, `create-entry`.
+  \ See also: `entry:`, `centry:`, `sentry:`, `create-entry`.
   \
   \ }doc
 
@@ -152,7 +152,7 @@ unneeding sentry: ?(
   \ Create a string entry "name" in the `associative-list`
   \ _wid_, with value _ca len_.
   \
-  \ See: `entry:`, `centry:`, `2entry:`, `create-entry`.
+  \ See also: `entry:`, `centry:`, `2entry:`, `create-entry`.
   \
   \ }doc
 

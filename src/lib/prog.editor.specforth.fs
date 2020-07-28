@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007100039
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -149,7 +149,7 @@ vocabulary specforth-editor ' specforth-editor is editor
 
   \ |===
 
-  \ See: `gforth-editor`.
+  \ See also: `gforth-editor`.
   \
   \ }doc
 
@@ -166,7 +166,7 @@ also editor definitions
   \ `pad` as a counted string, blank-filling the remainder of
   \ `pad` to `c/l` characters.
   \
-  \ See: `parse-all`.
+  \ See also: `parse-all`.
   \
   \ }doc
 
@@ -183,7 +183,7 @@ also editor definitions
   \ Read the disk block from disk if it is not already in the
   \ disk buffer.
   \
-  \ See: `line>string`.
+  \ See also: `line>string`.
   \
   \ }doc
 
@@ -197,7 +197,7 @@ also editor definitions
   \ From the cursor pointer `r#` compute the line number _n2_
   \ and the character offset _n1_ in line number _n2_.
   \
-  \ See: `#lead`, `c/l`.
+  \ See also: `#lead`, `c/l`.
   \
   \ }doc
 
@@ -212,7 +212,7 @@ also editor definitions
   \ in the block buffer and the offset from _a_ to the cursor
   \ location _n_.
   \
-  \ See: `#locate`, `#lag`.
+  \ See also: `#locate`, `#lag`.
   \
   \ }doc
 
@@ -226,7 +226,7 @@ also editor definitions
   \ Return cursor address _ca_ and count _n_ after cursor till
   \ end of line.
   \
-  \ See: `#lead`.
+  \ See also: `#lead`.
   \
   \ }doc
 
@@ -239,7 +239,7 @@ also editor definitions
   \ Part of `specforth-editor`:
   \ Move a line of text from _ca_ to line _n_ of current block.
   \
-  \ See: `<<src-lib-prog-editor-specforth-fs, m>>`, `c/l`, `cmove`, `update`.
+  \ See also: `<<src-lib-prog-editor-specforth-fs, m>>`, `c/l`, `cmove`, `update`.
   \
   \ }doc
 
@@ -252,7 +252,7 @@ also editor definitions
   \ A command of `specforth-editor`: Erase line _n_ with
   \ blanks.
   \
-  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ See also: `<<src-lib-prog-editor-specforth-fs, b>>`,
   \ `<<src-lib-prog-editor-specforth-fs, c>>`,
   \ `<<src-lib-prog-editor-specforth-fs, d>>`,
   \ `<<src-lib-prog-editor-specforth-fs, f>>`,
@@ -280,7 +280,7 @@ also editor definitions
   \ _n_ and following lines are are moved down one line. Line
   \ _n_ becomes blank. Line 15 is lost.
   \
-  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ See also: `<<src-lib-prog-editor-specforth-fs, b>>`,
   \ `<<src-lib-prog-editor-specforth-fs, c>>`,
   \ `<<src-lib-prog-editor-specforth-fs, d>>`,
   \ `<<src-lib-prog-editor-specforth-fs, e>>`,
@@ -306,7 +306,7 @@ also editor definitions
   \ A command of `specforth-editor`: Hold line _n_ at `pad`
   \ (used by system more often than by user).
   \
-  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ See also: `<<src-lib-prog-editor-specforth-fs, b>>`,
   \ `<<src-lib-prog-editor-specforth-fs, c>>`,
   \ `<<src-lib-prog-editor-specforth-fs, d>>`,
   \ `<<src-lib-prog-editor-specforth-fs, e>>`,
@@ -335,7 +335,7 @@ also editor definitions
   \ it in `pad`. Line 15 becomes free as all statements move up
   \ one line.
   \
-  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ See also: `<<src-lib-prog-editor-specforth-fs, b>>`,
   \ `<<src-lib-prog-editor-specforth-fs, c>>`,
   \ `<<src-lib-prog-editor-specforth-fs, e>>`,
   \ `<<src-lib-prog-editor-specforth-fs, f>>`,
@@ -362,7 +362,7 @@ also editor definitions
   \ characters. The position of the cursor on its line is shown
   \ by a "_" (underline).
   \
-  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ See also: `<<src-lib-prog-editor-specforth-fs, b>>`,
   \ `<<src-lib-prog-editor-specforth-fs, c>>`,
   \ `<<src-lib-prog-editor-specforth-fs, d>>`,
   \ `<<src-lib-prog-editor-specforth-fs, e>>`,
@@ -388,7 +388,7 @@ also editor definitions
   \ A command of `specforth-editor`: Type line _n_ and save in
   \ `pad`.
   \
-  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ See also: `<<src-lib-prog-editor-specforth-fs, b>>`,
   \ `<<src-lib-prog-editor-specforth-fs, c>>`,
   \ `<<src-lib-prog-editor-specforth-fs, d>>`,
   \ `<<src-lib-prog-editor-specforth-fs, e>>`,
@@ -415,7 +415,7 @@ also editor definitions
   \
   \ A command of `specforth-editor`: List the current block.
   \
-  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ See also: `<<src-lib-prog-editor-specforth-fs, b>>`,
   \ `<<src-lib-prog-editor-specforth-fs, c>>`,
   \ `<<src-lib-prog-editor-specforth-fs, d>>`,
   \ `<<src-lib-prog-editor-specforth-fs, e>>`,
@@ -441,7 +441,7 @@ also editor definitions
   \ A command of `specforth-editor`: Replace line _n_ with the
   \ text in `pad`.
   \
-  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ See also: `<<src-lib-prog-editor-specforth-fs, b>>`,
   \ `<<src-lib-prog-editor-specforth-fs, c>>`,
   \ `<<src-lib-prog-editor-specforth-fs, d>>`,
   \ `<<src-lib-prog-editor-specforth-fs, e>>`,
@@ -466,7 +466,7 @@ also editor definitions
   \
   \ A command of `specforth-editor`: Put _ccc_ on line _n_.
   \
-  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ See also: `<<src-lib-prog-editor-specforth-fs, b>>`,
   \ `<<src-lib-prog-editor-specforth-fs, c>>`,
   \ `<<src-lib-prog-editor-specforth-fs, d>>`,
   \ `<<src-lib-prog-editor-specforth-fs, e>>`,
@@ -492,7 +492,7 @@ also editor definitions
   \ A command of `specforth-editor`: Insert text from `pad` at
   \ line _n_, moving the old line _n_ down. Line 15 is lost.
   \
-  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ See also: `<<src-lib-prog-editor-specforth-fs, b>>`,
   \ `<<src-lib-prog-editor-specforth-fs, c>>`,
   \ `<<src-lib-prog-editor-specforth-fs, d>>`,
   \ `<<src-lib-prog-editor-specforth-fs, e>>`,
@@ -520,7 +520,7 @@ also editor definitions
   \ A command of `specforth-editor`: Clear block _n_ with
   \ blanks and select for editing.
   \
-  \ See: `<<src-lib-prog-editor-specforth-fs, e>>`, `l/scr`.
+  \ See also: `<<src-lib-prog-editor-specforth-fs, e>>`, `l/scr`.
   \
   \ }doc
 
@@ -543,7 +543,7 @@ also editor definitions
   \ Return a non-zero _f_ if string _ca1 len1_ exactly
   \ match string _ca2 len1_, else return a false flag.
   \
-  \ See: `match`.
+  \ See also: `match`.
   \
   \ }doc
 
@@ -563,7 +563,7 @@ also editor definitions
   \ end of the matching string, else leave _n4_ bytes to end of
   \ line.
   \
-  \ See: `-text`.
+  \ See also: `-text`.
   \
   \ }doc
 
@@ -578,7 +578,7 @@ also editor definitions
   \ and update the cursor `r#` to the end of matching text, or
   \ to the start of the next line if no match is found.
   \
-  \ See: `#lag`, `match`.
+  \ See also: `#lag`, `match`.
   \
   \ }doc
 
@@ -598,7 +598,7 @@ also editor definitions
   \ an error message and reposition the cursor at the `top` of
   \ the block.
   \
-  \ See: `1line`.
+  \ See also: `1line`.
   \
   \ }doc
 
@@ -614,7 +614,7 @@ also editor definitions
   \ A command of `specforth-editor`:
   \ Delete _n_ characters prior to the cursor.
   \
-  \ See: `#lag`, `r#`, `#lead`.
+  \ See also: `#lag`, `r#`, `#lead`.
   \
   \ }doc
 
@@ -628,7 +628,7 @@ also editor definitions
   \ of the string found by an
   \ `<<src-lib-prog-editor-specforth-fs, f>>` command.
   \
-  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ See also: `<<src-lib-prog-editor-specforth-fs, b>>`,
   \ `<<src-lib-prog-editor-specforth-fs, c>>`,
   \ `<<src-lib-prog-editor-specforth-fs, d>>`,
   \ `<<src-lib-prog-editor-specforth-fs, e>>`,
@@ -658,7 +658,7 @@ also editor definitions
   \ is printed. If the string is not found and error message is
   \ given and the cursor repositioned to the top of the block.
   \
-  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ See also: `<<src-lib-prog-editor-specforth-fs, b>>`,
   \ `<<src-lib-prog-editor-specforth-fs, c>>`,
   \ `<<src-lib-prog-editor-specforth-fs, d>>`,
   \ `<<src-lib-prog-editor-specforth-fs, e>>`,
@@ -685,7 +685,7 @@ also editor definitions
   \ `<<src-lib-prog-editor-specforth-fs, f>>` to backup the cursor by
   \ the length of the most recent text hold in `pad`.
   \
-  \ See: `<<src-lib-prog-editor-specforth-fs, c>>`,
+  \ See also: `<<src-lib-prog-editor-specforth-fs, c>>`,
   \ `<<src-lib-prog-editor-specforth-fs, d>>`,
   \ `<<src-lib-prog-editor-specforth-fs, e>>`,
   \ `<<src-lib-prog-editor-specforth-fs, f>>`,
@@ -711,7 +711,7 @@ also editor definitions
   \ A command of `specforth-editor`: Find and delete the next
   \ occurrence of the string _ccc_.
   \
-  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ See also: `<<src-lib-prog-editor-specforth-fs, b>>`,
   \ `<<src-lib-prog-editor-specforth-fs, c>>`,
   \ `<<src-lib-prog-editor-specforth-fs, d>>`,
   \ `<<src-lib-prog-editor-specforth-fs, e>>`,
@@ -756,7 +756,7 @@ also editor definitions
   \ position. ``(c`` is a factor of
   \ `<<src-lib-prog-editor-specforth-fs, c>>`.
   \
-  \ See: `#lag`, `r#`, `#lead`, `cmove`, `update`.
+  \ See also: `#lag`, `r#`, `#lead`, `cmove`, `update`.
   \
   \ }doc
 
@@ -770,7 +770,7 @@ also editor definitions
   \ A command of `specforth-editor`: Copy in _ccc_ to the
   \ cursor line at the cursor position.
   \
-  \ See: `<<src-lib-prog-editor-specforth-fs, b>>`,
+  \ See also: `<<src-lib-prog-editor-specforth-fs, b>>`,
   \ `<<src-lib-prog-editor-specforth-fs, d>>`,
   \ `<<src-lib-prog-editor-specforth-fs, e>>`,
   \ `<<src-lib-prog-editor-specforth-fs, f>>`,
@@ -796,7 +796,7 @@ also editor definitions
   \ A command of `specforth-editor`:
   \ Copy `block` _n1_ to block _n2_.
   \
-  \ See: `update`, `save-buffers`.
+  \ See also: `update`, `save-buffers`.
   \
   \ }doc
 

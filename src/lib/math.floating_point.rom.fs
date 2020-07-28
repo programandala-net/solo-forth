@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202006161547
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -53,7 +53,7 @@
   \
   \ _n_ is the size in bytes of a floating-point number.
   \
-  \ See: `floats`, `float+`, `float-`.
+  \ See also: `floats`, `float+`, `float-`.
   \
   \ }doc
 
@@ -66,7 +66,7 @@
   \ Add the size in bytes of a floating-point number to _fa1_,
   \ giving _fa2_.
   \
-  \ See: `float-`, `float`, `floats`.
+  \ See also: `float-`, `float`, `floats`.
   \
   \ }doc
 
@@ -79,7 +79,7 @@
   \ Subtract the size in bytes of a floating-point number from
   \ _fa1_, giving _fa2_.
   \
-  \ See: `float+`, `float`, `floats`.
+  \ See also: `float+`, `float`, `floats`.
   \
   \ }doc
 
@@ -92,7 +92,7 @@
   \ _n2_ is the size in bytes of _n1_ floating-point
   \ numbers.
   \
-  \ See: `float`, `float+`, `float-`.
+  \ See also: `float`, `float+`, `float-`.
   \
   \ }doc
 
@@ -113,7 +113,7 @@ need float need float-
   \ NOTE: The floating-point stack (which is the OS calculator
   \ stack) grows towards higher memory.
   \
-  \ See: `fp`.
+  \ See also: `fp`.
   \
   \ }doc
 
@@ -131,7 +131,7 @@ need float need float-
   \ stack) grows towards higher memory, and ``fp`` points to
   \ the first free position, therefore above top of stack.
   \
-  \ See: `fp@`, `fp0`.
+  \ See also: `fp@`, `fp0`.
   \
   \ }doc
 
@@ -144,7 +144,7 @@ need float need float-
   \ Return the address _fa_ above the top of the floating-point
   \ stack. ``(fp@``  is a factor of `fp@`.
   \
-  \ See: `fp`.
+  \ See also: `fp`.
   \
   \ }doc
 
@@ -157,7 +157,7 @@ need float need float-
   \ Return the address _fa_ of the top of the floating-point
   \ stack.
   \
-  \ See: `fp`.
+  \ See also: `fp`.
   \
   \ }doc
 
@@ -183,7 +183,7 @@ need float need float-
   \
   \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
   \
-  \ See: `fp0`, `(fp@` ,`float`, `depth`, `rdepth`.
+  \ See also: `fp0`, `(fp@` ,`float`, `depth`, `rdepth`.
   \
   \ }doc
 
@@ -221,7 +221,7 @@ macro end-calculator-flag ( -- f ) ( F: 1|0 -- )
   \ ``end-calculator-flag`` is a common factor of all
   \ floating-point logical operators.
   \
-  \ See: `calculator-command`.
+  \ See also: `calculator-command`.
   \
   \ }doc
 
@@ -247,7 +247,7 @@ need calculator
   \ Compile the assembly instructions needed to execute the
   \ _b_ command of the ROM calculator.
   \
-  \ See: `end-calculator-flag`.
+  \ See also: `end-calculator-flag`.
   \
   \ }doc
 
@@ -307,7 +307,7 @@ need fsgn
   \
   \ Origin: Gforth.
   \
-  \ See: `f~rel`, `f~relabs`.
+  \ See also: `f~rel`, `f~relabs`.
   \
   \ }doc
 
@@ -326,7 +326,7 @@ need fsgn
   \ than the value of _r3_ times the sum of the absolute values
   \ of _r1_ and _r2_.
   \
-  \ See: `f~abs`, `f~relabs`.
+  \ See also: `f~abs`, `f~relabs`.
   \
   \ }doc
 
@@ -345,7 +345,7 @@ need fsgn
   \ than the absolute value of _r3_ times the sum of the
   \ absolute values of _r1_ and _r2_.
   \
-  \ See: `f~rel`, `f~abs`.
+  \ See also: `f~rel`, `f~abs`.
   \
   \ }doc
 
@@ -361,7 +361,7 @@ need fsgn
   \ Are _r1_ and _r2_ exactly identical? Flag _f_ is true if
   \ the bitwise comparison of _r1_ and _r2_ is succesful.
   \
-  \ See: `f~`.
+  \ See also: `f~`.
   \
   \ }doc
 
@@ -390,7 +390,7 @@ here ' f== ,
   \
   \ Origin: Forth-94 (FLOATING EXT), Forth-2012 (FLOATING EXT).
   \
-  \ See: `f~rel`.
+  \ See also: `f~rel`.
   \
   \ }doc
 
@@ -710,7 +710,7 @@ code f! ( fa -- ) ( F: r -- )
   \
   \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
   \
-  \ See: `f@`, `f,`, `!`, `2!`, `c!`.
+  \ See also: `f@`, `f,`, `!`, `2!`, `c!`.
   \
   \ }doc
 
@@ -729,7 +729,7 @@ code f@ ( fa -- ) ( F: -- r )
   \
   \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
   \
-  \ See: `f!`, `@`, `2@`, `c@`.
+  \ See also: `f!`, `@`, `2@`, `c@`.
   \
   \ }doc
 
@@ -748,7 +748,7 @@ need float need f! need f@
   \
   \ Origin: Gforth.
   \
-  \ See: `f!`.
+  \ See also: `f!`.
   \
   \ }doc
 
@@ -763,7 +763,7 @@ need float need f! need f@
   \
   \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
   \
-  \ See: `constant`, `2constant`, `cconstant`, `fvariable`.
+  \ See also: `constant`, `2constant`, `cconstant`, `fvariable`.
   \
   \ }doc
 
@@ -782,7 +782,7 @@ need float need f! need f@
   \
   \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
   \
-  \ See: `constant`, `2constant`, `cconstant`, `fconstant`.
+  \ See also: `constant`, `2constant`, `cconstant`, `fconstant`.
   \
   \ }doc
 
@@ -797,7 +797,7 @@ code facos ( F: r1 -- r2 )
   \
   \ facos ( F: r1 -- r2 )
   \
-  \ See: `fasin`, `fatan`, `fcos`.
+  \ See also: `fasin`, `fatan`, `fcos`.
   \
   \ }doc
   \
@@ -810,7 +810,7 @@ code fasin ( F: r1 -- r2 )
   \
   \ fasin ( F: r1 -- r2 )
   \
-  \ See: `facos`, `fatan`, `fsin`.
+  \ See also: `facos`, `fatan`, `fsin`.
   \
   \ }doc
   \
@@ -823,7 +823,7 @@ code fatan ( F: r1 -- r2 )
   \
   \ fatan ( F: r1 -- r2 )
   \
-  \ See: `facos`, `fasin`, `ftan`.
+  \ See also: `facos`, `fasin`, `ftan`.
   \
   \ }doc
   \
@@ -836,7 +836,7 @@ code fcos ( F: r1 -- r2 )
   \
   \ fcos ( F: r1 -- r2 )
   \
-  \ See: `fsin`, `ftan`, `facos`.
+  \ See also: `fsin`, `ftan`, `facos`.
   \
   \ }doc
   \
@@ -849,7 +849,7 @@ code fsin ( F: r1 -- r2 )
   \
   \ fsin ( F: r1 -- r2 )
   \
-  \ See: `fcos`, `ftan`, `fasin`.
+  \ See also: `fcos`, `ftan`, `fasin`.
   \
   \ }doc
   \
@@ -862,7 +862,7 @@ code ftan ( F: r1 -- r2 )
   \
   \ ftan ( F: r1 -- r2 )
   \
-  \ See: `fcos`, `fsin`, `fatan`.
+  \ See also: `fcos`, `fsin`, `fatan`.
   \
   \ }doc
   \
@@ -888,7 +888,7 @@ code (f. ( F: r -- ) C5 c, CD c, 2DE3 , C1 c, jpnext, end-code
   \
   \ f. ( F: r -- )
   \
-  \ See: `.`, `d.`, `.fs`.
+  \ See also: `.`, `d.`, `.fs`.
   \
   \ }doc
   \
@@ -918,7 +918,7 @@ need fdepth need float need float+ need .depth
   \
   \ .fs ( F: i*r -- i*r )
   \
-  \ See: `dump-fs`, `f.`.
+  \ See also: `dump-fs`, `f.`.
   \
   \ }doc
   \
@@ -937,7 +937,7 @@ need fdepth need float need float+ need .depth
   \
   \ dump-fs ( F: i*r -- i*r )
   \
-  \ See: `.fs`.
+  \ See also: `.fs`.
   \
   \ }doc
   \
@@ -959,7 +959,7 @@ code floor ( F: r1 -- r2 )
   \
   \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
   \
-  \ See: `ftrunc`, `fround`.
+  \ See also: `ftrunc`, `fround`.
   \
   \ }doc
 
@@ -975,7 +975,7 @@ code ftrunc ( F: r1 -- r2 )
   \
   \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
   \
-  \ See: `fround` ,`floor`.
+  \ See also: `fround` ,`floor`.
   \
   \ }doc
 
@@ -1001,7 +1001,7 @@ code ftrunc ( F: r1 -- r2 )
   \
   \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
   \
-  \ See: `ftrunc`, `floor`.
+  \ See also: `ftrunc`, `floor`.
   \
   \ }doc
 
@@ -1022,7 +1022,7 @@ unneeding falign
   \
   \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
   \
-  \ See: `faligned`, `sfalign`, `dfalign`, `float`.
+  \ See also: `faligned`, `sfalign`, `dfalign`, `float`.
   \
   \ }doc
 
@@ -1041,7 +1041,7 @@ unneeding faligned
   \
   \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
   \
-  \ See: `falign`, `sfaligned`, `dfaligned`, `float`.
+  \ See also: `falign`, `sfaligned`, `dfaligned`, `float`.
   \
   \ }doc
 
@@ -1060,7 +1060,7 @@ unneeding sfalign
   \
   \ Origin: Forth-94 (FLOATING EXT), Forth-2012 (FLOATING EXT).
   \
-  \ See: `sfaligned`, `falign`, `dfalign`, `float`.
+  \ See also: `sfaligned`, `falign`, `dfalign`, `float`.
   \
   \ }doc
 
@@ -1079,7 +1079,7 @@ unneeding sfaligned
   \
   \ Origin: Forth-94 (FLOATING EXT), Forth-2012 (FLOATING EXT).
   \
-  \ See: `sfalign`, `faligned`, `dfaligned`, `float`.
+  \ See also: `sfalign`, `faligned`, `dfaligned`, `float`.
   \
   \ }doc
 
@@ -1098,7 +1098,7 @@ unneeding dfalign
   \
   \ Origin: Forth-94 (FLOATING EXT), Forth-2012 (FLOATING EXT).
   \
-  \ See: `dfaligned`, `falign`, `sfalign`, `float`.
+  \ See also: `dfaligned`, `falign`, `sfalign`, `float`.
   \
   \ }doc
 
@@ -1117,7 +1117,7 @@ unneeding dfaligned
   \
   \ Origin: Forth-94 (FLOATING EXT), Forth-2012 (FLOATING EXT).
   \
-  \ See: `dfalign`, `faligned`, `sfaligned`, `float`.
+  \ See also: `dfalign`, `faligned`, `sfaligned`, `float`.
   \
   \ }doc
 

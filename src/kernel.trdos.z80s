@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202006152111
+; Last modified: 202007282031
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -243,7 +243,7 @@ push_dos_ior:
 ;   Fz = 0
 ; ....
 
-; See: `dos-c_`, `dos-hl_`, `dos-alt-a-preserve-ip_`,
+; See also: `dos-c_`, `dos-hl_`, `dos-alt-a-preserve-ip_`,
 ; `dos-alt-a-restore-ip_`.
 ;
 ; }doc
@@ -274,7 +274,7 @@ push_dos_ior:
 ;   Fz = 0
 ; ....
 
-; See: `dos-hl_`, `dos-alt-a_`, `dos-alt-a-preserve-ip_`,
+; See also: `dos-hl_`, `dos-alt-a_`, `dos-alt-a-preserve-ip_`,
 ; `dos-alt-a-restore-ip_`.
 ;
 ; }doc
@@ -304,7 +304,7 @@ push_dos_ior:
 ;   Fz = 0
 ; ....
 
-; See: `dos-c_`, `dos-alt-a_`, `dos-alt-a-preserve-ip_`,
+; See also: `dos-c_`, `dos-alt-a_`, `dos-alt-a-preserve-ip_`,
 ; `dos-alt-a-restore-ip_`.
 ;
 ; }doc
@@ -337,7 +337,7 @@ push_dos_ior:
 ;   Fz = 0
 ; ....
 
-; See: `dos-c_`, `dos-hl_`, `dos-alt-a_`,
+; See also: `dos-c_`, `dos-hl_`, `dos-alt-a_`,
 ; `dos-alt-a-restore-ip_`.
 ;
 ; }doc
@@ -375,7 +375,7 @@ push_dos_ior:
 ;   Fz = 0
 ; ....
 
-; See: `dos-c_`, `dos-hl_`, `dos-alt-a-preserve-ip_`,
+; See also: `dos-c_`, `dos-hl_`, `dos-alt-a-preserve-ip_`,
 ; `dos-alt-a_`.
 ;
 ; }doc
@@ -406,7 +406,7 @@ push_dos_ior:
 ;   TOS = Forth exception code (-1012..-1001)
 ; ....
 
-; See: `dosior>ior`.
+; See also: `dosior>ior`.
 ;
 ; }doc
 
@@ -429,7 +429,7 @@ push_dos_ior:
 ;   dup if  1000 + negate  then   ;
 ; ----
 
-; See: `pushdosior`.
+; See also: `pushdosior`.
 ;
 ; }doc
 
@@ -510,7 +510,7 @@ dosior_hl_to_ior_hl:
 ; : sector#>dos ( n -- x ) sectors/track /mod sector>dos  ;
 ; ----
 
-; See: `sectors/track`, `sector>dos`, `transfer-sectors`.
+; See also: `sectors/track`, `sector>dos`, `transfer-sectors`.
 ;
 ; }doc
 
@@ -538,7 +538,7 @@ dosior_hl_to_ior_hl:
 ; : block-sector#>dos ( n -- x ) sectors/track + sector#>dos ;
 ; ----
 
-; See: `sectors/track`, `sector#>dos`, `transfer-block`.
+; See also: `sectors/track`, `sector#>dos`, `transfer-block`.
 ;
 ; }doc
 
@@ -560,7 +560,7 @@ dosior_hl_to_ior_hl:
 ; The high byte of _x_ is the track (0..79 for side 0; 80..159
 ; for side 1); its low byte is the sector (0..15).
 ;
-; See: `block-sector#>dos`, `transfer-block`.
+; See also: `block-sector#>dos`, `transfer-block`.
 ;
 ; }doc
 
@@ -591,7 +591,7 @@ transfer_sectors.command: equ $+1
 ;
 ; Set the write mode for `transfer-sectors` and `transfer-block`.
 ;
-; See: `read-mode`.
+; See also: `read-mode`.
 ;
 ; }doc
 
@@ -607,7 +607,7 @@ transfer_sectors.command: equ $+1
 ;
 ; Set the read mode for `transfer-sectors` and `transfer-block`.
 ;
-; See: `write-mode`.
+; See also: `write-mode`.
 ;
 ; }doc
 
@@ -637,7 +637,7 @@ transfer_mode:
 ;   transfer-sectors throw  ;
 ; ----
 
-; See: `transfer-sectors`.
+; See also: `transfer-sectors`.
 ;
 ; }doc
 
@@ -658,7 +658,7 @@ transfer_mode:
 ;
 ; ``init-drive`` is used by `set-drive`.
 ;
-; See: `read-system-track`.
+; See also: `read-system-track`.
 ;
 ; }doc
 
@@ -688,7 +688,7 @@ transfer_mode:
 ;
 ; ``read-system-track`` is used by `set-drive`.
 ;
-; See: `init-drive`.
+; See also: `init-drive`.
 ;
 ; }doc
 
@@ -734,7 +734,7 @@ transfer_mode:
 ; : get-drive ( -- n ior ) 23833 c@ false ;
 ; ----
 
-; See: `set-drive`.
+; See also: `set-drive`.
 ;
 ; }doc
 
@@ -758,7 +758,7 @@ transfer_mode:
 ; _ior_ is zero, otherwise it's an exception code. The default
 ; drive is 0.
 ;
-; See: `?set-drive`, `init-drive`, `drive`, `set-block-drives`,
+; See also: `?set-drive`, `init-drive`, `drive`, `set-block-drives`,
 ; `2-block-drives`, `read-system-track`.
 ;
 ; }doc
@@ -858,7 +858,7 @@ endif
 ;
 ; Display TR-DOS variables related to disk drives.
 ;
-; See: `.step-rates`, `.fda`.
+; See also: `.step-rates`, `.fda`.
 ;
 ; }doc
 
@@ -929,7 +929,7 @@ dot_drives.exit
 ;
 ; Display the configured step rates of the TR-DOS disk drives.
 ;
-; See: `.drives`, `.fda`.
+; See also: `.drives`, `.fda`.
 ;
 ; }doc
 
@@ -968,7 +968,7 @@ dot_drives.exit
 ;
 ; Display the contents of TR-DOS File Descriptor Area.
 ;
-; See: `.drives`, `.step-rates`.
+; See also: `.drives`, `.step-rates`.
 ;
 ; }doc
 

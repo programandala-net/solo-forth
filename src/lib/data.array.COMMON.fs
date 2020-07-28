@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202002270032
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -51,7 +51,7 @@ code array> ( n a1 -- a2 )
   \ : array> ( n a1 -- a2 ) swap cells + ;
   \ ----
 
-  \ See: `2array>`, `array<`, `+perform`.
+  \ See also: `2array>`, `array<`, `+perform`.
   \
   \ }doc
 
@@ -80,7 +80,7 @@ code array< ( a1 n -- a2 )
   \ : array< ( a1 n -- a2 ) cells + ;
   \ ----
 
-  \ See: `array>`, `+perform`.
+  \ See also: `array>`, `+perform`.
   \
   \ }doc
 
@@ -111,7 +111,7 @@ code 2array> ( n a1 -- a2 )
   \ : 2array> ( n a1 -- a2 ) swap [ 2 cells ] literal * + ;
   \ ----
 
-  \ See: `2array<`, `array>`.
+  \ See also: `2array<`, `array>`.
   \
   \ }doc
 
@@ -141,7 +141,7 @@ code 2array< ( a1 n -- a2 )
   \ : 2array< ( a1 n -- a2 ) [ 2 cells ] literal * + ;
   \ ----
 
-  \ See: `2array>`, `array<`.
+  \ See also: `2array>`, `array<`.
   \
   \ }doc
 

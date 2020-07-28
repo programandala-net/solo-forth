@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not usable yet
 
-  \ Last modified: 202005042036
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -45,7 +45,7 @@ blocks/disk bit-array indexed-blocks
   \
   \ Bit array to mark the indexed blocks
   \
-  \ See: `use-fly-index`.
+  \ See also: `use-fly-index`.
   \
   \ }doc
 
@@ -57,7 +57,7 @@ blocks/disk bit-array indexed-blocks
   \
   \ Is block _block_ indexed?
   \
-  \ See: `use-fly-index`.
+  \ See also: `use-fly-index`.
   \
   \ }doc
 
@@ -69,7 +69,7 @@ blocks/disk bit-array indexed-blocks
   \
   \ Mark block _block_ as indexed.
   \
-  \ See: `use-fly-index`.
+  \ See also: `use-fly-index`.
   \
   \ }doc
 
@@ -93,7 +93,7 @@ blocks/disk bit-array indexed-blocks
   \
   \ Index block _block_.
   \
-  \ See: `use-fly-index`.
+  \ See also: `use-fly-index`.
   \
   \ }doc
 
@@ -106,7 +106,7 @@ blocks/disk bit-array indexed-blocks
   \
   \ Index block _block_, if not done before.
   \
-  \ See: `use-fly-index`.
+  \ See also: `use-fly-index`.
   \
   \ }doc
 
@@ -123,7 +123,7 @@ blocks/disk bit-array indexed-blocks
   \ found, return zero.  The search is case-sensitive.
   \ Index all searched blocks on the fly.
   \
-  \ See: `use-fly-index`.
+  \ See also: `use-fly-index`.
   \
   \ }doc
 
@@ -143,7 +143,7 @@ blocks/disk bit-array indexed-blocks
   \ The default action of all said words can be restored by
   \ `use-no-index`.
   \
-  \ See: `use-thru-index`.
+  \ See also: `use-thru-index`.
   \
   \ }doc
 

@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202006081702
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -63,7 +63,7 @@
   \ WARNING: This word is experimental. See the source code for
   \ details.
   \
-  \ See: `system-zone`, `system-size`, `turnkey`.
+  \ See also: `system-zone`, `system-size`, `turnkey`.
   \
   \ }doc
 
@@ -76,7 +76,7 @@
   \ _len_ is the size of the system, in bytes, i.e. the size of
   \ data/code space.
   \
-  \ See: `+origin`, `system-zone`, `turnkey`, `here`.
+  \ See also: `+origin`, `system-zone`, `turnkey`, `here`.
   \
   \ }doc
 
@@ -90,7 +90,7 @@
   \ _len_, to be used as parameters for saving the system to
   \ tape or disk.
   \
-  \ See: `+origin`, `system-size`, `turnkey`.
+  \ See also: `+origin`, `system-size`, `turnkey`.
   \
   \ }doc
 
@@ -123,7 +123,7 @@
   \ meant to save a Forth program that does not need to search
   \ the dictionary or use data already stored in paged memory.
   \
-  \ See: `boot`, `extend`, `system-zone`, `cold`.
+  \ See also: `boot`, `extend`, `system-zone`, `cold`.
   \
   \ }doc
 

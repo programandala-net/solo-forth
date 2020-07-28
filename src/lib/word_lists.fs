@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006061551
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -37,7 +37,7 @@ unneeding wordlist>link
   \ _wid_, which holds the word-list identifier of the previous
   \ word list defined in the system.
   \
-  \ See: `wordlist>name`, `wordlist>last`, `/wordlist`.
+  \ See also: `wordlist>name`, `wordlist>last`, `/wordlist`.
   \
   \ }doc
 
@@ -53,7 +53,7 @@ unneeding wordlist>name
   \ `wordlist` identifier _wid_ (or zero if the word list has
   \ no associated name).
   \
-  \ See: `wordlist>link`, `wordlist>last`, `/wordlist`.
+  \ See also: `wordlist>link`, `wordlist>last`, `/wordlist`.
   \
   \ }doc
 
@@ -68,7 +68,7 @@ unneeding wordlist-name@ ?( need wordlist>name
   \ Fetch from the word-list identifier _wid_ its associated
   \ name _nt_, or zero if the word list has no associated name.
   \
-  \ See: `wordlist`, `wordlist-name!`, `wordlist>name`.
+  \ See also: `wordlist`, `wordlist-name!`, `wordlist>name`.
   \
   \ }doc
 
@@ -84,7 +84,7 @@ unneeding wordlist-name! ?( need wordlist>name
   \ identified by _wid_.  _nt_ is stored into the name field of
   \ the word-list metadata.
   \
-  \ See: `wordlist`, `wordlist-name@`, `wordlist>name`.
+  \ See also: `wordlist`, `wordlist-name@`, `wordlist>name`.
   \
   \ }doc
 
@@ -107,7 +107,7 @@ unneeding +order
   \ Remove all instances of the word list identified by _wid_
   \ from the search order, then add it to the top.
   \
-  \ See: `-order`, `>order`, `set-order`, `order`.
+  \ See also: `-order`, `>order`, `set-order`, `order`.
   \
   \ }doc
 
@@ -136,7 +136,7 @@ variable -order-wid
   \ Remove all instances of word list identified by _wid_ from
   \ the search order.
   \
-  \ See: `+order`, `>order`, `set-order`, `order`.
+  \ See also: `+order`, `>order`, `set-order`, `order`.
   \
   \ }doc
 
@@ -167,7 +167,7 @@ unneeding wordlist>last ?( need alias
   \ ``wordlist>last`` is provided only for legibility. It is
   \ an `immediate` `alias` of `noop`.
   \
-  \ See: `wordlist>name`, `wordlist>link`, `/wordlist`, `last`,
+  \ See also: `wordlist>name`, `wordlist>link`, `/wordlist`, `last`,
   \ `latest`.
   \
   \ }doc
@@ -187,7 +187,7 @@ unneeding wordlist-of
   \
   \ Origin: eForth's ``widof``.
   \
-  \ See: `wordlist`, `vocabulary`.
+  \ See also: `wordlist`, `vocabulary`.
   \
   \ }doc
 
@@ -202,7 +202,7 @@ unneeding latest>wordlist  ?( need wordlist-name!
   \ Associate the latest name to the word list identified by
   \ _wid_.
   \
-  \ See: `wordlist`, `wordlist-name!`,
+  \ See also: `wordlist`, `wordlist-name!`,
   \ `wordlist>vocabulary`, `wordlists`, `latest`.
   \
   \ }doc
@@ -219,7 +219,7 @@ unneeding wordlist>vocabulary ?( need latest>wordlist
   \ Create a vocabulary _name_ for the word list identified by
   \ _wid_.
   \
-  \ See: `wordlist`, `vocabulary`, `latest>wordlist`,
+  \ See also: `wordlist`, `vocabulary`, `latest>wordlist`,
   \ `wordlists`.
   \
   \ }doc
@@ -240,7 +240,7 @@ unneeding vocabulary ?( need wordlist>vocabulary
   \
   \ Origin: Forth-83 (Required Word Set).
   \
-  \ See: `wordlist`, `definitions`, `wordlist-of`,
+  \ See also: `wordlist`, `definitions`, `wordlist-of`,
   \ `set-current`.
   \
   \ }doc
@@ -260,7 +260,7 @@ unneeding seal ?\ : seal ( -- ) 1 #order ! ;
   \
   \ Origin: Gforth.
   \
-  \ See: `only`, `set-order`, `#order`.
+  \ See also: `only`, `set-order`, `#order`.
   \
   \ }doc
 
@@ -273,7 +273,7 @@ unneeding trail ?\ : trail ( -- nt ) context @ @ ;
   \ Leave the _nt_ of the topmost word in the first word list
   \ of the search order.
   \
-  \ See: `set-order`, `context`.
+  \ See also: `set-order`, `context`.
   \
   \ }doc
 
@@ -289,7 +289,7 @@ unneeding find-name-in
   \ word list identified by _wid_. If the definition is found,
   \ return its _nt_, else return zero.
   \
-  \ See: `search-wordlist`, `find-name-from`, `find-name`,
+  \ See also: `search-wordlist`, `find-name-from`, `find-name`,
   \ `<<src-lib-word_lists-fs, find>>`.
   \
   \ }doc
@@ -313,7 +313,7 @@ unneeding find ?(
   \ Origin: Forth-83 (Required Word Set), Forth-94 (CORE,
   \ SEARCH), Forth-2012 (CORE, SEARCH).
   \
-  \ See: `find-name`, `find-name-from`, `find-name-in`.
+  \ See also: `find-name`, `find-name-from`, `find-name-in`.
   \
   \ }doc
 
@@ -355,7 +355,7 @@ unneeding search-wordlist ?(
   \
   \ Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
   \
-  \ See: `find-name`, `find-name-from`, `find-name-in`,
+  \ See also: `find-name`, `find-name-from`, `find-name-in`,
   \ `<<src-lib-word_lists-fs, find>>`.
   \
   \ }doc

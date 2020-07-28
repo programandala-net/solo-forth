@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081220
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -44,7 +44,7 @@ unneeding 2nip ?( code 2nip ( x1 x2 x3 x4 -- x3 x4 )
   \
   \ 2nip ( x1 x2 x3 x4 -- x3 x4 ) "two-nip"
   \
-  \ See: `nip`.
+  \ See also: `nip`.
   \
   \ }doc
 
@@ -67,7 +67,7 @@ code pick ( x#u...x#1 x#0 u -- x#u...x#1 x#0 x#u )
   \ Origin: Forth-83 (Required Word Set), Forth-94 (CORE EXT),
   \ Forth-2012 (CORE EXT).
   \
-  \ See: `unpick`, `roll`, `rot`.
+  \ See also: `unpick`, `roll`, `rot`.
   \
   \ }doc
 
@@ -80,7 +80,7 @@ unneeding unpick ?\ : unpick ( x u -- ) 2+ cells sp@ + ! ;
   \ Remove _x_ and _u_. Replace _x#u_ with _x_.  ``0 unpick``
   \ is equivalent to `nip` (but much slower).
   \
-  \ See: `pick`.
+  \ See also: `pick`.
   \
   \ Origin: LaForth's ``put``.
   \
@@ -132,7 +132,7 @@ code roll ( x#u x#u-1...x#0 u -- x#u-1...x#0 x#u )
   \
   \ roll ( x#u x#u-1...x#0 u -- x#u-1...x#0 x#u )
   \
-  \ See: `pick`, `rot`.
+  \ See also: `pick`, `rot`.
   \
   \ }doc
 
@@ -151,7 +151,7 @@ code 3drop ( x1 x2 x3 -- )
   \
   \ 3drop ( x1 x2 x3 -- ) "three-drop"
   \
-  \ See: `3dup`, `drop`, `2drop`, `4drop`.
+  \ See also: `3dup`, `drop`, `2drop`, `4drop`.
   \
   \ }doc
 
@@ -169,7 +169,7 @@ code 4drop ( x1 x2 x3 x4 -- )
   \
   \ 4drop ( x1 x2 x3 x4 -- ) "four-drop"
   \
-  \ See: `4dup`, `drop`, `2drop`, `3drop`.
+  \ See also: `4dup`, `drop`, `2drop`, `3drop`.
   \
   \ }doc
 
@@ -202,7 +202,7 @@ code 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
   \ : 3dup ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 ) dup 2over rot ;
   \ ----
 
-  \ See: `3drop`, `dup`, `2dup`, `4dup`.
+  \ See also: `3drop`, `dup`, `2dup`, `4dup`.
   \
   \ }doc
 
@@ -232,7 +232,7 @@ code 4dup ( x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2 x3 x4 )
   \
   \ 4dup ( x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2 x3 x4 ) "four-dup"
   \
-  \ See: `4drop`, `dup`, `2dup`, `3dup`.
+  \ See also: `4drop`, `dup`, `2dup`, `3dup`.
   \
   \ }doc
 
@@ -312,7 +312,7 @@ unneeding nup ?( code nup ( x1 x2 -- x1 x1 x2 )
   \ : nup ( x1 x2 -- x1 x1 x2 ) over swap ;
   \ ----
   \
-  \ See: `dup`, `tuck`, `drup`, `dip`.
+  \ See also: `dup`, `tuck`, `drup`, `dip`.
   \
   \ }doc
 
@@ -335,7 +335,7 @@ unneeding drup ?( code drup ( x1 x2 -- x1 x1 )
   \ : drup ( x1 x2 -- x1 x1 ) drop dup ;
   \ ----
   \
-  \ See: `dup`, `tuck`, `nup`, `dip`.
+  \ See also: `dup`, `tuck`, `nup`, `dip`.
   \
   \ }doc
 
@@ -358,7 +358,7 @@ unneeding dip ?( code dip ( x1 x2 -- x2 x2 )
   \ : dip ( x1 x2 -- x2 x2 ) nip dup ;
   \ ----
   \
-  \ See: `nip`, `dup`, `tuck`, `drup`.
+  \ See also: `nip`, `dup`, `tuck`, `drup`.
   \
   \ }doc
 
@@ -379,7 +379,7 @@ unneeding 0dup ?( code 0dup ( x -- x | 0 0 )
   \
   \ Duplicate _x_ if it's zero.
   \
-  \ See: `dup`, `-dup`.
+  \ See also: `dup`, `-dup`.
   \
   \ }doc
 
@@ -399,7 +399,7 @@ unneeding -dup ?( code -dup ( x -- x | x x )
   \
   \ Duplicate _x_ if it's negative.
   \
-  \ See: `dup`, `0dup`.
+  \ See also: `dup`, `0dup`.
   \
   \ }doc
 
@@ -424,7 +424,7 @@ code ndrop ( x1...xn n -- )
   \
   \ Drop _n_ cell items from the stack.
   \
-  \ See: `2ndrop`, `drop`, `2drop`.
+  \ See also: `2ndrop`, `drop`, `2drop`.
   \
   \ }doc
 
@@ -449,7 +449,7 @@ code 2ndrop ( dx1...dxn n -- )
   \
   \ Drop _n_ double cell items from the stack.
   \
-  \ See: `ndrop`, `drop`, `2drop`.
+  \ See also: `ndrop`, `drop`, `2drop`.
   \
   \ }doc
 
@@ -465,7 +465,7 @@ code 2>true ( x1 x2 -- true ) E1 c, end-code
   \
   \ Replace _x1 x2_ with `true`.
   \
-  \ See: `2>false`, `>true`.
+  \ See also: `2>false`, `>true`.
   \
   \ }doc
 
@@ -479,7 +479,7 @@ code >true ( x -- true ) E1 c, ' true jp, end-code ?)
   \
   \ Replace _x_ with `true`.
   \
-  \ See: `>false`, `2>true`.
+  \ See also: `>false`, `2>true`.
   \
   \ }doc
 
@@ -495,7 +495,7 @@ code 2>false ( x1 x2 -- false ) E1 c, end-code
   \
   \ Replace _x1 x2_ with `false`.
   \
-  \ See: `2>true`, `>false`.
+  \ See also: `2>true`, `>false`.
   \
   \ }doc
 
@@ -509,7 +509,7 @@ code >false ( x -- false ) E1 c, ' false jp, end-code ?)
   \
   \ Replace _x_ with `false`.
   \
-  \ See: `>true`, `2>false`.
+  \ See also: `>true`, `2>false`.
   \
   \ }doc
 

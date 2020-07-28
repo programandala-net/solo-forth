@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081220
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -34,7 +34,7 @@ unneeding printer ?\ : printer ( -- ) 3 channel printing on ;
   \
   \ Select the printer as output.
   \
-  \ See: `terminal`, `printing`.
+  \ See also: `terminal`, `printing`.
   \
   \ }doc
 
@@ -89,7 +89,7 @@ create newline> 1 c, 'cr' c, 0 c,
   \
   \ The string is returned by `newline`.
   \
-  \ See: `'lf'`.
+  \ See also: `'lf'`.
   \
   \ }doc
 
@@ -108,7 +108,7 @@ create newline> 1 c, 'cr' c, 0 c,
   \
   \ Origin: Gforth.
   \
-  \ See: `'cr'`, `'lf'`.
+  \ See also: `'cr'`, `'lf'`.
   \
   \ }doc
 
@@ -123,7 +123,7 @@ unneeding 'tab' ?\ 6 cconstant 'tab'  exit
   \ A character constant that returns the caracter code used as
   \ tabulator (6).
   \
-  \ See: `tab`, `'cr'`, `'bs'`.
+  \ See also: `tab`, `'cr'`, `'bs'`.
   \
   \ }doc
 
@@ -136,7 +136,7 @@ unneeding 'bs' ?\ 8 cconstant 'bs'  exit
   \ A character constant that returns the caracter code used as
   \ backspace (8).
   \
-  \ See: `'cr'`, `'tab'`.
+  \ See also: `'cr'`, `'tab'`.
   \
   \ }doc
 
@@ -149,7 +149,7 @@ unneeding 'cr' ?\ 13 cconstant 'cr'  exit
   \ A character constant that returns the caracter code used as
   \ carriage return (13).
   \
-  \ See: `cr`, `crs`, `newline`, `'lf'`.
+  \ See also: `cr`, `crs`, `newline`, `'lf'`.
   \
   \ }doc
 
@@ -166,7 +166,7 @@ unneeding 'lf' ?\ 10 cconstant 'lf'  exit
   \ code 10 is not called "line feed" but "cursor down", which
   \ is analogous.
   \
-  \ See: `cr`, `newline`.
+  \ See also: `cr`, `newline`.
   \
   \ }doc
 
@@ -180,7 +180,7 @@ unneeding tab ?\ need 'tab'  : tab ( -- ) 'tab' emit ;
   \ character displayed will appear at the next 16-character
   \ column.
   \
-  \ See: `tabulate`.
+  \ See also: `tabulate`.
   \
   \ }doc
 
@@ -194,7 +194,7 @@ unneeding backspace
   \
   \ Emit a backspace character (character code 8).
   \
-  \ See: `'bs'`.
+  \ See also: `'bs'`.
   \
   \ }doc
 
@@ -206,7 +206,7 @@ unneeding crs ?\ need 'cr'  : crs   ( n -- ) 'cr'  emits ;
   \
   \ Emit _n_ number of cr characters (character code 13).
   \
-  \ See: `cr`, `'cr'`.
+  \ See also: `cr`, `'cr'`.
   \
   \ }doc
 
@@ -218,7 +218,7 @@ unneeding tabs ?\ need 'tab'  : tabs ( n -- ) 'tab' emits ;
   \
   \ Emit _n_ number of tab characters (character code 6).
   \
-  \ See: `tab`, `'tab'`.
+  \ See also: `tab`, `'tab'`.
   \
   \ }doc
 
@@ -232,7 +232,7 @@ unneeding backspaces
   \
   \ Emit _n_ number of backspace characters (character code 8).
   \
-  \ See: `backspace`, `'bs'`.
+  \ See also: `backspace`, `'bs'`.
   \
   \ }doc
 

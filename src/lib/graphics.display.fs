@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -45,7 +45,7 @@ code fade-display ( -- )
   \ Do a screen fade to black, by decrementing the values of
   \ paper and ink in a loop.
   \
-  \ See: `blackout`, `attr-cls`.
+  \ See also: `blackout`, `attr-cls`.
   \
   \ }doc
 
@@ -78,7 +78,7 @@ code invert-display ( -- )
   \
   \ Invert the pixels of the whole screen.
   \
-  \ See: `wave-display`, `fade-display`.
+  \ See also: `wave-display`, `fade-display`.
   \
   \ }doc
 
@@ -105,7 +105,7 @@ code wave-display ( -- )
   \ Modify the screen bitmap with a water effect. At the end
   \ the original image is  restored.
   \
-  \ See: `invert-display`, `fade-display`.
+  \ See also: `invert-display`, `fade-display`.
   \
   \ }doc
 
@@ -129,7 +129,7 @@ code blackout ( -- )
   \
   \ Erase the screen (bitmap and the attributes) with zeros.
   \
-  \ See: `fade-display`, `cls`, `attr-cls`.
+  \ See also: `fade-display`, `cls`, `attr-cls`.
   \
   \ }doc
 

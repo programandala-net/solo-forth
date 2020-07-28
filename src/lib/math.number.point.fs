@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007280014
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -47,7 +47,7 @@ unneeding classic-number-point? ?(
   \ in `number?`, and whose default action is
   \ `standard-number-point?`.
   \
-  \ See: `extended-number-point?`.
+  \ See also: `extended-number-point?`.
   \
   \ }doc
 
@@ -70,7 +70,7 @@ unneeding extended-number-point? ?(
   \ in `number?`, and whose default action is
   \ `standard-number-point?`.
   \
-  \ See: `classic-number-point?`.
+  \ See also: `classic-number-point?`.
   \
   \ }doc
 

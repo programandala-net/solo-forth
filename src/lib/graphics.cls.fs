@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804121531
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -60,7 +60,7 @@ code cls-chars0 ( -- )
   \
   \ Clear the screen by rotating all bytes of the bitmap.
   \
-  \ See: `cls-chars1`.
+  \ See also: `cls-chars1`.
   \
 
 ( cls-chars1 )
@@ -135,7 +135,7 @@ code horizontal-curtain ( b -- )
   \ Wash the screen with the given color attribute _b_ from the
   \ top and bottom rows to the middle.
   \
-  \ See: `vertical-curtain`.
+  \ See also: `vertical-curtain`.
   \
   \ }doc
 
@@ -174,7 +174,7 @@ code vertical-curtain ( b -- )
   \ Wash the screen with the given color attribute _b_ from the
   \ left and right columns to the middle.
   \
-  \ See: `horizontal-curtain`.
+  \ See also: `horizontal-curtain`.
   \
   \ }doc
 

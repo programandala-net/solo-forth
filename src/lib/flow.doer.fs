@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041324
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -118,7 +118,7 @@ variable >;and ( -- a )
 
   \ ``make`` is an `immediate` word.
   \
-  \ See: `;and`, `undo`.
+  \ See also: `;and`, `undo`.
   \
   \ }doc
 
@@ -144,7 +144,7 @@ unneeding ;and ?( need doer
 
   \ ``;and`` is an `immediate` word.
   \
-  \ See: `undo`.
+  \ See also: `undo`.
   \
   \ }doc
 
@@ -160,7 +160,7 @@ unneeding undo ?( need doer
   \ Parse _name_, which is the name of a word created by
   \ `doer`, and make it do nothing.
   \
-  \ See: `make`, `;and`.
+  \ See also: `make`, `;and`.
   \
   \ }doc
 

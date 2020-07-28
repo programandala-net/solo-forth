@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005051428
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -65,7 +65,7 @@ variable mode-32-font  rom-font bl 8 * + mode-32-font !
   \ restored by `restore-mode`, which is called by `warm` and
   \ `cold`).
   \
-  \ See: `current-mode`, `set-font`, `set-mode-output`,
+  \ See also: `current-mode`, `set-font`, `set-mode-output`,
   \ `columns`, `rows`, `mode-32-emit`, `mode-32-xy`,
   \ `mode-32-at-xy`, `>form`.
   \

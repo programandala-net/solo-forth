@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803062223
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -59,7 +59,7 @@ unneeding estack ?(
   \ my-stack edepth .
   \ ----
 
-  \ See: `>e`, `e@`, `e>`, `edepth`, `xstack`.
+  \ See also: `>e`, `e@`, `e>`, `edepth`, `xstack`.
   \
   \ }doc
 
@@ -71,7 +71,7 @@ unneeding estack ?(
   \
   \ Copy _x_ from the `estack` _a_ to the data stack.
   \
-  \ See: `e>`, `>e`.
+  \ See also: `e>`, `>e`.
   \
   \ }doc
 
@@ -83,7 +83,7 @@ unneeding estack ?(
   \
   \ Move _x_ to the extra stack _a_ defined with `estack`.
   \
-  \ See: `e>`, `e@`.
+  \ See also: `e>`, `e@`.
   \
   \ }doc
 
@@ -96,7 +96,7 @@ unneeding estack ?(
   \ Move _x_ from the extra stack _a_ defined with `estack` to
   \ the data stack.
   \
-  \ See: `>e`, `e@`.
+  \ See also: `>e`, `e@`.
   \
   \ }doc
 

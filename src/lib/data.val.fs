@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041142
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -63,7 +63,7 @@ unneeding val ?(  variable (val
   \
   \ ``val`` is an alternative to the standard `value`.
   \
-  \ See: `cval`, `2val`, `variable`, `constant`.
+  \ See also: `cval`, `2val`, `variable`, `constant`.
   \
   \ }doc
 
@@ -80,7 +80,7 @@ unneeding val ?(  variable (val
   \ ``toval`` and `val` are a non-parsing alternative to the
   \ standard `to` and `value`.
   \
-  \ See: `ctoval`, `2toval`.
+  \ See also: `ctoval`, `2toval`.
   \
   \ }doc
 
@@ -112,7 +112,7 @@ unneeding 2val ?(  variable (2val
   \
   \ ``2val`` is an alternative to the standard `2value`.
   \
-  \ See: `val`, `cval`, `2variable`, `2constant`.
+  \ See also: `val`, `cval`, `2variable`, `2constant`.
   \
   \ }doc
 
@@ -129,7 +129,7 @@ unneeding 2val ?(  variable (2val
   \ ``2toval`` and `2val` are a non-parsing alternative to the
   \ standard `to` and `2value`.
   \
-  \ See: `toval`, `ctoval`.
+  \ See also: `toval`, `ctoval`.
   \
   \ }doc
 
@@ -159,7 +159,7 @@ unneeding cval ?(  variable (cval
   \ the stack (unless `ctoval` is used first) and then will
   \ execute `init-cval`.
   \
-  \ See: `val`, `2val`, `cvariable`, `cconstant`.
+  \ See also: `val`, `2val`, `cvariable`, `cconstant`.
   \
   \ }doc
 
@@ -173,7 +173,7 @@ unneeding cval ?(  variable (cval
   \ make them store a new value instead of returning its actual
   \ one.
   \
-  \ See: `toval`, `2toval`.
+  \ See also: `toval`, `2toval`.
   \
   \ }doc
 

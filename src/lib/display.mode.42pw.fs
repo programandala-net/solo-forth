@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202005030047
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -730,7 +730,7 @@ variable mode-42pw-font  rom-font bl 8 * + mode-42pw-font !
   \ The only control character recognized is #13 (carriage
   \ return).
   \
-  \ See: `current-mode`, `set-font`, `set-mode-output`,
+  \ See also: `current-mode`, `set-font`, `set-mode-output`,
   \ `columns`, `rows`, `mode-42pw-emit`, `mode-42pw-xy`,
   \ `mode-42pw-font`, `>form`, `mode-42pw-output_`,
   \ `mode-42rs`.

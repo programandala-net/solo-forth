@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202002270049
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -91,7 +91,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \
   \ Origin: Gforth.
   \
-  \ See: `assert(`.
+  \ See also: `assert(`.
   \
   \ }doc
 
@@ -109,7 +109,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \
   \ Origin: Gforth.
   \
-  \ See: `assert(`.
+  \ See also: `assert(`.
   \
   \ }doc
 
@@ -126,7 +126,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \
   \ Origin: Gforth.
   \
-  \ See: `assert-level`, `assert(`, `assert1(`, `assert2(`,
+  \ See also: `assert-level`, `assert(`, `assert1(`, `assert2(`,
   \ `assert3(`, `)`.
   \
   \ }doc
@@ -144,7 +144,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \
   \ Origin: Gforth.
   \
-  \ See: `assert-level`, `assert(`, `assert0(`, `assert2(`,
+  \ See also: `assert-level`, `assert(`, `assert0(`, `assert2(`,
   \ `assert3(`, `)`.
   \
   \ }doc
@@ -161,7 +161,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \
   \ Origin: Gforth.
   \
-  \ See: `assert-level`, `assert(`, `assert0(`, `assert1(`,
+  \ See also: `assert-level`, `assert(`, `assert0(`, `assert1(`,
   \ `assert3(`, `)`.
   \
   \ }doc
@@ -180,7 +180,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \
   \ Origin: Gforth.
   \
-  \ See: `assert-level`, `assert(`, `assert0(`, `assert1(`,
+  \ See also: `assert-level`, `assert(`, `assert0(`, `assert1(`,
   \ `assert2(`, `)`.
   \
   \ }doc
@@ -198,7 +198,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \
   \ Origin: Gforth.
   \
-  \ See: `assert-level`, `assert0(`, `assert1(`,
+  \ See also: `assert-level`, `assert0(`, `assert1(`,
   \ `assert2(`, `assert3(`, `)`.
   \
   \ }doc
@@ -217,7 +217,7 @@ variable assert-level ( -- a ) 1 assert-level !
   \
   \ Origin: Gforth.
   \
-  \ See: `assert(`.
+  \ See also: `assert(`.
   \
   \ }doc
 

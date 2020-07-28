@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007112253
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -41,7 +41,7 @@ variable first-esc-block-char  128 first-esc-block-char !
   \ modified in order to make the escaped block characters
   \ produce a different range of codes.
   \
-  \ See: `esc-block-chars-wordlist`.
+  \ See also: `esc-block-chars-wordlist`.
   \
   \ }doc
 
@@ -95,7 +95,7 @@ wordlist dup constant esc-block-chars-wordlist
   \ The code of the first block character can be modified with
   \ the character variable `first-esc-block-char`.
   \
-  \ See: `first-esc-block-char`, `set-esc-order`, `>esc-order`,
+  \ See also: `first-esc-block-char`, `set-esc-order`, `>esc-order`,
   \ `esc-standard-chars-wordlist`, `esc-udg-chars-wordlist`,
   \ `parse-esc-string`, `s\"`, `.\"`.
   \
@@ -176,7 +176,7 @@ wordlist dup constant esc-udg-chars-wordlist set-current
   \ s\" \A\B\C\D\nNew line:\A\B\C\D..." type
   \ ----
 
-  \ See: `set-esc-order`, `>esc-order`,
+  \ See also: `set-esc-order`, `>esc-order`,
   \ `esc-standard-chars-wordlist`, `esc-block-chars-wordlist`.
   \
   \ }doc

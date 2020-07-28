@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804152155
+  \ Last modified: 202007282031
 
   \ ===========================================================
   \ Description
@@ -42,7 +42,7 @@ need cs-swap need cs-mark need thens
   \
   \ Start a ``{if`` control structure.
   \
-  \ See: `if}`, `if>`, `|if|`.
+  \ See also: `if}`, `if>`, `|if|`.
   \
   \ }doc
 
@@ -111,7 +111,7 @@ need cs-swap need cs-dup
   \
   \ Start a ``{do`` control structure.
   \
-  \ See: `do}`, `|do|`, `do>`.
+  \ See also: `do}`, `|do|`, `do>`.
   \
   \ }doc
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005130155
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -104,7 +104,7 @@ need alias need char-position?
   \   s" abc" ?ccase  .a .b .c  end?ccase  ."  The End" cr ;
   \ ----
   \
-  \ See: `ccase`, `ccase0`.
+  \ See also: `ccase`, `ccase0`.
   \
   \ }doc
 
@@ -185,7 +185,7 @@ need alias need char-position?
   \   ."  The End" cr ;
   \ ----
   \
-  \ See: `ccase` `?ccase`.
+  \ See also: `ccase` `?ccase`.
   \
   \ }doc
 
@@ -271,7 +271,7 @@ need char-position?
   \   ."  The End" cr ;
   \ ----
   \
-  \ See: `ccase0`, `?ccase`.
+  \ See also: `ccase0`, `?ccase`.
   \
   \ }doc
 

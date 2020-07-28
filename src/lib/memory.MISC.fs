@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006152055
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -48,7 +48,7 @@ code -! ( n|u a -- )
   \
   \ Subtract _n|u_ from the single-cell number stored at _a_.
   \
-  \ See: `+!`, `1-!`, `c-!`.
+  \ See also: `+!`, `1-!`, `c-!`.
   \
   \ }doc
 
@@ -69,7 +69,7 @@ code c+! ( c ca -- )
   \
   \ Add _c_ to the character stored at _ca_
   \
-  \ See: `c-!`, `c1+!`, `+!`.
+  \ See also: `c-!`, `c1+!`, `+!`.
   \
   \ }doc
 
@@ -90,7 +90,7 @@ code c-! ( c ca -- )
   \
   \ Subtract _c_ from the character stored at _ca_
   \
-  \ See: `c+!`, `c1-!`, `-!`.
+  \ See also: `c+!`, `c1-!`, `-!`.
   \
   \ }doc
 
@@ -109,7 +109,7 @@ unneeding c1+!
   \
   \ Increment the character stored at _ca_.
   \
-  \ See: `c1-!`, `c+!`, `1+!`.
+  \ See also: `c1-!`, `c+!`, `1+!`.
   \
   \ }doc
 
@@ -126,7 +126,7 @@ unneeding c1-!
   \
   \ Decrement the character stored at _ca_.
   \
-  \ See: `?c1-!`, `c1+!`, `c-!`, `1-!`.
+  \ See also: `?c1-!`, `c1+!`, `c-!`, `1-!`.
   \
   \ }doc
 
@@ -147,7 +147,7 @@ code ?c1-! ( ca -- )
   \
   \ If the character stored at _ca_ is not zero, decrement it.
   \
-  \ See: `c1-!`, `c1+!`, `c-!`, `1-!`.
+  \ See also: `c1-!`, `c1+!`, `c-!`, `1-!`.
   \
   \ }doc
 
@@ -172,7 +172,7 @@ code 1+! ( a -- )
   \
   \ Increment the single-cell number stored at _a_.
   \
-  \ See: `c1+!`, `1-!`, `+!`.
+  \ See also: `c1+!`, `1-!`, `+!`.
   \
   \ }doc
 
@@ -197,7 +197,7 @@ code 1-! ( a -- )
   \
   \ Decrement the single-cell number stored at _a_.
   \
-  \ See: `1+!`, `c1-!`, `-!`.
+  \ See also: `1+!`, `c1-!`, `-!`.
   \
   \ }doc
 
@@ -215,7 +215,7 @@ unneeding @+
   \ by one cell. This is handy for stepping through cell
   \ arrays.
   \
-  \ See: `@`, `2@+`, `c@+`.
+  \ See also: `@`, `2@+`, `c@+`.
   \
   \ }doc
 
@@ -231,7 +231,7 @@ unneeding 2@+
   \ by two cells. This is handy for stepping through
   \ double-cell arrays.
   \
-  \ See: `2@`, `@+`, `c@+`.
+  \ See also: `2@`, `@+`, `c@+`.
   \
   \ }doc
 
@@ -247,7 +247,7 @@ unneeding c@+ ?\ need alias ' count alias c@+ ( ca -- ca' c )
   \
   \ ``c@+`` is an `alias` of `count`.
   \
-  \ See: `c@`, `2@+`, `@+`.
+  \ See also: `c@`, `2@+`, `@+`.
   \
   \ }doc
 
@@ -273,7 +273,7 @@ code c@1+ ( ca -- c )
   \
   \ ``c@1+`` is a faster alternative to ``c@ 1+``.
   \
-  \ See: `c@1-`, `c@2+`, `c@`, `1+`.
+  \ See also: `c@1-`, `c@2+`, `c@`, `1+`.
   \
   \ }doc
 
@@ -297,7 +297,7 @@ code c@1- ( ca -- c )
   \
   \ ``c@1-`` is a faster alternative to ``c@ 1-``.
   \
-  \ See: `c@1+`, `c@2-`, `c@`, `1-`.
+  \ See also: `c@1+`, `c@2-`, `c@`, `1-`.
   \
   \ }doc
 
@@ -322,7 +322,7 @@ code c@2+ ( ca -- c )
   \
   \ ``c@2+`` is a faster alternative to ``c@ 2+``.
   \
-  \ See: `c@2-`, `c@1+`, `c@`, `2+`.
+  \ See also: `c@2-`, `c@1+`, `c@`, `2+`.
   \
   \ }doc
 
@@ -347,7 +347,7 @@ code c@2- ( ca -- c )
   \
   \ ``c@2-`` is a faster alternative to ``c@ 2-``.
   \
-  \ See: `c@2+`, `c@1-`, `c@`, `2-`.
+  \ See also: `c@2+`, `c@1-`, `c@`, `2-`.
   \
   \ }doc
 
@@ -363,7 +363,7 @@ unneeding n, ?\ : n, ( x[u]..x[1] u -- ) 0 ?do , loop ;
   \ space, being _x[1]_ the first one stored and _x[u]_ the
   \ last one.
   \
-  \ See: `,`, `far-n,`, `nn,`, `n@`, `n!`.
+  \ See also: `,`, `far-n,`, `nn,`, `n@`, `n!`.
   \
   \ }doc
 
@@ -379,7 +379,7 @@ unneeding nn, ?( need need-here need-here n,
   \ store also _u_ cells _x[u]..x[1]_ into data space, being
   \ _x[1]_ the first one stored and _x[u]_ the last one.
   \
-  \ See: `,`, `n,`, `nn!`.
+  \ See also: `,`, `n,`, `nn!`.
   \
   \ }doc
 
@@ -396,7 +396,7 @@ unneeding n@ ?(
   \ If _u_ is not zero, read _u_ cells _x[u]..x[1]_ from _a_,
   \ being _x[1]_ the first one stored and _x[u]_ the last one.
   \
-  \ See: `nn@`, `@`, `nn!`.
+  \ See also: `nn@`, `@`, `nn!`.
   \
   \ }doc
 
@@ -413,7 +413,7 @@ unneeding nn@ ?( need need-here need-here n@
   \ cell address, being _x[1]_ the first cell stored there and
   \ _x[u]_ the last one.
   \
-  \ See: `n@`, `@`, `nn!`.
+  \ See also: `n@`, `@`, `nn!`.
   \
   \ }doc
 
@@ -429,7 +429,7 @@ unneeding n! ?(
   \ If _u_ is not zero, store _u_ cells at address _a_, being
   \ _x[1]_ the first cell stored there and _x[u]_ the last one.
   \
-  \ See: `nn!`, `!`, `n@`.
+  \ See also: `nn!`, `!`, `n@`.
   \
   \ }doc
 
@@ -445,7 +445,7 @@ unneeding nn! ?( need need-here need-here n!
   \ _u_ cells _x[u]..x[1]_ at the next cell address, being
   \ _x[1]_ the first one stored and _x[u]_ the last one.
   \
-  \ See: `n!`, `!`, `nn@`.
+  \ See also: `n!`, `!`, `nn@`.
   \
   \ }doc
 
@@ -461,7 +461,7 @@ unneeding bit>mask
   \
   \ Convert bit number _n_ to a bitmask _b_ with bit _n_ set.
   \
-  \ See: `bit?`, `set-bit`, `reset-bit`.
+  \ See also: `bit?`, `set-bit`, `reset-bit`.
   \
   \ }doc
 
@@ -475,7 +475,7 @@ unneeding bit?
   \
   \ Is bit _n_ of _b_ set?
   \
-  \ See: `bit?`, `set-bit`, `bit>mask`.
+  \ See also: `bit?`, `set-bit`, `bit>mask`.
   \
   \ }doc
 
@@ -489,7 +489,7 @@ unneeding set-bit?
   \
   \ Set bit _n_ of _b1_, returning the result _b2_.
   \
-  \ See: `bit?`, `set-bit`, `bit>mask`.
+  \ See also: `bit?`, `set-bit`, `bit>mask`.
   \
   \ }doc
 
@@ -503,7 +503,7 @@ unneeding reset-bit? ?( need bit>mask
   \
   \ Reset bit _n_ of _b1_, returning the result _b2_.
   \
-  \ See: `bit?`, `set-bit`, `bit>mask`.
+  \ See also: `bit?`, `set-bit`, `bit>mask`.
   \
   \ }doc
 
@@ -543,7 +543,7 @@ code c@and ( b1 ca -- b2 )
   \ Fetch the caracter at _ca_ and do a bit-by-bit logical
   \ `and` of it with _b1_, returning the result _b2_.
   \
-  \ See: `c@and?`, `ctoggle`, `cset`, `creset`.
+  \ See also: `c@and?`, `ctoggle`, `cset`, `creset`.
   \
   \ }doc
 
@@ -578,7 +578,7 @@ code ctoggle ( b ca -- )
   \
   \ Invert the bits at _ca_ specified by the bitmask _b_.
   \
-  \ See: `cset`, `creset`, `c@and`.
+  \ See also: `cset`, `creset`, `c@and`.
   \
   \ }doc
 
@@ -602,7 +602,7 @@ unneeding coff
   \ : coff ( ca -- ) false swap c! ;
   \ ----
 
-  \ See: `off`.
+  \ See also: `off`.
   \
   \ }doc
 
@@ -629,7 +629,7 @@ unneeding con
   \ NOTE: The value actually stored is not `true`, which is a
   \ cell, but its 8-bit equivalent $FF.
   \
-  \ See: `coff`, `on`.
+  \ See also: `coff`, `on`.
   \
   \ }doc
 
@@ -645,7 +645,7 @@ unneeding ? ?\ : ? ( a -- ) @ . ;
   \ Origin: fig-Forth, Forth-79 (Required Word Set), Forth-94
   \ (TOOLS), Forth-2012 (TOOLS).
   \
-  \ See: `c?`, `2?`, `@`.
+  \ See also: `c?`, `2?`, `@`.
   \
   \ }doc
 
@@ -658,7 +658,7 @@ unneeding c? ?\ : c? ( ca -- ) c@ . ;
   \ Display the 1-byte unsigned integer stored at _ca_, using
   \ the format of `.`.
   \
-  \ See: `?`, `2?`, `c@`.
+  \ See also: `?`, `2?`, `c@`.
   \
   \ }doc
 
@@ -671,7 +671,7 @@ unneeding 2? ?\ : 2? ( a -- ) 2@ d. ;
   \ Display the double-cell signed integer stored at _a_, using
   \ the format of `d.`.
   \
-  \ See: `?`, `c?`, `2@`.
+  \ See also: `?`, `c?`, `2@`.
   \
   \ }doc
 
@@ -687,7 +687,7 @@ unneeding !exchange
   \
   \ Store _x1_ into _a_ and return its previous contents _x2_.
   \
-  \ See: `c!exchange`, `exchange`.
+  \ See also: `c!exchange`, `exchange`.
   \
   \ }doc
 
@@ -720,7 +720,7 @@ code c!exchange ( c1 ca -- c2 )
   \ : c!exchange ( c1 ca -- c2 ) dup c@ rot rot c! ;
   \ ----
 
-  \ See: `!exchange`, `cexchange`.
+  \ See also: `!exchange`, `cexchange`.
   \
   \ }doc
 
@@ -735,7 +735,7 @@ unneeding reserve
   \ Reserve _n_ bytes of data space, erase the zone and return
   \ its address _a_.
   \
-  \ See: `buffer:`, `allot`, `allotted`, `here`, `erase`.
+  \ See also: `buffer:`, `allot`, `allotted`, `here`, `erase`.
   \
   \ }doc
 
@@ -747,7 +747,7 @@ unneeding allotted ?\ : allotted ( n -- a ) here swap allot ;
   \
   \ Reserve _n_ bytes of data space and return its address _a_.
   \
-  \ See: `reserve`, `buffer:`, `allot`, `here`.
+  \ See also: `reserve`, `buffer:`, `allot`, `here`.
   \
   \ }doc
 
@@ -765,7 +765,7 @@ unneeding align ?\ need alias ' noop alias align immediate
   \
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
   \
-  \ See: `dp`, `aligned`.
+  \ See also: `dp`, `aligned`.
   \
   \ }doc
 
@@ -783,7 +783,7 @@ unneeding aligned ?\ need alias ' noop alias aligned immediate
   \
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
   \
-  \ See: `align`.
+  \ See also: `align`.
   \
   \ }doc
 
@@ -798,7 +798,7 @@ unneeding /! ?\ : /! ( n a -- ) tuck @ swap / swap ! ;
   \ Divide _n_ by the single-cell number stored at _a_ and store
   \ the quotient in _a_
   \
-  \ See: `2/!`, `*!`, `+!`, `-!`.
+  \ See also: `2/!`, `*!`, `+!`, `-!`.
   \
   \ }doc
 
@@ -811,7 +811,7 @@ unneeding *! ?\ : *! ( n a -- ) tuck @ swap * swap ! ;
   \ Multiply _n|u_ by the single-cell number stored at _a_ and store
   \ the product in _a_
   \
-  \ See: `2*!` `/!`, `+!`, `-!`.
+  \ See also: `2*!` `/!`, `+!`, `-!`.
   \
   \ }doc
 
@@ -823,7 +823,7 @@ unneeding 2*! ?\ : 2*! ( a -- ) dup @ 2* swap ! ;
   \
   \ Do a `2*` shift to the single-cell number stored at _a_.
   \
-  \ See: `2/!`, `2*`.
+  \ See also: `2/!`, `2*`.
   \
   \ }doc
 
@@ -835,7 +835,7 @@ unneeding 2/! ?\ need 2/ : 2/! ( a -- ) dup @ 2/ swap ! ;
   \
   \ Do a `2/` shift to the single-cell number stored at _a_.
   \
-  \ See: `2*!`, `2/`.
+  \ See also: `2*!`, `2/`.
   \
   \ }doc
 
@@ -849,7 +849,7 @@ unneeding exchange
   \
   \ Exchange the cells stored at _a1_ and _a2_.
   \
-  \ See: `cexchange`, `!exchange`.
+  \ See also: `cexchange`, `!exchange`.
   \
   \ }doc
 
@@ -883,7 +883,7 @@ code cexchange ( ca1 ca2 -- )
   \ : cexchange ( ca1 ca2 -- ) 2dup c@ swap c@ rot c! swap c! ;
   \ ----
 
-  \ See: `exchange`, `c!exchange`.
+  \ See also: `exchange`, `c!exchange`.
   \
   \ }doc
 

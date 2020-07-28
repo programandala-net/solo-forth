@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006082154
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -40,7 +40,7 @@ unneeding depth
   \ Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
   \ Set), Forth-94 (CORE), Forth-2012 (CORE).
   \
-  \ See: `sp@`, sp0`, `cell`, `rdepth`, `fdepth`, `.depth`.
+  \ See also: `sp@`, sp0`, `cell`, `rdepth`, `fdepth`, `.depth`.
   \
   \ }doc
 
@@ -53,7 +53,7 @@ unneeding .depth ?\ : .depth ( n -- ) ." <" 0 .r ." > " ;
   \ Display _n_ with the format used by `.s` and `u.s` to
   \ display the `depth` of the data stack`.
   \
-  \ See: `.r`, `depth`.
+  \ See also: `.r`, `depth`.
   \
   \ }doc
 
@@ -74,7 +74,7 @@ defer (.s ( x -- ) ' . ' (.s defer!
   \
   \ Display, using `.`, the values currently on the data stack.
   \
-  \ See: `u.s`, `depth`, `.depth`.
+  \ See also: `u.s`, `depth`, `.depth`.
   \
   \ }doc
 
@@ -90,7 +90,7 @@ unneeding u.s ?( need .s
   \ Display, using `u.`,  the values currently on the data
   \ stack.
   \
-  \ See: `.s`, `depth`, `.depth`.
+  \ See also: `.s`, `depth`, `.depth`.
   \
   \ }doc
 

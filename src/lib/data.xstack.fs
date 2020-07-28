@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006011401
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -83,7 +83,7 @@ unneeding xstack and ?(
   \ `xp0`, `xp` and `xsize` are used to access the contents of
   \ the table.
 
-  \ See: `estack`.
+  \ See also: `estack`.
   \
   \ }doc
 
@@ -110,7 +110,7 @@ unneeding allocate-xstack ?( need allocate
   \ Create an `xstack` in the heap. _n_ is the size in
   \ cells.  Return its address _a_.
   \
-  \ See: `xfree`, `allocate-xstack`.
+  \ See also: `xfree`, `allocate-xstack`.
   \
   \ }doc
 
@@ -126,7 +126,7 @@ unneeding allot-xstack ?(
   \ Create an `xstack` in data space. _n_ is the size in
   \ cells.  Return its address _a_.
   \
-  \ See: `allocate-xstack`.
+  \ See also: `allocate-xstack`.
   \
   \ }doc
 
@@ -142,7 +142,7 @@ unneeding >x ?( need xp
   \
   \ Move _x_ from the data stack to the `xstack`.
   \
-  \ See: `x>`, `x@`.
+  \ See also: `x>`, `x@`.
   \
   \ }doc
 
@@ -156,7 +156,7 @@ unneeding x> ?( need x@ need xdrop
   \
   \ Move _x_ from the current `xstack` to the data stack.
   \
-  \ See: `x>`, `x@`.
+  \ See also: `x>`, `x@`.
   \
   \ }doc
 
@@ -170,7 +170,7 @@ unneeding x@ ?( need xp
   \
   \ Copy _x_ from the current `xstack` to the data stack.
   \
-  \ See: `x>`, `>x`.
+  \ See also: `x>`, `>x`.
   \
   \ }doc
 
@@ -184,7 +184,7 @@ unneeding xdrop ?( need xp
   \
   \ Remove _x_ from the `xstack`.
   \
-  \ See: `>x`, `x>`.
+  \ See also: `>x`, `x>`.
   \
   \ }doc
 
@@ -198,7 +198,7 @@ unneeding xdup ?( need x@ need >x
   \
   \ Duplicate _x_ in the current `xstack`.
   \
-  \ See: `2xdup`.
+  \ See also: `2xdup`.
   \
   \ }doc
 
@@ -256,7 +256,7 @@ unneeding 2>x ?( need >x
   \ Move the cell pair _x1 x2_ from the data stack to the
   \ current `xstack`.
   \
-  \ See: `2x>`, `2x@`, `>x`.
+  \ See also: `2x>`, `2x@`, `>x`.
   \
   \ }doc
 
@@ -271,7 +271,7 @@ unneeding 2x> ?( need x>
   \ Move the cell pair _x1 x2_ from the current `xstack` to
   \ the data stack.
   \
-  \ See: `2>x`, `2x@`, `x>`.
+  \ See also: `2>x`, `2x@`, `x>`.
   \
   \ }doc
 
@@ -285,7 +285,7 @@ unneeding 2xdrop ?( need xp
   \
   \ Remove the cell pair _x1 x2_ from the current `xstack`.
   \
-  \ See: `xdrop`.
+  \ See also: `xdrop`.
   \
   \ }doc
 
@@ -299,7 +299,7 @@ unneeding 2xdup ?( need xover
   \
   \ Duplicate the cell pair _x1 x2_ in the current `xstack`.
   \
-  \ See: `xdup`.
+  \ See also: `xdup`.
   \
   \ }doc
 
@@ -315,7 +315,7 @@ unneeding xclear ?( need xp0 need xp
   \
   \ Clear the current `xstack`.
   \
-  \ See: `xdrop`, `2xdrop`, `xp0`, `xp`.
+  \ See also: `xdrop`, `2xdrop`, `xp0`, `xp`.
   \
   \ }doc
 
@@ -329,7 +329,7 @@ unneeding xlen unneeding xdepth and ?( need xp need xp0
   \
   \ _n_ is the length of the current `xstack`, in bytes.
   \
-  \ See: `xdepth`.
+  \ See also: `xdepth`.
   \
   \ }doc
 
@@ -342,7 +342,7 @@ unneeding xlen unneeding xdepth and ?( need xp need xp0
   \ _n_ is the number of single-cells values contained in the
   \ current `xstack`.
   \
-  \ See: `.xs`, `xlen`.
+  \ See also: `.xs`, `xlen`.
   \
   \ }doc
 
@@ -372,7 +372,7 @@ need xp0 need xlen need xdepth need .depth need +loop
   \ Display the number of items on the current `xstack`, followed
   \ by a list of the items, if any; TOS is the right-most item.
   \
-  \ See: `xdepth` ,`(.xs`.
+  \ See also: `xdepth` ,`(.xs`.
   \
   \ }doc
 

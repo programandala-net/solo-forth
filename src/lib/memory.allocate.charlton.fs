@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081220
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -204,7 +204,7 @@ variable nextnode
   \ by Gordon Charlton, whose words are defined in
   \ `charlton-heap-wordlist`.
   \
-  \ See: `charlton-allocate`, `charlton-resize`,
+  \ See also: `charlton-allocate`, `charlton-resize`,
   \ `charlton-free`.
   \
   \ }doc
@@ -347,7 +347,7 @@ variable nextnode
   \ Gordon Charlton, whose words are defined in
   \ `charlton-heap-wordlist`.
   \
-  \ See: `charlton-resize`, `charlton-free`.
+  \ See also: `charlton-resize`, `charlton-free`.
   \
   \ }doc
 

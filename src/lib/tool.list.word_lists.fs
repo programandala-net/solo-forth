@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006082154
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -35,7 +35,7 @@ unneeding .current
   \
   \ Display the compilation word list.
   \
-  \ See: `get-current`, `.wordlist`, `order`.
+  \ See also: `get-current`, `.wordlist`, `order`.
   \
   \ }doc
 
@@ -51,7 +51,7 @@ unneeding .context ?( need .wordlist
   \ Display the word lists in the search order in their search
   \ order sequence, from first searched to last searched.
   \
-  \ See: `get-order`, `.wordlist`, `order`.
+  \ See also: `get-order`, `.wordlist`, `order`.
   \
   \ }doc
 
@@ -67,7 +67,7 @@ unneeding .wordlist ?( need wordlist>name need .name
   \ If the `wordlist` identified by _wid_ has an associated
   \ name, display it; else display _wid_.
   \
-  \ See: `wordlists`, `dump-wordlist`, `wordlist>name`.
+  \ See also: `wordlists`, `dump-wordlist`, `wordlist>name`.
   \
   \ }doc
 
@@ -87,7 +87,7 @@ unneeding dump-wordlist ?( need .wordlist need wordlist>last
   \ and the name of the latest definition created in the word
   \ list.
   \
-  \ See: `.wordlist`, `dump-wordlists`, `wordlist>last`,
+  \ See also: `.wordlist`, `dump-wordlists`, `wordlist>last`,
   \ `.name`.
   \
   \ }doc
@@ -109,7 +109,7 @@ unneeding order ?( need .context need .current  : order ( -- )
   \
   \ Origin: Forth-2012 (SEARCH EXT).
   \
-  \ See: `.context`, `.current`, `.wordlist`, `set-order`.
+  \ See also: `.context`, `.current`, `.wordlist`, `set-order`.
   \
   \ }doc
 
@@ -132,7 +132,7 @@ unneeding wordlists ?( need .wordlist need wordlist>link
   \ lists are listed in reverse chronological order: The first
   \ word list listed is the most recently defined.
   \
-  \ See: `.wordlist`, `words`, `wordlist-words`, `wordlist`,
+  \ See also: `.wordlist`, `words`, `wordlist-words`, `wordlist`,
   \ `last-wordlist`.
   \
   \ }doc
@@ -153,7 +153,7 @@ unneeding dump-wordlists> ?( need dump-wordlist
   \
   \ ``dump-wordlists>`` is a useful factor of `dump-wordlists`.
   \
-  \ See: `dump-wordlist`, `wordlists`, `wordlist>link`.
+  \ See also: `dump-wordlist`, `wordlists`, `wordlist>link`.
   \
   \ }doc
 
@@ -169,7 +169,7 @@ unneeding dump-wordlists ?( need dump-wordlists>
   \ Dump the data of all the word lists defined in the system,
   \ starting from the `wordlist` pointed by `last-wordlist`.
   \
-  \ See: `dump-wordlist`, `dump-wordlists>`, `wordlists`.
+  \ See also: `dump-wordlist`, `dump-wordlists>`, `wordlists`.
   \
   \ }doc
 

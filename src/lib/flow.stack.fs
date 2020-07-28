@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804162004
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -47,7 +47,7 @@ unneeding cs-pick ?( need pick
   \
   \ Origin: Forth-94 (TOOLS EXT), Forth-2012 (TOOLS EXT).
   \
-  \ See: `cs-roll`, `cs-swap`, `cs-drop`, `cs-dup`, `cs-mark`,
+  \ See also: `cs-roll`, `cs-swap`, `cs-drop`, `cs-dup`, `cs-mark`,
   \ `cs-test`.
   \
   \ }doc
@@ -75,7 +75,7 @@ unneeding cs-roll ?( need roll
   \
   \ Origin: Forth-94 (TOOLS EXT), Forth-2012 (TOOLS EXT).
   \
-  \ See: `cs-pick`, `cs-swap`, `cs-drop`, `cs-dup`, `cs-mark`,
+  \ See also: `cs-pick`, `cs-swap`, `cs-drop`, `cs-dup`, `cs-mark`,
   \ `cs-test`.
   \
   \ }doc
@@ -94,7 +94,7 @@ unneeding cs-drop ?\ : cs-drop ( C: x -- ) drop ; compile-only
   \ NOTE: In Solo Forth the control-flow stack is implemented
   \ using the data stack.
   \
-  \ See: `cs-pick`, `cs-roll`, `cs-swap`, `cs-dup`, `cs-mark`,
+  \ See also: `cs-pick`, `cs-roll`, `cs-swap`, `cs-dup`, `cs-mark`,
   \ `cs-test`.
   \
   \ }doc
@@ -115,7 +115,7 @@ unneeding cs-dup
   \ NOTE: In Solo Forth the control-flow stack is implemented
   \ using the data stack.
   \
-  \ See: `cs-pick`, `cs-roll`, `cs-swap`, `cs-drop`, `cs-mark`,
+  \ See also: `cs-pick`, `cs-roll`, `cs-swap`, `cs-drop`, `cs-mark`,
   \ `cs-test`.
   \
   \ }doc
@@ -134,7 +134,7 @@ unneeding cs-mark ?\ 0 cconstant cs-mark ( C: -- cs-mark )
   \ marker ocuppies the same width as an _orig|dest_ but is
   \ distinguishable using `cs-test`.
   \
-  \ See: `cs-pick`, `cs-roll`, `cs-swap`, `cs-dup`, `cs-drop`.
+  \ See also: `cs-pick`, `cs-roll`, `cs-swap`, `cs-dup`, `cs-drop`.
   \
   \ }doc
 
@@ -154,7 +154,7 @@ unneeding cs-test ?( need cs-mark
   \ Return a true flag if _x_ is an _orig|dest_, and false if a
   \ marker placed by `cs-mark`.
   \
-  \ See: `cs-pick`, `cs-roll`, `cs-swap`, `cs-dup`, `cs-drop`.
+  \ See also: `cs-pick`, `cs-roll`, `cs-swap`, `cs-dup`, `cs-drop`.
   \
   \ }doc
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005301555
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -38,7 +38,7 @@ unneeding defined?
   \ found after searching the active search
   \ order, return true, else return false.
   \
-  \ See: `undefined?`, `defined`, `find-name`.
+  \ See also: `undefined?`, `defined`, `find-name`.
   \
   \ }doc
 
@@ -53,7 +53,7 @@ unneeding parse-char
   \ Parse the next character in the input stream and return its
   \ code _c_.
   \
-  \ See: `parse-name`, `parse`, `parsed`, `stream`.
+  \ See also: `parse-name`, `parse`, `parsed`, `stream`.
   \
   \ }doc
 
@@ -86,7 +86,7 @@ unneeding parse-all ?( : parse-all ( "ccc" -- ca len )
   \ exhausted, `throw` an exception #-289 ("input source
   \ exhausted").
   \
-  \ See: `parse-name`, `parse`.
+  \ See also: `parse-name`, `parse`.
   \
   \ }doc
 
@@ -103,7 +103,7 @@ unneeding string>source ?(
   \
   \ Set the string _ca len_ as the current source.
   \
-  \ See: `set-source`, `(source-id`.
+  \ See also: `set-source`, `(source-id`.
   \
   \ }doc
 
@@ -121,7 +121,7 @@ unneeding execute-parsing ?( need need-here
   \ `string>source`), execute _xt_, and then restore the
   \ previous input source.
   \
-  \ See: `evaluate`, `interpret`, `nest-source`.
+  \ See also: `evaluate`, `interpret`, `nest-source`.
   \
   \ Origin: Gforth.
   \
@@ -144,7 +144,7 @@ unneeding evaluate ?( need need-here need-here execute-parsing
   \
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
   \
-  \ See: `interpret`, `execute-parsing`.
+  \ See also: `interpret`, `execute-parsing`.
   \
   \ }doc
 
@@ -168,7 +168,7 @@ unneeding char ?\ : char ( "name" -- c ) parse-name drop c@ ;
   \
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
   \
-  \ See: `[char]`.
+  \ See also: `[char]`.
   \
   \ }doc
 
@@ -205,7 +205,7 @@ unneeding [char]  ?( need char
   \
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
   \
-  \ See: `char`.
+  \ See also: `char`.
   \
   \ }doc
 

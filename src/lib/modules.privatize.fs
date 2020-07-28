@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804152102
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -92,7 +92,7 @@ variable private-start  variable private-stop
   \ ' foo              \ will fail
   \ ----
 
-  \ See: `internal`, `isolate`, `module`, `package`,
+  \ See also: `internal`, `isolate`, `module`, `package`,
   \ `seclusion`.
   \
   \ }doc

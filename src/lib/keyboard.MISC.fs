@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007112242
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -218,7 +218,7 @@ unneeding nuf? ?( need aborted? need 'cr'
   \   begin  ." bla " nuf?  until  ." Aborted" ;
   \ ----
   \
-  \ See: `aborted?`.
+  \ See also: `aborted?`.
   \
   \ }doc
 
@@ -269,7 +269,7 @@ code -keys ( -- )
   \
   \ Remove all keys from the keyboard buffer.
   \
-  \ See: `key?`, `new-key`, `new-key-`, `key`, `xkey`.
+  \ See also: `key?`, `new-key`, `new-key-`, `key`, `xkey`.
   \
   \ }doc
 
@@ -283,7 +283,7 @@ unneeding new-key need -keys ?\ : new-key ( -- c ) -keys key ;
   \ character _c_ of the key struck, a member of the a member
   \ of the defined character set.
   \
-  \ See: `new-key-`, `key`, `xkey`, `-keys`.
+  \ See also: `new-key-`, `key`, `xkey`, `-keys`.
   \
   \ }doc
 
@@ -299,7 +299,7 @@ unneeding new-key- ?( need new-key need -keys
   \ key press and discard it. Finally remove all keys from the
   \ keyboard buffer.
   \
-  \ See: `new-key`, `key`, `xkey`, `-keys`.
+  \ See also: `new-key`, `key`, `xkey`, `-keys`.
   \
   \ }doc
 
@@ -369,7 +369,7 @@ defined /kk ?\ 4 cconstant /kk
   \ `kk-ports`. The actual definition of ``kk,`` depends on the
   \ value of `/kk`.
   \
-  \ See: `kk@`, `/kk`, `kk-ports`.
+  \ See also: `kk@`, `/kk`, `kk-ports`.
   \
   \ }doc
 
@@ -381,7 +381,7 @@ defined /kk ?\ 4 cconstant /kk
   \ _a1_ of table `kk-ports`.  The actual definition of ``kk@``
   \ depends on the value of `/kk`.
   \
-  \ See: `kk,`, `/kk`, `kk-ports`.
+  \ See also: `kk,`, `/kk`, `kk-ports`.
   \
   \ }doc
 
@@ -398,7 +398,7 @@ $10 $F7FE 2constant kk-5
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "1" with `pressed?`.
   \
-  \ See: `kk-1#`, `#kk`, `kk-ports`.
+  \ See also: `kk-1#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -409,7 +409,7 @@ $10 $F7FE 2constant kk-5
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "2" with `pressed?`.
   \
-  \ See: `kk-2#`, `#kk`, `kk-ports`.
+  \ See also: `kk-2#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -420,7 +420,7 @@ $10 $F7FE 2constant kk-5
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "3" with `pressed?`.
   \
-  \ See: `kk-3#`, `#kk`, `kk-ports`.
+  \ See also: `kk-3#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -431,7 +431,7 @@ $10 $F7FE 2constant kk-5
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "4" with `pressed?`.
   \
-  \ See: `kk-4#`, `#kk`, `kk-ports`.
+  \ See also: `kk-4#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -442,7 +442,7 @@ $10 $F7FE 2constant kk-5
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "5" with `pressed?`.
   \
-  \ See: `kk-5#`, `#kk`, `kk-ports`.
+  \ See also: `kk-5#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -457,7 +457,7 @@ $10 $FBFE 2constant kk-t
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "Q" with `pressed?`.
   \
-  \ See: `kk-q#`, `#kk`, `kk-ports`.
+  \ See also: `kk-q#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -468,7 +468,7 @@ $10 $FBFE 2constant kk-t
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "W" with `pressed?`.
   \
-  \ See: `kk-w#`, `#kk`, `kk-ports`.
+  \ See also: `kk-w#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -479,7 +479,7 @@ $10 $FBFE 2constant kk-t
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "E" with `pressed?`.
   \
-  \ See: `kk-e#`, `#kk`, `kk-ports`.
+  \ See also: `kk-e#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -490,7 +490,7 @@ $10 $FBFE 2constant kk-t
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "R" with `pressed?`.
   \
-  \ See: `kk-r#`, `#kk`, `kk-ports`.
+  \ See also: `kk-r#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -501,7 +501,7 @@ $10 $FBFE 2constant kk-t
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "T" with `pressed?`.
   \
-  \ See: `kk-t#`, `#kk`, `kk-ports`.
+  \ See also: `kk-t#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -516,7 +516,7 @@ $10 $FDFE 2constant kk-g  -->
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "A" with `pressed?`.
   \
-  \ See: `kk-a#`, `#kk`, `kk-ports`.
+  \ See also: `kk-a#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -527,7 +527,7 @@ $10 $FDFE 2constant kk-g  -->
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "S" with `pressed?`.
   \
-  \ See: `kk-s#`, `#kk`, `kk-ports`.
+  \ See also: `kk-s#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -538,7 +538,7 @@ $10 $FDFE 2constant kk-g  -->
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "D" with `pressed?`.
   \
-  \ See: `kk-d#`, `#kk`, `kk-ports`.
+  \ See also: `kk-d#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -549,7 +549,7 @@ $10 $FDFE 2constant kk-g  -->
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "F" with `pressed?`.
   \
-  \ See: `kk-f#`, `#kk`, `kk-ports`.
+  \ See also: `kk-f#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -560,7 +560,7 @@ $10 $FDFE 2constant kk-g  -->
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "G" with `pressed?`.
   \
-  \ See: `kk-g#`, `#kk`, `kk-ports`.
+  \ See also: `kk-g#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -577,7 +577,7 @@ $10 $FEFE 2constant kk-v
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "Caps Shift" with `pressed?`.
   \
-  \ See: `kk-cs#`, `#kk`, `kk-ports`.
+  \ See also: `kk-cs#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -588,7 +588,7 @@ $10 $FEFE 2constant kk-v
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "Z" with `pressed?`.
   \
-  \ See: `kk-z#`, `#kk`, `kk-ports`.
+  \ See also: `kk-z#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -599,7 +599,7 @@ $10 $FEFE 2constant kk-v
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "X" with `pressed?`.
   \
-  \ See: `kk-x#`, `#kk`, `kk-ports`.
+  \ See also: `kk-x#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -610,7 +610,7 @@ $10 $FEFE 2constant kk-v
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "C" with `pressed?`.
   \
-  \ See: `kk-c#`, `#kk`, `kk-ports`.
+  \ See also: `kk-c#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -621,7 +621,7 @@ $10 $FEFE 2constant kk-v
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "V" with `pressed?`.
   \
-  \ See: `kk-v#`, `#kk`, `kk-ports`.
+  \ See also: `kk-v#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -636,7 +636,7 @@ $10 $EFFE 2constant kk-6
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "0" with `pressed?`.
   \
-  \ See: `kk-0#`, `#kk`, `kk-ports`.
+  \ See also: `kk-0#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -647,7 +647,7 @@ $10 $EFFE 2constant kk-6
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "9" with `pressed?`.
   \
-  \ See: `kk-9#`, `#kk`, `kk-ports`.
+  \ See also: `kk-9#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -658,7 +658,7 @@ $10 $EFFE 2constant kk-6
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "8" with `pressed?`.
   \
-  \ See: `kk-8#`, `#kk`, `kk-ports`.
+  \ See also: `kk-8#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -669,7 +669,7 @@ $10 $EFFE 2constant kk-6
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "7" with `pressed?`.
   \
-  \ See: `kk-7#`, `#kk`, `kk-ports`.
+  \ See also: `kk-7#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -680,7 +680,7 @@ $10 $EFFE 2constant kk-6
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "6" with `pressed?`.
   \
-  \ See: `kk-6#`, `#kk`, `kk-ports`.
+  \ See also: `kk-6#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -695,7 +695,7 @@ $10 $DFFE 2constant kk-y
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "P" with `pressed?`.
   \
-  \ See: `kk-p#`, `#kk`, `kk-ports`.
+  \ See also: `kk-p#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -706,7 +706,7 @@ $10 $DFFE 2constant kk-y
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "O" with `pressed?`.
   \
-  \ See: `kk-o#`, `#kk`, `kk-ports`.
+  \ See also: `kk-o#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -717,7 +717,7 @@ $10 $DFFE 2constant kk-y
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "I" with `pressed?`.
   \
-  \ See: `kk-i#`, `#kk`, `kk-ports`.
+  \ See also: `kk-i#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -728,7 +728,7 @@ $10 $DFFE 2constant kk-y
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "U" with `pressed?`.
   \
-  \ See: `kk-u#`, `#kk`, `kk-ports`.
+  \ See also: `kk-u#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -739,7 +739,7 @@ $10 $DFFE 2constant kk-y
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "Y" with `pressed?`.
   \
-  \ See: `kk-y#`, `#kk`, `kk-ports`.
+  \ See also: `kk-y#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -754,7 +754,7 @@ $10 $BFFE 2constant kk-h
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "Enter" with `pressed?`.
   \
-  \ See: `kk-en#`, `#kk`, `kk-ports`.
+  \ See also: `kk-en#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -765,7 +765,7 @@ $10 $BFFE 2constant kk-h
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "L" with `pressed?`.
   \
-  \ See: `kk-l#`, `#kk`, `kk-ports`.
+  \ See also: `kk-l#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -776,7 +776,7 @@ $10 $BFFE 2constant kk-h
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "K" with `pressed?`.
   \
-  \ See: `kk-k#`, `#kk`, `kk-ports`.
+  \ See also: `kk-k#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -787,7 +787,7 @@ $10 $BFFE 2constant kk-h
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "J" with `pressed?`.
   \
-  \ See: `kk-j#`, `#kk`, `kk-ports`.
+  \ See also: `kk-j#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -798,7 +798,7 @@ $10 $BFFE 2constant kk-h
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "H" with `pressed?`.
   \
-  \ See: `kk-h#`, `#kk`, `kk-ports`.
+  \ See also: `kk-h#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -813,7 +813,7 @@ $10 $7FFE 2constant kk-b  -->
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "Space" with `pressed?`.
   \
-  \ See: `kk-sp#`, `#kk`, `kk-ports`.
+  \ See also: `kk-sp#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -824,7 +824,7 @@ $10 $7FFE 2constant kk-b  -->
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "Symbol Shift" with `pressed?`.
   \
-  \ See: `kk-ss#`, `#kk`, `kk-ports`.
+  \ See also: `kk-ss#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -835,7 +835,7 @@ $10 $7FFE 2constant kk-b  -->
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "M" with `pressed?`.
   \
-  \ See: `kk-m#`, `#kk`, `kk-ports`.
+  \ See also: `kk-m#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -846,7 +846,7 @@ $10 $7FFE 2constant kk-b  -->
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "N" with `pressed?`.
   \
-  \ See: `kk-n#`, `#kk`, `kk-ports`.
+  \ See also: `kk-n#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -857,7 +857,7 @@ $10 $7FFE 2constant kk-b  -->
   \ Return key bitmask _b_ and keyboard row port _a_ needed for
   \ reading the physical key "B" with `pressed?`.
   \
-  \ See: `kk-b#`, `#kk`, `kk-ports`.
+  \ See also: `kk-b#`, `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -873,7 +873,7 @@ $10 $7FFE 2constant kk-b  -->
   \ number of physical rubber keys on the keyboard of the
   \ original ZX Spectrum: 40.
   \
-  \ See: `kk-ports`, `kk-chars`, `kk-0#`, `kk-0`, `kk-1#`,
+  \ See also: `kk-ports`, `kk-chars`, `kk-0#`, `kk-0`, `kk-1#`,
   \ `kk-1`, `kk-2#`, `kk-2`, `kk-3#`, `kk-3`, `kk-4#`, `kk-4`,
   \ `kk-5#`, `kk-5`, `kk-6#`, `kk-6`, `kk-7#`, `kk-7`, `kk-8#`,
   \ `kk-8`, `kk-9#`, `kk-9`, `kk-a#`, `kk-a`, `kk-b#`, `kk-b`,
@@ -913,7 +913,7 @@ kk-sp kk,  kk-ss kk,  kk-m kk,  kk-n kk,  kk-b kk,
   \ Every item occupies 3 or 4 bytes, depending on the value of
   \ `/kk`. The default is 4.
   \
-  \ See: `kk,`, `kk@`, `#kk`, `kk-chars`.
+  \ See also: `kk,`, `kk@`, `#kk`, `kk-chars`.
   \
   \ }doc
 
@@ -955,7 +955,7 @@ need kk-1#
   \ Return index _n_ of the physical key "1" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-1`, `#kk`, `kk#>kk`.
+  \ See also: `kk-1`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -966,7 +966,7 @@ need kk-1#
   \ Return index _n_ of the physical key "2" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-2`, `#kk`, `kk#>kk`.
+  \ See also: `kk-2`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -977,7 +977,7 @@ need kk-1#
   \ Return index _n_ of the physical key "3" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-3`, `#kk`, `kk#>kk`.
+  \ See also: `kk-3`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -988,7 +988,7 @@ need kk-1#
   \ Return index _n_ of the physical key "4" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-4`, `#kk`, `kk#>kk`.
+  \ See also: `kk-4`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -999,7 +999,7 @@ need kk-1#
   \ Return index _n_ of the physical key "5" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-5`, `#kk`, `kk#>kk`.
+  \ See also: `kk-5`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1010,7 +1010,7 @@ need kk-1#
   \ Return index _n_ of the physical key "Q" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-q`, `#kk`, `kk#>kk`.
+  \ See also: `kk-q`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1021,7 +1021,7 @@ need kk-1#
   \ Return index _n_ of the physical key "W" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-w`, `#kk`, `kk#>kk`.
+  \ See also: `kk-w`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1032,7 +1032,7 @@ need kk-1#
   \ Return index _n_ of the physical key "E" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-e`, `#kk`, `kk#>kk`.
+  \ See also: `kk-e`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1043,7 +1043,7 @@ need kk-1#
   \ Return index _n_ of the physical key "R" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-r`, `#kk`, `kk#>kk`.
+  \ See also: `kk-r`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1054,7 +1054,7 @@ need kk-1#
   \ Return index _n_ of the physical key "T" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-t`, `#kk`, `kk#>kk`.
+  \ See also: `kk-t`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1065,7 +1065,7 @@ need kk-1#
   \ Return index _n_ of the physical key "A" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-a`, `#kk`, `kk#>kk`.
+  \ See also: `kk-a`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1076,7 +1076,7 @@ need kk-1#
   \ Return index _n_ of the physical key "S" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-s`, `#kk`, `kk#>kk`.
+  \ See also: `kk-s`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1087,7 +1087,7 @@ need kk-1#
   \ Return index _n_ of the physical key "D" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-d`, `#kk`, `kk#>kk`.
+  \ See also: `kk-d`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1098,7 +1098,7 @@ need kk-1#
   \ Return index _n_ of the physical key "F" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-f`, `#kk`, `kk#>kk`.
+  \ See also: `kk-f`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1109,7 +1109,7 @@ need kk-1#
   \ Return index _n_ of the physical key "G" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-g`, `#kk`, `kk#>kk`.
+  \ See also: `kk-g`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1120,7 +1120,7 @@ need kk-1#
   \ Return index _n_ of the physical key "Caps Shift" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-cs`, `#kk`, `kk#>kk`.
+  \ See also: `kk-cs`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1131,7 +1131,7 @@ need kk-1#
   \ Return index _n_ of the physical key "Z" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-z`, `#kk`, `kk#>kk`.
+  \ See also: `kk-z`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1142,7 +1142,7 @@ need kk-1#
   \ Return index _n_ of the physical key "X" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-x`, `#kk`, `kk#>kk`.
+  \ See also: `kk-x`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1153,7 +1153,7 @@ need kk-1#
   \ Return index _n_ of the physical key "C" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-c`, `#kk`, `kk#>kk`.
+  \ See also: `kk-c`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1164,7 +1164,7 @@ need kk-1#
   \ Return index _n_ of the physical key "V" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-v`, `#kk`, `kk#>kk`.
+  \ See also: `kk-v`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1175,7 +1175,7 @@ need kk-1#
   \ Return index _n_ of the physical key "0" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-0`, `#kk`, `kk#>kk`.
+  \ See also: `kk-0`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1186,7 +1186,7 @@ need kk-1#
   \ Return index _n_ of the physical key "9" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-9`, `#kk`, `kk#>kk`.
+  \ See also: `kk-9`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1197,7 +1197,7 @@ need kk-1#
   \ Return index _n_ of the physical key "8" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-8`, `#kk`, `kk#>kk`.
+  \ See also: `kk-8`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1208,7 +1208,7 @@ need kk-1#
   \ Return index _n_ of the physical key "7" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-7`, `#kk`, `kk#>kk`.
+  \ See also: `kk-7`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1219,7 +1219,7 @@ need kk-1#
   \ Return index _n_ of the physical key "6" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-6`, `#kk`, `kk#>kk`.
+  \ See also: `kk-6`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1230,7 +1230,7 @@ need kk-1#
   \ Return index _n_ of the physical key "P" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-p`, `#kk`, `kk#>kk`.
+  \ See also: `kk-p`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1241,7 +1241,7 @@ need kk-1#
   \ Return index _n_ of the physical key "O" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-o`, `#kk`, `kk#>kk`.
+  \ See also: `kk-o`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1252,7 +1252,7 @@ need kk-1#
   \ Return index _n_ of the physical key "I" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-i`, `#kk`, `kk#>kk`.
+  \ See also: `kk-i`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1263,7 +1263,7 @@ need kk-1#
   \ Return index _n_ of the physical key "U" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-u`, `#kk`, `kk#>kk`.
+  \ See also: `kk-u`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1274,7 +1274,7 @@ need kk-1#
   \ Return index _n_ of the physical key "Y" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-y`, `#kk`, `kk#>kk`.
+  \ See also: `kk-y`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1285,7 +1285,7 @@ need kk-1#
   \ Return index _n_ of the physical key "Enter" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-en`, `#kk`, `kk#>kk`.
+  \ See also: `kk-en`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1296,7 +1296,7 @@ need kk-1#
   \ Return index _n_ of the physical key "L" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-l`, `#kk`, `kk#>kk`.
+  \ See also: `kk-l`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1307,7 +1307,7 @@ need kk-1#
   \ Return index _n_ of the physical key "K" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-k`, `#kk`, `kk#>kk`.
+  \ See also: `kk-k`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1318,7 +1318,7 @@ need kk-1#
   \ Return index _n_ of the physical key "J" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-j`, `#kk`, `kk#>kk`.
+  \ See also: `kk-j`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1329,7 +1329,7 @@ need kk-1#
   \ Return index _n_ of the physical key "H" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-h`, `#kk`, `kk#>kk`.
+  \ See also: `kk-h`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1340,7 +1340,7 @@ need kk-1#
   \ Return index _n_ of the physical key "Space" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-sp`, `#kk`, `kk#>kk`.
+  \ See also: `kk-sp`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1351,7 +1351,7 @@ need kk-1#
   \ Return index _n_ of the physical key "Symbol Shift" in
   \ tables `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-ss`, `#kk`, `kk#>kk`.
+  \ See also: `kk-ss`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1362,7 +1362,7 @@ need kk-1#
   \ Return index _n_ of the physical key "M" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-m`, `#kk`, `kk#>kk`.
+  \ See also: `kk-m`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1373,7 +1373,7 @@ need kk-1#
   \ Return index _n_ of the physical key "N" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-n`, `#kk`, `kk#>kk`.
+  \ See also: `kk-n`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1384,7 +1384,7 @@ need kk-1#
   \ Return index _n_ of the physical key "B" in tables
   \ `kk-chars` and `kk-ports`.
   \
-  \ See: `kk-b`, `#kk`, `kk#>kk`.
+  \ See also: `kk-b`, `#kk`, `kk#>kk`.
   \
   \ }doc
 
@@ -1437,7 +1437,7 @@ create kk-chars '1' c,  '2' c,  '3' c,  '4' c,  '5' c,
   \ The application should define those UDG with proper icons
   \ to represent the corresponding keys.
   \
-  \ See: `#kk`, `kk-ports`.
+  \ See also: `#kk`, `kk-ports`.
   \
   \ }doc
 
@@ -1454,7 +1454,7 @@ unneeding kk#>kk ?( need kk-ports
   \ Convert keyboard key number _n_ to its data: key bitmask
   \ _b_ and keyboard row port _a_.
   \
-  \ See: `kk-ports`, `/kk`, `kk@`.
+  \ See also: `kk-ports`, `/kk`, `kk@`.
   \
   \ }doc
 
@@ -1469,7 +1469,7 @@ unneeding pressed? ?( need @p
   \ Is a keyboard key _b a_ pressed?  _b_ is the key bitmask
   \ and _a_ is the keyboard row port.
   \
-  \ See: `pressed`, `only-one-pressed`.
+  \ See also: `pressed`, `only-one-pressed`.
   \
   \ }doc
 
@@ -1490,7 +1490,7 @@ unneeding pressed ?( need pressed? need kk-ports need +loop
   \ that happens to be pressed, and `true`; if no key is
   \ pressed, return `false`.
   \
-  \ See: `only-one-pressed`, `pressed?`.
+  \ See also: `only-one-pressed`, `pressed?`.
   \
   \ }doc
 
@@ -1525,7 +1525,7 @@ need kk-ports need +loop need 2variable
   \ more than one key is pressed at the same time, return
   \ `false`.
   \
-  \ See: `pressed`, `pressed?`.
+  \ See also: `pressed`, `pressed?`.
   \
   \ }doc
 
@@ -1540,7 +1540,7 @@ unneeding key-edit ?\ 7 cconstant key-edit
   \ _c_ is the edit control character, which is obtained by
   \ pressing "Caps Shift + 1" and can be read by `key`.
   \
-  \ See: `key-left`, `key-right`, `key-down`, `key-up`,
+  \ See also: `key-left`, `key-right`, `key-down`, `key-up`,
   \ `key-delete`, `key-enter`, `key-graphics`,
   \ `key-true-video`, `key-inverse-video`, `key-caps-lock`.
   \
@@ -1555,7 +1555,7 @@ unneeding key-left ?\ 8 cconstant key-left
   \ _c_ is the cursor-left control character, which is obtained
   \ by pressing "Caps Shift + 5" and can be read by `key`.
   \
-  \ See: `key-edit`, `key-right`, `key-down`, `key-up`,
+  \ See also: `key-edit`, `key-right`, `key-down`, `key-up`,
   \ `key-delete`, `key-enter`, `key-graphics`,
   \ `key-true-video`, `key-inverse-video`, `key-caps-lock`.
   \
@@ -1571,7 +1571,7 @@ unneeding key-right ?\ 9 cconstant key-right
   \ obtained by pressing "Caps Shift + 8" and can be read by
   \ `key`.
   \
-  \ See: `key-edit`, `key-left`, `key-down`, `key-up`,
+  \ See also: `key-edit`, `key-left`, `key-down`, `key-up`,
   \ `key-delete`, `key-enter`, `key-graphics`,
   \ `key-true-video`, `key-inverse-video`, `key-caps-lock`.
   \
@@ -1586,7 +1586,7 @@ unneeding key-down ?\ 10 cconstant key-down
   \ _c_ is the cursor-down control character, which is obtained
   \ by pressing "Caps Shift + 6" and can be read by `key`.
   \
-  \ See: `key-edit`, `key-left`, `key-right`, `key-up`,
+  \ See also: `key-edit`, `key-left`, `key-right`, `key-up`,
   \ `key-delete`, `key-enter`, `key-graphics`,
   \ `key-true-video`, `key-inverse-video`, `key-caps-lock`.
   \
@@ -1601,7 +1601,7 @@ unneeding key-up ?\ 11 cconstant key-up
   \ _c_ is the cursor-up control character, which is obtained
   \ by pressing "Caps Shift + 7" and can be read by `key`.
   \
-  \ See: `key-edit`, `key-left`, `key-right`, `key-down`,
+  \ See also: `key-edit`, `key-left`, `key-right`, `key-down`,
   \ `key-delete`, `key-enter`, `key-graphics`,
   \ `key-true-video`, `key-inverse-video`, `key-caps-lock`.
   \
@@ -1616,7 +1616,7 @@ unneeding key-delete ?\ 12 cconstant key-delete
   \ _c_ is the delete control character, which is obtained by
   \ pressing "Caps Shift + 0" and can be read by `key`.
   \
-  \ See: `key-edit`, `key-left`, `key-right`, `key-down`,
+  \ See also: `key-edit`, `key-left`, `key-right`, `key-down`,
   \ `key-up`, `key-enter`, `key-graphics`, `key-true-video`,
   \ `key-inverse-video`, `key-caps-lock`.
   \
@@ -1633,7 +1633,7 @@ unneeding key-enter ?\ 13 cconstant key-enter
   \ _c_ is the enter control character, which is obtained by
   \ pressing "Enter" and can be read by `key`.
   \
-  \ See: `key-edit`, `key-left`, `key-right`, `key-down`,
+  \ See also: `key-edit`, `key-left`, `key-right`, `key-down`,
   \ `key-up`, `key-delete`, `key-graphics`, `key-true-video`,
   \ `key-inverse-video`, `key-caps-lock`.
   \
@@ -1648,7 +1648,7 @@ unneeding key-graphics ?\ 15 cconstant key-graphics
   \ _c_ is the graphics control character, which is obtained by
   \ pressing "Caps Shift + 9" and can be read by `key`.
   \
-  \ See: `key-edit`, `key-left`, `key-right`, `key-down`,
+  \ See also: `key-edit`, `key-left`, `key-right`, `key-down`,
   \ `key-up`, `key-delete`, `key-enter`, `key-true-video`,
   \ `key-inverse-video`, `key-caps-lock`.
   \
@@ -1663,7 +1663,7 @@ unneeding key-true-video ?\ 4 cconstant key-true-video
   \ _c_ is the true-video control character, which is obtained
   \ by pressing "Caps Shift + 3" and can be read by `key`.
   \
-  \ See: `key-edit`, `key-left`, `key-right`, `key-down`,
+  \ See also: `key-edit`, `key-left`, `key-right`, `key-down`,
   \ `key-up`, `key-delete`, `key-enter`, `key-graphics`,
   \ `key-inverse-video`, `key-caps-lock`.
   \
@@ -1679,7 +1679,7 @@ unneeding key-inverse-video ?\ 5 cconstant key-inverse-video
   \ obtained by pressing "Caps Shift + 4" and can be read by
   \ `key`.
   \
-  \ See: `key-edit`, `key-left`, `key-right`, `key-down`,
+  \ See also: `key-edit`, `key-left`, `key-right`, `key-down`,
   \ `key-up`, `key-delete`, `key-enter`, `key-graphics`,
   \ `key-true-video`, `key-caps-lock`.
   \
@@ -1694,7 +1694,7 @@ unneeding key-caps-lock ?\ 6 cconstant key-caps-lock
   \ _c_ is the caps-lock control character, which is obtained
   \ by pressing "Caps Shift + 2" and can be read by `key`.
   \
-  \ See: `key-edit`, `key-left`, `key-right`, `key-down`,
+  \ See also: `key-edit`, `key-left`, `key-right`, `key-down`,
   \ `key-up`, `key-delete`, `key-enter`, `key-graphics`,
   \ `key-true-video`, `key-inverse-video`.
   \

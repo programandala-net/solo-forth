@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703142257
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -106,7 +106,7 @@ need alias need nextname
   \ can use `name >order`, where _name_ is the name of the
   \ module.
   \
-  \ See: `internal`, `isolate`, `package`, `privatize`,
+  \ See also: `internal`, `isolate`, `package`, `privatize`,
   \ `seclusion`.
   \
   \ }doc

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091342
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -43,7 +43,7 @@
   \
   \ ``cslit`` is compiled by `csliteral`.
   \
-  \ See: `slit`.
+  \ See also: `slit`.
   \
   \ }doc
 
@@ -66,7 +66,7 @@
   \
   \ ``csliteral`` is an `immediate` and `compile-only` word.
   \
-  \ See: `sliteral`.
+  \ See also: `sliteral`.
   \
   \ }doc
 
@@ -89,7 +89,7 @@
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See: `csliteral`.
+  \ See also: `csliteral`.
   \
   \ }doc
 

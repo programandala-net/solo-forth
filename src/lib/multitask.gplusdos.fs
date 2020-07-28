@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803072255
+  \ Last modified: 202007282031
 
   \ ===========================================================
   \ Description
@@ -45,7 +45,7 @@ unneeding -jiffy ?( need !dosvar
   \ routine to be called by G+DOS after the OS interrupts
   \ routine, every 50th of a second.
   \
-  \ See: `jiffy@`, `-jiffy`.
+  \ See also: `jiffy@`, `-jiffy`.
   \
   \ }doc
 
@@ -61,7 +61,7 @@ unneeding -jiffy ?( need @dosvar
   \ routine that is called by G+DOS after the OS interrupts
   \ routine, every 50th of a second.
   \
-  \ See: `jiffy!`, `-jiffy`.
+  \ See also: `jiffy!`, `-jiffy`.
   \
   \ }doc
 
@@ -78,7 +78,7 @@ unneeding -jiffy ?( need jiffy!
   \ 50th of a second), by setting its default value (a noop
   \ routine in the RAM of the Plus D interface).
   \
-  \ See: `jiffy!`, `jiffy@`.
+  \ See also: `jiffy!`, `jiffy@`.
   \
   \ }doc
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803282239
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -75,7 +75,7 @@ here ] ( R: a0 x -- ) 2r> swap ! exit [ ( a )
   \ v ? \ default value
   \ ----
   \
-  \ See: `2local`, `clocal`, `arguments`, `anon`.
+  \ See also: `2local`, `clocal`, `arguments`, `anon`.
   \
   \ }doc
 
@@ -125,7 +125,7 @@ here ] ( R: ca c -- ) 2r> swap c! exit [ ( a )
   \ v c? \ default value
   \ ----
   \
-  \ See: `local`, `2local`, `arguments`, `anon`.
+  \ See also: `local`, `2local`, `arguments`, `anon`.
   \
   \ }doc
 
@@ -173,7 +173,7 @@ here ] ( R: a0 x1 x2 -- ) 2r> r> 2! exit [ ( a )
   \ v 2@ d. \ default value
   \ ----
   \
-  \ See: `local`, `clocal`, `arguments`, `anon`.
+  \ See also: `local`, `clocal`, `arguments`, `anon`.
   \
   \ }doc
 

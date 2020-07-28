@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041131
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -64,7 +64,7 @@
   \ The current value of the index can be retrieved with
   \ `dfor-i`.
   \
-  \ See: `for`, `dtimes`, `?do`, `executions`.
+  \ See also: `for`, `dtimes`, `?do`, `executions`.
   \
   \ }doc
 

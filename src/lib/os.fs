@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081220
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -36,7 +36,7 @@ unneeding os-unused ?( need os-ramtop need os-stkend
   \ _u_ is the amount of unused space by the OS and the BASIC
   \ interpreter.
   \
-  \ See: `unused`, `farunused`.
+  \ See also: `unused`, `farunused`.
   \
   \ }doc
 
@@ -52,7 +52,7 @@ unneeding ?os-unused ?( need os-unused
   \ OS and the BASIC interpreter, `throw` exception code #-291
   \ (out of OS memory).
   \
-  \ See: `os-unused`.
+  \ See also: `os-unused`.
   \
   \ }doc
 
@@ -66,7 +66,7 @@ unneeding first-stream ?\ -3 constant first-stream
   \
   \ _n_ is the number of the first stream.
   \
-  \ See: `last-stream`, `os-strms`, `stream>`, `stream?`.
+  \ See also: `last-stream`, `os-strms`, `stream>`, `stream?`.
   \
   \ }doc
 
@@ -78,7 +78,7 @@ unneeding last-stream ?\ 15 cconstant last-stream
   \
   \ _n_ is the number of the last stream.
   \
-  \ See: `first-stream`, `os-strms`, `stream>`, `stream?`.
+  \ See also: `first-stream`, `os-strms`, `stream>`, `stream?`.
   \
   \ }doc
 
@@ -94,7 +94,7 @@ unneeding stream> ?( need first-stream need os-strms
   \ Convert stream number _n_ to address _a_ of its
   \ corresponding element in `os-strms`.
   \
-  \ See: `first-stream`, `last-stream`, `stream?`.
+  \ See also: `first-stream`, `last-stream`, `stream?`.
   \
   \ }doc
 
@@ -113,7 +113,7 @@ unneeding stream? ?( need first-stream need last-stream
   \ If there's a closed stream, return its number _n_ and
   \ `true`; otherwise return `false`.
   \
-  \ See: `os-strms`, `.os-strms`, `first-stream`,
+  \ See also: `os-strms`, `.os-strms`, `first-stream`,
   \ `last-stream`, `stream>`.
   \
   \ }doc
@@ -131,7 +131,7 @@ unneeding chan> ?( need os-chans
   \ Convert channel offset _n_ in `os-chans`, fetched from an
   \ element of `os-strms`, to its address _a_.
   \
-  \ See: `chan>id`, `os-chans`.
+  \ See also: `chan>id`, `os-chans`.
   \
   \ }doc
 
@@ -146,7 +146,7 @@ unneeding chan>id ?( need chan>
   \ Convert channel offset _n_ in `os-chans`, fetched from an
   \ element of `os-strms`, to its character identifier _c_.
   \
-  \ See: `chan>`, `os-chans`.
+  \ See also: `chan>`, `os-chans`.
   \
   \ }doc
 
@@ -169,7 +169,7 @@ unneeding .os-strms ?( need os-chans need os-strms need stream>
   \
   \ Display the contents of `os-strms`.
   \
-  \ See: `.os-chans`, `first-stream`, `last-stream`, `stream?`.
+  \ See also: `.os-chans`, `first-stream`, `last-stream`, `stream?`.
   \
   \ }doc
 
@@ -197,7 +197,7 @@ need os-chans need >graphic-ascii-char need nuf?
   \
   \ Display the contents of `os-chans`.
   \
-  \ See: `.os-strms`.
+  \ See also: `.os-strms`.
   \
   \ }doc
 

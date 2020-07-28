@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007280012
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -114,7 +114,7 @@ unneeding columns ?\ need cvalue 32 cvalue columns
   \ Return the number of columns in the current screen mode.
   \ The default value is 32.
   \
-  \ See: `rows`, last-column`, `column`.
+  \ See also: `rows`, last-column`, `column`.
   \
   \ }doc
 
@@ -127,7 +127,7 @@ unneeding rows ?\ need cvalue 24 cvalue rows
   \ Return the number of rows in the current screen mode.  The
   \ default value is 24.
   \
-  \ See: `columns`, `last-row`, `row`.
+  \ See also: `columns`, `last-row`, `row`.
   \
   \ }doc
 

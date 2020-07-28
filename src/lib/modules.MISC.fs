@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804142339
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -69,7 +69,7 @@ unneeding seclusion ?(
   \ access private words later, e.g.
   \ ``seclusion dup constant my-module``.
   \
-  \ See: `internal`, `isolate`, `module`, `package`,
+  \ See also: `internal`, `isolate`, `module`, `package`,
   \ `privatize`.
   \
   \ }doc
@@ -82,7 +82,7 @@ unneeding seclusion ?(
   \
   \ Start the public definitions of a `seclusion` module.
   \
-  \ See: `+seclusion`, `end-seclusion`.
+  \ See also: `+seclusion`, `end-seclusion`.
   \
   \ }doc
 
@@ -94,7 +94,7 @@ unneeding seclusion ?(
   \
   \ Start more private definitions of a `seclusion` module.
   \
-  \ See: `-seclusion`, `end-seclusion`.
+  \ See also: `-seclusion`, `end-seclusion`.
   \
   \ }doc
 
@@ -106,7 +106,7 @@ unneeding seclusion ?(
   \
   \ End a `seclusion` module.
   \
-  \ See: `-seclusion`, `+seclusion`.
+  \ See also: `-seclusion`, `+seclusion`.
   \
   \ }doc
 
@@ -132,7 +132,7 @@ unneeding isolate
   \ previous
   \ ----
 
-  \ See: `internal`, `module`, `package`, `privatize`,
+  \ See also: `internal`, `module`, `package`, `privatize`,
   \ `seclusion`.
   \
   \ }doc

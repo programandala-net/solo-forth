@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202005051417
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -63,7 +63,7 @@ need get-drive need drive need file>
   \ WARNING: ``mode-42rs`` is under development. See the source
   \ code for details.
   \
-  \ See: `current-mode`, `mode-42pw`.
+  \ See also: `current-mode`, `mode-42pw`.
   \
   \ }doc
 

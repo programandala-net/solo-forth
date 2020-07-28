@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081616
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -69,7 +69,7 @@ create actual-results $20 cells allot
   \
   \ Part of `hayes-tester`: Start a Hayes test.
   \
-  \ See: `->`, `}`.
+  \ See also: `->`, `}`.
   \
   \ }doc
 
@@ -88,7 +88,7 @@ create actual-results $20 cells allot
   \ Part of the `hayes-test`: Record depth and content of
   \ stack.
   \
-  \ See: `{`, `}`.
+  \ See also: `{`, `}`.
   \
   \ }doc
 
@@ -111,7 +111,7 @@ create actual-results $20 cells allot
   \ Part of `hayes-tester`: End a Hayes test by comparing stack
   \ (expected) contents with saved (actual) contents.
   \
-  \ See: `{`, `->`.
+  \ See also: `{`, `->`.
   \
   \ }doc
 
@@ -137,7 +137,7 @@ create actual-results $20 cells allot
   \ Use WHERE to see the error line.
   \ ....
 
-  \ See: `ttester`, `forth2012-test-suite`.
+  \ See also: `ttester`, `forth2012-test-suite`.
   \
   \ }doc
 

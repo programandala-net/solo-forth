@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803272315
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -36,7 +36,7 @@ unneeding fartype
   \ If _len_ is greater than zero, display the character string
   \ _ca len_, which is stored in the far memory.
   \
-  \ See: `far-banks`, `type`, `fartype-ascii`.
+  \ See also: `far-banks`, `type`, `fartype-ascii`.
   \
   \ }doc
 
@@ -51,7 +51,7 @@ unneeding emit-ascii ?( need >graphic-ascii-char
   \ Convert character _c_ with `>graphic-ascii-char`, then
   \ `emit` it.
   \
-  \ See: `type-ascii`, `fartype-ascii`.
+  \ See also: `type-ascii`, `fartype-ascii`.
   \
   \ }doc
 
@@ -67,7 +67,7 @@ unneeding type-ascii ?( need emit-ascii
   \ using `emit-ascii` to make sure the characters are graphic
   \ ASCII characters.
   \
-  \ See: `type`, `fartype-ascii`.
+  \ See also: `type`, `fartype-ascii`.
   \
   \ }doc
 
@@ -84,7 +84,7 @@ unneeding fartype-ascii ?( need emit-ascii
   \ which is stored in far memory, using `emit-ascii` to make
   \ sure the characters are graphic ASCII characters.
   \
-  \ See: `fartype`, `type-ascii`.
+  \ See also: `fartype`, `type-ascii`.
   \
   \ }doc
 
@@ -114,7 +114,7 @@ unneeding padding-spaces
   \ If _len2_ minus _len1_ is a positive number, display that
   \ number of spaces; else do nothing.
   \
-  \ See: `type-left-field`.
+  \ See also: `type-left-field`.
   \
   \ }doc
 
@@ -131,7 +131,7 @@ unneeding type-left-field ?( need padding-spaces
   \ string _ca1 len1_ at the left of a field of _len2_
   \ characters.
   \
-  \ See: `padding-spaces`, `type-right-field`,
+  \ See also: `padding-spaces`, `type-right-field`,
   \ `type-center-field`.
   \
   \ }doc
@@ -150,7 +150,7 @@ need drop-type need <=> need array>
   \ Type string _ca1 len1_ at the right of a field of _len2_
   \ characters, which is shorter than the string.
   \
-  \ See: `type-right-field`, `type-right-field-fit`.
+  \ See also: `type-right-field`, `type-right-field-fit`.
   \
   \ }doc
 
@@ -164,7 +164,7 @@ need drop-type need <=> need array>
   \ Type string _ca1 len1_ at the right of a field of _len2_
   \ characters, which is longer than the string.
   \
-  \ See: `type-right-field`, `type-right-field-crop`.
+  \ See also: `type-right-field`, `type-right-field-crop`.
   \
   \ }doc
 
@@ -185,7 +185,7 @@ constant type-right-field-cases
   \ string _ca1 len1_ at the right of a field of _len2_
   \ characters.
   \
-  \ See: `type-right-field-fit`, `type-right-field-crop`,
+  \ See also: `type-right-field-fit`, `type-right-field-crop`,
   \ `drop-type`, `type-left-field`, `type-center-field`.
   \
   \ }doc
@@ -205,7 +205,7 @@ need drop-type need <=> need array>
   \ string _ca1 len1_ at the center of a field of _len2_
   \ characters, which is longer than the string.
   \
-  \ See: `type-center-field-crop`, `type-center-field`.
+  \ See also: `type-center-field-crop`, `type-center-field`.
   \
   \ }doc
 
@@ -220,7 +220,7 @@ need drop-type need <=> need array>
   \ string _ca1 len1_ at the center of a field of _len2_
   \ characters, which is shorter than the string.
   \
-  \ See: `type-center-field-fit`, `type-center-field`.
+  \ See also: `type-center-field-fit`, `type-center-field`.
   \
   \ }doc
 
@@ -241,7 +241,7 @@ constant type-center-field-cases
   \ string _ca1 len1_ at the center of a field of _len2_
   \ characters.
   \
-  \ See: `type-center-field-fit`,
+  \ See also: `type-center-field-fit`,
   \ `type-center-field-crop`, `drop-type`, `type-left-field`,
   \ `type-right-field`, `gigatype-title`.
   \

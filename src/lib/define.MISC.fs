@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007080016
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -63,7 +63,7 @@ unneeding :noname ?(
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See: `nextname`.
+  \ See also: `nextname`.
   \
   \ }doc
 
@@ -80,7 +80,7 @@ unneeding nextname ?( need 2variable 2variable nextname-string
   \
   \ Origin: Gforth.
   \
-  \ See: `nextname-header`.
+  \ See also: `nextname-header`.
   \
   \ }doc
 
@@ -96,7 +96,7 @@ unneeding nextname ?( need 2variable 2variable nextname-string
   \
   \ Origin: Gforth.
   \
-  \ See: `nextname-string`.  `default-header`.
+  \ See also: `nextname-string`.  `default-header`.
   \
   \ }doc
 
@@ -117,7 +117,7 @@ unneeding nextname ?( need 2variable 2variable nextname-string
   \
   \ Origin: Gforth.
   \
-  \ See: `nextname-header`, `nextname-string`.
+  \ See also: `nextname-header`, `nextname-string`.
   \
   \ }doc
 

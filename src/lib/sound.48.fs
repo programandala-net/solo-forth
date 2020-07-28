@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007081411
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -137,7 +137,7 @@ code bleep ( duration pitch -- )
   \ _____
 
   \
-  \ See: `hz>bleep`, `dhz>bleep`, `beep`.
+  \ See also: `hz>bleep`, `dhz>bleep`, `beep`.
   \
   \ }doc
 
@@ -160,7 +160,7 @@ unneeding hz>bleep ?(
   \ Convert _frequency_ (in Hz) and _duration1_ (in ms) to
   \ the parameters _duration2 pitch_ needed by `bleep`.
   \
-  \ See: `dhz>bleep`.
+  \ See also: `dhz>bleep`.
   \
   \ }doc
 
@@ -184,7 +184,7 @@ unneeding dhz>bleep ?(
   \ _duration1_ (in ms) to the parameters _duration2 pitch_
   \ needed by `bleep`.
   \
-  \ See: `hz>bleep`.
+  \ See also: `hz>bleep`.
   \
   \ }doc
 
@@ -260,7 +260,7 @@ create middle-octave ( -- a )
   \   C   D   E   F   G   A   B
   \ ....
 
-  \ See: `beep`, `/octave`, `octave-changer`.
+  \ See also: `beep`, `/octave`, `octave-changer`.
   \
   \ }doc
 
@@ -273,7 +273,7 @@ unneeding /octave ?\ 12 cconstant /octave
   \ A `cconstant` that returns the number of notes in one
   \ octave: 12.
   \
-  \ See: `middle-octave`.
+  \ See also: `middle-octave`.
   \
   \ }doc
 
@@ -292,7 +292,7 @@ here    ' drop    ,
   \ notes from any octave.  _a_ is the address of the second
   \ execution token (cell offset 0).
   \
-  \ See: `change-octave`, `beep>dhz`, `middle-octave`.
+  \ See also: `change-octave`, `beep>dhz`, `middle-octave`.
   \
   \ }doc
 
@@ -311,7 +311,7 @@ need polarity need octave-changer need array>
   \ zero) to its corresponding note frequency _u'_ in octave
   \ _n_.  If _n_ is zero, _u'_ equals _u_.
   \
-  \ See: `octave-changer`, `beep>dhz`, `middle-octave`.
+  \ See also: `octave-changer`, `beep>dhz`, `middle-octave`.
   \
   \ }doc
 
@@ -331,7 +331,7 @@ unneeding -beep>note ?( need /octave
   \ corresponding note _+n3_ (0..11) in octave _-n2_, being
   \ zero the middle octave.
   \
-  \ See: `beep>note`, `+beep>note`, `/octave`, `beep>dhz`,
+  \ See also: `beep>note`, `+beep>note`, `/octave`, `beep>dhz`,
   \ `beep>dhz`.
   \
   \ }doc
@@ -348,7 +348,7 @@ unneeding +beep>note ?( need /octave
   \ corresponding note _+n3_ (0..11) in octave _+n2_, being
   \ zero the middle octave.
   \
-  \ See: `beep>note`, `-beep>note`, `/octave`, `beep>dhz`,
+  \ See also: `beep>note`, `-beep>note`, `/octave`, `beep>dhz`,
   \ `beep>bleep`.
   \
   \ }doc
@@ -365,7 +365,7 @@ unneeding beep>note ?( need -beep>note need +beep>note
   \ Convert a pitch _n1_ of `beep` to its corresponding note
   \ _+n3_ (0..11) in octave _n2_, being zero the middle octave.
   \
-  \ See: `-beep>note`, `+beep>note`, `beep>dhz`, `beep>bleep`,
+  \ See also: `-beep>note`, `+beep>note`, `beep>dhz`, `beep>bleep`,
   \ `/octave`.
   \
   \ }doc
@@ -390,7 +390,7 @@ need beep>note need note>dhz need change-octave
   \ Convert a pitch _n_ of `beep` to its corresponding
   \ frequency in dHz (tenths of hertzs) _u_.
   \
-  \ See: `beep>note`, `beep>bleep`.
+  \ See also: `beep>note`, `beep>bleep`.
   \
   \ }doc
 
@@ -418,7 +418,7 @@ need beep>dhz need dhz>bleep
   \ number of semitones from middle C (positive number for
   \ notes above, negative number for notes below).
   \
-  \ See: `beep>dhz`, `beep>note`.
+  \ See also: `beep>dhz`, `beep>note`.
   \
   \ }doc
 
@@ -481,7 +481,7 @@ unneeding beep ?( need beep>bleep need bleep
   \ ----
 
   \
-  \ See: `beep>bleep`, `bleep`, `beep>dhz`.
+  \ See also: `beep>bleep`, `bleep`, `beep>dhz`.
   \
   \ }doc
 

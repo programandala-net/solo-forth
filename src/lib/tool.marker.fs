@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081705
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -46,7 +46,7 @@ unneeding anew ?( need possibly need marker
   \ The function of ``anew`` is to execute a _name_ already
   \ created by `marker` and then create it again.
   \
-  \ See: `possibly`.
+  \ See also: `possibly`.
   \
   \ }doc
 
@@ -65,7 +65,7 @@ unneeding wordlists, unneeding @wordlists and ?( need @+
   \
   \ ``wordlists,`` is a factor of `marker,`.
   \
-  \ See: `@wordlists`, `order,`, `wordlist`.
+  \ See also: `@wordlists`, `order,`, `wordlist`.
   \
   \ }doc
 
@@ -84,7 +84,7 @@ need /wordlist need nup need under+
   \
   \ ``@wordlists`` is a factor of `unmarker`.
   \
-  \ See: `wordlists,`, `last-wordlist`, `@order`.
+  \ See also: `wordlists,`, `last-wordlist`, `@order`.
   \
   \ }doc
 
@@ -102,7 +102,7 @@ unneeding order, unneeding @order and ?( need nn, need nn@
   \
   \ ``order,`` is a useful factor of `marker`.
   \
-  \ See: `@order`, `wordlists,`.
+  \ See also: `@order`, `wordlists,`.
   \
   \ }doc
 
@@ -117,7 +117,7 @@ unneeding order, unneeding @order and ?( need nn, need nn@
   \
   \ ``@order`` is a useful factor of `unmarker`.
   \
-  \ See: `order,`, `@wordlists`.
+  \ See also: `order,`, `@wordlists`.
   \
   \ }doc
 
@@ -203,7 +203,7 @@ need wordlists, need @wordlists
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See: `marker,`, `unmarker`, `anew`.
+  \ See also: `marker,`, `unmarker`, `anew`.
   \
   \ }doc
 

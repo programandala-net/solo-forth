@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007280015
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -63,7 +63,7 @@ create ~~resume-key bl c,  create ~~quit-key 'q' c,
   \ `~~control` will wait for a key press in order to quit the
   \ debugging.  Its default value is the code of 'q'.
   \
-  \ See: `~~resume-key`.
+  \ See also: `~~resume-key`.
   \
   \ }doc
 
@@ -80,7 +80,7 @@ create ~~resume-key bl c,  create ~~quit-key 'q' c,
   \ stored at ``~~resume-key``, whose default value is `bl`,
   \ the code of the space character.
   \
-  \ See: `~~quit-key`.
+  \ See also: `~~quit-key`.
   \
   \ }doc
 
@@ -156,7 +156,7 @@ defer ~~info ( nt line block -- )  ' (~~info ' ~~info defer!
   \ then execute `quit`; if the pressed key equals the contents
   \ of `~~resume-key`, then exit.
   \
-  \ See: `~~control?`, `~~press?`.
+  \ See also: `~~control?`, `~~press?`.
   \
   \ }doc
 
@@ -187,7 +187,7 @@ defer ~~before-info ( -- )  defer ~~after-info ( -- )
   \ Its default action is `~~save-xy`, which saves the cursor
   \ coordinates.
   \
-  \ See: `~~after-info`, `~~save-xy`.
+  \ See also: `~~after-info`, `~~save-xy`.
   \
   \ }doc
 
@@ -200,7 +200,7 @@ defer ~~before-info ( -- )  defer ~~after-info ( -- )
   \ default action is `~~restore-xy`, which restores the cursor
   \ coordinates.
   \
-  \ See: `~~before-info`, `~~restore-xy`.
+  \ See also: `~~before-info`, `~~restore-xy`.
   \
   \ }doc
 
@@ -217,7 +217,7 @@ defer ~~before-info ( -- )  defer ~~after-info ( -- )
   \
   \ ``~~save-xy`` is part of the `~~` tool.
   \
-  \ See: `~~restore-xy`, `~~after-info`, `~~xy-backup`.
+  \ See also: `~~restore-xy`, `~~after-info`, `~~xy-backup`.
   \
   \ }doc
 
@@ -234,7 +234,7 @@ defer ~~before-info ( -- )  defer ~~after-info ( -- )
   \
   \ ``~~restore-xy`` is part of the `~~` tool.
   \
-  \ See: `~~save-xy`, `~~before-info`, `~~xy-backup`.
+  \ See also: `~~save-xy`, `~~before-info`, `~~xy-backup`.
   \
   \ }doc
 
@@ -253,7 +253,7 @@ defer ~~before-info ( -- )  defer ~~after-info ( -- )
   \ words in the given order: `~~before-info`, `~~info`,
   \ `~~control` and `~~after-info`.
   \
-  \ See: `~~y`.
+  \ See also: `~~y`.
   \
   \ }doc
 
@@ -274,7 +274,7 @@ defer ~~before-info ( -- )  defer ~~after-info ( -- )
   \
   \ Origin: Gforth.
   \
-  \ See: `(~~`, `~~?`, `~~y`, `~~quit-key`, `~~resume-key`,
+  \ See also: `(~~`, `~~?`, `~~y`, `~~quit-key`, `~~resume-key`,
   \ `~~info`, `~~control` `~~before-info`, `~~after-info`.
   \
   \ }doc

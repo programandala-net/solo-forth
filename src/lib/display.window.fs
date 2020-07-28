@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007112231
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -42,7 +42,7 @@ cconstant /window
   \ A `cconstant`. _n_ is the size in bytes of a `window` data
   \ structure.
   \
-  \ See: `current-window`.
+  \ See also: `current-window`.
   \
   \ }doc
 
@@ -55,7 +55,7 @@ variable current-window
   \ A `variable`. _a_ is the address of a cell containing the
   \ address of the `current-window`.
   \
-  \ See: `wx`, `wy`, `wx0`, `wy0`, `wcolums`, `wrows`.
+  \ See also: `wx`, `wy`, `wx0`, `wy0`, `wcolums`, `wrows`.
   \
   \ }doc
 
@@ -68,7 +68,7 @@ variable current-window
   \ _ca_ is the address of a byte containing the x cursor
   \ coordinate of the `current-window`.
   \
-  \ See: `wy`, `wx0`, `wy0`, `wcolumns`, `wrows`.
+  \ See also: `wy`, `wx0`, `wy0`, `wcolumns`, `wrows`.
   \
   \ }doc
 
@@ -81,7 +81,7 @@ variable current-window
   \ _ca_ is the address of a byte containing the y cursor
   \ coordinate of the `current-window`.
   \
-  \ See: `wx`, `wx0`, `wy0`, `wcolumns`, `wrows`.
+  \ See also: `wx`, `wx0`, `wy0`, `wcolumns`, `wrows`.
   \
   \ }doc
 
@@ -94,7 +94,7 @@ variable current-window
   \ _ca_ is the address of a byte containing the left x
   \ coordinate on screen of the `current-window`.
   \
-  \ See: `wx`, `wy`, `wy0`, `wcolumns`, `wrows`.
+  \ See also: `wx`, `wy`, `wy0`, `wcolumns`, `wrows`.
   \
   \ }doc
 
@@ -107,7 +107,7 @@ variable current-window
   \ _ca_ is the address of a byte containing the top y
   \ coordinate on screen of the `current-window`.
   \
-  \ See: `wx`, `wy`, `wx0`, `wcolumns`, `wrows`.
+  \ See also: `wx`, `wy`, `wx0`, `wcolumns`, `wrows`.
   \
   \ }doc
 
@@ -120,7 +120,7 @@ variable current-window
   \ _ca_ is the address of a byte containing the width
   \ in characters of the `current-window`.
   \
-  \ See: `wx`, `wy`, `wx0`, `wy0`, `wrows`.
+  \ See also: `wx`, `wy`, `wx0`, `wy0`, `wrows`.
   \
   \ }doc
 
@@ -133,7 +133,7 @@ variable current-window
   \ _ca_ is the address of a byte containing the heigth in rows
   \ of the `current-window`.
   \
-  \ See: `wx`, `wy`, `wx0`, `wy0`, `wcolumns`.
+  \ See also: `wx`, `wy`, `wx0`, `wy0`, `wcolumns`.
   \
   \ }doc
 
@@ -182,7 +182,7 @@ variable current-window
   \ `mode-64ao`, `mode-42pw`). If windows are used when such
   \ mode is active, the layout of the output will be wrong.
   \
-  \ See: `current-window`, `wx`, `wy`, `wx0`, `wy0`,
+  \ See also: `current-window`, `wx`, `wy`, `wx0`, `wy0`,
   \ `wcolumns`, `wrows`.
   \
   \ }doc
@@ -197,7 +197,7 @@ unneeding wspace ?\ need wemit : wspace ( -- ) bl wemit ;
   \
   \ Display one space in the `current-window`.
   \
-  \ See: `space`.
+  \ See also: `space`.
   \
   \ }doc
 
@@ -211,7 +211,7 @@ unneeding wemit ?( need char>string need wtype
   \
   \ Display character _c_ in the `current-window`.
   \
-  \ See: `wtype`, `wspace`, `emit`.
+  \ See also: `wtype`, `wspace`, `emit`.
   \
   \ }doc
 
@@ -226,7 +226,7 @@ unneeding wfreecolumns ?( need window
   \ _n_ is the number of free columns in the current line of
   \ the `current-window`.
   \
-  \ See: `wcolumns`.
+  \ See also: `wcolumns`.
   \
   \ }doc
 
@@ -242,7 +242,7 @@ unneeding (wat-xy ?( need window need under+
   \ coordinates _col row_.  The upper left corner of the
   \ `window` is column zero, row zero.
   \
-  \ See: `wat-xy`.
+  \ See also: `wat-xy`.
   \
   \ }doc
 
@@ -258,7 +258,7 @@ unneeding wat-xy ?( need window need (wat-xy
   \ and set the cursor coordinates  accordingly.  The upper
   \ left corner of the `window` is column zero, row zero.
   \
-  \ See: `at-wxy`, `at-xy`.
+  \ See also: `at-wxy`, `at-xy`.
   \
   \ }doc
 
@@ -273,7 +273,7 @@ unneeding at-wxy ?( need window need (wat-xy
   \ Set the cursor coordinates to the `current-window` cursor
   \ coordinates.
   \
-  \ See: `wat-xy`, `at-xy`.
+  \ See also: `wat-xy`, `at-xy`.
   \
   \ }doc
 
@@ -286,7 +286,7 @@ unneeding whome ?\ need wat-xy  : whome ( -- ) 0 0 wat-xy ;
   \ Set the `current-window` cursor coordinates to its top left
   \ corner: column zero, row zero.
   \
-  \ See: `wat-xy`.
+  \ See also: `wat-xy`.
   \
   \ }doc
 
@@ -311,7 +311,7 @@ unneeding wcr ?( need window need whome
   \ cursor is set to the top left corner with `whome`. In a
   \ future version of the code, the window will be scrolled.
   \
-  \ See: `?wcr`, `wcr`.
+  \ See also: `?wcr`, `wcr`.
   \
   \ }doc
 
@@ -331,7 +331,7 @@ unneeding ?wcr ?( need window need wcr
   \ cursor is set to the top left corner with `whome`. In a
   \ future version of the code, the window will be scrolled.
   \
-  \ See: `wcr`.
+  \ See also: `wcr`.
   \
   \ }doc
 
@@ -349,7 +349,7 @@ unneeding wstamp ?( need window need ruler
   \ _c_ as needed, starting from the top left corner.
   \ The cursor position of the window is not changed.
   \
-  \ See: `wblank`, `wcls`, `wemit`.
+  \ See also: `wblank`, `wcls`, `wemit`.
   \
   \ }doc
 
@@ -368,7 +368,7 @@ unneeding wblank
   \
   \ ``wblank`` is a slower but lighter alternative to `wcls`.
   \
-  \ See: `wstamp`, `whome`, `wspace`.
+  \ See also: `wstamp`, `whome`, `wspace`.
   \
   \ }doc
 
@@ -386,7 +386,7 @@ unneeding wcls ?( need attr@ need attr-wcls
   \ reset its cursor position at the upper left corner (column
   \ 0, row 0).
   \
-  \ See: `attr-wcls`, `wblank`, `attr@`, `whome`,
+  \ See also: `attr-wcls`, `wblank`, `attr@`, `whome`,
   \ `clear-rectangle`, `cls`.
   \
   \ }doc
@@ -408,7 +408,7 @@ need window need clear-rectangle need whome
   \ reset its cursor position at the upper left corner (column
   \ 0, row 0).
   \
-  \ See: `wcolor`, `wcls`, `wblank`, `whome`,
+  \ See also: `wcolor`, `wcls`, `wblank`, `whome`,
   \ `clear-rectangle`, `cls`.
   \
   \ }doc
@@ -426,7 +426,7 @@ unneeding wcolor ?( need window need color-rectangle
   \
   \ Color the `current-window` with color attribute _b_.
   \
-  \ See: `attr-wcls`, `color-rectangle`.
+  \ See also: `attr-wcls`, `color-rectangle`.
   \
   \ }doc
 
@@ -490,7 +490,7 @@ unneeding /wtype ?( need at-wxy need wtype+
   \
   \ ``/wtype`` is a factor of `wltype`.
   \
-  \ See: `free/wtype`.
+  \ See also: `free/wtype`.
   \
   \ }doc
 
@@ -511,7 +511,7 @@ unneeding free/wtype ?( need wfreecolumns need at-wxy
   \
   \ ``free/wtype`` is a factor of `wltype` and `wtype`.
   \
-  \ See: `/wtype`.
+  \ See also: `/wtype`.
   \
   \ }doc
 
@@ -528,7 +528,7 @@ unneeding wtype ?( need free/wtype
   \
   \ Display string _ca len_ in the `current-window`.
   \
-  \ See: `wltype`, `wemit`, `ltype`.
+  \ See also: `wltype`, `wemit`, `ltype`.
   \
   \ }doc
 
@@ -553,7 +553,7 @@ unneeding wltype ?( need wtyped need wfreecolumns
   \ Display string _ca len_ in the `current-window`, left
   \ justified.
   \
-  \ See: `wtype`, `wemit`, `ltype`.
+  \ See also: `wtype`, `wemit`, `ltype`.
   \
   \ }doc
 

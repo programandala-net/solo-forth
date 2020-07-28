@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -58,7 +58,7 @@ unneeding avariable ?( need array>
   \
   \ Return address _a_ of element _n_.
   \
-  \ See: `2avariable`, `cavariable`, `faravariable`.
+  \ See also: `2avariable`, `cavariable`, `faravariable`.
   \
   \ }doc
 
@@ -82,7 +82,7 @@ unneeding 2avariable ?( need 2array>
   \
   \ Return address _a_ of element _n_.
   \
-  \ See: `avariable`, `cavariable`, `far2avariable`.
+  \ See also: `avariable`, `cavariable`, `far2avariable`.
   \
   \ }doc
 
@@ -105,7 +105,7 @@ unneeding cavariable ?( need align
   \
   \ Return address _ca_ of element _n_.
   \
-  \ See: `avariable`, `2avariable`, `farcavariable`.
+  \ See also: `avariable`, `2avariable`, `farcavariable`.
   \
   \ }doc
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006152108
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -323,7 +323,7 @@ VARIABLE ERROR-PAUSE ERROR-PAUSE ON
   \
   \ Part of `ttester`: Start a test.
   \
-  \ See: `->`, `}t`.
+  \ See also: `->`, `}t`.
   \
   \ }doc
 
@@ -343,7 +343,7 @@ VARIABLE ERROR-PAUSE ERROR-PAUSE ON
   \ Part of `ttester`: Record depth and contents of
   \ stack.
   \
-  \ See: `t{`, `}t`.
+  \ See also: `t{`, `}t`.
   \
   \ }doc
 
@@ -367,7 +367,7 @@ VARIABLE ERROR-PAUSE ERROR-PAUSE ON
   \ Part of `ttester`: End a test by comparing stack
   \ (expected) contents with saved (actual) contents.
   \
-  \ See: `t{`, `->`.
+  \ See also: `t{`, `->`.
   \
   \ }doc
 
@@ -464,7 +464,7 @@ BASE !
   \ T{ 1 2 3 swap -> 1 2 }T ok
   \ ....
 
-  \ See: `hayes-tester`.
+  \ See also: `hayes-tester`.
   \
   \ }doc
 

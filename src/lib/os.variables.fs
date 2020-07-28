@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007112247
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -37,7 +37,7 @@ unneeding os-chars ?\ #23606 constant os-chars
   \ current font (actual characters 32..127). By default this
   \ system variables holds ROM address 15360 ($3C00).
   \
-  \ See: `set-font`, `get-font`, `rom-font`, `os-udg`.
+  \ See also: `set-font`, `get-font`, `rom-font`, `os-udg`.
   \
   \ }doc
 
@@ -88,7 +88,7 @@ unneeding os-chans ?\ #23631 constant os-chans
   \ points to the first element of the channel data table,
   \ channel 'K'.
   \
-  \ See: `.os-chans`.
+  \ See also: `.os-chans`.
   \
   \ }doc
 
@@ -101,7 +101,7 @@ unneeding os-flags2 ?\ #23658 constant os-flags2
   \ A `constant` that returns the address _ca_ of 1-byte system
   \ variable FLAGS2, which holds several flags.
   \
-  \ See: `capslock`.
+  \ See also: `capslock`.
   \
   \ }doc
 
@@ -130,7 +130,7 @@ unneeding os-frames ?\ #23672 constant os-frames
   \ counter is returned by `ticks` and used by its related
   \ words.
   \
-  \ See: `set-ticks`, `reset-ticks`,
+  \ See also: `set-ticks`, `reset-ticks`,
   \ `ticks-pause`, `?ticks-pause`.
   \
   \ }doc
@@ -147,7 +147,7 @@ unneeding os-udg ?\ #23675 constant os-udg
   \ 128..255 or 0..255, depending on the words used to access
   \ them).
   \
-  \ See: `set-udg`, `get-udg`, `os-chars`.
+  \ See also: `set-udg`, `get-udg`, `os-chars`.
   \
   \ }doc
 
@@ -163,7 +163,7 @@ unneeding os-coords ?\ #23677 constant os-coords
   \ variable COORDS which holds the graphic coordinates of the
   \ last point plotted.
   \
-  \ See: `set-pixel`, `plot`, `os-coordx`, `os-coordy`.
+  \ See also: `set-pixel`, `plot`, `os-coordx`, `os-coordy`.
   \
   \ }doc
 
@@ -177,7 +177,7 @@ unneeding os-coordx ?\ #23677 constant os-coordx
   \ variable COORDX which holds the graphic x coordinate of the
   \ last point plotted.
   \
-  \ See: `set-pixel`, `plot`, `os-coords`, `os-coordy`.
+  \ See also: `set-pixel`, `plot`, `os-coords`, `os-coordy`.
   \
   \ }doc
 
@@ -211,7 +211,7 @@ unneeding os-strms ?\ #23568 constant os-strms
   \ `os-chans`.  When the content of a stream cell is zero, the
   \ stream is not attached to a channel.
   \
-  \ See: `.os-strms`.
+  \ See also: `.os-strms`.
   \
   \ }doc
 
@@ -225,7 +225,7 @@ unneeding os-coordy ?\ #23678 constant os-coordy
   \ variable COORDY which holds the graphic y coordinate of the
   \ last point plotted.
   \
-  \ See: `set-pixel`, `plot`, `os-coords`, `os-coordx`.
+  \ See also: `set-pixel`, `plot`, `os-coords`, `os-coordx`.
   \
   \ }doc
 
@@ -238,7 +238,7 @@ unneeding os-prog ?\ #23635 constant os-prog
   \ A `constant` that returns the address _a_ of 2-byte system
   \ variable PROG which holds the address of the BASIC program.
   \
-  \ See: `os-stkend`, `os-ramtop`, `os-chans`.
+  \ See also: `os-stkend`, `os-ramtop`, `os-chans`.
   \
   \ }doc
 
@@ -252,7 +252,7 @@ unneeding os-ramtop ?\ #23730 constant os-ramtop
   \ variable RAMTOP which holds the address of the last byte of
   \ BASIC system area.
   \
-  \ See: `os-stkend`, `os-prog`, `os-chans`.
+  \ See also: `os-stkend`, `os-prog`, `os-chans`.
   \
   \ }doc
 
@@ -268,7 +268,7 @@ unneeding os-attr-p ?\ #23693 constant os-attr-p
   \ variable ATTR_P, which holds the current permanent color
   \ attribute, as set up by color statements.
   \
-  \ See: `os-attr-t`, `os-mask-p`.
+  \ See also: `os-attr-t`, `os-mask-p`.
   \
   \ }doc
 
@@ -284,7 +284,7 @@ unneeding os-mask-p ?\ #23694 constant os-mask-p
   \ shows that the corresponding attribute bit is taken not
   \ from `os-attr-p` but from what is already on the screen.
   \
-  \ See: `os-attr-p`, `os-mask-t`.
+  \ See also: `os-attr-p`, `os-mask-t`.
   \
   \ }doc
 
@@ -298,7 +298,7 @@ unneeding os-attr-t ?\ #23695 constant os-attr-t
   \ variable ATTR_T, which holds the current temporary color
   \ attribute, as set up by color statements.
   \
-  \ See: `os-attr-p`, `os-mask-t`.
+  \ See also: `os-attr-p`, `os-mask-t`.
   \
   \ }doc
 
@@ -314,7 +314,7 @@ unneeding os-mask-t ?\ #23696 constant os-mask-t
   \ shows that the corresponding attribute bit is taken not
   \ from `os-attr-t` but from what is already on the screen.
   \
-  \ See: `os-attr-t`, `os-mask-p`.
+  \ See also: `os-attr-t`, `os-mask-p`.
   \
   \ }doc
 
@@ -340,7 +340,7 @@ unneeding os-stkend ?\ #23653 constant os-stkend
   \ variable STKEND which holds the address of the start of
   \ spare space of BASIC system area.
   \
-  \ See: `os-prog`, `os-chans`.
+  \ See also: `os-prog`, `os-chans`.
   \
   \ }doc
 

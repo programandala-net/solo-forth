@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007081234
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -7292,7 +7292,7 @@ FORTH2012-REPORT-ERRORS
   \ `forth2012-searchorder-test`, `forth2012-string-test`,
   \ `forth2012-tools-test`, `forth2012-utilities-test`.
   \
-  \ See: `forth2012-report-errors`, `ttester`, `hayes-test`.
+  \ See also: `forth2012-report-errors`, `ttester`, `hayes-test`.
   \
   \ }doc
 

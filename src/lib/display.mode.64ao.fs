@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005051425
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -501,7 +501,7 @@ need mode-32 need (at-xy need set-mode-output need >form
   \ compared to the Sinclair BASIC convention and `mode-32`.
   \ This will be changed in a later version of the code.
   \
-  \ See: `current-mode`, `set-font`, `set-mode-output`,
+  \ See also: `current-mode`, `set-font`, `set-mode-output`,
   \ `columns`, `rows`, `mode-64ao-emit`, `mode-64ao-xy`,
   \ `mode-64-font`, `>form`, `mode-64ao-output_`, `mode-64es`.
   \

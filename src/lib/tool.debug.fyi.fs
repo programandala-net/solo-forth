@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081705
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -50,7 +50,7 @@ need u.r
   \ Display information about the current status of the Forth
   \ system.
   \
-  \ See: `#words`, `here`, `last-wordlist`, `limit`,
+  \ See also: `#words`, `here`, `last-wordlist`, `limit`,
   \ `unused`. `np@`, `latest`, `current-latest`, `farlimit`,
   \ `farunused`, `greeting`.
   \

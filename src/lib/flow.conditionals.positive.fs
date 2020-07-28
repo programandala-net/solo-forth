@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803052149
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -42,7 +42,7 @@ unneeding +if ?( need -branch
   \
   \ ``+if`` is an `immediate` and `compile-only` word.
   \
-  \ See: `if`, `0if`, `-if`, `-branch` ,`+while`, `+until`,
+  \ See also: `if`, `0if`, `-if`, `-branch` ,`+while`, `+until`,
   \ `+exit`.
   \
   \ }doc
@@ -64,7 +64,7 @@ unneeding +while ?( need +if need cs-swap
   \
   \ ``+while`` is an `immediate` and `compile-only` word.
   \
-  \ See: `while`, `0while`, `-while`, `+if`, `+until`, `+exit`.
+  \ See also: `while`, `0while`, `-while`, `+if`, `+until`, `+exit`.
   \
   \ }doc
 
@@ -85,7 +85,7 @@ unneeding +until ?( need -branch
   \
   \ ``+until`` is an `immediate` and `compile-only` word.
   \
-  \ See: `until`, `0until`, `-until`, `-branch`, `+if`,
+  \ See also: `until`, `0until`, `-until`, `-branch`, `+if`,
   \ `+while`, `+exit`.
   \
   \ }doc
@@ -112,7 +112,7 @@ code +exit ( n -- ) ( R: nest-sys | -- nest-sys | )
   \ ``+exit`` can be used in interpretation mode to stop the
   \ interpretation of a block.
   \
-  \ See: `exit`, `?exit`, `0exit`, `-exit`, `+if`, `+while`,
+  \ See also: `exit`, `?exit`, `0exit`, `-exit`, `+if`, `+while`,
   \ `+until`.
   \
   \ }doc

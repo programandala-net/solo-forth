@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006161653
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -49,7 +49,7 @@ unneeding langs ?\ 0 cconstant langs \ number of languages
   \ the application using `c!>`, and it should not be changed
   \ later.
   \
-  \ See: `lang`.
+  \ See also: `lang`.
   \
   \ }doc
 
@@ -66,7 +66,7 @@ unneeding lang ?\ 0 cconstant lang  \ current language
   \ Its default value is zero. The value must be changed by the
   \ application using `c!>`.
   \
-  \ See: `langs`.
+  \ See also: `langs`.
   \
   \ }doc
 
@@ -85,7 +85,7 @@ unneeding localized, ?( need langs need n,
   \ `localized-string`, `far-localized-string` and
   \ far>localized-string.
   \
-  \ See: `far-localized,`.
+  \ See also: `far-localized,`.
   \
   \ }doc
 
@@ -125,7 +125,7 @@ need localized, need lang need +perform
   \ localized versions.  _xt[langs]..xt[1]_, are ordered by ISO
   \ language code, being TOS the first one.
   \
-  \ See: `localized-string`, `localized-character`, `langs`.
+  \ See also: `localized-string`, `localized-character`, `langs`.
   \
   \ }doc
 
@@ -148,7 +148,7 @@ need localized, need lang need array>
   \ have been compiled.  _ca[langs]..ca[1]_, are ordered by ISO
   \ language code, being TOS the first one.
   \
-  \ See: `far-localized-string`, `far>localized-string`,
+  \ See also: `far-localized-string`, `far>localized-string`,
   \ `localized-word`, `localized-character`, `langs`.
   \
   \ }doc
@@ -169,7 +169,7 @@ unneeding localized-character ?( need langs need lang
   \ _c[langs]..c[1]_, depending on `lang`.  _c[langs]..c[1]_
   \ are ordered by ISO language code, being TOS the first one.
   \
-  \ See: `localized-word`, `localized-string`, `langs`.
+  \ See also: `localized-word`, `localized-string`, `langs`.
   \
   \ }doc
 
@@ -201,7 +201,7 @@ need localized, need lang need array>
   \ variant of ``far-localized-string`` that returns the
   \ strings already copied in the `stringer`.
   \
-  \ See: `far>localized-string`, `localized-string`,
+  \ See also: `far>localized-string`, `localized-string`,
   \ `localized-word`, `localized-character`, `langs`,
   \ `farcount`.
   \
@@ -231,7 +231,7 @@ need localized, need lang need array> need far>stringer
   \ strings have been compiled.  _ca[langs]..ca[1]_, are
   \ ordered by ISO language code, being TOS the first one.
   \
-  \ See: `far-localized-string`, `localized-string`,
+  \ See also: `far-localized-string`, `localized-string`,
   \ `localized-word`, `localized-character`, `langs`,
   \ `farcount`, `far>stringer`.
   \

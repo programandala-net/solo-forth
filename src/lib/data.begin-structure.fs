@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007280010
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -49,7 +49,7 @@ unneeding +field ?\ defer +field ( n1 n2 "name" -- n3 )
   \
   \ Origin: Forth-2012 (FACILITY EXT).
   \
-  \ See: `begin-structure`.
+  \ See also: `begin-structure`.
   \
   \ }doc
 
@@ -75,7 +75,7 @@ unneeding field: ?( need +field
   \
   \ Origin: Forth-2012 (FACILITY EXT).
   \
-  \ See: `begin-structure`, `+field`.
+  \ See also: `begin-structure`, `+field`.
   \
   \ }doc
 
@@ -99,7 +99,7 @@ unneeding 2field: ?( need +field
   \ Add the _offset_ calculated during the compile-time action
   \ to _a1_ giving the address _a2_.
   \
-  \ See: `begin-structure`, `+field`.
+  \ See also: `begin-structure`, `+field`.
   \
   \ }doc
 
@@ -125,7 +125,7 @@ unneeding cfield: ?( need +field
   \
   \ Origin: Forth-2012 (FACILITY EXT).
   \
-  \ See: `begin-structure`, `+field`.
+  \ See also: `begin-structure`, `+field`.
   \
   \ }doc
 
@@ -182,7 +182,7 @@ unneeding begin-structure unneeding end-structure and ?(
   \
   \ Origin: Forth-2012 (FACILITY EXT).
   \
-  \ See: `end-structure`, `field:`, `cfield:`, `2field:`,
+  \ See also: `end-structure`, `field:`, `cfield:`, `2field:`,
   \ `+field`.
   \
   \ }doc

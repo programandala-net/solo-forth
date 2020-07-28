@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081220
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -40,7 +40,7 @@ need find-substitution need 2variable
   \ A character constant that returns the character used as
   \ delimiter by `substitute`. By default it's "%".
   \
-  \ See: `substitution-delimiter?`.
+  \ See also: `substitution-delimiter?`.
   \
   \ }doc
 
@@ -183,7 +183,7 @@ code substitution-delimiter? ( ca -- f )
   \ the input string contains a single delimiter,  the residue
   \ is passed unchanged to the output.
   \
-  \ See: `unescape`, `substitution-delimiter?`.
+  \ See also: `unescape`, `substitution-delimiter?`.
   \
   \ }doc
 

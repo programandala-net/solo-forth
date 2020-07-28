@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006081220
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -43,7 +43,7 @@ unneeding "y" unneeding "n" and ?(
   \ affirmative answer. By default it's "y".  For localization,
   \ the value can be changed with `c!>`.
   \
-  \ See: `"n"`.
+  \ See also: `"n"`.
   \
   \ }doc
 
@@ -58,7 +58,7 @@ unneeding "y" unneeding "n" and ?(
   \ answer. By default it's "n".  For localization, the value
   \ can be changed with `c!>`.
   \
-  \ See: `"y"`.
+  \ See also: `"y"`.
   \
   \ }doc
 
@@ -74,7 +74,7 @@ unneeding y/n? ?( need "y" need "n"
   \ for a "y/n" question? I.e., is _c_ the current value of
   \ `"y"` or `"n"`?
   \
-  \ See: `yes?`, `no?`, `y/n`.
+  \ See also: `yes?`, `no?`, `y/n`.
   \
   \ }doc
 
@@ -89,7 +89,7 @@ unneeding y/n ?( need y/n?
   \ Wait for a valid `key` press for a "yes/no" question and
   \ return its code _c_, which is `"y"` or `"n"`.
   \
-  \ See: `y/n?`.
+  \ See also: `y/n?`.
   \
   \ }doc
 
@@ -103,7 +103,7 @@ unneeding no? ?\ need y/n need "n" : no? ( -- f ) y/n "n" = ;
   \ and return `true` if it's the current value of `"n"`,
   \ else return `false`.
   \
-  \ See: `yes?`, `y/n?`.
+  \ See also: `yes?`, `y/n?`.
   \
   \ }doc
 
@@ -119,7 +119,7 @@ unneeding yes?
   \ return `true` if it's the current value of `"y"`, else
   \ return `false`.
   \
-  \ See: `no?`, `y/n?`.
+  \ See also: `no?`, `y/n?`.
   \
   \ }doc
 

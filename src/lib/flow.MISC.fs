@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201807220028
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -40,7 +40,7 @@ unneeding +perform
   \
   \ If the execution token is zero, do nothing.
   \
-  \ See: `perform`, `execute`, `array>`.
+  \ See also: `perform`, `execute`, `array>`.
   \
   \ }doc
 
@@ -82,7 +82,7 @@ code call ( a -- )
   \
   \ Call a machine code subroutine at _a_.
   \
-  \ See: `execute-hl,`, `call-xt,`.
+  \ See also: `execute-hl,`, `call-xt,`.
   \
   \ }doc
 
@@ -131,7 +131,7 @@ unneeding executions ?( need 2rdrop
   \
   \ Execute _xt_ _n_ times.
   \
-  \ See: `times`, `dtimes`.
+  \ See also: `times`, `dtimes`.
   \
   \ }doc
 
@@ -176,7 +176,7 @@ unneeding ?repeat ?( need cs-dup need 0until
   \   ;
   \ ----
 
-  \ See: `0repeat`.
+  \ See also: `0repeat`.
   \
   \ }doc
 
@@ -218,7 +218,7 @@ unneeding 0repeat ?( need cs-dup
   \   ;
   \ ----
 
-  \ See: `?repeat`.
+  \ See also: `?repeat`.
   \
   \ }doc
 
@@ -344,7 +344,7 @@ unneeding retry ?( need >body
   \
   \ ``retry`` is an `immediate` and `compile-only` word.
   \
-  \ See: `?retry`.
+  \ See also: `?retry`.
   \
   \ }doc
 
@@ -367,7 +367,7 @@ unneeding ?retry ?( need retry
   \
   \ ``?retry`` is an `immediate` and `compile-only` word.
   \
-  \ See: `retry`, `?repeat`, `0repeat`.
+  \ See also: `retry`, `?repeat`, `0repeat`.
   \
   \ }doc
 
@@ -391,7 +391,7 @@ code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ immediately following the innermost syntactically enclosing
   \ `loop` or `+loop`.
   \
-  \ See: `0leave`, `leave`, `unloop`, `do`, `?do`.
+  \ See also: `0leave`, `leave`, `unloop`, `do`, `?do`.
   \
   \ }doc
 
@@ -415,7 +415,7 @@ code 0leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \ immediately following the innermost syntactically enclosing
   \ `loop` or `+loop`.
   \
-  \ See: `?leave`, `leave`, `unloop`, `do`, `?do`.
+  \ See also: `?leave`, `leave`, `unloop`, `do`, `?do`.
   \
   \ }doc
 
@@ -482,7 +482,7 @@ unneeding cond ?( need cs-mark need thens
   \   thens ;
   \ ----
 
-  \ See: `case`, `cs-mark`, `andif`, `orif`.
+  \ See also: `case`, `cs-mark`, `andif`, `orif`.
   \
   \ }doc
 
@@ -512,7 +512,7 @@ unneeding thens ?( need cs-test
   \ structures, but it's also the end of the `cond` ...
   \ ``thens`` structure. See `cond` for an usage example.
   \
-  \ See: `cs-test`, `andif`, `orif`.
+  \ See also: `cs-test`, `andif`, `orif`.
   \
   \ }doc
 
@@ -552,7 +552,7 @@ unneeding andif ?(
   \                     kill-dragon?    and ;
   \ ----
 
-  \ See: `orif`, `cond`, `thens`.
+  \ See also: `orif`, `cond`, `thens`.
   \
   \ }doc
 
@@ -592,7 +592,7 @@ unneeding orif ?(
   \                           swap is-digit? or ;
   \ ----
 
-  \ See: `andif`, `cond`, `thens`.
+  \ See also: `andif`, `cond`, `thens`.
   \
   \ }doc
 

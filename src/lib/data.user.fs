@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041142
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -36,7 +36,7 @@ unneeding ucreate ?\ : ucreate ( "name" -- ) udp @ (user ;
   \ is later executed, its absolute user area storage address
   \ is placed on the stack.  No user space is allocated.
   \
-  \ See: `uallot`, `user`, `2user`, `?user`.
+  \ See also: `uallot`, `user`, `2user`, `?user`.
   \
   \ }doc
 
@@ -54,7 +54,7 @@ unneeding ?user ?(
   \ `throw` an exception if the user area pointer is out of
   \ bounds.
   \
-  \ See: `udp`, `/user`.
+  \ See also: `udp`, `/user`.
   \
   \ }doc
 
@@ -72,7 +72,7 @@ unneeding uallot ?( need ?user
   \ pointer unchanged. An exception is thrown if the user-data
   \ pointer is out of bounds after the operation.
   \
-  \ See: `udp`, `ucreate`, `?user`, `user`, `2user`.
+  \ See also: `udp`, `ucreate`, `?user`, `user`, `2user`.
   \
   \ }doc
 
@@ -90,7 +90,7 @@ unneeding user ?( need ucreate need uallot
   \ later executed, its absolute user area storage address is
   \ placed on the stack.
   \
-  \ See: `2user`, `ucreate`, `uallot`, `?user`.
+  \ See also: `2user`, `ucreate`, `uallot`, `?user`.
   \
   \ }doc
 
@@ -108,7 +108,7 @@ unneeding 2user ?( need ucreate need uallot
   \ _name_ is later executed, its absolute user area storage
   \ address is placed on the stack.
   \
-  \ See: `user`, `ucreate`, `uallot`, `?user`.
+  \ See also: `user`, `ucreate`, `uallot`, `?user`.
   \
   \ }doc
 

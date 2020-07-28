@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007112232
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -38,7 +38,7 @@ unneeding dos-in
   \
   \ Page in the Plus D memory.
   \
-  \ See: `dos-out`, `dos-in,`, `@dos`, `!dos`.
+  \ See also: `dos-out`, `dos-in,`, `@dos`, `!dos`.
   \
   \ }doc
 
@@ -54,7 +54,7 @@ unneeding dos-out
   \
   \ Page out the Plus D memory.
   \
-  \ See: `dos-in`, `dos-out,`.
+  \ See also: `dos-in`, `dos-out,`.
   \
   \ }doc
 
@@ -70,7 +70,7 @@ unneeding dos-in,
   \ Compile the Z80 instruction ``in a,(231)``, which pages in
   \ the Plus D memory.
   \
-  \ See: `dos-out,`, `dos-in`.
+  \ See also: `dos-out,`, `dos-in`.
   \
   \ }doc
 
@@ -86,7 +86,7 @@ unneeding dos-out,
   \ Compile the Z80 instruction ``out (231),a``, which pages out
   \ the Plus D memory.
   \
-  \ See: `dos-in,`, `dos-out`.
+  \ See also: `dos-in,`, `dos-out`.
   \
   \ }doc
 
@@ -101,7 +101,7 @@ unneeding dfca ?\ $3AC3 constant dfca
   \ _a_ is the address of G+DOS DFCA (Disk File Channel Area)
   \ in the Plus D memory.
   \
-  \ See: `ufia1`, `ufia2`.
+  \ See also: `ufia1`, `ufia2`.
   \
   \ }doc
 
@@ -116,7 +116,7 @@ unneeding ufia1 ?\ $3E01 constant ufia1
   \ which describes a file.  See `ufia` for a detailed
   \ description.
   \
-  \ See: `/ufia`, `ufia2`, `dfca`.
+  \ See also: `/ufia`, `ufia2`, `dfca`.
   \
   \ }doc
 
@@ -131,7 +131,7 @@ unneeding ufia2 ?\ $3E1A constant ufia2
   \ 24-byte structure which describes a file.  See `ufia` for a
   \ detailed description.
   \
-  \ See: `/ufia`, `ufia1`, `dfca`.
+  \ See also: `/ufia`, `ufia1`, `dfca`.
   \
   \ }doc
 
@@ -148,7 +148,7 @@ unneeding >ufiax ?( need /ufia need dos-in need dos-out
   \
   \ ``>ufiax`` is a common factor of `>ufia1` and `>ufia2`.
   \
-  \ See: `ufia`, `/ufia`, `ufia1`, `ufia2`.
+  \ See also: `ufia`, `/ufia`, `ufia1`, `ufia2`.
   \
   \ }doc
 
@@ -167,7 +167,7 @@ unneeding >ufia1
   \ Move a UFIA (User File Information Area) from _a_ to
   \ `ufia1`.
   \
-  \ See: `>ufia2`, `>ufiax`, `ufia`, `/ufia`.
+  \ See also: `>ufia2`, `>ufiax`, `ufia`, `/ufia`.
   \
   \ }doc
 
@@ -182,7 +182,7 @@ unneeding >ufia2
   \ Move a UFIA (User File Information Area) from _a_ to
   \ `ufia2`.
   \
-  \ See: `>ufia1`, `>ufiax`, `ufia`, `/ufia`.
+  \ See also: `>ufia1`, `>ufiax`, `ufia`, `/ufia`.
   \
   \ }doc
 
@@ -231,7 +231,7 @@ cconstant /fid
   \ field address _a2_, which contains the address of the
   \ previous structure.
   \
-  \ See: `ufia`, `/ufia`, `/fid`.
+  \ See also: `ufia`, `/ufia`, `/fid`.
   \
   \ }doc
 
@@ -242,7 +242,7 @@ cconstant /fid
   \ _n_ is the length of a UFIA (User File Information Area), a
   \ 24-byte structure which describes a file.
   \
-  \ See: `ufia`, `ufia0`, `ufia1`, `ufia2`, `/fid`.
+  \ See also: `ufia`, `ufia0`, `ufia1`, `ufia2`, `/fid`.
   \
   \ }doc
 
@@ -255,7 +255,7 @@ cconstant /fid
   \ open. The structure is identical to `ufia`, except field
   \ `~fid-link` is added at the end.
   \
-  \ See: `/ufia`.
+  \ See also: `/ufia`.
   \
   \ }doc
 
@@ -271,7 +271,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ Information Area), a 24-byte structure which describes a
   \ file. ``ufia0`` is the default value of `ufia`.
   \
-  \ See: `default-ufia`.
+  \ See also: `default-ufia`.
   \
   \ }doc
 
@@ -330,7 +330,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ NOTE: The original UFIA field names are used, except
   \ `device`, whose original name is "lstr1":
 
-  \ See: `/ufia`, `>ufiax`, `dstr1`, `fstr1`, `sstr1`,
+  \ See also: `/ufia`, `>ufiax`, `dstr1`, `fstr1`, `sstr1`,
   \ `device`, `nstr1`, `nstr2`, `hd00`, `hd0b`, `hd0d`, `hd0f`,
   \ `hd11`.
   \
@@ -358,7 +358,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ Return address _ca_ of the drive in the current `ufia`,
   \ containing 1, 2 or '*'.
   \
-  \ See: `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`, `hd00`,
+  \ See also: `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`, `hd00`,
   \ `hd0b`, `hd0d`, `hd0f`, `hd11`.
   \
   \ }doc
@@ -370,7 +370,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ Return address _ca_ of the file directory number in the
   \ current `ufia`.
   \
-  \ See: `dstr1`, `sstr1`, `device`, `nstr1`, `nstr2`, `hd00`,
+  \ See also: `dstr1`, `sstr1`, `device`, `nstr1`, `nstr2`, `hd00`,
   \ `hd0b`, `hd0d`, `hd0f`, `hd11`.
   \
   \ }doc
@@ -382,7 +382,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ Return address _ca_ of the stream number in the current
   \ `ufia`.
   \
-  \ See: `dstr1`, `fstr1`, `device`, `nstr1`, `nstr2`, `hd00`,
+  \ See also: `dstr1`, `fstr1`, `device`, `nstr1`, `nstr2`, `hd00`,
   \ `hd0b`, `hd0d`, `hd0f`, `hd11`.
   \
   \ }doc
@@ -396,7 +396,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \
   \ NOTE: In G+DOS, this UFIA field is called "lstr1".
   \
-  \ See: `dstr1`, `fstr1`, `sstr1`, `nstr1`, `nstr2`, `hd00`,
+  \ See also: `dstr1`, `fstr1`, `sstr1`, `nstr1`, `nstr2`, `hd00`,
   \ `hd0b`, `hd0d`, `hd0f`, `hd11`.
   \
   \ }doc
@@ -408,7 +408,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ Return address _ca_ of the directory description in the
   \ current `ufia`.
   \
-  \ See: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr2`, `hd00`,
+  \ See also: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr2`, `hd00`,
   \ `hd0b`, `hd0d`, `hd0f`, `hd11`.
   \
   \ }doc
@@ -420,7 +420,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ Return address _ca_ of the 10-character file name in the
   \ current `ufia`.
   \
-  \ See: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `hd00`,
+  \ See also: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `hd00`,
   \ `hd0b`, `hd0d`, `hd0f`, `hd11`.
   \
   \ }doc
@@ -431,7 +431,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \
   \ Return address _ca_ of the file type in the current `ufia`.
   \
-  \ See: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`,
+  \ See also: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`,
   \ `hd0b`, `hd0d`, `hd0f`, `hd11`.
   \
   \ }doc
@@ -443,7 +443,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ Return address _a_ of the file length in the current
   \ `ufia`.
   \
-  \ See: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`,
+  \ See also: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`,
   \ `hd00`, `hd0d`, `hd0f`, `hd11`.
   \
   \ }doc
@@ -455,7 +455,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ Return address _a_ of the file start address in the current
   \ `ufia`.
   \
-  \ See: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`,
+  \ See also: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`,
   \ `hd00`, `hd0b`, `hd0f`, `hd11`.
   \
   \ }doc
@@ -467,7 +467,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ Return address _a_ of the BASIC length without variables in
   \ the current `ufia`.
   \
-  \ See: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`,
+  \ See also: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`,
   \ `hd00`, `hd0b`, `hd0d`, `hd11`.
   \
   \ }doc
@@ -479,7 +479,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ Return address _a_ of the BASIC autorun line in the current
   \ `ufia`.
   \
-  \ See: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`,
+  \ See also: `dstr1`, `fstr1`, `sstr1`, `device`, `nstr1`, `nstr2`,
   \ `hd00`, `hd0b`, `hd0d`, `hd0f`, `hd11`.
   \
   \ }doc
@@ -492,7 +492,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \
   \ Erase the contents of `ufia` with zeroes,
   \
-  \ See: `init-ufia`, `/ufia`.
+  \ See also: `init-ufia`, `/ufia`.
   \
   \ }doc
 
@@ -507,7 +507,7 @@ need /ufia  create ufia0 /ufia allot  ufia0 constant ufia
   \ setting `device` to "d", `dstr1` to "*" (i.e., the default
   \ drive) and `sstr1` to 2.
   \
-  \ See: `-ufia`.
+  \ See also: `-ufia`.
   \
   \ }doc
 
@@ -539,7 +539,7 @@ variable latest-fid  0 latest-fid !
   \ to the previous one, pointed by `latest-fid`. Also update
   \ `latest-fid`.
   \
-  \ See: `latest-fid`, `/fid`, `~fid-link`.
+  \ See also: `latest-fid`, `/fid`, `~fid-link`.
   \
   \ }doc
 
@@ -551,7 +551,7 @@ variable latest-fid  0 latest-fid !
   \
   \ Is file identifier _fid_ free to be reused?
   \
-  \ See: `free-fid`, `create-fid`.
+  \ See also: `free-fid`, `create-fid`.
   \
   \ }doc
 
@@ -564,7 +564,7 @@ variable latest-fid  0 latest-fid !
   \ Make file identifier _fid_ free for reuse. The
   \ corresponding file is supposed to be closed already.
   \
-  \ See: `free-fid?`, `create-fid`.
+  \ See also: `free-fid?`, `create-fid`.
   \
   \ }doc
 
@@ -580,7 +580,7 @@ variable latest-fid  0 latest-fid !
   \ If no unused file identifier is found, a new one is
   \ created.
   \
-  \ See: `free-fid?`, `~fid-link`, `create-fid`.
+  \ See also: `free-fid?`, `~fid-link`, `create-fid`.
   \
   \ }doc
 
@@ -593,7 +593,7 @@ variable latest-fid  0 latest-fid !
   \
   \ Return a usable file identifier _fid_.
   \
-  \ See: `latest-fid`, `find-fid`, `create-fid`.
+  \ See also: `latest-fid`, `find-fid`, `create-fid`.
   \
   \ }doc
 
@@ -621,7 +621,7 @@ need /ufia need /fid need /filename need type-ascii
   \ Display the contents of the UFIA data structure pointed by
   \ _a_.
   \
-  \ See: `.fid`, `ufia`.
+  \ See also: `.fid`, `ufia`.
   \
   \ }doc
 
@@ -635,7 +635,7 @@ need /ufia need /fid need /filename need type-ascii
   \ Display the contents of the data structure pointed by file
   \ identifier _fid_.
   \
-  \ See: `.ufia`, `fid`.
+  \ See also: `.ufia`, `fid`.
   \
   \ }doc
 
@@ -660,7 +660,7 @@ unneeding r/o ?\ $BF cconstant r/o
   \
   \ Return the "read only" file access method _fam_.
   \
-  \ See: `w/o`, `r/w`, `bin`.
+  \ See also: `w/o`, `r/w`, `bin`.
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
@@ -676,7 +676,7 @@ unneeding w/o ?\ $DF cconstant w/o
   \
   \ Return the "write only" file access method _fam_.
   \
-  \ See: `r/o`, `r/w`, `bin`.
+  \ See also: `r/o`, `r/w`, `bin`.
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
@@ -694,7 +694,7 @@ unneeding r/w ?\ 0 cconstant r/w
   \
   \ WARNING: ``r/w`` is not supported on G+DOS.
   \
-  \ See: `r/o`, `w/o`, `bin`.
+  \ See also: `r/o`, `w/o`, `bin`.
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
@@ -710,7 +710,7 @@ unneeding bin ?\ need alias ' noop alias bin immediate
   \ "binary", i.e., not line oriented, file access method,
   \ giving file access method _fam2_.
   \
-  \ See: `r/o`, `w/o`, `r/w`.
+  \ See also: `r/o`, `w/o`, `r/w`.
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
@@ -760,7 +760,7 @@ unneeding dos-vars ?\ 8192 constant dos-vars
   \
   \ Address of the G+DOS variables in the Plus D memory.
   \
-  \ See: `@dosvar`, `c@dosvar`, `!dosvar`, `c!dosvar`.
+  \ See also: `@dosvar`, `c@dosvar`, `!dosvar`, `c!dosvar`.
   \
   \ }doc
 
@@ -829,7 +829,7 @@ code get-drive ( -- n ior )
   \ : get-drive ( -- n ior ) dos-in $3ACE c@ dos-out false ;
   \ ----
 
-  \ See: `set-drive`, `dos-in`, `dos-out`.
+  \ See also: `set-drive`, `dos-in`, `dos-out`.
   \
   \ }doc
 
@@ -848,7 +848,7 @@ unneeding 2-block-drives ?( need set-block-drives
   \ NOTE: For convenience, when this word is loaded, it's also
   \ executed.
   \
-  \ See: `set-block-drives`.
+  \ See also: `set-block-drives`.
   \
   \ }doc
 
@@ -885,7 +885,7 @@ code (delete-file ( -- ior )
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
-  \ See: `(delete-file`.
+  \ See also: `(delete-file`.
   \
   \ }doc
 
@@ -902,7 +902,7 @@ need ufia need get-drive
   \ A `cconstant` that returns the maximum length of a G+DOS
   \ filename.
   \
-  \ See: `set-filename`.
+  \ See also: `set-filename`.
   \
   \ }doc
 
@@ -914,7 +914,7 @@ need ufia need get-drive
   \
   \ Blank the filename in `ufia`, i.e. replace it with spaces.
   \
-  \ See: `/filename`, `set-filename`.
+  \ See also: `/filename`, `set-filename`.
   \
   \ }doc
 
@@ -929,7 +929,7 @@ need ufia need get-drive
   \ Configure `ufia` to use filename _ca len_ and the current
   \ drive.
   \
-  \ See: `-filename`, `/filename`.
+  \ See also: `-filename`, `/filename`.
   \
   \ }doc
 
@@ -944,7 +944,7 @@ need ufia need get-drive
   \ with filename _ca2 len2_, start address _ca1_ and length
   \ _len1_.
   \
-  \ See: `set-filename`.
+  \ See also: `set-filename`.
   \
   \ }doc
 
@@ -985,7 +985,7 @@ code (>file ( -- ior )
   \ Save memory region _ca1 len1_ to a file named by the string
   \ _ca2 len2_, and return the I/O result code _ior_.
   \
-  \ See: `file>`, `(>file`.
+  \ See also: `file>`, `(>file`.
   \
   \ }doc
 
@@ -1029,7 +1029,7 @@ code (file> ( ca len -- ior )
   \
   \ ``(file>`` is a factor of `file>`.
   \
-  \ See: `file-length`.
+  \ See also: `file-length`.
   \
   \ }doc
 
@@ -1079,7 +1079,7 @@ code (file> ( ca len -- ior )
   \ | `s" pic.scr" 32768  256 file>` | Load only 256 bytes to address 32768
   \ |===
 
-  \ See: `>file`, `(file>`.
+  \ See also: `>file`, `(file>`.
   \
   \ }doc
 
@@ -1136,7 +1136,7 @@ code (file-status ( -- a ior )
   \
   \ Origin: Forth-94 (FILE-EXT), Forth-2012 (FILE-EXT).
   \
-  \ See: `file-exists?`, `file-start`, `file-length`,
+  \ See also: `file-exists?`, `file-start`, `file-length`,
   \ `file-type`, `find-file`.
   \
   \ }doc
@@ -1154,7 +1154,7 @@ unneeding file-exists?  ?( need file-status
   \ If the file named in the character string _ca len_ is
   \ found, _f_ is `true`. Otherwise _f_ is `false`.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 
@@ -1173,7 +1173,7 @@ unneeding file-start  ?( need file-status need ufia
   \ Otherwise _ior_ is the I/O result code and _ca2_ is
   \ undefined.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 
@@ -1191,7 +1191,7 @@ unneeding file-length  ?( need file-status need ufia
   \ _ior_ is zero and _len2_ is the file length.  Otherwise
   \ _ior_ is the I/O result code and _len2_ is undefined.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 
@@ -1210,7 +1210,7 @@ unneeding file-type  ?( need file-status need ufia
   \ Otherwise _ior_ is the I/O result code and _n_ is
   \ undefined.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 
@@ -1226,7 +1226,7 @@ unneeding find-file  ?( need file-status
   \ found, update the contents of `ufia` and return its address
   \ _a_. Otherwise return zero.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 
@@ -1253,7 +1253,7 @@ unneeding file-dir#  ?( need file-status need ufia
   \ `(file-status`. This problem may be solved in a future
   \ version of Solo Forth.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
 
 unneeding file-dirdesc  ?( need file-status need ufia
@@ -1277,7 +1277,7 @@ unneeding file-dirdesc  ?( need file-status need ufia
   \ `(file-status`. This problem may be solved in a future
   \ version of Solo Forth.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
 
 unneeding tracks/cat ?\ 4 cconstant tracks/cat
@@ -1303,7 +1303,7 @@ unneeding tracks/disk ?\ 80 cconstant tracks/disk
   \
   \ A `cconstant`. _b_ is the number of tracks of a disk.
   \
-  \ See: `tracks/cat`, `sectors/disk`, `max-disk-capacity`,
+  \ See also: `tracks/cat`, `sectors/disk`, `max-disk-capacity`,
   \ `b/sector`, `sectors-used`, `drive-unused`.
   \
   \ }doc
@@ -1319,7 +1319,7 @@ tracks/disk sectors/track * 2* constant sectors/disk ?)
   \ A `constant`. _u_ is the total number of sectors of a disk
   \ (on both sides).
   \
-  \ See: `tracks/cat`, `tracks/disk`, `b/sector`,
+  \ See also: `tracks/cat`, `tracks/disk`, `b/sector`,
   \ `max-disk-capacity`, `sectors-used`, `drive-unused`.
   \
   \ }doc
@@ -1375,7 +1375,7 @@ constant max-disk-capacity ?)
   \ files on a disk, i.e. the actual capacity excluding the
   \ tracks used for the catalogue.
   \
-  \ See: `tracks/cat`, `tracks/disk`, `b/sector`,
+  \ See also: `tracks/cat`, `tracks/disk`, `b/sector`,
   \ `sectors-used`, `drive-unused`.
   \
   \ }doc
@@ -1400,7 +1400,7 @@ unneeding sectors-used@ ?( need dos-in need dos-out
   \ Therefore the user must execute `cat` or `acat` before, in
   \ order to update the value, or use `sectors-used` directly.
   \
-  \ See: `drive-used`, `drive-unused`, `b/sector`,
+  \ See also: `drive-used`, `drive-unused`, `b/sector`,
   \ `tracks/cat`.
   \
   \ }doc
@@ -1421,7 +1421,7 @@ unneeding sectors-used ?( need acat need sectors-used@
   \ includes `acat`. This problem may be solved in a future
   \ version of Solo Forth.
   \
-  \ See: `sectors-used@`, `drive-used`, `drive-unused`,
+  \ See also: `sectors-used@`, `drive-used`, `drive-unused`,
   \ `b/sector`, `tracks/cat`.
   \
   \ }doc
@@ -1450,7 +1450,7 @@ unneeding drive-used ?( need get-drive need sectors-used
   \ `acat`. This problem may be solved in a future version of
   \ Solo Forth.
   \
-  \ See: `drive-unused`, `max-disk-capacity`, `sectors-used`,
+  \ See also: `drive-unused`, `max-disk-capacity`, `sectors-used`,
   \ `get-drive`, `set-drive`, `unused`, `farunused`.
   \
   \ }doc
@@ -1473,7 +1473,7 @@ unneeding drive-unused ?( need drive-used need tracks/cat
   \ includes `acat`. This problem may be solved in a future
   \ version of Solo Forth.
   \
-  \ See: `drive-used`,  `max-disk-capacity`, `sectors-used`,
+  \ See also: `drive-used`,  `max-disk-capacity`, `sectors-used`,
   \ `get-drive`, `set-drive`, `unused`, `farunused`.
   \
   \ }doc
@@ -1695,7 +1695,7 @@ unneeding (cat ?( need pcat need ufia need hd00 need >ufia1
   \ ``(cat`` is the common factor of all words that show disk
   \ catalogues: `cat`, `acat`, `wcat`, `wacat`.
   \
-  \ See: `((cat`, `set-drive`.
+  \ See also: `((cat`, `set-drive`.
   \
   \ }doc
 
@@ -1711,7 +1711,7 @@ unneeding wcat ?( need set-filename need (cat
   \ the wild-card filename _ca len_.  See the Plus D manual for
   \ wild-card syntax.
   \
-  \ See: `cat`, `acat`, `wacat`, `(cat`, `set-drive`.
+  \ See also: `cat`, `acat`, `wacat`, `(cat`, `set-drive`.
   \
   \ }doc
 
@@ -1727,7 +1727,7 @@ unneeding wacat ?( need set-filename need (cat
   \ drive using the wild-card filename _ca len_.  See the Plus
   \ D manual for wild-card syntax.
   \
-  \ See: `cat`, `acat`, `wcat`, `(cat`, `set-drive`.
+  \ See also: `cat`, `acat`, `wcat`, `(cat`, `set-drive`.
   \
   \ }doc
 
@@ -1745,7 +1745,7 @@ unneeding cat ?\ need wcat : cat ( -- ) s" *" wcat ; ?)
   \
   \ Show a disk catalogue of the current drive.
   \
-  \ See: `acat`, `wcat`, `wacat`, `(cat`, `set-drive`.
+  \ See also: `acat`, `wcat`, `wacat`, `(cat`, `set-drive`.
   \
   \ }doc
 
@@ -1757,7 +1757,7 @@ unneeding acat ?( need wacat : acat ( -- ) s" *" wacat ;
   \
   \ Show an abbreviated disk catalogue of the current drive.
   \
-  \ See: `cat`, `wcat`, `wacat`, `(cat`, `set-drive`.
+  \ See also: `cat`, `wcat`, `wacat`, `(cat`, `set-drive`.
   \
   \ }doc
 
@@ -1847,7 +1847,7 @@ code @dos ( a -- x )
   \
   \ Fetch the cell _x_ stored at Plus D memory address _a_.
   \
-  \ See: `!dos`, `c@dos`.
+  \ See also: `!dos`, `c@dos`.
   \
   \ }doc
 
@@ -1862,7 +1862,7 @@ code c@dos ( ca -- b )
   \
   \ Fetch byte _b_ stored at Plus D memory address _ca_.
   \
-  \ See: `c!dos`, `@dos`.
+  \ See also: `c!dos`, `@dos`.
   \
   \ }doc
 
@@ -1877,7 +1877,7 @@ code !dos ( x a -- )
   \
   \ Store _x_ at the Plus D memory address _a_.
   \
-  \ See: `@dos`, `c!dos`.
+  \ See also: `@dos`, `c!dos`.
   \
   \ }doc
 
@@ -1892,7 +1892,7 @@ code c!dos ( b ca -- )
   \
   \ Store _b_ at the Plus D memory address _ca_.
   \
-  \ See: `c@dos`, `!dos`.
+  \ See also: `c@dos`, `!dos`.
   \
   \ }doc
 
@@ -1913,7 +1913,7 @@ code @dosvar ( n -- x )
   \
   \ Fetch the contents _x_ of G+DOS variable _n_.
   \
-  \ See: `!dosvar`, `c@dosvar`, `!dos`.
+  \ See also: `!dosvar`, `c@dosvar`, `!dos`.
   \
   \ }doc
 
@@ -1931,7 +1931,7 @@ code c@dosvar ( n -- b )
   \
   \ Fetch the contents _b_ of G+DOS variable _n_.
   \
-  \ See: `c!dosvar`, `c!dosvar`, `@dos`.
+  \ See also: `c!dosvar`, `c!dosvar`, `@dos`.
   \
   \ }doc
 
@@ -1952,7 +1952,7 @@ code !dosvar ( x n -- )
   \
   \ Store _x_ into the G+DOS variable _n_.
   \
-  \ See: `@dosvar`, `c!dosvar`, `!dos`.
+  \ See also: `@dosvar`, `c!dosvar`, `!dos`.
   \
   \ }doc
 
@@ -1970,7 +1970,7 @@ code c!dosvar ( b n -- )
   \
   \ Store _b_ into the G+DOS variable _n_.
   \
-  \ See: `c@dosvar`, `!dosvar`, `c!dos`.
+  \ See also: `c@dosvar`, `!dosvar`, `c!dos`.
   \
   \ }doc
 
@@ -2091,7 +2091,7 @@ code (create-file ( ufia -- ior )
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
-  \ See: `r/o`, `w/o`, `r/w`, `bin`.
+  \ See also: `r/o`, `w/o`, `r/w`, `bin`.
   \
 
 ( open-file )

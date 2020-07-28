@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006161756
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -39,7 +39,7 @@ assembler-wordlist dup >order set-current need ?rel
   \ `rl#`.  ``rl-id`` is used as a bitmask added to the
   \ `assembler` label number stored in `l-refs`.
   \
-  \ See: `al-id`.
+  \ See also: `al-id`.
   \
   \ }doc
 
@@ -51,7 +51,7 @@ assembler-wordlist dup >order set-current need ?rel
   \ `al#`.  ``al-id`` is used as a bitmask added to the
   \ `assembler` label number stored in `l-refs`.
   \
-  \ See: `rl-id`.
+  \ See also: `rl-id`.
   \
   \ }doc
 
@@ -84,7 +84,7 @@ create max-labels 8 c,  create max-l-refs 16 c,
   \ assembler-wordlist >order max-labels c! previous
   \ ----
 
-  \ See: `max-l-refs`.
+  \ See also: `max-l-refs`.
   \
   \ }doc
 
@@ -115,7 +115,7 @@ create max-labels 8 c,  create max-l-refs 16 c,
   \ assembler-wordlist >order max-l-refs c! previous
   \ ----
 
-  \ See: `max-labels`.
+  \ See also: `max-labels`.
   \
   \ }doc
 
@@ -128,7 +128,7 @@ create max-labels 8 c,  create max-l-refs 16 c,
   \ _n_ is the size in bytes of each `assembler` label
   \ reference stored in the `l-refs` table.
   \
-  \ See: `/l-refs`.
+  \ See also: `/l-refs`.
   \
   \ }doc
 
@@ -140,7 +140,7 @@ create max-labels 8 c,  create max-l-refs 16 c,
   \
   \ _n_ is the size in bytes of the `l-refs` table.
   \
-  \ See: `max-l-refs`, `/l-ref`, `/labels`.
+  \ See also: `max-l-refs`, `/l-ref`, `/labels`.
   \
   \ }doc
 
@@ -152,7 +152,7 @@ create max-labels 8 c,  create max-l-refs 16 c,
   \
   \ _n_ is the size in bytes of the `labels` table.
   \
-  \ See: `max-labels`, `/l-refs`.
+  \ See also: `max-labels`, `/l-refs`.
   \
   \ }doc
 
@@ -171,7 +171,7 @@ variable labels  variable l-refs
   \ contains either the address of the corresponding label or
   \ zero if the label is undefined.
   \
-  \ See: `/labels`, `l-refs`.
+  \ See also: `/labels`, `l-refs`.
   \
   \ }doc
 
@@ -231,7 +231,7 @@ init-labels ' init-labels ' init-asm defer!
   \ If `assembler` label _n_ is out of range, `throw` exception
   \ #-283.
   \
-  \ See: `max-labels`.
+  \ See also: `max-labels`.
   \
   \ }doc
 
@@ -273,7 +273,7 @@ init-labels ' init-labels ' init-asm defer!
   \
   \ Resolve an absolute reference at _orig_ to label _b_.
   \
-  \ See: `resolve-rl#`, `(resolve-ref`, `>l`.
+  \ See also: `resolve-rl#`, `(resolve-ref`, `>l`.
   \
   \ }doc
 
@@ -286,7 +286,7 @@ init-labels ' init-labels ' init-asm defer!
   \ Resolve a relative reference at _orig_ to `assembler` label
   \ _b_.
   \
-  \ See: `resolve-al#`, `(resolve-ref`, `>l`.
+  \ See also: `resolve-al#`, `(resolve-ref`, `>l`.
   \
   \ }doc
 
@@ -300,7 +300,7 @@ init-labels ' init-labels ' init-asm defer!
   \
   \ Resolve reference at _orig_ to `assembler` label _b_.
   \
-  \ See: `resolve-rl#`, `resolve-al#`.
+  \ See also: `resolve-rl#`, `resolve-al#`.
   \
   \ }doc
 
@@ -407,7 +407,7 @@ init-labels ' init-labels ' init-asm defer!
   \ could have been created by `rl#` or `al#`. Usually _x_ is
   \ an address.
   \
-  \ See: `l:`, `resolve-refs`.
+  \ See also: `l:`, `resolve-refs`.
   \
   \ }doc
 
@@ -424,7 +424,7 @@ init-labels ' init-labels ' init-asm defer!
   \ references to it that could have been created by `rl#` or
   \ `al#`.
   \
-  \ See: `l!`, `.l`, `labels`, `l-refs`, `init-labels`.
+  \ See also: `l!`, `.l`, `labels`, `l-refs`, `init-labels`.
   \
   \ See also `unresolved` for an alternative method.
   \

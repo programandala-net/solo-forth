@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201803091349
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -41,7 +41,7 @@ need (substitution
   \ storage space.  Return the address that will hold the
   \ execution token of the substitution.
   \
-  \ See: `xt-replaces`.
+  \ See also: `xt-replaces`.
   \
   \ }doc
 
@@ -67,7 +67,7 @@ need xt-substitution
   \ The name of a substitution should not contain the "%"
   \ delimiter character.
   \
-  \ See: `replaces`, `substitute`, `unescape`,
+  \ See also: `replaces`, `substitute`, `unescape`,
   \ `substitute-wordlist`.
   \
   \ }doc

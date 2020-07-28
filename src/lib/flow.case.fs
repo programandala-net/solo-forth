@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041132
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -53,7 +53,7 @@ cs-mark cconstant case immediate compile-only
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See: `of`, `endof`, `default-of`, `less-of`,
+  \ See also: `of`, `endof`, `default-of`, `less-of`,
   \ `greater-of`, `between-of`, `within-of`, `or-of`, `any-of`,
   \ `cond`, `thens`.
   \
@@ -88,7 +88,7 @@ cs-mark cconstant case immediate compile-only
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See: `default-of`, `less-of`, `greater-of`, `between-of`,
+  \ See also: `default-of`, `less-of`, `greater-of`, `between-of`,
   \ `within-of`, `or-of`, `any-of`.
   \
   \ }doc
@@ -135,7 +135,7 @@ cs-mark cconstant case immediate compile-only
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
-  \ See: `thens`.
+  \ See also: `thens`.
   \
   \ }doc
 
@@ -201,7 +201,7 @@ need between
   \   endcase ;
   \ ----
 
-  \ See: `case`, `within-of`, `(between-of`.
+  \ See also: `case`, `within-of`, `(between-of`.
   \
   \ }doc
 
@@ -225,7 +225,7 @@ unneeding less-of ?( need nup
   \ If _n1_ is less than _n2_, leave _n1 n1_; otherwise leave
   \ _n1 n3_, being _n3_ not equal to _n1_.
   \
-  \ See: `(greater-of`.
+  \ See also: `(greater-of`.
   \
   \ }doc
 
@@ -254,7 +254,7 @@ unneeding less-of ?( need nup
   \   endcase ;
   \ ----
 
-  \ See: `case`, `greater-of`, `(less-of`.
+  \ See also: `case`, `greater-of`, `(less-of`.
   \
   \ }doc
 
@@ -272,7 +272,7 @@ unneeding greater-of ?( need nup
   \ If _n1_ is greater than _n2_, leave _n1 n1_; otherwise
   \ leave _n1 n3_, being _n3_ not equal to _n1_.
   \
-  \ See: `(less-of`.
+  \ See also: `(less-of`.
   \
   \ }doc
 
@@ -301,7 +301,7 @@ unneeding greater-of ?( need nup
   \   endcase ;
   \ ----
 
-  \ See: `case`, `less-of`, `(greater-of`.
+  \ See also: `case`, `less-of`, `(greater-of`.
   \
   \ }doc
 
@@ -362,7 +362,7 @@ unneeding any-of ?( need any? need pick
   \   endcase ;
   \ ----
 
-  \ See: `case`, `or-of`, `(any-of`.
+  \ See also: `case`, `or-of`, `(any-of`.
   \
   \ }doc
 
@@ -475,7 +475,7 @@ unneeding within-of ?( need within
   \   endcase ;
   \ ----
 
-  \ See: `case`, `between-of`, `(within-of`.
+  \ See also: `case`, `between-of`, `(within-of`.
   \
   \ }doc
 
@@ -535,7 +535,7 @@ unneeding within-of ?( need within
   \   endcase ;
   \ ----
 
-  \ See: `case`, `any-of`, `(or-of`.
+  \ See also: `case`, `any-of`, `(or-of`.
   \
   \ }doc
 

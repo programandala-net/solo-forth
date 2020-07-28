@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007100058
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -37,7 +37,7 @@ wordlist constant environment-wordlist ( -- wid )
   \ A `constant`. _wid_ is the identifier of the word list where
   \ the environmental queries are defined.
   \
-  \ See: `environment?`.
+  \ See also: `environment?`.
   \
   \ }doc
 
@@ -86,7 +86,7 @@ wordlist constant environment-wordlist ( -- wid )
   \
   \ Origin: Forth-2012 (CORE).
   \
-  \ See: `environment-wordlist`.  `/counted-string`,
+  \ See also: `environment-wordlist`.  `/counted-string`,
   \ `/pad`, `address-unit-bits`, `floored`, `max-char`,
   \ `max-d`, `max-n`, `max-u`, `max-ud`, `return-stack-cells`,
   \ `stack-cells`.
@@ -155,7 +155,7 @@ unneeding address-unit-bits
   \
   \ _n_ is the size of one address unit, in bits.
   \
-  \ See: `max-char`, `environment?`.
+  \ See also: `max-char`, `environment?`.
   \
   \ }doc
 
@@ -170,7 +170,7 @@ unneeding max-char
   \ _u_ is the maximum value of any character in the character
   \ set.
   \
-  \ See: `address-unit-bits`, `/counted-string`,
+  \ See also: `address-unit-bits`, `/counted-string`,
   \ `environment?`.
   \
   \ }doc
@@ -185,7 +185,7 @@ unneeding /counted-string
   \
   \ _n_ is the maximum size of a counted string, in characters.
   \
-  \ See: `max-char`, `environment?`.
+  \ See also: `max-char`, `environment?`.
   \
   \ }doc
 
@@ -200,7 +200,7 @@ unneeding /pad
   \ _n_ is the size of the scratch area pointed to by `pad`, in
   \ characters.
   \
-  \ See: `/hold`, `environment?`.
+  \ See also: `/hold`, `environment?`.
   \
   \ }doc
 
@@ -214,7 +214,7 @@ unneeding floored
   \
   \ _f_ is `true` if floored division is the default.
   \
-  \ See: `environment?`.
+  \ See also: `environment?`.
   \
   \ }doc
 
@@ -230,7 +230,7 @@ unneeding max-n
   \
   \ _n_ is the largest usable signed integer.
   \
-  \ See: `max-u`, `max-d`, `environment?`.
+  \ See also: `max-u`, `max-d`, `environment?`.
   \
   \ }doc
 
@@ -247,7 +247,7 @@ unneeding max-u
   \
   \ _u_ is the largest usable unsigned integer.
   \
-  \ See: `max-n`, `max-ud`, `environment?`.
+  \ See also: `max-n`, `max-ud`, `environment?`.
   \
   \ }doc
 
@@ -261,7 +261,7 @@ unneeding max-d
   \
   \ _d_ is the largest usable signed double.
   \
-  \ See: `max-n`, `max-ud`, `environment?`.
+  \ See also: `max-n`, `max-ud`, `environment?`.
   \
   \ }doc
 
@@ -275,7 +275,7 @@ unneeding max-ud
   \
   \ _ud_ is the largest usable unsigned double.
   \
-  \ See: `max-u`, `max-d`, `environment?`.
+  \ See also: `max-u`, `max-d`, `environment?`.
   \
   \ }doc
 
@@ -289,7 +289,7 @@ unneeding return-stack-cells
   \
   \ _n_ is the maximum size of the return stack, in cells.
   \
-  \ See: `stack-cells`, `environment?`.
+  \ See also: `stack-cells`, `environment?`.
   \
   \ }doc
 
@@ -303,7 +303,7 @@ unneeding stack-cells
   \
   \ _n_ is the maximum size of the data stack, in cells.
   \
-  \ See: `return-stack-cells`, `environment?`.
+  \ See also: `return-stack-cells`, `environment?`.
   \
   \ }doc
 

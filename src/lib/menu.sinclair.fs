@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007112244
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -89,7 +89,7 @@ $FE c, $FC c, $F8 c, $F0 c, $E0 c, $C0 c, $80 c, $00 c, ?)
   \ 0 0 0 0 0 0 0 0
   \ ....
 
-  \ See: `.sinclair-stripes`,  `sinclair-stripes$`.
+  \ See also: `.sinclair-stripes`,  `sinclair-stripes$`.
   \
   \ }doc
 
@@ -126,7 +126,7 @@ here - abs 2constant sinclair-stripes$ ( -- ca len ) ?)
   \ Definitions for UDG codes $80 and $81 are provided
   \ optionally by `sinclair-stripes`.
   \
-  \ See: `.sinclair-stripes`.
+  \ See also: `.sinclair-stripes`.
   \
   \ }doc
 
@@ -145,7 +145,7 @@ unneeding .sinclair-stripes ?( need sinclair-stripes
   \ UDG font and typing `sinclair-stripes$`. The current UDG
   \ font is preserved.
   \
-  \ See: `set-udg`, `get-udg`.
+  \ See also: `set-udg`, `get-udg`.
   \
   \ }doc
 
@@ -188,7 +188,7 @@ need .sinclair-stripes need 2variable
   \ containing the coordinates (column and row) of the current
   \ `menu`. ``menu-xy`` is set by `set-menu`.
   \
-  \ See: `menu-width`, `.menu-border`, `.menu-banner`.
+  \ See also: `menu-width`, `.menu-border`, `.menu-banner`.
   \
   \ }doc
 
@@ -203,7 +203,7 @@ need .sinclair-stripes need 2variable
   \ title of the current `menu`. ``menu-title`` is set by
   \ `set-menu`.
   \
-  \ See: `menu-width`, `menu-xy`, `menu-banner-attr`,
+  \ See also: `menu-width`, `menu-xy`, `menu-banner-attr`,
   \ `.menu-banner`.
   \
   \ }doc
@@ -219,7 +219,7 @@ variable actions-table
   \ the current `menu` options. ``actions-table`` is set by
   \ `set-menu`.
   \
-  \ See: `options-table`.
+  \ See also: `options-table`.
   \
   \ }doc
 
@@ -234,7 +234,7 @@ variable options-table
   \ the current `menu` options. ``options-table`` is set by
   \ `set-menu`.
   \
-  \ See: `actions-table`.
+  \ See also: `actions-table`.
   \
   \ }doc
 
@@ -248,7 +248,7 @@ create menu-width 0 c, create menu-options 0 c,
   \ width of the current `menu` in characters. ``menu-width``
   \ is set by `set-menu`.
   \
-  \ See: `menu-title`, `menu-body-attr`, `menu-banner-attr`,
+  \ See also: `menu-title`, `menu-body-attr`, `menu-banner-attr`,
   \ `menu-highlight-attr`.
   \
   \ }doc
@@ -261,7 +261,7 @@ create menu-width 0 c, create menu-options 0 c,
   \ current `menu` number of options. ``menu-options`` is set
   \ by `set-menu`.
   \
-  \ See: `menu-width`.
+  \ See also: `menu-width`.
   \
   \ }doc
 
@@ -275,7 +275,7 @@ create menu-banner-attr black papery white + brighty c,
   \ attribute of the current `menu` banner. Its default value
   \ is white ink on black paper, with bright.
   \
-  \ See: `menu-body-attr`, `menu-highlight-attr`,
+  \ See also: `menu-body-attr`, `menu-highlight-attr`,
   \ `.menu-banner`, `black`, `papery`, `white`, `brighty`.
   \
   \ }doc
@@ -290,7 +290,7 @@ create menu-body-attr white papery brighty c,
   \ attribute of the current `menu` background. Its default
   \ value is black ink on white paper, with bright.
   \
-  \ See: `menu-banner-attr`, `menu-highlight-attr`,
+  \ See also: `menu-banner-attr`, `menu-highlight-attr`,
   \ `.menu-options`, `white`, `papery`, `brighty`.
   \
   \ }doc
@@ -305,7 +305,7 @@ create menu-key-down '6' c,
   \ key code used to move the current `menu` selection down.
   \ Its default value is character '6'.
   \
-  \ See: `menu-key-up`, `menu-key-choose`.
+  \ See also: `menu-key-up`, `menu-key-choose`.
   \
   \ }doc
 
@@ -319,7 +319,7 @@ create menu-key-up   '7' c,
   \ key code used to move the current `menu` selection up.
   \ Its default value is character '7'.
   \
-  \ See: `menu-key-down`, `menu-key-choose`.
+  \ See also: `menu-key-down`, `menu-key-choose`.
   \
   \ }doc
 
@@ -333,7 +333,7 @@ create menu-key-choose 13 c,
   \ key code used to move the current `menu` selection down.
   \ Its default value is 13, i.e. the enter key.
   \
-  \ See: `menu-key-up`, `menu-key-down`.
+  \ See also: `menu-key-up`, `menu-key-down`.
   \
   \ }doc
 
@@ -348,7 +348,7 @@ create menu-highlight-attr cyan papery brighty c,
   \ default value is the combination of `cyan`, `papery` and
   \ `brighty`, i.e. black ink on cyan bright paper.
   \
-  \ See: `menu-banner-attr`.
+  \ See also: `menu-banner-attr`.
   \
   \ }doc
 
@@ -365,7 +365,7 @@ variable menu-rounding  menu-rounding on
   \ botton option, and pressing `menu-key-down` at the bottom
   \ option lead to the top.
   \
-  \ See: `menu-key-choose`, `menu-highlight-attr`.
+  \ See also: `menu-key-choose`, `menu-highlight-attr`.
   \
   \ }doc
 
@@ -387,7 +387,7 @@ variable menu-rounding  menu-rounding on
   \
   \ Display the banner of the current `menu`.
   \
-  \ See: `menu-banner-attr`, `menu-title`, `menu-width`,
+  \ See also: `menu-banner-attr`, `menu-title`, `menu-width`,
   \ `.sinclair-stripes`, `.menu`, `.menu-options`,
   \ `.menu-border`, `type-left-field`, `menu-xy`.
   \
@@ -428,7 +428,7 @@ variable menu-rounding  menu-rounding on
   \ Draw a 1-pixel border around the current `menu` options,
   \ preserving the attributes.
   \
-  \ See: `.menu`, `.menu-options`, `.menu-banner`, `ortholine`,
+  \ See also: `.menu`, `.menu-options`, `.menu-banner`, `ortholine`,
   \ `menu-xy`, `xy>gxy`.
   \
   \ }doc
@@ -449,7 +449,7 @@ variable menu-rounding  menu-rounding on
   \
   \ Display menu option _n_ of the current `menu`.
   \
-  \ See: `.menu-options`, `.menu`.
+  \ See also: `.menu-options`, `.menu`.
   \
   \ }doc
 
@@ -464,7 +464,7 @@ variable menu-rounding  menu-rounding on
   \
   \ Display the options of the current `menu`.
   \
-  \ See: `.menu`, `.menu-option`, `.menu-border`,
+  \ See also: `.menu`, `.menu-option`, `.menu-border`,
   \ `.menu-banner`.
   \
   \ }doc
@@ -525,7 +525,7 @@ create current-option 0 c,
   \ Activate the current menu, which has been set by `set-menu`
   \ and displayed by `.menu`.
   \
-  \ See: `new-menu`,
+  \ See also: `new-menu`,
   \ `menu-key-up`, `menu-key-down`, `menu-key-choose`,
   \ `options-table`, `actions-table`.
   \
@@ -540,7 +540,7 @@ create current-option 0 c,
   \ Display the current menu, which has been set by `set-menu`
   \ and can be activated by `menu`.
   \
-  \ See: `new-menu`, `.menu-banner`, `.menu-options`,
+  \ See also: `new-menu`, `.menu-banner`, `.menu-options`,
   \ `.menu-border`.
   \
   \ }doc
@@ -560,7 +560,7 @@ create current-option 0 c,
   \ option texts table _a2_ (a cell array of _n2_ addresses of
   \ counted strings).
   \
-  \ See: `new-menu`, `.menu`, `menu`, `menu-xy`, `menu-title`,
+  \ See also: `new-menu`, `.menu`, `menu`, `menu-xy`, `menu-title`,
   \ `actions-table`, `menu-options`, `menu-width`,
   \ `menu-body-attr`, `menu-highlight-attr`,
   \ `menu-banner-attr`.
@@ -607,7 +607,7 @@ create current-option 0 c,
 
   \ ----
 
-  \ See: `set-menu`, `.menu`, `menu`.
+  \ See also: `set-menu`, `.menu`, `menu`.
   \
   \ }doc
 

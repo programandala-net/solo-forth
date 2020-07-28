@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005182131
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -32,7 +32,7 @@ unneeding ?depth ?( need depth need .s
   \ the stack on a new line with `.s` and finally `throw`
   \ exception #-258 (stack imbalance).
   \
-  \ See: `?csp`.
+  \ See also: `?csp`.
   \
   \ }doc
 
@@ -50,7 +50,7 @@ unneeding .unused ?(
   \ space remaining in the regions addressed by `here` and
   \ `np`, in bytes.
   \
-  \ See: `unused`, `farunused`, `.words`.
+  \ See also: `unused`, `farunused`, `.words`.
   \
   \ }doc
 
@@ -65,7 +65,7 @@ unneeding .words
   \ Display a message informing about the number of words
   \ defined in the system.
   \
-  \ See: `#words`, `greeting`, `.unused`.
+  \ See also: `#words`, `greeting`, `.unused`.
   \
   \ }doc
 

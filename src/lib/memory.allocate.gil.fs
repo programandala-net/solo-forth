@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202006152237
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -173,7 +173,7 @@ wordlist dup constant gil-heap-wordlist dup set-current >order
   \ memory `heap` implementation based on code written by
   \ Javier Gil, whose words are defined in `gil-heap-wordlist`.
   \
-  \ See: `gil-allocate`, `gil-free`.
+  \ See also: `gil-allocate`, `gil-free`.
   \
   \ }doc
 
@@ -200,7 +200,7 @@ wordlist dup constant gil-heap-wordlist dup set-current >order
   \ implementation based on code written by Javier Gil,
   \ whose words are defined in `gil-heap-wordlist`.
   \
-  \ See: `gil-free`.
+  \ See also: `gil-free`.
   \
   \ }doc
 

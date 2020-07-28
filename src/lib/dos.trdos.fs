@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007112236
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -91,7 +91,7 @@ $18 cconstant dos-read-system-track
   \ These constants are used to make the TR-DOS calls more
   \ legible in `code` words.
   \
-  \ See: `need`.
+  \ See also: `need`.
   \
   \ }doc
 
@@ -129,7 +129,7 @@ fda $0F + constant fda-filetrack ?)
   \ | +0xF   | 1     | `fda-filetrack`     | First track of the file
   \ |===
 
-  \ See: `/fda`, `read-file-descriptor`,
+  \ See also: `/fda`, `read-file-descriptor`,
   \ `write-file-descriptor`.
   \
   \ }doc
@@ -145,7 +145,7 @@ fda $0F + constant fda-filetrack ?)
   \ by the filename stored at ``fda-filename`` and the
   \ character stored at `fda-filetype`.
   \
-  \ See: `/filename`.
+  \ See also: `/filename`.
   \
   \ }doc
 
@@ -183,7 +183,7 @@ fda $0F + constant fda-filetrack ?)
   \ `fda-filetype` is 'B' (BASIC program), this cell contains
   \ the length of the BASIC program, including its variables.
   \
-  \ See: `fda-filelength`.
+  \ See also: `fda-filelength`.
   \
   \ }doc
 
@@ -194,7 +194,7 @@ fda $0F + constant fda-filetrack ?)
   \ Fourth field of `fda` (File Descriptor Area).  _a_ is the
   \ address of a cell containing the file length in bytes.
   \
-  \ See: `fda-filestart`, `fda-filesectors`.
+  \ See also: `fda-filestart`, `fda-filesectors`.
   \
   \ }doc
 
@@ -205,7 +205,7 @@ fda $0F + constant fda-filetrack ?)
   \ Fifth field of `fda` (File Descriptor Area).  _ca_ is the
   \ address of a byte containing the file length in sectors.
   \
-  \ See: `fda-filetrack`, `fda-filesector`,
+  \ See also: `fda-filetrack`, `fda-filesector`,
   \ `fda-filelength`.
   \
   \ }doc
@@ -217,7 +217,7 @@ fda $0F + constant fda-filetrack ?)
   \ Sixth field of `fda` (File Descriptor Area).  _ca_ is the
   \ address of a byte containing the first sector of the file.
   \
-  \ See: `fda-filetrack`, `fda-filesectors`.
+  \ See also: `fda-filetrack`, `fda-filesectors`.
   \
   \ }doc
 
@@ -228,7 +228,7 @@ fda $0F + constant fda-filetrack ?)
   \ Seventh field of `fda` (File Descriptor Area).  _ca_ is the
   \ address of a byte containing the first track of the file.
   \
-  \ See: `fda-filesector`, `fda-filesectors`.
+  \ See also: `fda-filesector`, `fda-filesectors`.
   \
   \ }doc
 
@@ -279,7 +279,7 @@ unneeding /filename ?\ 9 cconstant /filename
   \ If the filetype is not specified in a filename, 'C' is
   \ used.
   \
-  \ See: `set-filename`, `fda`.
+  \ See also: `set-filename`, `fda`.
   \
   \ }doc
 
@@ -294,7 +294,7 @@ unneeding -filename ?( need /filename
   \
   \ Erase the filename stored at _ca_ and set its type to 'C'.
   \
-  \ See: `-fda-filename`, `set-filename`.
+  \ See also: `-fda-filename`, `set-filename`.
   \
   \ }doc
 
@@ -309,7 +309,7 @@ unneeding -fda-filename ?( need fda need -filename
   \ Erase the filename stored at TR-DOS `fda` (File Descriptor
   \ Area) with spaces, and set its type to 'C'.
   \
-  \ See: `-filename`, `set-filename`.
+  \ See also: `-filename`, `set-filename`.
   \
   \ }doc
 
@@ -332,7 +332,7 @@ need -fda-filename need /filename need fda
   \ _ca len_ does not include the file type at the end (at
   \ character offset +8), 'C' (code file) is used by default.
   \
-  \ See: `-fda-filename`, `/filename`.
+  \ See also: `-fda-filename`, `/filename`.
   \
   \ }doc
 
@@ -347,7 +347,7 @@ unneeding get-filename ?( need /filename need fda
   \ Return the filename _ca len_ that is stored in `fda` (File
   \ Descriptor Area).
   \
-  \ See: `set-filename`, `fda-filename`, `/filename`,
+  \ See also: `set-filename`, `fda-filename`, `/filename`,
   \ `filename>filetype`.
   \
   \ }doc
@@ -364,7 +364,7 @@ unneeding filename>filetype
   \ assumed to be `/filename`, i.e., _ca len_ is a complete
   \ filename.
   \
-  \ See: `set-filename`, `get-filename`.
+  \ See also: `set-filename`, `get-filename`.
   \
   \ }doc
 
@@ -390,7 +390,7 @@ unneeding get-drive
   \ : get-drive ( -- b ) $5FC6 c@ ;
   \ ----
 
-  \ See: `set-drive`.
+  \ See also: `set-drive`.
   \
   \ }doc
 
@@ -413,7 +413,7 @@ code (acat ( -- ior )
   \ return the I/O result code _ior_.  ``(acat`` is a factor of
   \ `acat`.
   \
-  \ See: `set-drive`.
+  \ See also: `set-drive`.
   \
   \ }doc
 
@@ -425,7 +425,7 @@ unneeding acat ?\ need (acat : acat ( -- ) (acat throw ;
   \
   \ Display an abbreviated catalogue of the current disk.
   \
-  \ See: `set-drive`, `(acat`.
+  \ See also: `set-drive`, `(acat`.
   \
   \ }doc
 
@@ -446,7 +446,7 @@ unneeding 2-block-drives ?( need set-block-drives
   \ Note: For convenience, when this word is loaded, it's also
   \ executed.
   \
-  \ See: `3-block-drives`, `4-block-drives`,
+  \ See also: `3-block-drives`, `4-block-drives`,
   \ `set-block-drives`.
   \
   \ }doc
@@ -467,7 +467,7 @@ unneeding 3-block-drives ?( need set-block-drives
   \ Note: For convenience, when this word is loaded, it's also
   \ executed.
   \
-  \ See: `2-block-drives`, `4-block-drives`,
+  \ See also: `2-block-drives`, `4-block-drives`,
   \ `set-block-drives`.
   \
   \ }doc
@@ -487,7 +487,7 @@ unneeding 4-block-drives ?( need set-block-drives
   \ Note: For convenience, when this word is loaded, it's also
   \ executed.
   \
-  \ See: `2-block-drives`, `3-block-drives`,
+  \ See also: `2-block-drives`, `3-block-drives`,
   \ `set-block-drives`.
   \
   \ }doc
@@ -554,7 +554,7 @@ code (file> ( ca len -- ior )
   \
   \ ``(file>`` is a factor of `file>`.
   \
-  \ See: `fda-filestart`, `fda-filelength`.
+  \ See also: `fda-filestart`, `fda-filelength`.
   \
   \ }doc
 
@@ -685,7 +685,7 @@ code (>file ( -- ior )
   \ "Abort" exits to BASIC with "Tape loading error"; "Ignore"
   \ crashes the system. See more details in the source code.
   \
-  \ See: `set-filename`, `fda-filelength`, `fda-filestart`,
+  \ See also: `set-filename`, `fda-filelength`, `fda-filestart`,
   \ `(>file`.
   \
   \ }doc
@@ -715,7 +715,7 @@ code fda-filestatus ( -- a ior )
   \ the TR-DOS File Descriptor Area. Otherwise _ior_ is the I/O
   \ result code and _a_ is undefined.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 
@@ -735,7 +735,7 @@ unneeding file-status ?( need fda-filestatus need set-filename
   \
   \ Origin: Forth-94 (FILE-EXT), Forth-2012 (FILE-EXT).
   \
-  \ See: `file-exists?`, `file-start`, `file-length`,
+  \ See also: `file-exists?`, `file-start`, `file-length`,
   \ `file-type`, `find-file`, `file-dir#`, `file-sectors`,
   \ `file-sector`, `file-track`, `delete-file`, `rename-file`.
   \
@@ -754,7 +754,7 @@ unneeding file-exists? ?( need file-status
   \ If the file named in the character string _ca len_ is
   \ found, _f_ is `true`. Otherwise _f_ is `false`.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 
@@ -773,7 +773,7 @@ unneeding file-start  ?( need file-status need fda
   \ Otherwise _ior_ is the I/O result code.  and _ca2_ is
   \ undefined.
   \
-  \ See: `file-status`, `fda-filestart`.
+  \ See also: `file-status`, `fda-filestart`.
   \
   \ }doc
 
@@ -791,7 +791,7 @@ unneeding file-len  ?( need file-status need fda
   \ _ior_ is zero and _len2_ is the file length.  Otherwise
   \ _len2_ is undefined and _ior_ is the I/O result code.
   \
-  \ See: `file-status`, `fda-filelength`.
+  \ See also: `file-status`, `fda-filelength`.
   \
   \ }doc
 
@@ -816,7 +816,7 @@ unneeding file-type  ?( need file-status need fda
   \ characters, filetype 'C' (code file) is assumed by default.
   \ Therefore ``file-type`` is almost useless on TR-DOS.
   \
-  \ See: `file-status`, `fda-filetype`.
+  \ See also: `file-status`, `fda-filetype`.
   \
   \ }doc
 
@@ -831,7 +831,7 @@ unneeding find-file ?( need file-status
   \ found, return address _a_ of the updated `fda` (File
   \ Descriptor Area). Otherwise return zero.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 
@@ -860,7 +860,7 @@ code fda-filedir# ( -- n ior )
   \ directory number.  Otherwise _ior_ is the I/O result code
   \ and _n_ is undefined.
   \
-  \ See: `file-dir#`, `fda-filestatus`.
+  \ See also: `file-dir#`, `fda-filestatus`.
   \
   \ }doc
 
@@ -878,7 +878,7 @@ unneeding file-dir# ?( need fda-filedir# need set-filename
   \ Otherwise _ior_ is the I/O result code and _n_ is
   \ undefined.
   \
-  \ See: `file-status`, `fda-filedir#`.
+  \ See also: `file-status`, `fda-filedir#`.
   \
   \ }doc
 
@@ -899,7 +899,7 @@ unneeding file-sectors  ?( need file-status need fda
   \ Otherwise _ior_ is the I/O result code and _n_ is
   \ undefined.
   \
-  \ See: `file-status`, `fda-filesectors`.
+  \ See also: `file-status`, `fda-filesectors`.
   \
   \ }doc
 
@@ -918,7 +918,7 @@ unneeding file-sector  ?( need file-status need fda
   \ Otherwise _ior_ is the I/O result code and _n_ is
   \ undefined.
   \
-  \ See: `file-status`, `fda-filesector`.
+  \ See also: `file-status`, `fda-filesector`.
   \
   \ }doc
 
@@ -936,7 +936,7 @@ unneeding file-track  ?( need file-status need fda
   \ is zero and _n_ is the track.  Otherwise _ior_ is the I/O
   \ result code and _n_ is undefined.
   \
-  \ See: `file-status`, `fda-filetrack`.
+  \ See also: `file-status`, `fda-filetrack`.
   \
   \ }doc
 
@@ -975,7 +975,7 @@ code (delete-file ( -- ior )
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
-  \ See: `undelete-file`, `(delete-file`, `rename-file`,
+  \ See also: `undelete-file`, `(delete-file`, `rename-file`,
   \ `file-status`.
   \
   \ }doc
@@ -1012,7 +1012,7 @@ code read-file-descriptor ( n -- ior )
   \ Read file descriptor from disk directory entry _n_ to
   \ `fda`.
   \
-  \ See: `write-file-descriptor`.
+  \ See also: `write-file-descriptor`.
   \
   \ }doc
 
@@ -1029,7 +1029,7 @@ code write-file-descriptor ( n -- ior )
   \ Write file descriptor from `fda` to disk directory entry
   \ _n_.
   \
-  \ See: `write-file-descriptor`.
+  \ See also: `write-file-descriptor`.
   \
   \ }doc
 
@@ -1103,7 +1103,7 @@ create tmp-filename /filename allot
   \ 3. TR-DOS does not reuse the space occupied by a deleted
   \ file, until the disk is defragmented
   \
-  \ See: `delete-file`.
+  \ See also: `delete-file`.
   \
   \ }doc
 
@@ -1127,7 +1127,7 @@ unneeding .filename ?( need /filename
   \ Display the filename stored at _ca_, using the TR-DOS
   \ filename format.
   \
-  \ See: `.fda-filename`, `/filename`.
+  \ See also: `.fda-filename`, `/filename`.
   \
   \ }doc
 
@@ -1142,7 +1142,7 @@ unneeding .fda-filename ?( need fda need .filename
   \ Display the contents of `fda-filename`, using the TR-DOS
   \ filename format.
   \
-  \ See: `.filename`, `/filename`.
+  \ See also: `.filename`, `/filename`.
   \
   \ }doc
 
@@ -1156,7 +1156,7 @@ unneeding fda-basic?
   \
   \ _f_ is true if `fda` contains a BASIC program file.
   \
-  \ See: `fda-empty?`, `fda-deleted?`.
+  \ See also: `fda-empty?`, `fda-deleted?`.
   \
   \ }doc
 
@@ -1170,7 +1170,7 @@ unneeding fda-deleted?
   \
   \ _f_ is true if `fda` contains a deleted file.
   \
-  \ See: `fda-empty?`, `fda-basic?`.
+  \ See also: `fda-empty?`, `fda-basic?`.
   \
   \ }doc
 
@@ -1185,7 +1185,7 @@ unneeding fda-empty?
   \ _f_ is true if `fda` is empty, i.e. it's unused, it does
   \ not contain a file descriptor.
   \
-  \ See: `fda-deleted?`, `fda-basic?`.
+  \ See also: `fda-deleted?`, `fda-basic?`.
   \
   \ }doc
 
@@ -1214,7 +1214,7 @@ need fda-basic? need fda-empty? need fda-deleted?
   \
   \ ``cat-fda`` is a factor of `?cat-fda`.
   \
-  \ See: `.fda-filename`, `fda-basic?`.
+  \ See also: `.fda-filename`, `fda-basic?`.
   \
   \ }doc
 
@@ -1230,7 +1230,7 @@ need fda-basic? need fda-empty? need fda-deleted?
   \
   \ ``?cat-fda`` is a factor of `cat`.
   \
-  \ See: `fda-deleted?`, `cat-fda`.
+  \ See also: `fda-deleted?`, `cat-fda`.
   \
   \ }doc
 
@@ -1248,7 +1248,7 @@ need fda-basic? need fda-empty? need fda-deleted?
   \
   \ Show a disk catalogue of the current drive.
   \
-  \ See: `acat`, `?cat-fda`, `cat-fda`, `set-drive`.
+  \ See also: `acat`, `?cat-fda`, `cat-fda`, `set-drive`.
   \
   \ }doc
 
@@ -1316,7 +1316,7 @@ need read-file-descriptor need write-file-descriptor
 
   \ Origin: Forth-94 (FILE EXT), Forth-2012 (FILE EXT).
   \
-  \ See: `file-status`, `delete-file`.
+  \ See also: `file-status`, `delete-file`.
   \
   \ }doc
 

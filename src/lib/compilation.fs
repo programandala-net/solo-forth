@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007280009
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -34,7 +34,7 @@ unneeding [true] ?\ 0 constant [false] immediate
   \
   \ ``[true]`` is an `immediate` word.
   \
-  \ See: `[false]`, `true`.
+  \ See also: `[false]`, `true`.
   \
   \ }doc
 
@@ -46,7 +46,7 @@ unneeding [false] ?\ -1 constant [true] immediate
   \
   \ ``[false]`` is an `immediate` word.
   \
-  \ See: `[true]`, `false`.
+  \ See also: `[true]`, `false`.
   \
   \ }doc
 
@@ -78,7 +78,7 @@ unneeding [if] ?( need lowers
   \
   \ Origin: Forth-94 (TOOLS EXT), Forth-2012 (TOOLS EXT).
   \
-  \ See: `[if]`.
+  \ See also: `[if]`.
   \
   \ }doc
 
@@ -100,7 +100,7 @@ unneeding [if] ?( need lowers
   \
   \ Origin: Forth-94 (TOOLS EXT), Forth-2012 (TOOLS EXT).
   \
-  \ See: `?\`, `?(`.
+  \ See also: `?\`, `?(`.
   \
   \ }doc
 
@@ -139,7 +139,7 @@ unneeding body>name ?( need body> need >name
   \ headers created by `alias` or `synonym`, the _nt_ of its
   \ latest alias or synonym is found first.
   \
-  \ See: `name>body`, `link>name`, `>name`.
+  \ See also: `name>body`, `link>name`, `>name`.
   \
   \ }doc
 
@@ -153,7 +153,7 @@ unneeding name>body
   \
   \ Get _dfa_ from its _nt_.
   \
-  \ See: `body>name`, `>body`, `name>`, `name>>`, `name>name`.
+  \ See also: `body>name`, `>body`, `name>`, `name>>`, `name>name`.
   \
   \ }doc
 
@@ -167,7 +167,7 @@ unneeding link>name
   \
   \ Get _nt_ from its _lfa_.
   \
-  \ See: `name>link`.
+  \ See also: `name>link`.
   \
   \ }doc
 
@@ -181,7 +181,7 @@ unneeding name>link
   \
   \ Convert _nt_ into its corresponding _lfa_.
   \
-  \ See: `link>name`, `name>`, `name>body`, `name>>`,
+  \ See also: `link>name`, `name>`, `name>body`, `name>>`,
   \ `name>name`.
   \
   \ }doc
@@ -197,7 +197,7 @@ unneeding name<name
   \ Get the previous _nt2_ from _nt1_, i.e. _nt2_ is the
   \ word that was defined before _nt1_.
   \
-  \ See: `name>name`.
+  \ See also: `name>name`.
   \
   \ }doc
 
@@ -219,7 +219,7 @@ unneeding name>name ?( need name>str need >>name
   \ by _nt1_ and the following definition, the result _nt2_
   \ will be wrong.
   \
-  \ See: `name<name`, `name>`, `name>body`, `name>>`.
+  \ See also: `name<name`, `name>`, `name>body`, `name>>`.
   \
   \ }doc
 
@@ -235,7 +235,7 @@ unneeding >>link
   \
   \ Convert _xtp_ into its corresponding _lfa_.
   \
-  \ See: `>>name`, `name>link`.
+  \ See also: `>>name`, `name>link`.
   \
   \ }doc
 
@@ -249,7 +249,7 @@ unneeding name>>
   \
   \ Convert _nt_ into its corresponding _xtp_.
   \
-  \ See: `>>name`, `name>`, `name>body`, `name>name`.
+  \ See also: `>>name`, `name>`, `name>body`, `name>name`.
   \
   \ }doc
 
@@ -263,7 +263,7 @@ unneeding >>name
   \
   \ Convert _xtp_ into its corresponding _nt_.
   \
-  \ See: `name>>`, `>>link`, `>name`.
+  \ See also: `name>>`, `>>link`, `>name`.
   \
   \ }doc
 
@@ -304,7 +304,7 @@ unneeding >body
   \ Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
   \ Forth-2012 (CORE).
   \
-  \ See: `body>`, `name>body`, `>name`.
+  \ See also: `body>`, `name>body`, `>name`.
   \
   \ }doc
 
@@ -325,7 +325,7 @@ unneeding body>
   \
   \ Convert _dfa_ into its correspoding _xt_.
   \
-  \ See: `>body`, `body>name`.
+  \ See also: `>body`, `body>name`.
   \
   \ }doc
 
@@ -351,7 +351,7 @@ unneeding '' ?( need need-here need-here name>>
   \ '' discard >>name .name     \ this prints "discard"
   \ ----
 
-  \ See: `['']`, `'`.
+  \ See also: `['']`, `'`.
   \
   \ }doc
 
@@ -372,7 +372,7 @@ unneeding [''] ?( need need-here need-here ''
   \
   \ ``['']`` is an `immediate` and `compile-only` word.
   \
-  \ See: `literal`, `''`, `[']`.
+  \ See also: `literal`, `''`, `[']`.
   \
   \ }doc
 
@@ -409,7 +409,7 @@ need array> need name>> need name<name need wordlist>link
   \
   \ Origin: Gforth.
   \
-  \ See: `>name/order`, `>oldest-name`, `>oldest-name/order`,
+  \ See also: `>name/order`, `>oldest-name`, `>oldest-name/order`,
   \ `>oldest-name/fast`, `name>`, `>body`, `name>body`,
   \ `name>name`, `>>name`.
   \
@@ -426,7 +426,7 @@ unneeding name>str
   \ Convert the name token _nt_ to its name string _ca len_ in
   \ far memory.
   \
-  \ See: `name>string`, `name>immediate?`, `name>`,
+  \ See also: `name>string`, `name>immediate?`, `name>`,
   \ `name>body`.
   \
   \ }doc
@@ -444,7 +444,7 @@ unneeding .name ?( need name>string
   \ NOTE: ``.name`` is called ``.id`` or ``id.`` in other Forth
   \ systems.
   \
-  \ See: `name>string`, `type`, `space`.
+  \ See also: `name>string`, `type`, `space`.
   \
   \ }doc
 
@@ -479,7 +479,7 @@ need array> need name>> need name<name
   \ alias or synonym in the current search order is found
   \ first.
   \
-  \ See: `>name`, `>oldest-name/order`, `>oldest-name`,
+  \ See also: `>name`, `>oldest-name/order`, `>oldest-name`,
   \ `>oldest-name/fast`, `name>`, `>body`, `name>body`,
   \ `name>name`, `name>>`.
   \
@@ -501,7 +501,7 @@ unneeding [defined]
   \
   \ Origin: Forth-2012 (TOOLS EXT).
   \
-  \ See: `defined`, `[undefined]`.
+  \ See also: `defined`, `[undefined]`.
   \
   \ }doc
 
@@ -522,7 +522,7 @@ unneeding [undefined] ?( need [defined]
   \
   \ Origin: Forth-2012 (TOOLS EXT).
   \
-  \ See: `[defined]`.
+  \ See also: `[defined]`.
   \
   \ }doc
 
@@ -560,7 +560,7 @@ need array> need name>> need name<name need wordlist>link
   \ created by `alias` or `synonym`, the _nt_ of the original
   \ word is returned.
   \
-  \ See: `>oldest-name/order`, `>oldest-name/fast`, `>name`,
+  \ See also: `>oldest-name/order`, `>oldest-name/fast`, `>name`,
   \ `>name/order`, `name>`, `>body`, `name>body`, `name>name`,
   \ `name>>`.
   \
@@ -597,7 +597,7 @@ need array> need name>> need name<name
   \ created by `alias` or `synonym`, the _nt_ of the original
   \ word is returned.
   \
-  \ See: `>oldest-name`, `>oldest-name/fast`, `>name`,
+  \ See also: `>oldest-name`, `>oldest-name/fast`, `>name`,
   \ `>name/order`, `name>`, `>body`, `name>body`, `name>name`,
   \ `name>>`.
   \
@@ -638,7 +638,7 @@ need >>name need name>name need name>>
   \
   \ Origin: Gforth.
   \
-  \ See: `>oldest-name`, `>oldest-name/order`, `>name`,
+  \ See also: `>oldest-name`, `>oldest-name/order`, `>name`,
   \ `>name/order`, `name>`, `>body`, `name>body`, `name>name`,
   \ `>>name`.
   \
@@ -660,7 +660,7 @@ unneeding name>string ?( need name>str
   \ Convert the name token _nt_ to its name string _ca len_ in
   \ the `stringer`.
   \
-  \ See: `name>str`, `name>immediate?`, `name>`, `name>body`.
+  \ See also: `name>str`, `name>immediate?`, `name>`, `name>body`.
   \
   \ }doc
 
@@ -681,7 +681,7 @@ unneeding name>interpret ?(
   \
   \ Origin: Forth-2012 (TOOLS EXT).
   \
-  \ See: `name>compile`, `'`, `compile-only?`, `name>`.
+  \ See also: `name>compile`, `'`, `compile-only?`, `name>`.
   \
   \ }doc
 
@@ -698,7 +698,7 @@ unneeding name>compile ?(
   \ return the _xt_ of `execute`, else return the _xt_ of
   \ `compile,`.
   \
-  \ See: `immediate?`.
+  \ See also: `immediate?`.
   \
   \ }doc
 
@@ -716,7 +716,7 @@ unneeding name>compile ?(
   \
   \ Origin: Forth-2012 (TOOLS EXT).
   \
-  \ See: `name>interpret`, `comp'`, `(comp'`, `name>`.
+  \ See also: `name>interpret`, `comp'`, `(comp'`, `name>`.
   \
   \ }doc
 
@@ -734,7 +734,7 @@ unneeding comp' ?( need need-here need-here name>compile
   \
   \ Origin: Gforth.
   \
-  \ See: `[comp']`, `name>compile`, `[']`.
+  \ See also: `[comp']`, `name>compile`, `[']`.
   \
   \ }doc
 
@@ -756,7 +756,7 @@ unneeding [comp'] ?( need need-here need-here comp'
   \
   \ Origin: Gforth.
   \
-  \ See: `comp'`, `'`.
+  \ See also: `comp'`, `'`.
   \
   \ }doc
 
@@ -809,7 +809,7 @@ unneeding [compile]
   \ (Required Word Set), Forth-94 (CORE EXT), Forth-2012 (CORE
   \ EXT, obsolescent).
   \
-  \ See: `compile`, `compile,`.
+  \ See also: `compile`, `compile,`.
   \
   \ }doc
 
@@ -826,7 +826,7 @@ unneeding smudged
   \ ``smudged`` is obsolete. `hidden` and `revealed` are used
   \ instead.
   \
-  \ See: `smudge`, `smudge-mask`.
+  \ See also: `smudge`, `smudge-mask`.
   \
   \ }doc
 
@@ -848,7 +848,7 @@ unneeding smudge
   \
   \ Origin: fig-Forth.
   \
-  \ See: `smudged`.
+  \ See also: `smudged`.
   \
   \ }doc
 
@@ -915,7 +915,7 @@ unneeding ]l
   \
   \ ``]l`` is an `immediate` and `compile-only` word.
   \
-  \ See: `]`, `literal`, `]2l`, `]xl`, `]cl`.
+  \ See also: `]`, `literal`, `]2l`, `]xl`, `]cl`.
   \
   \ }doc
 
@@ -931,7 +931,7 @@ unneeding ]2l
   \
   \ ``]2l`` is an `immediate` and `compile-only` word.
   \
-  \ See: `]`, `2literal`, `]l`, `]xl`, `]cl`.
+  \ See also: `]`, `2literal`, `]l`, `]xl`, `]cl`.
   \
   \ }doc
 
@@ -947,7 +947,7 @@ unneeding ]xl
   \
   \ ``]xl`` is an `immediate` and `compile-only` word.
   \
-  \ See: `]`, `xliteral`, `]2l`, `]l`, `]cl`.
+  \ See also: `]`, `xliteral`, `]2l`, `]l`, `]cl`.
   \
   \ }doc
 
@@ -963,7 +963,7 @@ unneeding ]cl
   \
   \ ``]cl`` is an `immediate` and `compile-only` word.
   \
-  \ See: `]`, `cliteral`, `]2l`, `]l`, `]xl`.
+  \ See also: `]`, `cliteral`, `]2l`, `]l`, `]xl`.
   \
   \ }doc
 
@@ -995,7 +995,7 @@ unneeding possibly ?(
   \ Parse _name_.  If _name_ is the name of a word in the
   \ current search order, execute it; else do nothing.
   \
-  \ See: `exec`, `defined`, `name>`, `execute`, `anew`.
+  \ See also: `exec`, `defined`, `name>`, `execute`, `anew`.
   \
   \ }doc
 
@@ -1012,7 +1012,7 @@ unneeding exec ?(
   \ current search order, `execute` it; else `throw` an
   \ exception #-13 ("undefined word").
   \
-  \ See: `possibly`, `defined`, `name>`, `?throw`, `execute`.
+  \ See also: `possibly`, `defined`, `name>`, `?throw`, `execute`.
   \
   \ }doc
 
@@ -1029,7 +1029,7 @@ unneeding eval ?( need evaluate
   \ ``eval`` is a common factor of `[const]`, `[2const]` and
   \ `[cconst]`.
   \
-  \ See: `parse-name`.
+  \ See also: `parse-name`.
   \
   \ }doc
 
@@ -1061,7 +1061,7 @@ unneeding [const] ?( need eval
 
   \ ``[const]`` is an `immediate` and `compile-only` word.
   \
-  \ See: `const`, `[2const]`, `[xconst]`, `[cconst]`, `eval`.
+  \ See also: `const`, `[2const]`, `[xconst]`, `[cconst]`, `eval`.
   \
   \ }doc
 
@@ -1089,7 +1089,7 @@ unneeding [2const] ?( need eval
 
   \ ``[2const]`` is an `immediate` and `compile-only` word.
   \
-  \ See: `2const`, `[const]`, `[xconst]`, `[cconst]`, `eval`.
+  \ See also: `2const`, `[const]`, `[xconst]`, `[cconst]`, `eval`.
   \
   \ }doc
 
@@ -1120,7 +1120,7 @@ unneeding [xconst] ?( need eval
 
   \ ``[xconst]`` is an `immediate` and `compile-only` word.
   \
-  \ See: `[2const]`, `[const]`, `[cconst]`, `eval`.
+  \ See also: `[2const]`, `[const]`, `[cconst]`, `eval`.
   \
   \ }doc
 
@@ -1147,7 +1147,7 @@ unneeding [cconst] ?( need eval
 
   \ ``[cconst]`` is an `immediate` and `compile-only` word.
   \
-  \ See: `cconst`, `[2const]`, `[const]`, `[xconst]`, `eval`.
+  \ See also: `cconst`, `[2const]`, `[const]`, `[xconst]`, `eval`.
   \
   \ }doc
 
@@ -1176,7 +1176,7 @@ variable warnings  warnings on
   \
   \ Are the warnings deactivated?
   \
-  \ See: `?warn`, `warnings`.
+  \ See also: `?warn`, `warnings`.
   \
   \ }doc
 
@@ -1190,7 +1190,7 @@ variable warnings  warnings on
   \ Is the word name _ca len_ not yet defined in the
   \ compilation word list?
   \
-  \ See: `?warn`.
+  \ See also: `?warn`.
   \
   \ }doc
 
@@ -1212,7 +1212,7 @@ variable warnings  warnings on
   \ ``?warn`` is factor of `warn.throw`, `warn.message` and
   \ `warn-throw`.
   \
-  \ See: `no-warnings?`, `not-redefined?`, `warn.message`,
+  \ See also: `no-warnings?`, `not-redefined?`, `warn.message`,
   \ `warn.throw`, `warn-throw`.
   \
   \ }doc
@@ -1239,7 +1239,7 @@ unneeding warn.throw ?( need ?warn
   \ ``warn.throw`` is an alternative action of the deferred
   \ word `warn` (see `defer`).
   \
-  \ See: `warnings`, `warn-throw`, `warn.message`, `?warn`.
+  \ See also: `warnings`, `warn-throw`, `warn.message`, `?warn`.
   \
   \ }doc
 
@@ -1261,7 +1261,7 @@ unneeding warn.message ?( need ?warn need >name need .name
   \ ``warn.message`` is an alternative action of the deferred
   \ word `warn` (see `defer`).
   \
-  \ See: `warnings`, `warn.throw`, `warn-throw`, `?warn`.
+  \ See also: `warnings`, `warn.throw`, `warn-throw`, `?warn`.
   \
   \ }doc
 
@@ -1284,7 +1284,7 @@ unneeding warn-throw ?( need ?warn
   \ ``warn-throw`` is the default action of the deferred word
   \ `warn` (see `defer`).
   \
-  \ See: `warnings`, `warn.throw`, `warn.message`, `?warn`.
+  \ See also: `warnings`, `warn.throw`, `warn.message`, `?warn`.
   \
   \ }doc
 

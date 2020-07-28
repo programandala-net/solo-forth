@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201804152329
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -45,7 +45,7 @@ code j ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
   \ Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
   \ Forth-2012 (CORE).
   \
-  \ See: `j'`, `i`, `k`.
+  \ See also: `j'`, `i`, `k`.
   \
   \ }doc
 
@@ -69,7 +69,7 @@ code k ( -- n|u )
   \
   \ Origin: Forth-83 (Controlled reference words).
   \
-  \ See: `k'`, `i`, `j`.
+  \ See also: `k'`, `i`, `j`.
   \
   \ }doc
 
@@ -98,7 +98,7 @@ code i' ( -- n|u ) ( R: do-sys -- do-sys )
   \
   \ Origin: Comus.
   \
-  \ See: `i`, `j'`, `k'`.
+  \ See also: `i`, `j'`, `k'`.
   \
   \ }doc
 
@@ -125,7 +125,7 @@ code j' ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
   \
   \ Origin: Comus.
   \
-  \ See: `j`, `i'`, `k'`.
+  \ See also: `j`, `i'`, `k'`.
   \
   \ }doc
 
@@ -152,7 +152,7 @@ code k' ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
   \
   \ Origin: Comus.
   \
-  \ See: `k`, `i'`, `j'`.
+  \ See also: `k`, `i'`, `j'`.
   \
   \ }doc
 

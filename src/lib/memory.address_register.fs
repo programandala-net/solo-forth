@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201807221757
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -44,7 +44,7 @@ unneeding a ?( variable a
   \ A `variable`. _a_ is the address of a cell containing the
   \ address register.
   \
-  \ See: `a!`, `a@`, `!a`, `@a`, `c!a`, `c@a`, `!a+`, `@a+`,
+  \ See also: `a!`, `a@`, `!a`, `@a`, `c!a`, `c@a`, `!a+`, `@a+`,
   \ `c!a+`, `c@a+`.
   \
   \ }doc
@@ -60,7 +60,7 @@ code a! ( a -- ) E1 c, 22 c, a , jpnext, end-code
   \
   \ Set the address register.
   \
-  \ See: `a`, `a@`.
+  \ See also: `a`, `a@`.
   \
   \ }doc
 
@@ -75,7 +75,7 @@ code a@ ( -- a ) 2A c, a , E5 c, jpnext, end-code ?)
   \
   \ Get the address register.
   \
-  \ See: `a`, `a!`.
+  \ See also: `a`, `a!`.
   \
   \ }doc
 
@@ -96,7 +96,7 @@ code !a ( x -- ) D1 c, 2A c, a , 70 03 + c, 23 c, 70 02 + c,
   \
   \ Store _x_ at the address register.
   \
-  \ See: `a`, `@a`.
+  \ See also: `a`, `@a`.
   \
   \ }doc
 
@@ -118,7 +118,7 @@ code @a ( -- x ) 2A c, a , 5E c, 23 c, 66 c, 68 03 + c, E5 c,
   \
   \ Fetch cell _x_ stored at the address register.
   \
-  \ See: `a`, `!a`.
+  \ See also: `a`, `!a`.
   \
   \ }doc
 
@@ -137,7 +137,7 @@ code c!a ( c -- ) D1 c, 2A c, a , 70 03 + c, jpnext,
   \
   \ Store _c_ at the address register.
   \
-  \ See: `a`, `c@a`.
+  \ See also: `a`, `c@a`.
   \
   \ }doc
 
@@ -157,7 +157,7 @@ code c@a ( -- c ) 2A c, a , 6E c, 26 c, 00 c, E5 c, jpnext,
   \
   \ Fetch the character _c_ stored at the address register.
   \
-  \ See: `a`, `c!a`.
+  \ See also: `a`, `c!a`.
   \
   \ }doc
 
@@ -183,7 +183,7 @@ code !a+ ( x -- ) D1 c, 2A c, a , 70 03 + c, 23 c, 70 02 + c,
   \ Store _x_ at the address register and increment the address
   \ register by one cell.
   \
-  \ See: `a`, `@a+`.
+  \ See also: `a`, `@a+`.
   \
   \ }doc
 
@@ -207,7 +207,7 @@ code @a+ ( -- x ) 2A c, a , 5E c, 23 c, 56 c, 23 c, 22 c, a ,
   \ Fetch cell _x_ stored at the address register and increment
   \ the address register by one cell.
   \
-  \ See: `a`, `!a+`.
+  \ See also: `a`, `!a+`.
   \
   \ }doc
 
@@ -230,7 +230,7 @@ code c!a+ ( c -- ) D1 c, 2A c, a , 70 03 + c, 23 c,
   \ Store _c_ at the address register and increment the address
   \ register by one address unit.
   \
-  \ See: `a`, `c@a+`.
+  \ See also: `a`, `c@a+`.
   \
   \ }doc
 
@@ -253,7 +253,7 @@ code c@a+ ( -- c ) 2A c, a , 5E c, 23 c, 16 c, 00 c,
   \ Fetch character _c_ stored at the address register and
   \ increment the address register by one address unit.
   \
-  \ See: `a`, `c!a+`.
+  \ See also: `a`, `c!a+`.
   \
   \ }doc
 

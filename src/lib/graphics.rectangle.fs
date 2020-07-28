@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201801030000
+  \ Last modified: 202007282031
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -122,7 +122,7 @@ code wipe-rectangle ( column row width height -- )
   \ and of the given size in characters.  Only the bitmap is
   \ cleared. The color attributes remain unchanged.
   \
-  \ See: `clear-rectangle`, `color-rectangle`, `wcls`.
+  \ See also: `clear-rectangle`, `color-rectangle`, `wcls`.
   \
   \ }doc
 
@@ -213,7 +213,7 @@ code color-rectangle ( column row width height color -- )
   \ attribute.  Only the color attributes are changed; the
   \ bitmap remains unchanged.
   \
-  \ See: `wcolor`, `wipe-rectangle`, `clear-rectangle`.
+  \ See also: `wcolor`, `wipe-rectangle`, `clear-rectangle`.
   \
   \ }doc
 
@@ -372,7 +372,7 @@ code clear-rectangle ( column row width height color -- )
   \   >r 2over 2over wipe-rectangle r> color-rectangle ;
   \ ----
 
-  \ See: `attr-wcls`.
+  \ See also: `attr-wcls`.
   \
   \ }doc
 
