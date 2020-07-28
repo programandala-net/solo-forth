@@ -1,7 +1,7 @@
 = Solo Forth: Version {version} for {dosname}
 :author: Marcos Cruz
 :producer: Marcos Cruz
-:revdate: 2020-07-27
+:revdate: 2020-07-28
 :doctype: book
 :lang: en
 ifdef::backend-html5[]
@@ -874,20 +874,20 @@ endif::trdos[]
 == How to search the source files
 
 A shell script is included in order to make searching the Forth
-sources for a regular expression a bit easier: <tools/search_sources>.
+sources for a regular expression a bit easier: <tools/seek>.
 
 The script uses ``ack`` by default; if ``ack`` is not installed,
-``grep`` is used instead.
+``grep`` is used instead. All parameters are passed to them.
 
 Usage examples:
 
 ----
-./tools/search_sources use-thru-index
-./tools/search_sources use-thru-index -l
-./tools/search_sources color
-./tools/search_sources ";\s:\s"
-./tools/search_sources "\-bank"
-./tools/search_sources "code\s+\S+\s+\("
+./tools/seek use-thru-index
+./tools/seek use-thru-index -l
+./tools/seek color
+./tools/seek ";\s:\s"
+./tools/seek "\-bank"
+./tools/seek "code\s+\S+\s+\("
 ----
 
 // How to test and benchmark {{{1

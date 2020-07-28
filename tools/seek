@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# seek
+
+# This file is part of Solo Forth
+# http://programandala.net/en.program.solo_forth.html
+
+# Last modified: 202007282046.
+# See change log at the end of the file.
+
+# Search the sources of Solo Forth using ack (by default) or grep
+# (when ack is not installed).  All parameters are passed
+# to them.
+
+# ==============================================================
+
+dirs="./src/kernel*.z80s ./src/lib/*.fs ./src/doc/*.adoc"
+
+ack $* -r $dirs 2>/dev/null || \
+grep $* -r $dirs 2>/dev/null
+
+# ==============================================================
+# Change log
+
+# 2020-03-01: Start.
+#
+# 2020-07-28: Search also the documentation sources. Rename to "seek".

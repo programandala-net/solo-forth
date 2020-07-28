@@ -1,6 +1,6 @@
 = Solo Forth version history
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-07-08
+:revdate: 2020-07-28
 :toc:
 
 // This file is part of Solo Forth
@@ -12,7 +12,7 @@
 // Version 0.14.0  {{{1
 == Version 0.14.0
 
-About to be released in 2020-06.
+About to be released in 2020-08.
 
 // Background image {{{2
 === Background image
@@ -333,6 +333,8 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
 - Make paren comments multiline in the Vim syntax file.
 - Make `do_create` and `do_variable` Z80 entries 8 T States faster, by
   moving them from the `noop` word to the `next` entry.
+- The sources searcher searches also the document sources. It's
+  renamed to <tools/seek>.
 
 // Other changes {{{2
 === Other changes
