@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202007282031
+; Last modified: 202007282106
 
 include version.z80s
 
@@ -10065,7 +10065,7 @@ endif
 
 ; doc{
 
-; parse-name ( "name"  -- ca len )
+; parse-name ( "name" -- ca len )
 ;
 ; Parse _name_ and return it as string _ca len_ within the input
 ; buffer. If the parse area is empty or contains only white
@@ -10074,7 +10074,7 @@ endif
 ; Definition:
 
 ; ----
-; : parse-name ( "name"  -- ca len )
+; : parse-name ( "name" -- ca len )
 ;   stream                ( ca0 len0 )
 ;   dup >r   -leading     ( ca1 len1 ) ( R: len0 )
 ;   over >r  bl scan      ( ca2 len2 ) ( R: len0 ca1 )

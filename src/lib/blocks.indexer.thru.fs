@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
+  \ Last modified: 202007282107
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -95,7 +95,7 @@ need evaluate need catch need use-default-located
   \
   \ thru-index-need ( "name" -- )
   \
-  \ If word "name" is found in the current search order, do
+  \ If word _name_ is found in the current search order, do
   \ nothing. Otherwise search the index word list for it. If
   \ found, execute it, causing its associated block be loaded.
   \ If not found, `throw` an exception #-277 ("needed, but not
@@ -252,5 +252,6 @@ need evaluate need catch need use-default-located
   \ 2020-06-15: Improve documentation.
   \
   \ 2020-07-28: Improve documentation of deferred words.
+  \ Update notation of parsed "name" in word descriptions.
 
   \ vim: filetype=soloforth

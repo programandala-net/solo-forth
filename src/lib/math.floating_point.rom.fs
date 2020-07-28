@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202007282031
+  \ Last modified: 202007282110
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -758,7 +758,7 @@ need float need f! need f@
   \
   \ fconstant ( "name" -- ) ( F: r -- ) "f-constant"
   \
-  \ Create a floating-point constant called "name" with value
+  \ Create a floating-point constant called _name_ with value
   \ _r_.
   \
   \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
@@ -1191,5 +1191,8 @@ unneeding dfaligned
   \ 2020-06-15: Improve documentation.
   \
   \ 2020-06-16: Fix markup in documentation.
+  \
+  \ 2020-07-28: Update notation of parsed "name" in word
+  \ descriptions.
 
   \ vim: filetype=soloforth

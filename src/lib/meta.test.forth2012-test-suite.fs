@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
+  \ Last modified: 202007282112
   \ See change log at the end of the file
 
   \ XXX UNDER DEVELOPMENT
@@ -4628,7 +4628,7 @@ CR .( End of Double-Number word tests) CR
 
 DECIMAL VARIABLE TOTAL-ERRORS
 
-: ERROR-COUNT ( "name" n1 -- n2 ) \ n2 = n1 + 1cell
+: ERROR-COUNT ( n1 "name" -- n2 ) \ n2 = n1 + 1cell
   CREATE  DUP , CELL+
   DOES> ( -- offset ) @ ;   \ offset in address units
 
@@ -7339,5 +7339,7 @@ cr .( Forth-2012 tests completed ) cr cr
   \ 2020-06-10: Fix cross reference.
   \
   \ 2020-07-08: Fix one `sm/rem` test.
+  \
+  \ 2020-07-28: Fix position of "name" in stack comment.
 
   \ vim: filetype=soloforth

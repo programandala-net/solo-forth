@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201806041129
+  \ Last modified: 202007282110
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -48,7 +48,7 @@ variable #options
   \
   \ default-option ( "name" -- )
   \
-  \ Set the default option "name" of an ``options[ ...
+  \ Set the default option _name_ of an ``options[ ...
   \ ]options`` structure.  It can be anywhere inside the
   \ structure.
   \
@@ -150,7 +150,7 @@ variable #options
   \
   \ option ( x "name" -- )
   \
-  \ Compile the action "name" of an option _x_ in an ``options[
+  \ Compile the action _name_ of an option _x_ in an ``options[
   \ ... ]options`` control structure.
   \
   \ See `options[` for a usage example.
@@ -204,5 +204,8 @@ variable #options
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2020-07-28: Update notation of parsed "name" in word
+  \ descriptions.
 
   \ vim: filetype=soloforth

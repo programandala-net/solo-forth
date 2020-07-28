@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
+  \ Last modified: 202007282112
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -186,7 +186,7 @@ unneeding [char]  ?( need char
   \
   \ Compilation: ( "name" -- )
   \
-  \ Parse "name" and append the run-time semantics given below
+  \ Parse _name_ and append the run-time semantics given below
   \ to the current definition.
   \
   \ Run-time: ( -- c )
@@ -331,5 +331,8 @@ unneeding word ?(
   \ 2020-05-24: Improve documentation of `parse-all`.
   \
   \ 2020-05-30: Improve documentation of `execute-parsing`.
+  \
+  \ 2020-07-28: Update notation of parsed "name" in word
+  \ descriptions.
 
   \ vim: filetype=soloforth

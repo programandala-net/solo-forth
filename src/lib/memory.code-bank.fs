@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201807212117
+  \ Last modified: 202007282111
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -18,7 +18,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -58,7 +58,7 @@ variable code-bank#  3 code-bank# !
 : code-bank-caller ( i*x a "name" -- j*x )
   create ?bank ,
   does> ( -- ) ( dfa ) @ code-bank call default-bank ;
-  \ Create a word "name" which will call the machine code
+  \ Create a word _name_ which will call the machine code
   \ routine at _a_, in the code bank.
 
 ?bank
@@ -77,5 +77,8 @@ variable code-bank#  3 code-bank# !
   \ 2017-09-09: Update notation "pfa" to the standard "dfa".
   \
   \ 2018-07-21: Improve documentation, linking `throw`.
+  \
+  \ 2020-07-28: Update notation of parsed "name" in word
+  \ descriptions.
 
   \ vim: filetype=soloforth

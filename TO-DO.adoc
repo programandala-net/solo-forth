@@ -1171,12 +1171,6 @@ Homogenize the following stack notations:
 Adapt the markups of Z88 CamelForth to extract the glossary from the
 source.
 
-=== 2017-11-06
-
-NOTE: Milestone: 0.14.0
-
-Change notation `"name"` to `_name_` in descriptions.
-
 // DOS {{{1
 == DOS
 

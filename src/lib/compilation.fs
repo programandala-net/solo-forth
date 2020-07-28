@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
+  \ Last modified: 202007282107
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1008,7 +1008,7 @@ unneeding exec ?(
   \
   \ exec ( "name" -- i*x )
   \
-  \ Parse _name_.  If "name" is the name of a word in the
+  \ Parse _name_.  If _name_ is the name of a word in the
   \ current search order, `execute` it; else `throw` an
   \ exception #-13 ("undefined word").
   \
@@ -1554,5 +1554,6 @@ unneeding warn-throw ?( need ?warn
   \ 2020-06-16: Improve documentation.
   \
   \ 2020-07-28: Improve documentation of deferred words.
+  \ Update notation of parsed "name" in word descriptions.
 
   \ vim: filetype=soloforth

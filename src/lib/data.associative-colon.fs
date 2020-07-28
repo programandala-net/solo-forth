@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
+  \ Last modified: 202007282108
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -42,7 +42,7 @@
 
   \ associative: ( n "name" -- ) "associative-colon"
 
-  \ Create a table lookup "name" with _n_ entries.
+  \ Create a table lookup _name_ with _n_ entries.
   \
   \ An associative memory word.  It must be followed by a set
   \ of values to be looked up.  At runtime, the values stored
@@ -85,5 +85,8 @@
   \ words that need it.
   \
   \ 2020-06-15: Improve documentation: add cross-references.
+  \
+  \ 2020-07-28: Update notation of parsed "name" in word
+  \ descriptions.
 
   \ vim: filetype=soloforth

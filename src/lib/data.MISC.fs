@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
+  \ Last modified: 202007282107
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -45,7 +45,7 @@ unneeding buffer:
   \
   \ }doc
 
-unneeding 2variable ?( : 2variable ( "name"  -- ) create
+unneeding 2variable ?( : 2variable ( "name" -- ) create
   [ 2 cells ] cliteral allot ; ?)
 
   \ doc{
@@ -71,7 +71,7 @@ unneeding 2variable ?( : 2variable ( "name"  -- ) create
   \ }doc
 
 unneeding cvariable
-?\ : cvariable ( "name"  -- ) create 1 allot ;
+?\ : cvariable ( "name" -- ) create 1 allot ;
 
   \ doc{
   \

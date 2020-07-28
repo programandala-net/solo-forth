@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
+  \ Last modified: 202007282109
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -27,7 +27,7 @@
 
 unneeding cvalue ?( need to need ;code
 
-: cvalue ( c "name"  -- )
+: cvalue ( c "name" -- )
   create 0 c, c, ;code 23 c, ' c@ 1+ jp, end-code ?)
                    \ inc hl
                    \ jp c_fetch.hl
@@ -46,7 +46,7 @@ unneeding cvalue ?( need to need ;code
 
 unneeding value ?( need to need ;code
 
-: value ( n "name"  -- )
+: value ( n "name" -- )
   create 1 c, , ;code 23 c, ' @ 1+ jp, end-code ?)
                   \ inc hl
                   \ jp fetch.hl
@@ -67,7 +67,7 @@ unneeding value ?( need to need ;code
 
 unneeding 2value ?( need to need ;code
 
-: 2value ( x1 x2 "name"  -- )
+: 2value ( x1 x2 "name" -- )
   create 2 c, 2, ;code 23 c, ' 2@ 1+ jp, end-code ?)
                    \ inc hl
                    \ jp two_fetch.hl

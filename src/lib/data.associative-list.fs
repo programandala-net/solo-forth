@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
+  \ Last modified: 202007282108
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -84,7 +84,7 @@ need search-wordlist
   \
   \ create-entry ( i*x wid xt "name" -- )
   \
-  \ Create an entry "name" in the `associative-list` _wid_,
+  \ Create an entry _name_ in the `associative-list` _wid_,
   \ using _xt_ to store its value _i*x_.
   \
   \ ``create-entry`` is a factor of `entry:`, `centry:`,
@@ -104,7 +104,7 @@ need create-entry  unneeding entry: ?(
   \
   \ entry: ( x wid "name" -- ) "entry-colon"
   \
-  \ Create a cell entry "name" in the `associative-list`
+  \ Create a cell entry _name_ in the `associative-list`
   \ _wid_, with value _x_.
   \
   \ See also: `centry:`, `2entry:`, `sentry:`, `create-entry`.
@@ -119,7 +119,7 @@ unneeding centry: ?(
   \
   \ centry: ( c wid "name" -- ) "c-entry-colon"
   \
-  \ Create a character entry "name" in the `associative-list`
+  \ Create a character entry _name_ in the `associative-list`
   \ _wid_, with value _c_.
   \
   \ See also: `entry:`, `2entry:`, `sentry:`, `create-entry`.
@@ -134,7 +134,7 @@ unneeding 2entry: ?(
   \
   \ 2entry: ( dx wid "name" -- ) "two-entry-colon"
   \
-  \ Create a double-cell entry "name" in the `associative-list`
+  \ Create a double-cell entry _name_ in the `associative-list`
   \ _wid_, with value _dx_.
   \
   \ See also: `entry:`, `centry:`, `sentry:`, `create-entry`.
@@ -149,7 +149,7 @@ unneeding sentry: ?(
   \
   \ sentry: ( ca len wid "name" -- ) "s-entry-colon"
   \
-  \ Create a string entry "name" in the `associative-list`
+  \ Create a string entry _name_ in the `associative-list`
   \ _wid_, with value _ca len_.
   \
   \ See also: `entry:`, `centry:`, `2entry:`, `create-entry`.
@@ -207,9 +207,12 @@ unneeding items ?exit need alias need wordlist-words
   \
   \ 2020-05-04: Fix cross references.
   \
-  \ 2020-06-08: Improve documentation: make _true_ and
-  \ _false_ cross-references.
+  \ 2020-06-08: Improve documentation: make _true_ and _false_
+  \ cross-references.
   \
   \ 2020-06-15: Improve documentation: add cross-references.
+  \
+  \ 2020-07-28: Update notation of parsed "name" in word
+  \ descriptions.
 
   \ vim: filetype=soloforth

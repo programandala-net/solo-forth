@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201802041956
+  \ Last modified: 202007282110
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -84,7 +84,7 @@
   \ case> ( orig counter selector "name" -- orig counter' ) "case-from"
   \
   \ Compile an option into a `cases:` structure. The given
-  \ _selector_ will cause the word "name" to be executed.
+  \ _selector_ will cause the word _name_ to be executed.
   \
   \ See `cases:` for an usage example.
   \
@@ -97,7 +97,7 @@
   \ othercase> ( orig counter "name" -- ) "other-case-from"
   \
   \ Compile the default option of a `cases:` to be the word
-  \ "name" . This must be the last option of the structure and
+  \ _name_. This must be the last option of the structure and
   \ is mandatory.  When no default action is required,
   \ `othercase> noop` can be used.
   \
@@ -117,5 +117,8 @@
   \
   \ 2018-02-04: Improve documentation: add pronunciation to
   \ words that need it.
+  \
+  \ 2020-07-28: Update notation of parsed "name" in word
+  \ descriptions.
 
   \ vim: filetype=soloforth
