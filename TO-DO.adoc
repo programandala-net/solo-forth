@@ -1108,12 +1108,6 @@ ZX Spectrum.
 
 Add attributes to block quotes. See <sound.48.fs>.
 
-=== 2017-02-24, 2020-06-16
-
-NOTE: Milestone: 0.14.0
-
-Update "Note:" to Asciidoctor markup "NOTE:" where appropiate.
-
 === 2017-02-17
 
 NOTE: Milestone: 0.14.0

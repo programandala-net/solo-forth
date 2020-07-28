@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
+  \ Last modified: 202007282054
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -437,7 +437,7 @@ unneeding mask+attr>perm
   \
   \ Make the current attribute and mask permanent.
   \
-  \ Note: Words that use attributes don't use the OS permanent
+  \ NOTE: Words that use attributes don't use the OS permanent
   \ attribute but the temporary one, which is called "current
   \ attribute" in Solo Forth.
   \
@@ -542,7 +542,7 @@ code perm-attr@ ( -- b )
   \
   \ Get the permanent attribute _b_.
   \
-  \ Note: Words that use attributes don't use the OS permanent
+  \ NOTE: Words that use attributes don't use the OS permanent
   \ attribute but the temporary one, which is called "current
   \ attribute" in Solo Forth.
   \
@@ -570,7 +570,7 @@ code perm-attr! ( b -- )
   \
   \ Set _b_ as the permanent attribute.
   \
-  \ Note: Words that use attributes don't use the OS permanent
+  \ NOTE: Words that use attributes don't use the OS permanent
   \ attribute but the temporary one, which is called "current
   \ attribute" in Solo Forth.
   \
@@ -591,7 +591,7 @@ code perm-attr-mask@ ( -- b )
   \
   \ Get the permanent attribute mask _b_.
   \
-  \ Note: Words that use attributes don't use the OS permanent
+  \ NOTE: Words that use attributes don't use the OS permanent
   \ attribute but the temporary one, which is called "current
   \ attribute" in Solo Forth.
   \
@@ -619,7 +619,7 @@ code perm-attr-mask! ( b -- )
   \
   \ Set _b_ as the permanent attribute mask.
   \
-  \ Note: Words that use attributes don't use the OS permanent
+  \ NOTE: Words that use attributes don't use the OS permanent
   \ attribute but the temporary one, which is called "current
   \ attribute" in Solo Forth.
   \
@@ -1141,7 +1141,7 @@ create (0-9-color. ( -- a ) asm
   \ - A = attribute control char ($10 for ink, $11 for paper)
   \ - TOS = attribute value (0..9)
 
-  \ Note: If TOS is greater than 9, 9 is used instead.
+  \ NOTE: If TOS is greater than 9, 9 is used instead.
 
   \ }doc
 
@@ -1336,5 +1336,7 @@ unneeding (0-1-8-color.
   \ _false_ cross-references.
   \
   \ 2020-06-15: Improve documentation: add cross-references.
+  \
+  \ 2020-07-28: Replace "Note:" with the "NOTE:" markup.
 
   \ vim: filetype=soloforth

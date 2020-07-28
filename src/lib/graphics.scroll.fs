@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
+  \ Last modified: 202007282100
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -52,7 +52,7 @@ create (pixel-pan-right ( -- a ) asm
   \ Return the address _a_ of a Z80 routine that pans the whole
   \ screen one pixel to the right.
   \
-  \ Note: The BC register (the Forth IP) is not preserved.
+  \ WARNING: The BC register (the Forth IP) is not preserved.
   \ This is intended, in order to save time when this routine
   \ is called in a loop. Therefore the calling code must save
   \ the BC register.
@@ -121,7 +121,7 @@ create (pixel-scroll-up ( -- a ) asm
   \ Return the address _a_ of a Z80 routine that scrolls the
   \ whole screen one pixel up.
   \
-  \ Note: The BC register (the Forth IP) is not preserved.
+  \ WARNING: The BC register (the Forth IP) is not preserved.
   \ This is intended, in order to save time when this routine
   \ is called in a loop. Therefore the calling code must save
   \ the BC register.
@@ -194,5 +194,7 @@ unneeding pixels-scroll-up ?( need pixel-scroll-up
   \ words that need it.
   \
   \ 2018-03-05: Update `[unneeded]` to `unneeding`.
+  \
+  \ 2020-07-28: Replace "Note:" with the "WARNING:" markup.
 
   \ vim: filetype=soloforth

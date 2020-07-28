@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
+  \ Last modified: 202007282057
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -468,7 +468,7 @@ unneeding cond ?( need cs-mark need thens
   \   thens ;
   \ ----
 
-  \ Note: The tested value must be preserved and discarded by
+  \ NOTE: The tested value must be preserved and discarded by
   \ the application. Example:
 
   \ ----
@@ -701,5 +701,7 @@ unneeding orif ?(
   \ 2018-07-21: Improve documentation, linking `throw`.
   \
   \ 2018-07-22: Simplify `retry`.
+  \
+  \ 2020-07-28: Replace "Note:" with the "NOTE:" markup.
 
   \ vim: filetype=soloforth

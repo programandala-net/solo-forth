@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
+  \ Last modified: 202007282053
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -167,7 +167,7 @@ unneeding begin-structure unneeding end-structure and ?(
   \       9 record> ~month c@  \ fetch the month from record 9
   \ ----
 
-  \ Note: ``begin-structure`` and `end-structure` are not
+  \ NOTE: ``begin-structure`` and `end-structure` are not
   \ necessary to create a structure. Only the initial offset 0
   \ is needed at the start, and saving the structure size at
   \ the end, e.g. using a `constant` or a `value`:
@@ -346,5 +346,7 @@ unneeding +field-opt-0124 ?( need case need +field
   \ 2018-06-04: Fix typo in documentation.
   \
   \ 2020-07-28: Improve documentation of deferred words.
+  \
+  \ 2020-07-28: Replace "Note:" with the "NOTE:" markup.
 
   \ vim: filetype=soloforth

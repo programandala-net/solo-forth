@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
+  \ Last modified: 202007282102
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -228,7 +228,7 @@ need set-esc-order  esc-standard-chars-wordlist 1 set-esc-order
   \ "s-backslash-quote"
 
   \
-  \ Note: When ``s\"`` is loaded, `esc-standard-chars-wordlist`
+  \ NOTE: When ``s\"`` is loaded, `esc-standard-chars-wordlist`
   \ is set as the only word list by `set-esc-order`. That is
   \ the standard behaviour. Alternative escaped chars can be
   \ configured with `esc-block-chars-wordlist` and
@@ -265,7 +265,7 @@ need set-esc-order  esc-standard-chars-wordlist 1 set-esc-order
 
   \ ``.\"`` is an `immediate` and `compile-only` word.
   \
-  \ Note: When ``.\"`` is loaded, `esc-standard-chars-wordlist`
+  \ NOTE: When ``.\"`` is loaded, `esc-standard-chars-wordlist`
   \ is set as the only word list by `set-esc-order`. That is
   \ the standard behaviour. Alternative escaped chars can be
   \ configured with `esc-block-chars-wordlist` and
@@ -551,5 +551,7 @@ need parse-char need char>string
   \ 2020-05-24: Replace "hash" notation with "number sign".
   \
   \ 2020-07-11: Add title to table.
+  \
+  \ 2020-07-28: Replace "Note:" with the "NOTE:" markup.
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
+  \ Last modified: 202007282057
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -230,7 +230,7 @@ unneeding 2-block-drives ?( need set-block-drives
   \ Set all drives as block drives, in normal order: "A" and
   \ "B".
   \
-  \ Note: For convenience, when this word is loaded, it's also
+  \ NOTE: For convenience, when this word is loaded, it's also
   \ executed.
   \
   \ See also: `set-block-drives`.
@@ -1708,5 +1708,7 @@ need reposition-file need file-position
   \ _false_ cross-references.
   \
   \ 2020-07-11: Add title to table.
+  \
+  \ 2020-07-28: Replace "Note:" with the "NOTE:" markup.
 
   \ vim: filetype=soloforth

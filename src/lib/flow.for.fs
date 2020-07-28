@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
+  \ Last modified: 202007282058
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -122,7 +122,7 @@ code (step ( R: u -- u' )
   \
   \ ``step`` is an `immediate` and `compile-only` word.
   \
-  \ Note: ``step`` is usually called ``next`` in other Forth
+  \ NOTE: ``step`` is usually called ``next`` in other Forth
   \ systems.
   \
   \ Origin: Z88 CamelForth.
@@ -172,5 +172,7 @@ need alias
   \
   \ 2018-06-04: Update: remove trailing closing paren from
   \ word names.
+  \
+  \ 2020-07-28: Replace "Note:" with the "NOTE:" markup.
 
   \ vim: filetype=soloforth

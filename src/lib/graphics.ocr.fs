@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
+  \ Last modified: 202007282059
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -167,7 +167,7 @@ code ocr ( col line -- n )
   \ variables. Otherwise return 0.  Inverse characters are not
   \ recognized.
   \
-  \ Note: The name `ocr` stands for "Optical Character
+  \ NOTE: The name `ocr` stands for "Optical Character
   \ Recognition".
   \
   \ See also: `udg-ocr`, `ascii-ocr`.
@@ -259,5 +259,7 @@ unneeding udg-ocr ?( need ocr need os-udg
   \
   \ 2020-06-15: Improve documentation: Add cross-references to
   \ `cvariable`.
+  \
+  \ 2020-07-28: Replace "Note:" with the "NOTE:" markup.
 
   \ vim: filetype=soloforth

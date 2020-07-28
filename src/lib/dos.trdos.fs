@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
+  \ Last modified: 202007282057
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -443,7 +443,7 @@ unneeding 2-block-drives ?( need set-block-drives
   \
   \ Set the first two drives as block drives, in normal order.
   \
-  \ Note: For convenience, when this word is loaded, it's also
+  \ NOTE: For convenience, when this word is loaded, it's also
   \ executed.
   \
   \ See also: `3-block-drives`, `4-block-drives`,
@@ -464,7 +464,7 @@ unneeding 3-block-drives ?( need set-block-drives
   \ Set the first three drives as block drives, in normal
   \ order.
   \
-  \ Note: For convenience, when this word is loaded, it's also
+  \ NOTE: For convenience, when this word is loaded, it's also
   \ executed.
   \
   \ See also: `2-block-drives`, `4-block-drives`,
@@ -484,7 +484,7 @@ unneeding 4-block-drives ?( need set-block-drives
   \
   \ Set all 4 drives as block drives, in normal order.
   \
-  \ Note: For convenience, when this word is loaded, it's also
+  \ NOTE: For convenience, when this word is loaded, it's also
   \ executed.
   \
   \ See also: `2-block-drives`, `3-block-drives`,
@@ -810,7 +810,7 @@ unneeding file-type  ?( need file-status need fda
   \ identifier.  Otherwise _ior_ is the I/O result code and _c_
   \ is undefined.
   \
-  \ Note: In TR-DOS the file type is the 9th character of the
+  \ NOTE: In TR-DOS the file type is the 9th character of the
   \ filename. When a filetype is not included in a filename,
   \ i.e. when the specified filename is shorter than 9
   \ characters, filetype 'C' (code file) is assumed by default.
@@ -1422,5 +1422,7 @@ need read-file-descriptor need write-file-descriptor
   \ 2020-07-10: Improve layout of the `fda` table.
   \
   \ 2020-07-11: Add title to tables.
+  \
+  \ 2020-07-28: Replace "Note:" with the "NOTE:" markup.
 
   \ vim: filetype=soloforth
