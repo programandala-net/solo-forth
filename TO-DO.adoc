@@ -1505,16 +1505,6 @@ Use term "throw code" instead of "exception code"?
 
 "throw value" is used in Forth-2012.
 
-=== 2016-11-27
-
-NOTE: Milestone: 0.14.0
-
-Rename?:
-
-- `warn.throw` to `error-code-warn`
-- `warn-throw` to `error-warn`
-- `warn.message` to `message-warn`
-
 === 2016-04-25
 
 Idea: Add `where` to the default exception message. In order to save space,

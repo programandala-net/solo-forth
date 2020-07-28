@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282107
+  \ Last modified: 202007282125
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1209,26 +1209,26 @@ variable warnings  warnings on
   \ needed, return _ca len_ and the _xt_ of the word found in
   \ the current compilation wordlist.
   \
-  \ ``?warn`` is factor of `warn.throw`, `warn.message` and
-  \ `warn-throw`.
+  \ ``?warn`` is factor of `error-code-warn`, `message-warn` and
+  \ `error-warn`.
   \
-  \ See also: `no-warnings?`, `not-redefined?`, `warn.message`,
-  \ `warn.throw`, `warn-throw`.
+  \ See also: `no-warnings?`, `not-redefined?`, `message-warn`,
+  \ `error-code-warn`, `error-warn`.
   \
   \ }doc
 
-( warn.throw warn.message warn-throw )
+( error-code-warn message-warn error-warn )
 
-unneeding warn.throw ?( need ?warn
+unneeding error-code-warn ?( need ?warn
 
-: warn.throw ( ca len -- ca len )
+: error-code-warn ( ca len -- ca len )
   ?warn ( ca len xt ) drop .error-word  #-257 .throw ;
 
-' warn.throw ' warn defer! ?)
+' error-code-warn ' warn defer! ?)
 
   \ doc{
   \
-  \ warn.throw ( ca len -- ca len ) "warn-dot-throw"
+  \ error-code-warn ( ca len -- ca len ) "warn-dot-throw"
   \
   \ If the contents of the user variable `warnings` is not zero
   \ and the word name _ca len_ is already defined in the
@@ -1236,55 +1236,56 @@ unneeding warn.throw ?( need ?warn
   \ #-257 ("warning: is not unique") without actually throwing
   \ an exception.
   \
-  \ ``warn.throw`` is an alternative action of the deferred
+  \ ``error-code-warn`` is an alternative action of the deferred
   \ word `warn` (see `defer`).
   \
-  \ See also: `warnings`, `warn-throw`, `warn.message`, `?warn`.
+  \ See also: `warnings`, `error-warn`, `message-warn`, `?warn`.
   \
   \ }doc
 
-unneeding warn.message ?( need ?warn need >name need .name
+unneeding message-warn ?( need ?warn need >name need .name
 
-: warn.message ( ca len -- ca len )
+: message-warn ( ca len -- ca len )
   ?warn ( ca len xt ) ." redefined " >name .name ;
 
-' warn.message ' warn defer! ?)
+' message-warn ' warn defer! ?)
 
   \ doc{
   \
-  \ warn.message ( ca len -- ca len ) "warn-dot-message"
+  \ message-warn ( ca len -- ca len ) "warn-dot-message"
   \
   \ If the contents of the user variable `warnings` is not zero
   \ and the word name _ca len_ is already defined in the
   \ current compilation word list, display a warning message.
   \
-  \ ``warn.message`` is an alternative action of the deferred
+  \ ``message-warn`` is an alternative action of the deferred
   \ word `warn` (see `defer`).
   \
-  \ See also: `warnings`, `warn.throw`, `warn-throw`, `?warn`.
+  \ See also: `warnings`, `error-code-warn`, `error-warn`, `?warn`.
   \
   \ }doc
 
-unneeding warn-throw ?( need ?warn
+unneeding error-warn ?( need ?warn
 
-: warn-throw ( ca len -- ca len )
+: error-warn ( ca len -- ca len )
   ?warn ( ca len xt ) #-257 throw ;
 
-' warn-throw ' warn defer! ?)
+' error-warn ' warn defer! ?)
 
   \ doc{
   \
-  \ warn-throw ( ca len -- ca len )
+  \ error-warn ( ca len -- ca len )
   \
   \ If the contents of the user variable `warnings` is not zero
   \ and the word name _ca len_ is already defined in the
   \ current compilation word list, `throw` an exception #-257
   \ instead of printing a warning message.
   \
-  \ ``warn-throw`` is the default action of the deferred word
-  \ `warn` (see `defer`).
+  \ ``error-warn`` is an alternative action of the deferred
+  \ word `warn` (see `defer`).
   \
-  \ See also: `warnings`, `warn.throw`, `warn.message`, `?warn`.
+  \ See also: `warnings`, `error-code-warn`, `message-warn`,
+  \ `?warn`.
   \
   \ }doc
 
@@ -1553,7 +1554,10 @@ unneeding warn-throw ?( need ?warn
   \
   \ 2020-06-16: Improve documentation.
   \
-  \ 2020-07-28: Improve documentation of deferred words.
-  \ Update notation of parsed "name" in word descriptions.
+  \ 2020-07-28: Improve documentation of deferred words. Update
+  \ notation of parsed "name" in word descriptions. Rename
+  \ `warn.throw` to `error-code-warn`, `warn-throw` to
+  \ `error-warn` and `warn.message` to `message-warn`. Fix
+  \ description of `error-warn`.
 
   \ vim: filetype=soloforth

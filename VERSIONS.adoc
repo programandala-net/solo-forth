@@ -363,7 +363,7 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
 - Make `newline>` a counted string; remove `/newline`.
 - Make `/tabulate` a byte variable.
 - Move `fardump` and `farwdump` to <tool.dump.fs>.
-- Rename "printable-ascii-char" "graphic-ascii-char".  "graphic" is
+- Rename `printable-ascii-char` to `graphic-ascii-char`.  "graphic" is
   the standard notation for non-control characters.  Old words
   affected: `printable-ascii-char?` `default-printable-ascii-char?`,
   `>printable-ascii-char`.
@@ -383,8 +383,8 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
 - Replace "frames" names with "ticks".  The OS variable used is called
   FRAMES, but `ticks` is the common name in Forth. All related words
   have been renamed.
-- Rename `pause` `basic-pause`.  `pause` is a common usage name in the
-  Forth multitasker, which will be implemented.
+- Rename `pause` to `basic-pause`. `pause` is a common usage name in
+  the Forth multitasker, which will be implemented.
 - Move `cs-swap` to the kernel.
 - Don't make a +3DOS 180 KiB boot disk.  Supporting only one disk
   format makes some things simpler on +3DOS.
@@ -396,7 +396,7 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
 - Remove `jppushhl,`.  This word is useless, since it compiles `push
   hl` and `jp (ix)`.  But the `pushhl` constant is useful to make
   conditional exits in code words.
-- Rename `ocr-charset` `ocr-font`.
+- Rename `ocr-charset` to `ocr-font`.
 - Rename `1literal` to `xliteral`, `]1l` to `]xl`, `[1const]` to
   `[xconst]`.  The new names seem clearer, because an unknown cell is
   represented as "x" in the stack notation.
@@ -404,8 +404,8 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
 - Move `blk-line` to the library.
 - Move `>in/l` and `->in/l` to the kernel.  `->in/l` is a factor of
   `\`.
-- Rename disk 2 "programs".
-- Rename `astack` `estack`, and so the related words.
+- Rename disk 2 to "programs".
+- Rename `astack` to `estack`, and so the related words.
 - Remove `?name-too-short`.  It was used only once, and it was too
   specific to be useful.
 - Remove the 5-second pause after displaying the background the first
@@ -419,6 +419,8 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
 - Move `?` to the library.
 - Rename `latest-wordlist` to `last-wordlist`.
 - Delete <memory.bank.fs> and move its contents to <memory.far.fs>.
+- Rename `warn.throw` to `error-code-warn`, `warn-throw` to
+  `error-warn` and `warn.message` to `message-warn`.
 
 // Version 0.14.0-pre.209  {{{1
 == Version 0.14.0-pre.209

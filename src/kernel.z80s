@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202007282106
+; Last modified: 202007282129
 
 include version.z80s
 
@@ -10468,8 +10468,8 @@ endif
 ;
 ; ``warn`` is a deferred word (see `defer`) which is called by
 ; `header,` and whose default action is `noop`. Alternative
-; actions are provided by `warn.message`, `warn.throw` and
-; `warn-throw`.
+; actions are provided by `message-warn`, `error-code-warn` and
+; `error-warn`.
 ;
 ; }doc
 
