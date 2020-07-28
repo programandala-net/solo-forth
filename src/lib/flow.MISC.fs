@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282057
+  \ Last modified: 202007282133
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -543,8 +543,8 @@ unneeding andif ?(
   \                     thens ;
   \ ----
 
-  \ Compare with the following equivalent code, where all three
-  \ conditions are always checked:
+  \ Compare with the following equivalent definition, where all
+  \ three conditions are always checked:
 
   \ ----
   \ : the-end? ( -- f ) won-battle?
@@ -583,8 +583,8 @@ unneeding orif ?(
   \                           thens nip ;
   \ ----
 
-  \ Compare with the following equivalent code, where all three
-  \ conditions are always checked:
+  \ Compare with the following equivalent definition, where all
+  \ three conditions are always checked:
 
   \ ----
   \ : is-alphanum? ( c -- f ) dup  is-lower?
@@ -703,5 +703,6 @@ unneeding orif ?(
   \ 2018-07-22: Simplify `retry`.
   \
   \ 2020-07-28: Replace "Note:" with the "NOTE:" markup.
+  \ Replace "equivalent code" with "equivalent definition".
 
   \ vim: filetype=soloforth

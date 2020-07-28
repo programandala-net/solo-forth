@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282054
+  \ Last modified: 202007282132
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -304,8 +304,8 @@ code attr>paper ( b1 -- b2 )
   \
   \ Convert attribute _b1_ to its paper color number _b2_.
   \
-  \ ``attr>paper`` is written in Z80. The equivalent code in
-  \ Forth is the following:
+  \ ``attr>paper`` is written in Z80. Its equivalent definition
+  \ in Forth is the following:
 
   \ ----
   \ : attr>paper ( b1 -- b2 ) paper-mask and 3 rshift ;
@@ -330,8 +330,8 @@ code attr>ink ( b1 -- b2 )
   \
   \ Convert attribute _b1_ to its ink color number _b2_.
   \
-  \ ``attr>ink`` is written in Z80. The equivalent code in
-  \ Forth is the following:
+  \ ``attr>ink`` is written in Z80. Its equivalent definition
+  \ in Forth is the following:
 
   \ ----
   \ : attr>ink ( b1 -- b2 ) ink-mask and ;
@@ -1338,5 +1338,7 @@ unneeding (0-1-8-color.
   \ 2020-06-15: Improve documentation: add cross-references.
   \
   \ 2020-07-28: Replace "Note:" with the "NOTE:" markup.
+  \ Replace "the equivalent code" with "its equivalent
+  \ definition".
 
   \ vim: filetype=soloforth

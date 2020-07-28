@@ -1108,14 +1108,6 @@ ZX Spectrum.
 
 Add attributes to block quotes. See <sound.48.fs>.
 
-=== 2017-02-17
-
-NOTE: Milestone: 0.14.0
-
-In glossary entries, change "its equivalent code" to "its equivalent
-definition".  The reason is "Definition:" is used as heading in normal
-cases.
-
 === 2017-02-15
 
 Remove the documentation of DOS subroutines that is duplicated in its

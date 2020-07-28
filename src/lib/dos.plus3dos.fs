@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282057
+  \ Last modified: 202007282133
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -436,8 +436,8 @@ code headed ( fam1 -- fam2 )
   \ "headed", i.e., with an additional +3DOS header, file
   \ access method, giving file access method _fam2_.
   \
-  \ ``headed`` is written in Z80. Its equivalent code in Forth
-  \ is the following:
+  \ ``headed`` is written in Z80. Its equivalent definition in
+  \ Forth is the following:
 
   \ ----
   \ : headed ( fam1 -- fam2 ) 128 and ;
@@ -1710,5 +1710,6 @@ need reposition-file need file-position
   \ 2020-07-11: Add title to table.
   \
   \ 2020-07-28: Replace "Note:" with the "NOTE:" markup.
+  \ Replace "equivalent code" with "equivalent definition".
 
   \ vim: filetype=soloforth
