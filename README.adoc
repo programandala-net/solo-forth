@@ -1,13 +1,13 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-07-15
+:revdate: 2020-09-29
 :toc:
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202007152222
+// Last modified: 202009291346
 
 // Description {{{1
 == Description
@@ -154,7 +154,7 @@ http://programandala.net/en.program.black_flag.html[Black Flag].
 // ....
 // .
 // ├── backgrounds       Version background images
-// ├── bin               Binary files needed to build disk 0
+// ├── bin               ZX Spectrum binary files for disk 0
 // │   ├── fonts         Fonts for the supported screen modes
 // │   ├── addons        Code that is loaded from disk
 // │   │                 because it's not assembled in the library yet
@@ -186,7 +186,7 @@ http://programandala.net/en.program.black_flag.html[Black Flag].
 // | Directory      | Description
 
 // | backgrounds    | Version background images
-// | bin            | Binary files needed to build disk 0
+// | bin            | ZX Spectrum binary files for disk 0
 // | bin/addons     | Code loaded from disk, not assembled in the library yet
 // | bin/dos        | DOS files
 // | bin/fonts      | Fonts for the supported screen modes
@@ -213,7 +213,7 @@ http://programandala.net/en.program.black_flag.html[Black Flag].
 // XXX OLD -- A list version.
 
 // * *backgrounds* :  Version background images
-// * *bin* : Binary files needed to build disk 0
+// * *bin* : ZX Spectrum binary files for disk 0
 //   - *addons* : Code loaded from disk, not assembled in the library yet
 //   - *dos* : DOS files
 //   - *fonts* : Fonts for the supported screen modes
@@ -240,7 +240,7 @@ http://programandala.net/en.program.black_flag.html[Black Flag].
 
 // [horizontal]
 // backgrounds    :: Version background images
-// bin            :: Binary files needed to build disk 0
+// bin            :: ZX Spectrum binary files for disk 0
 // bin/addons     :: Code loaded from disk, not assembled in the library yet
 // bin/dos        :: DOS files
 // bin/fonts      :: Fonts for the supported screen modes
@@ -268,7 +268,7 @@ http://programandala.net/en.program.black_flag.html[Black Flag].
 | Directory   | Subdirectory | Description
 
 | backgrounds |              | Version background images
-| bin         |              | Binary files needed to build disk 0
+| bin         |              | ZX Spectrum binary files for disk 0
 | bin         | addons       | Code loaded from disk, not assembled in the library yet
 | bin         | dos          | DOS files
 | bin         | fonts        | Fonts for the supported screen modes
