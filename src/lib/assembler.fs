@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
+  \ Last modified: 202008082223
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -314,8 +314,8 @@ DD cconstant ix-op  FD cconstant iy-op
   \
   \ (jr, ( a op -- ) "paren-j-r-comma"
   \
-  \ Compile an `assembler` relative jump _op_ to absolute
-  \ address _a_.
+  \ Compile a Z80 `assembler` relative-jump intruction _op_ to
+  \ the absolute address _a_.
   \
   \ ``(jr,`` is a factor of `jr,`.
   \
@@ -1791,9 +1791,9 @@ F2 cconstant p?   FA cconstant m?
   \
   \ jp>jr ( op1 -- op2 ) "j-p-greater-than-j-r"
   \
-  \ Convert an absolute-jump Z80 `assembler` opcode to its
-  \ relative-jump equivalent.  Throw error #-273 if the jump
-  \ condition is invalid.
+  \ Convert a Z80 `assembler` absolute-jump instruction _op1_
+  \ to its relative-jump equivalent _op2_. Throw error #-273 if
+  \ the jump condition is invalid.
   \
   \ ``jp>jr`` is a factor of `?jr,`, `rif` and `runtil`.
   \
@@ -1806,9 +1806,9 @@ F2 cconstant p?   FA cconstant m?
   \ ?ret, ( op -- ) "question-ret-comma"
   \
   \ Compile a Z80 `assembler` conditional return instruction,
-  \ being _op_ the identifier of the condition, which has been
-  \ put on the stack by `nz?`, `c?`, `nc?`, `po?`, `pe?`, `p?`,
-  \ or `m?`.
+  \ being _op_ the identifier of the condition, which was put
+  \ on the stack by `z?`, `nz?`, `c?`, `nc?`, `po?`, `pe?`,
+  \ `p?`, or `m?`.
   \
   \ See also: `ret,`, `?jp,`, `?call,`.
   \
@@ -1821,9 +1821,9 @@ F2 cconstant p?   FA cconstant m?
   \ ?jp, ( a op -- ) "question-j-p-comma"
   \
   \ Compile a Z80 `assembler` conditional absolute-jump
-  \ instruction to address _a_, being _op_ the identifier of
-  \ the condition, which has been put on the stack by `nz?`,
-  \ `c?`, `nc?`, `po?`, `pe?`, `p?`, or `m?`.
+  \ instruction to the address _a_, being _op_ the identifier
+  \ of the condition, which was put on the stack by `z?`,
+  \ `nz?`, `c?`, `nc?`, `po?`, `pe?`, `p?`, or `m?`.
   \
   \ See also: `jp,`, `?jr,`, `?ret,`, `?call,`.
   \
@@ -1835,9 +1835,9 @@ F2 cconstant p?   FA cconstant m?
   \
   \ ?call, ( a op -- ) "question-call-comma"
   \
-  \ Compile a Z80 `assembler` conditional absolute call
+  \ Compile a Z80 `assembler` conditional absolute-call
   \ instruction to address _a_, being _op_ the identifier of
-  \ the condition, which has been put on the stack by `nz?`,
+  \ the condition, which was put on the stack by `z?`, `nz?`,
   \ `c?`, `nc?`, `po?`, `pe?`, `p?`, or `m?`.
   \
   \ See also: `call,`, `?ret,`, `?jp,`.
@@ -1850,9 +1850,9 @@ F2 cconstant p?   FA cconstant m?
   \
   \ ?jr, ( a op -- ) "question-j-r-comma"
   \
-  \ Compile a Z80 `assembler` conditional relative jump
+  \ Compile a Z80 `assembler` conditional relative-jump
   \ instruction to address _a_, being _op_ the identifier of
-  \ the condition, which has been put on the stack by `nz?`,
+  \ the condition, which was put on the stack by `z?`, `nz?`,
   \ `c?`, or `nc?`.
   \
   \ See also: `jr,`, `?jp,`, `djnz,`, `jp>jr`, `(jr,`.
@@ -1867,18 +1867,21 @@ F2 cconstant p?   FA cconstant m?
   \
   \ >rmark ( -- orig ) "greater-than-r-mark"
   \
-  \ Leave the origin address of an `assembler` forward relative
-  \ branch just compiled, to be resolved by `>rresolve`.
+  \ Leave the origin address of a Z80 `assembler` forward
+  \ relative branch just compiled, to be resolved by
+  \ `>rresolve`.
   \
   \ }doc
 
 : rresolve ( orig dest -- ) 1- over - dup ?rel swap c! ;
 
+  \ XXX TODO -- improve documentation
+
   \ doc{
   \
   \ rresolve ( orig dest -- ) "r-resolve"
   \
-  \ Resolve an `assembler` relative branch.
+  \ Resolve a Z80 `assembler` relative branch.
   \
   \ See also: `<rresolve`, `>rresolve`, `?rel`.
   \
@@ -1890,7 +1893,8 @@ F2 cconstant p?   FA cconstant m?
   \
   \ >rresolve ( orig -- ) "greater-than-r-resolve"
   \
-  \ Resolve an `assembler` forward relative branch.
+  \ Resolve a Z80 `assembler` forward relative branch reference
+  \ _orig_.
   \
   \ See also: `<rresolve`, `rresolve`.
   \
@@ -1902,7 +1906,8 @@ F2 cconstant p?   FA cconstant m?
   \
   \ <rresolve ( dest -- ) "less-than-r-resolve"
   \
-  \ Resolve an `assembler` backward relative branch.
+  \ Resolve a Z80 `assembler` backward relative branch
+  \ reference _dest_.
   \
   \ See also: `>rresolve`, `rresolve`.
   \
@@ -1919,9 +1924,8 @@ F2 cconstant p?   FA cconstant m?
   \
   \ rahead ( -- orig ) "r-ahead"
   \
-  \ Create an `assembler` relative branch forward. Leave the
-  \ origin address of a forward relative branch just compiled,
-  \ to be resolved by `>rresolve`.
+  \ Compile a Z80 `assembler` forward relative jump. Leave its
+  \ unresolved address _orig,_ to be resolved by `>rresolve`.
   \
   \ }doc
 
@@ -1931,7 +1935,12 @@ F2 cconstant p?   FA cconstant m?
   \
   \ (rif ( op -- orig cs-id ) "paren-r-if"
   \
-  \ ``(rif`` is a factor of `assembler` `rif` and `relse`.
+  \ Compile the Z80 `assembler` conditional relative-jump
+  \ instruction _op_. Leave address _orig_ to be resolved by
+  \ `relse` or `rthen` and the identifier _cs-id_ of the
+  \ control-flow structure ``rif`` .. `relse` .. `rthen`.
+  \
+  \ ``(rif`` is a factor of `rif` and `relse`.
   \
   \ }doc
 
@@ -1940,6 +1949,12 @@ F2 cconstant p?   FA cconstant m?
   \ doc{
   \
   \ rif ( op -- orig cs-id ) "r-if"
+  \
+  \ Compile a Z80 `assembler` conditional relative-jump
+  \ instruction _op_, which was put on the stack by `z?`,
+  \ `nz?`, `c?` or `nc?`. Return the address _orig_ to be
+  \ resolved by `relse` or `rthen` and the control-structure
+  \ identifier _cs-id_.
   \
   \ ``rif`` is part of the `assembler` relative-address
   \ control-flow structure ``rif`` .. `relse` .. `rthen`.
@@ -1954,6 +1969,9 @@ F2 cconstant p?   FA cconstant m?
   \
   \ rthen ( orig cs-id -- ) "r-then"
   \
+  \ Check the control-flow structure identifier _cs-id_. Then
+  \ resolve the address _orig_ left by `rif` or `relse`
+  \
   \ ``rthen`` is part of the `assembler` relative-address
   \ control-flow structure `rif` .. `relse` .. ``rthen``.
   \
@@ -1967,12 +1985,19 @@ F2 cconstant p?   FA cconstant m?
 
   \ doc{
   \
-  \ relse ( orig cs-id -- orig cs-id ) "r-else"
+  \ relse ( orig1 cs-id -- orig2 cs-id ) "r-else"
+  \
+  \ Check the Z80 `assembler` control-flow structure identifier
+  \ _cs_id_, and resolve the forward reference _orig1_, both
+  \ left by `rif`; then compile a Z80 `assembler` unconditional
+  \ relative-address jump, putting its unresolved forward
+  \ reference _orig2_ and control-flow structure identifier
+  \ _cs-id_ on the stack, to be resolved by `rthen`.
   \
   \ ``relse`` is part of the `assembler` relative-address
   \ control-flow structure `rif` .. ``relse`` .. `rthen`.
   \
-  \ See also: `aelse`, `(rif`.
+  \ See also: `aelse`, `?pairs`, `(rif`.
   \
   \ }doc
 
@@ -1981,6 +2006,12 @@ F2 cconstant p?   FA cconstant m?
   \ doc{
   \
   \ rbegin ( -- dest cs-id ) "r-begin"
+  \
+  \ Mark the start of an `assembler`  sequence for repetitive
+  \ execution, leaving _dest_ to be resolved by the
+  \ corresponding `runtil`, `ragain` or `rrepeat`. Also, leave
+  \ the control-flow structure identifier_cs-id_ to be checked
+  \ by the corresponding same word.
   \
   \ ``rbegin`` is part of the `assembler` relative-address
   \ control-flow structures ``rbegin`` .. `ragain`, ``rbegin``
@@ -1996,6 +2027,12 @@ F2 cconstant p?   FA cconstant m?
   \
   \ rwhile ( op -- orig cs-id ) "r-while"
   \
+  \ Compile a Z80 `assembler` relative-jump instruction _op_,
+  \ which was put on the stack by `z?`, `nz?`, `c?` or `nc?`.
+  \ Put the location of a forward reference _orig_ onto the
+  \ stack, to be resolved by `rrepeat`, and the
+  \ control-structure identifier _cs-id_.
+  \
   \ ``rwhile`` is part of the `assembler` relative-address
   \ control-flow structures ``rbegin`` .. `rwhile` ..
   \ `rrepeat`.
@@ -2010,8 +2047,11 @@ F2 cconstant p?   FA cconstant m?
   \
   \ (runtil ( dest cs-id op -- ) "paren-r-until"
   \
-  \ Compile a relative conditional jump Z80 `assembler`
-  \ instruction _op_. ``(runtil`` is a factor of `runtil`,
+  \ Compile a Z80 `assembler` conditional relative-jump
+  \ instruction _op_ to address _dest_, as part of a
+  \ control-flow structure identified by _cs-id_.
+  \
+  \ ``(runtil`` is a factor of `runtil`,
   \ `ragain` and `rstep`.
   \
   \ }doc
@@ -2022,8 +2062,10 @@ F2 cconstant p?   FA cconstant m?
   \
   \ runtil ( dest cs-id op -- ) "r-until"
   \
-  \ ``runtil`` is part of the `assembler` relative-address
-  \ control-flow structure `rbegin` .. ``runtil``.
+  \ Compile a Z80 `assembler` conditional relative-jump
+  \ instruction _op_ to address _dest_, as part of a
+  \ relative-address control-flow structure `rbegin` ..
+  \ ``runtil``, identified by _cs-id_.
   \
   \ See also: `auntil`, `(runtil`, `jp>jr`, `inverse-cond`.
   \
@@ -2036,8 +2078,10 @@ F2 cconstant p?   FA cconstant m?
   \
   \ ragain ( dest cs-id -- ) "r-again"
   \
-  \ ``ragain`` is part of the `assembler` relative-address
-  \ control-flow structure `rbegin` .. `ragain`.
+  \ Compile a Z80 `assembler` unconditional relative-jump
+  \ instruction to address _dest_, as part of a
+  \ relative-address control-flow structure `rbegin` ..
+  \ ``ragain``, identified by _cs-id_.
   \
   \ See also: `aagain`, `(runtil`.
   \
@@ -2049,16 +2093,23 @@ F2 cconstant p?   FA cconstant m?
   \
   \ rrepeat ( dest cs-id1 orig cs-id2 --) "r-repeat"
   \
+  \ Compile a Z80 `assembler` unconditional relative-jump
+  \ instruction to address _dest_, left by `rbegin`, and check
+  \ its control-flow identifier _cs-id1_. Resolve the forward
+  \ reference _orig_, usually left by `rwhile`, and check its
+  \ control-flow structure _cs-id2_.
+  \
   \ ``rrepeat`` is part of the `assembler` relative-address
   \ control-flow structure `rbegin` .. `rwhile` ..  `rrepeat`.
   \
-  \ See also: `arepeat`.
+  \ See also: `arepeat`, `ragain`.
   \
   \ }doc
 
 : rstep ( dest cs-id -- ) 10 (runtil ;
   \ Note: $10 is the Z80 opcode for `djnz`.
 
+  \ XXX TODO -- improve documentation
   \ doc{
   \
   \ rstep ( dest cs-id -- ) "r-step"
@@ -2086,8 +2137,8 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ (aif ( op -- orig cs-id ) "paren-a-if"
   \
-  \ Compile the `assembler` absolute-jump instruction _op_ and
-  \ put the location of a new unresolved forward reference
+  \ Compile the Z80 `assembler` absolute-jump instruction _op_
+  \ and put the location of a new unresolved forward reference
   \ _orig_ and the `assembler` control-structure identifier
   \ _cs_id_ onto the stack, to be consumed by `aelse` or
   \ `athen`.
@@ -2108,7 +2159,7 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ aif ( op -- orig cs-id ) "a-if"
   \
-  \ Compile the `assembler` absolute-jump instruction _op_ and
+  \ Compile the Z80 `assembler` absolute-jump instruction _op_ and
   \ put the location of a new unresolved forward reference
   \ _orig_ and the control-structure identifier _cs_id_ onto
   \ the stack, to be consumed by `aelse` or `athen`.
@@ -2152,12 +2203,12 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ aelse ( orig1 cs-id -- orig2 cs-id ) "a-else"
   \
-  \ Check the `assembler` control-structure identifier _cs_id_
-  \ and resolve the forward reference _orig1_, both left by
-  \ `aif`; then compile an unconditional Z80 `assembler`
+  \ Check the Z80 `assembler` control-flow structure identifier
+  \ _cs_id_, and resolve the forward reference _orig1_, both
+  \ left by `aif`; then compile a Z80 `assembler` unconditional
   \ absolute-address jump, putting its unresolved forward
-  \ reference _orig2_ and `assembler` control-structure
-  \ identifier _cs-id_, to be resolved by `athen`.
+  \ reference _orig2_ and control-flow structure identifier
+  \ _cs-id_ on the stack, to be resolved by `athen`.
   \
   \ Also put the location of a new unresolved forward reference
   \ _orig2_ and the control-structure identifier _cs_id_ onto
@@ -2191,9 +2242,14 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ awhile ( op -- orig cs-id ) "a-while"
   \
+  \ Compile a Z80 `assembler` absolute-jump instruction _op_,
+  \ which was put on the stack by `z?`, `nz?`, `c?`, `nc?`,
+  \ `po?`, `pe?`, `p?`, or `m?`. Put the location of a forward
+  \ reference _orig_ onto the stack, to be resolved by
+  \ `arepeat`, and the control-structure identifier _cs-id_.
+  \
   \ ``awhile`` is part of the `assembler` absolute-address
-  \ control-flow structure `abegin` .. ``awhile`` ..
-  \ `arepeat`.
+  \ control-flow structure `abegin` .. ``awhile`` .. `arepeat`.
   \
   \ See also: `rwhile`.
   \
@@ -2205,7 +2261,7 @@ assembler-wordlist >order set-current   need inverse-cond
   \
   \ (auntil ( dest cs-id op ) "paren-a-until"
   \
-  \ Compile an `assembler` absolute conditional jump opcode
+  \ Compile a Z80 `assembler` conditional absolute-jump opcode
   \ _op_.
   \
   \ ``(auntil`` is a factor of `auntil` and `aagain`.
@@ -2263,7 +2319,7 @@ unneeding inverse-cond ?\ : inverse-cond ( op1 -- op2) 8 xor ;
   \
   \ inverse-cond ( op1 -- op2 )
   \
-  \ Convert an `assembler` condition flag _op1_ (actually a
+  \ Convert a Z80 `assembler` condition flag _op1_ (actually a
   \ jump opcode) to its opposite _op2_.
   \
   \ Examples: The opcode returned by `c?` is converted to the
@@ -2281,7 +2337,7 @@ unneeding >amark ?\ : >amark ( -- a ) here 2- ;
   \
   \ >amark ( -- a ) "greater-than-a-mark"
   \
-  \ Leave the address of an `assembler` absolute forward
+  \ Leave the address of a Z80 `assembler` absolute forward
   \ reference.
   \
   \ }doc
@@ -2292,9 +2348,10 @@ unneeding >aresolve ?( need >amark
 
   \ doc{
   \
-  \ >aresolve ( a -- ) "greater-than-a-resolve"
+  \ >aresolve ( orig -- ) "greater-than-a-resolve"
   \
-  \ Resolve an `assembler` absolute forward reference.
+  \ Resolve a Z80 `assembler` forward absolute branch reference
+  \ _orig_.
   \
   \ See also: `>amark`.
   \
@@ -2308,7 +2365,7 @@ unneeding ?rel
   \
   \ ?rel ( n -- ) "question-rel"
   \
-  \ If `assembler` relative branch _n_ is too long, `throw`
+  \ If Z80 `assembler` relative branch _n_ is too long, `throw`
   \ exception #-269 (relative jump too long).
   \
   \ }doc
@@ -2338,7 +2395,7 @@ variable unresolved> ( -- a ) unresolved0> unresolved> !
   \
   \ The cell array pointed by ``unresolved>`` is used to store
   \ `unresolved` addresses during the compilation of `code`
-  \ words. This method is a simpler alternative to the
+  \ words. This method is a simpler alternative to the Z80
   \ `assembler` `labels` created by `l:`.
   \
   \ See `unresolved` for a usage example.
@@ -2354,22 +2411,17 @@ variable unresolved> ( -- a ) unresolved0> unresolved> !
   \ Convert element _n_ of the cell array pointed by
   \ `unresolved>` to its address _a_. ``unresolved>`` is used
   \ to store unresolved addresses during the compilation of
-  \ `code` words, as a simpler alternative to the `assembler`
-  \ `labels` created by `l:`.
+  \ `code` words, as a simpler alternative to the Z80
+  \ `assembler` `labels` created by `l:`.
   \
   \ Usage examples (extracted from `ocr`):
   \
-  \ ----
-  \ 0 d stp, >amark 0 unresolved !
-  \   \ modify the code to get the screen address later
-  \ \ (...)
-  \  0 d ldp#, \ restore the screen address
-  \  >amark 0 unresolved @ !
+  \ ---- 0 d stp, >amark 0 unresolved ! \ modify the code to
+  \ get the screen address later \ (...) 0 d ldp#, \ restore
+  \ the screen address >amark 0 unresolved @ !
   \
-  \ here jr, >rmark 2 unresolved !
-  \ \ (...)
-  \ 2 unresolved @ >rresolve
-  \ ----
+  \ here jr, >rmark 2 unresolved ! \ (...) 2 unresolved @
+  \ >rresolve ----
   \
   \ }doc
 
@@ -2400,7 +2452,8 @@ macro execute-hl, ( -- )
   \ execute-hl, ( -- ) "execute-h-l-comma"
   \
   \ Compile an `execute` with the _xt_ hold in the HL register.
-  \ ``execute-hl,`` is used to call Forth words from Z80.
+  \ ``execute-hl,`` is used to call Forth words from `code`
+  \ words.
   \
   \ See also: `call-xt,`, `call`, `call,`, `assembler`.
   \
@@ -2511,7 +2564,7 @@ set-current
   \ implementation of local labels.
   \
   \ 2016-12-20: Fix stack comments of `rrepeat` and `auntil`.
-  \ Fix `jp>jr` to manage also unconditional jumps. Factor
+  \ Fix `jp>jr` to manage also un-onditional jumps. Factor
   \ `?call` with `?jp`.  Fix `relse`, `rwhile` and `runtil`.
   \
   \ 2016-12-25: Fix `jp>jr`. Rename `im1`, `im2` to `im1,`
@@ -2609,5 +2662,12 @@ set-current
   \
   \ 2020-06-17: Improve documentation of the `aif` control-flow
   \ structure.
+  \
+  \ 2020-07-28: Fix documentation: add missing `z?` to several
+  \ descriptions. Improve documentation.
+  \
+  \ 2020-07-29: Improve documentation.
+  \
+  \ 2020-08-08: Improve documentation.
 
   \ vim: filetype=soloforth
