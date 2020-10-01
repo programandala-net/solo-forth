@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
+  \ Last modified: 202009291829
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -55,7 +55,7 @@ variable current-window
   \ A `variable`. _a_ is the address of a cell containing the
   \ address of the `current-window`.
   \
-  \ See also: `wx`, `wy`, `wx0`, `wy0`, `wcolums`, `wrows`.
+  \ See also: `wx`, `wy`, `wx0`, `wy0`, `wcolumns`, `wrows`.
   \
   \ }doc
 
@@ -613,5 +613,7 @@ unneeding wltype ?( need wtyped need wfreecolumns
   \ 2020-07-11: Add title to the window structure table and
   \ move it from `/window` to `window`. Add new
   \ cross-references.
+  \
+  \ 2020-09-29: Fix typo.
 
 \ vim: filetype=soloforth
