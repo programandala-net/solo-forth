@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202010012031.
+# Last modified: 202010020102.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -813,7 +813,7 @@ backgrounds/current.scr: backgrounds/current.pbm
 	zip -9 $@ $<
 
 %.gz: %
-	gzip -9 --force $<
+	gzip -9 --force --keep $<
 
 %.html: %.adoc
 	asciidoctor --out-file=$@ $<
@@ -1373,34 +1373,32 @@ oldbackup:
 # 	https://sites.google.com/site/zxgraph/home/einar-saukas/fonts
 # 	http://www.worldofspectrum.org/infoseekid.cgi?id=0027130
 
-# 2017-07-22: Add DocBook and EPUB experimental versions of the
-# manual.
+# 2017-07-22: Add DocBook and EPUB experimental versions of the manual.
 #
 # 2017-12-05: Don't make a +3DOS 180 KiB boot disk anymore.
 #
 # 2017-12-07: Fix rule of +3DOS boot disk.
 #
-# 2018-02-27: Move editors from the library disk to the games disk and
-# rename it, because the library didn't fit a TR-DOS disk image.
+# 2018-02-27: Move editors from the library disk to the games disk and rename
+# it, because the library didn't fit a TR-DOS disk image.
 #
-# 2018-03-10: Add `not_ready` to exclude modules under development.
-# Needed for <src/lib/meta.test.forth2012-test-suite.fs>, which is
-# being adapted.
+# 2018-03-10: Add `not_ready` to exclude modules under development. Needed for
+# <src/lib/meta.test.forth2012-test-suite.fs>, which is being adapted.
 #
-# 2018-04-05: Remove the old code that made the disks containing also
-# the library. Fix name of TR-DOS disk 1.
+# 2018-04-05: Remove the old code that made the disks containing also the
+# library. Fix name of TR-DOS disk 1.
 #
-# 2018-04-07: Update after the renaming of program modules (games,
-# block editors and `edit-sound`).
+# 2018-04-07: Update after the renaming of program modules (games, block
+# editors and `edit-sound`).
 #
-# 2018-04-10: Replace `htmldoc` with `asciidoctor-pdf` for making the
-# PDF versions of the manual.
+# 2018-04-10: Replace `htmldoc` with `asciidoctor-pdf` for making the PDF
+# versions of the manual.
 #
 # 2018-04-11: Create gzipped PDF.
 #
-# 2018-04-17: Link the Forth words of the manual to the glossary,
-# using the new `--annex` option of Glosara. Fix: make the +3DOS and
-# TR-DOS manuals depend also on the Z80 flags notation document.
+# 2018-04-17: Link the Forth words of the manual to the glossary, using the new
+# `--annex` option of Glosara. Fix: make the +3DOS and TR-DOS manuals depend
+# also on the Z80 flags notation document.
 #
 # 2018-06-04: Split the TR-DOS library into two disks.
 #
@@ -1408,19 +1406,17 @@ oldbackup:
 #
 # 2018-06-12: Add taptools to the list of requirements.
 #
-# 2018-06-15: Prepare the list of exception codes that will be
-# included in the manual.
+# 2018-06-15: Prepare the list of exception codes that will be included in the
+# manual.
 #
 # 2018-06-16: Finish the exception codes lists.
 #
-# 2018-07-20: Convert exception codes into tables instead of
-# definition lists.
+# 2018-07-20: Convert exception codes into tables instead of definition lists.
 #
-# 2018-07-21: Add `--attribute DOS` to Asciidoctor commands, to build
-# the manuals using Asciidoctor's conditional preprocessor directives.
-# Add `[%autowidth] to the tables of exception codes. Set an
-# Asciidoctor attribute "dosname" instead of replacing the "%DOS%"
-# mark with `sed`.
+# 2018-07-21: Add `--attribute DOS` to Asciidoctor commands, to build the
+# manuals using Asciidoctor's conditional preprocessor directives. Add
+# `[%autowidth] to the tables of exception codes. Set an Asciidoctor attribute
+# "dosname" instead of replacing the "%DOS%" mark with `sed`.
 #
 # 2018-07-22: Add a header to the tables of exception codes.
 #
@@ -1430,59 +1426,59 @@ oldbackup:
 #
 # 2020-02-28: Add the _Z80 instructions_ annex to the manual.
 #
-# 2020-02-29: Make the zip and gzip rules common to all cases.
-# Generalize the interface to build the manual in any format for any
-# DOS. Split the long command lines by parameters.  Get the Solo Forth
-# version only once, store it in a variable and pass it to Asciidoctor
-# as a parameter, instead of replacing a markup in the source file.
-# Add Vim folding markers. Build PDF also with Pandoc (and wkhtmltopdf
-# as PDF-engine). Build also a ODT version of the manuals.
+# 2020-02-29: Make the zip and gzip rules common to all cases. Generalize the
+# interface to build the manual in any format for any DOS. Split the long
+# command lines by parameters.  Get the Solo Forth version only once, store it
+# in a variable and pass it to Asciidoctor as a parameter, instead of replacing
+# a markup in the source file. Add Vim folding markers. Build PDF also with
+# Pandoc (and wkhtmltopdf as PDF-engine). Build also a ODT version of the
+# manuals.
 #
-# 2020-03-01: Build EPUB also with asciidoctor-epub3. Fix prerequites:
-# README and manual skeleton.
+# 2020-03-01: Build EPUB also with asciidoctor-epub3. Fix prerequites: README
+# and manual skeleton.
 #
 # 2020-03-03: Fix prerequisite: exceptions file.
 #
 # 2020-04-03: Replace "docbook" filename extension with "dbk".
 #
-# 2020-04-05: Deprecate the PDF build by Pandoc from HTML. Simplify
-# the filenames of the manuals built by Asciidoctor EPUB3 and
-# Asciidoctor PDF. Fix the building of DocBook (the DOS label
-# attribute was not passed, and the corresponding Asciidoctor
-# conditions failed, making the DOS-spcific contents missing). Dont't
-# build OpenDocument by default. Add rules to build the DocBook
-# directly. Build an HTML manual also with Pandoc.
+# 2020-04-05: Deprecate the PDF build by Pandoc from HTML. Simplify the
+# filenames of the manuals built by Asciidoctor EPUB3 and Asciidoctor PDF. Fix
+# the building of DocBook (the DOS label attribute was not passed, and the
+# corresponding Asciidoctor conditions failed, making the DOS-spcific contents
+# missing). Dont't build OpenDocument by default. Add rules to build the
+# DocBook directly. Build an HTML manual also with Pandoc.
 #
-# 2020-04-06: Split the rules to build EPUB and HTML: one rule for
-# every DOS and converter.
+# 2020-04-06: Split the rules to build EPUB and HTML: one rule for every DOS
+# and converter.
 #
-# 2020-04-13: Add `--epub-chapter-level` to Pandoc, to force the huge
-# glossary XHTML file be splitted in subchapters into the EPUB.
+# 2020-04-13: Add `--epub-chapter-level` to Pandoc, to force the huge glossary
+# XHTML file be splitted in subchapters into the EPUB.
 #
-# 2020-04-17: Test attribute `epub-chapter-level` to Asciidoctor
-# EPUB3, just added to the future version following v0.5.0.alpha.15.
+# 2020-04-17: Test attribute `epub-chapter-level` to Asciidoctor EPUB3, just
+# added to the future version following v0.5.0.alpha.15.
 #
 # 2020-04-27: Add attribute `epub-chapter-level`, after the fixes in
 # Asciidoctor EPUB3 v0.5.0.alpha.17.dev.
 #
-# 2020-05-04: Add the apps to the glossary (actually, only
-# `edit-sound`).
+# 2020-05-04: Add the apps to the glossary (actually, only `edit-sound`).
 #
 # 2020-05-05: Add the editors to the glossary.
 #
 # 2020-06-04: Add the tests to the glossary.
 #
-# 2020-06-17: Save error output of Asciidoctor EPUB3 to log files, to
-# detect wrong cross-references. Add rule "epuba" to build the EPUBs
-# only with Asciidoctor EPUB3.
+# 2020-06-17: Save error output of Asciidoctor EPUB3 to log files, to detect
+# wrong cross-references. Add rule "epuba" to build the EPUBs only with
+# Asciidoctor EPUB3.
 #
-# 2020-07-13: Fix compressed versions of PDF: make gzip keep the input
-# files. Add titles to the exception codes tables.
+# 2020-07-13: Fix compressed versions of PDF: make gzip keep the input files.
+# Add titles to the exception codes tables.
 #
-# 2020-10-01: Compress only with gzip (deactivate zip); remove the
-# uncompressed originals; compress also HTML. Deprecate HTML built
-# from DocBook by Pandoc: the glossary IDs are lost in the process and
-# the links don't work.
+# 2020-10-01: Compress only with gzip (deactivate zip); remove the uncompressed
+# originals; compress also HTML. Deprecate HTML built from DocBook by Pandoc:
+# the glossary IDs are lost in the process and the links don't work.
+#
+# 2020-10-02: Keep the ungzipped originals, e.g. HTML and PDF, in order to make
+# updating faster.
 
 # ==============================================================
 
