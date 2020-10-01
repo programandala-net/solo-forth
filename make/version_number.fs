@@ -3,7 +3,7 @@
 \ This file is part of Solo Forth
 \ http://programandala.net/en.program.solo_forth.html
 
-\ Last modified 201707261841
+\ Last modified 202010012056
 \ See change log at the end of the file
 
 \ ==============================================================
@@ -44,9 +44,6 @@ only forth definitions decimal
 
 \ ==============================================================
 
-
-\ ==============================================================
-
 variable real-format \ flag
 
 variable version-major
@@ -68,8 +65,12 @@ variable version-build-low
   version-minor @ .version-part '.' emit
   version-patch @ .version-part
   version-prerelease @ ?dup if
-    ." -pre." .version-part '+' emit build-date 0 .r
-  then ;
+    version-prerelease-id @ case
+      'd' of ." -dev." .version-part endof
+      'p' of ." -pre." .version-part endof
+      'r' of ." -rc."  endof
+    endcase .version-part
+  then '+' emit build-date 0 .r ;
 
 : .version-part-00 ( n -- )  s>d <# # # #> type ;
   \ Print one part of the version number, with two digits,
@@ -129,4 +130,6 @@ real-format !  parser-wordlist >order included  .version bye
 \ with a defining word.
 \
 \ 2017-07-26: Update to the new internal format of the version number.
+\
+\ 2020-10-01: Update to support dev/pre/rc prereleases.
 
