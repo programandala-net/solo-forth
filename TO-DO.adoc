@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-07-28
+:revdate: 2020-10-02 
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1850,25 +1850,11 @@ Remove the routine `compare_de_hl_signed`, if possible.
 // Makefile {{{1
 == Makefile
 
-=== 2017-02-14
+=== 2020-10-02
 
-Fix:
-
-When a kernel file is modified, the boot disk is built twice before
-`make` informs there's nothing to do. The first time the kernel and
-the BASIC loader are built; the second time, only the BASIC loader.
-
-This does not happen doing `make clean;make all`: the next `make all`
-does nothing, as expected.
-
-=== 2019-03-14
-
-TR-DOS cannot be built:
-
-....
-make: *** No hay ninguna regla para construir el objetivo
-'disks/trdos/disk_0_boot.128.trd', necesario para 'trdos128'.  Alto.
-....
+Fix: <disks/trdos/disk_1a_library.trd> and
+<disks/trdos/disk_1b_library.trd> are always built again, as if they
+were always outdated.
 
 // Maths {{{1
 == Maths
