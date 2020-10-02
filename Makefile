@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202010020102.
+# Last modified: 202010021744.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -99,7 +99,8 @@ MAKEFLAGS = --no-print-directory
 # ==============================================================
 # Metadata {{{1
 
-version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs)
+full_version=$(shell gforth -e 's" ../src/version.z80s" 3' make/version_number.fs)
+release=$(shell gforth -e 's" ../src/version.z80s" 2' make/version_number.fs)
 
 # ==============================================================
 # Interface {{{1
@@ -790,7 +791,7 @@ disks/trdos/disk_3_workbench.trd: tmp/workbench.fs
 # version of Solo Forth:
 
 backgrounds/current.pbm: src/version.z80s
-	version=$(shell gforth -e 's" ../$<" false' make/version_number.fs) ; \
+	version=$(shell gforth -e 's" ../$<" 0' make/version_number.fs) ; \
 	cd backgrounds ; \
 	cp -f v$${version}.pbm $(notdir $@) ; \
 	cd ..
@@ -832,7 +833,7 @@ tmp/doc.README.linked.adoc: README.adoc
 		--backend=docbook \
 		--attribute=gplusdos \
 		--attribute=dosname=G+DOS \
-		--attribute=version=$(version) \
+		--attribute=version=$(full_version) \
 		--out-file=$@ $<
 
 %doc.plus3dos.manual.dbk: %doc.plus3dos.manual.adoc
@@ -840,7 +841,7 @@ tmp/doc.README.linked.adoc: README.adoc
 		--backend=docbook \
 		--attribute=plus3dos \
 		--attribute=dosname=+3DOS \
-		--attribute=version=$(version) \
+		--attribute=version=$(full_version) \
 		--out-file=$@ $<
 
 %doc.trdos.manual.dbk: %doc.trdos.manual.adoc
@@ -848,7 +849,7 @@ tmp/doc.README.linked.adoc: README.adoc
 		--backend=docbook \
 		--attribute=trdos \
 		--attribute=dosname=TR-DOS \
-		--attribute=version=$(version) \
+		--attribute=version=$(full_version) \
 		--out-file=$@ $<
 
 %.dbk.dbtoepub.epub: %.dbk
@@ -900,7 +901,7 @@ doc/gplusdos_solo_forth_manual.epub: \
 		--attribute=gplusdos \
 		--attribute=dosname=G+DOS \
 		--attribute=epub-chapter-level=2 \
-		--attribute=version=$(version) \
+		--attribute=version=$(full_version) \
 		--out-file=$@ $< \
 		2> tmp/doc.gplusdos.unknown_anchors.log
 
@@ -911,7 +912,7 @@ doc/gplusdos_solo_forth_manual.pdf: \
 		--trace \
 		--attribute=gplusdos \
 		--attribute=dosname=G+DOS \
-		--attribute=version=$(version) \
+		--attribute=version=$(full_version) \
 		--out-file=$@ $<
 
 doc/gplusdos_solo_forth_manual.html: \
@@ -920,7 +921,7 @@ doc/gplusdos_solo_forth_manual.html: \
 	asciidoctor \
 		--attribute=gplusdos \
 		--attribute=dosname=G+DOS \
-		--attribute=version=$(version) \
+		--attribute=version=$(full_version) \
 		--out-file=$@ $<
 
 tmp/doc.gplusdos.files.txt: \
@@ -983,7 +984,7 @@ doc/plus3dos_solo_forth_manual.epub: \
 		--attribute=plus3dos \
 		--attribute=dosname=+3DOS \
 		--attribute=epub-chapter-level=2 \
-		--attribute=version=$(version) \
+		--attribute=version=$(full_version) \
 		--out-file=$@ $< \
 		2> tmp/doc.plus3dos.unknown_anchors.log
 
@@ -994,7 +995,7 @@ doc/plus3dos_solo_forth_manual.pdf: \
 		--trace \
 		--attribute=plus3dos \
 		--attribute=dosname=+3DOS \
-		--attribute=version=$(version) \
+		--attribute=version=$(full_version) \
 		--out-file=$@ $<
 
 doc/plus3dos_solo_forth_manual.html: \
@@ -1003,7 +1004,7 @@ doc/plus3dos_solo_forth_manual.html: \
 	asciidoctor \
 		--attribute=plus3dos \
 		--attribute=dosname=+3DOS \
-		--attribute=version=$(version) \
+		--attribute=version=$(full_version) \
 		--out-file=$@ $<
 
 tmp/doc.plus3dos.files.txt: \
@@ -1062,7 +1063,7 @@ doc/trdos_solo_forth_manual.epub: \
 		--attribute=trdos \
 		--attribute=dosname=TRDOS \
 		--attribute=epub-chapter-level=2 \
-		--attribute=version=$(version) \
+		--attribute=version=$(full_version) \
 		--out-file=$@ $< \
 		2> tmp/doc.trdos.unknown_anchors.log
 
@@ -1073,7 +1074,7 @@ doc/trdos_solo_forth_manual.pdf: \
 		--trace \
 		--attribute=trdos \
 		--attribute=dosname=TR-DOS \
-		--attribute=version=$(version) \
+		--attribute=version=$(full_version) \
 		--out-file=$@ $<
 
 doc/trdos_solo_forth_manual.html: \
@@ -1082,7 +1083,7 @@ doc/trdos_solo_forth_manual.html: \
 	asciidoctor \
 		--attribute=trdos \
 		--attribute=dosname=TR-DOS \
-		--attribute=version=$(version) \
+		--attribute=version=$(full_version) \
 		--out-file=$@ $<
 
 tmp/doc.trdos.files.txt: \
@@ -1129,6 +1130,94 @@ tmp/doc.trdos.manual.adoc: \
 		src/doc/glossary_heading.adoc \
 		tmp/doc.trdos.glossary.adoc \
 		> $@
+
+# ==============================================================
+# Release archives {{{1
+
+.PHONY: zips
+zips: gplusdoszips plus3doszips trdoszips
+
+# ----------------------------------------------
+# G+DOS release archives {{{2
+
+.PHONY: gplusdoszips
+gplusdoszips: gplusdosdiskszip gplusdosdoczip
+
+.PHONY: gplusdosdoczip
+gplusdosdoczip: tmp/solo_forth_$(release)_gplusdos_manuals.zip
+
+tmp/solo_forth_$(release)_gplusdos_manuals.zip: \
+	doc/gplusdos_solo_forth_manual.dbk.dbtoepub.epub \
+	doc/gplusdos_solo_forth_manual.epub \
+	doc/gplusdos_solo_forth_manual.html \
+	doc/gplusdos_solo_forth_manual.pdf
+	zip -9 $@ $^
+
+.PHONY: gplusdosdiskszip
+gplusdosdiskszip: tmp/solo_forth_$(release)_gplusdos_disks.zip
+
+tmp/solo_forth_$(release)_gplusdos_disks.zip: \
+	disks/gplusdos/disk_0_boot.mgt \
+	disks/gplusdos/disk_1_library.mgt \
+	disks/gplusdos/disk_2_programs.mgt \
+	disks/gplusdos/disk_3_workbench.mgt
+	zip -9 $@ $^
+
+# ----------------------------------------------
+# +3DOS release archives {{{2
+
+.PHONY: plus3doszips
+plus3doszips: plus3dosdiskszip plus3dosdoczip
+
+.PHONY: plus3dosdoczip
+plus3dosdoczip: tmp/solo_forth_$(release)_plus3dos_manuals.zip
+
+tmp/solo_forth_$(release)_plus3dos_manuals.zip: \
+	doc/plus3dos_solo_forth_manual.dbk.dbtoepub.epub \
+	doc/plus3dos_solo_forth_manual.epub \
+	doc/plus3dos_solo_forth_manual.html \
+	doc/plus3dos_solo_forth_manual.pdf
+	zip -9 $@ $^
+
+.PHONY: plus3dosdiskszip
+plus3dosdiskszip: tmp/solo_forth_$(release)_plus3dos_disks.zip
+
+tmp/solo_forth_$(release)_plus3dos_disks.zip: \
+	disks/plus3dos/disk_0_boot.dsk \
+	disks/plus3dos/disk_1_library.dsk \
+	disks/plus3dos/disk_2_programs.dsk \
+	disks/plus3dos/disk_3_workbench.dsk
+	zip -9 $@ $^
+
+# ----------------------------------------------
+# TR-DOS release archives {{{2
+
+.PHONY: trdoszips
+trdoszips: trdosdiskszip trdosdoczip
+
+.PHONY: trdosdoczip
+trdosdoczip: tmp/solo_forth_$(release)_trdos_manuals.zip
+
+tmp/solo_forth_$(release)_trdos_manuals.zip: \
+	doc/trdos_solo_forth_manual.dbk.dbtoepub.epub \
+	doc/trdos_solo_forth_manual.epub \
+	doc/trdos_solo_forth_manual.html \
+	doc/trdos_solo_forth_manual.pdf
+	zip -9 $@ $^
+
+.PHONY: trdosdiskszip
+trdosdiskszip: tmp/solo_forth_$(release)_trdos_disks.zip
+
+tmp/solo_forth_$(release)_trdos_disks.zip: \
+	disks/trdos/disk_0_boot.128.trd \
+	disks/trdos/disk_0_boot.pentagon_1024.trd \
+	disks/trdos/disk_0_boot.pentagon_512.trd \
+	disks/trdos/disk_0_boot.scorpion_zs_256.trd \
+	disks/trdos/disk_1a_library.trd \
+	disks/trdos/disk_1b_library.trd \
+	disks/trdos/disk_2_programs.trd \
+	disks/trdos/disk_3_workbench.trd
+	zip -9 $@ $^
 
 # ==============================================================
 # Backup {{{1
@@ -1478,7 +1567,8 @@ oldbackup:
 # the glossary IDs are lost in the process and the links don't work.
 #
 # 2020-10-02: Keep the ungzipped originals, e.g. HTML and PDF, in order to make
-# updating faster.
+# updating faster. Build release zip archives containing the disks and manuals
+# of every DOS.
 
 # ==============================================================
 
