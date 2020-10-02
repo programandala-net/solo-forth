@@ -3,7 +3,7 @@
 \ This file is part of Solo Forth
 \ http://programandala.net/en.program.solo_forth.html
 
-\ Last modified 202010012056
+\ Last modified 202010021653
 \ See change log at the end of the file
 
 \ ==============================================================
@@ -11,7 +11,6 @@
 
 \ This program extracts the version number of Solo Forth from the
 \ labels defined in the Z80 source and prints it in certain format.
-\
 
 \ This program is written in Forth (http://forth-standard.org)
 \ with Gforth (http://gnu.org/software/gforth/).
@@ -21,15 +20,19 @@
 
 \ Invocation:
 
-\     gforth -e 's" PATH-TO/version.z80s" flag' version_number.fs
+\     gforth -e 's" PATH-TO/version.z80s" FORMAT' version_number.fs
 
-\ Where "flag" is either `true` (complete version number) or `false`
-\ (simplified format used as a file name for the background images).
+\ Where FORMAT is 0..3 with the following meaning:
+\
+\ 0 = XX.YY.ZZ (two digits per element, with padding zeros)
+\ 1 = X.Y.Z
+\ 2 = X.Y.Z-prerelease
+\ 3 = X.Y.Z-prerelease+build
 
 \ ==============================================================
 \ Author
 
-\ Marcos Cruz (programandala.net), 2016, 2017.
+\ Marcos Cruz (programandala.net), 2016, 2017, 2020.
 
 \ ==============================================================
 \ License
@@ -44,7 +47,7 @@ only forth definitions decimal
 
 \ ==============================================================
 
-variable real-format \ flag
+variable format \ version output format ID (0..2)
 
 variable version-major
 variable version-minor
@@ -54,36 +57,52 @@ variable version-prerelease
 variable version-build-high
 variable version-build-low
 
-: .version-part ( n -- )  s>d <# #S #> type ;
+defer .version-part
+
+: .full-version-part ( n -- )  s>d <# #S #> type ;
   \ Print one part of the version number.
-
-: build-date ( -- u )
-  version-build-low @ version-build-high @ $10000 * + ;
-
-: .real-version ( -- )
-  version-major @ .version-part '.' emit
-  version-minor @ .version-part '.' emit
-  version-patch @ .version-part
-  version-prerelease @ ?dup if
-    version-prerelease-id @ case
-      'd' of ." -dev." .version-part endof
-      'p' of ." -pre." .version-part endof
-      'r' of ." -rc."  endof
-    endcase .version-part
-  then '+' emit build-date 0 .r ;
+  \ Default action of `.version-part`.
 
 : .version-part-00 ( n -- )  s>d <# # # #> type ;
   \ Print one part of the version number, with two digits,
   \ padded with zeros.
+  \ Alternative action of `.version-part`.
 
-: .simple-version ( -- )
-  version-major @ .version-part-00 '.' emit
-  version-minor @ .version-part-00 '.' emit
-  version-patch @ .version-part-00 ;
-  \ Print the version number using format "MM.mm.pp".
+' .full-version-part is .version-part
+
+: build-date ( -- u )
+  version-build-low @ version-build-high @ $10000 * + ;
+
+: .version-x.y.z ( -- )
+  version-major @ .version-part '.' emit
+  version-minor @ .version-part '.' emit
+  version-patch @ .version-part ;
+  \ Print the version number using format "X.Y.Z".
+
+: .version-0x.0y.0z ( -- )
+  ['] .version-part-00 is .version-part
+  .version-x.y.z ;
+
+: .version-x.y.z-prerelease ( -- )
+  .version-x.y.z
+  version-prerelease @ ?dup if
+    version-prerelease-id @ case
+      'd' of ." -dev." endof
+      'p' of ." -pre." endof
+      'r' of ." -rc."  endof
+    endcase .version-part
+  then ;
+
+: .version-x.y.z-prerelease+build ( -- )
+  .version-x.y.z-prerelease '+' emit build-date 0 .r ;
 
 : .version ( -- )
-  real-format @ if .real-version else .simple-version then ;
+  format @ case
+    0 of .version-0x.0y.0z               endof
+    1 of .version-x.y.z                  endof
+    2 of .version-x.y.z-prerelease       endof
+    3 of .version-x.y.z-prerelease+build endof
+  endcase ;
 
 \ ==============================================================
 \ Parser
@@ -115,7 +134,7 @@ forth-wordlist set-current
 \ ==============================================================
 \ Main
 
-real-format !  parser-wordlist >order included  .version bye
+format ! parser-wordlist >order included .version bye
 
 \ ==============================================================
 \ Change log
@@ -132,4 +151,7 @@ real-format !  parser-wordlist >order included  .version bye
 \ 2017-07-26: Update to the new internal format of the version number.
 \
 \ 2020-10-01: Update to support dev/pre/rc prereleases.
+\
+\ 2020-10-02: Improve format selection from true/false to 0..3.
 
+\ vim: filetype=gforth
