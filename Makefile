@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202010021752.
+# Last modified: 202010031613.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -1138,13 +1138,24 @@ tmp/doc.trdos.manual.adoc: \
 # Release archives {{{1
 
 .PHONY: zips
-zips: diskzips doczips
+zips: diskzips doczips srczip
 
 .PHONY: diskzips
 diskzips: gplusdosdiskszip plus3dosdiskszip trdosdiskszip
 
 .PHONY: doczips
 diskzips: gplusdosdoczip plus3dosdoczip trdosdoczip
+
+.PHONY: srczip
+srczip: tmp/solo_forth_$(release)_src.zip
+
+# ----------------------------------------------
+# Source release archive {{{2
+
+tmp/solo_forth_$(release)_src.zip: \
+	Makefile src/ bin/ make/ tools/ vim/ tmp/.gitignore
+	cd .. ; \
+	zip -9 -r solo_forth/$@ $(addprefix solo_forth/,$^) --exclude *.swp
 
 # ----------------------------------------------
 # G+DOS release archives {{{2
@@ -1579,6 +1590,8 @@ oldbackup:
 # updating faster. Build release zip archives containing the disks and manuals
 # of every DOS. Make the master Asciidoctor manual depend also on the version
 # number source file.
+#
+# 2020-10-03: Build a zip archive containing the sources.
 
 # ==============================================================
 
