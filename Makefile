@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202010031628.
+# Last modified: 202010031656.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -1144,7 +1144,7 @@ zips: diskzips doczips srczip
 diskzips: gplusdosdiskszip plus3dosdiskszip trdosdiskszip
 
 .PHONY: doczips
-diskzips: gplusdosdoczip plus3dosdoczip trdosdoczip
+doczips: gplusdosdoczip plus3dosdoczip trdosdoczip
 
 .PHONY: srczip
 srczip: tmp/solo_forth_$(release)_src.zip
@@ -1155,7 +1155,11 @@ srczip: tmp/solo_forth_$(release)_src.zip
 tmp/solo_forth_$(release)_src.zip: \
 	Makefile src/ bin/ make/ tools/ vim/ tmp/.gitignore
 	cd .. ; \
-	zip -9 -r solo_forth/$@ $(addprefix solo_forth/,$^) --exclude *.swp
+	ln -sfn solo_forth solo_forth_$(release) ; \
+	zip -9r \
+		solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) \
+		--exclude *.swp ; \
+	rm -f solo_forth_$(release) 
 
 # ----------------------------------------------
 # G+DOS release archives {{{2
@@ -1172,14 +1176,18 @@ tmp/solo_forth_$(release)_gplusdos_manuals.zip: \
 	doc/gplusdos_solo_forth_manual.html \
 	doc/gplusdos_solo_forth_manual.pdf
 	cd .. ; \
-	zip -9 solo_forth/$@ $(addprefix solo_forth/,$^)
+	ln -sfn solo_forth solo_forth_$(release) ; \
+	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
+	rm -f solo_forth_$(release) 
 
 .PHONY: gplusdosdiskszip
 gplusdosdiskszip: tmp/solo_forth_$(release)_gplusdos_disks.zip
 
 tmp/solo_forth_$(release)_gplusdos_disks.zip: disks/gplusdos/*.mgt
 	cd .. ; \
-	zip -9 solo_forth/$@ $(addprefix solo_forth/,$^)
+	ln -sfn solo_forth solo_forth_$(release) ; \
+	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
+	rm -f solo_forth_$(release) 
 
 # ----------------------------------------------
 # +3DOS release archives {{{2
@@ -1196,15 +1204,18 @@ tmp/solo_forth_$(release)_plus3dos_manuals.zip: \
 	doc/plus3dos_solo_forth_manual.html \
 	doc/plus3dos_solo_forth_manual.pdf
 	cd .. ; \
-	zip -9 solo_forth/$@ $(addprefix solo_forth/,$^)
+	ln -sfn solo_forth solo_forth_$(release) ; \
+	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
+	rm -f solo_forth_$(release) 
 
 .PHONY: plus3dosdiskszip
 plus3dosdiskszip: tmp/solo_forth_$(release)_plus3dos_disks.zip
 
 tmp/solo_forth_$(release)_plus3dos_disks.zip: disks/plus3dos/*.dsk
 	cd .. ; \
-	zip -9 solo_forth/$@ $(addprefix solo_forth/,$^) ; \
-	cd -
+	ln -sfn solo_forth solo_forth_$(release) ; \
+	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
+	rm -f solo_forth_$(release) 
 
 # ----------------------------------------------
 # TR-DOS release archives {{{2
@@ -1221,14 +1232,18 @@ tmp/solo_forth_$(release)_trdos_manuals.zip: \
 	doc/trdos_solo_forth_manual.html \
 	doc/trdos_solo_forth_manual.pdf
 	cd .. ; \
-	zip -9 solo_forth/$@ $(addprefix solo_forth/,$^)
+	ln -sfn solo_forth solo_forth_$(release) ; \
+	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
+	rm -f solo_forth_$(release) 
 
 .PHONY: trdosdiskszip
 trdosdiskszip: tmp/solo_forth_$(release)_trdos_disks.zip
 
 tmp/solo_forth_$(release)_trdos_disks.zip: disks/trdos/*.trd
 	cd .. ; \
-	zip -9 solo_forth/$@ $(addprefix solo_forth/,$^)
+	ln -sfn solo_forth solo_forth_$(release) ; \
+	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
+	rm -f solo_forth_$(release) 
 
 # ==============================================================
 # Backup {{{1
@@ -1583,7 +1598,7 @@ oldbackup:
 # number source file.
 #
 # 2020-10-03: Build a zip archive containing the sources. Improve the zip
-# archives packing the contents into the <solo_forth> root directory.
+# archives packing the contents into a release-specific directory.
 
 # ==============================================================
 
