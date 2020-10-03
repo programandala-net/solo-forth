@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202010021744.
+# Last modified: 202010021752.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -963,7 +963,8 @@ tmp/doc.gplusdos.manual.adoc: \
 	src/doc/glossary_heading.adoc \
 	tmp/doc.gplusdos.glossary.adoc \
 	tmp/doc.gplusdos.exception_codes.adoc \
-	tmp/doc.README.linked.adoc
+	tmp/doc.README.linked.adoc \
+	src/version.z80s
 	cat \
 		tmp/doc.manual_skeleton.linked.adoc \
 		tmp/doc.stack_notation.linked.adoc \
@@ -1042,7 +1043,8 @@ tmp/doc.plus3dos.manual.adoc: \
 	src/doc/glossary_heading.adoc \
 	tmp/doc.plus3dos.glossary.adoc \
 	tmp/doc.plus3dos.exception_codes.adoc \
-	tmp/doc.README.linked.adoc
+	tmp/doc.README.linked.adoc \
+	src/version.z80s
 	cat \
 		tmp/doc.manual_skeleton.linked.adoc \
 		tmp/doc.stack_notation.linked.adoc \
@@ -1121,7 +1123,8 @@ tmp/doc.trdos.manual.adoc: \
 	src/doc/glossary_heading.adoc \
 	tmp/doc.trdos.glossary.adoc \
 	tmp/doc.trdos.exception_codes.adoc \
-	tmp/doc.README.linked.adoc
+	tmp/doc.README.linked.adoc \
+	src/version.z80s
 	cat \
 		tmp/doc.manual_skeleton.linked.adoc \
 		tmp/doc.stack_notation.linked.adoc \
@@ -1135,7 +1138,13 @@ tmp/doc.trdos.manual.adoc: \
 # Release archives {{{1
 
 .PHONY: zips
-zips: gplusdoszips plus3doszips trdoszips
+zips: diskzips doczips
+
+.PHONY: diskzips
+diskzips: gplusdosdiskszip plus3dosdiskszip trdosdiskszip
+
+.PHONY: doczips
+diskzips: gplusdosdoczip plus3dosdoczip trdosdoczip
 
 # ----------------------------------------------
 # G+DOS release archives {{{2
@@ -1568,7 +1577,8 @@ oldbackup:
 #
 # 2020-10-02: Keep the ungzipped originals, e.g. HTML and PDF, in order to make
 # updating faster. Build release zip archives containing the disks and manuals
-# of every DOS.
+# of every DOS. Make the master Asciidoctor manual depend also on the version
+# number source file.
 
 # ==============================================================
 
