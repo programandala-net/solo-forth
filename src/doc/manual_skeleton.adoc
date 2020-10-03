@@ -1,7 +1,7 @@
 = Solo Forth: Version {version} for {dosname}
 :author: Marcos Cruz
 :producer: Marcos Cruz
-:revdate: 2020-07-28
+:revdate: 2020-10-03
 :doctype: book
 :lang: en
 ifdef::backend-html5[]
@@ -37,9 +37,9 @@ endif::[]
 // =============================================================
 
 
-NOTE: English is only my third language in fluency, so please excuse
-any mistakes. Any kind of correction will be appreciated. Contact:
-http://programandala.net[programandala.net].
+// NOTE: English is only my third language in fluency, so please excuse
+// any mistakes. Any kind of correction will be appreciated. Contact:
+// http://programandala.net[programandala.net].
 
 // =============================================================
 
