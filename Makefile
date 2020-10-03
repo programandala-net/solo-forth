@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202010031613.
+# Last modified: 202010031628.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -1171,17 +1171,15 @@ tmp/solo_forth_$(release)_gplusdos_manuals.zip: \
 	doc/gplusdos_solo_forth_manual.epub \
 	doc/gplusdos_solo_forth_manual.html \
 	doc/gplusdos_solo_forth_manual.pdf
-	zip -9 $@ $^
+	cd .. ; \
+	zip -9 solo_forth/$@ $(addprefix solo_forth/,$^)
 
 .PHONY: gplusdosdiskszip
 gplusdosdiskszip: tmp/solo_forth_$(release)_gplusdos_disks.zip
 
-tmp/solo_forth_$(release)_gplusdos_disks.zip: \
-	disks/gplusdos/disk_0_boot.mgt \
-	disks/gplusdos/disk_1_library.mgt \
-	disks/gplusdos/disk_2_programs.mgt \
-	disks/gplusdos/disk_3_workbench.mgt
-	zip -9 $@ $^
+tmp/solo_forth_$(release)_gplusdos_disks.zip: disks/gplusdos/*.mgt
+	cd .. ; \
+	zip -9 solo_forth/$@ $(addprefix solo_forth/,$^)
 
 # ----------------------------------------------
 # +3DOS release archives {{{2
@@ -1197,17 +1195,16 @@ tmp/solo_forth_$(release)_plus3dos_manuals.zip: \
 	doc/plus3dos_solo_forth_manual.epub \
 	doc/plus3dos_solo_forth_manual.html \
 	doc/plus3dos_solo_forth_manual.pdf
-	zip -9 $@ $^
+	cd .. ; \
+	zip -9 solo_forth/$@ $(addprefix solo_forth/,$^)
 
 .PHONY: plus3dosdiskszip
 plus3dosdiskszip: tmp/solo_forth_$(release)_plus3dos_disks.zip
 
-tmp/solo_forth_$(release)_plus3dos_disks.zip: \
-	disks/plus3dos/disk_0_boot.dsk \
-	disks/plus3dos/disk_1_library.dsk \
-	disks/plus3dos/disk_2_programs.dsk \
-	disks/plus3dos/disk_3_workbench.dsk
-	zip -9 $@ $^
+tmp/solo_forth_$(release)_plus3dos_disks.zip: disks/plus3dos/*.dsk
+	cd .. ; \
+	zip -9 solo_forth/$@ $(addprefix solo_forth/,$^) ; \
+	cd -
 
 # ----------------------------------------------
 # TR-DOS release archives {{{2
@@ -1223,21 +1220,15 @@ tmp/solo_forth_$(release)_trdos_manuals.zip: \
 	doc/trdos_solo_forth_manual.epub \
 	doc/trdos_solo_forth_manual.html \
 	doc/trdos_solo_forth_manual.pdf
-	zip -9 $@ $^
+	cd .. ; \
+	zip -9 solo_forth/$@ $(addprefix solo_forth/,$^)
 
 .PHONY: trdosdiskszip
 trdosdiskszip: tmp/solo_forth_$(release)_trdos_disks.zip
 
-tmp/solo_forth_$(release)_trdos_disks.zip: \
-	disks/trdos/disk_0_boot.128.trd \
-	disks/trdos/disk_0_boot.pentagon_1024.trd \
-	disks/trdos/disk_0_boot.pentagon_512.trd \
-	disks/trdos/disk_0_boot.scorpion_zs_256.trd \
-	disks/trdos/disk_1a_library.trd \
-	disks/trdos/disk_1b_library.trd \
-	disks/trdos/disk_2_programs.trd \
-	disks/trdos/disk_3_workbench.trd
-	zip -9 $@ $^
+tmp/solo_forth_$(release)_trdos_disks.zip: disks/trdos/*.trd
+	cd .. ; \
+	zip -9 solo_forth/$@ $(addprefix solo_forth/,$^)
 
 # ==============================================================
 # Backup {{{1
@@ -1591,7 +1582,8 @@ oldbackup:
 # of every DOS. Make the master Asciidoctor manual depend also on the version
 # number source file.
 #
-# 2020-10-03: Build a zip archive containing the sources.
+# 2020-10-03: Build a zip archive containing the sources. Improve the zip
+# archives packing the contents into the <solo_forth> root directory.
 
 # ==============================================================
 
