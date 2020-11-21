@@ -13,6 +13,7 @@ ifdef::backend-pdf[]
 :toc:
 :toclevels: 2
 :toc-placement!:
+:front-cover-image: ../tmp/{doslabel}_solo_forth_cover.pdf
 endif::[]
 :linkattrs:
 :keywords: Forth, programming, ZX Spectrum, computer
@@ -20,12 +21,13 @@ endif::[]
 :source:
 ifdef::backend-epub3[]
 :copyright: 2015-2020 Marcos Cruz
+:front-cover-image: ../doc/{doslabel}_solo_forth_cover.jpg
 endif::[]
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202007120113
+// Last modified: 202010081714
 
 ifdef::backend-html5[]
 toc::[]

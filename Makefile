@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202010031656.
+# Last modified: 202011211712.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -91,10 +91,22 @@
 # Config {{{1
 
 VPATH = ./
-
 MAKEFLAGS = --no-print-directory
-
 #.ONESHELL:
+
+book=solo_forth
+title="Solo Forth"
+lang="en"
+editor="Marcos Cruz"
+publisher="programandala.net"
+description="Solo Forth user manual"
+
+cover=$(book)_cover
+cover_author="Marcos Cruz\n(programandala.net)"
+cover_title="Solo Forth"
+cover_gplusdos_subtitle="Version $(full_version) for G+DOS"
+cover_plus3dos_subtitle="Version $(full_version) for +3DOS"
+cover_trdos_subtitle="Version $(full_version) for TR-DOS"
 
 # ==============================================================
 # Metadata {{{1
@@ -178,7 +190,7 @@ disk_9: \
 # the kernel).
 
 .PHONY: clean
-clean: cleantmp cleandisks cleandoc
+clean: cleantmp cleandisks cleandoc cleancover
 
 .PHONY: cleandisks
 cleandisks: cleangplusdosdisks cleanplus3dosdisks cleantrdosdisks
@@ -348,6 +360,30 @@ plus3dospdf: \
 .PHONY: trdospdf
 trdospdf: \
 		doc/trdos_solo_forth_manual.pdf.gz
+
+# -------------------------------------
+
+.PHONY: covers
+covers: gplusdoscover plus3doscover trdoscover
+
+.PHONY: gplusdoscover
+gplusdoscover: doc/gplusdos_$(cover).jpg
+
+.PHONY: plus3doscover
+plus3doscover: doc/plus3dos_$(cover).jpg
+
+.PHONY: trdoscover
+trdoscover: doc/trdos_$(cover).jpg
+
+.PHONY: thumbs
+thumbs: \
+	doc/gplusdos_$(cover)_thumb.jpg \
+	doc/plus3dos_$(cover)_thumb.jpg \
+	doc/trdos_$(cover)_thumb.jpg
+
+.PHONY: cleancover
+cleancover:
+	rm -f doc/*_cover*.jpg tmp/*.png
 
 # ==============================================================
 # Debug {{{1
@@ -832,6 +868,7 @@ tmp/doc.README.linked.adoc: README.adoc
 	asciidoctor \
 		--backend=docbook \
 		--attribute=gplusdos \
+		--attribute=doslabel=gplusdos \
 		--attribute=dosname=G+DOS \
 		--attribute=version=$(full_version) \
 		--out-file=$@ $<
@@ -840,6 +877,7 @@ tmp/doc.README.linked.adoc: README.adoc
 	asciidoctor \
 		--backend=docbook \
 		--attribute=plus3dos \
+		--attribute=doslabel=plus3dos \
 		--attribute=dosname=+3DOS \
 		--attribute=version=$(full_version) \
 		--out-file=$@ $<
@@ -848,6 +886,7 @@ tmp/doc.README.linked.adoc: README.adoc
 	asciidoctor \
 		--backend=docbook \
 		--attribute=trdos \
+		--attribute=doslabel=trdos \
 		--attribute=dosname=TR-DOS \
 		--attribute=version=$(full_version) \
 		--out-file=$@ $<
@@ -895,10 +934,12 @@ tmp/doc.README.linked.adoc: README.adoc
 
 doc/gplusdos_solo_forth_manual.epub: \
 	tmp/doc.gplusdos.manual.adoc \
-	README.adoc
+	README.adoc \
+	doc/gplusdos_$(cover).jpg
 	asciidoctor-epub3 \
 		--trace \
 		--attribute=gplusdos \
+		--attribute=doslabel=gplusdos \
 		--attribute=dosname=G+DOS \
 		--attribute=epub-chapter-level=2 \
 		--attribute=version=$(full_version) \
@@ -907,10 +948,12 @@ doc/gplusdos_solo_forth_manual.epub: \
 
 doc/gplusdos_solo_forth_manual.pdf: \
 	tmp/doc.gplusdos.manual.adoc \
-	README.adoc
+	README.adoc \
+	tmp/gplusdos_$(cover).pdf
 	asciidoctor-pdf \
 		--trace \
 		--attribute=gplusdos \
+		--attribute=doslabel=gplusdos \
 		--attribute=dosname=G+DOS \
 		--attribute=version=$(full_version) \
 		--out-file=$@ $<
@@ -920,6 +963,7 @@ doc/gplusdos_solo_forth_manual.html: \
 	README.adoc
 	asciidoctor \
 		--attribute=gplusdos \
+		--attribute=doslabel=gplusdos \
 		--attribute=dosname=G+DOS \
 		--attribute=version=$(full_version) \
 		--out-file=$@ $<
@@ -979,10 +1023,12 @@ tmp/doc.gplusdos.manual.adoc: \
 
 doc/plus3dos_solo_forth_manual.epub: \
 	tmp/doc.plus3dos.manual.adoc \
-	README.adoc
+	README.adoc \
+	doc/plus3dos_$(cover).jpg
 	asciidoctor-epub3 \
 		--trace \
 		--attribute=plus3dos \
+		--attribute=doslabel=plus3dos \
 		--attribute=dosname=+3DOS \
 		--attribute=epub-chapter-level=2 \
 		--attribute=version=$(full_version) \
@@ -991,10 +1037,12 @@ doc/plus3dos_solo_forth_manual.epub: \
 
 doc/plus3dos_solo_forth_manual.pdf: \
 	tmp/doc.plus3dos.manual.adoc \
-	README.adoc
+	README.adoc \
+	tmp/plus3dos_$(cover).pdf
 	asciidoctor-pdf \
 		--trace \
 		--attribute=plus3dos \
+		--attribute=doslabel=plus3dos \
 		--attribute=dosname=+3DOS \
 		--attribute=version=$(full_version) \
 		--out-file=$@ $<
@@ -1004,6 +1052,7 @@ doc/plus3dos_solo_forth_manual.html: \
 	README.adoc
 	asciidoctor \
 		--attribute=plus3dos \
+		--attribute=doslabel=plus3dos \
 		--attribute=dosname=+3DOS \
 		--attribute=version=$(full_version) \
 		--out-file=$@ $<
@@ -1059,10 +1108,12 @@ tmp/doc.plus3dos.manual.adoc: \
 
 doc/trdos_solo_forth_manual.epub: \
 	tmp/doc.trdos.manual.adoc \
-	README.adoc
+	README.adoc \
+	doc/trdos_$(cover).jpg
 	asciidoctor-epub3 \
 		--trace \
 		--attribute=trdos \
+		--attribute=doslabel=trdos \
 		--attribute=dosname=TRDOS \
 		--attribute=epub-chapter-level=2 \
 		--attribute=version=$(full_version) \
@@ -1071,10 +1122,12 @@ doc/trdos_solo_forth_manual.epub: \
 
 doc/trdos_solo_forth_manual.pdf: \
 	tmp/doc.trdos.manual.adoc \
-	README.adoc
+	README.adoc \
+	tmp/trdos_$(cover).pdf
 	asciidoctor-pdf \
 		--trace \
 		--attribute=trdos \
+		--attribute=doslabel=trdos \
 		--attribute=dosname=TR-DOS \
 		--attribute=version=$(full_version) \
 		--out-file=$@ $<
@@ -1084,6 +1137,7 @@ doc/trdos_solo_forth_manual.html: \
 	README.adoc
 	asciidoctor \
 		--attribute=trdos \
+		--attribute=doslabel=trdos \
 		--attribute=dosname=TR-DOS \
 		--attribute=version=$(full_version) \
 		--out-file=$@ $<
@@ -1159,7 +1213,7 @@ tmp/solo_forth_$(release)_src.zip: \
 	zip -9r \
 		solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) \
 		--exclude *.swp ; \
-	rm -f solo_forth_$(release) 
+	rm -f solo_forth_$(release)
 
 # ----------------------------------------------
 # G+DOS release archives {{{2
@@ -1178,7 +1232,7 @@ tmp/solo_forth_$(release)_gplusdos_manuals.zip: \
 	cd .. ; \
 	ln -sfn solo_forth solo_forth_$(release) ; \
 	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
-	rm -f solo_forth_$(release) 
+	rm -f solo_forth_$(release)
 
 .PHONY: gplusdosdiskszip
 gplusdosdiskszip: tmp/solo_forth_$(release)_gplusdos_disks.zip
@@ -1187,7 +1241,7 @@ tmp/solo_forth_$(release)_gplusdos_disks.zip: disks/gplusdos/*.mgt
 	cd .. ; \
 	ln -sfn solo_forth solo_forth_$(release) ; \
 	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
-	rm -f solo_forth_$(release) 
+	rm -f solo_forth_$(release)
 
 # ----------------------------------------------
 # +3DOS release archives {{{2
@@ -1206,7 +1260,7 @@ tmp/solo_forth_$(release)_plus3dos_manuals.zip: \
 	cd .. ; \
 	ln -sfn solo_forth solo_forth_$(release) ; \
 	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
-	rm -f solo_forth_$(release) 
+	rm -f solo_forth_$(release)
 
 .PHONY: plus3dosdiskszip
 plus3dosdiskszip: tmp/solo_forth_$(release)_plus3dos_disks.zip
@@ -1215,7 +1269,7 @@ tmp/solo_forth_$(release)_plus3dos_disks.zip: disks/plus3dos/*.dsk
 	cd .. ; \
 	ln -sfn solo_forth solo_forth_$(release) ; \
 	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
-	rm -f solo_forth_$(release) 
+	rm -f solo_forth_$(release)
 
 # ----------------------------------------------
 # TR-DOS release archives {{{2
@@ -1234,7 +1288,7 @@ tmp/solo_forth_$(release)_trdos_manuals.zip: \
 	cd .. ; \
 	ln -sfn solo_forth solo_forth_$(release) ; \
 	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
-	rm -f solo_forth_$(release) 
+	rm -f solo_forth_$(release)
 
 .PHONY: trdosdiskszip
 trdosdiskszip: tmp/solo_forth_$(release)_trdos_disks.zip
@@ -1243,7 +1297,7 @@ tmp/solo_forth_$(release)_trdos_disks.zip: disks/trdos/*.trd
 	cd .. ; \
 	ln -sfn solo_forth solo_forth_$(release) ; \
 	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
-	rm -f solo_forth_$(release) 
+	rm -f solo_forth_$(release)
 
 # ==============================================================
 # Backup {{{1
@@ -1280,6 +1334,11 @@ oldbackup:
 		*.dsk \
 		*.sh \
 		*.txt
+
+# ----------------------------------------------
+# Cover image {{{2
+
+include Makefile.cover_image
 
 # ==============================================================
 # Makefile variables cheat sheet {{{1
@@ -1599,6 +1658,12 @@ oldbackup:
 #
 # 2020-10-03: Build a zip archive containing the sources. Improve the zip
 # archives packing the contents into a release-specific directory.
+#
+# 2020-10-08: Add cover to the manuals build by Asciidoctor EPUB3 and
+# Asciidoctor PDF.
+#
+# 2020-11-21: Simplify the interface rules to build the cover images. Add a
+# rule to build the thumb cover images.
 
 # ==============================================================
 

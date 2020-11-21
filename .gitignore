@@ -17,6 +17,7 @@ doc/*.dbk
 doc/*.dbk.gz
 doc/*.dbk.zip
 doc/*.epub
+doc/*.jpg
 doc/*.html
 doc/*.html.gz
 doc/*.html.zip

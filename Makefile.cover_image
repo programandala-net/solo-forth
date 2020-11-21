@@ -1,0 +1,126 @@
+# Makefile.cover_image
+
+# This file is part of Solo Forth
+# http://programandala.net/en.program.solo_forth.html
+
+# By Marcos Cruz (programandala.net)
+
+# Last modified 202008281715
+# See change log at the end of the file
+
+# ==============================================================
+# Create the cover image {{{1
+
+# ------------------------------------------------
+# Create the canvas and texts of the cover image {{{2
+
+font=Helvetica
+background=lightgray
+fill=black
+strokewidth=4
+subtitle_pointsize=48
+
+tmp/$(cover).title.png:
+	convert \
+		-background transparent \
+		-fill $(fill) \
+		-font $(font) \
+		-pointsize 96 \
+		-size 1200x \
+		-gravity east \
+		caption:$(cover_title) \
+		$@
+
+tmp/$(cover).gplusdos_subtitle.png:
+	convert \
+		-background transparent \
+		-fill $(fill) \
+		-font $(font) \
+		-pointsize $(subtitle_pointsize) \
+		-size 1200x \
+		-gravity east \
+		caption:$(cover_gplusdos_subtitle) \
+		$@
+
+tmp/$(cover).plus3dos_subtitle.png:
+	convert \
+		-background transparent \
+		-fill $(fill) \
+		-font $(font) \
+		-pointsize $(subtitle_pointsize) \
+		-size 1200x \
+		-gravity east \
+		caption:$(cover_plus3dos_subtitle) \
+		$@
+
+tmp/$(cover).trdos_subtitle.png:
+	convert \
+		-background transparent \
+		-fill $(fill) \
+		-font $(font) \
+		-pointsize $(subtitle_pointsize) \
+		-size 1200x \
+		-gravity east \
+		caption:$(cover_trdos_subtitle) \
+		$@
+
+tmp/$(cover).author.png:
+	convert \
+		-background transparent \
+		-fill $(fill) \
+		-font $(font) \
+		-pointsize 48 \
+		-size 896x \
+		-gravity east \
+		caption:$(cover_author) \
+		$@
+
+# ------------------------------------------------
+# Create the cover image {{{2
+
+doc/gplusdos_$(cover).jpg: \
+	tmp/$(cover).title.png \
+	tmp/$(cover).gplusdos_subtitle.png \
+	tmp/$(cover).author.png
+	convert -size 1200x1600 canvas:$(background) $@
+	composite -gravity east -geometry +048+000 tmp/$(cover).title.png $@ $@
+	composite -gravity east -geometry +048+072 tmp/$(cover).gplusdos_subtitle.png $@ $@
+	composite -gravity east -geometry +048+256 tmp/$(cover).author.png $@ $@
+
+doc/plus3dos_$(cover).jpg: \
+	tmp/$(cover).title.png \
+	tmp/$(cover).plus3dos_subtitle.png \
+	tmp/$(cover).author.png
+	convert -size 1200x1600 canvas:$(background) $@
+	composite -gravity east -geometry +048+000 tmp/$(cover).title.png $@ $@
+	composite -gravity east -geometry +048+072 tmp/$(cover).plus3dos_subtitle.png $@ $@
+	composite -gravity east -geometry +048+256 tmp/$(cover).author.png $@ $@
+
+doc/trdos_$(cover).jpg: \
+	tmp/$(cover).title.png \
+	tmp/$(cover).trdos_subtitle.png \
+	tmp/$(cover).author.png
+	convert -size 1200x1600 canvas:$(background) $@
+	composite -gravity east -geometry +048+000 tmp/$(cover).title.png $@ $@
+	composite -gravity east -geometry +048+072 tmp/$(cover).trdos_subtitle.png $@ $@
+	composite -gravity east -geometry +048+256 tmp/$(cover).author.png $@ $@
+
+# ------------------------------------------------
+# Convert the cover image to PDF {{{2
+
+# This is needed in order to make sure the cover image ocuppies the whole page
+# in the PDF versions of the book.
+
+tmp/%.pdf: doc/%.jpg
+	img2pdf --output $@ --border 0 $<
+
+# ------------------------------------------------
+# Create a thumb version of the cover image {{{2
+
+%_thumb.jpg: %.jpg
+	convert $< -resize 190x $@
+
+# ==============================================================
+# Change log {{{1
+
+# 2020-10-08: Start. Adapt the code from other projects of the author.
