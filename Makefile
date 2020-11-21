@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202011211712.
+# Last modified: 202011211954.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -1225,7 +1225,6 @@ gplusdoszips: gplusdosdiskszip gplusdosdoczip
 gplusdosdoczip: tmp/solo_forth_$(release)_gplusdos_manuals.zip
 
 tmp/solo_forth_$(release)_gplusdos_manuals.zip: \
-	doc/gplusdos_solo_forth_manual.dbk.dbtoepub.epub \
 	doc/gplusdos_solo_forth_manual.epub \
 	doc/gplusdos_solo_forth_manual.html \
 	doc/gplusdos_solo_forth_manual.pdf
@@ -1253,7 +1252,6 @@ plus3doszips: plus3dosdiskszip plus3dosdoczip
 plus3dosdoczip: tmp/solo_forth_$(release)_plus3dos_manuals.zip
 
 tmp/solo_forth_$(release)_plus3dos_manuals.zip: \
-	doc/plus3dos_solo_forth_manual.dbk.dbtoepub.epub \
 	doc/plus3dos_solo_forth_manual.epub \
 	doc/plus3dos_solo_forth_manual.html \
 	doc/plus3dos_solo_forth_manual.pdf
@@ -1281,7 +1279,6 @@ trdoszips: trdosdiskszip trdosdoczip
 trdosdoczip: tmp/solo_forth_$(release)_trdos_manuals.zip
 
 tmp/solo_forth_$(release)_trdos_manuals.zip: \
-	doc/trdos_solo_forth_manual.dbk.dbtoepub.epub \
 	doc/trdos_solo_forth_manual.epub \
 	doc/trdos_solo_forth_manual.html \
 	doc/trdos_solo_forth_manual.pdf
@@ -1663,7 +1660,8 @@ include Makefile.cover_image
 # Asciidoctor PDF.
 #
 # 2020-11-21: Simplify the interface rules to build the cover images. Add a
-# rule to build the thumb cover images.
+# rule to build the thumb cover images. Remove the EPUB built by dbtoepub from
+# the release files.
 
 # ==============================================================
 

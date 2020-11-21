@@ -1,7 +1,7 @@
 = Solo Forth: Version {version} for {dosname}
 :author: Marcos Cruz
 :producer: Marcos Cruz
-:revdate: 2020-10-03
+:revdate: 2020-11-21
 :doctype: book
 :lang: en
 ifdef::backend-html5[]
@@ -27,7 +27,7 @@ endif::[]
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202010081714
+// Last modified: 202011212003
 
 ifdef::backend-html5[]
 toc::[]
@@ -1071,8 +1071,10 @@ images or the manual for your DOS of choice:
 | All     | ``make plus3dosdoc``  | ``make gplusdosdoc``  | ``make trdosdoc``  | ``make doc``
 |===
 
-NOTE: The manuals in ODT are not built by default. Two versions of
-EPUB and two versions of HTML are built, with different tools.
+NOTE: Only the EPUB, HTML and PDF built directly from the Asciidoctor
+source are included in the release files. Other formats like ODT and
+DocBook, or the EPUB and HTML variants obtained from DocBook, are
+optional and can be built from the sources.
 
 The disk images will be created in the <disks> directory. The manual
 will be created in the <doc> directory.
