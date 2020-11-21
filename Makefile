@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202011212238.
+# Last modified: 202011212250.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -115,6 +115,43 @@ full_version=$(shell gforth -e 's" ../src/version.z80s" 3' make/version_number.f
 release=$(shell gforth -e 's" ../src/version.z80s" 2' make/version_number.fs)
 
 # ==============================================================
+# Disk images {{{1
+
+gplusdos_disks=\
+	disks/gplusdos/disk_0_boot.mgt \
+	disks/gplusdos/disk_1_library.mgt \
+	disks/gplusdos/disk_2_programs.mgt \
+	disks/gplusdos/disk_3_workbench.mgt
+
+plus3dos_disks=\
+	disks/plus3dos/disk_0_boot.dsk \
+	disks/plus3dos/disk_1_library.dsk \
+	disks/plus3dos/disk_2_programs.dsk \
+	disks/plus3dos/disk_3_workbench.dsk
+
+trdos_block_disks=\
+	disks/trdos/disk_1a_library.trd \
+	disks/trdos/disk_1b_library.trd \
+	disks/trdos/disk_2_programs.trd \
+	disks/trdos/disk_3_workbench.trd
+
+trdos_128_boot_disk=\
+	disks/trdos/disk_0_boot.128.trd
+
+trdos_pentagon_boot_disks=\
+	disks/trdos/disk_0_boot.pentagon_512.trd \
+	disks/trdos/disk_0_boot.pentagon_1024.trd
+
+trdos_scorpion_boot_disk=\
+	disks/trdos/disk_0_boot.scorpion_zs_256.trd
+
+trdos_disks=\
+	$(trdos_block_disks) \
+	$(trdos_128_boot_disk) \
+	$(trdos_pentagon_boot_disks) \
+	$(trdos_scorpion_boot_disk)
+
+	# ==============================================================
 # Interface {{{1
 
 .PHONY: all
@@ -124,21 +161,13 @@ all: gplusdos trdos plus3dos
 gplusdos: gplusdosdisks
 
 .PHONY: gplusdosdisks
-gplusdosdisks: \
-	disks/gplusdos/disk_0_boot.mgt \
-	disks/gplusdos/disk_1_library.mgt \
-	disks/gplusdos/disk_2_programs.mgt \
-	disks/gplusdos/disk_3_workbench.mgt
+gplusdosdisks: $(gplusdos_disks)
 
 .PHONY: plus3dos
 plus3dos: plus3dosdisks
 
 .PHONY: plus3dosdisks
-plus3dosdisks: \
-	disks/plus3dos/disk_0_boot.dsk \
-	disks/plus3dos/disk_1_library.dsk \
-	disks/plus3dos/disk_2_programs.dsk \
-	disks/plus3dos/disk_3_workbench.dsk
+plus3dosdisks: $(plus3dos_disks)
 
 .PHONY: trdos
 trdos: trdosdisks
@@ -150,30 +179,25 @@ trdosdisks: \
 	scorpion
 
 .PHONY: trdosblockdisks
-trdosblockdisks: \
-	disks/trdos/disk_1a_library.trd \
-	disks/trdos/disk_1b_library.trd \
-	disks/trdos/disk_2_programs.trd \
-	disks/trdos/disk_3_workbench.trd
+trdosblockdisks: $(trdos_block_disks)
 
 .PHONY: t128
 t128: trdos128
 
 .PHONY: trdos128
 trdos128: \
-	disks/trdos/disk_0_boot.128.trd \
-	trdosblockdisks
+	$(trdos_128_boot_disk)
+	$(trdos_block_disks)
 
 .PHONY: pentagon
 pentagon: \
-	disks/trdos/disk_0_boot.pentagon_512.trd \
-	disks/trdos/disk_0_boot.pentagon_1024.trd \
-	trdosblockdisks
+	$(trdos_pentagon_boot_disks) \
+	$(trdos_block_disks)
 
 .PHONY: scorpion
 scorpion: \
-	disks/trdos/disk_0_boot.scorpion_zs_256.trd \
-	trdosblockdisks
+	$(trdos_scorpion_boot_disk) \
+	$(trdos_block_disks)
 
 .PHONY: disk_9
 disk_9: \
@@ -1249,7 +1273,7 @@ tmp/solo_forth_$(release)_gplusdos_manuals.zip: \
 .PHONY: gplusdosdiskszip
 gplusdosdiskszip: tmp/solo_forth_$(release)_gplusdos_disks.zip
 
-tmp/solo_forth_$(release)_gplusdos_disks.zip: disks/gplusdos/*.mgt
+tmp/solo_forth_$(release)_gplusdos_disks.zip: $(gplusdos_disks)
 	cd .. ; \
 	ln -sfn solo_forth solo_forth_$(release) ; \
 	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
@@ -1276,7 +1300,7 @@ tmp/solo_forth_$(release)_plus3dos_manuals.zip: \
 .PHONY: plus3dosdiskszip
 plus3dosdiskszip: tmp/solo_forth_$(release)_plus3dos_disks.zip
 
-tmp/solo_forth_$(release)_plus3dos_disks.zip: disks/plus3dos/*.dsk
+tmp/solo_forth_$(release)_plus3dos_disks.zip: $(plus3dos_disks)
 	cd .. ; \
 	ln -sfn solo_forth solo_forth_$(release) ; \
 	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
@@ -1303,7 +1327,7 @@ tmp/solo_forth_$(release)_trdos_manuals.zip: \
 .PHONY: trdosdiskszip
 trdosdiskszip: tmp/solo_forth_$(release)_trdos_disks.zip
 
-tmp/solo_forth_$(release)_trdos_disks.zip: disks/trdos/*.trd
+tmp/solo_forth_$(release)_trdos_disks.zip: $(trdos_disks)
 	cd .. ; \
 	ln -sfn solo_forth solo_forth_$(release) ; \
 	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
@@ -1675,7 +1699,8 @@ include Makefile.cover_image
 # 2020-11-21: Simplify the interface rules to build the cover images. Add a
 # rule to build the thumb cover images. Remove the EPUB built by dbtoepub from
 # the release files. Complete the source zip archive with all files and
-# directories needed to build the target files. Simplify two cleaning receipts. 
+# directories needed to build the target files. Simplify two cleaning receipts.
+# Fix/improve the requirements of the disks zip archives.
 
 # ==============================================================
 
