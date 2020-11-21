@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202011212146.
+# Last modified: 202011212238.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -209,13 +209,11 @@ cleantrdosdisks:
 
 .PHONY: cleantmp
 cleantmp:
-	-rm -f tmp/[a-zA-Z0-9_]*
-# Note: The file <tmp/.gitignore> must be preserved;
-#       that's why the wildcard is used.
+	rm -f tmp/*
 
 .PHONY: cleandoc
 cleandoc:
-	-rm -f doc/* tmp/doc.*
+	rm -f doc/* tmp/doc.*
 
 .PHONY: doc
 doc: gplusdosdoc plus3dosdoc trdosdoc
@@ -1677,7 +1675,7 @@ include Makefile.cover_image
 # 2020-11-21: Simplify the interface rules to build the cover images. Add a
 # rule to build the thumb cover images. Remove the EPUB built by dbtoepub from
 # the release files. Complete the source zip archive with all files and
-# directories needed to build the target files.
+# directories needed to build the target files. Simplify two cleaning receipts. 
 
 # ==============================================================
 
