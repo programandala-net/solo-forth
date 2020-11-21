@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202011211954.
+# Last modified: 202011212146.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -1207,7 +1207,22 @@ srczip: tmp/solo_forth_$(release)_src.zip
 # Source release archive {{{2
 
 tmp/solo_forth_$(release)_src.zip: \
-	Makefile src/ bin/ make/ tools/ vim/ tmp/.gitignore
+	*.adoc \
+	LICENSE.txt \
+	Makefile* \
+	backgrounds/ \
+	bin/ \
+	disks/.gitignore \
+	disks/gplusdos/.gitignore \
+	disks/plus3dos/.gitignore \
+	disks/trdos/.gitignore \
+	doc/.gitignore \
+	make/ \
+	screenshots/ \
+	src/ \
+	tmp/.gitignore \
+	tools/ \
+	vim/
 	cd .. ; \
 	ln -sfn solo_forth solo_forth_$(release) ; \
 	zip -9r \
@@ -1661,7 +1676,8 @@ include Makefile.cover_image
 #
 # 2020-11-21: Simplify the interface rules to build the cover images. Add a
 # rule to build the thumb cover images. Remove the EPUB built by dbtoepub from
-# the release files.
+# the release files. Complete the source zip archive with all files and
+# directories needed to build the target files.
 
 # ==============================================================
 
