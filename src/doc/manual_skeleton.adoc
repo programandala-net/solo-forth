@@ -27,7 +27,7 @@ endif::[]
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202011212003
+// Last modified: 202011212025
 
 ifdef::backend-html5[]
 toc::[]
@@ -686,9 +686,17 @@ include::doc.README.linked.adoc[tags=run_128_with_plusd]
 endif::gplusdos[]
 
 ifdef::trdos[]
+
+// XXX REMARK Separating the include macros with an empty line
+// prevents Asciidoctor PDF from issue warnings about the expected
+// list item indexes.
+
 include::doc.README.linked.adoc[tags=run_pentagon]
+
 include::doc.README.linked.adoc[tags=run_scorpion]
+
 include::doc.README.linked.adoc[tags=run_128_with_betadisk]
+
 endif::trdos[]
 
 // How to use the library {{{1
