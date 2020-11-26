@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
+  \ Last modified: 202011261719
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ License
@@ -131,7 +132,7 @@ unneeding set-ticks ?( need os-frames
 
   \ doc{
   \
-  \ set-ticks ( d -- )
+  \ set-ticks ( n -- )
   \
   \ Set the system clock to _n_ ticks.
   \
@@ -906,5 +907,7 @@ need reset-dticks need dticks need dticks>cs
   \ double spaces). Fix and improve documentation.
   \
   \ 2018-04-12: Fix link in documentation.
+  \
+  \ 2020-11-26: Fix stack comment of `set-ticks`.
 
   \ vim: filetype=soloforth

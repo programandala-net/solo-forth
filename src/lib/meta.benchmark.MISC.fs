@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202006092155
+  \ Last modified: 202011261729
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1425,6 +1425,52 @@ defer (fill
   \ 00100   169   180     89
   \ 01000  1693  1795    898
   \ 30000 50770 53863  26933
+
+( scr-fill-bench )
+
+  \ 2020-11-26: Benchmark written after the test found in the
+  \ following forum thread, titled "Perfomance of Forth":
+  \ https://spectrumcomputing.co.uk/forums/viewtopic.php?f=6&t=3487
+
+need dticks need reset-dticks need do need +loop need dticks>ms
+
+: end ( d ca len -- ) cr type ." : " 2dup d. ."  ticks (" 
+                      dticks>ms d. ." ms)" key drop ;
+  \ Display the result of a benchmark. _d_ are the ticks and
+  \ _ca len_ is the name of the bench.
+
+: fill-16b ( -- ) reset-dticks 23296 16384
+  do 255 i ! loop dticks s" 16b-loop" end ;
+  \ The original method used in the forum.
+
+: fill-8b ( -- ) reset-dticks 23296 16384
+  do 255 i c! loop dticks s" 8b-loop" end ;
+  \ Simpler and a bit faster 8-bit variant.
+
+: fill-16b+ ( -- ) reset-dticks 23296 16384
+  do 65535 i ! 2 +loop dticks s" 16b-+loop" end ;
+  \ Much faster 16-bit variant with a 2-byte loop step.
+
+: fill-16b+dup ( -- ) reset-dticks 65535 23296 16384
+  do dup i ! 2 +loop drop dticks s" 16b-dup-+loop" end ;
+  \ A bit faster variant that duplicates the value.
+
+: pure-fill ( -- ) reset-dticks 16384 6912 255
+  fill dticks s" pure" end ;
+  \ The fastest option by far, a pure Forth loop-less `fill`.
+
+: scr-fill-bench ( -- ) fill-16b fill-8b fill-16b+ fill-16b+dup
+  pure-fill ;  scr-fill-bench
+
+  \ 2020-11-26: Results:
+
+  \ Test            ticks    ms
+  \ -----           -----  ----
+  \ fill-16b           59  1180
+  \ fill-8b            57  1140
+  \ fill-16b+          36   720
+  \ fill-16b+dup       35   700
+  \ pure-fill           2    40
 
 ( 2fetch-bench )
 
@@ -3331,5 +3377,7 @@ need bench{ need }bench.
   \ 2020-06-09: Compact the code, saving 2 blocks.
   \
   \ 2020-06-10: Compact the code, saving 6 more blocks.
+  \
+  \ 2020-11-26: Add `scr-fill-bench`.
 
   \ vim: filetype=soloforth
