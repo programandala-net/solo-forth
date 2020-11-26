@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202011212250.
+# Last modified: 202011262045.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -186,7 +186,7 @@ t128: trdos128
 
 .PHONY: trdos128
 trdos128: \
-	$(trdos_128_boot_disk)
+	$(trdos_128_boot_disk) \
 	$(trdos_block_disks)
 
 .PHONY: pentagon
@@ -1701,6 +1701,8 @@ include Makefile.cover_image
 # the release files. Complete the source zip archive with all files and
 # directories needed to build the target files. Simplify two cleaning receipts.
 # Fix/improve the requirements of the disks zip archives.
+#
+# 2020-11-26: Fix typo in the "trdos128" phony rule.
 
 # ==============================================================
 
