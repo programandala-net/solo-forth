@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202011262045.
+# Last modified: 202012050018.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -352,6 +352,21 @@ trdoshtmla: \
 .PHONY: trdoshtmlp
 trdoshtmlp: \
 		doc/trdos_solo_forth_manual.dbk.pandoc.html.gz
+
+.PHONY: md
+md: gplusdosmd plus3dosmd trdosmd
+
+.PHONY: gplusdosmd
+gplusdosmd: \
+		doc/gplusdos_solo_forth_manual.md
+
+.PHONY: plus3dosmd
+plus3dosmd: \
+		doc/plus3dos_solo_forth_manual.md
+
+.PHONY: trdosmd
+trdosmd: \
+		doc/trdos_solo_forth_manual.md
 
 .PHONY: odt
 odt: gplusdosodt plus3dosodt trdosodt
@@ -990,6 +1005,14 @@ doc/gplusdos_solo_forth_manual.html: \
 		--attribute=version=$(full_version) \
 		--out-file=$@ $<
 
+doc/gplusdos_solo_forth_manual.md: \
+	doc/gplusdos_solo_forth_manual.dbk \
+	README.adoc
+	pandoc \
+		--from=docbook \
+		--to=markdown_strict \
+		--output=$@ $<
+
 tmp/doc.gplusdos.files.txt: \
 	src/kernel.z80s \
 	src/kernel.gplusdos.z80s \
@@ -1079,6 +1102,14 @@ doc/plus3dos_solo_forth_manual.html: \
 		--attribute=version=$(full_version) \
 		--out-file=$@ $<
 
+doc/plus3dos_solo_forth_manual.md: \
+	doc/plus3dos_solo_forth_manual.dbk \
+	README.adoc
+	pandoc \
+		--from=docbook \
+		--to=markdown_strict \
+		--output=$@ $<
+
 tmp/doc.plus3dos.files.txt: \
 	src/kernel.z80s \
 	src/kernel.plus3dos.z80s \
@@ -1163,6 +1194,14 @@ doc/trdos_solo_forth_manual.html: \
 		--attribute=dosname=TR-DOS \
 		--attribute=version=$(full_version) \
 		--out-file=$@ $<
+
+doc/trdos_solo_forth_manual.md: \
+	doc/trdos_solo_forth_manual.dbk \
+	README.adoc
+	pandoc \
+		--from=docbook \
+		--to=markdown_strict \
+		--output=$@ $<
 
 tmp/doc.trdos.files.txt: \
 	src/kernel.z80s \
@@ -1703,6 +1742,9 @@ include Makefile.cover_image
 # Fix/improve the requirements of the disks zip archives.
 #
 # 2020-11-26: Fix typo in the "trdos128" phony rule.
+#
+# 2020-12-05: Add rules to build Markdown (strict variant) versions of the
+# manuals.
 
 # ==============================================================
 
