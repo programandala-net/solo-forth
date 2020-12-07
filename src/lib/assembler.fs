@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202008082223
+  \ Last modified: 202012070338
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -70,7 +70,8 @@ also assembler definitions base @ hex
 
 need ?rel need inverse-cond
 
-: ed, ( -- )  ED c, ;
+: ed, ( -- ) ED c, ;
+  \ Compile the Z80 $ED prefix opcode.
 
   \ Registers
 
@@ -2669,5 +2670,7 @@ set-current
   \ 2020-07-29: Improve documentation.
   \
   \ 2020-08-08: Improve documentation.
+  \
+  \ 2020-12-07: Add comment to `ed,`.
 
   \ vim: filetype=soloforth

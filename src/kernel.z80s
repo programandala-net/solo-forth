@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202007282129
+; Last modified: 202012061823
 
 include version.z80s
 
@@ -9783,7 +9783,7 @@ fill.done:
 ;
 ; /hold ( -- len ) "slash-hold"
 ;
-; A 'cconstant`. _len_ is the length of the pictured
+; A `cconstant`. _len_ is the length of the pictured
 ; output string buffer, which is located right below `pad`.
 ;
 ; The default value of ``/hold`` is 80. It may be changed by
