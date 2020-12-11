@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202012070338
+  \ Last modified: 202012120015
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1638,9 +1638,11 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ }doc
 
-: ftpx, ( disp regpi regp -- ) 3dup 1+ ftx, rot 1+ -rot ftx, ;
+  \ : ftpx, ( disp regpi regp -- )
+  \ 3dup 1+ ftx, rot 1+ -rot ftx, ;
+  \ XXX FIXME The method is wrong, because `ix` compiles an
+  \ opcode prefix.
 
-  \ doc{
   \
   \ ftpx, ( disp regpi regp -- ) "f-t-p-x-comma"
   \
@@ -1653,11 +1655,12 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ See also: `stpx,`, `ftx,`.
   \
-  \ }doc
 
-: stpx, ( disp regpi regp -- ) 3dup 1+ stx, rot 1+ -rot stx, ;
+  \ : stpx, ( disp regpi regp -- )
+  \ 3dup 1+ stx, rot 1+ -rot stx, ;
+  \ XXX FIXME The method is wrong, because `ix` compiles an
+  \ opcode prefix.
 
-  \ doc{
   \
   \ stpx, ( disp regpi regp -- ) "s-t-p-x-comma"
   \
@@ -1670,7 +1673,6 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \
   \ See also: `ftpx,`, `stx,`.
   \
-  \ }doc
 
 -->
 
@@ -2672,5 +2674,8 @@ set-current
   \ 2020-08-08: Improve documentation.
   \
   \ 2020-12-07: Add comment to `ed,`.
+  \
+  \ 2020-12-12: 2020-12-12: Comment out `ftpx,` and `stpx,`,
+  \ which don't work and need a rewrite.
 
   \ vim: filetype=soloforth
