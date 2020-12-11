@@ -5,8 +5,17 @@
 
 # By Marcos Cruz (programandala.net)
 
-# Last modified 202008281715
+# Last modified 202012111910
 # See change log at the end of the file
+
+# ==============================================================
+# Requirements {{{1
+
+# ImageMagick (by ImageMagick Studio LCC)
+#   http://imagemagick.org
+
+# img2pdf (by Johannes 'josch' Schauer)
+#   https://gitlab.mister-muffin.de/josch/img2pdf
 
 # ==============================================================
 # Create the cover image {{{1
@@ -124,3 +133,5 @@ tmp/%.pdf: doc/%.jpg
 # Change log {{{1
 
 # 2020-10-08: Start. Adapt the code from other projects of the author.
+#
+# 2020-12-11: Add the list of requirements.
