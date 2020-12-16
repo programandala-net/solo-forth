@@ -3,8 +3,10 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202007152209
-// See change log at the end of the file
+// By Marcos Cruz (programandala.net), 2020.
+
+// Last modified: 202007152209.
+// See change log at the end of the file.
 
 // Credits:
 //
