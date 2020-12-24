@@ -1,13 +1,13 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-12-05
+:revdate: 2020-12-24
 :toc:
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202012050009
+// Last modified: 202012241705
 
 // Description {{{1
 == Description
@@ -101,12 +101,13 @@ also from the Afera library and from a previous abandoned project
 called http://programandala.net/en.program.dzx-forth.html[DZX-Forth]
 (a port of CP/M DX-Forth to ZX Spectrum +3e).
 
-The http://github.com/programandala-net/solo-forth[GitHub
-repository,role="external"] was created on 2016-03-13 from the
-development backups, in order to preserve the evolution of the code
-from the very beginning. On 2020-12-05 the repository was converted
-from Git to http://fossil-scm.org[Fossil]. GitHub will be used only as
-a mirror.
+On 2016-03-13 a Git repository was created from the development
+backups, in order to preserve the evolution of the code from the
+start, and uploaded to GitHub. On 2020-12-05 the Git repository was
+converted to a http://fossil.programandala.net/solo_forth[Fossil
+repository], keeping
+http://github.com/programandala-net/solo-forth[GitHub as a
+mirror,role="external"].
 
 Solo Forth is very stable, and it's being used to develop two projects
 in Forth:
