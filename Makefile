@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202012050018.
+# Last modified: 202012241654.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -967,6 +967,33 @@ tmp/doc.README.linked.adoc: README.adoc
 		--output=$@ $<
 
 # ----------------------------------------------
+# Online documentation {{{2
+
+# Online documentation displayed on the Fossil repository.
+
+.PHONY: wwwdoc
+wwwdoc: wwwreadme
+
+.PHONY: cleanwww
+cleanwww:
+	rm -f \
+		doc/www/* \
+		tmp/README.*
+
+.PHONY: wwwreadme
+wwwreadme: doc/www/README.html
+
+doc/www/README.html: tmp/README.html
+	echo "<div class='fossil-doc' data-title='README'>" > $@;\
+	cat $< >> $@;\
+	echo "</div>" >> $@
+
+tmp/README.html: README.adoc
+	asciidoctor \
+		--embedded \
+		--out-file=$@ $<
+
+# ----------------------------------------------
 # Documentation for G+DOS {{{2
 
 doc/gplusdos_solo_forth_manual.epub: \
@@ -1745,6 +1772,9 @@ include Makefile.cover_image
 #
 # 2020-12-05: Add rules to build Markdown (strict variant) versions of the
 # manuals.
+#
+# 2020-12-24: Build the online documentation for the Fossil repository: an HTML
+# version of the README file.
 
 # ==============================================================
 

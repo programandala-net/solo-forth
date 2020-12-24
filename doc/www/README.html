@@ -1,0 +1,716 @@
+<div class='fossil-doc' data-title='README'>
+<div id="toc" class="toc">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_description">Description</a>
+<ul class="sectlevel2">
+<li><a href="#_main_features">Main features</a></li>
+<li><a href="#_minimum_requirements">Minimum requirements</a></li>
+</ul>
+</li>
+<li><a href="#_motivation_history_and_current_status">Motivation, history and current status</a></li>
+<li><a href="#_platforms">Platforms</a></li>
+<li><a href="#_tree">Project directories</a></li>
+<li><a href="#_disks">Disks</a></li>
+<li><a href="#_run">How to run</a>
+<ul class="sectlevel2">
+<li><a href="#_pentagon_128">Pentagon 128</a></li>
+<li><a href="#_pentagon_512">Pentagon 512</a></li>
+<li><a href="#_pentagon_1024">Pentagon 1024</a></li>
+<li><a href="#_scorpion_zs_256">Scorpion ZS 256</a></li>
+<li><a href="#_zx_spectrum_1282_with_the_beta_128_interface">ZX Spectrum 128/+2 with the Beta 128 interface</a></li>
+<li><a href="#_zx_spectrum_1282_with_the_plus_d_interface">ZX Spectrum 128/+2 with the Plus D interface</a></li>
+<li><a href="#_zx_spectrum_33e">ZX Spectrum +3/+3e</a></li>
+</ul>
+</li>
+<li><a href="#_library">How to use the library</a>
+<ul class="sectlevel2">
+<li><a href="#_on_3dos">On +3DOS</a></li>
+<li><a href="#_on_gdos">On G+DOS</a></li>
+<li><a href="#_on_tr_dos">On TR-DOS</a></li>
+</ul>
+</li>
+<li><a href="#_documentation">Documentation</a></li>
+</ul>
+</div>
+<div class="sect1">
+<h2 id="_description">Description</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Solo Forth is a Forth system for the ZX Spectrum 128 and
+compatible computers, with disk drives and +3DOS, G+DOS, or TR-DOS.</p>
+</div>
+<div class="paragraph">
+<p>Solo Forth cannot run on the original ZX Spectrum 48, but could be
+used to develop programs for it.</p>
+</div>
+<div class="paragraph">
+<p>Solo Forth can be used as a stand-alone Forth system (either on an
+emulator or on the real computer), or as part of a cross-development
+environment on a GNU/Linux operating system (in theory, other type of
+operating systems could be used as well).</p>
+</div>
+<div class="sect2">
+<h3 id="_main_features">Main features</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Fast DTC (Direct Threaded Code) implementation.</p>
+</li>
+<li>
+<p>A kernel as small as possible.</p>
+</li>
+<li>
+<p>Name space in banked memory, separated from code and data space.</p>
+</li>
+<li>
+<p>Easy access to banked memory.</p>
+</li>
+<li>
+<p>Big <a href="#_library">library</a> of useful source code.</p>
+</li>
+<li>
+<p>Modular <a href="#_platforms">DOS support</a>.</p>
+</li>
+<li>
+<p>Fully documented source code.</p>
+</li>
+<li>
+<p>Detailed documentation.</p>
+</li>
+<li>
+<p>Conform to the <a href="http://forth-standard.org" class="external">Forth standard</a> (not fully tested yet).</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_minimum_requirements">Minimum requirements</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>128 KiB RAM.</p>
+</li>
+<li>
+<p>One double-sided 80-track disk drive (two or three recommended,
+depending on the DOS).</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_motivation_history_and_current_status">Motivation, history and current status</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The motivation behind Solo Forth is double:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>I wanted to program the ZX Spectrum with a modern Forth system</strong>:
+In 2015, my
+<a href="http://programandala.net/en.program.abersoft_forth.html">detailed
+disassembly of ZX Spectrum&#8217;s Abersoft Forth</a>, a popular tape-based
+implementation of fig-Forth ported to several 8-bit home computers
+in the 1980&#8217;s (and the Forth system I started learning Forth with
+in 1984), helped me understand the inner working of the fig-Forth
+model, including its by-design limitations, compared to modern
+Forths, and discover some bugs of the ZX Spectrum port. At the same time I
+wrote the <a href="http://programandala.net/en.program.afera.html">Afera
+library</a> in order to make Abersoft Forth more stable, powerful and
+comfortable for cross development.
+The objective was reached but, after a
+certain point, further improvements weren&#8217;t feasible without making
+radical changes in the system. The need for a new Forth system
+arised: a Forth designed from the start to use disk drives and
+banked memory, and useful for cross-development.</p>
+</li>
+<li>
+<p><strong>Nobody had written such a Forth system before:</strong> In 2015 there was
+no disk-based Forth for the ZX Spectrum platform, and the only
+Forth written for ZX Spectrum 128 (the first model with banked
+memory) was Lennart Benschop&#8217;s Forth-83
+(1988). But despite being more powerful than fig-Forth, it is still
+tape-based and keeps the block sources in a RAM disk. Beside, the
+system is built by metacompilation, what makes it difficult to
+adapt to disk drives.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The development of Solo Forth started on 2015-05-30, from the
+disassembled code of Abersoft Forth. Some ideas and code were reused
+also from the Afera library and from a previous abandoned project
+called <a href="http://programandala.net/en.program.dzx-forth.html">DZX-Forth</a>
+(a port of CP/M DX-Forth to ZX Spectrum +3e).</p>
+</div>
+<div class="paragraph">
+<p>The <a href="http://github.com/programandala-net/solo-forth" class="external">GitHub repository</a> was created on 2016-03-13 from the
+development backups, in order to preserve the evolution of the code
+from the very beginning. On 2020-12-05 the repository was converted
+from Git to <a href="http://fossil-scm.org">Fossil</a>. GitHub will be used only as
+a mirror.</p>
+</div>
+<div class="paragraph">
+<p>Solo Forth is very stable, and it&#8217;s being used to develop two projects
+in Forth:
+<a href="http://programandala.net/en.program.nuclear_waste_invaders.html">Nuclear
+Waste Invaders</a> and
+<a href="http://programandala.net/en.program.black_flag.html">Black Flag</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_platforms">Platforms</h2>
+<div class="sectionbody">
+<table class="tableblock frame-all grid-all fit-content">
+<caption class="title">Table 1. Supported platforms</caption>
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Computer</th>
+<th class="tableblock halign-left valign-top">Disk interface</th>
+<th class="tableblock halign-left valign-top">DOS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pentagon 128</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TR-DOS</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pentagon 512</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TR-DOS</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pentagon 1024</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TR-DOS</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Scorpion ZS 256</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TR-DOS</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ZX Spectrum 128</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Beta 128</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TR-DOS</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ZX Spectrum 128</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Plus D</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">G+DOS</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ZX Spectrum +2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Beta 128</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TR-DOS</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ZX Spectrum +2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Plus D</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">G+DOS</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ZX Spectrum +2A</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(External disk drive)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">+3DOS</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ZX Spectrum +2B</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(External disk drive)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">+3DOS</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ZX Spectrum +3</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">+3DOS</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ZX Spectrum +3e</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">+3DOS</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_tree">Project directories</h2>
+<div class="sectionbody">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 15%;">
+<col style="width: 17.5%;">
+<col style="width: 67.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Directory</th>
+<th class="tableblock halign-left valign-top">Subdirectory</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">backgrounds</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Version background images</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bin</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ZX Spectrum binary files for disk 0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bin</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">addons</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Code loaded from disk, not assembled in the library yet</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bin</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">dos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DOS files</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bin</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">fonts</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fonts for the supported screen modes</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">disks</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Disk images</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">disks</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">gplusdos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">G+DOS disk images</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">disks</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">plus3dos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">+3DOS disk images</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">disks</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">trdos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TR-DOS disk images</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">doc</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Manuals in DocBook, EPUB, HTML and PDF</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">make</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Files used by <code>make</code> to build the system</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">screenshots</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Version screenshots</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">src</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sources</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">src</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">addons</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Code to be loaded from disk. Not used yet.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">src</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">doc</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Files used to build the documentation</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">src</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">inc</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Z80 symbols</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">src</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">lib</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Library</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">src</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">loader</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BASIC loader for disk 0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">tmp</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Temporary files created by <code>make</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">tools</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Development and user tools</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vim</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Vim files</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vim</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ftplugin</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Filetype plugin</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">vim</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">syntax</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Syntax highlighting</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_disks">Disks</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The &lt;disks&gt; directory of the <a href="#_tree">directory tree</a> contains the
+disk images:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>disks/*/disk_0_boot.*
+disks/*/disk_1*_library.*
+disks/*/disk_2_programs.*
+disks/*/disk_3_workbench.*</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The subdirectory and the filename extension of every DOS are the
+following:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 2. DOS subdirectories and disk image filename extensions</caption>
+<colgroup>
+<col style="width: 17.1428%;">
+<col style="width: 31.4285%;">
+<col style="width: 51.4287%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">DOS</th>
+<th class="tableblock halign-left valign-top">Subdirectory</th>
+<th class="tableblock halign-left valign-top">Filename extension</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">+3DOS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">plus3dos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">dsk</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">G+DOS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">gplusdos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mgt</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TR-DOS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">trdos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">trd</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_run">How to run</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_pentagon_128">Pentagon 128</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Run a ZX Spectrum emulator and select a Pentagon
+128<sup class="footnote" id="_footnote_trdosdiskformat">[<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup>.</p>
+</li>
+<li>
+<p>“Insert” the disk image file &lt;disks/trdos/disk_0_boot.trd&gt; as disk
+'A'.</p>
+</li>
+<li>
+<p>Choose “TR-DOS” from the computer start menu. This will enter the
+TR-DOS command line<sup class="footnote" id="_footnote_trdoscli">[<a id="_footnoteref_2" class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup>.</p>
+</li>
+<li>
+<p>Press the 'R' key to get the <code>RUN</code> command and press the Enter
+key. Solo Forth will be loaded from disk.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_pentagon_512">Pentagon 512</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Run a ZX Spectrum emulator and select a Pentagon
+512<sup class="footnoteref">[<a class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup>.</p>
+</li>
+<li>
+<p>“Insert” the disk image file
+&lt;disks/trdos/disk_0_boot.pentagon_512.trd&gt; as disk 'A'.</p>
+</li>
+<li>
+<p>Choose "128k menu"<sup class="footnote" id="_footnote_pentagonboot">[<a id="_footnoteref_3" class="footnote" href="#_footnotedef_3" title="View footnote.">3</a>]</sup> from the computer start
+menu (the reset service menu). This will enter a ZX Spectrum 128
+style menu. Choose “TR-DOS”.  This will enter the TR-DOS command
+line<sup class="footnoteref">[<a class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup>.</p>
+</li>
+<li>
+<p>Press the '.' key to get the <code>RUN</code> command and press the Enter
+key.  Solo Forth will be loaded from disk.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_pentagon_1024">Pentagon 1024</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Run a ZX Spectrum emulator and select a Pentagon
+1024<sup class="footnoteref">[<a class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup>.</p>
+</li>
+<li>
+<p>“Insert” the disk image file
+&lt;disks/trdos/disk_0_boot.pentagon_1024.trd&gt; as disk 'A'.</p>
+</li>
+<li>
+<p>Choose "128k menu"<sup class="footnoteref">[<a class="footnote" href="#_footnotedef_3" title="View footnote.">3</a>]</sup> from the computer start
+menu (the reset service menu). This will enter a ZX Spectrum 128
+style menu. Choose “TR-DOS”.  This will enter the TR-DOS command
+line<sup class="footnoteref">[<a class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup>.</p>
+</li>
+<li>
+<p>Press the '.' key to get the <code>RUN</code> command and press the Enter
+key.  Solo Forth will be loaded from disk.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_scorpion_zs_256">Scorpion ZS 256</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Run a ZX Spectrum emulator and select a Scorpion ZS
+256<sup class="footnoteref">[<a class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup>.</p>
+</li>
+<li>
+<p>“Insert” the disk image file
+&lt;disks/trdos/disk_0_boot.scorpion_zs_256.trd&gt; as disk 'A'.</p>
+</li>
+<li>
+<p>Choose "128 TR-DOS" from the computer start menu.  Solo Forth will
+be loaded from disk.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_zx_spectrum_1282_with_the_beta_128_interface">ZX Spectrum 128/+2 with the Beta 128 interface</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Run a ZX Spectrum emulator and select a ZX Spectrum 128 (or ZX
+Spectrum +2) with the Beta 128
+interface<sup class="footnoteref">[<a class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup>.</p>
+</li>
+<li>
+<p>“Insert” the disk image file &lt;disks/trdos/disk_0_boot.trd&gt; as disk
+A of the Beta 128 interface.</p>
+</li>
+<li>
+<p>Choose "128 BASIC" from the computer start menu.</p>
+</li>
+<li>
+<p>Type <code>randomize usr 15616</code> in BASIC (or just <code>run usr15616</code> to save
+seven keystrokes). This will enter the TR-DOS command
+line<sup class="footnoteref">[<a class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup>.</p>
+</li>
+<li>
+<p>Press the 'R' key to get the <code>RUN</code> command and press the Enter
+key.  Solo Forth will be loaded from disk.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_zx_spectrum_1282_with_the_plus_d_interface">ZX Spectrum 128/+2 with the Plus D interface</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Run a ZX Spectrum emulator and select a ZX Spectrum 128 (or ZX
+Spectrum +2) with the Plus D disk interface.</p>
+</li>
+<li>
+<p>“Insert” the disk image file &lt;disks/gplusdos/disk_0_boot.mgt&gt; as
+disk 1 of the Plus D disk interface.</p>
+</li>
+<li>
+<p>Choose "128 BASIC" from the computer start menu.</p>
+</li>
+<li>
+<p>Type <code>run</code> in BASIC. G+DOS will be loaded from disk, and Solo
+Forth as well.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_zx_spectrum_33e">ZX Spectrum +3/+3e</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Run a ZX Spectrum emulator and select a ZX Spectrum +3 (or
+<a href="http://www.worldofspectrum.org/zxplus3e/" class="external">ZX Spectrum +3e</a>)<sup class="footnote" id="_footnote_plus3dosdiskformat">[<a id="_footnoteref_4" class="footnote" href="#_footnotedef_4" title="View footnote.">4</a>]</sup>.</p>
+</li>
+<li>
+<p>“Insert” the disk image file &lt;disks/plus3dos/disk_0_boot.180.dsk&gt;
+(or &lt;disks/plus3dos/disk_0_boot.720.dsk&gt;, depending on the capacity
+of the drive) as disk 'A'.</p>
+</li>
+<li>
+<p>Choose “Loader” from the computer start menu. Solo Forth will be
+loaded from disk.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_library">How to use the library</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_on_3dos">On +3DOS</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><a href="#_run">Run Solo Forth</a>.</p>
+</li>
+<li>
+<p>“Insert” the file &lt;disks/plus3dos/disk_1_library.dsk&gt; as disk B.
+<code>'b' set-drive throw</code> to make drive 'B' the current one.</p>
+</li>
+<li>
+<p>Type <code>1 load</code> to load block 1 from the library disk. By convention,
+block 0 cannot be loaded (it is used for comments), and block 1 is
+used as a loader.  In Solo Forth, block 1 contains <code>2 load</code>, in
+order to load the <code>need</code> tool from block 2.</p>
+</li>
+<li>
+<p>Type <code>need name</code>, were “name” is the name of the word or tool you
+want to load from the library.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_on_gdos">On G+DOS</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><a href="#_run">Run Solo Forth</a>.</p>
+</li>
+<li>
+<p>“Insert” the file &lt;disks/gplusdos/disk_1_library.mgt&gt; as
+disk 2 of the Plus D disk interface. Type <code>2 set-drive throw</code> to
+make drive 2 the current one.</p>
+</li>
+<li>
+<p>Type <code>1 load</code> to load block 1 from the library disk. By convention,
+block 0 cannot be loaded (it is used for comments), and block 1 is
+used as a loader.  In Solo Forth, block 1 contains <code>2 load</code>, in
+order to load the <code>need</code> tool from block 2.</p>
+</li>
+<li>
+<p>Type <code>need name</code>, were “name” is the name of the word or tool you
+want to load from the library.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_on_tr_dos">On TR-DOS</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><a href="#_run">Run Solo Forth</a>.</p>
+</li>
+<li>
+<p>“Insert” the file &lt;disks/trdos/disk_1a_library.trd&gt; as disk B of
+the Beta 128 interface, and the file
+&lt;disks/trdos/disk_1b_library.trd&gt; as disk C.  Type <code>1 set-drive
+throw</code> to make drive 1<sup class="footnote">[<a id="_footnoteref_5" class="footnote" href="#_footnotedef_5" title="View footnote.">5</a>]</sup> the current one.</p>
+</li>
+<li>
+<p>Type <code>1 load</code> to load block 1 from the library disk. By convention,
+block 0 cannot be loaded (it is used for comments), and block 1 is
+used as a loader.  In Solo Forth, block 1 contains <code>2 load</code>, in
+order to load the <code>need</code> tool from block 2.  Type <code>need
+set-block-drives</code> to load the word <code>set-block-drives</code> from the
+library. Then type <code>2 1 2 set-block-drives</code> to configure the second
+and the third drives as block drives.</p>
+</li>
+<li>
+<p>Type <code>need name</code>, were “name” is the name of the word or tool you
+want to load from the library.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_documentation">Documentation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The &lt;doc&gt; directory contains one version of the manual for every
+supported DOS, in DocBook, EPUB, HTML and PDF formats.  The manuals
+are built automatically from the sources and other files.  At the
+moment they contain a description of the Forth system, the basic
+information required to use it and a complete glossary with cross
+references.</p>
+</div>
+</div>
+</div>
+<div id="footnotes">
+<hr>
+<div class="footnote" id="_footnotedef_1">
+<a href="#_footnoteref_1">1</a>. Make sure the disk drives are configured as double-sided and 80-track
+</div>
+<div class="footnote" id="_footnotedef_2">
+<a href="#_footnoteref_2">2</a>. The TR-DOS command line uses keyboard tokens, like the ZX Spectrum 48, but commands typed in 'L' cursor mode will be recognized as well, as on the ZX Spectrum 128 editor.  In order to get the 'L' cursor mode you can type a quote (Symbol Shift + 'P') or press 'E' to get keyword <code>REM</code>. When the DOS command is typed in full, the quote or the <code>REM</code> must be removed from the start of the line before pressing 'Enter'.
+</div>
+<div class="footnote" id="_footnotedef_3">
+<a href="#_footnoteref_3">3</a>. In theory, choosing option “TR-DOS” from the system service menu should work. But it seems it depends on a specific version of TR-DOS.  This alternative method is longer, but it works with the TR-DOS 5.03 ROM. It will be improved in future versions of the manual.
+</div>
+<div class="footnote" id="_footnotedef_4">
+<a href="#_footnoteref_4">4</a>. Make sure the disk drives are configured as double-sided and 80-track
+</div>
+<div class="footnote" id="_footnotedef_5">
+<a href="#_footnoteref_5">5</a>. The TR-DOS BASIC interface uses letters 'A'..'D' to identify the disk drives, in commands and filenames. But, under the hood, TR-DOS uses numbers 0..3 to identify the disk drives, and filenames don&#8217;t include the drive letter. This is the way Solo Forth works too.  Usage of 'A'..'D' instead of 0..3 may be implemented in a future version of Solo Forth, either by default or as an option.
+</div>
+</div></div>
