@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282058
+  \ Last modified: 202012240347
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -14,7 +14,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
+  \ 2020.
 
   \ ===========================================================
   \ Credit
@@ -78,12 +79,14 @@ code (step ( R: u -- u' )
 
   end-code
 
-: for ( u -- ) postpone >r <mark ; immediate compile-only
+: for \ Compilation: ( C: -- dest )
+      \ Run-time:    ( u -- )
+  postpone >r <mark ; immediate compile-only
 
   \ doc{
   \
   \ for
-  \   Compilation: ( R: -- dest )
+  \   Compilation: ( C: -- dest )
   \   Run-time:    ( u -- )
 
   \
@@ -99,7 +102,8 @@ code (step ( R: u -- u' )
   \
   \ }doc
 
-: step ( -- )
+: step \ Compilation: ( dest -- )
+       \ Run-time:    ( R: n -- n' )
   postpone (step <resolve ; immediate compile-only
 
   \ doc{
@@ -111,7 +115,8 @@ code (step ( R: u -- u' )
   \ Compilation: ( dest -- )
   \
   \ Append the run-time semantics given below to the current
-  \ definition. Resolve the destination of `for`.
+  \ definition. Resolve the destination address _dest_, which
+  \ was left by `for`.
   \
   \ Run-time: ( R: n -- n' )
   \
@@ -174,5 +179,7 @@ need alias
   \ word names.
   \
   \ 2020-07-28: Replace "Note:" with the "NOTE:" markup.
+  \
+  \ 2020-12-16: Fix and improve documentation.
 
   \ vim: filetype=soloforth
