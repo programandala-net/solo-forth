@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202012061823
+; Last modified: 202012260153
 
 include version.z80s
 
@@ -5504,7 +5504,7 @@ zero_equals.hl:
 
 ; doc{
 ;
-; 0< ( x -- f ) "0-less"
+; 0< ( n -- f ) "0-less"
 ;
 ; _f_ is true if and only if _n_ is less than zero.
 ;
@@ -6591,7 +6591,7 @@ fetch.hl:
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `cvariable`, `2variable`, `constant`.
+; See also: `cvariable`, `2variable`, `create`, `constant`.
 ;
 ; }doc
 
@@ -7968,7 +7968,7 @@ u_less_than.de_hl:
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `bl`, `emit`.
+; See also: `bl`, `spaces`, `emit`.
 ;
 ; }doc
 
@@ -9203,10 +9203,10 @@ push_ahl:
 ; If _len_ is greater than zero, display the character string
 ; _ca len_.
 ;
-;----
+; ----
 ; : type ( ca len -- )
 ;   bounds ?do i c@ emit loop ;
-;----
+; ----
 
 ; See also: `type-udg`.
 ;
@@ -10585,7 +10585,7 @@ endif
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
 ; Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `,`, `c,`, `2,`.
+; See also: `variable`, `,`, `c,`, `2,`.
 ;
 ; }doc
 
@@ -13977,6 +13977,8 @@ if.do:
 ; : emits ( c n -- ) 0 max 0 ?do dup emit loop drop ;
 ; ----
 
+; See also: `emit`, `spaces`.
+;
 ; }doc
 
   _literal 0

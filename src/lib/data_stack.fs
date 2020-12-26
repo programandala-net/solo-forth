@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
+  \ Last modified: 202012251429
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -44,7 +44,10 @@ unneeding 2nip ?( code 2nip ( x1 x2 x3 x4 -- x3 x4 )
   \
   \ 2nip ( x1 x2 x3 x4 -- x3 x4 ) "two-nip"
   \
-  \ See also: `nip`.
+  \ Drop the cell pair _x1 x2_ below the cell pair at the top
+  \ of the stack.
+  \
+  \ See also: `nip`, `2drop`.
   \
   \ }doc
 
@@ -588,5 +591,7 @@ code >false ( x -- false ) E1 c, ' false jp, end-code ?)
   \
   \ 2020-06-08: Improve documentation: make _true_ and
   \ _false_ cross-references.
+  \
+  \ 2020-12-25: Improve documentation of `2nip`.
 
   \ vim: filetype=soloforth
