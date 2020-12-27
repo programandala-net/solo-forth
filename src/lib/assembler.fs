@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202012120015
+  \ Last modified: 202012262348
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -2418,14 +2418,20 @@ variable unresolved> ( -- a ) unresolved0> unresolved> !
   \ `assembler` `labels` created by `l:`.
   \
   \ Usage examples (extracted from `ocr`):
+
+  \ ----
+  \ 0 d stp, >amark 0 unresolved !
+  \   \ modify the code to get the screen address later
+  \ \ (...)
+  \ 0 d ldp#, \ restore the screen address
+  \ >amark 0 unresolved @ !
   \
-  \ ---- 0 d stp, >amark 0 unresolved ! \ modify the code to
-  \ get the screen address later \ (...) 0 d ldp#, \ restore
-  \ the screen address >amark 0 unresolved @ !
-  \
-  \ here jr, >rmark 2 unresolved ! \ (...) 2 unresolved @
-  \ >rresolve ----
-  \
+  \ \ (...)
+  \ here jr, >rmark 2 unresolved !
+  \ \ (...)
+  \ 2 unresolved @ >rresolve 
+  \ ----
+
   \ }doc
 
 ( execute-hl, call-xt, )
@@ -2677,5 +2683,8 @@ set-current
   \
   \ 2020-12-12: 2020-12-12: Comment out `ftpx,` and `stpx,`,
   \ which don't work and need a rewrite.
+  \
+  \ 2020-12-26: Fix layout of the usage example of
+  \ `unresolved`.
 
   \ vim: filetype=soloforth

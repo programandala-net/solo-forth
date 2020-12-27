@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202012260153
+; Last modified: 202012260351
 
 include version.z80s
 
@@ -12526,6 +12526,8 @@ question_d_negate.hl:
 ; : abs ( n -- u ) dup ?negate ;
 ; ----
 
+; See also: `abs`, `?negate`.
+;
 ; }doc
 
   pop hl
@@ -12547,6 +12549,8 @@ question_d_negate.hl:
 ; : dabs ( d -- ud ) dup ?dnegate ;
 ; ----
 
+; See also: `abs`, `?dnegate`.
+;
 ; }doc
 
   pop hl
@@ -14092,6 +14096,8 @@ sign.end:
 ;   dup 9 > [ 'A' '0' - 1+ ] literal and + '0' + ;
 ; ----
 
+; See also: `<#`, `#`, `#s`, `#>`.
+;
 ; }doc
 
   ; Credit:
@@ -14160,6 +14166,8 @@ to_digit.end:
 ; ----
 
 ; Origin: fig-Forth's ``m/mod``, Gforth, Z88 CamelForth.
+;
+; See also: `um/mod`.
 ;
 ; }doc
 
