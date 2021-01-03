@@ -1,13 +1,13 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-12-24
+:revdate: 2021-01-03
 :toc:
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202012241705
+// Last modified: 202101031916
 
 // Description {{{1
 == Description
@@ -335,7 +335,7 @@ following:
 1. Run a ZX Spectrum emulator and select a Pentagon
    128{blank}footnote:trdosdiskformat[Make sure the disk drives are
    configured as double-sided and 80-track].
-2. “Insert” the disk image file <disks/trdos/disk_0_boot.trd> as disk
+2. “Insert” the disk image file <disks/trdos/disk_0_boot.128.trd> as disk
    'A'.
 3. Choose “TR-DOS” from the computer start menu. This will enter the
    TR-DOS command line{blank}footnote:trdoscli[The TR-DOS command line
@@ -364,7 +364,7 @@ following:
    menu (the reset service menu). This will enter a ZX Spectrum 128
    style menu. Choose “TR-DOS”.  This will enter the TR-DOS command
    line{blank}footnote:trdoscli[].
-4. Press the '.' key to get the ``RUN`` command and press the Enter
+4. Press the 'R' key to get the ``RUN`` command and press the Enter
    key.  Solo Forth will be loaded from disk.
 
 // Pentagon 1024 {{{2
@@ -378,7 +378,7 @@ following:
    menu (the reset service menu). This will enter a ZX Spectrum 128
    style menu. Choose “TR-DOS”.  This will enter the TR-DOS command
    line{blank}footnote:trdoscli[].
-4. Press the '.' key to get the ``RUN`` command and press the Enter
+4. Press the 'R' key to get the ``RUN`` command and press the Enter
    key.  Solo Forth will be loaded from disk.
 
 // end::run_pentagon[]
@@ -405,7 +405,7 @@ following:
 1. Run a ZX Spectrum emulator and select a ZX Spectrum 128 (or ZX
    Spectrum +2) with the Beta 128
    interface{blank}footnote:trdosdiskformat[].
-2. “Insert” the disk image file <disks/trdos/disk_0_boot.trd> as disk
+2. “Insert” the disk image file <disks/trdos/disk_0_boot.128.trd> as disk
    A of the Beta 128 interface.
 3. Choose "128 BASIC" from the computer start menu.
 4. Type `randomize usr 15616` in BASIC (or just `run usr15616` to save
