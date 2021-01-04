@@ -14,20 +14,16 @@
 <li><a href="#_disks">Disks</a></li>
 <li><a href="#_run">How to run</a>
 <ul class="sectlevel2">
-<li><a href="#_pentagon_128">Pentagon 128</a></li>
-<li><a href="#_pentagon_512">Pentagon 512</a></li>
-<li><a href="#_pentagon_1024">Pentagon 1024</a></li>
-<li><a href="#_scorpion_zs_256">Scorpion ZS 256</a></li>
-<li><a href="#_zx_spectrum_1282_with_the_beta_128_interface">ZX Spectrum 128/+2 with the Beta 128 interface</a></li>
-<li><a href="#_zx_spectrum_1282_with_the_plus_d_interface">ZX Spectrum 128/+2 with the Plus D interface</a></li>
-<li><a href="#_zx_spectrum_33e">ZX Spectrum +3/+3e</a></li>
+<li><a href="#_run_plus3dos">In +3DOS</a></li>
+<li><a href="#_run_gplusdos">In G+DOS</a></li>
+<li><a href="#_run_trdos">In TR-DOS</a></li>
 </ul>
 </li>
 <li><a href="#_library">How to use the library</a>
 <ul class="sectlevel2">
-<li><a href="#_on_3dos">On +3DOS</a></li>
-<li><a href="#_on_gdos">On G+DOS</a></li>
-<li><a href="#_on_tr_dos">On TR-DOS</a></li>
+<li><a href="#_in_3dos">In +3DOS</a></li>
+<li><a href="#_in_gdos">In G+DOS</a></li>
+<li><a href="#_in_tr_dos">In TR-DOS</a></li>
 </ul>
 </li>
 <li><a href="#_documentation">Documentation</a></li>
@@ -438,7 +434,56 @@ following:</p>
 <h2 id="_run">How to run</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_pentagon_128">Pentagon 128</h3>
+<h3 id="_run_plus3dos">In +3DOS</h3>
+<div class="sect3">
+<h4 id="_on_zx_spectrum_33e">On ZX Spectrum +3/+3e</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Run a ZX Spectrum emulator and select a ZX Spectrum +3 (or
+<a href="http://www.worldofspectrum.org/zxplus3e/" class="external">ZX Spectrum +3e</a>). Make sure its disk drives are configured as double-sided and 80-track in the emulator.</p>
+</li>
+<li>
+<p>“Insert” the disk image file &lt;disks/plus3dos/disk_0_boot.dsk&gt; as
+disk 'A'.</p>
+</li>
+<li>
+<p>Choose “Loader” from the computer start menu. Solo Forth will be
+loaded from disk.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_run_gplusdos">In G+DOS</h3>
+<div class="sect3">
+<h4 id="_on_zx_spectrum_1282_with_the_plus_d_interface">On ZX Spectrum 128/+2 with the Plus D interface</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Run a ZX Spectrum emulator and select a ZX Spectrum 128 (or ZX
+Spectrum +2) with the Plus D disk interface. Make sure its disk drives are configured as double-sided and 80-track in the emulator.</p>
+</li>
+<li>
+<p>“Insert” the disk image file &lt;disks/gplusdos/disk_0_boot.mgt&gt; as
+disk 1 of the Plus D disk interface.</p>
+</li>
+<li>
+<p>Choose "128 BASIC" from the computer start menu.</p>
+</li>
+<li>
+<p>Type <code>run</code> in BASIC. G+DOS will be loaded from disk, and Solo
+Forth as well.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_run_trdos">In TR-DOS</h3>
+<div class="sect3">
+<h4 id="_on_pentagon_128">On Pentagon 128</h4>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -460,8 +505,8 @@ key. Solo Forth will be loaded from disk.</p>
 </ol>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_pentagon_512">Pentagon 512</h3>
+<div class="sect3">
+<h4 id="_on_pentagon_512">On Pentagon 512</h4>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -485,8 +530,8 @@ key.  Solo Forth will be loaded from disk.</p>
 </ol>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_pentagon_1024">Pentagon 1024</h3>
+<div class="sect3">
+<h4 id="_on_pentagon_1024">On Pentagon 1024</h4>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -510,8 +555,8 @@ key.  Solo Forth will be loaded from disk.</p>
 </ol>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_scorpion_zs_256">Scorpion ZS 256</h3>
+<div class="sect3">
+<h4 id="_on_scorpion_zs_256">On Scorpion ZS 256</h4>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -529,8 +574,8 @@ be loaded from disk.</p>
 </ol>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_zx_spectrum_1282_with_the_beta_128_interface">ZX Spectrum 128/+2 with the Beta 128 interface</h3>
+<div class="sect3">
+<h4 id="_on_zx_spectrum_1282_with_the_beta_128_interface">On ZX Spectrum 128/+2 with the Beta 128 interface</h4>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -556,46 +601,6 @@ key.  Solo Forth will be loaded from disk.</p>
 </ol>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_zx_spectrum_1282_with_the_plus_d_interface">ZX Spectrum 128/+2 with the Plus D interface</h3>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Run a ZX Spectrum emulator and select a ZX Spectrum 128 (or ZX
-Spectrum +2) with the Plus D disk interface. Make sure its disk drives are configured as double-sided and 80-track in the emulator.</p>
-</li>
-<li>
-<p>“Insert” the disk image file &lt;disks/gplusdos/disk_0_boot.mgt&gt; as
-disk 1 of the Plus D disk interface.</p>
-</li>
-<li>
-<p>Choose "128 BASIC" from the computer start menu.</p>
-</li>
-<li>
-<p>Type <code>run</code> in BASIC. G+DOS will be loaded from disk, and Solo
-Forth as well.</p>
-</li>
-</ol>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_zx_spectrum_33e">ZX Spectrum +3/+3e</h3>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Run a ZX Spectrum emulator and select a ZX Spectrum +3 (or
-<a href="http://www.worldofspectrum.org/zxplus3e/" class="external">ZX Spectrum +3e</a>). Make sure its disk drives are configured as double-sided and 80-track in the emulator.</p>
-</li>
-<li>
-<p>“Insert” the disk image file &lt;disks/plus3dos/disk_0_boot.dsk&gt; as
-disk 'A'.</p>
-</li>
-<li>
-<p>Choose “Loader” from the computer start menu. Solo Forth will be
-loaded from disk.</p>
-</li>
-</ol>
-</div>
 </div>
 </div>
 </div>
@@ -603,11 +608,11 @@ loaded from disk.</p>
 <h2 id="_library">How to use the library</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_on_3dos">On +3DOS</h3>
+<h3 id="_in_3dos">In +3DOS</h3>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p><a href="#_run">Run Solo Forth</a>.</p>
+<p><a href="#_run_plus3dos">Run Solo Forth</a>.</p>
 </li>
 <li>
 <p>“Insert” the file &lt;disks/plus3dos/disk_1_library.dsk&gt; as disk B.
@@ -627,11 +632,11 @@ want to load from the library.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_on_gdos">On G+DOS</h3>
+<h3 id="_in_gdos">In G+DOS</h3>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p><a href="#_run">Run Solo Forth</a>.</p>
+<p><a href="#_run_gplusdos">Run Solo Forth</a>.</p>
 </li>
 <li>
 <p>“Insert” the file &lt;disks/gplusdos/disk_1_library.mgt&gt; as
@@ -652,15 +657,11 @@ want to load from the library.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_on_tr_dos">On TR-DOS</h3>
-<div class="paragraph">
-<p>Since the maximun capacity of TR-DOS disks is only 640 KiB, the
-library is split into two disks.</p>
-</div>
+<h3 id="_in_tr_dos">In TR-DOS</h3>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p><a href="#_run">Run Solo Forth</a>.</p>
+<p><a href="#_run_trdos">Run Solo Forth</a>.</p>
 </li>
 <li>
 <p>“Insert” the file &lt;disks/trdos/disk_1a_library.trd&gt; into the second
@@ -670,7 +671,11 @@ C in TR-DOS and 2 in Solo Forth).</p>
 <div class="openblock">
 <div class="content">
 <div class="paragraph">
-<p>Notice that the TR-DOS version of Solo Forth uses numbers as disk
+<p>Notice that the library is split into two disks because the maximun
+capacity of a TR-DOS disk is only 640 KiB.</p>
+</div>
+<div class="paragraph">
+<p>Also notice that the TR-DOS version of Solo Forth uses numbers as disk
 drive identifiers (the same numbers TR-DOS uses internally) instead of
 the letters used by the TR-DOS BASIC interface:</p>
 </div>
