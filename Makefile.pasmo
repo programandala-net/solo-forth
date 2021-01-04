@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202101040125.
+# Last modified: 202101040207.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -77,7 +77,7 @@ tmp/kernel.nextzxos.bin.tap: \
 	src/version.z80s \
 	backgrounds/current.scr
 	cd src && \
-	$(pasmo) -v --tap \
+	$(pasmo) -v \
 		--equ nextzxos \
 		kernel.z80s \
 		../nextzxos/solo.bin \
