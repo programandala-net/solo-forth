@@ -27,7 +27,7 @@ endif::[]
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202101042038.
+// Last modified: 202101042044. 
 
 ifdef::backend-html5[]
 toc::[]
@@ -205,7 +205,7 @@ Forth blocks or files), but it haves some interesting features:
 
 ifdef::plus3dos[]
 
-Block disks are fully supported on +3DOS, but most file-management words are
+Block disks are fully supported in +3DOS, but most file-management words are
 not implemented yet, though standard Forth words are better supported than on
 G+DOS or TR-DOS.
 
@@ -213,14 +213,14 @@ endif::plus3dos[]
 
 ifdef::gplusdos[]
 
-Block disks are fully supported on G+DOS, but some file-management words are
+Block disks are fully supported in G+DOS, but some file-management words are
 not implemented yet, especially the standard Forth words.
 
 endif::gplusdos[]
 
 ifdef::trdos[]
 
-Block disks are fully supported on TR-DOS , but many file-management words are
+Block disks are fully supported in TR-DOS , but many file-management words are
 not implemented yet, especially the standard Forth words.
 
 endif::trdos[]
@@ -780,7 +780,7 @@ disk drives must be configured as block drives, using `3-block-drives`.
 Let's see an example, how to load the game called Tetris for
 Terminals, which is in disk 2.
 
-. <<_run,Run Solo Forth>>.
+. <<_run_trdos,Run Solo Forth>>.
 . Insert the first library disk image (disk 1a) into the first drive.
 . Insert the second library disk image (disk 1b) into the second drive.
 . Insert the programs disk image (disk 2) into the third drive.
@@ -831,7 +831,7 @@ second disk:
 endif::trdos[]
 
 [cols="6,10,10,10,10"]
-.Range of blocks per drive on every DOS, in normal order
+.Range of blocks per drive in every DOS, in normal order
 |===
 | DOS    | 1st drive | 2nd drive | 3rd drive | 4th drive
 
