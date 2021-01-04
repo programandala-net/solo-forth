@@ -15,4 +15,4 @@ version_prerelease_id:        equ 'r'
 version_prerelease:           equ 132
 
 version_build_high_part:      equ $0134
-version_build_low_part:       equ $61B7  ; build 20210103
+version_build_low_part:       equ $61B8  ; build 20210104
