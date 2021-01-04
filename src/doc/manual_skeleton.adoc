@@ -1,7 +1,7 @@
 = Solo Forth: Version {version} for {dosname}
 :author: Marcos Cruz
 :producer: Marcos Cruz
-:revdate: 2020-11-21
+:revdate: 2021-01-04
 :doctype: book
 :lang: en
 ifdef::backend-html5[]
@@ -27,7 +27,7 @@ endif::[]
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202011212025
+// Last modified: 202101042038.
 
 ifdef::backend-html5[]
 toc::[]
@@ -630,7 +630,7 @@ The DSK disk image format, used for +3DOS and other systems,
 contains a lot of metadata to describe the
 format of the disk, the tracks and the sectors...
 
-On +3DOS, sector 0 of track 0 cannot be used for Forth blocks,
+In +3DOS, sector 0 of track 0 cannot be used for Forth blocks,
 because it must contain the disk specification, even for sector-level
 access.  Since the size of a sector is 512 B, only one Forth block is
 lost because of this restriction.
@@ -913,7 +913,7 @@ test and some known benchmarks.
 // First, set the required block disks {{{2
 === First, set the required block disks
 
-// On +3DOS {{{3
+// In +3DOS {{{3
 
 ifdef::plus3dos[]
 
@@ -932,7 +932,7 @@ ifdef::plus3dos[]
 
 endif::[]
 
-// On G+DOS {{{3
+// In G+DOS {{{3
 
 ifdef::gplusdos[]
 
@@ -951,7 +951,7 @@ ifdef::gplusdos[]
 
 endif::gplusdos[]
 
-// On TR-DOS {{{3
+// In TR-DOS {{{3
 
 ifdef::trdos[]
 
