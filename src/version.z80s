@@ -6,13 +6,13 @@
 ; Solo Forth version after Semantic Versioning (http://semver.org)
 
 version_major:                equ 0
-version_minor:                equ 14
+version_minor:                equ 15
 version_patch:                equ 0
 
-version_prerelease_id:        equ 'r'
+version_prerelease_id:        equ 'd'
   ; 'd' for "dev", 'p' for "pre", 'r' for "rc", zero if none
 
-version_prerelease:           equ 132
+version_prerelease:           equ 0
 
 version_build_high_part:      equ $0134
-version_build_low_part:       equ $61B7  ; build 20210103
+version_build_low_part:       equ $61B8  ; build 20210104
