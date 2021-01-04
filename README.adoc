@@ -7,7 +7,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202101041925
+// Last modified: 202101041957
 
 // Description {{{1
 == Description
@@ -455,9 +455,8 @@ following:
    http://www.worldofspectrum.org/zxplus3e/[ZX
    Spectrum{sp}+3e,role="external"])footnote:plus3dosdiskformat[Make
    sure the disk drives are configured as double-sided and 80-track].
-2. “Insert” the disk image file <disks/plus3dos/disk_0_boot.180.dsk>
-   (or <disks/plus3dos/disk_0_boot.720.dsk>, depending on the capacity
-   of the drive) as disk 'A'.
+2. “Insert” the disk image file <disks/plus3dos/disk_0_boot.dsk> as
+   disk 'A'.
 3. Choose “Loader” from the computer start menu. Solo Forth will be
    loaded from disk.
 
