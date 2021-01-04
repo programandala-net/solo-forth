@@ -7,7 +7,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202101042036.
+// Last modified: 202101042314.
 
 // Description {{{1
 == Description
@@ -20,9 +20,9 @@ compatible computers, with disk drives and +3DOS, G+DOS, or TR-DOS.
 Solo Forth cannot run on the original ZX Spectrum 48, but could be
 used to develop programs for it.
 
-Solo Forth can be used as a stand-alone Forth system (either on an
+Solo Forth can be used as a stand-alone Forth system (either in an
 emulator or on the real computer), or as part of a cross-development
-environment on a GNU/Linux operating system (in theory, other type of
+environment in a GNU/Linux operating system (in theory, other type of
 operating systems could be used as well).
 
 // end::description[]
