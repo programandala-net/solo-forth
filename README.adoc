@@ -1,13 +1,13 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2021-01-03
+:revdate: 2021-01-04
 :toc:
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202101031916
+// Last modified: 202101041925
 
 // Description {{{1
 == Description
@@ -509,25 +509,45 @@ following:
 
 // tag::library_on_trdos[]
 
+Since the maximun capacity of TR-DOS disks is only 640 KiB, the
+library is split into two disks.
+
 1. <<_run,Run Solo Forth>>.
-2. “Insert” the file <disks/trdos/disk_1a_library.trd> as disk B of
-   the Beta 128 interface, and the file
-   <disks/trdos/disk_1b_library.trd> as disk C.  Type `1 set-drive
-   throw` to make drive 1{blank}footnote:[The TR-DOS BASIC interface uses
-   letters 'A'..'D' to identify the disk drives, in commands and
-   filenames. But, under the hood, TR-DOS uses numbers 0..3 to
-   identify the disk drives, and filenames don't include the drive
-   letter. This is the way Solo Forth works too.  Usage of 'A'..'D'
-   instead of 0..3 may be implemented in a future version of Solo
-   Forth, either by default or as an option.] the current one.
-3. Type `1 load` to load block 1 from the library disk. By convention,
+
+2. “Insert” the file <disks/trdos/disk_1a_library.trd> into the second
+   disk drive (called B in TR-DOS and 1 in Solo Forth), and the file
+   <disks/trdos/disk_1b_library.trd> into the third disk drive (called
+   C in TR-DOS and 2 in Solo Forth).
++
+--
+Notice that the TR-DOS version of Solo Forth uses numbers as disk
+drive identifiers (the same numbers TR-DOS uses internally) instead of
+the letters used by the TR-DOS BASIC interface:
+
+.TR-DOS disk drive identifiers
+|===
+| Drive | In TR-DOS | In Solo Forth
+
+| 1st   | A         | 0
+| 2nd   | B         | 1
+| 3rd   | C         | 2
+| 4th   | D         | 3
+|===
+--
+
+3. Type `1 set-drive throw` to make drive 1 (i.e. the second one,
+   called B by TR-DOS) the current one.
+
+4. Type `1 load` to load block 1 from the library disk. By convention,
    block 0 cannot be loaded (it is used for comments), and block 1 is
    used as a loader.  In Solo Forth, block 1 contains `2 load`, in
    order to load the `need` tool from block 2.  Type `need
    set-block-drives` to load the word `set-block-drives` from the
    library. Then type `2 1 2 set-block-drives` to configure the second
-   and the third drives as block drives.
-4. Type `need name`, were “name” is the name of the word or tool you
+   and the third drives (i.e. drives 1 and 2 in Solo Forth, called B
+   and C in the TR-DOS BASIC interface) as block drives.
+
+5. Type `need name`, were “name” is the name of the word or tool you
    want to load from the library.
 
 // end::library_on_trdos[]
