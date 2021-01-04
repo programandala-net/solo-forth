@@ -163,6 +163,9 @@ gplusdos: gplusdosdisks
 .PHONY: gplusdosdisks
 gplusdosdisks: $(gplusdos_disks)
 
+.PHONY: nextzxos
+nextzxos: nextzxos/solo_forth.fb
+
 .PHONY: plus3dos
 plus3dos: plus3dosdisks
 
@@ -693,60 +696,25 @@ no_dos_core_lib_files = \
 	$(filter-out $(dos_lib_files), $(core_lib_files))
 
 gplusdos_core_lib_files = \
-	$(filter-out %idedos.fs %plus3dos.fs %trdos.fs, $(core_lib_files))
+	$(filter-out %nextzxos.fs %plus3dos.fs %trdos.fs, $(core_lib_files))
+
+nextzxos_core_lib_files = \
+	$(filter-out %gplusdos.fs %plus3dos.fs %trdos.fs, $(core_lib_files))
 
 plus3dos_core_lib_files = \
-	$(filter-out %gplusdos.fs %idedos.fs %trdos.fs, $(core_lib_files))
+	$(filter-out %gplusdos.fs %nextzxos.fs %trdos.fs, $(core_lib_files))
 
 trdos_core_lib_files = \
-	$(filter-out %gplusdos.fs %idedos.fs %plus3dos.fs, $(core_lib_files))
+	$(filter-out %gplusdos.fs %nextzxos.fs %plus3dos.fs, $(core_lib_files))
 
 gplusdos_exception_codes_lib_files = \
-	$(filter-out %idedos.fs %plus3dos.fs %trdos.fs , $(exception_codes_lib_files))
+	$(filter-out %nextzxos.fs %plus3dos.fs %trdos.fs , $(exception_codes_lib_files))
 
 plus3dos_exception_codes_lib_files = \
-	$(filter-out %gplusdos.fs %idedos.fs %trdos.fs, $(exception_codes_lib_files))
+	$(filter-out %gplusdos.fs %nextzxos.fs %trdos.fs, $(exception_codes_lib_files))
 
 trdos_exception_codes_lib_files = \
-	$(filter-out %gplusdos.fs %idedos.fs %plus3dos.fs, $(exception_codes_lib_files))
-
-# ==============================================================
-# Block files {{{1
-
-# XXX UNDER DEVELOPMENT
-
-# Copying the whole library to a disk image, as one single
-# file, is not possible with ordinary tools, which are written
-# to manipulate only the ordinary filetypes that can be stored
-# on a ZX Spectrum tape.
-#
-# Therefore, this first approach can not work:
-
-%.fb: %.fs
-	fsb2 $<
-
-library_block_file=solo.fb
-
-tmp/library.gplusdos.tap: tmp/library.gplusdos.fb
-	cd tmp/; \
-	ln -f $(notdir $<) $(library_block_file);\
-	bin2code $(library_block_file) $(library_block_file).tap 0;\
-	mv $(library_block_file).tap $(notdir $@);\
-	cd -;
-
-tmp/library.trdos.tap: tmp/library.trdos.fb
-	cd tmp/; \
-	ln -f $(notdir $<) $(library_block_file);\
-	bin2code $(library_block_file) $(library_block_file).tap 0;\
-	mv $(library_block_file).tap $(notdir $@);\
-	cd -;
-
-tmp/library.plus3dos.tap: tmp/library.plus3dos.fb
-	cd tmp/; \
-	ln -sf $(notdir $<) $(library_block_file);\
-	bin2code $(library_block_file) $(library_block_file).tap 0;\
-	mv $(library_block_file).tap $(notdir $@);\
-	cd -;
+	$(filter-out %gplusdos.fs %nextzxos.fs %plus3dos.fs, $(exception_codes_lib_files))
 
 # ==============================================================
 # Block disks {{{1
@@ -853,6 +821,36 @@ disks/trdos/disk_2_programs.trd: tmp/programs.fs
 disks/trdos/disk_3_workbench.trd: tmp/workbench.fs
 	fsb2-trd $< SoloFth3 ; \
 	mv $(basename $<).trd $@
+
+# ==============================================================
+# NextZXOS files {{{1
+
+tmp/loader.nextzxos.bas: \
+	tmp/kernel.symbols.nextzxos.z80s \
+	src/loader/nextzxos.bas \
+	src/kernel.z80s
+	gforth make/patch_the_loader.fs $@ $^
+
+nextzxos/solo_forth.bas: tmp/loader.nextzxos.bas
+	zmakebas -3 -n Autoload -a 1 -o $@ $<
+
+tmp/library.nextzxos.fs: $(nextzxos_core_lib_files)
+	cat $(nextzxos_core_lib_files) > $@
+
+nextzxos/solo_forth.fb: tmp/library.nextzxos.fs
+	fsb2 $<; \
+	mv -f $(addsuffix .fb,$(basename $< .fs)) $@
+
+.PHONY: nextzxos_files
+nextzxos_files: \
+	nextzxos/solo_forth.bas \
+	nextzxos/solo.bin \
+	nextzxos/solo_forth.fb
+	cp -f $(basename $(fzx_fonts)) nextzxos
+	cp -f $(basename $(f64_fonts)) nextzxos
+	cp -f bin/addons/pr42.bin nextzxos
+	cp -f	bin/fonts/ea5a.f42.tap nextzxos
+	cp -f bin/text/img.zx7 nextzxos
 
 # ==============================================================
 # Background images {{{1

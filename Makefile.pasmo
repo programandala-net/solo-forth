@@ -3,40 +3,36 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 20190712
+# Last modified: 202101040125.
+# See change log at the end of the file.
 
 # ==============================================================
-# Author
+# Author {{{1
 
-# Marcos Cruz (programandala.net), 2015, 2016, 2017, 2019.
+# Marcos Cruz (programandala.net), 2015, 2016, 2017, 2019, 2021.
 
 # ==============================================================
-# License
+# License {{{1
 
 # You may do whatever you want with this work, so long as you
 # retain every copyright, credit and authorship notice, and this
 # license.  There is no warranty.
 
 # ==============================================================
-# Requirements
+# Requirements {{{1
 
 # Pasmo (by Julián Albo)
 #   http://pasmo.speccy.org/
 
 # ==============================================================
-# History
-
-# See at the end of the file.
-
-# ==============================================================
-# Config
+# Config {{{1
 
 #pasmo=/usr/local/bin/pasmo.054beta2
 #pasmo=/usr/local/bin/pasmo.053
 pasmo=/usr/local/bin/pasmo
 
 # ==============================================================
-# Kernel
+# Kernel {{{1
 
 # A temporary name "solo.bin" is used because Pasmo does not have an
 # option to choose the filename used in the TAP file header; it uses
@@ -50,7 +46,7 @@ pasmo=/usr/local/bin/pasmo
 # why `cd src` is used.
 
 # ----------------------------------------------
-# Kernel for G+DOS
+# Kernel for G+DOS {{{2
 
 tmp/kernel.symbols.gplusdos.z80s: tmp/kernel.gplusdos.bin.tap
 
@@ -69,7 +65,27 @@ tmp/kernel.gplusdos.bin.tap: \
 	cd ..
 
 # ----------------------------------------------
-# Kernel for +3DOS
+# Kernel for NextZXOS {{{2
+
+tmp/kernel.symbols.nextzxos.z80s: tmp/kernel.nextzxos.bin.tap
+
+# XXX TODO: add requirement:
+#	src/kernel.nextzxos.z80s \
+
+tmp/kernel.nextzxos.bin.tap: \
+	src/kernel.z80s \
+	src/version.z80s \
+	backgrounds/current.scr
+	cd src && \
+	$(pasmo) -v --tap \
+		--equ nextzxos \
+		kernel.z80s \
+		../nextzxos/solo.bin \
+		../tmp/kernel.symbols.nextzxos.z80s
+	cd ..
+
+# ----------------------------------------------
+# Kernel for +3DOS {{{2
 
 tmp/kernel.symbols.plus3dos.z80s: tmp/kernel.plus3dos.bin.tap
 
@@ -88,7 +104,7 @@ tmp/kernel.plus3dos.bin.tap: \
 	cd ..
 
 # ----------------------------------------------
-# Kernel for TR-DOS
+# Kernel for TR-DOS {{{2
 
 tmp/kernel.symbols.trdos.z80s: tmp/kernel.trdos.bin.tap
 
@@ -107,7 +123,7 @@ tmp/kernel.trdos.bin.tap: \
 	cd ..
 
 # ----------------------------------------------
-# Kernel for TR-DOS on Scorpion ZS 256
+# Kernel for TR-DOS on Scorpion ZS 256 {{{2
 
 tmp/kernel.symbols.trdos.scorpion_zs_256.z80s: tmp/kernel.trdos.scorpion_zs_256.bin.tap
 
@@ -127,7 +143,7 @@ tmp/kernel.trdos.scorpion_zs_256.bin.tap: \
 	cd ..
 
 # ----------------------------------------------
-# Kernel for TR-DOS on Pentagon 512
+# Kernel for TR-DOS on Pentagon 512 {{{2
 
 tmp/kernel.symbols.trdos.pentagon_512.z80s: tmp/kernel.trdos.pentagon_512.bin.tap
 
@@ -147,7 +163,7 @@ tmp/kernel.trdos.pentagon_512.bin.tap: \
 	cd ..
 
 # ----------------------------------------------
-# Kernel for TR-DOS on Pentagon 1024
+# Kernel for TR-DOS on Pentagon 1024 {{{2
 
 tmp/kernel.symbols.trdos.pentagon_1024.z80s: tmp/kernel.trdos.pentagon_1024.bin.tap
 
@@ -167,37 +183,34 @@ tmp/kernel.trdos.pentagon_1024.bin.tap: \
 	cd ..
 
 # ==============================================================
-# History
+# Change log {{{1
 
 # 2015-08-20: Created with code from the main Makefile.
 #
-# 2016-03-19: Updated after the reorganization of files into
-# directories.
+# 2016-03-19: Updated after the reorganization of files into directories.
 #
 # 2016-04-13: Updated the header and the license.
 #
-# 2016-04-16: Fix: the process didn't stop when the assembling
-# of the kernel failed. Fix: the patching of the loader needed
-# a dependency here.
+# 2016-04-16: Fix: the process didn't stop when the assembling of the kernel
+# failed. Fix: the patching of the loader needed a dependency here.
 #
 # 2016-08-03: First changes to support TR-DOS.
 #
-# 2016-08-04: Fix requisites: the new DOS modules of the kernel
-# were missing.
+# 2016-08-04: Fix requisites: the new DOS modules of the kernel were missing.
 #
-# 2016-08-06: Rename the kernel file in TR-DOS, which only
-# accepts 8 characters.
+# 2016-08-06: Rename the kernel file in TR-DOS, which only accepts 8
+# characters.
 #
-# 2016-08-11: Rename the kernel file to "solo.bin", which fits
-# any DOS.
+# 2016-08-11: Rename the kernel file to "solo.bin", which fits any DOS.
 #
 # 2016-11-20: Add background images.
 #
-# 2017-02-14: Remove the `.PHONY` of the kernel symbols
-# targets. They were the reason the BASIC loaders were rebuilt
-# every time.
+# 2017-02-14: Remove the `.PHONY` of the kernel symbols targets. They were the
+# reason the BASIC loaders were rebuilt every time.
 #
-# 2017-02-20: Build kernels for Scorpion ZS 256, Pentagon 512
-# and Pentagon 1024.
+# 2017-02-20: Build kernels for Scorpion ZS 256, Pentagon 512 and Pentagon
+# 1024.
 #
 # 2019-07-12: Update the filename of Pasmo.
+#
+# 2021-01-04: Build a kernel for NextZXOS. Add Vim folding markers.
