@@ -3,8 +3,8 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202007282031
-; See change log at the end of the file
+; Last modified: 202101040213.
+; See change log at the end of the file.
 
 ; ==============================================================
 ; Description
@@ -133,8 +133,7 @@ dos.ix.preserve_ip:
   ; are returned from it.
 
   ; The stack must be somewhere in central 32K (conforming to
-  ; DOS requirements), so saved AF and BC will not be switched
-  ; out.
+  ; DOS requirements), so saved BC will not be switched out.
 
   push bc
   call dos.ix
@@ -1160,5 +1159,7 @@ endif ; defined plus3dos
 ; 2020-07-09: Improve the markup of the `default-1346` table.
 ;
 ; 2020-07-11: Add titles to tables.
+;
+; 2021-01-04: Fix description of "dos.ix.preserve_ip".
 
 ; vim: filetype=z80:textwidth=64
