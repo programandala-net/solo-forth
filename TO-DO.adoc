@@ -2454,9 +2454,12 @@ Words that could be moved to the library, if the `need` tool didn't use them:
 
 NOTE: Milestone: 0.15.0
 
-Move the disk code, common only to +3DOS, G+DOS and TR-DOS, from
-<lib/dos.COMMON.fs> to <lib/dos.disk.COMMON.fs>. Keep in
-<lib/dos.COMMON.fs> only the code common also to NextZXOS.
+- Move the disk code, common only to +3DOS, G+DOS and TR-DOS, from
+  <lib/dos.COMMON.fs> to <lib/dos.disk.COMMON.fs>. Keep in
+  <lib/dos.COMMON.fs> only the code common also to NextZXOS.
+- Move `read-block` and `write-block` to <lib/dos.disk.COMMON.fs>.
+- Move `flush` to <lib/dos.disk.COMMON.fs>, because it must be
+  included in the NextZXOS kernel.  
 
 // Loading {{{1
 == Loading
