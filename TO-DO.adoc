@@ -1153,12 +1153,18 @@ Change the stack notation back to classic Forth?:
 
 Homogenize the stack notation for character/bytes: only _c_.
 
-=== 2016-04-29, 2016-11-21
+=== 2016-04-29, 2016-11-21, 2021-01-05
+
+NOTE: Milestone: 0.15.0
 
 Homogenize the stack notation for blocks and block lines.
 
-Change _n_ to _u_ for blocks and block lines. Consult the notation used in
-Forth-2012.
+Change _n_ to _u_ or _+n_ for blocks and block lines. _+n_ seems the
+best option, because the maximum block number that can be stored in
+`disk-buffer` is 32767-1.
+
+Consult the
+notation used in Forth-2012.
 
 === 2016-04-28
 
