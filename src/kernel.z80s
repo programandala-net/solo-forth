@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101050044.
+; Last modified: 202101050101.
 
 include version.z80s
 
@@ -12335,7 +12335,7 @@ cold.number_sign_words: equ $+1
   ; The Second part of `cold` contains the initialization actions
   ; that need less bytes in Forth than in Z80.
 
-if plus3dos
+if plus3dos or nextzxos
   ; Set the default configuration of memory banks for +3DOS:
   dw default_1346_
 endif
@@ -14891,7 +14891,7 @@ system_stack_pointer:
 
 ; }doc
 
-if plus3dos
+if plus3dos or nextzxos
   dw $C000 ; use 48 KiB of far memory (16 KiB are used for cache and RAM disk)
 else
   dw $0000 ; use 64 KiB of far memory

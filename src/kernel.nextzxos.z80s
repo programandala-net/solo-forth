@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101040230.
+; Last modified: 202101050100.
 ; See change log at the end of the file.
 
 ; ==============================================================
@@ -585,7 +585,9 @@ transfer_bytes.backup_ip equ $+1
 ;
 ; }doc
 
-  ld hl,dd_write_sector
+  ; XXX TODO rewrite
+
+  ;ld hl,dd_write_sector
   jr transfer_mode
 
 ; ----------------------------------------------
@@ -601,11 +603,13 @@ transfer_bytes.backup_ip equ $+1
 ;
 ; }doc
 
-  ld hl,dd_read_sector
+  ; XXX TODO rewrite
+
+  ;ld hl,dd_read_sector
 
 transfer_mode:
   ; HL = DOS routine
-  ld (transfer_sector.command),hl
+  ;ld (transfer_sector.command),hl
   _jp_next
 
 ; ----------------------------------------------
@@ -717,7 +721,7 @@ transfer_mode:
   ; A = default logical drive ('A'..'P')
   push af
   sub 'A' ; calculate physical drive (0..1)
-  ld (transfer_sector.physical_drive),a ; patch `transfer-sector`
+  ;ld (transfer_sector.physical_drive),a ; patch `transfer-sector`; XXX OLD
   ld (set_drive.physical_drive),a ; patch below
   pop af
 
@@ -725,7 +729,7 @@ transfer_mode:
   call dos_ref_xdpb ; IX = XDPB of the current drive
   call dos_out
   jr nc,set_drive.end ; skip if error
-  ld (transfer_sector.xdpb),ix ; patch `transfer-sector`
+  ;ld (transfer_sector.xdpb),ix ; patch `transfer-sector`; XXX OLD
 
 set_drive.physical_drive: equ $+1
   ld c,0 ; physical drive (0..1) (patched above)
@@ -830,5 +834,8 @@ endif ; defined nextzxos
 ; 2021-01-04: Start. Copy from <kernel.plus3dos.zx80s>
 ; (2015, 2016, 2017, 2018, 2020). Remove the code about direct
 ; sectors access.
+;
+; 2021-01-05: Deactivate `read-mode`, `write-mode` and some Z80
+; instructions.
 
 ; vim: filetype=z80:textwidth=64
