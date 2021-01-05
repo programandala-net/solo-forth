@@ -299,6 +299,7 @@ error.not_found:                    equ -013
 error.compilation_only:             equ -014
 error.zero_length_name:             equ -016
 error.control_structure_mismatch:   equ -022
+error.block_read_exception:         equ -033
 error.invalid_block_number:         equ -035
 error.search_order_overflow:        equ -049
 error.search_order_underflow:       equ -050
@@ -13165,52 +13166,6 @@ endif
 ; `(>drive-block` when `block-drives` is loaded.
 ;
 ; }doc
-
-; ----------------------------------------------
-  _colon_header read_block_,'read-block'
-
-; doc{
-;
-; read-block ( u -- )
-;
-; Read disk block _u_ to the buffer.
-;
-; Definition:
-
-; ----
-; : read-block ( u -- ) read-mode transfer-block ;
-; ----
-
-; See also: `read-mode`, `transfer-block`, `write-block`,
-; `block`.
-;
-; }doc
-
-  dw read_mode_,transfer_block_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header write_block_,'write-block'
-
-; doc{
-;
-; write-block ( n -- )
-;
-; Write the buffer to disk block _n_.
-;
-; Definition:
-
-; ----
-; : write-block ( n -- ) write-mode transfer-block ;
-; ----
-
-; See also: `write-mode`, `transfer-block`, `read-block`,
-; `block`.
-;
-; }doc
-
-  dw write_mode_,transfer_block_
-  dw exit_
 
 ; ----------------------------------------------
   _colon_header free_buffer_,'free-buffer'
