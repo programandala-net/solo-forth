@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101040213.
+; Last modified: 202101050133.
 ; See change log at the end of the file.
 
 ; ==============================================================
@@ -619,38 +619,6 @@ dosior_to_ior.hl:
   dw exit_
 
 ; ----------------------------------------------
-  _code_header transfer_bytes_,'transfer-bytes'
-
-; doc{
-;
-; transfer-bytes ( n ca len fid -- ior )
-;
-; Transfer _len_ bytes to/from file _fid_ to/from memory, using _n_ as
-; page $C000..$FFFF.  The read or write mode must be previously set by
-; `write-mode` or `read-mode`.
-;
-; }doc
-
-  ; XXX OLD
-  ; XXX TODO -- Move to the library.
-  ; XXX TODO -- Update `read-mode` and `write-mode` to modify
-  ; this word too
-
-  ld (transfer_bytes.backup_ip),bc ; save Forth IP
-  pop bc ; C = fid
-  ld a,c ; A = fid
-  pop de ; length
-  pop hl ; address
-  pop bc ; C = page
-  ld b,a ; B = fid
-transfer_bytes.command equ $+2
-  ld ix,dos_write
-  call dos.ix
-transfer_bytes.backup_ip equ $+1
-  ld bc,0 ; restore Forth IP
-  jp push_dos_ior
-
-; ----------------------------------------------
   _code_header transfer_sector_,'transfer-sector'
 
 ; doc{
@@ -1161,5 +1129,8 @@ endif ; defined plus3dos
 ; 2020-07-11: Add titles to tables.
 ;
 ; 2021-01-04: Fix description of "dos.ix.preserve_ip".
+;
+; 2021-01-05: Delete `transfer-bytes`, which was not configured
+; by `read-mode` and `write-mode` yet, but anyway it is useless.
 
 ; vim: filetype=z80:textwidth=64
