@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202101051732.
+# Last modified: 202101051947.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -233,7 +233,7 @@ cleangplusdosdisks:
 
 .PHONY: cleannextzxosfiles
 cleannextzxosfiles:
-	rm -f nextzxos/*
+	rm -f nextzxos/solo.*
 
 .PHONY: cleanplus3dosdisks
 cleanplus3dosdisks:
