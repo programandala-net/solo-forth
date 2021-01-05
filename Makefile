@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202012241654.
+# Last modified: 202101050050.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -151,6 +151,11 @@ trdos_disks=\
 	$(trdos_pentagon_boot_disks) \
 	$(trdos_scorpion_boot_disk)
 
+nextzxos_files=\
+	 nextzxos/solo_forth.bas \
+	 nextzxos/solo.bin \
+	 nextzxos/solo_forth.fb
+
 	# ==============================================================
 # Interface {{{1
 
@@ -164,7 +169,7 @@ gplusdos: gplusdosdisks
 gplusdosdisks: $(gplusdos_disks)
 
 .PHONY: nextzxos
-nextzxos: nextzxos/solo_forth.fb
+nextzxos: $(nextzxos_files)
 
 .PHONY: plus3dos
 plus3dos: plus3dosdisks
@@ -1773,6 +1778,11 @@ include Makefile.cover_image
 #
 # 2020-12-24: Build the online documentation for the Fossil repository: an HTML
 # version of the README file.
+#
+# 2021-01-04: Do the first changes in order to build target files for
+# NextZXOS: loader, binary and library.
+#
+# 2021-01-05: Finish the main rule to build all of the NextZXOS files.
 
 # ==============================================================
 
