@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202101050221.
+  \ Last modified: 202101051652.
   \ See change log at the end of the file.
 
   \ ===========================================================
@@ -23,20 +23,9 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( /filename /base-filename /filename-ext >filename )
+( /base-filename /filename-ext )
 
-unneeding /filename ?\ 16 cconstant /filename
-
-  \ doc{
-  \
-  \ /filename ( -- n ) "slash-filename"
-  \
-  \ Return the maximum length of a NextZXOS filename, including
-  \ drive, user area and filename extension.
-  \
-  \ See also: `/base-filename`, `>filename`.
-  \
-  \ }doc
+  \ XXX TODO Adapt to NextZXOS.
 
 unneeding /base-filename ?\ 8 cconstant /base-filename
 
@@ -61,23 +50,6 @@ unneeding /filename-ext ?\ 3 cconstant /filename-ext
   \ excluding the dot.
   \
   \ See also: `/filename`, `/base-filename`.
-  \
-  \ }doc
-
-unneeding >filename ?( need /filename
-
-: >filename ( ca1 len1 -- ca2 )
-  /filename min char+ >stringer
-  2dup + char- $FF swap c! drop ; ?)
-
-  \ doc{
-  \
-  \ >filename ( ca1 len1 -- ca2 ) "to-filename"
-  \
-  \ Convert the filename _ca1 len1_ to a $FF-terminated string
-  \ at _ca2_ in the `stringer`.
-  \
-  \ See also: `/filename`.
   \
   \ }doc
 
@@ -110,7 +82,7 @@ code (rename-file ( ca1 ca2 -- ior )
   \
   \ }doc
 
-unneeding rename-file ?( need >filename need (rename-file
+unneeding rename-file ?( need (rename-file
 
 : rename-file ( ca1 len1 ca2 len2 -- ior )
   >filename >r >filename r> (rename-file ; ?)
@@ -217,7 +189,7 @@ code set-1346 ( n1 n2 n3 n4 -- )
 
   \ XXX TODO -- Finish the documentation.
 
-( (delete-file delete-file file-id )
+( (delete-file delete-file )
 
 unneeding (delete-file ?(
 
@@ -244,7 +216,7 @@ code (delete-file ( ca -- ior )
   \
   \ }doc
 
-unneeding delete-file ?( need >filename need (delete-file
+unneeding delete-file ?( need (delete-file
 
 : delete-file ( ca len -- ior ) >filename (delete-file ; ?)
 
@@ -265,63 +237,7 @@ unneeding delete-file ?( need >filename need (delete-file
   \
   \ }doc
 
-unneeding file-id ?(
-
-16 cconstant #file-ids
-
-  \ doc{
-  \
-  \ #file-ids ( -- n )
-  \
-  \ _n_ is the total number of file identifiers that can be
-  \ used.
-  \
-  \ See also: `file-ids`, `file-id`.
-  \
-  \ }doc
-
-create file-ids #file-ids allot  file-ids #file-ids erase
-
-  \ XXX TODO -- Use also to remember which files are headed,
-  \ one bit.
-
-  \ doc{
-  \
-  \ file-ids ( -- ca )
-  \
-  \ _ca_ is the address of a byte table containing the status
-  \ of the file identifiers:
-  \
-  \ .Meaning of the bytes hold in the ``file-ids`` table.
-  \ |===
-  \ | Byte | Meaning
-  \
-  \ | $00  | Not used
-  \ | $FF  | Used
-  \ |===
-  \
-  \ See also: `#file-ids`, `file-id`.
-  \
-  \ }doc
-
-: file-id ( -- fid true | false )
-  #file-ids 0 ?do
-    i file-ids + dup c@ 0=
-    if $FF swap c! i true unloop exit then drop
-  loop false ; ?)
-
-  \ doc{
-  \
-  \ file-id ( -- fid true | false )
-  \
-  \ If there is a file identifier not used yet, return it _fid_
-  \ and `true`; otherwise return `false`.
-  \
-  \ See also: `#file-ids`, file-ids`.
-  \
-  \ }doc
-
-( r/o w/o r/w s/r bin headed do-dos-open_ 'ctrl-z' )
+( r/o w/o s/r bin headed 'ctrl-z' )
 
   \ Credit:
   \
@@ -351,21 +267,6 @@ unneeding w/o ?\ %010 cconstant w/o
   \ Return the "write only" file access method _fam_.
   \
   \ See also: `r/o`, `r/w`, `s/r`, `bin`,
-  \ `create-file`, `open-file`.
-  \
-  \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
-  \
-  \ }doc
-
-unneeding r/w ?\ %011 cconstant r/w
-
-  \ doc{
-  \
-  \ r/w ( -- fam ) "r-w"
-  \
-  \ Return the "read/write" file access method _fam_.
-  \
-  \ See also: `r/o`, `w/o`, `s/r`, `bin`,
   \ `create-file`, `open-file`.
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
@@ -428,42 +329,6 @@ code headed ( fam1 -- fam2 )
   \
   \ }doc
 
-unneeding do-dos-open_ ?( need assembler
-
-create do-dos-open_ ( -- a ) asm
-
-  \ This word is used by '(create-file' and `(open-file`
-  \
-  \ Entry conditions:
-  \   B = fid
-  \   C = fam
-  \   D = create action
-  \   E = open action
-  \   HL = address of filename (no wildcards), with trailing 0xFF
-  \   (TOS) = Forth IP
-  \   (NOS) = fid + 256*fam
-
-  0106 ix ldp#, dos-ix_ call,
-  \   ld ix,dos_open
-  \   call dos.ix
-  b pop, pushdosior nc? ?jp,
-  h pop, 0 h ld#, h push, ' false jp, end-asm ?)
-  \   pop bc  ; restore the Forth IP
-  \   _jump_nc do_dos_open.error
-  \   ; no error
-  \   pop hl      ; l = fid
-  \   ld h,0
-  \   push hl     ; fid
-  \   jp false_   ; no error
-  \
-  \ do_dos_open.error
-  \   ; (sp) = fid + 256*fam (used as undefined fid)
-  \   ; a = error code
-
-  \   call convert_dos_error_code
-  \   ; hl = error code
-  \   jp push_hl
-
 unneeding 'ctrl-z' ?\ $1A cconstant 'ctrl-z'
 
   \ doc{
@@ -481,7 +346,7 @@ unneeding 'ctrl-z' ?\ $1A cconstant 'ctrl-z'
   \
   \ Adapted from DZX-Forth.
 
-need assembler need >filename need file-id need do-dos-open_
+need assembler
 
 code (create-file ( ca fam fid -- fid ior )
   d pop, h pop, l d ld, h pop, d push, b push, e b ld, d c ld,
@@ -508,7 +373,8 @@ code (create-file ( ca fam fid -- fid ior )
   \   ld e,a  ; E = open action
   \   jp do_dos_open
 
-  \ XXX TODO -- Document.
+  \ XXX TODO -- Document. Add cross-reference to
+  \ `do-dos-open_`.
 
   \ ****************************
   \
@@ -554,64 +420,11 @@ code (create-file ( ca fam fid -- fid ior )
   \
   \ }doc
 
-( open-file close-file )
+( close-file )
 
   \ Credit:
   \
   \ Adapted from DZX-Forth.
-
-unneeding open-file ?(
-
-need assembler need >filename need file-id need do-dos-open_
-
-code (open-file ( ca fam fid -- fid ior )
-  d pop, h pop, l d ld, h pop, d push, b push, e b ld, d c ld,
-  \   pop de  ; E = fid
-  \   pop hl  ; L = fam
-  \   ld d,l  ; D = fam
-  \   pop hl  ; HL = ca
-  \   push de ; save fid
-  \   push bc ; save the Forth IP
-  \   ld b,e  ; B = fid
-  \   ld c,d  ; C = fam
-  \   ; Calculate the open action
-  c 7 bit, c 7 res, 1 a ld#, z? rif a inc, rthen
-  \   bit 7,c ; headed? (maybe set by 'headed')
-  \   res 7,c
-  \   ld a,1  ; open action 1: position after the header
-  \   jr nz,paren_open_file_.actions ; jump if headed
-  \   ; Open a file with no header
-  \   inc a   ; open action 2: ignore any header, position at 0
-  \ paren_open_file_.actions:
-  \   ; A = open action
-  0 d ld#, a e ld, do-dos-open_ jp, end-code
-  \   ld d,0  ; D = create action: error, file does not exist
-  \   ld e,a  ; E = open action
-  \   jp do_dos_open
-
-: open-file ( ca len fam -- fid ior )
-  >r >filename r> file-id if (open-file exit then drop #-288 ;
-
-?)
-
-  \ doc{
-  \
-  \ open-file ( ca len fam -- fid ior )
-  \
-  \  Open the file named in the character string specified by
-  \  _ca len_, and open it with file access method _fam_.
-  \
-  \ If the  file  was  successfully and  opened, _ior_ is zero,
-  \ _fid_  is  the file identifier and the file has been
-  \ positioned to the start of the file.  Otherwise _ior_ is
-  \ the I/O result code and _fid_ is undefined.
-  \
-  \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
-  \
-  \ See also: `close-file`, `create-file`, `r/o`, `w/o`, `r/w`,
-  \ `s/r`, `bin`.
-  \
-  \ }doc
 
 unneeding close-file ?(
 
@@ -653,7 +466,7 @@ code (close-file ( fid -- ior )
   \
   \ }doc
 
-( file-position reposition-file file-size eof? )
+( file-position file-size eof? )
 
 unneeding file-position ?(
 
@@ -682,35 +495,6 @@ code file-position ( fid -- ud ior )
   \
   \ See also: `reposition-file`, `file-size`, `open-file`,
   \ `create-file`.
-  \
-  \ }doc
-
-unneeding reposition-file ?(
-
-code reposition-file ( ud fid -- ior )
-  E1 c, 7D c, D1 c, E1 c, C5 c, 47 c, DD c, 21 c, 0136 ,
-  \ pop hl
-  \ ld a,l ; A = fid
-  \ pop de ;
-  \ pop hl ; EHL = file pointer
-  \ push bc ; save Forth IP
-  \ ld b,a ; B = fid
-  \ ld ix,dos_set_position
-  dos-ix_ call, C1 c, pushdosior jp, end-code ?)
-  \ call dos.ix
-  \ pop bc ; restore Forth IP
-  \ jp push_dos_ior
-
-  \ doc{
-  \
-  \ reposition-file ( ud fid -- ior )
-  \
-  \ Reposition the file identified by _fid_ to _ud_ and return
-  \ the I/O result code _ior_.
-  \
-  \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
-  \
-  \ See also: `file-position`, `open-file`, `create-file`.
   \
   \ }doc
 
@@ -773,7 +557,7 @@ unneeding eof? ?( need file-size need file-position need d=
 
 ( (cat )
 
-need >filename need /base-filename need /filename-ext
+need /base-filename need /filename-ext
 
 13 cconstant /cat-entry
 
@@ -1132,216 +916,6 @@ need (cat need tab need 3dup need 3drop
   \
   \ }doc
 
-( bank-write-file write-file )
-
-unneeding bank-write-file ?(
-
-code bank-write-file ( ca len fid +n -- ior )
-
-  E1 c, 78 05 + c, save-ip_ call,
-    \ pop hl ; l = bank
-    \ ld a,l
-    \ bank_write_file_.a:
-    \ call save_ip
-  48 07 + c, E1 c, 40 05 + c, D1 c, E1 c, DD c, 21 c, 0115 ,
-    \ ld c,a
-    \ pop hl
-    \ ld b,l ; fid
-    \ pop de ; len
-    \ pop hl ; ca
-    \ ld ix,dos_write ; $0115
-  dos-ix_ call, restore-ip_ call, pushdosior jp, end-code ?)
-    \ call dos.ix
-    \ call restore_ip
-    \ jp push_dos_ior
-
-  \ Credit:
-  \ Adapted from DZX-Forth.
-
-  \ doc{
-  \
-  \ bank-write-file ( ca len fid +n -- ior )
-  \
-  \ Write _len_ characters from address _ca_ to the file
-  \ identified by _fid_ starting at its current position, while
-  \ memory bank _+n_ is paged in addresses $C000..$FFFF.
-  \ Return I/O result code _ior_.
-  \
-  \ See also: `write-file`, `write-byte`, `bank`, `create-file`,
-  \ `open-file`.
-  \
-  \ }doc
-
-unneeding write-file ?( need bank-write-file
-
-code write-file ( ca len fid -- ior )
-  3A c, 5B5C , E6 c, %111 c, ' bank-write-file 2+ jp,
-  end-code ?)
-  \ ld a,(sys_bankm) ; $5B5C
-  \ and %111 ; current page for 0xC000..0xFFFF
-  \ jp bank_write_file_.a
-
-  \ Credit:
-  \ Adapted from DZX-Forth.
-
-  \ doc{
-  \
-  \ write-file ( ca len fid -- ior )
-  \
-  \ Write _len_ characters from address _ca_ to the file
-  \ identified by _fid_ starting at its current position.
-  \ Return I/O result code _ior_.
-  \
-  \ See also: `bank-write-file`, `write-byte`, `create-file`,
-  \ `open-file`.
-  \
-  \ }doc
-
-( read-file bank-read-file )
-
-need assembler
-
-code read-file  ( ca len1 fid -- len2 ior )
-  3A c, 5B5C , E6 c, %111 c, 6F c, E5 c,
-  end-code ?)
-  \ ld a,(sys_bankm) ; $5B5C
-  \ and %111 ; current page for 0xC000..0xFFFF
-  \ ld l,a
-  \ push hl
-  \ ; execution continues in `bank-read-file`
-
-  \ Credit:
-  \ Adapted from DZX-Forth.
-
-  \ doc{
-  \
-  \ read-file ( ca len1 fid -- len2 ior )
-  \
-  \ Read _len1_ consecutive  characters to  _ca_ from the
-  \ current position  of the  file identified by _fid_.
-  \
-  \ If _len1_ characters are read without an exception, _ior_
-  \ is zero and _len2_ is equal to _len1_.
-  \
-  \ If the end of the file is reached before _len1_ characters
-  \ are read, _ior_ is zero and _len2_ is the number of
-  \ characters actually read.
-  \
-  \ If the operation is initiated when the value returned by
-  \ `file-position` is equal to the value returned by
-  \ `file-size` for the file identified by _fid, _len2_ is zero
-  \ and _ior_ is zero.
-  \
-  \ If an exception occurs, _ior_ is the I/O result code and
-  \ _len2_ is the number of characters transferred to _ca_
-  \ without an exception.
-  \
-  \ At the conclusion of the operation, `file-position` returns
-  \ the next file position after the last character read.
-  \
-  \ See also: `bank-read-file`, `read-byte`, `open-file`,
-  \ `write-file`.
-  \
-  \ }doc
-
-  \ XXX TODO -- Finish adapting the documentation.
-  \
-  \ An ambiguous condition exists if the operation is initiated
-  \ when the value returned by `file-position` is greater than
-  \ the value returned by `file-size` for the file identified
-  \ by fileid, or if the requested operation attempts to read
-  \ portions of the file not written.
-  \
-
-code bank-read-file  ( ca len fid +n -- ior )
-
-  \ XXX TODO: Check if this +3DOS issue was fixed in NextZXOS:
-  \
-  \ NextZXOS causes EOF error when the desired length is beyond
-  \ the end of file (not counting the padding 0x1A at the end).
-  \ This makes it impossible to behave according to Forth-94.
-  \
-  \ Solution: check the file position at the start.
-
-  save-ip_ call,
-    \   call save_ip
-  C1 c, E1 c, 45 c, D1 c, E1 c, D5 c, DD c, 21 c, 0112 ,
-    \   pop bc  ; C = bank
-    \   pop hl
-    \   ld b,l  ; B = fid
-    \   pop de  ; DE = len
-    \   pop hl  ; HL = ca
-    \   push de ; save len for later
-    \   ld ix,dos_read ; $0112
-  dos-ix_ call, E1 c, restore-ip_ call, nc? rif
-    \   call dos
-    \   pop hl ; len
-    \   call restore_ip
-    \   jr c,page_read_file_.no_error
-
-    \   ; error
-    \   ; hl = len
-    \   ; a = error code
-    \   ; de = number of bytes remaining unread
-
-  a and, d sbcp, #21 cp#, nz? rif h push, pushdosior jp, rthen
-    \   and a
-    \   sbc hl,de ; hl = bytes actually read
-    \   cp 21 ; is it "bad parameter"? XXX TODO label
-    \   jr z, page_read_file_.no_error
-    \   push hl
-    \ jp push_dos_ior
-
-  rthen E5 c, ' false jp, end-code ?)
-    \ page_read_file_.no_error:
-    \   ; no error
-    \   ; hl = len
-    \   push hl
-    \   jp false_
-
-  \ Credit:
-  \ Adapted from DZX-Forth.
-
-  \ doc{
-  \
-  \ bank-read-file ( ca len1 fid +n -- len2 ior )
-  \
-  \ Read _len_ consecutive  characters to  _ca_ from the
-  \ current position  of the  file identified by _fid_ with
-  \ bank _+n_ paged in address range $C000..$FFFF.
-  \
-  \ If _len1_ characters are read without an exception, _ior_
-  \ is zero and _len2_ is equal to _len1_.
-  \
-  \ If the end of the file is reached before _len1_ characters
-  \ are read, _ior_ is zero and _len2_ is the number of
-  \ characters actually read.
-  \
-  \ If the operation is initiated when the value returned by
-  \ `file-position` is equal to the value returned by
-  \ `file-size` for the file identified by _fid, _ior_ is zero
-  \ and _len2_ is zero.
-  \
-  \ If an exception occurs _ior_ is the I/O result code and
-  \ _len2_ is the number of characters transferred to _ca_
-  \ without an exception.
-  \
-  \ At the conclusion of the operation, `file-position` returns
-  \ the next file position after the last character read.
-  \
-  \ See also: `bank-read-file`, `read-byte`, `open-file`,
-  \ `write-file`.
-  \
-  \ }doc
-
-  \ XXX TODO -- Finish adapting the documentation.
-  \
-  \ An ambiguous condition exists if the operation is initiated
-  \ when the value returned by `file-position` is greater than
-  \ the value returned by `file-size` for the file identified
-  \ by fileid, or if the requested operation attempts to read
-  \ portions of the file not written.
-
 ( write-byte read-byte write-line )
 
 unneeding read-byte ?( need assembler
@@ -1593,6 +1167,11 @@ code set-user ( n -- ior )
   \ 2021-01-04: Start. Copy from <dos.plus3dos.fs> (2017, 2018,
   \ 2020).
   \
-  \ 2021-01-05: Delete `2-block-drives`.
+  \ 2021-01-05: Delete `2-block-drives`. Move to the NextZXOS
+  \ kernel all the words required to use the library blocks
+  \ file: `read-file`, `bank-read-file`, `write-file`,
+  \ `bank-write-file`, `reposition-file`, `>filename`, `r/w`,
+  \ `open-file`, `(open-file`, `/filename`, `do-dos-open_`,
+  \ `file-id`, `file-ids`, `#file-ids`.
 
   \ vim: filetype=soloforth

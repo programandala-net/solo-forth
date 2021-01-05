@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101050342.
+; Last modified: 202101051650.
 ; See change log at the end of the file.
 
 ; ==============================================================
@@ -426,8 +426,6 @@ saved_ip: equ $+1
 ; ----------------------------------------------
   _constant_header push_dos_ior_,'pushdosior'
 
-  ; XXX TODO -- Move to the assembler word list.
-
 ; doc{
 ;
 ; pushdosior ( -- a ) "push-dos-I-O-R"
@@ -536,7 +534,7 @@ dosior_to_ior.hl:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header open_blocks_,'close-blocks'
+  _colon_header close_blocks_,'close-blocks'
 
 ; XXX FIXME: this words needs `close-file` from the library.
 
@@ -558,14 +556,282 @@ dosior_to_ior.hl:
 ;
 ; }doc
 
-  dw block_fid_,fetch_,true_,equals_,question_exit_
-  dw flush_,block_f_i_d_,fetch_,close_file_,throw_
+  dw block_f_i_d_,fetch_,true_,equals_,question_exit_
+; XXX TODO
+;  dw flush_,block_f_i_d_,fetch_,close_file_,throw_
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header open_blocks_,'open-blocks'
+  _c_constant_header number_sign_file_i_d_s_,'#file-ids'
 
-; XXX FIXME: this words needs `open-file` from the library.
+; doc{
+;
+; #file-ids ( -- n ) "number-sign-file-i-d-s"
+;
+; _n_ is the total number of file identifiers that can be
+; used.
+;
+; See also: `file-ids`, `file-id`.
+;
+; }doc
+
+number_sign_file_i_d_s: equ 16
+
+  db number_sign_file_i_d_s
+
+; ----------------------------------------------
+  _variable_header file_i_d_s_,'file-ids'
+
+; XXX TODO -- Use also to remember which files are headed, using
+; one bit.
+
+; doc{
+;
+; file-ids ( -- ca ) "file-i-d-s"
+;
+; _ca_ is the address of a byte table containing the status
+; of the file identifiers:
+;
+; .Meaning of the bytes hold in the ``file-ids`` table.
+; |===
+; | Byte | Meaning
+;
+; | $00  | Not used
+; | $FF  | Used
+; |===
+;
+; See also: `#file-ids`, `file-id`.
+;
+; }doc
+
+  ds number_sign_file_i_d_s
+
+  ; XXX REMARK: The Pasmo assembler fills the reserved space
+  ; with zeroes, or with an optional second parameter to `ds`.
+
+; ----------------------------------------------
+  _colon_header file_i_d_,'file-id'
+
+; doc{
+;
+; file-id ( -- fid true | false ) "file-i-d"
+;
+; If there is a file identifier not used yet, return it _fid_
+; and `true`; otherwise return `false`.
+;
+; Definition:
+
+; ----
+; : file-id ( -- fid true | false )
+;   #file-ids 0 ?do
+;     i file-ids + dup c@ 0=
+;     if $FF swap c! i true unloop exit then drop
+;   loop false ;
+; ----  
+
+; See also: `#file-ids`, file-ids`.
+;
+; }doc
+
+  dw number_sign_file_i_d_s_,zero_
+  dw paren_question_do_,file_id.loop_exit ; ?do
+  dw i_,file_i_d_s_,plus_,dup_,c_fetch_,zero_equals_
+  dw zero_branch_,file_id.continue
+  _literal $FF
+  dw swap_,c_store_,i_,true_,unloop_,exit_
+file_id.continue:
+  dw drop_
+  dw paren_loop_ ; loop
+file_id.loop_exit:
+  dw false_
+  dw exit_
+
+; ----------------------------------------------
+  _code_header do_dos_open_underscore_,'do-dos-open_'
+
+; doc{
+;
+; do-dos-open_ ( -- a )
+;
+; Return the address _a_ of a Z80 routine used by '(create-file'
+; and `(open-file`.
+;
+; ....
+; Entry conditions:
+;   B = fid
+;   C = fam
+;   D = create action
+;   E = open action
+;   HL = address of filename (no wildcards), with trailing 0xFF
+;   (TOS) = Forth IP
+;   (NOS) = fid + 256*fam
+; ....
+;
+; }doc
+
+  ld ix,dos_open
+  call dos.ix
+  pop bc  ; restore the Forth IP
+  jp nc,push_dos_ior_
+  ; no error
+  pop hl      ; l = fid
+  ld h,0
+  push hl     ; fid
+  jp false_   ; no error
+
+; ----------------------------------------------
+  _code_header paren_open_file_,'(open-file'
+
+; XXX TODO
+; need >filename need file-id need do-dos-open_
+
+  pop de  ; E = fid
+  pop hl  ; L = fam
+  ld d,l  ; D = fam
+  pop hl  ; HL = ca
+  push de ; save fid
+  push bc ; save the Forth IP
+  ld b,e  ; B = fid
+  ld c,d  ; C = fam
+  ; Calculate the open action
+  bit 7,c ; headed? (maybe set by 'headed')
+  res 7,c
+  ld a,1  ; open action 1: position after the header
+  jr nz,paren_open_file_.actions ; jump if headed
+  ; Open a file with no header
+  inc a   ; open action 2: ignore any header, position at 0
+paren_open_file_.actions:
+  ; A = open action
+  ld d,0  ; D = create action: error, file does not exist
+  ld e,a  ; E = open action
+  jp do_dos_open_underscore_
+
+; doc{
+;
+; (open-file ( ca fam fid -- fid ior )
+;
+;  Open the file named in the $FF-terminated string pointed at
+;  _ca_, and open it with file access method _fam_ and file
+;  identifier _fid_.
+;
+; If the  file  was  successfully and  opened, _ior_ is zero,
+; _fid_  is  the file identifier and the file has been
+; positioned to the start of the file.  Otherwise _ior_ is the
+; I/O result code and _fid_ is undefined.
+;
+; ``(open-file`` is a low-level factor of `open-file`.
+;
+; See also: `r/o`, `w/o`, `r/w`, `s/r`, `bin`, `do-dos-open_`.
+;
+; }doc
+
+; ----------------------------------------------
+  _c_constant_header slash_filename_,'/filename'
+
+; doc{
+;
+; /filename ( -- len ) "slash-filename"
+;
+; Return the maximum length _len_ of a NextZXOS filename,
+; including drive, user area and filename extension.
+;
+; See also: `/base-filename`, `>filename`.
+;
+; }doc
+
+; XXX TODO Adapt to NextZXOS.
+
+  db 16
+
+; ----------------------------------------------
+  _colon_header to_filename_,'>filename'
+
+; XXX TODO need /filename
+
+; doc{
+;
+; >filename ( ca1 len1 -- ca2 ) "to-filename"
+;
+; Convert the filename _ca1 len1_ to a $FF-terminated string
+; at _ca2_ in the `stringer`.
+;
+; Definition:
+
+; ----
+; : >filename ( ca1 len1 -- ca2 )
+;   /filename min char+ >stringer
+;   2dup + char- $FF swap c! drop ;
+; ----
+
+; See also: `/filename`, `>stringer`.
+;
+; }doc
+
+  dw slash_filename_,min_,char_plus_,to_stringer_
+  dw two_dup_,plus_,char_minus_
+  _literal $FF
+  dw swap_,c_store_,drop_
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header open_file_,'open-file'
+
+; doc{
+;
+; open-file ( ca len fam -- fid ior )
+;
+;  Open the file named in the character string specified by
+;  _ca len_, and open it with file access method _fam_.
+;
+; If the  file  was  successfully and  opened, _ior_ is zero,
+; _fid_  is  the file identifier and the file has been
+; positioned to the start of the file.  Otherwise _ior_ is
+; the I/O result code and _fid_ is undefined.
+;
+; Definition:
+
+; ----
+; : open-file ( ca len fam -- fid ior )
+;  >r >filename r> file-id if (open-file exit then drop #-288 ;
+; ----
+
+; Origin: Forth-94 (FILE), Forth-2012 (FILE).
+;
+; See also: `close-file`, `create-file`, `r/o`, `w/o`, `r/w`,
+; `s/r`, `bin`, `>filename`, `file-id`, `(open-file`.
+;
+; }doc
+
+; XXX TODO: this word needs several words from the library.
+
+  dw to_r_,to_filename_,from_r_,file_i_d_
+  dw zero_branch_,open_file.end
+  dw paren_open_file_,exit_
+open_file.end:
+  dw drop_
+  _literal -288
+  dw exit_
+
+; ----------------------------------------------
+  _c_constant_header r_w_,'r/w'
+
+; doc{
+;
+; r/w ( -- fam ) "r-w"
+;
+; Return the "read/write" file access method _fam_.
+;
+; See also: `r/o`, `w/o`, `s/r`, `bin`,
+; `create-file`, `open-file`.
+;
+; Origin: Forth-94 (FILE), Forth-2012 (FILE).
+;
+; }doc
+
+  db %011
+
+; ----------------------------------------------
+  _colon_header open_blocks_,'open-blocks'
 
 ; doc{
 ;
@@ -575,7 +841,6 @@ dosior_to_ior.hl:
 ; file.
 ;
 ; Definition:
-
 
 ; ----
 ; : open-blocks ( ca len -- )
@@ -589,9 +854,229 @@ dosior_to_ior.hl:
 ;
 ; }doc
 
-  dw close_blocks_,r_slash_w_,open_file_,throw_
+  dw close_blocks_,r_w_,open_file_,throw_
   dw block_f_i_d_,store_
   dw exit_
+
+; ----------------------------------------------
+  _code_header reposition_file_,'reposition-file'
+
+; doc{
+;
+; reposition-file ( ud fid -- ior )
+;
+; Reposition the file identified by _fid_ to _ud_ and return
+; the I/O result code _ior_.
+;
+; Origin: Forth-94 (FILE), Forth-2012 (FILE).
+;
+; See also: `file-position`, `open-file`, `create-file`.
+;
+; }doc
+
+  pop hl
+  ld a,l ; A = fid
+  pop de ;
+  pop hl ; EHL = file pointer ; XXX TODO adapt to NextZXOS
+  push bc ; save Forth IP
+  ld b,a ; B = fid
+  ld ix,136 ; dos_set_position ; XXX TODO use label
+  call dos_ix_underscore_
+  pop bc ; restore Forth IP
+  jp push_dos_ior_
+
+; ----------------------------------------------
+  _code_header bank_write_file_,'bank-write-file'
+
+; doc{
+;
+; bank-write-file ( ca len fid +n -- ior )
+;
+; Write _len_ characters from address _ca_ to the file
+; identified by _fid_ starting at its current position, while
+; memory bank _+n_ is paged in addresses $C000..$FFFF.
+; Return I/O result code _ior_.
+;
+; See also: `write-file`, `write-byte`, `bank`, `create-file`,
+; `open-file`.
+;
+; }doc
+
+  ; Credit:
+  ; Adapted from DZX-Forth.
+
+  pop hl ; l = bank
+  ld a,l
+bank_write_file_.a:
+  call save_ip
+  ld c,a
+  pop hl
+  ld b,l ; fid
+  pop de ; len
+  pop hl ; ca
+  ld ix,dos_write ; $0115
+  call dos.ix
+  call restore_ip
+  jp push_dos_ior
+
+; ----------------------------------------------
+  _code_header write_file_,'write-file'
+
+; doc{
+;
+; write-file ( ca len fid -- ior )
+;
+; Write _len_ characters from address _ca_ to the file
+; identified by _fid_ starting at its current position.
+; Return I/O result code _ior_.
+;
+; See also: `bank-write-file`, `write-byte`, `create-file`,
+; `open-file`.
+;
+; }doc
+
+  ; Credit:
+  ; Adapted from DZX-Forth.
+
+  ld a,(sys_bankm) ; $5B5C
+  and %111 ; current page for 0xC000..0xFFFF
+  jp bank_write_file_.a
+
+; ----------------------------------------------
+  _code_header read_file_,'read-file'
+
+; doc{
+
+; read-file ( ca len1 fid -- len2 ior )
+
+; Read _len1_ consecutive  characters to  _ca_ from the
+; current position  of the  file identified by _fid_.
+
+; If _len1_ characters are read without an exception, _ior_
+; is zero and _len2_ is equal to _len1_.
+
+; If the end of the file is reached before _len1_ characters
+; are read, _ior_ is zero and _len2_ is the number of
+; characters actually read.
+
+; If the operation is initiated when the value returned by
+; `file-position` is equal to the value returned by
+; `file-size` for the file identified by _fid, _len2_ is zero
+; and _ior_ is zero.
+
+; If an exception occurs, _ior_ is the I/O result code and
+; _len2_ is the number of characters transferred to _ca_
+; without an exception.
+
+; At the conclusion of the operation, `file-position` returns
+; the next file position after the last character read.
+
+; See also: `bank-read-file`, `read-byte`, `open-file`,
+; `write-file`.
+
+; }doc
+
+; XXX TODO -- Finish adapting the documentation.
+
+; XXX REMARK -- An ambiguous condition exists if the operation is initiated
+; when the value returned by `file-position` is greater than
+; the value returned by `file-size` for the file identified
+; by fileid, or if the requested operation attempts to read
+; portions of the file not written.
+
+  ; Credit:
+  ; Adapted from DZX-Forth.
+
+  ld a,(sys_bankm) ; $5B5C
+  and %111 ; current page for 0xC000..0xFFFF
+  ld l,a
+  push hl
+  ; execution continues in `bank-read-file`
+
+; ----------------------------------------------
+  _code_header bank_read_file_,'bank-read-file'
+
+; doc{
+;
+; bank-read-file ( ca len1 fid +n -- len2 ior )
+;
+; Read _len_ consecutive  characters to  _ca_ from the
+; current position  of the  file identified by _fid_ with
+; bank _+n_ paged in address range $C000..$FFFF.
+;
+; If _len1_ characters are read without an exception, _ior_
+; is zero and _len2_ is equal to _len1_.
+;
+; If the end of the file is reached before _len1_ characters
+; are read, _ior_ is zero and _len2_ is the number of
+; characters actually read.
+;
+; If the operation is initiated when the value returned by
+; `file-position` is equal to the value returned by
+; `file-size` for the file identified by _fid, _ior_ is zero
+; and _len2_ is zero.
+;
+; If an exception occurs _ior_ is the I/O result code and
+; _len2_ is the number of characters transferred to _ca_
+; without an exception.
+;
+; At the conclusion of the operation, `file-position` returns
+; the next file position after the last character read.
+;
+; See also: `bank-read-file`, `read-byte`, `open-file`,
+; `write-file`.
+;
+; }doc
+
+; XXX TODO -- Finish adapting the documentation.
+;
+; XXX REMARK -- An ambiguous condition exists if the operation
+; is initiated when the value returned by `file-position` is
+; greater than the value returned by `file-size` for the file
+; identified by fileid, or if the requested operation attempts
+; to read portions of the file not written.
+
+; XXX TODO: Check if this +3DOS issue was fixed in NextZXOS:
+;
+; NextZXOS causes EOF error when the desired length is beyond
+; the end of file (not counting the padding 0x1A at the end).
+; This makes it impossible to behave according to Forth-94.
+;
+; Solution: check the file position at the start.
+
+  ; Credit:
+  ; Adapted from DZX-Forth.
+
+  call save_ip
+  pop bc  ; C = bank
+  pop hl
+  ld b,l  ; B = fid
+  pop de  ; DE = len
+  pop hl  ; HL = ca
+  push de ; save len for later
+  ld ix,dos_read ; $0112
+  call dos.ix
+  pop hl ; len
+  call restore_ip
+  jr c,page_read_file_.no_error
+
+  ; error
+  ; hl = len
+  ; a = error code
+  ; de = number of bytes remaining unread
+
+  and a
+  sbc hl,de ; hl = bytes actually read
+  cp 21 ; is it "bad parameter"? XXX TODO label
+  jr z, page_read_file_.no_error
+  push hl
+  jp push_dos_ior
+
+page_read_file_.no_error:
+  ; no error
+  ; hl = len
+  push hl
+  jp false_
 
 ; ----------------------------------------------
   _colon_header transfer_block_,'transfer-block'
@@ -627,7 +1112,7 @@ dosior_to_ior.hl:
   dw to_r_
   dw b_slash_buf_,u_m_star_,block_f_i_d_,fetch_,reposition_file_,throw_
   dw buffer_data_,b_slash_buf_,block_f_i_d_,fetch_
-  dw r_from_
+  dw from_r_
   dw zero_branch_,transfer_block.read
   dw write_file_
   dw branch_,interpret.begin
@@ -899,6 +1384,11 @@ endif ; defined nextzxos
 ; `transfer-block`. Move `read-block` and `write-block` from the
 ; kernel and adapt them; the original versions will be shared by
 ; +3DOS, G+DOS and TR-DOS. Add `block-fid`, `flush`,
-; `close-blocks`, `open-blocks`.
+; `close-blocks`, `open-blocks`. Move from the library all the
+; words required to use the library blocks file: `read-file`,
+; `bank-read-file`, `write-file`, `bank-write-file`,
+; `reposition-file`, `>filename`, `r/w`, `open-file`,
+; `(open-file`, `/filename`, `do-dos-open_`, `file-id`,
+; `file-ids`, `#file-ids`. 
 
 ; vim: filetype=z80:textwidth=64
