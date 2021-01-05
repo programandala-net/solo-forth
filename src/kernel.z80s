@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101051754.
+; Last modified: 202101051859.
 
 include version.z80s
 
@@ -11,7 +11,7 @@ include version.z80s
 ; Author
 
 ; Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018, 2019,
-; 2020.
+; 2020, 2021.
 
 ; ==============================================================
 ; License
@@ -237,13 +237,15 @@ if gplusdos
   sectors_per_block:                equ 2
   max_drives:                       equ 2
   first_drive:                      equ 1 ; 1 .. 2
+  initial_drive:                    equ first_drive
 endif
 if nextzxos
   sectors_per_track:                equ 0 ; XXX REMARK not used
   blocks_per_disk:                  equ 0 ; XXX REMARK not used
   sectors_per_block:                equ 1 ; to avoid a division by zero later
   max_drives:                       equ 0 ; XXX REMARK not used
-  first_drive:                      equ 'C' ; 'A' .. 'P'
+  first_drive:                      equ 'A' ; 'A' .. 'P'
+  initial_drive:                    equ 'C'
 endif
 if plus3dos
   sectors_per_track:                equ 9
@@ -251,6 +253,7 @@ if plus3dos
   sectors_per_block:                equ 2
   max_drives:                       equ 2
   first_drive:                      equ 'A' ; 'A' .. 'P'
+  initial_drive:                    equ first_drive
 endif
 if trdos
   sectors_per_track:                equ 16
@@ -258,6 +261,7 @@ if trdos
   sectors_per_block:                equ 4
   max_drives:                       equ 4
   first_drive:                      equ 0 ; 0 .. 3
+  initial_drive:                    equ first_drive
 endif
 
 bytes_per_sector:                 equ bytes_per_buffer/sectors_per_block
@@ -12352,8 +12356,9 @@ endif
   ; Empty the disk buffer:
   dw empty_buffers_
 
-  ; Set the first drive as the current one:
-  dw first_drive_,set_drive_
+  ; Set the initial drive as the current one:
+  _literal initial_drive
+  dw set_drive_
 
   ; Restore default value of `#block-drives`:
   _literal 1
