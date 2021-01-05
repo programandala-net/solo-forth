@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101050239.
+; Last modified: 202101051821.
 ; See change log at the end of the file.
 
 ; ==============================================================
@@ -584,10 +584,11 @@ dosior_to_ior.hl:
 ;
 ; transfer-block ( u -- ior )
 ;
-; The block-level disk read-write linkage.  Transfer block _u_
-; to or from the current drive set by `set-drive` or
-; `set-block-drives`.  The read or write mode must be previously
-; set by `write-mode` or `read-mode`.
+; Transfer block _u_ to or from the current drive set by
+; `set-drive` or `set-block-drives`. The read or write mode must
+; be previously set by `write-mode` or `read-mode`.
+;
+; ``transfer-block`` is the block-level disk read-write linkage.  
 ;
 ; Definition:
 
@@ -601,7 +602,8 @@ dosior_to_ior.hl:
 ; ----
 
 ; See also: `read-block`, `write-block`, `transfer-sector`,
-; `block-sector#>dos`, `>drive-block`, `set-drive`.
+; `buffer-data`, `block-sector#>dos`, `>drive-block`,
+; `2-block-drives`.
 ;
 ; }doc
 
@@ -900,17 +902,17 @@ endif
 ;
 ; Set drive _c_ ('A'..'P') as the current one, i.e.  the drive
 ; implied by all filenames that do not specify a drive, and the
-; drive used by `transfer-sector` and `transfer-block`,
-; returning the I/O result code _ior_.  If the drive is
-; successfully selected, _ior_ is zero, otherwise it's an
-; exception code.  The default drive is 'A'.
+; drive used by all block operations, returning the I/O result
+; code _ior_.  If the drive is successfully selected, _ior_ is
+; zero, otherwise it's an exception code.  The default drive is
+; 'A'.
 ;
 ; ``set-drive`` does not access the drive, but merely checks
 ; that there is a driver for it (which does not imply that the
 ; drive exists).
 ;
-; See also: `get-drive`, `?set-drive`, `drive`, `set-block-drives`,
-; `2-block-drives`, `set-user`.
+; See also: `get-drive`, `?set-drive`, `drive`,
+; `set-block-drives`, `2-block-drives`, `set-user`.
 ;
 ; }doc
 
@@ -1132,6 +1134,6 @@ endif ; defined plus3dos
 ;
 ; 2021-01-05: Delete `transfer-bytes`, which was not configured
 ; by `read-mode` and `write-mode` yet, but anyway it is useless.
-; Improve documentation of `transfer-block`.
+; Improve documentation of `transfer-block` and `set-drive`.
 
 ; vim: filetype=z80:textwidth=64
