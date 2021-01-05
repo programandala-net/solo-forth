@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202101050050.
+# Last modified: 202101051732.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -152,9 +152,9 @@ trdos_disks=\
 	$(trdos_scorpion_boot_disk)
 
 nextzxos_files=\
-	 nextzxos/solo_forth.bas \
+	 nextzxos/solo.bas \
 	 nextzxos/solo.bin \
-	 nextzxos/solo_forth.fb
+	 nextzxos/solo.fb
 
 	# ==============================================================
 # Interface {{{1
@@ -225,11 +225,15 @@ disk_9: \
 clean: cleantmp cleandisks cleandoc cleancover
 
 .PHONY: cleandisks
-cleandisks: cleangplusdosdisks cleanplus3dosdisks cleantrdosdisks
+cleandisks: cleangplusdosdisks cleannextzxosfiles cleanplus3dosdisks cleantrdosdisks
 
 .PHONY: cleangplusdosdisks
 cleangplusdosdisks:
 	rm -f disks/gplusdos/*.mgt
+
+.PHONY: cleannextzxosfiles
+cleannextzxosfiles:
+	rm -f nextzxos/*
 
 .PHONY: cleanplus3dosdisks
 cleanplus3dosdisks:
@@ -245,7 +249,7 @@ cleantmp:
 
 .PHONY: cleandoc
 cleandoc:
-	rm -f doc/* tmp/doc.*
+	rm -f doc/* doc/www/* tmp/doc.*
 
 .PHONY: doc
 doc: gplusdosdoc plus3dosdoc trdosdoc
@@ -836,21 +840,21 @@ tmp/loader.nextzxos.bas: \
 	src/kernel.z80s
 	gforth make/patch_the_loader.fs $@ $^
 
-nextzxos/solo_forth.bas: tmp/loader.nextzxos.bas
+nextzxos/solo.bas: tmp/loader.nextzxos.bas
 	zmakebas -3 -n Autoload -a 1 -o $@ $<
 
 tmp/library.nextzxos.fs: $(nextzxos_core_lib_files)
 	cat $(nextzxos_core_lib_files) > $@
 
-nextzxos/solo_forth.fb: tmp/library.nextzxos.fs
+nextzxos/solo.fb: tmp/library.nextzxos.fs
 	fsb2 $<; \
 	mv -f $(addsuffix .fb,$(basename $< .fs)) $@
 
 .PHONY: nextzxos_files
 nextzxos_files: \
-	nextzxos/solo_forth.bas \
+	nextzxos/solo.bas \
 	nextzxos/solo.bin \
-	nextzxos/solo_forth.fb
+	nextzxos/solo.fb
 	cp -f $(basename $(fzx_fonts)) nextzxos
 	cp -f $(basename $(f64_fonts)) nextzxos
 	cp -f bin/addons/pr42.bin nextzxos
@@ -1779,10 +1783,13 @@ include Makefile.cover_image
 # 2020-12-24: Build the online documentation for the Fossil repository: an HTML
 # version of the README file.
 #
-# 2021-01-04: Do the first changes in order to build target files for
-# NextZXOS: loader, binary and library.
+# 2021-01-04: Do the first changes in order to build target files for NextZXOS:
+# loader, binary and library.
 #
-# 2021-01-05: Finish the main rule to build all of the NextZXOS files.
+# 2021-01-05: Finish the main rule to build all of the NextZXOS files. Shorten
+# the filenames of the NextZXOS files to "solo.EXT", until the restrictions
+# inherited from the +3DOS code can be removed. Improve/update the cleaning
+# rules.
 
 # ==============================================================
 
