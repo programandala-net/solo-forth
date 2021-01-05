@@ -3,8 +3,8 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
-  \ See change log at the end of the file
+  \ Last modified: 202101051857.
+  \ See change log at the end of the file.
 
   \ ===========================================================
   \ Description
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2017, 2018, 2020.
+  \ Marcos Cruz (programandala.net), 2017, 2018, 2020, 2021.
 
   \ ===========================================================
   \ License
@@ -29,10 +29,10 @@ unneeding drive ?\ : drive ( c1 -- c2 ) first-drive + ;
 
   \ doc{
   \
-  \ drive ( c1 -- c2 )
+  \ drive ( +n -- x )
   \
-  \ Convert drive number _c1_ (0 index) to actual drive
-  \ identifier _c2_ (DOS dependent).
+  \ Convert drive number _+n_ (0 index) to actual drive
+  \ identifier _x_ (DOS dependent).
   \
   \ ``drive`` is used in order to make the code portable,
   \ abstracting the DOS drive identifiers.
@@ -42,11 +42,11 @@ unneeding drive ?\ : drive ( c1 -- c2 ) first-drive + ;
   \ ----
   \ \ Set the second disk drive as default:
   \
-  \ 2 set-drive       \ on G+DOS only
-  \ 1 set-drive       \ on TR-DOS only
-  \ 'B' set-drive     \ on +3DOS only
+  \ 'B' set-drive \ +3DOS
+  \ 2 set-drive   \ G+DOS
+  \ 1 set-drive   \ TR-DOS
   \
-  \ 1 drive set-drive \ on any DOS -- portable code
+  \ 1 drive set-drive \ any DOS -- portable code
   \ ----
 
   \ See also: `set-drive`, `first-drive`, `max-drives`.
@@ -387,5 +387,7 @@ unneeding get-block-drives ?( need block-drive@
   \ 2020-05-24: Replace "hash" notation with "number sign".
   \
   \ 2020-05-26: Fix typo.
+  \
+  \ 2021-01-05: Improve documentation of `drive`.
 
   \ vim: filetype=soloforth
