@@ -3,8 +3,8 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282133
-  \ See change log at the end of the file
+  \ Last modified: 202101051643.
+  \ See change log at the end of the file.
 
   \ ===========================================================
   \ Description
@@ -14,7 +14,7 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2017, 2018, 2020.
+  \ Marcos Cruz (programandala.net), 2017, 2018, 2020, 2021.
 
   \ ===========================================================
   \ License
@@ -29,10 +29,10 @@ unneeding /filename ?\ 16 cconstant /filename
 
   \ doc{
   \
-  \ /filename ( -- n ) "slash-filename"
+  \ /filename ( -- len ) "slash-filename"
   \
-  \ Return the maximum length of a +3DOS filename, including
-  \ drive, user area and filename extension.
+  \ Return the maximum length _len_ of a +3DOS filename,
+  \ including drive, user area and filename extension.
   \
   \ See also: `/base-filename`, `>filename`.
   \
@@ -42,10 +42,10 @@ unneeding /base-filename ?\ 8 cconstant /base-filename
 
   \ doc{
   \
-  \ /base-filename ( -- n ) "slash-basefilename"
+  \ /base-filename ( -- len ) "slash-basefilename"
   \
-  \ Return the maximum length of a +3DOS base filename, i.e.,
-  \ a filename without drive, user area and extension.
+  \ Return the maximum length _len_ of a +3DOS base filename,
+  \ i.e., a filename without drive, user area and extension.
   \
   \ See also: `/filename-ext`, `/filename`, `>filename`.
   \
@@ -55,10 +55,10 @@ unneeding /filename-ext ?\ 3 cconstant /filename-ext
 
   \ doc{
   \
-  \ /filename-ext ( -- n ) "slash-filename-ext"
+  \ /filename-ext ( -- len ) "slash-filename-ext"
   \
-  \ Return the maximum length of a +3DOS filename extension
-  \ excluding the dot.
+  \ Return the maximum length _len_ of a +3DOS filename
+  \ extension excluding the dot.
   \
   \ See also: `/filename`, `/base-filename`.
   \
@@ -291,7 +291,7 @@ unneeding file-id ?(
 
   \ doc{
   \
-  \ #file-ids ( -- n )
+  \ #file-ids ( -- n ) "number-sign-file-i-d-s"
   \
   \ _n_ is the total number of file identifiers that can be
   \ used.
@@ -307,7 +307,7 @@ create file-ids #file-ids allot  file-ids #file-ids erase
 
   \ doc{
   \
-  \ file-ids ( -- ca )
+  \ file-ids ( -- ca ) "file-i-d-s"
   \
   \ _ca_ is the address of a byte table containing the status
   \ of the file identifiers:
@@ -332,7 +332,7 @@ create file-ids #file-ids allot  file-ids #file-ids erase
 
   \ doc{
   \
-  \ file-id ( -- fid true | false )
+  \ file-id ( -- fid true | false ) "file-i-d"
   \
   \ If there is a file identifier not used yet, return it _fid_
   \ and `true`; otherwise return `false`.
@@ -452,8 +452,27 @@ unneeding do-dos-open_ ?( need assembler
 
 create do-dos-open_ ( -- a ) asm
 
-  \ This word is used by '(create-file' and `(open-file`
+  0106 ix ldp#, dos-ix_ call,
+  \   ld ix,dos_open
+  \   call dos.ix
+  b pop, pushdosior nc? ?jp,
+  h pop, 0 h ld#, h push, ' false jp, end-asm ?)
+  \   pop bc  ; restore the Forth IP
+  \   jp nc, pushdosior
+  \   ; no error
+  \   pop hl      ; l = fid
+  \   ld h,0
+  \   push hl     ; fid
+  \   jp false_   ; no error
+
+  \ doc{
   \
+  \ do-dos-open_ (-- a )
+  \
+  \ Return the address _a_ of a Z80 routine 
+  \ used by '(create-file' and `(open-file`.
+
+  \ ....
   \ Entry conditions:
   \   B = fid
   \   C = fam
@@ -462,27 +481,9 @@ create do-dos-open_ ( -- a ) asm
   \   HL = address of filename (no wildcards), with trailing 0xFF
   \   (TOS) = Forth IP
   \   (NOS) = fid + 256*fam
+  \ ....
 
-  0106 ix ldp#, dos-ix_ call,
-  \   ld ix,dos_open
-  \   call dos.ix
-  b pop, pushdosior nc? ?jp,
-  h pop, 0 h ld#, h push, ' false jp, end-asm ?)
-  \   pop bc  ; restore the Forth IP
-  \   _jump_nc do_dos_open.error
-  \   ; no error
-  \   pop hl      ; l = fid
-  \   ld h,0
-  \   push hl     ; fid
-  \   jp false_   ; no error
-  \
-  \ do_dos_open.error
-  \   ; (sp) = fid + 256*fam (used as undefined fid)
-  \   ; a = error code
-
-  \   call convert_dos_error_code
-  \   ; hl = error code
-  \   jp push_hl
+  \ }doc
 
 unneeding 'ctrl-z' ?\ $1A cconstant 'ctrl-z'
 
@@ -528,7 +529,8 @@ code (create-file ( ca fam fid -- fid ior )
   \   ld e,a  ; E = open action
   \   jp do_dos_open
 
-  \ XXX TODO -- Document.
+  \ XXX TODO -- Document. Add cross-reference to
+  \ `do-dos-open_`.
 
   \ ****************************
   \
@@ -608,6 +610,25 @@ code (open-file ( ca fam fid -- fid ior )
   \   ld d,0  ; D = create action: error, file does not exist
   \   ld e,a  ; E = open action
   \   jp do_dos_open
+
+  \ doc{
+  \
+  \ (open-file ( ca fam fid -- fid ior )
+  \
+  \  Open the file named in the $FF-terminated string pointed
+  \  at _ca_, and open it with file access method _fam_ and
+  \  file identifier _fid_.
+  \
+  \ If the  file  was  successfully and  opened, _ior_ is zero,
+  \ _fid_  is  the file identifier and the file has been
+  \ positioned to the start of the file.  Otherwise _ior_ is
+  \ the I/O result code and _fid_ is undefined.
+  \
+  \ ``(open-file`` is a low-level factor of `open-file`.
+  \
+  \ See also: `r/o`, `w/o`, `r/w`, `s/r`, `bin`, `do-dos-open`.
+  \
+  \ }doc
 
 : open-file ( ca len fam -- fid ior )
   >r >filename r> file-id if (open-file exit then drop #-288 ;
@@ -1294,7 +1315,7 @@ code bank-read-file  ( ca len fid +n -- ior )
     \   push de ; save len for later
     \   ld ix,dos_read ; $0112
   dos-ix_ call, E1 c, restore-ip_ call, nc? rif
-    \   call dos
+    \   call dos.ix
     \   pop hl ; len
     \   call restore_ip
     \   jr c,page_read_file_.no_error
@@ -1704,12 +1725,18 @@ need reposition-file need file-position
   \ `/cat-buffer`. Improve documentation. Make `>cat` erase the
   \ whole `cat-buffer`, not only the first entry.
   \
-  \ 2020-06-08: Improve documentation: make _true_ and
-  \ _false_ cross-references.
+  \ 2020-06-08: Improve documentation: make _true_ and _false_
+  \ cross-references.
   \
   \ 2020-07-11: Add title to table.
   \
   \ 2020-07-28: Replace "Note:" with the "NOTE:" markup.
   \ Replace "equivalent code" with "equivalent definition".
+  \
+  \ 2021-01-05: Document `(open-file`. Add pronunciation to
+  \ some words. Improve documentation of `do-dos-open_`. Update
+  \ the Z80 assembly translation of `do-dos-open_`. Improve
+  \ notation of lenghts in data stack comments. Fix typo in Z80
+  \ transcription of `bank-read-file`.
 
   \ vim: filetype=soloforth

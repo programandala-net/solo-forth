@@ -3,8 +3,8 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
-  \ See change log at the end of the file
+  \ Last modified: 202101051611.
+  \ See change log at the end of the file.
 
   \ ===========================================================
   \ Description
@@ -31,7 +31,7 @@
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
-  \ 2020.
+  \ 2020, 2021.
 
   \ ===========================================================
   \ License
@@ -131,9 +131,9 @@ create tape-header  /tape-header 2 * allot
 
   \ doc{
   \
-  \ /tape-filename ( -- n ) "slash-tape-filename"
+  \ /tape-filename ( -- len ) "slash-tape-filename"
   \
-  \ _n_ is the maximum length of a tape filename, which is 10
+  \ _len_ is the maximum length of a tape filename, which is 10
   \ characters.
   \
   \ See also: `tape-filename`. `/filename`.
@@ -512,5 +512,8 @@ unneeding tape-file>display ?( need tape-file>
   \ affect the final documentation).
   \
   \ 2020-05-24: Fix typo.
+  \
+  \ 2021-01-05: Improve notation of a length in data stack
+  \ comment.
 
   \ vim: filetype=soloforth
