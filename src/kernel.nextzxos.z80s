@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101051736.
+; Last modified: 202101051825.
 ; See change log at the end of the file.
 
 ; ==============================================================
@@ -1078,10 +1078,12 @@ page_read_file_.no_error:
 ;
 ; transfer-block ( u f -- ior )
 ;
-; The block-level disk read-write linkage.  Transfer block _u_
-; to or from the current block file set by `open-blocks`. If _f_
-; is zero, read the file from the file, otherwise write it to
-; the file. 
+; Transfer block _u_ to or from the current blocks file set by
+; `open-blocks`. If _f_ is zero, read block _u_ from the file
+; into `buffer-data`, otherwise write the contents of
+; `buffer-data` into block _u_ of the file.
+;
+; ``transfer-block`` is the block-level disk read-write linkage.  
 ;
 ; Definition:
 
@@ -1094,7 +1096,8 @@ page_read_file_.no_error:
 ;      then throw ;
 ; ----
 
-; See also: `read-block`, `write-block`.
+; See also: `read-block`, `write-block`, `b/buf`,
+; `reposition-file`, `block-fid`, `write-file`, `read-file`.
 ;
 ; }doc
 
@@ -1237,7 +1240,7 @@ transfer_block.end:
 ; implied by all filenames that do not specify a drive,
 ; returning the I/O result code _ior_.  If the drive is
 ; successfully selected, _ior_ is zero, otherwise it's an
-; exception code.  The default drive is 'A'.
+; exception code.  The default drive is 'C'.
 ;
 ; ``set-drive`` does not access the drive, but merely checks
 ; that there is a driver for it (which does not imply that the
@@ -1361,6 +1364,7 @@ endif ; defined nextzxos
 ; `bank-read-file`, `write-file`, `bank-write-file`,
 ; `reposition-file`, `>filename`, `r/w`, `open-file`,
 ; `(open-file`, `/filename`, `do-dos-open_`, `file-id`,
-; `file-ids`, `#file-ids`.  Delete `ref-xdbp`.
+; `file-ids`, `#file-ids`.  Delete `ref-xdbp`. Improve
+; documentation of `transfer-block`.
 
 ; vim: filetype=z80:textwidth=64
