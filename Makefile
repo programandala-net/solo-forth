@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202101051947.
+# Last modified: 202101052304.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -707,8 +707,8 @@ no_dos_core_lib_files = \
 gplusdos_core_lib_files = \
 	$(filter-out %nextzxos.fs %plus3dos.fs %trdos.fs, $(core_lib_files))
 
-nextzxos_core_lib_files = \
-	$(filter-out %gplusdos.fs %plus3dos.fs %trdos.fs, $(core_lib_files))
+nextzxos_lib_files = \
+	$(filter-out $(not_ready) %gplusdos.fs %plus3dos.fs %trdos.fs, $(lib_files))
 
 plus3dos_core_lib_files = \
 	$(filter-out %gplusdos.fs %nextzxos.fs %trdos.fs, $(core_lib_files))
@@ -843,8 +843,8 @@ tmp/loader.nextzxos.bas: \
 nextzxos/solo.bas: tmp/loader.nextzxos.bas
 	zmakebas -3 -n Autoload -a 1 -o $@ $<
 
-tmp/library.nextzxos.fs: $(nextzxos_core_lib_files)
-	cat $(nextzxos_core_lib_files) > $@
+tmp/library.nextzxos.fs: $(nextzxos_lib_files)
+	cat $^ > $@
 
 nextzxos/solo.fb: tmp/library.nextzxos.fs
 	fsb2 $<; \
@@ -1789,7 +1789,8 @@ include Makefile.cover_image
 # 2021-01-05: Finish the main rule to build all of the NextZXOS files. Shorten
 # the filenames of the NextZXOS files to "solo.EXT", until the restrictions
 # inherited from the +3DOS code can be removed. Improve/update the cleaning
-# rules.
+# rules. Complete the NextZXOS blocks file with the programs and the
+# benchmarks.
 
 # ==============================================================
 
