@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101051727.
+; Last modified: 202101051736.
 ; See change log at the end of the file.
 
 ; ==============================================================
@@ -1282,29 +1282,6 @@ set_drive.end:
   jp push_dos_ior
 
 ; ----------------------------------------------
-  _code_header ref_xdbp_,'ref-xdpb'
-
-; doc{
-;
-; ref-xdbp ( c -- a ior ) "ref-X-D-B-P"
-;
-; Return the address _a_ of the XDPB of drive _c_ ('A'..'P').
-;
-; }doc
-
-  ; XXX TODO -- Confirm: The returned address is accessible
-  ; when bank 7 is paged in.
-
-  ; XXX TODO -- Delete.
-
-  pop hl
-  ld a,l               ; drive 'A'..'P'
-  ld ix,dos_ref_xdpb
-  call dos.ix.preserve_ip
-  push ix
-  jp push_dos_ior
-
-; ----------------------------------------------
   _code_header default_1346_,'default-1346'
 
   ; doc{
@@ -1384,6 +1361,6 @@ endif ; defined nextzxos
 ; `bank-read-file`, `write-file`, `bank-write-file`,
 ; `reposition-file`, `>filename`, `r/w`, `open-file`,
 ; `(open-file`, `/filename`, `do-dos-open_`, `file-id`,
-; `file-ids`, `#file-ids`. 
+; `file-ids`, `#file-ids`.  Delete `ref-xdbp`.
 
 ; vim: filetype=z80:textwidth=64
