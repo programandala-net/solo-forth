@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101050101.
+; Last modified: 202101051754.
 
 include version.z80s
 
@@ -239,12 +239,11 @@ if gplusdos
   first_drive:                      equ 1 ; 1 .. 2
 endif
 if nextzxos
-  ; XXX REMARK not used
-  sectors_per_track:                equ 0 
-  blocks_per_disk:                  equ 0
+  sectors_per_track:                equ 0 ; XXX REMARK not used
+  blocks_per_disk:                  equ 0 ; XXX REMARK not used
   sectors_per_block:                equ 1 ; to avoid a division by zero later
-  max_drives:                       equ 0
-  first_drive:                      equ 0
+  max_drives:                       equ 0 ; XXX REMARK not used
+  first_drive:                      equ 'C' ; 'A' .. 'P'
 endif
 if plus3dos
   sectors_per_track:                equ 9
@@ -11054,7 +11053,7 @@ search.failed:
 
 ; ----------------------------------------------
 
-if 0 ; developing
+if 1 ; developing
 
   _colon_header depth_,'depth'
 
@@ -14456,7 +14455,7 @@ number_sign_s.begin:
 
 ; ----------------------------------------------
 
-if 0 ; debugging
+if 1 ; debugging
 
   _colon_header dot_s_,'.s'
 
@@ -14491,7 +14490,7 @@ endif
 
 ; ----------------------------------------------
 
-if 0 ; developing
+if 1 ; developing
 
   _colon_header u_dot_s_,'u.s'
 
