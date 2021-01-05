@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101050325.
+; Last modified: 202101050342.
 ; See change log at the end of the file.
 
 ; ==============================================================
@@ -513,6 +513,8 @@ dosior_to_ior.hl:
 ;
 ; }doc
 
+  dw -1 ; -1 (=true) means no blocks file is open
+
 ; ----------------------------------------------
   _colon_header flush_,'flush'
 
@@ -536,7 +538,7 @@ dosior_to_ior.hl:
 ; ----------------------------------------------
   _colon_header open_blocks_,'close-blocks'
 
-; XXX FIXME: the unused value of `block-fid` cannot be 0..15.
+; XXX FIXME: this words needs `close-file` from the library.
 
 ; doc{
 ;
@@ -546,16 +548,19 @@ dosior_to_ior.hl:
 ;
 ; Definition:
 
-
 ; ----
 ; : close-blocks ( -- )
-;   block-fid @ ?dup
-;   if flush close-file throw then ;
+;   block-fid @ true = ?exit
+;   flush block-fid @ close-file throw ;
 ; ----
 
 ; See also: `open-blocks`, `block-fid`, `flush`, `close-file`.
 ;
 ; }doc
+
+  dw block_fid_,fetch_,true_,equals_,question_exit_
+  dw flush_,block_f_i_d_,fetch_,close_file_,throw_
+  dw exit_
 
 ; ----------------------------------------------
   _colon_header open_blocks_,'open-blocks'
