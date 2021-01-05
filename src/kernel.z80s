@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101051859.
+; Last modified: 202101052257.
 
 include version.z80s
 
@@ -9624,6 +9624,9 @@ simple_accept.end:
 ; ----------------------------------------------
   _variable_header number_sign_block_drives_,'#block-drives'
 
+; XXX TODO This word is useless in NextZXOS. Move it to the
+; corresponding DOS kernels.
+
 ; doc{
 ;
 ; #block-drives ( -- ca ) "number-sign-block-drives"
@@ -9645,7 +9648,14 @@ simple_accept.end:
   db 1
 
 ; ----------------------------------------------
+if nextzxos
+  _constant_header max_blocks_,'max-blocks'
+else
   _colon_header max_blocks_,'max-blocks'
+endif
+
+; XXX TODO Move to the DOS-specific kernels, because the
+; description in NextZXOS is different.
 
 ; doc{
 ;
@@ -9657,8 +9667,12 @@ simple_accept.end:
 ;
 ; }doc
 
+if nextzxos
+  dw $7FFF-1 ; 32766 ; XXX TODO document why
+else  
   dw blocks_slash_disk_,number_sign_block_drives_,c_fetch_,star_
   dw exit_
+endif  
 
 ; ----------------------------------------------
   _colon_header block_question_,'block?'
