@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101050253.
+; Last modified: 202101050325.
 ; See change log at the end of the file.
 
 ; ==============================================================
@@ -498,9 +498,98 @@ dosior_to_ior.hl:
   jp negate_hl
 
 ; ----------------------------------------------
-  _colon_header transfer_block_,'transfer-block'
+  _variable_header block_f_i_d_,'block-fid'
 
-; XXX TODO `open-blocks`, `block-fid`.
+; doc{
+;
+; block-fid ( -- a ) "block-f-i-d"
+;
+; A `variable`. _a_ is the address of a cell containing the file
+; ID of the current blocks file.
+;
+; Origin: Gforth.
+;
+; See also: `open-blocks`.
+;
+; }doc
+
+; ----------------------------------------------
+  _colon_header flush_,'flush'
+
+; doc{
+;
+; flush ( -- )
+;
+; Perform the function of `save-buffers`, then unassign all
+; block buffers with `empty-buffers`.
+;
+; Origin: Forth-83 (Required Word Set), Forth-94 (BLOCK).
+; Forth-2012 (BLOCK).
+;
+; See also: `close-blocks`.
+;
+; }doc
+
+  dw save_buffers_,empty_buffers_
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header open_blocks_,'close-blocks'
+
+; XXX FIXME: the unused value of `block-fid` cannot be 0..15.
+
+; doc{
+;
+; close-blocks ( -- )
+;
+; Close the current blocks file, if any.
+;
+; Definition:
+
+
+; ----
+; : close-blocks ( -- )
+;   block-fid @ ?dup
+;   if flush close-file throw then ;
+; ----
+
+; See also: `open-blocks`, `block-fid`, `flush`, `close-file`.
+;
+; }doc
+
+; ----------------------------------------------
+  _colon_header open_blocks_,'open-blocks'
+
+; XXX FIXME: this words needs `open-file` from the library.
+
+; doc{
+;
+; open-blocks ( ca len -- )
+;
+; Use the file, whose name is given by _ca len_, as the blocks
+; file.
+;
+; Definition:
+
+
+; ----
+; : open-blocks ( ca len -- )
+;   close-blocks r/w open-file throw block-fid ! ;
+; ----
+
+; Origin: Gforth.
+;
+; See also: `block-fid`, `read-block`, `write-block`,
+; `transfer-block`, `block`, `buffer`.
+;
+; }doc
+
+  dw close_blocks_,r_slash_w_,open_file_,throw_
+  dw block_f_i_d_,store_
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header transfer_block_,'transfer-block'
 
 ; doc{
 ;
@@ -804,6 +893,7 @@ endif ; defined nextzxos
 ; some Z80 instructions. Delete `transfer-bytes`. Rewrite
 ; `transfer-block`. Move `read-block` and `write-block` from the
 ; kernel and adapt them; the original versions will be shared by
-; +3DOS, G+DOS and TR-DOS.
+; +3DOS, G+DOS and TR-DOS. Add `block-fid`, `flush`,
+; `close-blocks`, `open-blocks`.
 
 ; vim: filetype=z80:textwidth=64
