@@ -1,7 +1,7 @@
 = Solo Forth: Version {version} for {dosname}
 :author: Marcos Cruz
 :producer: Marcos Cruz
-:revdate: 2021-01-04
+:revdate: 2021-01-05
 :doctype: book
 :lang: en
 ifdef::backend-html5[]
@@ -20,7 +20,7 @@ endif::[]
 :username:
 :source:
 ifdef::backend-epub3[]
-:copyright: 2015-2020 Marcos Cruz
+:copyright: 2015-2021 Marcos Cruz
 :front-cover-image: ../doc/{doslabel}_solo_forth_cover.jpg
 endif::[]
 
@@ -724,7 +724,8 @@ word, within a configurable range of blocks (using the variables
 `first-locatable` and `last-locatable`).  Of course, nested `need` are
 resolved the same way: searching the library from the beginning.  This
 can be slow.  This is not a problem, because the goal of Solo Forth is
-cross development, and therefore only the last step of the development
+<<_write_programs,cross development>>,
+and therefore only the last step of the development
 loop, i.e., the compilation of the sources from the disk images
 created in the host system, compilation that includes all the slow
 searching of library blocks, is done in the real (actually, emulated)
@@ -984,9 +985,19 @@ Depending on the code you want to run, enter the corresponding command:
 . ``need all-benchmarks`` to run all the three benchmarks above
 
 // How to write Forth programs {{{1
+[#_write_programs]
 == How to write Forth programs
 
-// XXX TODO --
+There are two ways to write source code:
+
+. In the Forth system itself, using a classic Forth block editor (two
+  of them are included in the library: `gforth-editor` and
+  `specforth-editor`).
+. In a modern operating system, using an ordinary text editor and then
+  converting the sources into a ZX Spectrum disk image, ready to be
+  used as a block disk by the Forth system. This is the recommended
+  method. We call it “cross development”, though the actual
+  compilation of the Forth sources is done in the ZX Spectrum.
 
 Briefly, the steps of cross development are the following:
 
