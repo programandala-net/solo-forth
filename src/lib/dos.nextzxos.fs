@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202101040226.
+  \ Last modified: 202101050221.
   \ See change log at the end of the file.
 
   \ ===========================================================
@@ -133,7 +133,7 @@ unneeding rename-file ?( need >filename need (rename-file
   \
   \ }doc
 
-( get-1346 set-1346 2-block-drives )
+( get-1346 set-1346 )
 
 unneeding get-1346 ?(
 
@@ -216,26 +216,6 @@ code set-1346 ( n1 n2 n3 n4 -- )
   \ }doc
 
   \ XXX TODO -- Finish the documentation.
-
-unneeding 2-block-drives ?( need set-block-drives
-
-: 2-block-drives ( -- ) 'B' 'A' 2 set-block-drives ;
-
-2-block-drives ?)
-
-  \ doc{
-  \
-  \ 2-block-drives ( -- )
-  \
-  \ Set all drives as block drives, in normal order: "A" and
-  \ "B".
-  \
-  \ NOTE: For convenience, when this word is loaded, it's also
-  \ executed.
-  \
-  \ See also: `set-block-drives`.
-  \
-  \ }doc
 
 ( (delete-file delete-file file-id )
 
@@ -1612,5 +1592,7 @@ code set-user ( n -- ior )
 
   \ 2021-01-04: Start. Copy from <dos.plus3dos.fs> (2017, 2018,
   \ 2020).
+  \
+  \ 2021-01-05: Delete `2-block-drives`.
 
   \ vim: filetype=soloforth
