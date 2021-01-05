@@ -1,13 +1,13 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2021-01-03
+:revdate: 2021-01-04
 :toc:
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202101031916
+// Last modified: 202101042314.
 
 // Description {{{1
 == Description
@@ -20,9 +20,9 @@ compatible computers, with disk drives and +3DOS, G+DOS, or TR-DOS.
 Solo Forth cannot run on the original ZX Spectrum 48, but could be
 used to develop programs for it.
 
-Solo Forth can be used as a stand-alone Forth system (either on an
+Solo Forth can be used as a stand-alone Forth system (either in an
 emulator or on the real computer), or as part of a cross-development
-environment on a GNU/Linux operating system (in theory, other type of
+environment in a GNU/Linux operating system (in theory, other type of
 operating systems could be used as well).
 
 // end::description[]
@@ -327,116 +327,15 @@ following:
 [#_run]
 == How to run
 
-// tag::run_pentagon[]
+:diskdriveformat: Make sure its disk drives are \
+configured as double-sided and 80-track in the emulator.
 
-// Pentagon 128 {{{2
-=== Pentagon 128
+// In +3DOS {{{2
+[#_run_plus3dos]
+=== In +3DOS
 
-1. Run a ZX Spectrum emulator and select a Pentagon
-   128{blank}footnote:trdosdiskformat[Make sure the disk drives are
-   configured as double-sided and 80-track].
-2. “Insert” the disk image file <disks/trdos/disk_0_boot.128.trd> as disk
-   'A'.
-3. Choose “TR-DOS” from the computer start menu. This will enter the
-   TR-DOS command line{blank}footnote:trdoscli[The TR-DOS command line
-   uses keyboard tokens, like the ZX Spectrum 48, but commands typed
-   in 'L' cursor mode will be recognized as well, as on the ZX
-   Spectrum 128 editor.  In order to get the 'L' cursor mode you can
-   type a quote (Symbol Shift + 'P') or press 'E' to get keyword
-   ``REM``. When the DOS command is typed in full, the quote or the
-   ``REM`` must be removed from the start of the line before pressing
-   'Enter'.].
-4. Press the 'R' key to get the ``RUN`` command and press the Enter
-   key. Solo Forth will be loaded from disk.
-
-// Pentagon 512 {{{2
-=== Pentagon 512
-
-1. Run a ZX Spectrum emulator and select a Pentagon
-   512{blank}footnote:trdosdiskformat[].
-2. “Insert” the disk image file
-   <disks/trdos/disk_0_boot.pentagon_512.trd> as disk 'A'.
-3. Choose "128k menu"footnote:pentagonboot[In theory, choosing option
-   “TR-DOS” from the system service menu should work. But it seems it
-   depends on a specific version of TR-DOS.  This alternative method
-   is longer, but it works with the TR-DOS 5.03 ROM. It will be
-   improved in future versions of the manual.] from the computer start
-   menu (the reset service menu). This will enter a ZX Spectrum 128
-   style menu. Choose “TR-DOS”.  This will enter the TR-DOS command
-   line{blank}footnote:trdoscli[].
-4. Press the 'R' key to get the ``RUN`` command and press the Enter
-   key.  Solo Forth will be loaded from disk.
-
-// Pentagon 1024 {{{2
-=== Pentagon 1024
-
-1. Run a ZX Spectrum emulator and select a Pentagon
-   1024{blank}footnote:trdosdiskformat[].
-2. “Insert” the disk image file
-   <disks/trdos/disk_0_boot.pentagon_1024.trd> as disk 'A'.
-3. Choose "128k menu"footnote:pentagonboot[] from the computer start
-   menu (the reset service menu). This will enter a ZX Spectrum 128
-   style menu. Choose “TR-DOS”.  This will enter the TR-DOS command
-   line{blank}footnote:trdoscli[].
-4. Press the 'R' key to get the ``RUN`` command and press the Enter
-   key.  Solo Forth will be loaded from disk.
-
-// end::run_pentagon[]
-
-// tag::run_scorpion[]
-
-// Scorpion ZS 256 {{{2
-=== Scorpion ZS 256
-
-1. Run a ZX Spectrum emulator and select a Scorpion ZS
-   256{blank}footnote:trdosdiskformat[].
-2. “Insert” the disk image file
-   <disks/trdos/disk_0_boot.scorpion_zs_256.trd> as disk 'A'.
-3. Choose "128 TR-DOS" from the computer start menu.  Solo Forth will
-   be loaded from disk.
-
-// end::run_scorpion[]
-
-// tag::run_128_with_betadisk[]
-
-// ZX Spectrum 128/+2 with the Beta 128 interface {{{2
-=== ZX Spectrum 128/+2 with the Beta 128 interface
-
-1. Run a ZX Spectrum emulator and select a ZX Spectrum 128 (or ZX
-   Spectrum +2) with the Beta 128
-   interface{blank}footnote:trdosdiskformat[].
-2. “Insert” the disk image file <disks/trdos/disk_0_boot.128.trd> as disk
-   A of the Beta 128 interface.
-3. Choose "128 BASIC" from the computer start menu.
-4. Type `randomize usr 15616` in BASIC (or just `run usr15616` to save
-   seven keystrokes). This will enter the TR-DOS command
-   line{blank}footnote:trdoscli[].
-5. Press the 'R' key to get the ``RUN`` command and press the Enter
-   key.  Solo Forth will be loaded from disk.
-
-// end::run_128_with_betadisk[]
-
-// ZX Spectrum 128/+2 with the Plus D interface {{{2
-=== ZX Spectrum 128/+2 with the Plus D interface
-
-// tag::run_128_with_plusd[]
-
-// XXX REMARK -- This tag does not include the title, because this is
-// the only entry for +3DOS, and the computers are mentioned in item
-// 1:
-
-1. Run a ZX Spectrum emulator and select a ZX Spectrum 128 (or ZX
-   Spectrum +2) with the Plus D disk interface.
-2. “Insert” the disk image file <disks/gplusdos/disk_0_boot.mgt> as
-   disk 1 of the Plus D disk interface.
-3. Choose "128 BASIC" from the computer start menu.
-4. Type ``run`` in BASIC. G+DOS will be loaded from disk, and Solo
-   Forth as well.
-
-// end::run_128_with_plusd[]
-
-// ZX Spectrum +3/+3e {{{2
-=== ZX Spectrum +3/+3e
+// On ZX Spectrum +3/+3e {{{3
+==== On ZX Spectrum +3/+3e
 
 // tag::run_plus3[]
 
@@ -453,28 +352,139 @@ following:
 
 1. Run a ZX Spectrum emulator and select a ZX Spectrum +3 (or
    http://www.worldofspectrum.org/zxplus3e/[ZX
-   Spectrum{sp}+3e,role="external"])footnote:plus3dosdiskformat[Make
-   sure the disk drives are configured as double-sided and 80-track].
-2. “Insert” the disk image file <disks/plus3dos/disk_0_boot.180.dsk>
-   (or <disks/plus3dos/disk_0_boot.720.dsk>, depending on the capacity
-   of the drive) as disk 'A'.
+   Spectrum{sp}+3e,role="external"]). {diskdriveformat}
+2. “Insert” the disk image file <disks/plus3dos/disk_0_boot.dsk> as
+   disk 'A'.
 3. Choose “Loader” from the computer start menu. Solo Forth will be
    loaded from disk.
 
 // end::run_plus3[]
 
+// In G+DOS {{{2
+[#_run_gplusdos]
+=== In G+DOS
+
+// On ZX Spectrum 128/+2 with the Plus D interface {{{3
+==== On ZX Spectrum 128/+2 with the Plus D interface
+
+// tag::run_128_with_plusd[]
+
+// XXX REMARK -- This tag does not include the title, because this is
+// the only entry for +3DOS, and the computers are mentioned in item
+// 1:
+
+1. Run a ZX Spectrum emulator and select a ZX Spectrum 128 (or ZX
+   Spectrum +2) with the Plus D disk interface. {diskdriveformat}
+2. “Insert” the disk image file <disks/gplusdos/disk_0_boot.mgt> as
+   disk 1 of the Plus D disk interface.
+3. Choose "128 BASIC" from the computer start menu.
+4. Type ``run`` in BASIC. G+DOS will be loaded from disk, and Solo
+   Forth as well.
+
+// end::run_128_with_plusd[]
+
+// In TR-DOS {{{2
+[#_run_trdos]
+=== In TR-DOS
+
+// tag::run_pentagon[]
+
+// On Pentagon 128 {{{3
+==== On Pentagon 128
+
+1. Run a ZX Spectrum emulator and select a Pentagon 128.
+   {diskdriveformat}
+2. “Insert” the disk image file <disks/trdos/disk_0_boot.128.trd> as
+   disk 'A'.
+3. Choose “TR-DOS” from the computer start menu. This will enter the
+   TR-DOS command line{blank}footnote:trdoscli[The TR-DOS command line
+   uses keyboard tokens, like the ZX Spectrum 48, but commands typed
+   in 'L' cursor mode will be recognized as well, as on the ZX
+   Spectrum 128 editor.  In order to get the 'L' cursor mode you can
+   type a quote (Symbol Shift + 'P') or press 'E' to get keyword
+   ``REM``. When the DOS command is typed in full, the quote or the
+   ``REM`` must be removed from the start of the line before pressing
+   'Enter'.].
+4. Press the 'R' key to get the ``RUN`` command and press the Enter
+   key. Solo Forth will be loaded from disk.
+
+// On Pentagon 512 {{{3
+==== On Pentagon 512
+
+1. Run a ZX Spectrum emulator and select a Pentagon 512.
+   {diskdriveformat}
+2. “Insert” the disk image file
+   <disks/trdos/disk_0_boot.pentagon_512.trd> as disk 'A'.
+3. Choose "128k menu"footnote:pentagonboot[In theory, choosing option
+   “TR-DOS” from the system service menu should work. But it seems it
+   depends on a specific version of TR-DOS.  This alternative method
+   is longer, but it works with the TR-DOS 5.03 ROM.] from the
+   computer start menu (the reset service menu). This will enter a ZX
+   Spectrum 128 style menu. Choose “TR-DOS”.  This will enter the
+   TR-DOS command line{blank}footnote:trdoscli[].
+4. Press the 'R' key to get the ``RUN`` command and press the Enter
+   key.  Solo Forth will be loaded from disk.
+
+// On Pentagon 1024 {{{3
+==== On Pentagon 1024
+
+1. Run a ZX Spectrum emulator and select a Pentagon 1024.
+   {diskdriveformat}
+2. “Insert” the disk image file
+   <disks/trdos/disk_0_boot.pentagon_1024.trd> as disk 'A'.
+3. Choose "128k menu"footnote:pentagonboot[] from the computer start
+   menu (the reset service menu). This will enter a ZX Spectrum 128
+   style menu. Choose “TR-DOS”.  This will enter the TR-DOS command
+   line{blank}footnote:trdoscli[].
+4. Press the 'R' key to get the ``RUN`` command and press the Enter
+   key.  Solo Forth will be loaded from disk.
+
+// end::run_pentagon[]
+
+// tag::run_scorpion[]
+
+// On Scorpion ZS 256 {{{3
+==== On Scorpion ZS 256
+
+1. Run a ZX Spectrum emulator and select a Scorpion ZS 256.
+   {diskdriveformat}
+2. “Insert” the disk image file
+   <disks/trdos/disk_0_boot.scorpion_zs_256.trd> as disk 'A'.
+3. Choose "128 TR-DOS" from the computer start menu.  Solo Forth will
+   be loaded from disk.
+
+// end::run_scorpion[]
+
+// tag::run_128_with_betadisk[]
+
+// On ZX Spectrum 128/+2 with the Beta 128 interface {{{3
+==== On ZX Spectrum 128/+2 with the Beta 128 interface
+
+1. Run a ZX Spectrum emulator and select a ZX Spectrum 128 (or ZX
+   Spectrum +2) with the Beta 128 interface. {diskdriveformat}
+2. “Insert” the disk image file <disks/trdos/disk_0_boot.128.trd> as disk
+   A of the Beta 128 interface.
+3. Choose "128 BASIC" from the computer start menu.
+4. Type `randomize usr 15616` in BASIC (or just `run usr15616` to save
+   seven keystrokes). This will enter the TR-DOS command
+   line{blank}footnote:trdoscli[].
+5. Press the 'R' key to get the ``RUN`` command and press the Enter
+   key.  Solo Forth will be loaded from disk.
+
+// end::run_128_with_betadisk[]
+
 // How to use the library {{{1
 [#_library]
 == How to use the library
 
-// On +3DOS {{{2
-=== On +3DOS
+// In +3DOS {{{2
+=== In +3DOS
 
 // tag::library_on_plus3dos[]
 
 // XXX TODO -- is `set-drive` needed?
 
-1. <<_run,Run Solo Forth>>.
+1. <<_run_plus3dos,Run Solo Forth>>.
 2. “Insert” the file <disks/plus3dos/disk_1_library.dsk> as disk B.
    `'b' set-drive throw` to make drive 'B' the current one.
 3. Type `1 load` to load block 1 from the library disk. By convention,
@@ -486,12 +496,12 @@ following:
 
 // end::library_on_plus3dos[]
 
-// On G+DOS {{{2
-=== On G+DOS
+// In G+DOS {{{2
+=== In G+DOS
 
 // tag::library_on_gplusdos[]
 
-1. <<_run,Run Solo Forth>>.
+1. <<_run_gplusdos,Run Solo Forth>>.
 2. “Insert” the file <disks/gplusdos/disk_1_library.mgt> as
   disk 2 of the Plus D disk interface. Type `2 set-drive throw` to
   make drive 2 the current one.
@@ -504,30 +514,50 @@ following:
 
 // end::library_on_gplusdos[]
 
-// On TR-DOS {{{2
-=== On TR-DOS
+// In TR-DOS {{{2
+=== In TR-DOS
 
 // tag::library_on_trdos[]
 
-1. <<_run,Run Solo Forth>>.
-2. “Insert” the file <disks/trdos/disk_1a_library.trd> as disk B of
-   the Beta 128 interface, and the file
-   <disks/trdos/disk_1b_library.trd> as disk C.  Type `1 set-drive
-   throw` to make drive 1{blank}footnote:[The TR-DOS BASIC interface uses
-   letters 'A'..'D' to identify the disk drives, in commands and
-   filenames. But, under the hood, TR-DOS uses numbers 0..3 to
-   identify the disk drives, and filenames don't include the drive
-   letter. This is the way Solo Forth works too.  Usage of 'A'..'D'
-   instead of 0..3 may be implemented in a future version of Solo
-   Forth, either by default or as an option.] the current one.
-3. Type `1 load` to load block 1 from the library disk. By convention,
+1. <<_run_trdos,Run Solo Forth>>.
+
+2. “Insert” the file <disks/trdos/disk_1a_library.trd> into the second
+   disk drive (called B in TR-DOS and 1 in Solo Forth), and the file
+   <disks/trdos/disk_1b_library.trd> into the third disk drive (called
+   C in TR-DOS and 2 in Solo Forth).
++
+--
+Notice that the library is split into two disks because the maximun
+capacity of a TR-DOS disk is only 640 KiB.
+
+Also notice that the TR-DOS version of Solo Forth uses numbers as disk
+drive identifiers (the same numbers TR-DOS uses internally) instead of
+the letters used by the TR-DOS BASIC interface:
+
+.TR-DOS disk drive identifiers
+|===
+| Drive | In TR-DOS | In Solo Forth
+
+| 1st   | A         | 0
+| 2nd   | B         | 1
+| 3rd   | C         | 2
+| 4th   | D         | 3
+|===
+--
+
+3. Type `1 set-drive throw` to make drive 1 (i.e. the second one,
+   called B by TR-DOS) the current one.
+
+4. Type `1 load` to load block 1 from the library disk. By convention,
    block 0 cannot be loaded (it is used for comments), and block 1 is
    used as a loader.  In Solo Forth, block 1 contains `2 load`, in
    order to load the `need` tool from block 2.  Type `need
    set-block-drives` to load the word `set-block-drives` from the
    library. Then type `2 1 2 set-block-drives` to configure the second
-   and the third drives as block drives.
-4. Type `need name`, were “name” is the name of the word or tool you
+   and the third drives (i.e. drives 1 and 2 in Solo Forth, called B
+   and C in the TR-DOS BASIC interface) as block drives.
+
+5. Type `need name`, were “name” is the name of the word or tool you
    want to load from the library.
 
 // end::library_on_trdos[]
@@ -536,7 +566,7 @@ following:
 == Documentation
 
 The <doc> directory contains one version of the manual for every
-supported DOS, in DocBook, EPUB, HTML and PDF formats.  The manuals
+supported DOS, EPUB, HTML and PDF formats.  The manuals
 are built automatically from the sources and other files.  At the
 moment they contain a description of the Forth system, the basic
 information required to use it and a complete glossary with cross

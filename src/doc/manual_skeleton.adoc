@@ -1,7 +1,7 @@
 = Solo Forth: Version {version} for {dosname}
 :author: Marcos Cruz
 :producer: Marcos Cruz
-:revdate: 2020-11-21
+:revdate: 2021-01-05
 :doctype: book
 :lang: en
 ifdef::backend-html5[]
@@ -20,14 +20,14 @@ endif::[]
 :username:
 :source:
 ifdef::backend-epub3[]
-:copyright: 2015-2020 Marcos Cruz
+:copyright: 2015-2021 Marcos Cruz
 :front-cover-image: ../doc/{doslabel}_solo_forth_cover.jpg
 endif::[]
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202011212025
+// Last modified: 202101042044. 
 
 ifdef::backend-html5[]
 toc::[]
@@ -205,7 +205,7 @@ Forth blocks or files), but it haves some interesting features:
 
 ifdef::plus3dos[]
 
-Block disks are fully supported on +3DOS, but most file-management words are
+Block disks are fully supported in +3DOS, but most file-management words are
 not implemented yet, though standard Forth words are better supported than on
 G+DOS or TR-DOS.
 
@@ -213,14 +213,14 @@ endif::plus3dos[]
 
 ifdef::gplusdos[]
 
-Block disks are fully supported on G+DOS, but some file-management words are
+Block disks are fully supported in G+DOS, but some file-management words are
 not implemented yet, especially the standard Forth words.
 
 endif::gplusdos[]
 
 ifdef::trdos[]
 
-Block disks are fully supported on TR-DOS , but many file-management words are
+Block disks are fully supported in TR-DOS , but many file-management words are
 not implemented yet, especially the standard Forth words.
 
 endif::trdos[]
@@ -630,7 +630,7 @@ The DSK disk image format, used for +3DOS and other systems,
 contains a lot of metadata to describe the
 format of the disk, the tracks and the sectors...
 
-On +3DOS, sector 0 of track 0 cannot be used for Forth blocks,
+In +3DOS, sector 0 of track 0 cannot be used for Forth blocks,
 because it must contain the disk specification, even for sector-level
 access.  Since the size of a sector is 512 B, only one Forth block is
 lost because of this restriction.
@@ -724,7 +724,8 @@ word, within a configurable range of blocks (using the variables
 `first-locatable` and `last-locatable`).  Of course, nested `need` are
 resolved the same way: searching the library from the beginning.  This
 can be slow.  This is not a problem, because the goal of Solo Forth is
-cross development, and therefore only the last step of the development
+<<_write_programs,cross development>>,
+and therefore only the last step of the development
 loop, i.e., the compilation of the sources from the disk images
 created in the host system, compilation that includes all the slow
 searching of library blocks, is done in the real (actually, emulated)
@@ -780,7 +781,7 @@ disk drives must be configured as block drives, using `3-block-drives`.
 Let's see an example, how to load the game called Tetris for
 Terminals, which is in disk 2.
 
-. <<_run,Run Solo Forth>>.
+. <<_run_trdos,Run Solo Forth>>.
 . Insert the first library disk image (disk 1a) into the first drive.
 . Insert the second library disk image (disk 1b) into the second drive.
 . Insert the programs disk image (disk 2) into the third drive.
@@ -831,7 +832,7 @@ second disk:
 endif::trdos[]
 
 [cols="6,10,10,10,10"]
-.Range of blocks per drive on every DOS, in normal order
+.Range of blocks per drive in every DOS, in normal order
 |===
 | DOS    | 1st drive | 2nd drive | 3rd drive | 4th drive
 
@@ -913,7 +914,7 @@ test and some known benchmarks.
 // First, set the required block disks {{{2
 === First, set the required block disks
 
-// On +3DOS {{{3
+// In +3DOS {{{3
 
 ifdef::plus3dos[]
 
@@ -932,7 +933,7 @@ ifdef::plus3dos[]
 
 endif::[]
 
-// On G+DOS {{{3
+// In G+DOS {{{3
 
 ifdef::gplusdos[]
 
@@ -951,7 +952,7 @@ ifdef::gplusdos[]
 
 endif::gplusdos[]
 
-// On TR-DOS {{{3
+// In TR-DOS {{{3
 
 ifdef::trdos[]
 
@@ -984,9 +985,19 @@ Depending on the code you want to run, enter the corresponding command:
 . ``need all-benchmarks`` to run all the three benchmarks above
 
 // How to write Forth programs {{{1
+[#_write_programs]
 == How to write Forth programs
 
-// XXX TODO --
+There are two ways to write source code:
+
+. In the Forth system itself, using a classic Forth block editor (two
+  of them are included in the library: `gforth-editor` and
+  `specforth-editor`).
+. In a modern operating system, using an ordinary text editor and then
+  converting the sources into a ZX Spectrum disk image, ready to be
+  used as a block disk by the Forth system. This is the recommended
+  method. We call it “cross development”, though the actual
+  compilation of the Forth sources is done in the ZX Spectrum.
 
 Briefly, the steps of cross development are the following:
 
