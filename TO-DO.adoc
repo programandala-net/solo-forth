@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-10-02 
+:revdate: 2020-10-05
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -2449,6 +2449,14 @@ benchmarks) that included the library at the start.
 
 Words that could be moved to the library, if the `need` tool didn't use them:
 `2over`, `line>string`.
+
+=== 2021-01-05
+
+NOTE: Milestone: 0.15.0
+
+Move the disk code, common only to +3DOS, G+DOS and TR-DOS, from
+<lib/dos.COMMON.fs> to <lib/dos.disk.COMMON.fs>. Keep in
+<lib/dos.COMMON.fs> only the code common also to NextZXOS.
 
 // Loading {{{1
 == Loading
