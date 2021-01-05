@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101052202.
+; Last modified: 202101052235.
 ; See change log at the end of the file.
 
 ; ==============================================================
@@ -1091,9 +1091,8 @@ page_read_file_.no_error:
 ; : transfer-block ( u f -- )
 ;   >r b/buf um* block-fid @ reposition-file throw
 ;      buffer-data b/buf block-fid @ 
-;   r> if   write-file
-;      else read-file throw b/buf < #-33 ?throw
-;      then throw ;
+;   r> if   write-file throw
+;      else read-file throw b/buf < #-33 ?throw then ;
 ; ----
 
 ; See also: `read-block`, `write-block`, `b/buf`,
@@ -1110,14 +1109,13 @@ page_read_file_.no_error:
   dw buffer_data_,b_slash_buf_,block_f_i_d_,fetch_
   dw from_r_
   dw zero_branch_,transfer_block.read
-  dw write_file_
-  dw branch_,transfer_block.end
-transfer_block.read:
+transfer_block.write: 
+  dw write_file_,throw_
+  dw exit_
+transfer_block.read: 
   dw read_file_,throw_
   dw b_slash_buf_,less_than_
   _question_throw error.block_read_exception
-transfer_block.end:
-  dw throw_
   dw exit_
 
 ; ----------------------------------------------
