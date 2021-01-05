@@ -3,8 +3,8 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
-  \ See change log at the end of the file
+  \ Last modified: 202101050331.
+  \ See change log at the end of the file.
 
   \ ===========================================================
   \ Description
@@ -15,7 +15,7 @@
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
-  \ 2020.
+  \ 2020, 2021.
 
   \ ===========================================================
   \ License
@@ -68,12 +68,10 @@ unneeding flush
   \ flush ( -- )
   \
   \ Perform the function of `save-buffers`, then unassign all
-  \ block buffers.
+  \ block buffers with `empty-buffers`.
   \
   \ Origin: Forth-83 (Required Word Set), Forth-94 (BLOCK),
   \ Forth-2012 (BLOCK).
-  \
-  \ See also: `empty-buffers`.
   \
   \ }doc
 
@@ -389,5 +387,7 @@ variable loading-program
   \ 2020-02-27: Fix typo.
   \
   \ 2020-05-24: Fix typos.
+  \
+  \ 2021-01-05: Improve documentation of `flush`.
 
   \ vim: filetype=soloforth
