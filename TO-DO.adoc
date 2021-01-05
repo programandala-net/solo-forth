@@ -952,6 +952,10 @@ Improve tab control.
 // Documentation {{{1
 == Documentation
 
+=== 2021-01-05
+
+Improve wording of "return it _fid_".
+
 === 2020-07-15
 
 NOTE: Milestone: 0.14.0
