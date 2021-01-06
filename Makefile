@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202101052304.
+# Last modified: 202101062132.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -685,7 +685,9 @@ dos_lib_files = $(sort $(wildcard src/lib/dos.*.fs))
 editor_prog_lib_files = $(sort $(wildcard src/lib/prog.editor.*.fs))
 app_prog_lib_files = $(sort $(wildcard src/lib/prog.app.*.fs))
 prog_lib_files = $(sort $(wildcard src/lib/prog.*.fs))
-exception_codes_lib_files = $(sort $(wildcard src/lib/exception.codes.*.fs))
+exception_codes_lib_files = \
+	$(filter-out %.os.fs %idedos.fs, \
+	$(sort $(wildcard src/lib/exception.codes.*.fs)))
 
 meta_lib_files = $(filter-out $(not_ready),$(sort $(wildcard src/lib/meta.*.fs)))
 
@@ -698,6 +700,7 @@ meta_test_lib_files = $(filter-out $(not_ready),$(sort $(wildcard src/lib/meta.t
 
 core_lib_files = \
 	$(filter-out \
+			%.os.fs %idedos.fs \
 			$(not_ready) $(prog_lib_files) $(meta_lib_files), \
 			$(lib_files))
 
@@ -705,35 +708,35 @@ no_dos_core_lib_files = \
 	$(filter-out $(dos_lib_files), $(core_lib_files))
 
 gplusdos_core_lib_files = \
-	$(filter-out %idedos.fs %nextzxos.fs %plus3dos.fs %trdos.fs, \
+	$(filter-out %nextzxos.fs %plus3dos.fs %trdos.fs, \
 		$(core_lib_files))
 
 nextzxos_lib_files = \
-	$(filter-out $(not_ready) %idedos.fs %gplusdos.fs %plus3dos.fs %trdos.fs, \
+	$(filter-out $(not_ready) %.os.fs %idedos.fs %gplusdos.fs %plus3dos.fs %trdos.fs, \
 		$(lib_files))
 
 plus3dos_core_lib_files = \
-	$(filter-out %gplusdos.fs %idedos.fs %nextzxos.fs %trdos.fs, \
+	$(filter-out %gplusdos.fs %nextzxos.fs %trdos.fs, \
 		$(core_lib_files))
 
 trdos_core_lib_files = \
-	$(filter-out %gplusdos.fs %idedos.fs %nextzxos.fs %plus3dos.fs, \
+	$(filter-out %gplusdos.fs %nextzxos.fs %plus3dos.fs, \
 		$(core_lib_files))
 
 gplusdos_exception_codes_lib_files = \
-	$(filter-out %idedos.fs %nextzxos.fs %plus3dos.fs %trdos.fs, \
+	$(filter-out %nextzxos.fs %plus3dos.fs %trdos.fs, \
 		$(exception_codes_lib_files))
 
 nextzxos_exception_codes_lib_files = \
-	$(filter-out %gplusdos.fs %idedos.fs %plus3dos.fs %trdos.fs, \
+	$(filter-out %gplusdos.fs %plus3dos.fs %trdos.fs, \
 		$(exception_codes_lib_files))
 
 plus3dos_exception_codes_lib_files = \
-	$(filter-out %gplusdos.fs %idedos.fs %nextzxos.fs %trdos.fs, \
+	$(filter-out %gplusdos.fs %nextzxos.fs %trdos.fs, \
 		$(exception_codes_lib_files))
 
 trdos_exception_codes_lib_files = \
-	$(filter-out %gplusdos.fs %idedos.fs %nextzxos.fs %plus3dos.fs, \
+	$(filter-out %gplusdos.fs %nextzxos.fs %plus3dos.fs, \
 		$(exception_codes_lib_files))
 
 # ==============================================================
@@ -1805,7 +1808,8 @@ include Makefile.cover_image
 #
 # 2021-01-06: Exclude the IDEDOS exception codes file from the file lists. Make
 # the NextZXOS exception codes files list, required to build the NextZXOS
-# version of the manual.
+# version of the manual. Exclude also the unfinished
+# <exception.codes.1128.os.fs>.
 
 # ==============================================================
 
