@@ -712,7 +712,9 @@ gplusdos_core_lib_files = \
 		$(core_lib_files))
 
 nextzxos_lib_files = \
-	$(filter-out $(not_ready) %.os.fs %idedos.fs %gplusdos.fs %plus3dos.fs %trdos.fs, \
+	$(filter-out $(not_ready) \
+			%dos.COMMON.fs %.os.fs %idedos.fs \
+			%gplusdos.fs %plus3dos.fs %trdos.fs, \
 		$(lib_files))
 
 plus3dos_core_lib_files = \
@@ -1809,7 +1811,8 @@ include Makefile.cover_image
 # 2021-01-06: Exclude the IDEDOS exception codes file from the file lists. Make
 # the NextZXOS exception codes files list, required to build the NextZXOS
 # version of the manual. Exclude also the unfinished
-# <exception.codes.1128.os.fs>.
+# <exception.codes.1128.os.fs>. Exclude <dos.COMMON.fs> from the NextZXOS
+# library.
 
 # ==============================================================
 

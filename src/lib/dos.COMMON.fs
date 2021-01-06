@@ -3,13 +3,18 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
-  \ See change log at the end of the file
+  \ Last modified: 202101062320.
+  \ See change log at the end of the file.
 
   \ ===========================================================
   \ Description
 
-  \ Code common to any DOS.
+  \ Code common to the diskette-based DOSes: +3DOS, G+DOS and
+  \ TR-DOS.
+
+  \ XXX TODO: Move the block-drives code to
+  \ <dos.block-drives.COMMON.fs> or similar and keep here only
+  \ the code common to any DOS, e.g. `drive`..
 
   \ ===========================================================
   \ Author
@@ -387,5 +392,7 @@ unneeding get-block-drives ?( need block-drive@
   \ 2020-05-24: Replace "hash" notation with "number sign".
   \
   \ 2020-05-26: Fix typo.
+  \
+  \ 2021-01-06: Update the description of this file.
 
   \ vim: filetype=soloforth
