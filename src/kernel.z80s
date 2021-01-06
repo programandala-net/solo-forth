@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101060408.
+; Last modified: 202101061840.
 
 include version.z80s
 
@@ -318,6 +318,8 @@ error.execution_only:               equ -263
 error.definition_not_finished:      equ -264
 error.loading_only:                 equ -265
 error.off_current_editing_screen:   equ -266
+error.a_blocks_file_is_open:        equ -294
+error.no_blocks_file_is_open:       equ -295
 
 ; ----------------------------------------------
 ; ZX Spectrum
@@ -13262,6 +13264,8 @@ endif
 ; ----------------------------------------------
   _colon_header buffer_block_,'buffer-block'
 
+; XXX TODO: document the mask $7FFF, maybe use a constant.
+
 ; doc{
 ;
 ; buffer-block ( -- n )
@@ -13269,7 +13273,7 @@ endif
 ; Return the block _n_ associated with the disk buffer.
 ;
 ; ---
-; : buffer-block ( -- n ) buffer-id $7FFF literal and ;
+; : buffer-block ( -- n ) buffer-id $7FFF and ;
 ; ---
 ;
 ; See also: `buffer-id`, `buffer`, `block`.
@@ -13439,6 +13443,9 @@ block.end:
 
 ; ----------------------------------------------
   _colon_header save_buffers_,'save-buffers'
+
+; XXX FIXME: `buffer-block write-block` causes error #-1021 (bad
+; parameter) after using `update`, because `buffer-block` .
 
 ; doc{
 ;

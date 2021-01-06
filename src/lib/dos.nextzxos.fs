@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202101051652.
+  \ Last modified: 202101061835.
   \ See change log at the end of the file.
 
   \ ===========================================================
@@ -420,7 +420,7 @@ code (create-file ( ca fam fid -- fid ior )
   \
   \ }doc
 
-( close-file )
+( close-file close-blocks )
 
   \ Credit:
   \
@@ -463,6 +463,24 @@ code (close-file ( fid -- ior )
   \ result code _ior_.
   \
   \ See also: `open-file`, `create-file`, `(close-file`.
+  \
+  \ }doc
+
+unneeding close-blocks ?( need close-file need flush
+
+: close-blocks ( -- ) blocks? 0= #-295 ?throw
+                      flush block-fid @ close-file throw
+                      block-fid on ; ?)
+
+  \ doc{
+  \
+  \ close-blocks ( -- )
+  \
+  \ If no blocks file is open, `throw` error #-295. Otherwise
+  \ execute `flush` and close the current blocks file.
+  \
+  \ See also: `open-blocks`, `blocks?`, `block-fid`,
+  \ `close-file`.
   \
   \ }doc
 
@@ -1061,7 +1079,23 @@ variable read-line-len
 
   \ XXX TODO -- Support 2-character line terminators.
 
-( flush-drive drive-unused )
+( flush flush-drive drive-unused )
+
+unneeding flush ?\ : flush ( -- ) save-buffers empty-buffers ;
+
+  \ doc{
+  \
+  \ flush ( -- )
+  \
+  \ Perform the function of `save-buffers`, then unassign all
+  \ block buffers with `empty-buffers`.
+  \
+  \ Origin: Forth-83 (Required Word Set), Forth-94 (BLOCK).
+  \ Forth-2012 (BLOCK).
+  \
+  \ See also: `close-blocks`.
+  \
+  \ }doc
 
 unneeding flush-drive ?(
 
@@ -1173,5 +1207,8 @@ code set-user ( n -- ior )
   \ `bank-write-file`, `reposition-file`, `>filename`, `r/w`,
   \ `open-file`, `(open-file`, `/filename`, `do-dos-open_`,
   \ `file-id`, `file-ids`, `#file-ids`.
+  \
+  \ 2021-01-06: Move `flush`, and `close-blocks` from the
+  \ NextZXOS kernel. Finish and improve `close-blocks`.
 
   \ vim: filetype=soloforth

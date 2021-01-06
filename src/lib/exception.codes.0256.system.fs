@@ -3,8 +3,8 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202005290031
-  \ See change log at the end of the file
+  \ Last modified: 202101061820.
+  \ See change log at the end of the file.
 
   \ ===========================================================
   \ Description
@@ -16,7 +16,7 @@
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
-  \ 2020.
+  \ 2020, 2021.
 
   \ ===========================================================
   \ License
@@ -71,8 +71,8 @@
 #-291 \ out of OS memory
 #-292 \ file access method not supported
 #-293 \ string too long
-#-294 \
-#-295 \
+#-294 \ a blocks file is open
+#-295 \ no blocks file is open
 #-296 \
 #-297 \
 #-298 \
@@ -109,5 +109,8 @@
   \ using opentype files.
   \
   \ 2020-05-29: Add code #-293, needed by `?stringer`.
+  \
+  \ 2021-01-06: Add codes #-294 and #-295, needed by NextZXOS
+  \ to handle the blocks file.
 
   \ vim: filetype=soloforth
