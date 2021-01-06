@@ -975,6 +975,10 @@ ____
 
 I.e. first describe the action of the word in imperative.
 
+- Homogenize the pronunciation notation of acronyms in word names,
+  e.g. after `dosior>ior` "dos-I-O-R-to-I-O-R", `file-ids` should be
+  "file-I-D-s".
+
 === 2021-01-05
 
 Improve wording of "return it _fid_".
