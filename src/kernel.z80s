@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101061840.
+; Last modified: 202101070033.
 
 include version.z80s
 
@@ -241,9 +241,11 @@ if gplusdos
   initial_drive:                    equ first_drive
 endif
 if nextzxos
+  ; XXX TODO Remove the unused labels.
   sectors_per_track:                equ 0 ; XXX REMARK not used
   blocks_per_disk:                  equ 0 ; XXX REMARK not used
-  sectors_per_block:                equ 1 ; to avoid a division by zero later
+  sectors_per_block:                equ 1 ; XXX REMARK not used
+                                          ; set to avoid a division by zero later
   max_drives:                       equ 0 ; XXX REMARK not used
   first_drive:                      equ 'A' ; 'A' .. 'P'
   initial_drive:                    equ 'C'
@@ -1550,6 +1552,8 @@ endif
 
 ; ----------------------------------------------
   _c_constant_header max_drives_,'max-drives'
+
+; XXX TODO Remove from NextZXOS.
 
 ; doc{
 ;
@@ -6880,6 +6884,8 @@ do_user:
 ; ----------------------------------------------
   _c_constant_header sectors_slash_track_,'sectors/track'
 
+; XXX TODO Remove from NextZXOS.
+
 ; doc{
 ;
 ; sectors/track ( -- b ) "sectors-slash-track"
@@ -6895,6 +6901,8 @@ do_user:
 ; ----------------------------------------------
   _c_constant_header sectors_slash_block_,'sectors/block'
 
+; XXX TODO Remove from NextZXOS.
+
 ; doc{
 ;
 ; sectors/block ( -- b ) "sectors-slash-block"
@@ -6909,6 +6917,10 @@ do_user:
 
 ; ----------------------------------------------
   _constant_header blocks_slash_disk_,'blocks/disk'
+
+; XXX TODO Remove from NextZXOS. But it's used in <002.need.fs>.
+; XXX TODO Rename to `blocks/media` and make it a calculation in
+; NextZXOS after the current blocks file?
 
 ; doc{
 ;
