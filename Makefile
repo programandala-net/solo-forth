@@ -705,25 +705,36 @@ no_dos_core_lib_files = \
 	$(filter-out $(dos_lib_files), $(core_lib_files))
 
 gplusdos_core_lib_files = \
-	$(filter-out %nextzxos.fs %plus3dos.fs %trdos.fs, $(core_lib_files))
+	$(filter-out %idedos.fs %nextzxos.fs %plus3dos.fs %trdos.fs, \
+		$(core_lib_files))
 
 nextzxos_lib_files = \
-	$(filter-out $(not_ready) %gplusdos.fs %plus3dos.fs %trdos.fs, $(lib_files))
+	$(filter-out $(not_ready) %idedos.fs %gplusdos.fs %plus3dos.fs %trdos.fs, \
+		$(lib_files))
 
 plus3dos_core_lib_files = \
-	$(filter-out %gplusdos.fs %nextzxos.fs %trdos.fs, $(core_lib_files))
+	$(filter-out %gplusdos.fs %idedos.fs %nextzxos.fs %trdos.fs, \
+		$(core_lib_files))
 
 trdos_core_lib_files = \
-	$(filter-out %gplusdos.fs %nextzxos.fs %plus3dos.fs, $(core_lib_files))
+	$(filter-out %gplusdos.fs %idedos.fs %nextzxos.fs %plus3dos.fs, \
+		$(core_lib_files))
 
 gplusdos_exception_codes_lib_files = \
-	$(filter-out %nextzxos.fs %plus3dos.fs %trdos.fs , $(exception_codes_lib_files))
+	$(filter-out %idedos.fs %nextzxos.fs %plus3dos.fs %trdos.fs, \
+		$(exception_codes_lib_files))
+
+nextzxos_exception_codes_lib_files = \
+	$(filter-out %gplusdos.fs %idedos.fs %plus3dos.fs %trdos.fs, \
+		$(exception_codes_lib_files))
 
 plus3dos_exception_codes_lib_files = \
-	$(filter-out %gplusdos.fs %nextzxos.fs %trdos.fs, $(exception_codes_lib_files))
+	$(filter-out %gplusdos.fs %idedos.fs %nextzxos.fs %trdos.fs, \
+		$(exception_codes_lib_files))
 
 trdos_exception_codes_lib_files = \
-	$(filter-out %gplusdos.fs %nextzxos.fs %plus3dos.fs, $(exception_codes_lib_files))
+	$(filter-out %gplusdos.fs %idedos.fs %nextzxos.fs %plus3dos.fs, \
+		$(exception_codes_lib_files))
 
 # ==============================================================
 # Block disks {{{1
@@ -1791,6 +1802,10 @@ include Makefile.cover_image
 # inherited from the +3DOS code can be removed. Improve/update the cleaning
 # rules. Complete the NextZXOS blocks file with the programs and the
 # benchmarks.
+#
+# 2021-01-06: Exclude the IDEDOS exception codes file from the file lists. Make
+# the NextZXOS exception codes files list, required to build the NextZXOS
+# version of the manual.
 
 # ==============================================================
 

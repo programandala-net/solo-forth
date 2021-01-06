@@ -477,9 +477,9 @@ _code_header dosior_to_ior_,'dosior>ior'
 dosior_to_ior:
 
   ; Input:
-  ;   A  = NextZXOS error code (0..36)
+  ;   A  = NextZXOS error code (0..74)
   ; Output:
-  ;   HL = Forth exception code (-1036..-1000)
+  ;   HL = Forth exception code (-1074..-1000)
 
   ld h,0
   ld l,a
@@ -487,9 +487,9 @@ dosior_to_ior:
 dosior_to_ior.hl:
 
   ; Input:
-  ;   HL  = NextZXOS error code (0..36)
+  ;   HL  = NextZXOS error code (0..74)
   ; Output:
-  ;   HL = Forth exception code (-1036..-1000)
+  ;   HL = Forth exception code (-1074..-1000)
 
   ld de,1000
   add hl,de
@@ -1358,5 +1358,6 @@ endif ; defined nextzxos
 ; 2021-01-06: Update port variable names. Move `flush` and
 ; `close-blocks` to the library. Add `blocks?`, improve
 ; `open-blocks` with it and improve the related documentation.
+; Update the exception codes ranges.
 
 ; vim: filetype=z80:textwidth=64

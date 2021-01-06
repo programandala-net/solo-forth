@@ -3,14 +3,18 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
-  \ See change log at the end of the file
+  \ Last modified: 202101062038.
+  \ See change log at the end of the file.
 
   \ ===========================================================
   \ Description
 
   \ The Forth system error codes (range -4095..-256) used for
   \ IDEDOS (range -1066..-1056).
+
+  \ XXX REMARK: This file is deprecated. Its messages were
+  \ added to <exception.codes.1000.plus3dos.fs>, and are also
+  \ part of <exception.codes.1000.nextzxos.fs>.
 
 ( IDEDOS error codes #-1045..#-1059 )
 
@@ -47,5 +51,9 @@
   \
   \ 2016-08-04: Add unused errors #-1045..#-1055, because
   \ IDEDOS is used always with +3DOS.
+  \
+  \ 2021-01-06: Deprecate this file, excluding it in
+  \ <Makefile>. Copy the errors to
+  \ <exception.codes.1000.plus3dos.fs>.
 
   \ vim: filetype=soloforth
