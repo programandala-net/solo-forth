@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2020-10-05
+:revdate: 2020-10-06
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -951,6 +951,29 @@ Improve tab control.
 
 // Documentation {{{1
 == Documentation
+
+=== 2021-01-06
+
+Make the documentation of variables, constants, etc., coherent with
+other types of words. Instead of this:
+
+____
+myword ( -- a )
+
+A `variable`. _a_ is the address of ...
+____
+
+Write this:
+
+____
+myword ( -- a )
+
+Return the address _a_ of ...
+
+``myword`` is a `variable`.
+____
+
+I.e. first describe the action of the word in imperative.
 
 === 2021-01-05
 
