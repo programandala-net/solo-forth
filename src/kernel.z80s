@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101060243.
+; Last modified: 202101060310.
 
 include version.z80s
 
@@ -6940,7 +6940,7 @@ do_user:
 ; lastblk ( -- a ) "last-b-l-k"
 ;
 ; A `user` variable. _a_ is the address of a cell containing the
-; `block` number of the block most recently or loaded (e.g. with
+; `block` number of the block most recently loaded (e.g. with
 ; `load`, `continued` or `load-program`). ``lastblk`` is updated
 ; by `(load` and used by `reload`.
 ;
