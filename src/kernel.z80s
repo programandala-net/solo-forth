@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101060103.
+; Last modified: 202101060243.
 
 include version.z80s
 
@@ -86,8 +86,8 @@ include version.z80s
 
   ; Solo Forth can be compiled for G+DOS, +3DOS or TR-DOS.  This
   ; depends on three labels, `gplusdos`, `plus3dos` and `trdos`,
-  ; defined with a parameter of the Pasmo assembler. See the
-  ; Makefile files for details.
+  ; defined with a parameter of the Pasmo assembler. See files
+  ; <Makefile> and <Makefile.pasmo> for details.
 
 if !defined gplusdos
   gplusdos: equ false
@@ -1823,11 +1823,14 @@ far.hl:
   ; Convert a far-memory address ($0000 .. $FFFF) to its actual
   ; equivalent ($C000 .. $FFFF) and page in the corresponding
   ; memory bank.
-  ;
-  ; Input: HL = far-memory address ($0000 .. $FFFF) Output: HL =
-  ; actual memory address ($C000 .. $FFFF) A = corrupted DE =
-  ; corrupted
-  ;
+
+  ; Input:
+  ;   HL = far-memory address ($0000 .. $FFFF)
+  ; Output:
+  ;   HL = actual memory address ($C000 .. $FFFF)
+  ;   A  = corrupted
+  ;   DE = corrupted
+
   ; Note: the address of this routine is returned by `far-hl_`,
   ; a constant defined in the assembler word list in the
   ; <memory.far.fsb> module of the library, so `code` words can
@@ -8184,7 +8187,7 @@ bank.e:
   ; token of `default-bank`.
 
   ; The 128-KiB ZX Spectrum and Pentagon computers use bits 0 ..
-  ; 2 of port $EFF7 to select the memory bank (0 .. 7) to page
+  ; 2 of port $7FFD to select the memory bank (0 .. 7) to page
   ; in at addresses $C000 .. $FFFF. The Pentagon 512 and the
   ; Pentagon 1024 use additional bits to form the number of the
   ; memory bank, as follows:
@@ -8199,7 +8202,7 @@ bank.e:
 if pentagon=512 or pentagon=1024
 
   ; This routine converts a Pentagon bank number (0 .. 31 or
-  ; 0 .. 63) to the bit layout that must be written to port $EFF7.
+  ; 0 .. 63) to the bit layout that must be written to port $7FFD.
 
   ld a,e        ; bank number
 
@@ -8244,7 +8247,7 @@ else
 
 if scorpion=256
 
-  ; The Scorpion ZS 256 uses bits 0 .. 2 of port $EFF7 and bit 4
+  ; The Scorpion ZS 256 uses bits 0 .. 2 of port $7FFD and bit 4
   ; of port $1FFD to select the memory bank (0 .. 15) to page in
   ; at $C000 .. $FFFF.
 
