@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101052257.
+; Last modified: 202101060103.
 
 include version.z80s
 
@@ -8138,6 +8138,8 @@ u_less_than.de_hl:
 ;
 ; }doc
 
+; XXX TODO -- Support ZX Spectrum Next.
+
 banks: equ (pentagon+scorpion+128*(!(pentagon || scorpion) and 1))/16
 
   ; XXX REMARK -- The calculation above is equivalent to the
@@ -8171,6 +8173,8 @@ banks: equ (pentagon+scorpion+128*(!(pentagon || scorpion) and 1))/16
 ;
 ; }doc
 
+; XXX TODO -- Support ZX Spectrum Next.
+
 ram_kib: equ banks*16+(8*(gplusdos and 1))
 
   dw ram_kib
@@ -8198,7 +8202,7 @@ bank.default:
   ; Output:
   ;   A E corrupted
 
-  ; WARNING -- In order to make this routine usable by `code`
+  ; WARNING: In order to make this routine usable by `code`
   ; words, its address is returned by the
   ; `default-bank_` constant, which is defined in the
   ; library. The actual address is calculated using an offset
@@ -8217,12 +8221,12 @@ bank.e:
   ;       On 128-KiB computers:  0 .. 7
   ;       On 256-KiB computers:  0 .. 15
   ;       On 512-KiB computers:  0 .. 31
-  ;       On 1024-Kib computers: 0 .. 63
+  ;       On 1024-KiB computers: 0 .. 63
   ; Output:
   ;   A = corrupted
   ;   D = corrupted (only on Pentagon 512 and Pentagon 1024)
 
-  ; WARNING -- In order to make this routine usable by `code`
+  ; WARNING: In order to make this routine usable by `code`
   ; words, its address is returned by the `e-bank_`
   ; constant, which is defined in the library. The actual
   ; address is calculated using an offset from the execution
