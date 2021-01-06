@@ -3,8 +3,8 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101051821
-; See change log at the end of the file
+; Last modified: 202101061724.
+; See change log at the end of the file.
 
 ; ==============================================================
 ; Description
@@ -14,7 +14,7 @@
 ; ==============================================================
 ; Author
 
-; Marcos Cruz (programandala.net), 2016, 2017, 2018, 2020.
+; Marcos Cruz (programandala.net), 2016, 2017, 2018, 2020, 2021.
 
 ; ==============================================================
 ; License
@@ -854,20 +854,13 @@ list_command:
 endif
 
 ; ----------------------------------------------
+
+if 0 ; debugging
+
   _colon_header dot_drives_,'.drives'
 
-  ; XXX TMP -- for debugging
-  ; XXX TODO -- Move to the library.
-
-; doc{
-;
-; .drives ( -- ) "dot-drives"
-;
-; Display TR-DOS variables related to disk drives.
-;
-; See also: `.step-rates`, `.fda`.
-;
-; }doc
+  ; XXX REMARK -- This word is in the library. This copy is
+  ; preserved to be activated for debugging.
 
   dw cr_
   _literal trdos_variable.current_temporary_drive
@@ -892,92 +885,58 @@ endif
   dw cr_
   dw paren_dot_quote_
   _string "Drive modes"
-  _literal 23756
-  _literal 23752
+  _literal trdos_variable.drive_d_mode+1
+  _literal trdos_variable.drive_a_mode
   dw paren_do_,dot_drives.exit
   dw cr_,i_,dup_,u_dot_,c_fetch_,dot_
   dw paren_loop_
 dot_drives.exit
   dw exit_
 
-; Value of some TR-DOS variables after changing the default drive with
-; command `*"a"`, `*"b"`, etc.
-;
-;        A  B  C  D
-;
-; 23798  0  1  2  3  = current drive
-; 23800  0  0  0  0  = two-files drive
-; 23801  0  0  0  0  = cat drive
-; 23833  0  1  2  3  = default drive
-
-; After booting Solo Forth from drive A:
-
-; 23798  0  = current drive
-; 23800  0  = two-files drive
-; 23801  0  = cat drive
-; 23833  0  = default drive
-
-; After booting Solo Forth from drive B:
-
-; 23798  1  = current drive
-; 23800  0  = two-files drive
-; 23801  0  = cat drive
-; 23833  1  = default drive
+endif
 
 ; ----------------------------------------------
+
+if 0 ; debugging
+
   _colon_header dot_step_rates_,'.step-rates'
 
-  ; XXX TMP -- for debugging
-  ; XXX TODO -- Move to the library.
-
-; doc{
-;
-; .step-rates ( -- ) "dot-step-rates"
-;
-; Display the configured step rates of the TR-DOS disk drives.
-;
-; See also: `.drives`, `.fda`.
-;
-; }doc
+  ; XXX REMARK -- This word is in the library. This copy is
+  ; preserved to be activated for debugging.
 
   dw cr_
   dw paren_dot_quote_
-  _string 'Drive A: '
+  _string 'Drive 0/A: '
   _literal trdos_variable.drive_a_step_rate
   dw dup_,dot_,c_fetch_,dot_
   dw cr_
   dw paren_dot_quote_
-  _string 'Drive B: '
+  _string 'Drive 1/B: '
   _literal trdos_variable.drive_b_step_rate
   dw dup_,dot_,c_fetch_,dot_
   dw cr_
   dw paren_dot_quote_
-  _string 'Drive C: '
+  _string 'Drive 2/C: '
   _literal trdos_variable.drive_c_step_rate
   dw dup_,dot_,c_fetch_,dot_
   dw cr_
   dw paren_dot_quote_
-  _string 'Drive D: '
+  _string 'Drive 3/D: '
   _literal trdos_variable.drive_d_step_rate
   dw dup_,dot_,c_fetch_,dot_
   dw cr_
   dw exit_
 
+endif
+
 ; ----------------------------------------------
+
+if 0 ; debugging
+
   _colon_header dot_f_d_a_,'.fda'
 
-  ; XXX TMP -- for debugging
-  ; XXX TODO -- Move to the library.
-
-; doc{
-;
-; .fda ( -- ) "dot-F-D-A"
-;
-; Display the contents of TR-DOS File Descriptor Area.
-;
-; See also: `.drives`, `.step-rates`.
-;
-; }doc
+  ; XXX REMARK -- This word is in the library. This copy is
+  ; preserved to be activated for debugging.
 
   dw cr_,paren_dot_quote_
   _string "Filename and type:"
@@ -1003,6 +962,8 @@ dot_drives.exit
   _literal trdos_variable.file_length_in_sectors
   dw c_fetch_,dot_
   dw exit_
+
+endif
 
 ; ----------------------------------------------
   _colon_header sector_number_sign_,'sector#'
@@ -1125,5 +1086,9 @@ endif ; defined trdos
 ;
 ; 2021-01-05: Improve documentation of `transfer-block` and
 ; `set-drive`.
+;
+; 2021-01-06: Move `.drives`, `.step-rates` and `.fda` to the
+; library, but keep deactivated copies to be used for debugging
+; in case the disk access fails. Improve `.step-rates`.
 
 ; vim: filetype=z80:textwidth=64

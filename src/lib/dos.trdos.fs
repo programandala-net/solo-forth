@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282057
+  \ Last modified: 202101061709
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -242,7 +242,7 @@ unneeding /fda ?\ $10 cconstant /fda
   \
   \ }doc
 
-( files/disk /filename -filename -fda-filename )
+( files/disk /filename -filename -fda-filename .fda )
 
 unneeding files/disk ?\ 128 cconstant files/disk
 
@@ -313,7 +313,26 @@ unneeding -fda-filename ?( need fda need -filename
   \
   \ }doc
 
-( set-filename get-filename filename>filetype )
+unneeding .fda ?( need fda
+
+: .fda ( -- )
+  cr ." Filename and type:" fda-filename 8 type
+  '<' emit fda-filetype c@ emit '>' emit
+  cr ." Start address:    " fda-filestart @ u.
+  cr ." Lenght in bytes:  " fda-filelength @ u.
+  cr ." Lenght in sectors:" fda-filesectors c@ . ; ?)
+
+  \ doc{
+  \
+  \ .fda ( -- ) "dot-F-D-A"
+  \
+  \ Display the contents of TR-DOS File Descriptor Area.
+  \
+  \ See also: `.drives`, `.step-rates`.
+  \
+  \ }doc
+
+( set-filename get-filename filename>filetype .drives )
 
 unneeding set-filename ?(
 
@@ -368,7 +387,48 @@ unneeding filename>filetype
   \
   \ }doc
 
-( get-drive (acat acat )
+unneeding .drives ?(
+
+: .drives ( -- ) cr 23798 dup . c@ . ."  current"
+                 cr 23800 dup . c@ . ."  two files"
+                 cr 27801 dup . c@ . ."  cat"
+                 cr 23833 dup . c@ . ."  default"
+  cr ." Drive modes" 23756 23752 ?do cr i dup u. c@ . loop ; ?)
+
+  \ doc{
+  \
+  \ .drives ( -- ) "dot-drives"
+  \
+  \ Display TR-DOS variables related to disk drives.
+  \
+  \ See also: `.step-rates`, `.fda`.
+  \
+  \ }doc
+
+  \ XXX REMARK: Value of some TR-DOS variables after changing
+  \ the default drive with command `*"a"`, `*"b"`, etc.:
+
+  \        A  B  C  D
+  \ 23798  0  1  2  3  = current drive
+  \ 23800  0  0  0  0  = two-files drive
+  \ 23801  0  0  0  0  = cat drive
+  \ 23833  0  1  2  3  = default drive
+
+  \ After booting Solo Forth from drive A:
+
+  \ 23798  0  = current drive
+  \ 23800  0  = two-files drive
+  \ 23801  0  = cat drive
+  \ 23833  0  = default drive
+
+  \ After booting Solo Forth from drive B:
+
+  \ 23798  1  = current drive
+  \ 23800  0  = two-files drive
+  \ 23801  0  = cat drive
+  \ 23833  1  = default drive
+
+( get-drive (acat acat .step-rates )
 
 unneeding get-drive
 
@@ -426,6 +486,23 @@ unneeding acat ?\ need (acat : acat ( -- ) (acat throw ;
   \ Display an abbreviated catalogue of the current disk.
   \
   \ See also: `set-drive`, `(acat`.
+  \
+  \ }doc
+
+unneeding .step-rates ?(
+
+: .step-rates ( -- ) cr ." Drive 0/A: " 23802 dup . c@ .
+                     cr ." Drive 1/B: " 23803 dup . c@ .
+                     cr ." Drive 2/C: " 23804 dup . c@ .
+                     cr ." Drive 3/D: " 23805 dup . c@ . cr ;
+
+  \ doc{
+  \
+  \ .step-rates ( -- ) "dot-step-rates"
+  \
+  \ Display the configured step rates of the TR-DOS disk drives.
+  \
+  \ See also: `.drives`, `.fda`.
   \
   \ }doc
 
@@ -1424,5 +1501,8 @@ need read-file-descriptor need write-file-descriptor
   \ 2020-07-11: Add title to tables.
   \
   \ 2020-07-28: Replace "Note:" with the "NOTE:" markup.
+  \
+  \ 2021-01-06: Move `.drives`, `.step-rates` and `.fda` from
+  \ the TR-DOS kernel.
 
   \ vim: filetype=soloforth

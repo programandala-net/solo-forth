@@ -1,6 +1,6 @@
 = Solo Forth version history
 :author: Marcos Cruz (programandala.net)
-:revdate: 2021-01-05
+:revdate: 2021-01-06
 :toc:
 
 // This file is part of Solo Forth
@@ -50,6 +50,7 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
 === Improvements
 
 - Improve the documentation.
+- Improve TR-DOS `.step-rates`.
 
 // Other changes {{{2
 === Other changes
@@ -57,6 +58,7 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
 - Deactivate assembler instructions `stpx,` and `ftpx,`, which need to
   be fixed.
 - Remove `transfer-bytes` from +3DOS.
+- Move TR-DOS `.drives`, `.step-rates` and `.fda` to the library.
 
 // Version 0.14.0-rc.124  {{{1
 == Version 0.14.0-rc.124
@@ -381,7 +383,7 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
 - Make `order,`, `@order`, `wordlists,` and `@wordlists` independent
   from `marker`.
 - Move `0exit` to the kernel; no data/code space needed, because of
-  the space saved by using this word instead of `0= ?exit` and `if`. 
+  the space saved by using this word instead of `0= ?exit` and `if`.
 - Make paren comments multiline in the Vim syntax file.
 - Make `do_create` and `do_variable` Z80 entries 8 T States faster, by
   moving them from the `noop` word to the `next` entry.
@@ -1359,7 +1361,7 @@ to use all the paged memory.  It has been called "far memory".
   `call,` in the `z80-asm,` assembler. So it has been renamed, moved
   to the `assembler` word list and removed from the assembler.
 - Move `8*` from the assemblers to the operators.
- 
+
 // Version 0.10.0  {{{1
 == Version 0.10.0
 
