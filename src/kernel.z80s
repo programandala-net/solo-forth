@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101060241.
+; Last modified: 202101060309.
 
 include version.z80s
 
@@ -84,10 +84,11 @@ include version.z80s
 ; ----------------------------------------------
 ; DOS
 
-  ; Solo Forth can be compiled for G+DOS, NextZXOS, +3DOS or
-  ; TR-DOS. This depends on three labels, `gplusdos`,
-  ; `nextzxos`, `plus3dos` and `trdos`, defined with a parameter
-  ; of the Pasmo assembler. See the Makefile files for details.
+  ; Solo Forth can be compiled for +3DOS, G+DOS, NextZXOS or
+  ; TR-DOS.  This depends respectively on labels, `plus3dos`,
+  ; `gplusdos`, `nextzxos` and `trdos`, defined with a parameter
+  ; of the Pasmo assembler. See files <Makefile> and
+  ; <Makefile.pasmo> for details.
 
 if !defined gplusdos
   gplusdos: equ false
@@ -1600,9 +1601,9 @@ endif
 ; called "far memory". Every byte holds the bank number used for
 ; a 16-KiB range of addresses, as follows:
 
-; ifdef::gplusdos[]
+; ifdef::gplusdos,trdos[]
 
-; // XXX REMARK -- G+DOS
+; // XXX REMARK -- G+DOS or TR-DOS
 
 ; .Far-memory banks.
 ; |===
@@ -1670,26 +1671,6 @@ endif
 ; `faruppers`, `default-1346`.
 
 ; endif::plus3dos[]
-
-; ifdef::trdos[]
-
-; // XXX REMARK -- TR-DOS
-
-; .Far-memory banks.
-; |===
-; | Offset | Address range   | Bank
-;
-; | +0     | $0000 .. $3FFF  | 1
-; | +1     | $4000 .. $7999  | 3
-; | +2     | $8000 .. $BFFF  | 4
-; | +3     | $C000 .. $FFFF  | 6
-; |===
-
-; See also: `bank`, `banks`, `bank-index`, `far`, `far@`, `farc@`,
-; `far!`, `farc!`, `farcount`, `farplace`, `fartype`,
-; `faruppers`, `farlimit`.
-
-; endif::[]
 
 ; }doc
 
@@ -7036,7 +7017,7 @@ do_user:
 ; lastblk ( -- a ) "last-b-l-k"
 ;
 ; A `user` variable. _a_ is the address of a cell containing the
-; `block` number of the block most recently or loaded (e.g. with
+; `block` number of the block most recently loaded (e.g. with
 ; `load`, `continued` or `load-program`). ``lastblk`` is updated
 ; by `(load` and used by `reload`.
 ;
@@ -9776,21 +9757,30 @@ else
   _colon_header max_blocks_,'max-blocks'
 endif
 
-; XXX TODO Move to the DOS-specific kernels, because the
-; description in NextZXOS is different.
-
 ; doc{
 ;
 ; max-blocks ( -- u )
+;
+; ifdef::gplusdos,plus3dos,trdos[]
 ;
 ; Return the number _u_ of maximum blocks available in the
 ; system. The number depends on `#block-drives` and
 ; `blocks/disk`.
 ;
+; endif::[]
+;
+; ifdef::nextzxos[]
+;
+; Return the number _u_ of maximum blocks available in the
+; system.
+;
+; endif::[]
+;
 ; }doc
 
 if nextzxos
   dw $7FFF-1 ; 32766 ; XXX TODO document why
+  ; XXX FIXME return after the size of the current blocks file
 else  
   dw blocks_slash_disk_,number_sign_block_drives_,c_fetch_,star_
   dw exit_
