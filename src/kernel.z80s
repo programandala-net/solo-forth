@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101060310.
+; Last modified: 202101060408.
 
 include version.z80s
 
@@ -901,7 +901,7 @@ dpl_value:                                    ; +$22
   dw $0000
 csp_value:                                    ; +$24
   dw $0000
-number_sign_order_value:                             ; +$26
+number_sign_order_value:                      ; +$26
   dw $0000
 
 context_value:                                ; +$28 .. +$36
