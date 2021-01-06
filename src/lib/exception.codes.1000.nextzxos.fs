@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202101061945.
+  \ Last modified: 202101062107.
   \ See change log at the end of the file.
 
   \ ===========================================================
@@ -48,7 +48,7 @@
 #-1028 \ NextZXOS: Read-only file
 #-1029 \ NextZXOS: File number not open (or with wrong access)
 
-( NextZXOS error codes #-1030..#-1043 )
+( NextZXOS error codes #-1030..#-1044 )
 
 #-1030 \ NextZXOS: Access denied (file is in use already)
 #-1031 \ NextZXOS: Cannot rename between drives
@@ -64,10 +64,10 @@
 #-1041 \ NextZXOS: (Unused error)
 #-1042 \ NextZXOS: (Unused error)
 #-1043 \ NextZXOS: (Unused error)
-
-( NextZXOS error codes #-1044..#-1058 )
-
 #-1044 \ NextZXOS: (Unused error)
+
+( NextZXOS error codes #-1045..#-1059 )
+
 #-1045 \ NextZXOS: (Unused error)
 #-1046 \ NextZXOS: (Unused error)
 #-1047 \ NextZXOS: (Unused error)
@@ -82,10 +82,10 @@
 #-1056 \ NextZXOS: Invalid partition
 #-1057 \ NextZXOS: Partition already exists
 #-1058 \ NextZXOS: Not implemented
-
-( NextZXOS error codes #-1059..#-1073 )
-
 #-1059 \ NextZXOS: Partition open
+
+( NextZXOS error codes #-1060..#-1073 )
+
 #-1060 \ NextZXOS: Out of handles
 #-1061 \ NextZXOS: Not a swap partition
 #-1062 \ NextZXOS: Drive already mapped
@@ -100,9 +100,6 @@
 #-1071 \ NextZXOS: (Unused error)
 #-1072 \ NextZXOS: (Unused error)
 #-1073 \ NextZXOS: (Unused error)
-
-( NextZXOS error codes #-1074..#-1074 )
-
 #-1074 \ NextZXOS: File is fragmented, use .DEFRAG
 
   \ ===========================================================
