@@ -3,8 +3,8 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
-  \ See change log at the end of the file
+  \ Last modified: 202101062139.
+  \ See change log at the end of the file.
 
   \ ===========================================================
   \ Description
@@ -15,7 +15,7 @@
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
-  \ 2020.
+  \ 2020, 2021.
 
   \ ===========================================================
   \ License
@@ -171,8 +171,8 @@ unneeding warning?( ?( need string-parameter
   \ ----
   \ -n1 =    -90 ...    -1 \ Standard error codes
   \         -300 ...  -256 \ Solo Forth error codes
-  \        -1024 ... -1000 \ DOS error codes
-  \ +n2 =      1 ...   146
+  \        -1074 ... -1000 \ DOS error codes
+  \ +n2 =      1 ...     x
   \ ----
 
   \ See also: `error>line`.
@@ -181,7 +181,7 @@ unneeding warning?( ?( need string-parameter
 
 : error>line ( -n1 -- n2 )
   error>ordinal dup >r
-  begin  dup dup l/scr / - r@ <>  while  1+  repeat  rdrop ;
+  begin  dup dup l/scr / - r@ <>  while 1+ repeat rdrop ;
 
   \ doc{
   \
@@ -359,6 +359,7 @@ s" Standard error codes" located errors-block !
   \ improve its documentation.
   \
   \ 2020-07-28: Improve documentation of deferred words.
+  \
+  \ 2021-01-06: Update documentation of `error>ordinal`.
 
   \ vim: filetype=soloforth
-
