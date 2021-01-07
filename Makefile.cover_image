@@ -5,7 +5,7 @@
 
 # By Marcos Cruz (programandala.net)
 
-# Last modified: 202101071822.
+# Last modified: 202101071859.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -19,6 +19,15 @@
 
 # ==============================================================
 # Config {{{1
+
+width=1200
+height=1600
+size=$(width)x$(height)
+
+margin=+048
+title_y=-384
+subtitle_y=-312
+author_y=-128
 
 font=Helvetica
 background=lightgray
@@ -35,7 +44,7 @@ tmp/$(cover).title.png:
 		-fill $(fill) \
 		-font $(font) \
 		-pointsize 96 \
-		-size 1200x \
+		-size $(width)x \
 		-gravity east \
 		caption:$(cover_title) \
 		$@
@@ -105,7 +114,7 @@ tmp/$(cover).background.png: backgrounds/current.pbm
 	convert \
 		$< \
 		-fuzz 4% -transparent "#ffffff" \
-		-resize 800x \
+		-resize $(width)x \
 		$@
 
 # ==============================================================
@@ -116,44 +125,44 @@ doc/gplusdos_$(cover).jpg: \
 	tmp/$(cover).gplusdos_subtitle.png \
 	tmp/$(cover).background.png \
 	tmp/$(cover).author.png
-	convert -size 1200x1600 canvas:$(background) $@
-	composite -gravity east -geometry +048+000 tmp/$(cover).title.png $@ $@
-	composite -gravity east -geometry +048+072 tmp/$(cover).gplusdos_subtitle.png $@ $@
-	composite -gravity east -geometry +048+256 tmp/$(cover).author.png $@ $@
-	composite -gravity southeast tmp/$(cover).background.png $@ $@
+	convert -size $(size) canvas:$(background) $@
+	composite -gravity east -geometry $(margin)$(title_y) tmp/$(cover).title.png $@ $@
+	composite -gravity east -geometry $(margin)$(subtitle_y) tmp/$(cover).gplusdos_subtitle.png $@ $@
+	composite -gravity east -geometry $(margin)$(author_y) tmp/$(cover).author.png $@ $@
+	composite -gravity southeast -geometry $(margin)$(margin) tmp/$(cover).background.png $@ $@
 
 doc/nextzxos_$(cover).jpg: \
 	tmp/$(cover).title.png \
 	tmp/$(cover).nextzxos_subtitle.png \
 	tmp/$(cover).background.png \
 	tmp/$(cover).author.png
-	convert -size 1200x1600 canvas:$(background) $@
-	composite -gravity east -geometry +048+000 tmp/$(cover).title.png $@ $@
-	composite -gravity east -geometry +048+072 tmp/$(cover).nextzxos_subtitle.png $@ $@
-	composite -gravity east -geometry +048+256 tmp/$(cover).author.png $@ $@
-	composite -gravity southeast tmp/$(cover).background.png $@ $@
+	convert -size $(size) canvas:$(background) $@
+	composite -gravity east -geometry $(margin)$(title_y) tmp/$(cover).title.png $@ $@
+	composite -gravity east -geometry $(margin)$(subtitle_y) tmp/$(cover).nextzxos_subtitle.png $@ $@
+	composite -gravity east -geometry $(margin)$(author_y) tmp/$(cover).author.png $@ $@
+	composite -gravity southeast -geometry $(margin)$(margin) tmp/$(cover).background.png $@ $@
 
 doc/plus3dos_$(cover).jpg: \
 	tmp/$(cover).title.png \
 	tmp/$(cover).plus3dos_subtitle.png \
 	tmp/$(cover).background.png \
 	tmp/$(cover).author.png
-	convert -size 1200x1600 canvas:$(background) $@
-	composite -gravity east -geometry +048+000 tmp/$(cover).title.png $@ $@
-	composite -gravity east -geometry +048+072 tmp/$(cover).plus3dos_subtitle.png $@ $@
-	composite -gravity east -geometry +048+256 tmp/$(cover).author.png $@ $@
-	composite -gravity southeast tmp/$(cover).background.png $@ $@
+	convert -size $(size) canvas:$(background) $@
+	composite -gravity east -geometry $(margin)$(title_y) tmp/$(cover).title.png $@ $@
+	composite -gravity east -geometry $(margin)$(subtitle_y) tmp/$(cover).plus3dos_subtitle.png $@ $@
+	composite -gravity east -geometry $(margin)$(author_y) tmp/$(cover).author.png $@ $@
+	composite -gravity southeast -geometry $(margin)$(margin) tmp/$(cover).background.png $@ $@
 
 doc/trdos_$(cover).jpg: \
 	tmp/$(cover).title.png \
 	tmp/$(cover).trdos_subtitle.png \
 	tmp/$(cover).background.png \
 	tmp/$(cover).author.png
-	convert -size 1200x1600 canvas:$(background) $@
-	composite -gravity east -geometry +048+000 tmp/$(cover).title.png $@ $@
-	composite -gravity east -geometry +048+072 tmp/$(cover).trdos_subtitle.png $@ $@
-	composite -gravity east -geometry +048+256 tmp/$(cover).author.png $@ $@
-	composite -gravity southeast tmp/$(cover).background.png $@ $@
+	convert -size $(size) canvas:$(background) $@
+	composite -gravity east -geometry $(margin)$(title_y) tmp/$(cover).title.png $@ $@
+	composite -gravity east -geometry $(margin)$(subtitle_y) tmp/$(cover).trdos_subtitle.png $@ $@
+	composite -gravity east -geometry $(margin)$(author_y) tmp/$(cover).author.png $@ $@
+	composite -gravity southeast -geometry $(margin)$(margin) tmp/$(cover).background.png $@ $@
 
 # ==============================================================
 # Convert the cover image to PDF {{{1
@@ -178,4 +187,5 @@ tmp/%.pdf: doc/%.jpg
 # 2020-12-11: Add the list of requirements.
 #
 # 2021-01-07: Add the rules to make the NextZXOS cover image. Add the Solo
-# Forth background image to the cover image.
+# Forth background image to the cover image. Use variables to set the positions
+# and sizes. Improve the layout.
