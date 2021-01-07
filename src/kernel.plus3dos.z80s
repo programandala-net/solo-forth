@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101051821.
+; Last modified: 202101070126.
 ; See change log at the end of the file.
 
 ; ==============================================================
@@ -288,11 +288,11 @@ saved_ip: equ $+1
 ;
 ; dos-ix-ehl_ ( -- a ) "dos-I-X-E-H-L-underscore"
 ;
-; Address of an entry point to the Forth inner interpreter.
-; This entry point is jumped to at the end of a code word, in
-; order to execute first the +3DOS command hold in the IX
-; register, which returns a double-cell result in registers E
-; and HL.
+; Address of an entry point to the Forth inner interpreter. This
+; entry point is jumped to at the end of a code word, in order
+; to execute first the +3DOS command hold in the IX register,
+; which returns a double-cell result (from registers E and HL)
+; and an _ior_.
 
 ; ....
 ; Input:
@@ -304,7 +304,8 @@ saved_ip: equ $+1
 ;   IX   = Forth `next`
 ; Output stack:
 ;   ( d ior )
-;   Where _d_ is the content of registers EHL.
+;   Where _d_ is the content of registers EHL (being E the high
+;   part and HL the low part).
 ; ....
 
 ; The stack must be somewhere in central 32K (conforming to
@@ -1135,5 +1136,7 @@ endif ; defined plus3dos
 ; 2021-01-05: Delete `transfer-bytes`, which was not configured
 ; by `read-mode` and `write-mode` yet, but anyway it is useless.
 ; Improve documentation of `transfer-block` and `set-drive`.
+;
+; 2021-01-07: Improve documentation of `dos-ix-ehl_`.
 
 ; vim: filetype=z80:textwidth=64

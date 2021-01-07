@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202101051643.
+  \ Last modified: 202101070105.
   \ See change log at the end of the file.
 
   \ ===========================================================
@@ -764,7 +764,7 @@ code file-size ( fid -- d )
   \ push bc ; save the Forth IP
   \ ld b,l ; fid
   \ ld ix, $0139 ; GET EOF
-  \ jp dos_ehl
+  \ jp dos.ix_ehl
 
   \ doc{
   \
@@ -1738,5 +1738,8 @@ need reposition-file need file-position
   \ the Z80 assembly translation of `do-dos-open_`. Improve
   \ notation of lenghts in data stack comments. Fix typo in Z80
   \ transcription of `bank-read-file`.
+  \
+  \ 2021-01-07: Fix label in the Z80 assembly transcription of
+  \ `file-size`.
 
   \ vim: filetype=soloforth
