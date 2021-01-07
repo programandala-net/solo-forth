@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101070115.
+; Last modified: 202101070128.
 ; See change log at the end of the file.
 
 ; ==============================================================
@@ -147,7 +147,7 @@ dos.ix.preserve_ip:
 ; DOS call (routine in IX)
 ; Push EHL and DOS ior and continue at `next`
 
-dos.ix_ehl:
+dos.ix_dehl:
 
   ; Address of an entry point to the Forth inner interpreter.
   ; This entry point is jumped to at the end of a code word, in
@@ -164,13 +164,12 @@ dos.ix_ehl:
   ;   IX   = Forth `next`
   ; Output stack:
   ;   ( d ior )
-  ;   Where _d_ is the content of registers EHL.
+  ;   Where _d_ is the content of registers DEHL.
 
   call dos.ix
   pop bc ; restore the Forth IP
   ; EHL = result
   push hl ; low part
-  ld d,0
   push de ; high part
 
   ; Execution continues at `push_dos_ior`:
@@ -285,17 +284,17 @@ saved_ip: equ $+1
   dw dos.ix
 
 ; ----------------------------------------------
-  _constant_header dos_ix_ehl_underscore_,'dos-ix-ehl_'
+  _constant_header dos_ix_dehl_underscore_,'dos-ix-dehl_'
 
 ; doc{
 ;
-; dos-ix-ehl_ ( -- a ) "dos-I-X-E-H-L-underscore"
+; dos-ix-dehl_ ( -- a ) "dos-I-X-D-E-H-L-underscore"
 ;
 ; Address of an entry point to the Forth inner interpreter.
 ; This entry point is jumped to at the end of a code word, in
 ; order to execute first the NextZXOS command hold in the IX
-; register, which returns a double-cell result in registers E
-; and HL.
+; register, which returns a double-cell result (from registers DE
+; and HL) and an _ior_.
 
 ; ....
 ; Input:
@@ -307,7 +306,8 @@ saved_ip: equ $+1
 ;   IX   = Forth `next`
 ; Output stack:
 ;   ( d ior )
-;   Where _d_ is the content of registers EHL.
+;   Where _d_ is the content of registers DEHL (being DE the
+;   high part and HL the low part).
 ; ....
 
 ; The stack must be somewhere in central 32K (conforming to
@@ -319,7 +319,7 @@ saved_ip: equ $+1
 
   ; XXX TODO -- Move to the assembler word list.
 
-  dw dos.ix_ehl
+  dw dos.ix_dehl
 
 ; ----------------------------------------------
   _constant_header dos_tos_underscore_,'dos-tos_'
@@ -813,13 +813,11 @@ open_file.end:
 ; }doc
 
 code file-size ( fid -- d )
-  E1 c, C5 c, 45 c, DD c, 21 c, 0139 , dos-ix-ehl_ jp,
-  end-code ?)
   pop hl
   push bc     ; save the Forth IP
   ld b,l      ; fid
   ld ix,$0139 ; GET EOF
-  jp dos.ix_ehl
+  jp dos.ix_dehl
 
 ; ----------------------------------------------
   _colon_header open_blocks_,'open-blocks'
@@ -1416,6 +1414,8 @@ endif ; defined nextzxos
 ; Update the exception codes ranges.
 ;
 ; 2021-01-07: Factor `position-block` from `transfer-block`.
-; Move `file-size` from the library. 
+; Move `file-size` from the library. Convert +3DOS `dos.ix_ehl`
+; and `dos-ix-ehl_` (24-bit result) to NextZXOS `dos.ix_dehl`
+; and `dos-ix-dehl_` (32-bit result).
 
 ; vim: filetype=z80:textwidth=64
