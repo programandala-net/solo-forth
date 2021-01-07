@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
+  \ Last modified: 202101070215
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -15,7 +15,7 @@
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
-  \ 2020.
+  \ 2020, 2021.
 
   \ ===========================================================
   \ Credit
@@ -342,7 +342,7 @@ need see
   \ 2016-04-24: Remove `[char]`, which has been moved to the
   \ library.
   \
-  \ 2016-05-17: Need `>body` and `body>`, which has been moved
+  \ 2016-05-17: Need `>body` and `body>`, which have been moved
   \ to the library.
   \
   \ 2016-05-18: Improve `colon-cfa?`. Compact `decode-special`.
