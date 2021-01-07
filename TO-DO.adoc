@@ -3083,6 +3083,13 @@ Update the date with interrupts.
 // Tools {{{1
 == Tools
 
+=== 2021-01-06
+
+NOTE: Milestone: 0.14.0
+
+Fix `see`: it recognizes an initial code word, e.g. `see over`, but
+not when that word is inside another word and Enter is pressed at it. 
+
 === 2018-03-23
 
 Improve `.os-chans`: The 128 check, used by G+DOS,  does not work
