@@ -3,8 +3,8 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202101070215
-  \ See change log at the end of the file
+  \ Last modified: 202101072122.
+  \ See change log at the end of the file.
 
   \ ===========================================================
   \ Description
@@ -43,6 +43,8 @@ need cond need thens need defer@ need .name
 
 : >oname. ( xt -- ) >oldest-name ?dup if   .name
                                       else ." :noname" then ;
+  \ XXX FIXME 2021-01-07: This is executed when a code word is
+  \ entered from the decompilation of a colon word.
 
 : body>oname. ( dfa -- nt ) body> >oname. ;
 
@@ -103,8 +105,10 @@ variable see-address
   \
   \ see-usage ( -- )
   \
-  \ Display the usage of `see`. ``see-usage`` is executed when
-  \ `manual-see` contains non-zero.
+  \ Display the usage of `see`.
+  \
+  \ ``see-usage`` is executed when `manual-see` contains
+  \ non-zero.
   \
   \ }doc
 
@@ -116,10 +120,13 @@ variable manual-see manual-see on
   \
   \ manual-see ( -- a )
   \
-  \ A `variable`. _a_ is the address of a cell containing a flag.
+  \ Return the address _a_ of a cell containing a flag.
   \ When the flag is non-zero, the decompilation of colon words
   \ done by `see` can be controlled manually with some keys,
   \ which are displayed at the start of the process.
+  \
+  \ ``manual-see`` is  a `variable`. Its default value is
+  \ `true`.
   \
   \ See also: `see-usage`.
   \
@@ -155,13 +162,14 @@ variable manual-see manual-see on
   \ see-colon-body ( dfa -- )
   \
   \ Decode the colon word's definition whose body is _dfa_.
+  \
   \ ``see-colon-body`` is a factor of `see-colon`.
   \
   \ See also: `see`, `see-colon-body>`, `see-xt`, `see-usage`.
   \
   \ }doc
 
-: ucreate-cf? ( c a -- )
+: ucreate-cf? ( c a -- f )
   $CD [ ' (user >body 2 cells + ] literal d= ;
   \ Is _c a_ the code field of a word created by `ucreate`,
   \ `user`, `2user` or `(user`?
@@ -169,26 +177,31 @@ variable manual-see manual-see on
   \ WARNING: the code address is calculated from the code field
   \ address of `(user`, after its current code.
 
-: colon-cf? ( c a -- ) $CD docolon d= ;
+: colon-cf? ( c a -- f ) $CD docolon d= ;
   \ Is _c a_ the code field of a word created by `:`?
 
-: constant-cf? ( c a -- ) $CD ['] @ d= ;
+: constant-cf? ( c a -- f ) $CD ['] @ d= ;
   \ Is _c a_ the code field of a word created by `constant`?
 
-: 2constant-cf? ( c a -- ) $CD ['] 2@ d= ;
+: 2constant-cf? ( c a -- f ) $CD ['] 2@ d= ;
   \ Is _c a_ the code field of a word created by `2constant`?
 
-: cconstant-cf? ( c a -- ) $CD ['] c@ d= ;
+: cconstant-cf? ( c a -- f ) $CD ['] c@ d= ;
   \ Is _c a_ the code field of a word created by `cconstant`?
 
-: create-cf? ( c a -- ) $CD ['] noop d= ;
+: create-cf? ( c a -- f ) $CD ['] noop d= ;
   \ Is _c a_ the code field of a word created by `create`,
   \ `variable` or `2variable`?
 
-: defer-cf? ( c a -- ) drop $C3 = ;
+: defer-cf? ( c a -- f ) drop $C3 = ;
   \ Is _c a_ the code field of a word created by `defer`?
 
-: see-code ( nt -- ) dup name> (indent ." code " .name ;
+                     \ XXX INFORMER
+: see-code ( nt -- ) \ 2 border key drop 0 border
+  dup name> (indent ." code " .name ;
+  \ XXX FIXME 2021-01-07: This is executed when a code word is
+  \ decompiled itself, but not when it's entered from a colon
+  \ word that is being decompiled.
 
 : see-constant ( nt -- )
   dup name>body dup (indent @ . ." constant " .name ; -->
@@ -300,7 +313,9 @@ need see
   \ see-colon-body> ( a -- ) "see-colon-body-to"
   \
   \ Decode the colon word's definition from _a_, which is part
-  \ of its body. ``see-colon-body>`` is useful to decode words
+  \ of its body.
+  \
+  \ ``see-colon-body>`` is useful to decode words
   \ that use `exit` in the midle of the definition, because
   \ `see` stops at the first `exit` found.
   \
@@ -412,5 +427,8 @@ need see
   \ from the kernel to the library.
   \
   \ 2020-06-15: Improve documentation.
+  \
+  \ 2021-01-07: Fix typo. Improve documentation. Fix stack
+  \ comments.
 
   \ vim: filetype=soloforth
