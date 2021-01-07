@@ -16,6 +16,7 @@
 <ul class="sectlevel2">
 <li><a href="#_run_plus3dos">In +3DOS</a></li>
 <li><a href="#_run_gplusdos">In G+DOS</a></li>
+<li><a href="#_run_nextzxos">In NextZXOS</a></li>
 <li><a href="#_run_trdos">In TR-DOS</a></li>
 </ul>
 </li>
@@ -23,6 +24,7 @@
 <ul class="sectlevel2">
 <li><a href="#_in_3dos">In +3DOS</a></li>
 <li><a href="#_in_gdos">In G+DOS</a></li>
+<li><a href="#_in_nextzxos">In NextZXOS</a></li>
 <li><a href="#_in_tr_dos">In TR-DOS</a></li>
 </ul>
 </li>
@@ -33,12 +35,31 @@
 <h2 id="_description">Description</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Solo Forth is a Forth system for the ZX Spectrum 128 and
-compatible computers, with disk drives and +3DOS, G+DOS, or TR-DOS.</p>
+<p>Solo Forth is a Forth system for a wide range of ZX Spectrum
+compatible computers and four DOSes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>ZX Spectrum 128/+2 with G+DOS or TR-DOS.</p>
+</li>
+<li>
+<p>ZX Spectrum +2A/+2B/+3/+3e with +3DOS.</p>
+</li>
+<li>
+<p>Pentagon 128/512/1024 with TR-DOS.</p>
+</li>
+<li>
+<p>Scorpion ZS 256 with TR-DOS.</p>
+</li>
+<li>
+<p>ZX Spectrum Next with NextZXOS.</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>Solo Forth cannot run on the original ZX Spectrum 48, but could be
-used to develop programs for it.</p>
+<p>Solo Forth cannot run on the first ZX Spectrum model (16 or 48 KiB),
+but in theory it could be used to develop programs for it.</p>
 </div>
 <div class="paragraph">
 <p>Solo Forth can be used as a stand-alone Forth system (either in an
@@ -237,6 +258,11 @@ Waste Invaders</a> and
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">+3DOS</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ZX Spectrum Next</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NextZXOS</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -312,6 +338,11 @@ Waste Invaders</a> and
 <td class="tableblock halign-left valign-top"><p class="tableblock">make</p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Files used by <code>make</code> to build the system</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">nextzxos</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NextZXOS files</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">screenshots</p></td>
@@ -477,6 +508,24 @@ disk 1 of the Plus D disk interface.</p>
 Forth as well.</p>
 </li>
 </ol>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_run_nextzxos">In NextZXOS</h3>
+<div class="sect3">
+<h4 id="_on_zx_spectrum_next">On ZX Spectrum Next</h4>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Section pending.
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
@@ -698,6 +747,29 @@ make drive 2 the current one.</p>
 </li>
 <li>
 <p>Type <code>1 load</code> to load block 1 from the library disk. By convention,
+block 0 cannot be loaded (it is used for comments), and block 1 is
+used as a loader.  In Solo Forth, block 1 contains <code>2 load</code>, in
+order to load the <code>need</code> tool from block 2.</p>
+</li>
+<li>
+<p>Type <code>need name</code>, were “name” is the name of the word or tool you
+want to load from the library.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_in_nextzxos">In NextZXOS</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><a href="#_run_nextzxos">Run Solo Forth</a>.</p>
+</li>
+<li>
+<p>Type <code>s" solo.fb" open-blocks</code> to open the blocks file.</p>
+</li>
+<li>
+<p>Type <code>1 load</code> to load block 1 from the library. By convention,
 block 0 cannot be loaded (it is used for comments), and block 1 is
 used as a loader.  In Solo Forth, block 1 contains <code>2 load</code>, in
 order to load the <code>need</code> tool from block 2.</p>

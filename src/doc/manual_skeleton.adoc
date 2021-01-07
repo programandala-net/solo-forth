@@ -1,7 +1,7 @@
 = Solo Forth: Version {version} for {dosname}
 :author: Marcos Cruz
 :producer: Marcos Cruz
-:revdate: 2021-01-06
+:revdate: 2021-01-07
 :doctype: book
 :lang: en
 ifdef::backend-html5[]
@@ -27,7 +27,7 @@ endif::[]
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202101061749.
+// Last modified: 202101071651. 
 
 ifdef::backend-html5[]
 toc::[]
@@ -75,6 +75,13 @@ ifdef::gplusdos[]
 
 endif::gplusdos[]
 
+ifdef::nextzxos[]
+
+No special requirement is necessary. Any ZX Spectrum Next can run Solo
+Forth.
+
+endif::nextzxos[]
+
 ifdef::trdos[]
 
 - 128 KiB RAM.
@@ -104,71 +111,73 @@ information>> and a complete <<_glossary,glossary>> with cross references.
 
 include::doc.README.linked.adoc[tags=platforms]
 
-Porting the G+DOS version of Solo Forth to its close relatives GDOS,
-Beta DOS and Uni-DOS would require only minor changes, beside adding
-some library code to support their specific features.
-
-Supporting
-http://www.worldofspectrum.org/zxplus3e/technical.html[IDEDOS,role="external"],
-http://www.worldofspectrum.org/residos/[ResiDOS,role="external"],
-http://esxdos.org[esxDOS,role="external"] or
-http://specnext.com[NextZXOS,role="external"] would let Solo Forth use
-hard drives, flash cards, and a lot of memory.
-
 [%autowidth]
 .Platforms that could be supported in future versions
 |===
-| Computer                      | Disk interface                      | DOS
+| Computer                          | Disk interface                      | DOS
 
-| ZX Evolution TS-Conf          |                                     | TR-DOS
-| ZX Spectrum +3e               | divIDE/divMMC/ZXATASP/ZXCF/ZXMMC... | IDEDOS
-| ZX Spectrum +3e               | divIDE/divMMC/ZXATASP/ZXCF/ZXMMC... | ResiDOS
-| ZX Spectrum 128/+2            | DISCiPLE                            | GDOS
-| ZX Spectrum 128/+2            | DISCiPLE/Plus D                     | Uni-DOS
-| ZX Spectrum 128/+2            | Plus D                              | Beta DOS
-| ZX Spectrum 128/+2/+2A/+2B/+3 | divIDE/divMMC/ZXATSP/ZXCF/ZXMMC...  | esxDOS
-| ZX Spectrum Next              |                                     | NextZXOS
-| ZX-UNO/ZX-UNO+/ZX-DOS         |                                     | esxDOS
+| ZX Evolution TS-Conf              |                                     | TR-DOS
+| ZX Spectrum +3e                   | divIDE/divMMC/ZXATASP/ZXCF/ZXMMC... | IDEDOS
+| ZX Spectrum 128/+2                | DISCiPLE                            | GDOS
+| ZX Spectrum 128/+2                | DISCiPLE/Plus D                     | Uni-DOS
+| ZX Spectrum 128/+2                | Plus D                              | Beta DOS
+| ZX Spectrum 128/+2/+2A/+2B/+3/+3e | divIDE/divMMC/ZXATSP/ZXCF/ZXMMC...  | ResiDOS
+| ZX Spectrum 128/+2/+2A/+2B/+3/+3e | divIDE/divMMC/ZXATSP/ZXCF/ZXMMC...  | esxDOS
+| ZX-UNO/UNO+/DOS                   |                                     | esxDOS
 |===
-
-////
-
-// XXX OLD
 
 // DOS support {{{1
 == DOS support
 
-// +3DOS {{{2
-=== +3DOS
+// Rationale {{{2
+=== Rationale
 
-// Rationale {{{3
-==== Rationale
+ifdef::plus3dos[]
 
-+3DOS uses 16 KiB of banked memory, but its features and API are
-excellent and very well documented.
++3DOS uses 16 KiB of banked memory, but it has good features:
 
-// G+DOS {{{2
-=== G+DOS
+- Excelent API.
+- Excelent documentation.
+- Fast disk operations.
 
-// Rationale {{{3
-==== Rationale
+endif::[]
+
+ifdef::gplusdos[]
 
 G+DOS was the first target (in fact, the only planned target at the
-beginning), and it's also the author's platform of choice to develop
-projects in Solo Forth, because of its excellent features:
+beginning of the project), and it's also the author's platform of
+choice to develop projects in Solo Forth, because of its excellent
+features:
 
-- Fast disk operations.
 - Big disk capacity (800 KiB for Forth blocks or 780 KiB for files).
 - It uses only the RAM of the Plus D interface.
+- Simple disk image format, without metadata.  
+- Fast disk operations.
 
-// TR-DOS {{{2
-=== TR-DOS
+endif::[]
 
-// Rationale {{{3
-==== Rationale
+ifdef::nextzxos[]
 
-TR-DOS is more than 5 times slower than +3DOS and G+DOS, it uses
-368 bytes of RAM from the main computer memory, and the maximum
+Support for NextZXOS was not planned at all. Solo Forth was designed
+as a diskette-based Forth system for ZX Spectrum 128 and compatible
+computers, storing disk blocks directly on disk sectors.
+
+In fact, during some months the plan was to start a new Forth designed
+for NextZXOS from scratch, with a different approach.
+
+But being NextZXOS a compatible evolution of +3DOS, the +3e ROM and
+IDEDOS, it was clear that it wouldn't be difficult to make a NextZXOS
+version from the current +3DOS one.
+
+Running in NextZXOS on the ZX Spectrum Next, Solo Forth is more
+powerful and easier to use than in +3DOS, G+DOS or TR-DOS.
+
+endif::[]
+
+ifdef::trdos[]
+
+TR-DOS is more than 5 times slower than +3DOS, G+DOS or NextZXOS, it
+uses 368 bytes of RAM from the main computer memory, and the maximum
 capacity of its disks is smaller (636 KiB of useful space, either for
 Forth blocks or files), but it haves some interesting features:
 
@@ -181,24 +190,25 @@ Forth blocks or files), but it haves some interesting features:
 - TR-DOS is used by Pentagon and Scorpion, the powerful Russian clones
   of ZX Spectrum.
 
+endif::[]
+
 // Comparative of DOS features {{{2
 === Comparative of DOS features
+
+// XXX TODO Complete the data about NextZXOS:
 
 [%autowidth]
 .Main features of every DOS
 |===
-| Feature                       | +3DOS           | G+DOS   | TR-DOS
+| Feature                       | +3DOS           | G+DOS   | NextZXOS      | TR-DOS
 
-| Maximum number of disk drives | 16 (actually 2) | 2       | 4
-| Maximum raw disk capacity     | 780 KiB         | 800 KiB | 640 KiB
-| RAM used                      | 16 KiB (bank)   | 0       | 368 B
-| Block disk operations time    | 1.0             | 1.2     | 5.1
+| Maximum number of disk drives | 16 (actually 2) | 2       | 16            | 4
+| Maximum raw disk capacity     | 780 KiB         | 800 KiB | ?             | 640 KiB
+| RAM used                      | 16 KiB (bank)   | 0       | 16 KiB (bank) | 368 B
+| Block disk operations time    | 1.0             | 1.2     | ?             | 5.1
+| Z80 assembly API              | Excellent       | Poor    | Excellent     | Poor
+| API documentation             | Excellent       | Good    | Excellent     | Poor
 |===
-
-// | Z80 assembly API              | Excellent     | Poor    | Poor
-// | API documentation             | Excellent     | Good    | Poor
-
-////
 
 // Comparative of DOS support {{{2
 === Comparative of DOS support
@@ -228,279 +238,324 @@ endif::trdos[]
 The following table shows the main disk-management words implemented on each
 DOS:
 
-[cols="18,10,10,10,52"]
+[cols="18,10,10,10,10,52"]
 .Main disk-related words implemented
 |===
-| Word                   | +3DOS | G+DOS | TR-DOS | Description
+| Word                   | +3DOS | G+DOS | NextZXOS | TR-DOS | Description
 
-| `2-block-drives`       | YES   | YES   | YES    | Use the first two drives as block drives
+|
+ifdef::plus3dos[`2-block-drives`]
+ifdef::gplusdos[`2-block-drives`]
+ifdef::nextzxos[``2-block-drives``]
+ifdef::trdos[`2-block-drives`]
+| YES | YES | n/a | YES | Use the first two drives as block drives
 
 |
 ifdef::plus3dos[``3-block-drives``]
 ifdef::gplusdos[``3-block-drives``]
+ifdef::nextzxos[``3-block-drives``]
 ifdef::trdos[`3-block-drives`]
-| n/a   | n/a   | YES    | Use the first three drives as block drives
+| n/a | n/a | n/a | YES | Use the first three drives as block drives
 
 |
 ifdef::plus3dos[``4-block-drives``]
 ifdef::gplusdos[``4-block-drives``]
+ifdef::nextzxos[``4-block-drives``]
 ifdef::trdos[`4-block-drives`]
-| n/a   | n/a   | YES    | Use the first four drives as block drives
+| n/a | n/a | n/a | YES | Use the first four drives as block drives
 
 |
 ifdef::plus3dos[``>file``]
 ifdef::gplusdos[`>file`]
+ifdef::nextzxos[``>file``]
 ifdef::trdos[`>file`]
-|       | YES   | YES    | Save memory zone to a file
+| | YES | | YES | Save memory zone to a file
 
 | `acat`
-| YES   | YES   | YES    | Display an abbreviated disk catalogue
+| YES | YES | YES | YES | Display an abbreviated disk catalogue
 
 |
 ifdef::plus3dos[`bank-read-file`]
 ifdef::gplusdos[``bank-read-file``]
+ifdef::nextzxos[`bank-read-file`]
 ifdef::trdos[``bank-read-file``]
-| YES   |       |        | Read from a file with a bank paged in
+| YES | | YES | | Read from a file with a bank paged in
 
 |
 ifdef::plus3dos[`bank-write-file`]
 ifdef::gplusdos[``bank-write-file``]
+ifdef::nextzxos[`bank-write-file`]
 ifdef::trdos[``bank-write-file``]
-| YES   |       |        | Write to a file with a bank paged in
+| YES | | YES | | Write to a file with a bank paged in
 
 |
 ifdef::plus3dos[`bin`]
 ifdef::gplusdos[`bin`]
+ifdef::nextzxos[`bin`]
 ifdef::trdos[``bin``]
-| YES   | YES   |        | Standard Forth
+| YES | YES | YES | | Standard Forth
 
 | `cat`
-| YES   | YES   | YES    | Display a detailed disk catalogue
+| YES | YES | YES | YES | Display a detailed disk catalogue
 
 |
 ifdef::plus3dos[`close-file`]
 ifdef::gplusdos[``close-file``]
+ifdef::nextzxos[`close-file`]
 ifdef::trdos[``close-file``]
-| YES   |       |        | Standard Forth
+| YES | | YES | | Standard Forth
 
 |
 ifdef::plus3dos[`create-file`]
 ifdef::gplusdos[``create-file``]
+ifdef::nextzxos[`create-file`]
 ifdef::trdos[``create-file``]
-| YES   |       |        | Standard Forth
+| YES | | YES | | Standard Forth
 
 | `delete-file`
-| YES   | YES   | YES    | Standard Forth
+| YES | YES | YES | YES | Standard Forth
 
 |
 ifdef::plus3dos[`drive-unused`]
 ifdef::gplusdos[`drive-unused`]
+ifdef::nextzxos[`drive-unused`]
 ifdef::trdos[``drive-unused``]
-| YES   | YES   |        | Return the number of unused kibibytes in a drive
+| YES | YES | YES | | Return the number of unused kibibytes in a drive
 
 |
 ifdef::plus3dos[``file-dir#``]
 ifdef::gplusdos[``file-dir#``]
+ifdef::nextzxos[``file-dir#``]
 ifdef::trdos[`file-dir#`]
-|       |       | YES    | Return the directory number of a file
+| | | | YES | Return the directory number of a file
 
 |
 ifdef::plus3dos[``file-exists?``]
 ifdef::gplusdos[`file-exists?`]
+ifdef::nextzxos[``file-exists?``]
 ifdef::trdos[`file-exists?`]
-|       | YES   | YES    | Return a flag: does a files exists?
+| | YES | | YES | Return a flag: does a files exists?
 
 |
 ifdef::plus3dos[``file-length``]
 ifdef::gplusdos[`file-length`]
+ifdef::nextzxos[``file-length``]
 ifdef::trdos[`file-length`]
-|       | YES   | YES    | Return the length of a file
+| | YES | | YES | Return the length of a file
 
 |
 ifdef::plus3dos[`file-position`]
 ifdef::gplusdos[``file-position``]
+ifdef::nextzxos[`file-position`]
 ifdef::trdos[``file-position``]
-| YES   |       |        | Standard Forth
+| YES | | YES | | Standard Forth
 
 |
 ifdef::plus3dos[``file-sector``]
 ifdef::gplusdos[``file-sector``]
+ifdef::nextzxos[``file-sector``]
 ifdef::trdos[`file-sector`]
-|       |       | YES    | Return the first sector of a file
+| | | | YES | Return the first sector of a file
 
 |
 ifdef::plus3dos[``file-sectors``]
 ifdef::gplusdos[``file-sectors``]
+ifdef::nextzxos[``file-sectors``]
 ifdef::trdos[`file-sectors`]
-|       |       | YES    | Return the number of sectors occupied by a file
+| | | | YES | Return the number of sectors occupied by a file
 
 |
 ifdef::plus3dos[`file-size`]
 ifdef::gplusdos[``file-size``]
+ifdef::nextzxos[`file-size`]
 ifdef::trdos[``file-size``]
-| YES   |       |        | Standard Forth
+| YES | | YES | | Standard Forth
 
 |
 ifdef::plus3dos[``file-start``]
 ifdef::gplusdos[`file-start`]
+ifdef::nextzxos[``file-start``]
 ifdef::trdos[`file-start`]
-|       | YES   | YES    | Return the start address of a file
+| | YES | | YES | Return the start address of a file
 
 |
 ifdef::plus3dos[``file-status``]
 ifdef::gplusdos[`file-status`]
+ifdef::nextzxos[``file-status``]
 ifdef::trdos[`file-status`]
-|       | YES   | YES    | Standard Forth
+| | YES | | YES | Standard Forth
 
 |
 ifdef::plus3dos[``file-track``]
 ifdef::gplusdos[``file-track``]
+ifdef::nextzxos[``file-track``]
 ifdef::trdos[`file-track`]
-|       |       | YES    | Return the first track of a file
+| | | | YES | Return the first track of a file
 
 |
 ifdef::plus3dos[``file-type``]
 ifdef::gplusdos[`file-type`]
+ifdef::nextzxos[``file-type``]
 ifdef::trdos[`file-type`]
-|       | YES   | YES    | Return the type of a file
+| | YES | | YES | Return the type of a file
 
 |
 ifdef::plus3dos[``file>``]
 ifdef::gplusdos[`file>`]
+ifdef::nextzxos[``file>``]
 ifdef::trdos[`file>`]
-|       | YES   | YES    | Load file contents to memory zone
+| | YES | | YES | Load file contents to memory zone
 
 |
 ifdef::plus3dos[``find-file``]
 ifdef::gplusdos[`find-file`]
+ifdef::nextzxos[``find-file``]
 ifdef::trdos[`find-file`]
-|       | YES   | YES    | Find a file
+| | YES | | YES | Find a file
 
 |
 ifdef::plus3dos[`flush-drive`]
 ifdef::gplusdos[``flush-drive``]
+ifdef::nextzxos[`flush-drive`]
 ifdef::trdos[``flush-drive``]
-| YES   |       |        | Write all pending data for a drive
+| YES | | YES | | Write all pending data for a drive
 
 | ``flush-file``
-|       |       |        | Standard Forth
+| | | | | Standard Forth
 
 | `get-block-drives`
-| YES   | YES   | YES    | Get the drives used as block drives
+| YES | n/a | YES | YES | Get the drives used as block drives
 
 | `get-drive`
-| YES   | YES   | YES    | Get the number of the current drive
+| YES | YES | YES | YES | Get the number of the current drive
 
 | ``include-file``
-|       |       |        | Standard Forth
+| | | | | Standard Forth
 
 | ``include``
-|       |       |        | Standard Forth
+| | | | | Standard Forth
 
 | ``included``
-|       |       |        | Standard Forth
+| | | | | Standard Forth
 
 |
 ifdef::plus3dos[`open-file`]
 ifdef::gplusdos[``open-file``]
+ifdef::nextzxos[`open-file`]
 ifdef::trdos[``open-file``]
-| YES   |       |        | Standard Forth
+| YES | | YES | | Standard Forth
 
 |
 ifdef::plus3dos[`r/o`]
 ifdef::gplusdos[``r/o``]
+ifdef::nextzxos[`r/o`]
 ifdef::trdos[``r/o``]
-| YES   |       |        | Standard Forth
+| YES | | YES | | Standard Forth
 
 |
 ifdef::plus3dos[`r/w`]
 ifdef::gplusdos[``r/w``]
+ifdef::nextzxos[`r/w`]
 ifdef::trdos[``r/w``]
-| YES   |       |        | Standard Forth
+| YES | | YES | | Standard Forth
 
 |
 ifdef::plus3dos[`read-byte`]
 ifdef::gplusdos[``read-byte``]
+ifdef::nextzxos[``read-byte``]
 ifdef::trdos[``read-byte``]
-| YES   |       |        | Read byte from file
+| YES | | YES | | Read byte from file
 
 |
 ifdef::plus3dos[`read-file`]
 ifdef::gplusdos[``read-file``]
+ifdef::nextzxos[``read-file``]
 ifdef::trdos[``read-file``]
-| YES   |       |        | Standard Forth
+| YES | | YES | | Standard Forth
 
 |
 ifdef::plus3dos[`read-line`]
 ifdef::gplusdos[``read-line``]
+ifdef::nextzxos[``read-line``]
 ifdef::trdos[``read-line``]
-| YES   |       |        | Standard Forth
+| YES | | YES | | Standard Forth
 
 | `rename-file`
-| YES   | YES   | YES    | Standard Forth
+| YES | YES | YES | YES | Standard Forth
 
 |
 ifdef::plus3dos[`reposition-file`]
 ifdef::gplusdos[``reposition-file``]
+ifdef::nextzxos[``reposition-file``]
 ifdef::trdos[``reposition-file``]
-| YES   |       |        | Standard Forth
+| YES | | YES | | Standard Forth
 
 | ``require``
-|       |       |        | Standard Forth
+| | | | | Standard Forth
 
 | ``required``
-|       |       |        | Standard Forth
+| | | | | Standard Forth
 
 | ``resize-file``
-|       |       |        | Standard Forth
+| | | | | Standard Forth
 
-| `set-block-drives`
-| YES   | YES   | YES    | Set the drives used as block drives
+ifdef::plus3dos[`set-block-drives`]
+ifdef::gplusdos[`set-block-drives`]
+ifdef::nextzxos[``set-block-drives``]
+ifdef::trdos[`set-block-drives`]
+| YES | n/a | YES | YES | Set the drives used as block drives
 
 | `set-drive`
-| YES   | YES   | YES    | Set the current drive
+| YES | YES | YES | YES | Set the current drive
 
 |
 ifdef::plus3dos[``undelete-file``]
 ifdef::gplusdos[``undelete-file``]
+ifdef::nextzxos[``undelete-file``]
 ifdef::trdos[`undelete-file`]
-|       |       | YES    | Undelete a file
+| | | | YES | Undelete a file
 
 |
 ifdef::plus3dos[`w/o`]
 ifdef::gplusdos[``w/o``]
+ifdef::nextzxos[`w/o`]
 ifdef::trdos[``w/o``]
-| YES   |       |        | Standard Forth
+| YES | | YES | | Standard Forth
 
 |
 ifdef::plus3dos[`wacat`]
 ifdef::gplusdos[`wacat`]
+ifdef::nextzxos[`wacat`]
 ifdef::trdos[``wacat``]
-| YES   | YES   |        | Display an abbreviated disk catalogue with wildcards
+| YES | YES | YES | | Display an abbreviated disk catalogue with wildcards
 
 |
 ifdef::plus3dos[`wcat`]
 ifdef::gplusdos[`wcat`]
+ifdef::nextzxos[`wcat`]
 ifdef::trdos[``wcat``]
-| YES   | YES   |        | Display a detailed disk catalogue with wildcards
+| YES | YES | YES | | Display a detailed disk catalogue with wildcards
 
 |
 ifdef::plus3dos[`write-byte`]
 ifdef::gplusdos[``write-byte``]
+ifdef::nextzxos[`write-byte`]
 ifdef::trdos[``write-byte``]
-| YES   |       |        | Write a byte to a file
+| YES | | YES | | Write a byte to a file
 
 |
 ifdef::plus3dos[`write-file`]
 ifdef::gplusdos[``write-file``]
+ifdef::nextzxos[`write-file`]
 ifdef::trdos[``write-file``]
-| YES   |       |        | Standard Forth
+| YES | | YES | | Standard Forth
 
 |
 ifdef::plus3dos[`write-line`]
 ifdef::gplusdos[``write-line``]
+ifdef::nextzxos[`write-line`]
 ifdef::trdos[``write-line``]
-| YES   |       |        | Standard Forth
+| YES | | YES | | Standard Forth
 
 |===
 
@@ -518,7 +573,9 @@ Solo Forth can be downloaded from two sites:
 //  in GitHub,role="external"]
 
 - http://programandala.net/en.program.solo_forth.html[Solo Forth home page]
-- http://github.com/programandala-net/solo-forth[Solo Forth repository in GitHub,role="external"]
+- http://programandala.net/en.program.solo_forth.html[Fossil
+  repository,role="external"]
+- http://github.com/programandala-net/solo-forth[GitHub mirror,role="external"]
 
 // Project directories {{{1
 [#_tree]
@@ -526,8 +583,13 @@ Solo Forth can be downloaded from two sites:
 
 include::doc.README.linked.adoc[tags=tree]
 
-// Disks {{{1
-== Disks
+// Disk images / NextZXOS files {{{1
+ifndef::nextzxos[]
+== Disks images
+endif::[]
+ifdef::nextzxos[]
+== NextZXOS files
+endif::[]
 
 ifdef::plus3dos[]
 
@@ -556,6 +618,19 @@ disks/gplusdos/disk_3_workbench.mgt
 ....
 
 endif::gplusdos[]
+
+ifdef::nextzxos[]
+
+The <nextzxos> directory of the <<_tree,directory tree>>
+contains the following files:
+
+....
+nextzxos/solo.bas
+nextzxos/solo.bin
+nextzxos/solo.fb
+....
+
+endif::nextzxos[]
 
 ifdef::trdos[]
 
@@ -618,6 +693,24 @@ system.  Therefore their contents cannot be accessed with ordinary
 DOS commands.
 
 endif::trdos[]
+
+ifdef::nextzxos[]
+
+- <solo.bas> is the BASIC loader, the program that launches Solo
+  Forth.
+- <solo.bin> is the Solo Forth kernel loaded by <solo.bas>.
+- <solo.fb> contains the library, some programs (little sample games,
+  most of them under development, two block editors and one sound
+  editor), tests and benchmarks (most of them were used during the
+  development and their only documentation is the commented source).
+
+// XXX TODO Improve, mention the block editors and maybe Tasword:
+
+WARNING: <solo.fb> is a Forth blocks file: It contains the source
+Forth blocks without any control character. Therefore its content
+cannot be accessed with ordinary editors.
+
+endif::nextzxos[]
 
 // end::disks[]
 
@@ -713,6 +806,10 @@ ifdef::gplusdos[]
 include::doc.README.linked.adoc[tags=library_on_gplusdos]
 endif::gplusdos[]
 
+ifdef::nextzxos[]
+include::doc.README.linked.adoc[tags=library_on_nextzxos]
+endif::nextzxos[]
+
 ifdef::trdos[]
 include::doc.README.linked.adoc[tags=library_on_trdos]
 endif::trdos[]
@@ -749,6 +846,8 @@ definitions use no code or data space) and changes the default
 behaviour of `need` and related words to use it. Then ``need name``
 will automatically start loading the first block where the “name”
 is defined
+
+// XXX TODO: Add NextZXOS:
 
 [cols="11,6,>8,>8,>6,>6"]
 .Time and name-space memory required to make the library index
@@ -833,6 +932,8 @@ second disk:
 
 endif::trdos[]
 
+ifdef::plus3dos,gplusdos,trdos[]
+
 [cols="6,10,10,10,10"]
 .Range of blocks per drive in every DOS, in normal order
 |===
@@ -842,6 +943,8 @@ endif::trdos[]
 | G+DOS  | 0-799     | 800-1599  | n/a       | n/a
 | TR-DOS | 0-635     | 636-1271  | 1272-1908 | 1909-2544
 |===
+
+endif::[]
 
 ifdef::trdos[]
 
@@ -906,15 +1009,33 @@ Usage examples:
 // How to test and benchmark {{{1
 == How to test and benchmark
 
-// XXX TODO -- Combine with section "How to loed a program that uses the library"
+// XXX TODO -- Combine with section "How to load a program that uses the library"
+
+ifdef::plus3dos,gplusdos,trdos[]
 
 Disk 3 (called “workbench”) contains many little specific tests and benchmarks
 used during the development of Solo Forth, probably not interesting for the
 application programmer.  But it also contains an adapted version of the Hayes
 test and some known benchmarks.
 
-// First, set the required block disks {{{2
+endif::[]
+
+ifdef::nextzxos[]
+
+The <solo.fb> file contains also many little specific tests and
+benchmarks used during the development of Solo Forth, probably not
+interesting for the application programmer.  But it also contains an
+adapted version of the Hayes test and some known benchmarks.
+
+endif::[]
+
+// First, set the required block disks / open the blocks file {{{2
+ifdef::plus3dos,gplusdos,trdos[]
 === First, set the required block disks
+endif::[]
+ifdef::nextzxos[]
+=== First, open the blocks file
+endif::[]
 
 // In +3DOS {{{3
 
@@ -953,6 +1074,16 @@ ifdef::gplusdos[]
   set-block-drives``
 
 endif::gplusdos[]
+
+// In NextZXOS {{{3
+
+ifdef::nextzxos[]
+
+. <<_run,Run Solo Forth>> or enter `cold` to start from scratch.
+. Open the blocks file with `s" solo.fb" open-blocks`.
+. Enter command ``1 load`` to `load` the `need` tool.
+
+endif::nextzxos[]
 
 // In TR-DOS {{{3
 
@@ -1068,28 +1199,32 @@ images or the manual for your DOS of choice:
 [%autowidth]
 .Commands to rebuild the disk images
 |===
-| DOS    | Computer          |
+| DOS      | Computer          |
 
-| +3DOS  | All               | ``make plus3dos``
-| G+DOS  | All               | ``make gplusdos``
-| TR-DOS | All               | ``make trdos``
-| TR-DOS | 128-KiB models    | ``make trdos128``
-| TR-DOS | Pentagon 512/1024 | ``make pentagon``
-| TR-DOS | Scorpion ZS 256   | ``make scorpion``
-| All    | All               | ``make``
+| +3DOS    | All               | ``make plus3dos``
+| G+DOS    | All               | ``make gplusdos``
+| NextZXOS | ZX Spectrum Next  | ``make nextzxos``
+| TR-DOS   | All               | ``make trdos``
+| TR-DOS   | 128-KiB models    | ``make trdos128``
+| TR-DOS   | Pentagon 512/1024 | ``make pentagon``
+| TR-DOS   | Scorpion ZS 256   | ``make scorpion``
+| All      | All               | ``make``
 |===
+
+// XXX FIXME: The table is too wide. Show only the current DOS or
+// split the content into several tables or lists:
 
 [%autowidth]
 .Commands to rebuild the manual
 |===
-| Format  | +3DOS                 | G+DOS                 | TR-DOS             | All
+| Format  | +3DOS                 | G+DOS                 | NextZXOS              | TR-DOS             | All
 
-| DocBook | ``make plus3dosdbk``  | ``make gplusdosdbk``  | ``make trdosdbk``  | ``make dbk``
-| EPUB    | ``make plus3dosepub`` | ``make gplusdosepub`` | ``make trdosepub`` | ``make epub``
-| HTML    | ``make plus3doshtml`` | ``make gplusdoshtml`` | ``make trdoshtml`` | ``make html``
-| ODT     | ``make plus3dosodt``  | ``make gplusdosodt``  | ``make trdosodt``  | ``make odt``
-| PDF     | ``make plus3dospdf``  | ``make gplusdospdf``  | ``make trdospdf``  | ``make pdf``
-| All     | ``make plus3dosdoc``  | ``make gplusdosdoc``  | ``make trdosdoc``  | ``make doc``
+| DocBook | ``make plus3dosdbk``  | ``make gplusdosdbk``  | ``make nextzxosdbk``  | ``make trdosdbk``  | ``make dbk``
+| EPUB    | ``make plus3dosepub`` | ``make gplusdosepub`` | ``make nextzxosepub`` | ``make trdosepub`` | ``make epub``
+| HTML    | ``make plus3doshtml`` | ``make gplusdoshtml`` | ``make nextzxoshtml`` | ``make trdoshtml`` | ``make html``
+| ODT     | ``make plus3dosodt``  | ``make gplusdosodt``  | ``make nextzxosodt``  | ``make trdosodt``  | ``make odt``
+| PDF     | ``make plus3dospdf``  | ``make gplusdospdf``  | ``make nextzxospdf``  | ``make trdospdf``  | ``make pdf``
+| All     | ``make plus3dosdoc``  | ``make gplusdosdoc``  | ``make nextzxosdoc``  | ``make trdosdoc``  | ``make doc``
 |===
 
 NOTE: Only the EPUB, HTML and PDF built directly from the Asciidoctor
@@ -1117,13 +1252,16 @@ Solo Forth.  Therefore, programs shall not define values for use with
 | 1..32767      | Programs
 | -255..-1      | Standard Forth
 | -999..-256    | Solo Forth
-| -1127..-1000  | Solo Forth: {dosname}
-| -1154..-1128  | Solo Forth: ZX Spectrum OS (BASIC)
+| -1127..-1000  | {dosname}
+| -1154..-1128  | Sinclair BASIC
 | -4095..-1155  | Solo Forth
 | -32768..-4096 | Programs
 |===
 
-The original ZX Spectrum OS error codes are included (in range -1154..-1128)
+// XXX TODO Confirm that Sinclair BASIC errors are properly included,
+// and indexed by `error>ordinal`.
+
+The original Sinclar BASIC error codes are included (in range -1154..-1128)
 because a few of them may be returned by some DOS words in special cases.
 
 The way errors are displayed is configurable.  By default only the exception
@@ -1143,6 +1281,12 @@ ifdef::gplusdos[]
 include::doc.gplusdos.exception_codes.adoc[]
 
 endif::gplusdos[]
+
+ifdef::nextzxos[]
+
+include::doc.nextzxos.exception_codes.adoc[]
+
+endif::nextzxos[]
 
 ifdef::trdos[]
 

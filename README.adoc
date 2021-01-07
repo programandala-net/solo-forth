@@ -1,24 +1,30 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2021-01-04
+:revdate: 2021-01-07
 :toc:
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202101061748.
+// Last modified: 202101071728.
 
 // Description {{{1
 == Description
 
 // tag::description[]
 
-Solo Forth is a Forth system for the ZX Spectrum 128 and
-compatible computers, with disk drives and +3DOS, G+DOS, or TR-DOS.
+Solo Forth is a Forth system for a wide range of ZX Spectrum
+compatible computers and four DOSes:
 
-Solo Forth cannot run on the original ZX Spectrum 48, but could be
-used to develop programs for it.
+- ZX Spectrum 128/+2 with G+DOS or TR-DOS.
+- ZX Spectrum +2A/+2B/+3/+3e with +3DOS.
+- Pentagon 128/512/1024 with TR-DOS.  
+- Scorpion ZS 256 with TR-DOS.  
+- ZX Spectrum Next with NextZXOS.
+
+Solo Forth cannot run on the first ZX Spectrum model (16 or 48 KiB),
+but in theory it could be used to develop programs for it. 
 
 Solo Forth can be used as a stand-alone Forth system (either in an
 emulator or on the real computer), or as part of a cross-development
@@ -126,20 +132,21 @@ http://programandala.net/en.program.black_flag.html[Black Flag].
 [%autowidth]
 .Supported platforms
 |===
-| Computer        | Disk interface        | DOS
+| Computer         | Disk interface        | DOS
 
-| Pentagon 128    |                       | TR-DOS
-| Pentagon 512    |                       | TR-DOS
-| Pentagon 1024   |                       | TR-DOS
-| Scorpion ZS 256 |                       | TR-DOS
-| ZX Spectrum 128 | Beta 128              | TR-DOS
-| ZX Spectrum 128 | Plus D                | G+DOS
-| ZX Spectrum +2  | Beta 128              | TR-DOS
-| ZX Spectrum +2  | Plus D                | G+DOS
-| ZX Spectrum +2A | (External disk drive) | +3DOS
-| ZX Spectrum +2B | (External disk drive) | +3DOS
-| ZX Spectrum +3  |                       | +3DOS
-| ZX Spectrum +3e |                       | +3DOS
+| Pentagon 128     |                       | TR-DOS
+| Pentagon 512     |                       | TR-DOS
+| Pentagon 1024    |                       | TR-DOS
+| Scorpion ZS 256  |                       | TR-DOS
+| ZX Spectrum 128  | Beta 128              | TR-DOS
+| ZX Spectrum 128  | Plus D                | G+DOS
+| ZX Spectrum +2   | Beta 128              | TR-DOS
+| ZX Spectrum +2   | Plus D                | G+DOS
+| ZX Spectrum +2A  | (External disk drive) | +3DOS
+| ZX Spectrum +2B  | (External disk drive) | +3DOS
+| ZX Spectrum +3   |                       | +3DOS
+| ZX Spectrum +3e  |                       | +3DOS
+| ZX Spectrum Next |                       | NextZXOS
 |===
 
 // end::platforms[]
@@ -281,6 +288,7 @@ http://programandala.net/en.program.black_flag.html[Black Flag].
 | disks       | trdos        | TR-DOS disk images
 | doc         |              | Manuals in DocBook, EPUB, HTML and PDF
 | make        |              | Files used by ``make`` to build the system
+| nextzxos    |              | NextZXOS files
 | screenshots |              | Version screenshots
 | src         |              | Sources
 | src         | addons       | Code to be loaded from disk. Not used yet.
@@ -370,7 +378,7 @@ configured as double-sided and 80-track in the emulator.
 // tag::run_128_with_plusd[]
 
 // XXX REMARK -- This tag does not include the title, because this is
-// the only entry for +3DOS, and the computers are mentioned in item
+// the only entry for G+DOS, and the computers are mentioned in item
 // 1:
 
 1. Run a ZX Spectrum emulator and select a ZX Spectrum 128 (or ZX
@@ -382,6 +390,25 @@ configured as double-sided and 80-track in the emulator.
    Forth as well.
 
 // end::run_128_with_plusd[]
+
+// In NextZXOS {{{2
+[#_run_nextzxos]
+=== In NextZXOS
+
+// On ZX Spectrum Next {{{3
+==== On ZX Spectrum Next
+
+// tag::run_zx_spectrum_next[]
+
+// XXX REMARK -- This tag does not include the title, because this is
+// the only entry for NextZXOS, and the computer is mentioned in item
+// 1:
+
+// XXX TODO
+
+NOTE: Section pending.
+
+// end::run_zx_spectrum_next[]
 
 // In TR-DOS {{{2
 [#_run_trdos]
@@ -535,6 +562,22 @@ letters used by the TR-DOS BASIC interface:
    want to load from the library.
 
 // end::library_on_gplusdos[]
+
+// In NextZXOS {{{2
+=== In NextZXOS
+
+// tag::library_on_nextzxos[]
+
+1. <<_run_nextzxos,Run Solo Forth>>.
+2. Type `s" solo.fb" open-blocks` to open the blocks file.
+3. Type `1 load` to load block 1 from the library. By convention,
+   block 0 cannot be loaded (it is used for comments), and block 1 is
+   used as a loader.  In Solo Forth, block 1 contains `2 load`, in
+   order to load the `need` tool from block 2.
+4. Type `need name`, were “name” is the name of the word or tool you
+   want to load from the library.
+
+// end::library_on_nextzxos[]
 
 // In TR-DOS {{{2
 === In TR-DOS
