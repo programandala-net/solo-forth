@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202101062132.
+# Last modified: 202101070204.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -713,7 +713,7 @@ gplusdos_core_lib_files = \
 
 nextzxos_lib_files = \
 	$(filter-out $(not_ready) \
-			%dos.COMMON.fs %.os.fs %idedos.fs \
+  	%dos.COMMON.block-drives.fs %.os.fs %idedos.fs \
 			%gplusdos.fs %plus3dos.fs %trdos.fs, \
 		$(lib_files))
 
@@ -1813,6 +1813,9 @@ include Makefile.cover_image
 # version of the manual. Exclude also the unfinished
 # <exception.codes.1128.os.fs>. Exclude <dos.COMMON.fs> from the NextZXOS
 # library.
+#
+# 2021-01-07: Update file list filter: the DOS code excluded from NextZXOS has
+# been moved to <dos.COMMON.block-drives.fs>.
 
 # ==============================================================
 
