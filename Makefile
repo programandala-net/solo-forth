@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202101071844.
+# Last modified: 202101072251.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -155,9 +155,9 @@ trdos_disks=\
 	$(trdos_scorpion_boot_disk)
 
 nextzxos_files=\
-	 nextzxos/solo.bas \
-	 nextzxos/solo.bin \
-	 nextzxos/solo.fb
+	 disks/nextzxos/solo.bas \
+	 disks/nextzxos/solo.bin \
+	 disks/nextzxos/solo.fb
 
 	# ==============================================================
 # Interface {{{1
@@ -236,7 +236,7 @@ cleangplusdosdisks:
 
 .PHONY: cleannextzxosfiles
 cleannextzxosfiles:
-	rm -f nextzxos/solo.*
+	rm -f disks/nextzxos/solo.*
 
 .PHONY: cleanplus3dosdisks
 cleanplus3dosdisks:
@@ -899,21 +899,21 @@ tmp/loader.nextzxos.bas: \
 	src/kernel.z80s
 	gforth make/patch_the_loader.fs $@ $^
 
-nextzxos/solo.bas: tmp/loader.nextzxos.bas
+disks/nextzxos/solo.bas: tmp/loader.nextzxos.bas
 	zmakebas -3 -n Autoload -a 1 -o $@ $<
 
 tmp/library.nextzxos.fs: $(nextzxos_lib_files)
 	cat $^ > $@
 
-nextzxos/solo.fb: tmp/library.nextzxos.fs
+disks/nextzxos/solo.fb: tmp/library.nextzxos.fs
 	fsb2 $<; \
 	mv -f $(addsuffix .fb,$(basename $< .fs)) $@
 
 .PHONY: nextzxos_files
 nextzxos_files: \
-	nextzxos/solo.bas \
-	nextzxos/solo.bin \
-	nextzxos/solo.fb
+	disks/nextzxos/solo.bas \
+	disks/nextzxos/solo.bin \
+	disks/nextzxos/solo.fb
 	cp -f $(basename $(fzx_fonts)) nextzxos
 	cp -f $(basename $(f64_fonts)) nextzxos
 	cp -f bin/addons/pr42.bin nextzxos
@@ -1976,7 +1976,9 @@ include Makefile.cover_image
 #
 # 2021-01-07: Update file list filter: the DOS code excluded from NextZXOS has
 # been moved to <dos.COMMON.block-drives.fs>. Add the rules to build the
-# NextZXOS manuals and cover images.
+# NextZXOS manuals and cover images. Move the <nextzxos> directory to
+# <disks/nextzxos>; in the definitive version <disks> will be renamed to
+# <media>.
 
 # ==============================================================
 
