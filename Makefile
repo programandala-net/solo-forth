@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202101071831.
+# Last modified: 202101071844.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -453,7 +453,7 @@ trdospdf: \
 # -------------------------------------
 
 .PHONY: covers
-covers: gplusdoscover nextzxos plus3doscover trdoscover
+covers: gplusdoscover nextzxoscover plus3doscover trdoscover
 
 .PHONY: gplusdoscover
 gplusdoscover: doc/gplusdos_$(cover).jpg
