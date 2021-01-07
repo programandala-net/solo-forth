@@ -44,6 +44,7 @@ http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=00096057
 === New
 
 - Add `scr-fill-bench`.
+- Add `word-separator` to make `(.word` configurable.
 
 // Fixes {{{2
 === Fixes

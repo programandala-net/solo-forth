@@ -3,8 +3,8 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
-  \ See change log at the end of the file
+  \ Last modified: 202101072036.
+  \ See change log at the end of the file.
 
   \ ===========================================================
   \ Description
@@ -15,7 +15,7 @@
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018,
-  \ 2020.
+  \ 2020, 2021.
 
   \ ===========================================================
   \ License
@@ -26,28 +26,57 @@
 
 ( .word .wordname more-words? words wordlist-words )
 
-unneeding .word ?( need tab need .name  defer .word ( nt -- )
+unneeding .word ?( need 'cr' need .name need cvariable
 
-: (.word ( nt -- ) .name tab ;  ' (.word ' .word defer! ?)
+cvariable word-separator  'cr' word-separator c!
 
   \ doc{
   \
-  \ .word ( nt -- ) "dot-word"
+  \ word-separator  ( -- ca )
   \
-  \ A deferred word (see `defer`) whose default action is
-  \ `(.word`. This word is used by `words`, `words-like` and
-  \ `wordlist-words`, therefore their output can be changed by
-  \ the user in special cases, for example when more details
-  \ are needed for debugging.
+  \ Return the address _ca_ containing the character printed by
+  \ `(.word` after every word.
+  \
+  \ ``word-separator`` is a `cvariable`` whose default content
+  \ is `'cr'`, i.e. a carriage return. Useful alternative
+  \ values are `'tab'` (a tabulator) and `bl` (a space).
+  \
+  \ NOTE: ``word-separator`` is not locatable in the library.
+  \ It's compiled together with `.word`.
+  \
+  \ See also: `.word`, `words`.
   \
   \ }doc
+
+: (.word ( nt -- ) .name word-separator c@ emit ;
 
   \ doc{
   \
   \ (.word ( nt -- ) "paren-dot-word"
   \
   \ Default action of `.word`: display the name of the
-  \ definition _nt_ and execute `tab`.
+  \ definition _nt_ and `emit` the content of `word-separator`.
+  \
+  \ NOTE: ``(.word`` is not locatable in the library.
+  \ It's compiled together with `.word`.
+  \
+  \ }doc
+
+defer .word ( nt -- ) ' (.word ' .word defer! ?)
+
+  \ doc{
+  \
+  \ .word ( nt -- ) "dot-word"
+  \
+  \ A deferred word (see `defer`) whose default action is
+  \ `(.word`.
+  \
+  \ ``.word`` is used by `words`, `words-like` and
+  \ `wordlist-words`, therefore the user can modify the output
+  \ of these three words by configuring ``.word`` with a
+  \ different action.
+  \
+  \ See also: `word-separator`.
   \
   \ }doc
 
@@ -205,5 +234,9 @@ unneeding words# ?( need trail need name<name
   \ 2020-05-24: Replace "hash" notation with "number sign".
   \
   \ 2020-07-28: Improve documentation of deferred words.
+  \
+  \ 2021-01-07: Add `word-separator` to make `(.word`
+  \ configurable; make a carriage return its default value
+  \ instead; formerly a tabulator was emitted.
 
   \ vim: filetype=soloforth
