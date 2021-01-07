@@ -1,0 +1,81 @@
+; kernel.COMMON.block-drives.z80s
+
+; This file is part of Solo Forth
+; http://programandala.net/en.program.solo_forth.html
+
+; Last modified: 202101070033.
+; See change log at the end of the file.
+
+; ==============================================================
+; Description
+
+; The part of the kernel that is specific to +3DOS.
+
+; ==============================================================
+; Author
+
+; Marcos Cruz (programandala.net), 2015..2020, 2021.
+
+; ==============================================================
+; License
+
+; You may do whatever you want with this work, so long as you
+; retain every copyright, credit and authorship notice, and this
+; license.  There is no warranty.
+
+; ==============================================================
+
+; ----------------------------------------------
+  _c_constant_header sectors_slash_track_,'sectors/track'
+
+; doc{
+;
+; sectors/track ( -- b ) "sectors-slash-track"
+;
+; A `cconstant`. _b_ is the number of sectors per track.
+;
+; See also: `b/sector`, `sectors/block`, `blocks/disk`.
+;
+; }doc
+
+  db sectors_per_track
+
+; ----------------------------------------------
+  _c_constant_header sectors_slash_block_,'sectors/block'
+
+; doc{
+;
+; sectors/block ( -- b ) "sectors-slash-block"
+;
+; A `cconstant`. _b_ is the number of sectors per block.
+;
+; See also: `b/sector`, `sectors/track`, `blocks/disk`.
+;
+; }doc
+
+  db sectors_per_block
+
+; ----------------------------------------------
+  _constant_header blocks_slash_disk_,'blocks/disk'
+
+; doc{
+;
+; blocks/disk ( -- n ) "blocks-slash-disk"
+;
+; A `constant`. _n_ is the number of blocks per disk.
+;
+; See also: `sectors/block`, `sectors/track`.
+;
+; }doc
+
+  dw blocks_per_disk
+
+; ==============================================================
+; Change log
+
+; 2021-01-07: Start. Move here the definitions of
+; `sectors/track`, `sectors/block` and `blocks/disk` from the
+; main <kernel.z80s>, in order to exclude them from the NextZXOS
+; version of Solo Forth.
+
+; vim: filetype=z80:textwidth=64

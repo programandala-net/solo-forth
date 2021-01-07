@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101060438
+; Last modified: 202101070247
 ; See change log at the end of the file
 
 ; ==============================================================
@@ -29,6 +29,7 @@
 if trdos
 
 include inc/zx_spectrum_trdos.z80s
+include kernel.COMMON.block-drives.z80s
 
 testing_trdos: equ 0 ; flag
 
@@ -1165,5 +1166,7 @@ endif ; defined trdos
 ; 2021-01-06: Move `read-block` and `write-block` from the
 ; main kernel, because their definitions are not the same in
 ; NextZXOS.
+;
+; 2021-01-07: Include <kernel.COMMON.block-drives.z80s>.
 
 ; vim: filetype=z80:textwidth=64
