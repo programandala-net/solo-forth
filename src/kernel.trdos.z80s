@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101070334.
+; Last modified: 202101070340.
 ; See change log at the end of the file.
 
 ; ==============================================================
@@ -620,52 +620,6 @@ transfer_mode:
   _jp_next
 
 ; ----------------------------------------------
-  _colon_header read_block_,'read-block'
-
-; doc{
-;
-; read-block ( u -- )
-;
-; Read disk block _u_ to the buffer.
-;
-; Definition:
-
-; ----
-; : read-block ( u -- ) read-mode transfer-block ;
-; ----
-
-; See also: `read-mode`, `transfer-block`, `write-block`,
-; `block`.
-;
-; }doc
-
-  dw read_mode_,transfer_block_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header write_block_,'write-block'
-
-; doc{
-;
-; write-block ( n -- )
-;
-; Write the buffer to disk block _n_.
-;
-; Definition:
-
-; ----
-; : write-block ( n -- ) write-mode transfer-block ;
-; ----
-
-; See also: `write-mode`, `transfer-block`, `read-block`,
-; `block`.
-;
-; }doc
-
-  dw write_mode_,transfer_block_
-  dw exit_
-
-; ----------------------------------------------
   _colon_header transfer_block_,'transfer-block'
 
 ; doc{
@@ -1170,6 +1124,7 @@ endif ; defined trdos
 ; NextZXOS.
 ;
 ; 2021-01-07: Include <kernel.COMMON.block-drives.z80s>. Improve
-; documentation of `transfer-block`.
+; documentation of `transfer-block`. Move `read-block` and
+; `write-block` to <kernel.COMMON.block-drives.z80s>.
 
 ; vim: filetype=z80:textwidth=64
