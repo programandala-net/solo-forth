@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101070340.
+; Last modified: 202101070356.
 ; See change log at the end of the file.
 
 ; ==============================================================
@@ -71,6 +71,28 @@
   dw blocks_per_disk
 
 ; ----------------------------------------------
+  _variable_header number_sign_block_drives_,'#block-drives'
+
+; doc{
+;
+; #block-drives ( -- ca ) "number-sign-block-drives"
+;
+; Return the address _ca_ of a byte containing the number of
+; block drives defined in `block-drives`, i.e. the number of
+; drives that are used for blocks.  ``#block-drives`` could be
+; modified manually, provided also `block-drives` is configured
+; accordingly, but `set-block-drives` is provided for that.
+;
+; ``#block-drives`` is a `cvariable`. Its default value is 1,
+; which is restored by `cold`.
+;
+; See also: `max-blocks`.
+;
+; }doc
+
+  db 1
+
+; ----------------------------------------------
   _colon_header read_block_,'read-block'
 
 ; doc{
@@ -123,6 +145,7 @@
 ; `sectors/track`, `sectors/block` and `blocks/disk` from the
 ; main <kernel.z80s>, in order to exclude them from the NextZXOS
 ; version of Solo Forth. Move here the common `read-block` and
-; `write-block` from the +3DOS, G+DOS and TR-DOS kernels. 
+; `write-block` from the +3DOS, G+DOS and TR-DOS kernels. Move
+; `#block-drives` from the kernel.
 
 ; vim: filetype=z80:textwidth=64

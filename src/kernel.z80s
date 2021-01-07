@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101070248.
+; Last modified: 202101070356.
 
 include version.z80s
 
@@ -9682,32 +9682,6 @@ simple_accept.end:
 ; `source-id is used when `blk` contains a non-zero value."
 
   dw 0
-
-; ----------------------------------------------
-  _variable_header number_sign_block_drives_,'#block-drives'
-
-; XXX TODO This word is useless in NextZXOS. Move it to the
-; corresponding DOS kernels.
-
-; doc{
-;
-; #block-drives ( -- ca ) "number-sign-block-drives"
-;
-; A `cvariable`. _ca_ is the address of a byte containing
-; the number of block drives defined in `block-drives`, i.e. the
-; number of drives that are used for blocks.  ``#block-drives``
-; could be modified manually, provided also `block-drives` is
-; configured accordingly, but `set-block-drives` is provided for
-; that.
-;
-; The default value of ``#block-drives`` is 1, which is restored
-; by `cold`.
-;
-; See also: `max-blocks`.
-;
-; }doc
-
-  db 1
 
 ; ----------------------------------------------
 if nextzxos
