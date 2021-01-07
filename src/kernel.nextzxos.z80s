@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101061844.
+; Last modified: 202101070113.
 ; See change log at the end of the file.
 
 ; ==============================================================
@@ -1047,6 +1047,34 @@ page_read_file_.no_error:
   jp false_
 
 ; ----------------------------------------------
+  _colon_header block_position_,'block-position'
+
+; doc{
+;
+; block-position ( u -- )
+;
+; Position the blocks file to the start of block _u_.
+;
+; ``block-position`` is a useful factor of `transfer-block`.
+;
+; Definition:
+
+; ----
+; : block-position ( u -- )
+;   b/buf um* block-fid @ reposition-file throw :
+; ----
+
+; Origin: Gforth.
+;
+; See also: `block-fid`, `reposition-file`.
+;
+; }doc
+
+  dw b_slash_buf_,u_m_star_
+  dw block_f_i_d_,fetch_,reposition_file_,throw_
+  dw exit_
+
+; ----------------------------------------------
   _colon_header transfer_block_,'transfer-block'
 
 ; doc{
@@ -1064,7 +1092,7 @@ page_read_file_.no_error:
 
 ; ----
 ; : transfer-block ( u f -- )
-;   >r b/buf um* block-fid @ reposition-file throw
+;   >r block-position
 ;      buffer-data b/buf block-fid @ 
 ;   r> if   write-file throw
 ;      else read-file throw b/buf < #-33 ?throw then ;
@@ -1080,7 +1108,7 @@ page_read_file_.no_error:
   ; Adapted from DZX-Forth.
 
   dw to_r_
-  dw b_slash_buf_,u_m_star_,block_f_i_d_,fetch_,reposition_file_,throw_
+  dw block_position_
   dw buffer_data_,b_slash_buf_,block_f_i_d_,fetch_
   dw from_r_
   dw zero_branch_,transfer_block.read
@@ -1359,5 +1387,7 @@ endif ; defined nextzxos
 ; `close-blocks` to the library. Add `blocks?`, improve
 ; `open-blocks` with it and improve the related documentation.
 ; Update the exception codes ranges.
+;
+; 2021-01-07: Factor `position-block` from `transfer-block`.
 
 ; vim: filetype=z80:textwidth=64
