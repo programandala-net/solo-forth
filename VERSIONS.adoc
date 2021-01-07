@@ -9,6 +9,9 @@
 // This file is in Asciidoctor format
 // http://asciidoctor.org
 
+// XXX TODO 2021-01-07: Add the new links to the original background
+// images.
+
 // Version 0.14.0  {{{1
 == Version 0.14.0
 
@@ -34,9 +37,15 @@ Edition:: 1897, Barcelona, _El ingenioso hidalgo don Quijote de la
 Mancha_ (Centro Editorial Artístico de Miguel Seguí).  Volume 1,
 chapter 1, page 21.
 
-The ZX Spectrum image was created from
-http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=0009605796[image
-0009605796 of QBI].
+// XXX REMARK
+//
+// The ZX Spectrum image was created from
+// http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=0009605796[image
+// 0009605796 of QBI].
+//
+// As of 2021-01-07 the link is dead. The main URL of the QBI image
+// bank is
+// <http://www.cervantesvirtual.com/portales/quijote_banco_imagenes_qbi/>.
 
 // end::background_image[]
 
@@ -91,9 +100,15 @@ Edition:: 1897, Barcelona, _El ingenioso hidalgo don Quijote de la
 Mancha_ (Centro Editorial Artístico de Miguel Seguí).  Volume 1,
 chapter 1, page 21.
 
-The ZX Spectrum image was created from
-http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=0009605796[image
-0009605796 of QBI].
+// XXX REMARK
+//
+// The ZX Spectrum image was created from
+// http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=0009605796[image
+// 0009605796 of QBI].
+//
+// As of 2021-01-07 the link is dead. The main URL of the QBI image
+// bank is
+// <http://www.cervantesvirtual.com/portales/quijote_banco_imagenes_qbi/>.
 
 // New {{{2
 === New
@@ -684,9 +699,15 @@ Edition:: 1897, Barcelona, _El ingenioso hidalgo don Quijote de la
 Mancha_ (Centro Editorial Artístico de Miguel Seguí).  Volume 1,
 chapter 1, page 21.
 
-The ZX Spectrum image was created from
-http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=0009605796[image
-0009605796 of QBI].
+// XXX REMARK
+//
+// The ZX Spectrum image was created from
+// http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=0009605796[image
+// 0009605796 of QBI].
+//
+// As of 2021-01-07 the link is dead. The main URL of the QBI image
+// bank is
+// <http://www.cervantesvirtual.com/portales/quijote_banco_imagenes_qbi/>.
 
 // Version 0.13.0  {{{1
 == Version 0.13.0
@@ -1001,16 +1022,24 @@ Book:: _El ingenioso hidalgo don Quijote de La Mancha_ (_The Ingenious
 Gentleman Don Quixote of La Mancha_) (1605), by Miguel de Cervantes
 (1547-1616).
 
-http:://qbi2005.windows.cervantesvirtual.com/wfrmDatosEdicion.aspx?edicion=6[Edition]::
-1863, Paris, _L'ingénieux hidalgo Don Quichotte de la Manche_
-(Hachette).  Volume 1, chapter 1, page 13.
+Edition:: 1863, Paris, _L'ingénieux hidalgo Don Quichotte de la
+Manche_ (Hachette).  Volume 1, chapter 1, page 13.
 
-The ZX Spectrum image was created from
-http://qbi2005.windows.cervantesvirtual.com/imagenes/media/0000600879.jpg[image
-0000600879 of QBI].
-
+// XXX REMARK
+//
+// The ZX Spectrum image was created from
+// http://qbi2005.windows.cervantesvirtual.com/imagenes/media/0000600879.jpg[image
+// 0000600879 of QBI].
+//
 // Alternative URL:
 // http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=0000600879
+//
+// Edition:
+// http:://qbi2005.windows.cervantesvirtual.com/wfrmDatosEdicion.aspx?edicion=6
+//
+// As of 2021-01-07 all of the links are dead. The main URL of the QBI
+// image bank is
+// <http://www.cervantesvirtual.com/portales/quijote_banco_imagenes_qbi/>.
 
 // Version 0.12.0  {{{1
 == Version 0.12.0
