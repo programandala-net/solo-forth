@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202101071757.
+# Last modified: 202101071831.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -453,10 +453,13 @@ trdospdf: \
 # -------------------------------------
 
 .PHONY: covers
-covers: gplusdoscover plus3doscover trdoscover
+covers: gplusdoscover nextzxos plus3doscover trdoscover
 
 .PHONY: gplusdoscover
 gplusdoscover: doc/gplusdos_$(cover).jpg
+
+.PHONY: nextzxoscover
+nextzxoscover: doc/nextzxos_$(cover).jpg
 
 .PHONY: plus3doscover
 plus3doscover: doc/plus3dos_$(cover).jpg
@@ -1973,7 +1976,7 @@ include Makefile.cover_image
 #
 # 2021-01-07: Update file list filter: the DOS code excluded from NextZXOS has
 # been moved to <dos.COMMON.block-drives.fs>. Add the rules to build the
-# NextZXOS manuals.
+# NextZXOS manuals and cover images.
 
 # ==============================================================
 
