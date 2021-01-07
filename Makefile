@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202012241654.
+# Last modified: 202101072130.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -1080,6 +1080,7 @@ tmp/doc.gplusdos.manual.adoc: \
 	tmp/doc.gplusdos.glossary.adoc \
 	tmp/doc.gplusdos.exception_codes.adoc \
 	tmp/doc.README.linked.adoc \
+	VERSIONS.adoc \
 	src/version.z80s
 	cat \
 		tmp/doc.manual_skeleton.linked.adoc \
@@ -1173,6 +1174,7 @@ tmp/doc.plus3dos.manual.adoc: \
 	tmp/doc.plus3dos.glossary.adoc \
 	tmp/doc.plus3dos.exception_codes.adoc \
 	tmp/doc.README.linked.adoc \
+	VERSIONS.adoc \
 	src/version.z80s
 	cat \
 		tmp/doc.manual_skeleton.linked.adoc \
@@ -1266,6 +1268,7 @@ tmp/doc.trdos.manual.adoc: \
 	tmp/doc.trdos.glossary.adoc \
 	tmp/doc.trdos.exception_codes.adoc \
 	tmp/doc.README.linked.adoc \
+	VERSIONS.adoc \
 	src/version.z80s
 	cat \
 		tmp/doc.manual_skeleton.linked.adoc \
@@ -1775,6 +1778,9 @@ include Makefile.cover_image
 #
 # 2020-12-24: Build the online documentation for the Fossil repository: an HTML
 # version of the README file.
+#
+# 2021-01-07: Make the manual dependo <VERSIONS.adoc>, from which the credits
+# of the cover image are taken.
 
 # ==============================================================
 
