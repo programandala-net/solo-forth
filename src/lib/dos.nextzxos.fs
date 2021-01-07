@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202101070102.
+  \ Last modified: 202101070418.
   \ See change log at the end of the file.
 
   \ ===========================================================
@@ -468,9 +468,8 @@ code (close-file ( fid -- ior )
 
 unneeding close-blocks ?( need close-file need flush
 
-: close-blocks ( -- ) blocks? 0= #-295 ?throw
-                      flush block-fid @ close-file throw
-                      block-fid on ; ?)
+: close-blocks ( -- )
+  ?blocks flush block-fid @ close-file throw block-fid on ; ?)
 
   \ doc{
   \
@@ -1176,5 +1175,6 @@ code set-user ( n -- ior )
   \ NextZXOS kernel. Finish and improve `close-blocks`.
   \
   \ 2021-01-07: Move `file-size` to the NextZXOS kernel.
+  \ Improve `close-blocks` with `?blocks`.
 
   \ vim: filetype=soloforth

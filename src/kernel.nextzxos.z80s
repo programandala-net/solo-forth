@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101070220.
+; Last modified: 202101070418.
 ; See change log at the end of the file.
 
 ; ==============================================================
@@ -819,6 +819,24 @@ open_file.end:
   jp dos.ix_dehl
 
 ; ----------------------------------------------
+  _colon_header question_blocks_,'?blocks'
+
+; doc{
+;
+; ?blocks ( -- )
+;
+; If a blocks file is open, do nothing; otherwise `throw` error
+; #-295.
+;
+; See also: `blocks?`, `block-fid`.
+;
+; }doc
+
+  dw blocks_question_,zero_equals_
+  _question_throw error.no_blocks_file_is_open
+  dw exit_
+
+; ----------------------------------------------
   _colon_header open_blocks_,'open-blocks'
 
 ; doc{
@@ -1415,6 +1433,6 @@ endif ; defined nextzxos
 ; 2021-01-07: Factor `position-block` from `transfer-block`.
 ; Move `file-size` from the library. Convert +3DOS `dos.ix_ehl`
 ; and `dos-ix-ehl_` (24-bit result) to NextZXOS `dos.ix_dehl`
-; and `dos-ix-dehl_` (32-bit result).
+; and `dos-ix-dehl_` (32-bit result). Add `?blocks`.
 
 ; vim: filetype=z80:textwidth=64
