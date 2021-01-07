@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101070128.
+; Last modified: 202101070220.
 ; See change log at the end of the file.
 
 ; ==============================================================
@@ -812,7 +812,6 @@ open_file.end:
 ;
 ; }doc
 
-code file-size ( fid -- d )
   pop hl
   push bc     ; save the Forth IP
   ld b,l      ; fid
