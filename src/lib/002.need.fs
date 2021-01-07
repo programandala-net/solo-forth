@@ -3,8 +3,8 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
-  \ See change log at the end of the file
+  \ Last modified: 202101070118.
+  \ See change log at the end of the file.
 
   \ ===========================================================
   \ Description
@@ -75,6 +75,8 @@
   \ That's why `contains` is not included in the block header.
   \
   \ XXX TODO -- Not needed with multiline block headers.
+
+  \ XXX FIXME Adapt `blocks/disk` to NextZXOS.
 
 variable default-first-locatable  variable first-locatable
 variable last-locatable  blocks/disk 1- last-locatable !
