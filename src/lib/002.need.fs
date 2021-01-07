@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202101070118.
+  \ Last modified: 202101070408.
   \ See change log at the end of the file.
 
   \ ===========================================================
@@ -76,10 +76,8 @@
   \
   \ XXX TODO -- Not needed with multiline block headers.
 
-  \ XXX FIXME Adapt `blocks/disk` to NextZXOS.
-
 variable default-first-locatable  variable first-locatable
-variable last-locatable  blocks/disk 1- last-locatable !
+variable last-locatable  max-blocks 1- last-locatable !
   \ Variables that define the range of blocks to be searched
   \ by `located` and its descendants.
 
@@ -889,5 +887,8 @@ unneeding need-here ?(
   \ 2020-06-16: Improve documentation on deferred words.
   \
   \ 2020-07-28: Improve documentation of deferred words.
+  \
+  \ 2021-01-07: Replace `blocks/disk` with `max-blocks`, making
+  \ the init of `last-locatable` compatible with NextZXOS.
 
   \ vim: filetype=soloforth

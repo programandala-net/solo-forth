@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101070356.
+; Last modified: 202101070419.
 
 include version.z80s
 
@@ -121,11 +121,11 @@ endif
   ; compilation is not done for them, but for the Sinclar
   ; models:
 
-if (!defined pentagon)
+if !defined pentagon
   pentagon: equ false
 endif
 
-if (!defined scorpion)
+if !defined scorpion
   scorpion: equ false
 endif
 
@@ -9684,11 +9684,7 @@ simple_accept.end:
   dw 0
 
 ; ----------------------------------------------
-if nextzxos
-  _constant_header max_blocks_,'max-blocks'
-else
   _colon_header max_blocks_,'max-blocks'
-endif
 
 ; doc{
 ;
@@ -9705,19 +9701,24 @@ endif
 ; ifdef::nextzxos[]
 ;
 ; Return the number _u_ of maximum blocks available in the
-; system.
+; current blocks file. If no blocks file is open `throw` error
+; #-295.
+;
+; See also: `?blocks`, `blocks?`, `block-fid`, `file-size`,
+; `b/buf`.
 ;
 ; endif::[]
 ;
 ; }doc
 
 if nextzxos
-  dw $7FFF-1 ; 32766 ; XXX TODO document why
-  ; XXX FIXME return after the size of the current blocks file
+  dw question_blocks_
+  dw block_f_i_d_,fetch_,file_size_,throw_
+  dw b_slash_buf_,m_slash_,nip_
 else  
   dw blocks_slash_disk_,number_sign_block_drives_,c_fetch_,star_
-  dw exit_
 endif  
+  dw exit_
 
 ; ----------------------------------------------
   _colon_header block_question_,'block?'
@@ -12419,10 +12420,11 @@ endif
   _literal initial_drive
   dw set_drive_
 
+if ! nextzxos
   ; Restore default value of `#block-drives`:
   _literal 1
   dw number_sign_block_drives_,c_store_
-
+endif
   ; Restore the default stringer:
   dw default_stringer_
 
