@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202101061835.
+  \ Last modified: 202101070102.
   \ See change log at the end of the file.
 
   \ ===========================================================
@@ -484,7 +484,7 @@ unneeding close-blocks ?( need close-file need flush
   \
   \ }doc
 
-( file-position file-size eof? )
+( file-position eof? )
 
 unneeding file-position ?(
 
@@ -516,43 +516,7 @@ code file-position ( fid -- ud ior )
   \
   \ }doc
 
-unneeding file-size ?(
-
-code file-size ( fid -- d )
-  E1 c, C5 c, 45 c, DD c, 21 c, 0139 , dos-ix-ehl_ jp,
-  end-code ?)
-  \ pop hl
-  \ push bc ; save the Forth IP
-  \ ld b,l ; fid
-  \ ld ix, $0139 ; GET EOF
-  \ jp dos_ehl
-
-  \ doc{
-  \
-  \ file-size ( fid - ud ior )
-  \
-  \ _ud_ is  the  size, in  bytes,  of  the file  identified by
-  \ _fid_.  _ior_  is  the I/O result code.  This operation
-  \ does not affect the  value returned by `file-position`.  If
-  \ _ior_ is non-zero, _ud_ is undefined.
-  \
-  \ WARNING: ``file-size`` returns unpredictable results on the
-  \ ZX Spectrum +2A/+2B/+3, because of a bug in the +3DOS ROM:
-  \ _ud_ may be correct, or rounded to 128-byte blocks, or
-  \ correspond to the previously checked file.  The bug was
-  \ fixed in the improved ROM of the ZX Spectrum +3e.
-  \
-  \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
-  \
-  \ See also: `file-position`, `open-file`.
-  \
-  \ }doc
-
-  \ XXX TODO write 'flush-disk' and try it before every
-  \ 'file-size', in order to make this work on the ZX Spectrum
-  \ +3e.
-
-unneeding eof? ?( need file-size need file-position need d=
+unneeding eof? ?( need file-position need d=
 
 : eof? ( fid -- f )
   dup file-size throw rot file-position d= ; ?)
@@ -1210,5 +1174,7 @@ code set-user ( n -- ior )
   \
   \ 2021-01-06: Move `flush`, and `close-blocks` from the
   \ NextZXOS kernel. Finish and improve `close-blocks`.
+  \
+  \ 2021-01-07: Move `file-size` to the NextZXOS kernel.
 
   \ vim: filetype=soloforth

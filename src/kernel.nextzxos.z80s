@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101070113.
+; Last modified: 202101070115.
 ; See change log at the end of the file.
 
 ; ==============================================================
@@ -795,6 +795,33 @@ open_file.end:
   dw exit_
 
 ; ----------------------------------------------
+  _code_header file_size_,'file-size'
+
+; doc{
+;
+; file-size ( fid - ud ior )
+;
+; _ud_ is  the  size, in  bytes,  of  the file  identified by
+; _fid_.  _ior_  is  the I/O result code.  This operation
+; does not affect the  value returned by `file-position`.  If
+; _ior_ is non-zero, _ud_ is undefined.
+;
+; Origin: Forth-94 (FILE), Forth-2012 (FILE).
+;
+; See also: `file-position`, `open-file`.
+;
+; }doc
+
+code file-size ( fid -- d )
+  E1 c, C5 c, 45 c, DD c, 21 c, 0139 , dos-ix-ehl_ jp,
+  end-code ?)
+  pop hl
+  push bc     ; save the Forth IP
+  ld b,l      ; fid
+  ld ix,$0139 ; GET EOF
+  jp dos.ix_ehl
+
+; ----------------------------------------------
   _colon_header open_blocks_,'open-blocks'
 
 ; doc{
@@ -1389,5 +1416,6 @@ endif ; defined nextzxos
 ; Update the exception codes ranges.
 ;
 ; 2021-01-07: Factor `position-block` from `transfer-block`.
+; Move `file-size` from the library. 
 
 ; vim: filetype=z80:textwidth=64
