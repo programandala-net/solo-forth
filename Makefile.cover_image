@@ -5,8 +5,8 @@
 
 # By Marcos Cruz (programandala.net)
 
-# Last modified 202012111910
-# See change log at the end of the file
+# Last modified: 202101071758.
+# See change log at the end of the file.
 
 # ==============================================================
 # Requirements {{{1
@@ -49,6 +49,17 @@ tmp/$(cover).gplusdos_subtitle.png:
 		-size 1200x \
 		-gravity east \
 		caption:$(cover_gplusdos_subtitle) \
+		$@
+
+tmp/$(cover).nextzxos_subtitle.png:
+	convert \
+		-background transparent \
+		-fill $(fill) \
+		-font $(font) \
+		-pointsize $(subtitle_pointsize) \
+		-size 1200x \
+		-gravity east \
+		caption:$(cover_nextzxos_subtitle) \
 		$@
 
 tmp/$(cover).plus3dos_subtitle.png:
@@ -96,6 +107,15 @@ doc/gplusdos_$(cover).jpg: \
 	composite -gravity east -geometry +048+072 tmp/$(cover).gplusdos_subtitle.png $@ $@
 	composite -gravity east -geometry +048+256 tmp/$(cover).author.png $@ $@
 
+doc/nextzxos_$(cover).jpg: \
+	tmp/$(cover).title.png \
+	tmp/$(cover).nextzxos_subtitle.png \
+	tmp/$(cover).author.png
+	convert -size 1200x1600 canvas:$(background) $@
+	composite -gravity east -geometry +048+000 tmp/$(cover).title.png $@ $@
+	composite -gravity east -geometry +048+072 tmp/$(cover).nextzxos_subtitle.png $@ $@
+	composite -gravity east -geometry +048+256 tmp/$(cover).author.png $@ $@
+
 doc/plus3dos_$(cover).jpg: \
 	tmp/$(cover).title.png \
 	tmp/$(cover).plus3dos_subtitle.png \
@@ -135,3 +155,5 @@ tmp/%.pdf: doc/%.jpg
 # 2020-10-08: Start. Adapt the code from other projects of the author.
 #
 # 2020-12-11: Add the list of requirements.
+#
+# 2021-01-07: Add the rules to make the NextZXOS cover image.

@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202101070204.
+# Last modified: 202101071757.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -105,8 +105,9 @@ cover=$(book)_cover
 cover_author="Marcos Cruz\n(programandala.net)"
 cover_title="Solo Forth"
 cover_gplusdos_subtitle="Version $(full_version) for G+DOS"
+cover_nextzxos_subtitle="Version $(full_version) for NextZXOS"
 cover_plus3dos_subtitle="Version $(full_version) for +3DOS"
-cover_trdos_subtitle="Version $(full_version) for TR-DOS"
+cover_trdos_subtitle   ="Version $(full_version) for TR-DOS"
 
 # ==============================================================
 # Metadata {{{1
@@ -116,6 +117,8 @@ release=$(shell gforth -e 's" ../src/version.z80s" 2' make/version_number.fs)
 
 # ==============================================================
 # Disk images {{{1
+
+# XXX TODO Rename to "DOS media".
 
 gplusdos_disks=\
 	disks/gplusdos/disk_0_boot.mgt \
@@ -252,10 +255,13 @@ cleandoc:
 	rm -f doc/* doc/www/* tmp/doc.*
 
 .PHONY: doc
-doc: gplusdosdoc plus3dosdoc trdosdoc
+doc: gplusdosdoc nextzxos plus3dosdoc trdosdoc
 
 .PHONY: gplusdosdoc
 gplusdosdoc: gplusdosepub gplusdoshtml gplusdospdf
+
+.PHONY: nextzxos
+nextzxosdoc: nextzxosepub nextzxoshtml nextzxospdf
 
 .PHONY: plus3dosdoc
 plus3dosdoc: plus3dosepub plus3doshtml plus3dospdf
@@ -264,11 +270,15 @@ plus3dosdoc: plus3dosepub plus3doshtml plus3dospdf
 trdosdoc: trdosepub trdoshtml trdospdf
 
 .PHONY: dbk
-dbk: gplusdosdbk plus3dosdbk trdosdbk
+dbk: gplusdosdbk nextzxosdbk plus3dosdbk trdosdbk
 
 .PHONY: gplusdosdbk
 gplusdosdbk: \
 	doc/gplusdos_solo_forth_manual.dbk
+
+.PHONY: nextzxosdbk
+nextzxosdbk: \
+	doc/nextzxos_solo_forth_manual.dbk
 
 .PHONY: plus3dosdbk
 plus3dosdbk: \
@@ -279,10 +289,10 @@ trdosdbk: \
 	doc/trdos_solo_forth_manual.dbk
 
 .PHONY: epub
-epub: gplusdosepub plus3dosepub trdosepub
+epub: gplusdosepub nextzxosepub plus3dosepub trdosepub
 
 .PHONY: epuba
-epuba: gplusdosepuba plus3dosepuba trdosepuba
+epuba: gplusdosepuba nextzxosepuba plus3dosepuba trdosepuba
 
 .PHONY: gplusdosepub
 gplusdosepub: gplusdosepuba gplusdosepubd
@@ -298,6 +308,21 @@ gplusdosepubd: \
 .PHONY: gplusdosepubp
 gplusdosepubp: \
 	doc/gplusdos_solo_forth_manual.dbk.pandoc.epub
+
+.PHONY: nextzxosepub
+nextzxosepub: nextzxosepuba nextzxosepubd
+
+.PHONY: nextzxosepuba
+nextzxosepuba: \
+	doc/nextzxos_solo_forth_manual.epub
+
+.PHONY: nextzxosepubd
+nextzxosepubd: \
+	doc/nextzxos_solo_forth_manual.dbk.dbtoepub.epub
+
+.PHONY: nextzxosepubp
+nextzxosepubp: \
+	doc/nextzxos_solo_forth_manual.dbk.pandoc.epub
 
 .PHONY: plus3dosepub
 plus3dosepub: plus3dosepuba plus3dosepubd
@@ -330,7 +355,7 @@ trdosepubp: \
 	doc/trdos_solo_forth_manual.dbk.pandoc.epub
 
 .PHONY: html
-html: gplusdoshtml plus3doshtml trdoshtml
+html: gplusdoshtml nextzxoshtml plus3doshtml trdoshtml
 
 .PHONY: gplusdoshtml
 gplusdoshtml: gplusdoshtmla
@@ -342,6 +367,17 @@ gplusdoshtmla: \
 .PHONY: gplusdoshtmlp
 gplusdoshtmlp: \
 		doc/gplusdos_solo_forth_manual.dbk.pandoc.html.gz
+
+.PHONY: nextzxoshtml
+nextzxoshtml: nextzxoshtmla
+
+.PHONY: nextzxoshtmla
+nextzxoshtmla: \
+		doc/nextzxos_solo_forth_manual.html.gz
+
+.PHONY: nextzxoshtmlp
+nextzxoshtmlp: \
+		doc/nextzxos_solo_forth_manual.dbk.pandoc.html.gz
 
 .PHONY: plus3doshtml
 plus3doshtml: plus3doshtmla
@@ -396,11 +432,15 @@ trdosodt: \
 		doc/trdos_solo_forth_manual.dbk.pandoc.odt
 
 .PHONY: pdf
-pdf: gplusdospdf plus3dospdf trdospdf
+pdf: gplusdospdf nextzxospdf plus3dospdf trdospdf
 
 .PHONY: gplusdospdf
 gplusdospdf: \
 		doc/gplusdos_solo_forth_manual.pdf.gz
+
+.PHONY: nextzxospdf
+nextzxospdf: \
+		doc/nextzxos_solo_forth_manual.pdf.gz
 
 .PHONY: plus3dospdf
 plus3dospdf: \
@@ -1207,6 +1247,96 @@ tmp/doc.plus3dos.manual.adoc: \
 		> $@
 
 # ----------------------------------------------
+# Documentation for NextZXOS {{{2
+
+doc/nextzxos_solo_forth_manual.epub: \
+	tmp/doc.nextzxos.manual.adoc \
+	README.adoc \
+	doc/nextzxos_$(cover).jpg
+	asciidoctor-epub3 \
+		--trace \
+		--attribute=nextzxos \
+		--attribute=doslabel=nextzxos \
+		--attribute=dosname=NextZXOS \
+		--attribute=epub-chapter-level=2 \
+		--attribute=version=$(full_version) \
+		--out-file=$@ $< \
+		2> tmp/doc.nextzxos.unknown_anchors.log
+
+doc/nextzxos_solo_forth_manual.pdf: \
+	tmp/doc.nextzxos.manual.adoc \
+	README.adoc \
+	tmp/nextzxos_$(cover).pdf
+	asciidoctor-pdf \
+		--trace \
+		--attribute=nextzxos \
+		--attribute=doslabel=nextzxos \
+		--attribute=dosname=NextZXOS \
+		--attribute=version=$(full_version) \
+		--out-file=$@ $<
+
+doc/nextzxos_solo_forth_manual.html: \
+	tmp/doc.nextzxos.manual.adoc \
+	README.adoc
+	asciidoctor \
+		--attribute=nextzxos \
+		--attribute=doslabel=nextzxos \
+		--attribute=dosname=NextZXOS \
+		--attribute=version=$(full_version) \
+		--out-file=$@ $<
+
+doc/nextzxos_solo_forth_manual.md: \
+	doc/nextzxos_solo_forth_manual.dbk \
+	README.adoc
+	pandoc \
+		--from=docbook \
+		--to=markdown_strict \
+		--output=$@ $<
+
+tmp/doc.nextzxos.files.txt: \
+	src/kernel.z80s \
+	src/kernel.nextzxos.z80s \
+	$(nextzxos_lib_files)
+	ls -1 $^ > $@
+
+tmp/doc.nextzxos.exception_codes.adoc: $(nextzxos_exception_codes_lib_files)
+	grep \
+		--no-filename "^#-[0-9]\+\s[\]\s[[:print:]]" $^ | \
+	sed \
+		-e "s/^/| /" \
+		-e "s/[\]/|/" \
+		-e "1s/^/[%autowidth]\n.Exception code assignments\n\|===\n|Exception code|Meaning\n\n/" \
+	> $@ && \
+	echo "|===" >> $@
+
+# Preserve the links in the DocBook source by removing the
+# enclosing <literal> tags:
+
+doc/nextzxos_solo_forth_manual.dbk: tmp/doc.nextzxos.manual.dbk
+	sed \
+		-e "s/<literal><link/<link/g" \
+		-e "s/<\/link><\/literal>/<\/link>/g" $< > $@
+
+tmp/doc.nextzxos.manual.adoc: \
+	tmp/doc.manual_skeleton.linked.adoc \
+	tmp/doc.stack_notation.linked.adoc \
+	tmp/doc.z80_flags_notation.linked.adoc \
+	tmp/doc.z80_instructions.linked.adoc \
+	src/doc/glossary_heading.adoc \
+	tmp/doc.nextzxos.glossary.adoc \
+	tmp/doc.nextzxos.exception_codes.adoc \
+	tmp/doc.README.linked.adoc \
+	src/version.z80s
+	cat \
+		tmp/doc.manual_skeleton.linked.adoc \
+		tmp/doc.stack_notation.linked.adoc \
+		tmp/doc.z80_flags_notation.linked.adoc \
+		tmp/doc.z80_instructions.linked.adoc \
+		src/doc/glossary_heading.adoc \
+		tmp/doc.nextzxos.glossary.adoc \
+		> $@
+
+# ----------------------------------------------
 # Documentation for TR-DOS {{{2
 
 doc/trdos_solo_forth_manual.epub: \
@@ -1306,10 +1436,10 @@ tmp/doc.trdos.manual.adoc: \
 zips: diskzips doczips srczip
 
 .PHONY: diskzips
-diskzips: gplusdosdiskszip plus3dosdiskszip trdosdiskszip
+diskzips: gplusdosdiskszip nextzxosfileszip plus3dosdiskszip trdosdiskszip
 
 .PHONY: doczips
-doczips: gplusdosdoczip plus3dosdoczip trdosdoczip
+doczips: gplusdosdoczip nextzxosdoczip plus3dosdoczip trdosdoczip
 
 .PHONY: srczip
 srczip: tmp/solo_forth_$(release)_src.zip
@@ -1390,6 +1520,33 @@ tmp/solo_forth_$(release)_plus3dos_manuals.zip: \
 plus3dosdiskszip: tmp/solo_forth_$(release)_plus3dos_disks.zip
 
 tmp/solo_forth_$(release)_plus3dos_disks.zip: $(plus3dos_disks)
+	cd .. ; \
+	ln -sfn solo_forth solo_forth_$(release) ; \
+	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
+	rm -f solo_forth_$(release)
+
+# ----------------------------------------------
+# NextZXOS release archives {{{2
+
+.PHONY: nextzxoszips
+nextzxoszips: nextzxosfileszip nextzxosdoczip
+
+.PHONY: nextzxosdoczip
+nextzxosdoczip: tmp/solo_forth_$(release)_nextzxos_manuals.zip
+
+tmp/solo_forth_$(release)_nextzxos_manuals.zip: \
+	doc/nextzxos_solo_forth_manual.epub \
+	doc/nextzxos_solo_forth_manual.html \
+	doc/nextzxos_solo_forth_manual.pdf
+	cd .. ; \
+	ln -sfn solo_forth solo_forth_$(release) ; \
+	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
+	rm -f solo_forth_$(release)
+
+.PHONY: nextzxosfileszip
+nextzxosfileszip: tmp/solo_forth_$(release)_nextzxos_files.zip
+
+tmp/solo_forth_$(release)_nextzxos_files.zip: $(nextzxos_files)
 	cd .. ; \
 	ln -sfn solo_forth solo_forth_$(release) ; \
 	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
@@ -1815,7 +1972,8 @@ include Makefile.cover_image
 # library.
 #
 # 2021-01-07: Update file list filter: the DOS code excluded from NextZXOS has
-# been moved to <dos.COMMON.block-drives.fs>.
+# been moved to <dos.COMMON.block-drives.fs>. Add the rules to build the
+# NextZXOS manuals.
 
 # ==============================================================
 
