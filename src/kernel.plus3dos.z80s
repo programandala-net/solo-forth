@@ -3,8 +3,8 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101070247
-; See change log at the end of the file
+; Last modified: 202101070303.
+; See change log at the end of the file.
 
 ; ==============================================================
 ; Description
@@ -93,7 +93,7 @@ dos_in:
   ld   a,(sys_bankm)       ; RAM/ROM switching system variable
   or   %00000111           ; set bits 0-3: RAM 7
   res  4,a                 ; and DOS ROM
-  ld   bc,bank1_port       ; port used for horiz. ROM switch and RAM paging
+  ld   bc,bank_128_port    ; port used for horiz. ROM switch and RAM paging
   di
   ld   (sys_bankm),a       ; keep system variables up to date
   out  (c),a               ; RAM page 7 to top and DOS ROM
@@ -112,7 +112,7 @@ dos_out:
   ld   a,(sys_bankm)
   and  %11111000           ; reset bits 0-3: RAM 0
   set  4,a                 ; switch to ROM 3 (48 BASIC)
-  ld   bc,bank1_port
+  ld   bc,bank_128_port
   di
   ld   (sys_bankm),a
   out  (c),a               ; switch back to RAM page 0 and 48 BASIC
@@ -1212,6 +1212,7 @@ endif ; defined plus3dos
 ; main kernel, because their definitions are not the same in
 ; NextZXOS.
 ;
-; 2021-01-07: Include <kernel.COMMON.block-drives.z80s>.
+; 2021-01-07: Include <kernel.COMMON.block-drives.z80s>. Fix old
+; label "bank1_port".
 
 ; vim: filetype=z80:textwidth=64
