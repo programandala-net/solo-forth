@@ -5,7 +5,7 @@
 
 # By Marcos Cruz (programandala.net)
 
-# Last modified: 202101071758.
+# Last modified: 202101071822.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -18,16 +18,16 @@
 #   https://gitlab.mister-muffin.de/josch/img2pdf
 
 # ==============================================================
-# Create the cover image {{{1
-
-# ------------------------------------------------
-# Create the canvas and texts of the cover image {{{2
+# Config {{{1
 
 font=Helvetica
 background=lightgray
 fill=black
 strokewidth=4
 subtitle_pointsize=48
+
+# ==============================================================
+# Create the canvas {{{1
 
 tmp/$(cover).title.png:
 	convert \
@@ -39,6 +39,9 @@ tmp/$(cover).title.png:
 		-gravity east \
 		caption:$(cover_title) \
 		$@
+
+# ==============================================================
+# Create the texts {{{1
 
 tmp/$(cover).gplusdos_subtitle.png:
 	convert \
@@ -95,47 +98,65 @@ tmp/$(cover).author.png:
 		caption:$(cover_author) \
 		$@
 
-# ------------------------------------------------
-# Create the cover image {{{2
+# ==============================================================
+# Convert the background of the current release {{{1
+
+tmp/$(cover).background.png: backgrounds/current.pbm
+	convert \
+		$< \
+		-fuzz 4% -transparent "#ffffff" \
+		-resize 800x \
+		$@
+
+# ==============================================================
+# Create the cover image {{{1
 
 doc/gplusdos_$(cover).jpg: \
 	tmp/$(cover).title.png \
 	tmp/$(cover).gplusdos_subtitle.png \
+	tmp/$(cover).background.png \
 	tmp/$(cover).author.png
 	convert -size 1200x1600 canvas:$(background) $@
 	composite -gravity east -geometry +048+000 tmp/$(cover).title.png $@ $@
 	composite -gravity east -geometry +048+072 tmp/$(cover).gplusdos_subtitle.png $@ $@
 	composite -gravity east -geometry +048+256 tmp/$(cover).author.png $@ $@
+	composite -gravity southeast tmp/$(cover).background.png $@ $@
 
 doc/nextzxos_$(cover).jpg: \
 	tmp/$(cover).title.png \
 	tmp/$(cover).nextzxos_subtitle.png \
+	tmp/$(cover).background.png \
 	tmp/$(cover).author.png
 	convert -size 1200x1600 canvas:$(background) $@
 	composite -gravity east -geometry +048+000 tmp/$(cover).title.png $@ $@
 	composite -gravity east -geometry +048+072 tmp/$(cover).nextzxos_subtitle.png $@ $@
 	composite -gravity east -geometry +048+256 tmp/$(cover).author.png $@ $@
+	composite -gravity southeast tmp/$(cover).background.png $@ $@
 
 doc/plus3dos_$(cover).jpg: \
 	tmp/$(cover).title.png \
 	tmp/$(cover).plus3dos_subtitle.png \
+	tmp/$(cover).background.png \
 	tmp/$(cover).author.png
 	convert -size 1200x1600 canvas:$(background) $@
 	composite -gravity east -geometry +048+000 tmp/$(cover).title.png $@ $@
 	composite -gravity east -geometry +048+072 tmp/$(cover).plus3dos_subtitle.png $@ $@
 	composite -gravity east -geometry +048+256 tmp/$(cover).author.png $@ $@
+	composite -gravity southeast tmp/$(cover).background.png $@ $@
 
 doc/trdos_$(cover).jpg: \
 	tmp/$(cover).title.png \
 	tmp/$(cover).trdos_subtitle.png \
+	tmp/$(cover).background.png \
 	tmp/$(cover).author.png
 	convert -size 1200x1600 canvas:$(background) $@
 	composite -gravity east -geometry +048+000 tmp/$(cover).title.png $@ $@
 	composite -gravity east -geometry +048+072 tmp/$(cover).trdos_subtitle.png $@ $@
 	composite -gravity east -geometry +048+256 tmp/$(cover).author.png $@ $@
+	composite -gravity southeast tmp/$(cover).background.png $@ $@
 
-# ------------------------------------------------
-# Convert the cover image to PDF {{{2
+# ==============================================================
+# Convert the cover image to PDF {{{1
 
 # This is needed in order to make sure the cover image ocuppies the whole page
 # in the PDF versions of the book.
@@ -143,8 +164,8 @@ doc/trdos_$(cover).jpg: \
 tmp/%.pdf: doc/%.jpg
 	img2pdf --output $@ --border 0 $<
 
-# ------------------------------------------------
-# Create a thumb version of the cover image {{{2
+# ==============================================================
+# Create a thumb version of the cover image {{{1
 
 %_thumb.jpg: %.jpg
 	convert $< -resize 190x $@
@@ -156,4 +177,5 @@ tmp/%.pdf: doc/%.jpg
 #
 # 2020-12-11: Add the list of requirements.
 #
-# 2021-01-07: Add the rules to make the NextZXOS cover image.
+# 2021-01-07: Add the rules to make the NextZXOS cover image. Add the Solo
+# Forth background image to the cover image.
