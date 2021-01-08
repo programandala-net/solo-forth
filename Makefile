@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202101072251.
+# Last modified: 202101080323.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -1146,6 +1146,7 @@ tmp/doc.gplusdos.manual.adoc: \
 	tmp/doc.gplusdos.glossary.adoc \
 	tmp/doc.gplusdos.exception_codes.adoc \
 	tmp/doc.README.linked.adoc \
+	VERSIONS.adoc \
 	src/version.z80s
 	cat \
 		tmp/doc.manual_skeleton.linked.adoc \
@@ -1239,6 +1240,7 @@ tmp/doc.plus3dos.manual.adoc: \
 	tmp/doc.plus3dos.glossary.adoc \
 	tmp/doc.plus3dos.exception_codes.adoc \
 	tmp/doc.README.linked.adoc \
+	VERSIONS.adoc \
 	src/version.z80s
 	cat \
 		tmp/doc.manual_skeleton.linked.adoc \
@@ -1422,6 +1424,7 @@ tmp/doc.trdos.manual.adoc: \
 	tmp/doc.trdos.glossary.adoc \
 	tmp/doc.trdos.exception_codes.adoc \
 	tmp/doc.README.linked.adoc \
+	VERSIONS.adoc \
 	src/version.z80s
 	cat \
 		tmp/doc.manual_skeleton.linked.adoc \
@@ -1979,6 +1982,9 @@ include Makefile.cover_image
 # NextZXOS manuals and cover images. Move the <nextzxos> directory to
 # <disks/nextzxos>; in the definitive version <disks> will be renamed to
 # <media>.
+#
+# 2021-01-08: Make the manual depend on <VERSIONS.adoc>, from which the credits
+# of the cover image are taken.
 
 # ==============================================================
 
