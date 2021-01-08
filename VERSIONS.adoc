@@ -14,6 +14,31 @@
 
 To be released.
 
+// New {{{2
+=== New
+
+- Add `scr-fill-bench`.
+- Add `word-separator` to make `(.word` configurable.
+
+// Fixes {{{2
+=== Fixes
+
+- Fix details of the documentation.
+
+// Improvements {{{2
+=== Improvements
+
+- Improve the documentation.
+- Improve TR-DOS `.step-rates`.
+
+// Other changes {{{2
+=== Other changes
+
+- Deactivate assembler instructions `stpx,` and `ftpx,`, which need to
+  be fixed.
+- Remove `transfer-bytes` from +3DOS.
+- Move TR-DOS `.drives`, `.step-rates` and `.fda` to the library.
+
 // Background image {{{2
 === Background image
 
@@ -40,31 +65,6 @@ http://www.cervantesvirtual.com/portales/quijote_banco_imagenes_qbi/ficha_imagen
 
 // end::background_image[]
 
-// New {{{2
-=== New
-
-- Add `scr-fill-bench`.
-- Add `word-separator` to make `(.word` configurable.
-
-// Fixes {{{2
-=== Fixes
-
-- Fix details of the documentation.
-
-// Improvements {{{2
-=== Improvements
-
-- Improve the documentation.
-- Improve TR-DOS `.step-rates`.
-
-// Other changes {{{2
-=== Other changes
-
-- Deactivate assembler instructions `stpx,` and `ftpx,`, which need to
-  be fixed.
-- Remove `transfer-bytes` from +3DOS.
-- Move TR-DOS `.drives`, `.step-rates` and `.fda` to the library.
-
 // Version 0.14.0-rc.124  {{{1
 == Version 0.14.0-rc.124
 
@@ -72,28 +72,6 @@ Released on 2020-11-23.
 
 This is a release canditate of 0.14.0. It includes a manual with a
 full glossary, in EPUB, PDF and HTML.
-
-// Background image {{{2
-=== Background image
-
-Title:: Alonso Quijano prueba la celada (Alonso Quixano tries the
-helmet).
-
-Illustrator:: Pahissa Laporta, Jaime (1846-1928).
-
-Engraver:: Unknown.
-
-Book:: _El ingenioso hidalgo don Quijote de La Mancha_ (_The Ingenious
-Gentleman Don Quixote of La Mancha_) (1605), by Miguel de Cervantes
-(1547-1616).
-
-Edition:: 1897, Barcelona, _El ingenioso hidalgo don Quijote de la
-Mancha_ (Centro Editorial Artístico de Miguel Seguí).  Volume 1,
-chapter 1, page 21.
-
-The ZX Spectrum image was created from
-http://www.cervantesvirtual.com/portales/quijote_banco_imagenes_qbi/ficha_imagen/?id=5796[image
-5796 of the QBI image bank].
 
 // New {{{2
 === New
@@ -480,6 +458,28 @@ http://www.cervantesvirtual.com/portales/quijote_banco_imagenes_qbi/ficha_imagen
 - Delete <memory.bank.fs> and move its contents to <memory.far.fs>.
 - Rename `warn.throw` to `error-code-warn`, `warn-throw` to
   `error-warn` and `warn.message` to `message-warn`.
+
+// Background image {{{2
+=== Background image
+
+Title:: Alonso Quijano prueba la celada (Alonso Quixano tries the
+helmet).
+
+Illustrator:: Pahissa Laporta, Jaime (1846-1928).
+
+Engraver:: Unknown.
+
+Book:: _El ingenioso hidalgo don Quijote de La Mancha_ (_The Ingenious
+Gentleman Don Quixote of La Mancha_) (1605), by Miguel de Cervantes
+(1547-1616).
+
+Edition:: 1897, Barcelona, _El ingenioso hidalgo don Quijote de la
+Mancha_ (Centro Editorial Artístico de Miguel Seguí).  Volume 1,
+chapter 1, page 21.
+
+The ZX Spectrum image was created from
+http://www.cervantesvirtual.com/portales/quijote_banco_imagenes_qbi/ficha_imagen/?id=5796[image
+5796 of the QBI image bank].
 
 // Version 0.14.0-pre.209  {{{1
 == Version 0.14.0-pre.209
