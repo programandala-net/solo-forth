@@ -9,6 +9,62 @@
 // This file is in Asciidoctor format
 // http://asciidoctor.org
 
+// Version 0.15.0  {{{1
+== Version 0.15.0
+
+To be released.
+
+// New {{{2
+=== New
+
+- Support for NextZXOS on the ZX Spectrum Next.
+
+// Fixes {{{2
+=== Fixes
+
+// Improvements {{{2
+=== Improvements
+
+// Other changes {{{2
+=== Other changes
+
+// Background image {{{2
+=== Background image
+
+// tag::background_image[]
+
+// XXX TODO Finish.
+
+Original title:: Un beau matin il sortit dans la campagne.
+
+Illustrator:: Forest, Eugène Hippolyte (1808- ?)
+
+Engraver:: Pouget, Jean-Achille (19th century)
+
+Edition:: 1866, Paris, Histoire de l'admirable Don Quichotte de la
+Manche (Hachette et Cie.)
+
+////
+
+Ubicación: I, cap. 2
+
+Posición: pág. 12
+
+Dimensiones: 95 x 73 mm.
+
+Episode:: Primera salida de don Quijote
+ 
+Título/s:: Salida por el corral de la casa Don Quijote conversa
+consigo mismo sobre sus futuras hazañas
+
+////
+
+The ZX Spectrum image was created from
+http://www.cervantesvirtual.com/portales/quijote_banco_imagenes_qbi/ficha_imagen/?id=13763[image
+13763 of the QBI image bank].
+
+// end::background_image[]
+
 // Version 0.14.0  {{{1
 == Version 0.14.0
 
@@ -42,8 +98,6 @@ To be released.
 // Background image {{{2
 === Background image
 
-// tag::background_image[]
-
 Title:: Alonso Quijano prueba la celada (Alonso Quixano tries the
 helmet).
 
@@ -62,8 +116,6 @@ chapter 1, page 21.
 The ZX Spectrum image was created from
 http://www.cervantesvirtual.com/portales/quijote_banco_imagenes_qbi/ficha_imagen/?id=5796[image
 5796 of the QBI image bank].
-
-// end::background_image[]
 
 // Version 0.14.0-rc.124  {{{1
 == Version 0.14.0-rc.124
