@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202101090251.
+# Last modified: 202101152210.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -1477,8 +1477,8 @@ tmp/solo_forth_$(release)_src.zip: \
 	tmp/.gitignore \
 	tools/ \
 	vim/
-	cd .. ; \
-	ln -sfn solo_forth solo_forth_$(release) ; \
+	cd ../.. ; \
+	ln -sfn solo_forth/trunk solo_forth_$(release) ; \
 	zip -9r \
 		solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) \
 		--exclude *.swp ; \
@@ -1497,8 +1497,8 @@ tmp/solo_forth_$(release)_gplusdos_manuals.zip: \
 	doc/gplusdos_solo_forth_manual.epub \
 	doc/gplusdos_solo_forth_manual.html \
 	doc/gplusdos_solo_forth_manual.pdf
-	cd .. ; \
-	ln -sfn solo_forth solo_forth_$(release) ; \
+	cd ../.. ; \
+	ln -sfn solo_forth/trunk solo_forth_$(release) ; \
 	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
 	rm -f solo_forth_$(release)
 
@@ -1506,8 +1506,8 @@ tmp/solo_forth_$(release)_gplusdos_manuals.zip: \
 gplusdosdiskszip: tmp/solo_forth_$(release)_gplusdos_disks.zip
 
 tmp/solo_forth_$(release)_gplusdos_disks.zip: $(gplusdos_disks)
-	cd .. ; \
-	ln -sfn solo_forth solo_forth_$(release) ; \
+	cd ../.. ; \
+	ln -sfn solo_forth/trunk solo_forth_$(release) ; \
 	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
 	rm -f solo_forth_$(release)
 
@@ -1524,8 +1524,8 @@ tmp/solo_forth_$(release)_plus3dos_manuals.zip: \
 	doc/plus3dos_solo_forth_manual.epub \
 	doc/plus3dos_solo_forth_manual.html \
 	doc/plus3dos_solo_forth_manual.pdf
-	cd .. ; \
-	ln -sfn solo_forth solo_forth_$(release) ; \
+	cd ../.. ; \
+	ln -sfn solo_forth/trunk solo_forth_$(release) ; \
 	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
 	rm -f solo_forth_$(release)
 
@@ -1533,8 +1533,8 @@ tmp/solo_forth_$(release)_plus3dos_manuals.zip: \
 plus3dosdiskszip: tmp/solo_forth_$(release)_plus3dos_disks.zip
 
 tmp/solo_forth_$(release)_plus3dos_disks.zip: $(plus3dos_disks)
-	cd .. ; \
-	ln -sfn solo_forth solo_forth_$(release) ; \
+	cd ../.. ; \
+	ln -sfn solo_forth/trunk solo_forth_$(release) ; \
 	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
 	rm -f solo_forth_$(release)
 
@@ -1551,8 +1551,8 @@ tmp/solo_forth_$(release)_nextzxos_manuals.zip: \
 	doc/nextzxos_solo_forth_manual.epub \
 	doc/nextzxos_solo_forth_manual.html \
 	doc/nextzxos_solo_forth_manual.pdf
-	cd .. ; \
-	ln -sfn solo_forth solo_forth_$(release) ; \
+	cd ../.. ; \
+	ln -sfn solo_forth/trunk solo_forth_$(release) ; \
 	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
 	rm -f solo_forth_$(release)
 
@@ -1562,8 +1562,8 @@ nextzxosfileszip: tmp/solo_forth_$(release)_nextzxos_files.zip
 	#	echo "<<<<<<"; echo $(branch) ; echo ">>>>>>>>>>>";
 
 tmp/solo_forth_$(release)_nextzxos_files.zip: $(nextzxos_files)
-	cd .. ; \
-	ln -sfn solo_forth solo_forth_$(release) ; \
+	cd ../.. ; \
+	ln -sfn solo_forth/trunk solo_forth_$(release) ; \
 	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
 	rm -f solo_forth_$(release)
 
@@ -1580,8 +1580,8 @@ tmp/solo_forth_$(release)_trdos_manuals.zip: \
 	doc/trdos_solo_forth_manual.epub \
 	doc/trdos_solo_forth_manual.html \
 	doc/trdos_solo_forth_manual.pdf
-	cd .. ; \
-	ln -sfn solo_forth solo_forth_$(release) ; \
+	cd ../.. ; \
+	ln -sfn solo_forth/trunk solo_forth_$(release) ; \
 	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
 	rm -f solo_forth_$(release)
 
@@ -1589,8 +1589,8 @@ tmp/solo_forth_$(release)_trdos_manuals.zip: \
 trdosdiskszip: tmp/solo_forth_$(release)_trdos_disks.zip
 
 tmp/solo_forth_$(release)_trdos_disks.zip: $(trdos_disks)
-	cd .. ; \
-	ln -sfn solo_forth solo_forth_$(release) ; \
+	cd ../.. ; \
+	ln -sfn solo_forth/trunk solo_forth_$(release) ; \
 	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
 	rm -f solo_forth_$(release)
 
@@ -1994,6 +1994,9 @@ include Makefile.cover_image
 #
 # 2021-01-08: Make the manual depend on <VERSIONS.adoc>, from which the credits
 # of the cover image are taken.
+#
+# 2021-01-16: Update the making of release archives with the repository branch
+# directory.
 
 # ==============================================================
 
