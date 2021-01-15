@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202101080323.
+# Last modified: 202101090251.
 # See change log at the end of the file.
 
 # ==============================================================
@@ -108,6 +108,10 @@ cover_gplusdos_subtitle="Version $(full_version) for G+DOS"
 cover_nextzxos_subtitle="Version $(full_version) for NextZXOS"
 cover_plus3dos_subtitle="Version $(full_version) for +3DOS"
 cover_trdos_subtitle   ="Version $(full_version) for TR-DOS"
+
+# XXX TODO calculate the branch directory
+# current_dir=`pwd`
+# branch=$(notdir $(current_dir))
 
 # ==============================================================
 # Metadata {{{1
@@ -1438,6 +1442,9 @@ tmp/doc.trdos.manual.adoc: \
 # ==============================================================
 # Release archives {{{1
 
+# XXX TODO Update: the current branch directory has to be added to build the
+# .zip files.
+
 .PHONY: zips
 zips: diskzips doczips srczip
 
@@ -1551,6 +1558,8 @@ tmp/solo_forth_$(release)_nextzxos_manuals.zip: \
 
 .PHONY: nextzxosfileszip
 nextzxosfileszip: tmp/solo_forth_$(release)_nextzxos_files.zip
+
+	#	echo "<<<<<<"; echo $(branch) ; echo ">>>>>>>>>>>";
 
 tmp/solo_forth_$(release)_nextzxos_files.zip: $(nextzxos_files)
 	cd .. ; \
