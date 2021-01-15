@@ -3,8 +3,8 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282133
-  \ See change log at the end of the file
+  \ Last modified: 202101152157.
+  \ See change log at the end of the file.
 
   \ ===========================================================
   \ Description
@@ -608,6 +608,25 @@ code (open-file ( ca fam fid -- fid ior )
   \   ld d,0  ; D = create action: error, file does not exist
   \   ld e,a  ; E = open action
   \   jp do_dos_open
+
+  \ doc{
+  \
+  \ (open-file ( ca fam fid -- fid ior )
+  \
+  \  Open the file named in the $FF-terminated string pointed
+  \  at _ca_, and open it with file access method _fam_ and
+  \  file identifier _fid_.
+  \
+  \ If the  file  was  successfully and  opened, _ior_ is zero,
+  \ _fid_  is  the file identifier and the file has been
+  \ positioned to the start of the file.  Otherwise _ior_ is
+  \ the I/O result code and _fid_ is undefined.
+  \
+  \ ``(open-file`` is a low-level factor of `open-file`.
+  \
+  \ See also: `r/o`, `w/o`, `r/w`, `s/r`, `bin`, `do-dos-open_`.
+  \
+  \ }doc
 
 : open-file ( ca len fam -- fid ior )
   >r >filename r> file-id if (open-file exit then drop #-288 ;
@@ -1711,5 +1730,7 @@ need reposition-file need file-position
   \
   \ 2020-07-28: Replace "Note:" with the "NOTE:" markup.
   \ Replace "equivalent code" with "equivalent definition".
+  \
+  \ 2021-01-15: Fix cross-reference.
 
   \ vim: filetype=soloforth

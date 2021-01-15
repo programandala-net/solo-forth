@@ -7,7 +7,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202101071728.
+// Last modified: 202101151948.
 
 // Description {{{1
 == Description
@@ -335,8 +335,12 @@ following:
 [#_run]
 == How to run
 
+// tag::attributes[]
+
 :diskdriveformat: Make sure its disk drives are \
 configured as double-sided and 80-track in the emulator.
+
+// end::attributes[]
 
 // In +3DOS {{{2
 [#_run_plus3dos]

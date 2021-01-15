@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101070340.
+; Last modified: 202101151822.
 ; See change log at the end of the file.
 
 ; ==============================================================
@@ -761,8 +761,9 @@ transfer_mode:
 ; _ior_ is zero, otherwise it's an exception code. The default
 ; drive is 0.
 ;
-; See also: `?set-drive`, `init-drive`, `drive`, `set-block-drives`,
-; `2-block-drives`, `read-system-track`.
+; See also: `?set-drive`, `init-drive`, `drive`,
+; `set-block-drives`, `2-block-drives`, `3-block-drives`,
+; `4-block-drives`, `read-system-track`.
 ;
 ; }doc
 
@@ -1126,5 +1127,7 @@ endif ; defined trdos
 ; 2021-01-07: Include <kernel.COMMON.block-drives.z80s>. Improve
 ; documentation of `transfer-block`. Move `read-block` and
 ; `write-block` to <kernel.COMMON.block-drives.z80s>.
+;
+; 2021-01-15: Fix cross-reference.
 
 ; vim: filetype=z80:textwidth=64
