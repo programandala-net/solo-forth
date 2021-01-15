@@ -1,7 +1,7 @@
 = Solo Forth: Version {version} for {dosname}
 :author: Marcos Cruz
 :producer: Marcos Cruz
-:revdate: 2021-01-07
+:revdate: 2021-01-15
 :doctype: book
 :lang: en
 ifdef::backend-html5[]
@@ -27,7 +27,7 @@ endif::[]
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202101072145.
+// Last modified: 202101151549. 
 
 ifdef::backend-html5[]
 toc::[]
@@ -689,11 +689,11 @@ endif::trdos[]
 == How to run
 
 ifdef::plus3dos[]
-include::doc.README.linked.adoc[tags=run_plus3]
+include::doc.README.linked.adoc[tags=run_plus3,leveloffset=-1]
 endif::plus3dos[]
 
 ifdef::gplusdos[]
-include::doc.README.linked.adoc[tags=run_128_with_plusd]
+include::doc.README.linked.adoc[tags=run_128_with_plusd,leveloffset=-1]
 endif::gplusdos[]
 
 ifdef::trdos[]
@@ -702,13 +702,13 @@ ifdef::trdos[]
 // prevents Asciidoctor PDF from issue warnings about the expected
 // list item indexes.
 
-include::doc.README.linked.adoc[tags=trdos_disk_drives]
+include::doc.README.linked.adoc[tags=trdos_disk_drives,leveloffset=-1]
 
-include::doc.README.linked.adoc[tags=run_pentagon]
+include::doc.README.linked.adoc[tags=run_pentagon,leveloffset=-1]
 
-include::doc.README.linked.adoc[tags=run_scorpion]
+include::doc.README.linked.adoc[tags=run_scorpion,leveloffset=-1]
 
-include::doc.README.linked.adoc[tags=run_128_with_betadisk]
+include::doc.README.linked.adoc[tags=run_128_with_betadisk,leveloffset=-1]
 
 endif::trdos[]
 
