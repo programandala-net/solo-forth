@@ -3,13 +3,13 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202101090259.
+# Last modified: 202101151626.
 # See change log at the end of the file.
 
 # ==============================================================
 # Author {{{1
 
-# Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018, 2020.
+# Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018, 2020, 2021.
 
 # ==============================================================
 # License {{{1
@@ -895,10 +895,15 @@ backgrounds/current.scr: backgrounds/current.pbm
 %.glossary.adoc: %.files.txt
 	glosara --level=4 --sections --input=$< > $@
 
-tmp/doc.%.linked.adoc: src/doc/%.adoc
+tmp/doc.README.linked.adoc: README.adoc
 	glosara --annex $< > $@
 
-tmp/doc.README.linked.adoc: README.adoc
+tmp/doc.manual_skeleton.linked.adoc: \
+	src/doc/manual_skeleton.adoc \
+	tmp/doc.README.linked.adoc
+	glosara --annex $< > $@
+
+tmp/doc.%.linked.adoc: src/doc/%.adoc
 	glosara --annex $< > $@
 
 %doc.gplusdos.manual.dbk: %doc.gplusdos.manual.adoc
@@ -1784,6 +1789,9 @@ include Makefile.cover_image
 #
 # 2021-01-09: Update the making of release archives with the repository branch
 # directory.
+#
+# 2021-01-15: Make the requirements of <tmp/doc.manual_skeleton.linked.adoc>
+# explicit.
 
 # ==============================================================
 
