@@ -27,7 +27,7 @@ endif::[]
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202101151549. 
+// Last modified: 202101151942.
 
 ifdef::backend-html5[]
 toc::[]
@@ -689,14 +689,18 @@ endif::trdos[]
 == How to run
 
 ifdef::plus3dos[]
+[[_run_plus3dos]]
 include::doc.README.linked.adoc[tags=run_plus3,leveloffset=-1]
 endif::plus3dos[]
 
 ifdef::gplusdos[]
+[[_run_gplusdos]]
 include::doc.README.linked.adoc[tags=run_128_with_plusd,leveloffset=-1]
 endif::gplusdos[]
 
 ifdef::trdos[]
+
+[[_run_trdos]]
 
 // XXX REMARK Separating the include macros with an empty line
 // prevents Asciidoctor PDF from issue warnings about the expected
@@ -794,7 +798,7 @@ disk drives must be configured as block drives, using `3-block-drives`.
 Let's see an example, how to load the game called Tetris for
 Terminals, which is in disk 2.
 
-. <<_run_trdos,Run Solo Forth>>.
+. <<_run,Run Solo Forth>>.
 . Insert the first library disk image (disk 1a) into the first drive.
 . Insert the second library disk image (disk 1b) into the second drive.
 . Insert the programs disk image (disk 2) into the third drive.
