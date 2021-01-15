@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101060408.
+; Last modified: 202101080525.
 
 include version.z80s
 
@@ -8375,6 +8375,8 @@ endif ; pentagon=512 or pentagon=1024
   ld (hl),e
   call bank.default
   _jp_next
+
+; XXX TODO Move to the library?
 
 ; XXX REMARK -- `farc!` could be moved to the library, because
 ; it's not used in the kernel, but `farc@` is, and it makes
