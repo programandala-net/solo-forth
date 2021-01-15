@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202101070105.
+  \ Last modified: 202101152157.
   \ See change log at the end of the file.
 
   \ ===========================================================
@@ -626,7 +626,7 @@ code (open-file ( ca fam fid -- fid ior )
   \
   \ ``(open-file`` is a low-level factor of `open-file`.
   \
-  \ See also: `r/o`, `w/o`, `r/w`, `s/r`, `bin`, `do-dos-open`.
+  \ See also: `r/o`, `w/o`, `r/w`, `s/r`, `bin`, `do-dos-open_`.
   \
   \ }doc
 
@@ -1741,5 +1741,7 @@ need reposition-file need file-position
   \
   \ 2021-01-07: Fix label in the Z80 assembly transcription of
   \ `file-size`.
+  \
+  \ 2021-01-15: Fix cross-reference.
 
   \ vim: filetype=soloforth
