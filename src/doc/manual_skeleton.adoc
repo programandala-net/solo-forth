@@ -1,7 +1,7 @@
 = Solo Forth: Version {version} for {dosname}
 :author: Marcos Cruz
 :producer: Marcos Cruz
-:revdate: 2021-01-15
+:revdate: 2021-01-16
 :doctype: book
 :lang: en
 ifdef::backend-html5[]
@@ -27,7 +27,7 @@ endif::[]
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202101151958.
+// Last modified: 202101160102.
 
 include::doc.README.linked.adoc[tags=attributes]
 
@@ -530,8 +530,9 @@ Solo Forth can be downloaded from two sites:
 //- http://github.com/programandala-net/solo-forth[Solo Forth repository
 //  in GitHub,role="external"]
 
-- http://programandala.net/en.program.solo_forth.html[Solo Forth home page]
-- http://github.com/programandala-net/solo-forth[Solo Forth repository in GitHub,role="external"]
+- http://programandala.net/en.program.solo_forth.html[home page]
+- http://fossil.programandala.net/solo_forth[Fossil repository]
+- http://github.com/programandala-net/solo-forth[GitHub mirror,role="external"]
 
 // Project directories {{{1
 [#_tree]
