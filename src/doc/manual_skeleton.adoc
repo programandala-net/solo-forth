@@ -27,7 +27,7 @@ endif::[]
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202101160105.
+// Last modified: 202101160119.
 
 include::doc.README.linked.adoc[tags=attributes]
 
@@ -765,7 +765,7 @@ How to use the library index:
 The indexer creates an index (actually, a Forth word list whose
 definitions use no code or data space) and changes the default
 behaviour of `need` and related words to use it. Then ``need name``
-will automatically start loading the first block where the “name”
+will automatically start loading the first block where “name”
 is defined
 
 [cols="11,6,>8,>8,>6,>6"]
@@ -783,11 +783,15 @@ NOTE: The name space is in far memory, a virtual 64-KiB space formed
 by 4 configurable memory banks (see `far-banks`). No code or data
 space is used by the indexer.
 
-An alternative indexer is under development. It's activated with
-`use-fly-index` and does not make and index in advance: Instead, it
-indexes the blocks on the fly, when they are searched the first time.
-This indexer was included in Solo Forth 0.12.0 but it's not finished
-yet.
+An alternative indexer is under development in the library file
+<blocks.indexer.fly.fs>. It will not make and index in advance:
+Instead, it will index the blocks on the fly, when they are searched
+the first time.
+
+// XXX TODO
+// It's loaded with ``need use-fly-index`` and activated with
+// `use-fly-index`. This indexer was included in Solo Forth 0.12.0 but
+// it's not finished yet.
 
 // How to load a program that needs the library {{{1
 == How to load a program that needs the library

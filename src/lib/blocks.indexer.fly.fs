@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not usable yet
 
-  \ Last modified: 202007282031
+  \ Last modified: 202101160118.
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -21,7 +21,8 @@
   \ ===========================================================
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016, 2017, 2018, 2020.
+  \ Marcos Cruz (programandala.net), 2016, 2017, 2018, 2020,
+  \ 2021.
 
   \ ===========================================================
   \ License
@@ -39,7 +40,7 @@ need bit-array need catch need use-default-need
 
 blocks/disk bit-array indexed-blocks
 
-  \ doc{
+  \ XXX-doc{
   \
   \ indexed-blocks ( -- ca )
   \
@@ -47,11 +48,11 @@ blocks/disk bit-array indexed-blocks
   \
   \ See also: `use-fly-index`.
   \
-  \ }doc
+  \ XXX-}doc
 
 : indexed-block? ( block -- f ) indexed-blocks @bit ;
 
-  \ doc{
+  \ XXX-doc{
   \
   \ indexed-block? ( block -- f ) "indexed-block-question"
   \
@@ -59,11 +60,11 @@ blocks/disk bit-array indexed-blocks
   \
   \ See also: `use-fly-index`.
   \
-  \ }doc
+  \ XXX-}doc
 
 : block-indexed ( block -- ) indexed-blocks !bit ;
 
-  \ doc{
+  \ XXX-doc{
   \
   \ block-indexed ( block -- )
   \
@@ -71,7 +72,7 @@ blocks/disk bit-array indexed-blocks
   \
   \ See also: `use-fly-index`.
   \
-  \ }doc
+  \ XXX-}doc
 
 -->
 
@@ -87,7 +88,7 @@ blocks/disk bit-array indexed-blocks
 
   \ XXX TODO -- #-278 \ empty block found: quit indexing
 
-  \ doc{
+  \ XXX-doc{
   \
   \ index-block ( block -- )
   \
@@ -95,12 +96,12 @@ blocks/disk bit-array indexed-blocks
   \
   \ See also: `use-fly-index`.
   \
-  \ }doc
+  \ XXX-}doc
 
 : ?index-block ( block -- ) ~~
   dup indexed-block? if  drop exit  then  index-block ;
 
-  \ doc{
+  \ XXX-doc{
   \
   \ ?index-block ( block -- ) "question-index-block"
   \
@@ -108,13 +109,13 @@ blocks/disk bit-array indexed-blocks
   \
   \ See also: `use-fly-index`.
   \
-  \ }doc
+  \ XXX-}doc
 
 : fly-located ( ca len -- block | false ) ~~
   2dup indexed-name? if  ~~ nip nip load exit
   then  ~~ (located ;
 
-  \ doc{
+  \ XXX-doc{
   \
   \ fly-located ( ca len -- block | 0 )
   \
@@ -125,14 +126,14 @@ blocks/disk bit-array indexed-blocks
   \
   \ See also: `use-fly-index`.
   \
-  \ }doc
+  \ XXX-}doc
 
 : use-fly-index ( -- )
   use-default-need
   ['] fly-located     ['] located   defer!
   ['] ?index-block    ['] unlocated defer! ;
 
-  \ doc{
+  \ XXX-doc{
   \
   \ use-fly-index ( -- )
   \
@@ -145,7 +146,7 @@ blocks/disk bit-array indexed-blocks
   \
   \ See also: `use-thru-index`.
   \
-  \ }doc
+  \ XXX-}doc
 
   \ ===========================================================
   \ Change log
@@ -162,8 +163,8 @@ blocks/disk bit-array indexed-blocks
   \ library.  Rename `blocks` to `blk/disk` after the fix in
   \ the kernel.
   \
-  \ 2017-02-17: Update notation "behaviour" to "action".
-  \ Update cross references.
+  \ 2017-02-17: Update notation "behaviour" to "action". Update
+  \ cross references.
   \
   \ 2017-02-21: Need `use-default-need`, which now is optional.
   \
@@ -173,9 +174,12 @@ blocks/disk bit-array indexed-blocks
   \ 2018-02-05: Improve documentation: add pronunciation to
   \ words that need it.
   \
-  \ 2018-06-04: Update: remove trailing closing paren from
-  \ word names.
+  \ 2018-06-04: Update: remove trailing closing paren from word
+  \ names.
   \
   \ 2020-05-04: Improve documentation.
+  \
+  \ 2021-01-16: Deactivate the documentation by modifying its
+  \ marks, in order to exclude these words from the manual.
 
   \ vim: filetype=soloforth

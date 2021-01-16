@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282107
+  \ Last modified: 202101160121.
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -126,7 +126,7 @@ need evaluate need catch need use-default-located
   \ The default action of all said words can be restored by
   \ `use-no-index`.
   \
-  \ See also: `use-fly-index`.
+  \ // See also: `use-fly-index`. // XXX TODO
   \
   \ }doc
 
@@ -253,5 +253,8 @@ need evaluate need catch need use-default-located
   \
   \ 2020-07-28: Improve documentation of deferred words.
   \ Update notation of parsed "name" in word descriptions.
+  \
+  \ 2021-01-16: Deactivate the cross-reference to the
+  \ unfinished `use-fly-index`.
 
   \ vim: filetype=soloforth
