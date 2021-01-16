@@ -1,13 +1,13 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2021-01-04
+:revdate: 2021-01-16
 :toc:
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202101151948.
+// Last modified: 202101162124.
 
 // Description {{{1
 == Description
@@ -547,10 +547,10 @@ letters used by the TR-DOS BASIC interface:
 
 1. <<_run_trdos,Run Solo Forth>>.
 
-2. “Insert” the file <disks/trdos/disk_1a_library.trd> into the second
-   disk drive (called B in TR-DOS and 1 in Solo Forth), and the file
-   <disks/trdos/disk_1b_library.trd> into the third disk drive (called
-   C in TR-DOS and 2 in Solo Forth).
+2. “Insert” the file <disks/trdos/disk_1a_library.trd> into the first
+   disk drive (called A in TR-DOS and 0 in Solo Forth), and the file
+   <disks/trdos/disk_1b_library.trd> into the second disk drive (called
+   B in TR-DOS and 1 in Solo Forth).
 +
 --
 Notice that the library is split into two disks because the maximun
@@ -560,17 +560,14 @@ Also remember in Solo Forth the <<trdosdiskdrives,TR-DOS disk drive
 identifiers>> are numbers 0..3 instead of letters A..D.
 --
 
-3. Type `1 set-drive throw` to make drive 1 (i.e. the second one,
-   called B by TR-DOS) the current one.
+3. Type `1 load` to load block 1 from the first library disk. By
+   convention, block 0 cannot be loaded (it is used for comments), and
+   block 1 is used as a loader.  In Solo Forth, block 1 contains `2
+   load`, in order to load the `need` tool from block 2.
 
-4. Type `1 load` to load block 1 from the library disk. By convention,
-   block 0 cannot be loaded (it is used for comments), and block 1 is
-   used as a loader.  In Solo Forth, block 1 contains `2 load`, in
-   order to load the `need` tool from block 2.  Type `need
-   set-block-drives` to load the word `set-block-drives` from the
-   library. Then type `2 1 2 set-block-drives` to configure the second
-   and the third drives (i.e. drives 1 and 2 in Solo Forth, called B
-   and C in the TR-DOS BASIC interface) as block drives.
+4. Type `need 2-block-drives` to load and execute the word
+   `2-block-drives` from the library, setting the first two drives as
+   block drives in their normal order.
 
 5. Type `need name`, were “name” is the name of the word or tool you
    want to load from the library.

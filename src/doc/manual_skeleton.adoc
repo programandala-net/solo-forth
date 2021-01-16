@@ -27,7 +27,7 @@ endif::[]
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202101160119.
+// Last modified: 202101161928.
 
 include::doc.README.linked.adoc[tags=attributes]
 
@@ -806,17 +806,20 @@ Let's see an example, how to load the game called Tetris for
 Terminals, which is in disk 2.
 
 . <<_run,Run Solo Forth>>.
-. Insert the first library disk image (disk 1a) into the first drive.
-. Insert the second library disk image (disk 1b) into the second drive.
-. Insert the programs disk image (disk 2) into the third drive.
-. Execute command ``1 load`` in order to `load` the `need` utility from
-  the first library disk.
+. Insert the first library disk image (disk 1a) into the first drive
+  (called 'A' in TR-DOS, 0 in Solo Forth).
+. Insert the second library disk image (disk 1b) into the second drive
+  (called 'B' in TR-DOS, 1 in Solo Forth).
+. Insert the programs disk image (disk 2) into the third drive (called
+  'C' in TR-DOS, 2 in Solo Forth).
+. Execute command ``1 load`` in order to `load` the `need` utility
+  from the first library disk.
 . Execute the command `need 3-block-drives`, which loads
-  `3-block-drives` from the library disk and then executes it, setting the
-  first three drives as block drives in their normal order.
+  `3-block-drives` from the library disk and then executes it, setting
+  the first three drives as block drives in their normal order.
 . Execute the command ``need tt``, which locates the first block of
-  the game (in disk 2) and loads it, loading its requirements from the
-  library as needed.
+  the game (in the third drive) and loads it, loading its requirements
+  from the library as needed.
 . Follow the instructions.
 
 When `3-block-drives` is executed, the blocks of the first three disk
