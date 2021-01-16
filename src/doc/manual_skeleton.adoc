@@ -27,7 +27,7 @@ endif::[]
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202101160102.
+// Last modified: 202101160105.
 
 include::doc.README.linked.adoc[tags=attributes]
 
@@ -520,7 +520,7 @@ ifdef::trdos[``write-line``]
 // Download {{{1
 == Download
 
-Solo Forth can be downloaded from two sites:
+Solo Forth can be downloaded from the following sites:
 
 // XXX FIXME -- Asciidoctor bug?
 //
