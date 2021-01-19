@@ -3,8 +3,8 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
-  \ See change log at the end of the file
+  \ Last modified: 202101192013.
+  \ See change log at the end of the file.
 
   \ ===========================================================
   \ Description
@@ -26,7 +26,7 @@
 
 ( r# top editor )
 
-unneeding r# unneeding top or ?(
+unneeding r# unneeding top and ?(
 
 variable r#
 
@@ -99,5 +99,7 @@ unneeding editor ?\ defer editor
   \ 2020-05-13: Improve documentation of `editor`.
   \
   \ 2020-07-28: Improve documentation of deferred words.
+  \
+  \ 2021-01-19: Fix needing of `r#` and `top`.
 
   \ vim: filetype=soloforth
