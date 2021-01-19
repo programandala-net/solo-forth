@@ -80,7 +80,8 @@ To be released.
 === Fixes
 
 - Fix details of the documentation.
-- Fix requirement of the block editors.  
+- Fix requirement of the block editors.
+- Fix needing of `r#` and `top`.
 
 // Improvements {{{2
 === Improvements
