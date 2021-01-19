@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101070419.
+; Last modified: 202101192035.
 
 include version.z80s
 
@@ -12354,10 +12354,11 @@ warm_start:
   ; that need less bytes in Z80 than in Forth.
 
   ; Init `farlimit`:
-  if !plus3dos
-    ld hl,$0000 ; use 64 KiB
-  else
+  if plus3dos or nextzxos
+    ; XXX TODO Make NextZXOS use 64 KiB
     ld hl,$C000 ; use 48 KiB (16 KiB are used for cache and RAM disk)
+  else
+    ld hl,$0000 ; use 64 KiB
   endif
   ld (farlimit_dfa),hl
 
