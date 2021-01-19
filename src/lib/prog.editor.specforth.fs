@@ -3,8 +3,8 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202007282031
-  \ See change log at the end of the file
+  \ Last modified: 202101191826.
+  \ See change log at the end of the file.
 
   \ ===========================================================
   \ Description
@@ -28,7 +28,7 @@
   \ Written by Chris A. Thornton, 1983.
 
   \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
-  \ 2015, 2016, 2017, 2018, 2020.
+  \ 2015, 2016, 2017, 2018, 2020, 2021.
 
   \ ===========================================================
   \ License
@@ -44,7 +44,7 @@ only forth definitions
 need list need update need flush need parse-all need vocabulary
 need +loop need editor need r# need top
 
-vocabulary specforth-editor ' specforth-editor is editor
+vocabulary specforth-editor ' specforth-editor ' editor defer!
 
   \ doc{
   \
@@ -857,3 +857,6 @@ only forth definitions
   \ 2020-07-10: Improve layout of tables.
   \
   \ 2020-07-11: Modify markup of table title.
+  \
+  \ 2021-01-19: Fix requirement: replace `is` with `defer!`, which is
+  \ in the kernel.
