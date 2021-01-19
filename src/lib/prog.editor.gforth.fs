@@ -5,8 +5,8 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 202007282031
-  \ See change log at the end of the file
+  \ Last modified: 202101191827.
+  \ See change log at the end of the file.
 
   \ ===========================================================
   \ Authors
@@ -14,7 +14,7 @@
   \ Bernd Paysan, 1995.
   \
   \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
-  \ 2016, 2017, 2018.
+  \ 2016, 2017, 2018, 2020, 2021.
 
   \ ===========================================================
   \ Description
@@ -33,7 +33,7 @@ need inverse need list need update need r# need top
 need list-lines need vocabulary need catch need editor
 need insert need replace need delete need 2variable
 
-vocabulary gforth-editor ' gforth-editor is editor
+vocabulary gforth-editor ' gforth-editor ' editor defer!
 
   \ doc{
   \
@@ -615,5 +615,8 @@ forth definitions
   \ 2020-07-10: Improve layout of tables.
   \
   \ 2020-07-11: Modify markup of table title.
+  \
+  \ 2021-01-19: Fix requirement: replace `is` with `defer!`,
+  \ which is in the kernel.
 
   \ vim: filetype=soloforth
