@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202101070418.
+  \ Last modified: 202101200013.
   \ See change log at the end of the file.
 
   \ ===========================================================
@@ -460,7 +460,7 @@ code (close-file ( fid -- ior )
   \ close-file ( fid -- ior )
   \
   \ Close the file identified by _fid_ and return the I/O
-  \ result code _ior_.
+  \ result code _ior_. Then update `file-ids`.
   \
   \ See also: `open-file`, `create-file`, `(close-file`.
   \
@@ -1176,5 +1176,7 @@ code set-user ( n -- ior )
   \
   \ 2021-01-07: Move `file-size` to the NextZXOS kernel.
   \ Improve `close-blocks` with `?blocks`.
+  \
+  \ 2021-01-20: Improve documentation.
 
   \ vim: filetype=soloforth

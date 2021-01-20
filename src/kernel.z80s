@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 202101192035.
+; Last modified: 202101200129.
 
 include version.z80s
 
@@ -12340,6 +12340,13 @@ warm_start:
 ; Restore the Forth system to its default status, i.e. as if it
 ; were just booted the first time, except the background picture
 ; is not displayed.
+;
+; ifdef::nextzxos[]
+;
+; IMPORTANT: If a blocks file is open, it will not be closed.
+; `close-blocks` must be used.
+;
+; endif::[]
 ;
 ; Origin: fig-Forth.
 ;
