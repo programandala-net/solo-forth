@@ -1,19 +1,19 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2021-02-02
+:revdate: 2021-02-03
 :toc: macro
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202102022010.
+// Last modified: 202102030028.
 
 ifdef::env-github[]
 
-NOTE: This is the GitHub mirror of the
+NOTE: This is the GitHub mirror of the actual
 http://fossil.programandala.net/solo_forth[Solo Forth repository],
-which uses http://fossil-scm.org[Fossil].
+which is powered by http://fossil-scm.org[Fossil].
 
 '''
 
