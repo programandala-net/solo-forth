@@ -1,6 +1,8 @@
 <div class='fossil-doc' data-title='README'>
+<div id="preamble">
+<div class="sectionbody">
 <div id="toc" class="toc">
-<div id="toctitle">Table of Contents</div>
+<div id="toctitle" class="title">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#_description">Description</a>
 <ul class="sectlevel2">
@@ -28,6 +30,8 @@
 </li>
 <li><a href="#_documentation">Documentation</a></li>
 </ul>
+</div>
+</div>
 </div>
 <div class="sect1">
 <h2 id="_description">Description</h2>
@@ -482,6 +486,59 @@ Forth as well.</p>
 </div>
 <div class="sect2">
 <h3 id="_run_trdos">In TR-DOS</h3>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">
+<div id="trdosdiskdrives" class="paragraph">
+<p>The TR-DOS version of Solo Forth uses numbers as disk drive
+identifiers (the same numbers TR-DOS uses internally) instead of the
+letters used by the TR-DOS BASIC interface:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 3. TR-DOS disk drive identifiers</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Drive</th>
+<th class="tableblock halign-left valign-top">In TR-DOS</th>
+<th class="tableblock halign-left valign-top">In Solo Forth</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1st</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2nd</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">B</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3rd</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">C</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4th</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">D</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3</p></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</table>
+</div>
 <div class="sect3">
 <h4 id="_on_pentagon_128">On Pentagon 128</h4>
 <div class="olist arabic">
@@ -664,10 +721,10 @@ want to load from the library.</p>
 <p><a href="#_run_trdos">Run Solo Forth</a>.</p>
 </li>
 <li>
-<p>“Insert” the file &lt;disks/trdos/disk_1a_library.trd&gt; into the second
-disk drive (called B in TR-DOS and 1 in Solo Forth), and the file
-&lt;disks/trdos/disk_1b_library.trd&gt; into the third disk drive (called
-C in TR-DOS and 2 in Solo Forth).</p>
+<p>“Insert” the file &lt;disks/trdos/disk_1a_library.trd&gt; into the first
+disk drive (called A in TR-DOS and 0 in Solo Forth), and the file
+&lt;disks/trdos/disk_1b_library.trd&gt; into the second disk drive (called
+B in TR-DOS and 1 in Solo Forth).</p>
 <div class="openblock">
 <div class="content">
 <div class="paragraph">
@@ -675,63 +732,22 @@ C in TR-DOS and 2 in Solo Forth).</p>
 capacity of a TR-DOS disk is only 640 KiB.</p>
 </div>
 <div class="paragraph">
-<p>Also notice that the TR-DOS version of Solo Forth uses numbers as disk
-drive identifiers (the same numbers TR-DOS uses internally) instead of
-the letters used by the TR-DOS BASIC interface:</p>
+<p>Also remember in Solo Forth the <a href="#trdosdiskdrives">TR-DOS disk drive
+identifiers</a> are numbers 0..3 instead of letters A..D.</p>
 </div>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 3. TR-DOS disk drive identifiers</caption>
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Drive</th>
-<th class="tableblock halign-left valign-top">In TR-DOS</th>
-<th class="tableblock halign-left valign-top">In Solo Forth</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1st</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">2nd</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">B</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">3rd</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">C</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">2</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">4th</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">D</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">3</p></td>
-</tr>
-</tbody>
-</table>
 </div>
 </div>
 </li>
 <li>
-<p>Type <code>1 set-drive throw</code> to make drive 1 (i.e. the second one,
-called B by TR-DOS) the current one.</p>
+<p>Type <code>1 load</code> to load block 1 from the first library disk. By
+convention, block 0 cannot be loaded (it is used for comments), and
+block 1 is used as a loader.  In Solo Forth, block 1 contains <code>2
+load</code>, in order to load the <code>need</code> tool from block 2.</p>
 </li>
 <li>
-<p>Type <code>1 load</code> to load block 1 from the library disk. By convention,
-block 0 cannot be loaded (it is used for comments), and block 1 is
-used as a loader.  In Solo Forth, block 1 contains <code>2 load</code>, in
-order to load the <code>need</code> tool from block 2.  Type <code>need
-set-block-drives</code> to load the word <code>set-block-drives</code> from the
-library. Then type <code>2 1 2 set-block-drives</code> to configure the second
-and the third drives (i.e. drives 1 and 2 in Solo Forth, called B
-and C in the TR-DOS BASIC interface) as block drives.</p>
+<p>Type <code>need 2-block-drives</code> to load and execute the word
+<code>2-block-drives</code> from the library, setting the first two drives as
+block drives in their normal order.</p>
 </li>
 <li>
 <p>Type <code>need name</code>, were “name” is the name of the word or tool you
