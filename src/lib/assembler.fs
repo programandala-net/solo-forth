@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202012262348
+  \ Last modified: 202102282019
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -26,7 +26,7 @@
   \
   \ Marcos Cruz (programandala.net) adapted, modified and
   \ improved the Spectrum Forth-83 version for Solo Forth,
-  \ 2015, 2016, 2017, 2018, 2018, 2020.
+  \ 2015, 2016, 2017, 2018, 2020.
 
   \ ===========================================================
   \ License
@@ -2686,5 +2686,7 @@ set-current
   \
   \ 2020-12-26: Fix layout of the usage example of
   \ `unresolved`.
+  \
+  \ 2021-02-28: Fix typo.
 
   \ vim: filetype=soloforth
