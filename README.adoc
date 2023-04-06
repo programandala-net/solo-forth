@@ -1,28 +1,21 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2021-02-03
+:revdate: 2023-04-06
+ifndef::env-github[]
 :toc: macro
+endif::[]
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 202102030028.
+// Last modified: 20230406T0814+0200.
 
-ifdef::env-github[]
-
-NOTE: This is the GitHub mirror of the actual
-http://fossil.programandala.net/solo_forth[Solo Forth repository],
-which is powered by http://fossil-scm.org[Fossil].
-
-'''
-
-endif::[]
-
-// XXX FIXME 2021-02-02: The layout of the ToC title is ruined on the
-// Fossil repo when the ToC is placed by `:toc: macro`:
+ifndef::env-github[]
 
 toc::[]
+
+endif::[]
 
 // Description {{{1
 == Description
@@ -106,7 +99,7 @@ The motivation behind Solo Forth is double:
    Forth written for ZX Spectrum 128 (the first model with banked
    memory) was Lennart Benschop's Forth-83
    (1988). But despite being more powerful than fig-Forth, it is still
-   tape-based and keeps the block sources in a RAM disk. Beside, the
+   tape-based and keeps the block sources in a RAM disk. Besides, the
    system is built by metacompilation, what makes it difficult to
    adapt to disk drives.
 
@@ -119,10 +112,11 @@ called http://programandala.net/en.program.dzx-forth.html[DZX-Forth]
 On 2016-03-13 a Git repository was created from the development
 backups, in order to preserve the evolution of the code from the
 start, and uploaded to GitHub. On 2020-12-05 the Git repository was
-converted to a http://fossil.programandala.net/solo_forth[Fossil
-repository], keeping
+converted to https://fossil-scm.org[Fossil,role="external"], keeping
 http://github.com/programandala-net/solo-forth[GitHub as a
-mirror,role="external"].
+mirror,role="external"]. On 2023-04-06 the repository was converted to
+https://mercurial-scm.org[Mercurial,role="external"], enabling a
+better interaction with GitHub.
 
 Solo Forth is very stable, and it's being used to develop two projects
 in Forth:

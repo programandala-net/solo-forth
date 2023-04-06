@@ -1,11 +1,14 @@
+syntax: glob
+
 *.dsk
 *.mgt
 *.sna
 *.szx
 *.trd
 *.z80
+*_session*.vim
 000-info.txt
-_meta/
+_meta
 doc/*.dbk
 doc/*.dbk.gz
 doc/*.dbk.zip
@@ -18,4 +21,4 @@ doc/*.odt
 doc/*.pdf
 doc/*.pdf.gz
 doc/*.pdf.zip
-tmp/
+tmp

@@ -3,13 +3,13 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 202101151626.
+# Last modified: 20230406T0811+0200.
 # See change log at the end of the file.
 
 # ==============================================================
 # Author {{{1
 
-# Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018, 2020, 2021.
+# Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018, 2020, 2021, 2023.
 
 # ==============================================================
 # License {{{1
@@ -972,33 +972,6 @@ tmp/doc.%.linked.adoc: src/doc/%.adoc
 		--output=$@ $<
 
 # ----------------------------------------------
-# Online documentation {{{2
-
-# Online documentation displayed on the Fossil repository.
-
-.PHONY: wwwdoc
-wwwdoc: wwwreadme
-
-.PHONY: cleanwww
-cleanwww:
-	rm -f \
-		doc/www/* \
-		tmp/README.*
-
-.PHONY: wwwreadme
-wwwreadme: doc/www/README.html
-
-doc/www/README.html: tmp/README.html
-	echo "<div class='fossil-doc' data-title='README'>" > $@;\
-	cat $< >> $@;\
-	echo "</div>" >> $@
-
-tmp/README.html: README.adoc
-	asciidoctor \
-		--embedded \
-		--out-file=$@ $<
-
-# ----------------------------------------------
 # Documentation for G+DOS {{{2
 
 doc/gplusdos_solo_forth_manual.epub: \
@@ -1792,6 +1765,8 @@ include Makefile.cover_image
 #
 # 2021-01-15: Make the requirements of <tmp/doc.manual_skeleton.linked.adoc>
 # explicit.
+#
+# 2023-04-06: Remove the online documentation rules, after migrating to Mercurial.
 
 # ==============================================================
 
