@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 202102282019
+  \ Last modified: 20231013T1326+0200
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -433,7 +433,7 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ Compile the Z80 `assembler` instruction ``ADD HL,_regp_``.
   \
-  \ See also: `add,`.
+  \ See also: `add,`, `adcp,`.
   \
   \ }doc
 
@@ -1201,16 +1201,16 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \
   \ }doc
 
-: adcp, ( regp1 regp2 -- ) ed, 8* 4A + c, ;
+: adcp, ( regp -- ) ed, 8* 4A + c, ;
 
   \ doc{
   \
-  \ adcp, ( regp1 regp2 -- ) "a-d-c-p-comma"
+  \ adcp, ( regp -- ) "a-d-c-p-comma"
   \
   \ Compile the Z80 `assembler` instruction ``ADC
-  \ _regp2_,_regp1_``.
+  \ HL,_regp_``.
   \
-  \ See also: `adcp,`.
+  \ See also: `addp,`.
   \
   \ }doc
 
@@ -2688,5 +2688,7 @@ set-current
   \ `unresolved`.
   \
   \ 2021-02-28: Fix typo.
+  \
+  \ 2023-10-13: Fix documentation of `addp,` and `adcp,`.
 
   \ vim: filetype=soloforth
