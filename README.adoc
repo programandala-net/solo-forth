@@ -1,13 +1,13 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2023-04-06
+:revdate: 2023-10-13
 :toc:
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 20230406T1015+0200.
+// Last modified: 20231013T2010+0200.
 
 // Description {{{1
 == Description
@@ -108,7 +108,9 @@ converted to https://fossil-scm.org[Fossil,role="external"], keeping
 http://github.com/programandala-net/solo-forth[GitHub as a
 mirror,role="external"]. On 2023-04-06 the repository was converted to
 https://mercurial-scm.org[Mercurial,role="external"], enabling a
-better interaction with GitHub.
+better interaction with GitHub. On 2023-09-12 the Mercurial repository
+was https://hg.sr.ht/~programandala_net/solo_forth[published on
+Sourcehut], keeping GitHub as a mirror.
 
 Solo Forth is very stable, and it's being used to develop two projects
 in Forth:
