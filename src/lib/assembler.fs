@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20231013T1326+0200
+  \ Last modified: 20231013T2008+0200
   \ See change log at the end of the file
 
   \ ===========================================================
@@ -1241,8 +1241,8 @@ B0 m2 or, A8 m2 xor, 5FED m8 ldar, 4FED m8 ldra, -->
   \ i.e.  fetch the contents of pair register _regp_ from
   \ memory address _a_.
   \
-  \ NOTE: For the "HL" register has a specific word: `fthl,`,
-  \ which compiles shorten and faster code.
+  \ NOTE: The "HL" register has a specific word: `fthl,`, which
+  \ compiles shorten and faster code.
   \
   \ See also: `stp,`.
   \
