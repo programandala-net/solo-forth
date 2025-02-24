@@ -3,23 +3,23 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 20230406T0811+0200.
+# Last modified: 20250224T1543+0100.
 # See change log at the end of the file.
 
-# ==============================================================
 # Author {{{1
+# ==============================================================
 
 # Marcos Cruz (programandala.net), 2015, 2016, 2017, 2018, 2020, 2021, 2023.
 
-# ==============================================================
 # License {{{1
+# ==============================================================
 
 # You may do whatever you want with this work, so long as you
 # retain every copyright, credit and authorship notice, and this
 # license.  There is no warranty.
 
-# ==============================================================
 # Requirements {{{1
+# ==============================================================
 
 # Asciidoctor (by Dan Allen, Sarah White et al.)
 #   http://asciidoctor.org
@@ -87,8 +87,8 @@
 # zx7 (by Einar Saukas)
 #   http://www.worldofspectrum.org/infoseekid.cgi?id=0027996
 
-# ==============================================================
 # Config {{{1
+# ==============================================================
 
 VPATH = ./
 MAKEFLAGS = --no-print-directory
@@ -108,14 +108,14 @@ cover_gplusdos_subtitle="Version $(full_version) for G+DOS"
 cover_plus3dos_subtitle="Version $(full_version) for +3DOS"
 cover_trdos_subtitle="Version $(full_version) for TR-DOS"
 
-# ==============================================================
 # Metadata {{{1
+# ==============================================================
 
 full_version=$(shell gforth -e 's" ../src/version.z80s" 3' make/version_number.fs)
 release=$(shell gforth -e 's" ../src/version.z80s" 2' make/version_number.fs)
 
-# ==============================================================
 # Disk images {{{1
+# ==============================================================
 
 gplusdos_disks=\
 	disks/gplusdos/disk_0_boot.mgt \
@@ -422,18 +422,18 @@ thumbs: \
 cleancover:
 	rm -f doc/*_cover*.jpg tmp/*.png
 
-# ==============================================================
 # Debug {{{1
+# ==============================================================
 
 # .PHONY: try
 
-# ==============================================================
 # Kernel {{{1
+# ==============================================================
 
 include Makefile.pasmo
 
-# ==============================================================
 # Loader {{{1
+# ==============================================================
 
 # The BASIC loader of the system is coded in plain text. The addresses
 # that depend on the kernel (its load address and entry points) are
@@ -442,8 +442,8 @@ include Makefile.pasmo
 # created by the assembler. Then zmakebas converts the patched loader
 # into a TAP file, ready to be copied to a disk image.
 
-# ----------------------------------------------
 # G+DOS loader {{{2
+# ----------------------------------------------
 
 tmp/loader.gplusdos.bas: \
 	tmp/kernel.symbols.gplusdos.z80s \
@@ -454,8 +454,8 @@ tmp/loader.gplusdos.bas: \
 tmp/loader.gplusdos.bas.tap: tmp/loader.gplusdos.bas
 	zmakebas -n Autoload -a 1 -o $@ $<
 
-# ----------------------------------------------
 # +3DOS loader {{{2
+# ----------------------------------------------
 
 tmp/loader.plus3dos.bas: \
 	tmp/kernel.symbols.plus3dos.z80s \
@@ -466,8 +466,8 @@ tmp/loader.plus3dos.bas: \
 tmp/loader.plus3dos.bas.tap: tmp/loader.plus3dos.bas
 	zmakebas -n DISK -a 1 -o $@ $<
 
-# ----------------------------------------------
 # TR-DOS loader {{{2
+# ----------------------------------------------
 
 tmp/loader.trdos.bas: \
 	tmp/kernel.symbols.trdos.z80s \
@@ -479,8 +479,8 @@ tmp/loader.trdos.bas.tap: \
 	tmp/loader.trdos.bas
 	zmakebas -n boot -a 1 -o $@ $<
 
-# ==============================================================
 # Addons {{{1
+# ==============================================================
 
 # These addons (font drivers) are not part of the Solo Forth
 # library yet.  Meanwhile, their binary files are included in
@@ -497,8 +497,8 @@ tmp/pr42.tap: bin/addons/pr42.bin
 	cd - ; \
 	mv bin/addons/pr42.tap tmp/pr42.tap
 
-# ==============================================================
 # Fonts {{{1
+# ==============================================================
 
 # Note: The DSK disk image needs the fzx files to be packed
 # into TAP first.
@@ -525,8 +525,8 @@ tmp/f64_fonts.tap : $(f64_fonts)
 	cat $(addsuffix .tap,$(f64_fonts)) > $@ ; \
 	rm -f $(addsuffix .tap, $(f64_fonts))
 
-# ==============================================================
 # Compressed test screen {{{1
+# ==============================================================
 
 # A ZX Spectrum screen compressed with ZX7 is included in the
 # boot disk, in order to try the ZX7 decompressor.
@@ -537,11 +537,11 @@ tmp/img.tap: bin/test/img.zx7
 	cd - ; \
 	mv bin/test/img.tap tmp/img.tap
 
-# ==============================================================
 # Boot disk {{{1
+# ==============================================================
 
-# ----------------------------------------------
 # G+DOS boot disk {{{2
+# ----------------------------------------------
 
 disks/gplusdos/disk_0_boot.mgt: \
 		tmp/loader.gplusdos.bas.tap \
@@ -553,8 +553,8 @@ disks/gplusdos/disk_0_boot.mgt: \
 		tmp/img.tap
 	mkmgt $@ bin/dos/gplusdos-sys-2a.tap $^
 
-# ----------------------------------------------
 # +3DOS boot disk {{{2
+# ----------------------------------------------
 
 tmp/disk_0_boot.plus3dos.tap: \
 		tmp/loader.plus3dos.bas.tap \
@@ -569,8 +569,8 @@ tmp/disk_0_boot.plus3dos.tap: \
 disks/plus3dos/disk_0_boot.dsk: tmp/disk_0_boot.plus3dos.tap
 	tap2dsk -720 -label SoloForth $< $@
 
-# ----------------------------------------------
 # TR-DOS boot disk {{{2
+# ----------------------------------------------
 
 tmp/disk_0_boot.trdos.tap: \
 		tmp/loader.trdos.bas.tap \
@@ -593,8 +593,8 @@ disks/trdos/disk_0_boot.128.trd: tmp/disk_0_boot.trdos.tap
 	cd -
 	mv tmp/SOLOFTH0.TRD $@
 
-# ----------------------------------------------
 # TR-DOS boot disk for Scorpion ZS 256 {{{2
+# ----------------------------------------------
 
 tmp/disk_0_boot.trdos.scorpion_zs_256.tap: \
 		tmp/loader.trdos.bas.tap \
@@ -616,8 +616,8 @@ disks/trdos/disk_0_boot.scorpion_zs_256.trd: tmp/disk_0_boot.trdos.scorpion_zs_2
 	cd -
 	mv tmp/SOLOFTH0.TRD $@
 
-# ----------------------------------------------
 # TR-DOS boot disk for Pentagon 512 {{{2
+# ----------------------------------------------
 
 tmp/disk_0_boot.trdos.pentagon_512.tap: \
 		tmp/loader.trdos.bas.tap \
@@ -639,8 +639,8 @@ disks/trdos/disk_0_boot.pentagon_512.trd: tmp/disk_0_boot.trdos.pentagon_512.tap
 	cd -
 	mv tmp/SOLOFTH0.TRD $@
 
-# ----------------------------------------------
 # TR-DOS boot disk for Pentagon 1024 {{{2
+# ----------------------------------------------
 
 tmp/disk_0_boot.trdos.pentagon_1024.tap: \
 		tmp/loader.trdos.bas.tap \
@@ -662,8 +662,8 @@ disks/trdos/disk_0_boot.pentagon_1024.trd: tmp/disk_0_boot.trdos.pentagon_1024.t
 	cd -
 	mv tmp/SOLOFTH0.TRD $@
 
-# ==============================================================
 # Source file lists {{{1
+# ==============================================================
 
 #not_ready = src/lib/meta.test.forth2012-test-suite.fs
 not_ready =
@@ -710,8 +710,8 @@ plus3dos_exception_codes_lib_files = \
 trdos_exception_codes_lib_files = \
 	$(filter-out %gplusdos.fs %idedos.fs %plus3dos.fs, $(exception_codes_lib_files))
 
-# ==============================================================
 # Block files {{{1
+# ==============================================================
 
 # XXX UNDER DEVELOPMENT
 
@@ -748,8 +748,8 @@ tmp/library.plus3dos.tap: tmp/library.plus3dos.fb
 	mv $(library_block_file).tap $(notdir $@);\
 	cd -;
 
-# ==============================================================
 # Block disks {{{1
+# ==============================================================
 
 # The block disks contain the source blocks of the library and
 # additional code.
@@ -763,11 +763,11 @@ tmp/workbench.fs: $(meta_lib_files)
 tmp/programs.fs: $(prog_lib_files)
 	cat $^ > $@
 
-# ----------------------------------------------
 # G+DOS block disks {{{2
+# ----------------------------------------------
 
-# ------------------------------
 # Library disk {{{3
+# ------------------------------
 
 tmp/library.gplusdos.fs: $(gplusdos_core_lib_files)
 	cat $(gplusdos_core_lib_files) > $@
@@ -776,8 +776,8 @@ disks/gplusdos/disk_1_library.mgt: tmp/library.gplusdos.fs
 	fsb2-mgt $< ;\
 	mv $(basename $<).mgt $@
 
-# ------------------------------
 # Additional disks {{{3
+# ------------------------------
 
 disks/gplusdos/disk_2_programs.mgt: tmp/programs.fs
 	fsb2-mgt $< ;\
@@ -787,11 +787,11 @@ disks/gplusdos/disk_3_workbench.mgt: tmp/workbench.fs
 	fsb2-mgt $< ;\
 	mv $(basename $<).mgt $@
 
-# ----------------------------------------------
 # +3DOS block disks {{{2
+# ----------------------------------------------
 
-# ------------------------------
 # Library disk {{{3
+# ------------------------------
 
 tmp/library.plus3dos.fs: $(plus3dos_core_lib_files)
 	cat $(plus3dos_core_lib_files) > $@
@@ -800,8 +800,8 @@ disks/plus3dos/disk_1_library.dsk: tmp/library.plus3dos.fs
 	fsb2-dsk tmp/library.plus3dos.fs ;\
 	mv $(basename $<).dsk $@
 
-# ------------------------------
 # Additional disks {{{3
+# ------------------------------
 
 disks/plus3dos/disk_2_programs.dsk: tmp/programs.fs
 	fsb2-dsk $< ;\
@@ -811,11 +811,11 @@ disks/plus3dos/disk_3_workbench.dsk: tmp/workbench.fs
 	fsb2-dsk $< ;\
 	mv $(basename $<).dsk $@
 
-# ----------------------------------------------
 # TR-DOS block disks {{{2
+# ----------------------------------------------
 
-# ------------------------------
 # Library disks {{{3
+# ------------------------------
 
 tmp/library.trdos.fs: $(trdos_core_lib_files)
 	cat $(trdos_core_lib_files) > $@
@@ -843,8 +843,8 @@ disks/trdos/disk_1b_library.trd: tmp/library_b.trdos.fs
 	fsb2-trd $< SoloF1b ; \
 	mv $(basename $<).trd $@
 
-# ------------------------------
 # Additional disks {{{3
+# ------------------------------
 
 disks/trdos/disk_2_programs.trd: tmp/programs.fs
 	fsb2-trd $< SoloFth2 ; \
@@ -854,8 +854,8 @@ disks/trdos/disk_3_workbench.trd: tmp/workbench.fs
 	fsb2-trd $< SoloFth3 ; \
 	mv $(basename $<).trd $@
 
-# ==============================================================
 # Background images {{{1
+# ==============================================================
 
 # Starting from version 0.12.0, Solo Forth shows a background
 # image every time it boots.
@@ -877,11 +877,11 @@ backgrounds/current.pbm: src/version.z80s
 backgrounds/current.scr: backgrounds/current.pbm
 	make/pbm2scr.fs $<
 
-# ==============================================================
 # Documentation {{{1
+# ==============================================================
 
-# ----------------------------------------------
 # Common rules {{{2
+# ----------------------------------------------
 
 %.zip: %
 	zip -9 $@ $<
@@ -971,8 +971,8 @@ tmp/doc.%.linked.adoc: src/doc/%.adoc
 		--pdf-engine=wkhtmltopdf \
 		--output=$@ $<
 
-# ----------------------------------------------
 # Documentation for G+DOS {{{2
+# ----------------------------------------------
 
 doc/gplusdos_solo_forth_manual.epub: \
 	tmp/doc.gplusdos.manual.adoc \
@@ -1069,8 +1069,8 @@ tmp/doc.gplusdos.manual.adoc: \
 		tmp/doc.gplusdos.glossary.adoc \
 		> $@
 
-# ----------------------------------------------
 # Documentation for +3DOS {{{2
+# ----------------------------------------------
 
 doc/plus3dos_solo_forth_manual.epub: \
 	tmp/doc.plus3dos.manual.adoc \
@@ -1163,8 +1163,8 @@ tmp/doc.plus3dos.manual.adoc: \
 		tmp/doc.plus3dos.glossary.adoc \
 		> $@
 
-# ----------------------------------------------
 # Documentation for TR-DOS {{{2
+# ----------------------------------------------
 
 doc/trdos_solo_forth_manual.epub: \
 	tmp/doc.trdos.manual.adoc \
@@ -1257,8 +1257,15 @@ tmp/doc.trdos.manual.adoc: \
 		tmp/doc.trdos.glossary.adoc \
 		> $@
 
-# ==============================================================
+# README{{{2
+# ----------------------------------------------
+
+readme_title = Solo Forth
+
+include Makefile.readme
+
 # Release archives {{{1
+# ==============================================================
 
 .PHONY: zips
 zips: diskzips doczips srczip
@@ -1272,8 +1279,8 @@ doczips: gplusdosdoczip plus3dosdoczip trdosdoczip
 .PHONY: srczip
 srczip: tmp/solo_forth_$(release)_src.zip
 
-# ----------------------------------------------
 # Source release archive {{{2
+# ----------------------------------------------
 
 tmp/solo_forth_$(release)_src.zip: \
 	*.adoc \
@@ -1299,8 +1306,8 @@ tmp/solo_forth_$(release)_src.zip: \
 		--exclude *.swp ; \
 	rm -f solo_forth_$(release)
 
-# ----------------------------------------------
 # G+DOS release archives {{{2
+# ----------------------------------------------
 
 .PHONY: gplusdoszips
 gplusdoszips: gplusdosdiskszip gplusdosdoczip
@@ -1326,8 +1333,8 @@ tmp/solo_forth_$(release)_gplusdos_disks.zip: $(gplusdos_disks)
 	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
 	rm -f solo_forth_$(release)
 
-# ----------------------------------------------
 # +3DOS release archives {{{2
+# ----------------------------------------------
 
 .PHONY: plus3doszips
 plus3doszips: plus3dosdiskszip plus3dosdoczip
@@ -1353,8 +1360,8 @@ tmp/solo_forth_$(release)_plus3dos_disks.zip: $(plus3dos_disks)
 	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
 	rm -f solo_forth_$(release)
 
-# ----------------------------------------------
 # TR-DOS release archives {{{2
+# ----------------------------------------------
 
 .PHONY: trdoszips
 trdoszips: trdosdiskszip trdosdoczip
@@ -1380,8 +1387,8 @@ tmp/solo_forth_$(release)_trdos_disks.zip: $(trdos_disks)
 	zip -9r solo_forth_$(release)/$@ $(addprefix solo_forth_$(release)/,$^) ; \
 	rm -f solo_forth_$(release)
 
-# ==============================================================
 # Backup {{{1
+# ==============================================================
 
 .PHONY: backupsrc
 backupsrc:
@@ -1416,23 +1423,13 @@ oldbackup:
 		*.sh \
 		*.txt
 
-# ----------------------------------------------
 # Cover image {{{2
+# ----------------------------------------------
 
 include Makefile.cover_image
 
-# ==============================================================
-# Makefile variables cheat sheet {{{1
-
-# $@ = the name of the target of the rule
-# $< = the name of the first prerequisite
-# $? = the names of all the prerequisites that are newer than the target
-# $^ = the names of all the prerequisites
-
-# `%` works only at the start of the filter pattern
-
-# ==============================================================
 # Change log {{{1
+# ==============================================================
 
 # 2015-06-02: Start.
 #
@@ -1767,6 +1764,9 @@ include Makefile.cover_image
 # explicit.
 #
 # 2023-04-06: Remove the online documentation rules, after migrating to Mercurial.
+#
+# 2025-02-24: Include <Makefile.readme> to build a Commonmark version of
+# <README.adoc>.
 
 # ==============================================================
 

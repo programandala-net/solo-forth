@@ -1,0 +1,74 @@
+# Makefile.markdown_readme
+
+# Objective: Convert <README.adoc> to <README.md>.
+
+# Motivation: SourceHut does not support readme files in AsciiDoc, only plain
+# text and Markdown (Commonmark).
+
+# By Marcos Cruz (programandala.net)
+
+# Last modified 20250223T2326+0100.
+# See change log at the end of the file.
+
+# Requirements {{{1
+# ==============================================================
+
+# Asciidoctor (by Dan Allen, Sarah White et al.)
+#   http://asciidoctor.org
+
+# Pandoc (by John MaFarlane)
+#   http://pandoc.org
+
+# Config {{{1
+# ==============================================================
+
+# Input variable, set by <Makefile>:
+#
+# readme_title = title of the README file, usually the name of the project
+
+# Convert README to Markdown {{{1
+# ==============================================================
+
+.PHONY: readme
+readme: README.md
+
+.PHONY: cleanreadme
+cleanreadme:
+	rm -f README.md
+
+# XXX FIXME Somehow `pandoc --from docbook --to commonmark` ignores the main
+# title and makes section headings level 1.  A workaround is used with `echo`
+# and `--shift-heading-level-by`:
+
+README.md: tmp/README.db
+	echo "# $(readme_title)\n" > $@
+	pandoc \
+		--from docbook \
+		--to commonmark \
+		--shift-heading-level-by 1 \
+		$< \
+		>> $@
+
+tmp/README.db: README.adoc
+	asciidoctor \
+		--backend docbook \
+		--out-file=$@ $<
+
+tmp/README.html: README.adoc
+	asciidoctor \
+		--backend html5 \
+		--embedded \
+		--out-file=$@ $<
+
+# ==============================================================
+# Change log {{{1
+
+# 2024-09-03: Start as part of the Makefile of project Fendo
+# (http://programandala.net/en.program.fendo.html): Remove the rules to build
+# the <README.html> required by Fossil; add rules to build a <README.md> for
+# SourceHut.
+#
+# 2024-11-06: Extract the rules to <Makefile.readme> in order to share the code
+# with other projects.
+#
+# 2025-02-23: Simplify workaround to fix the headings of the Commonmark file.
