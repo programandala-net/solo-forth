@@ -585,7 +585,7 @@ the TR-DOS BASIC interface:
 ## Documentation
 
 The \<doc\> directory contains one version of the manual for every
-supported DOS, EPUB, HTML and PDF formats. The manuals are built
+supported DOS, in EPUB, HTML and PDF formats. The manuals are built
 automatically from the sources and other files. At the moment they
 contain a description of the Forth system, the basic information
 required to use it and a complete glossary with cross references.

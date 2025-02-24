@@ -1,13 +1,13 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2023-10-13
+:revdate: 2025-02-24
 :toc:
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified: 20231013T2010+0200.
+// Last modified: 20250224T1550+0100.
 
 // Description {{{1
 == Description
@@ -581,7 +581,7 @@ identifiers>> are numbers 0..3 instead of letters A..D.
 == Documentation
 
 The <doc> directory contains one version of the manual for every
-supported DOS, EPUB, HTML and PDF formats.  The manuals
+supported DOS, in EPUB, HTML and PDF formats.  The manuals
 are built automatically from the sources and other files.  At the
 moment they contain a description of the Forth system, the basic
 information required to use it and a complete glossary with cross
