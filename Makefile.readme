@@ -1,4 +1,4 @@
-# Makefile.markdown_readme
+# Makefile.readme
 
 # Objective: Convert <README.adoc> to <README.md>.
 
@@ -7,7 +7,7 @@
 
 # By Marcos Cruz (programandala.net)
 
-# Last modified 20250223T2326+0100.
+# Last modified 20250414T2318+0200.
 # See change log at the end of the file.
 
 # Requirements {{{1
