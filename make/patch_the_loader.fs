@@ -5,7 +5,7 @@
 \ This file is part of Solo Forth
 \ http://programandala.net/en.program.solo_forth.html
 
-\ Last modified 201703101317
+\ Last modified 20250824T1255+0200
 
 \ ==============================================================
 \ Description
@@ -58,6 +58,8 @@
 \ code style. Change the order of the parameters and make
 \ parameters greater than 3 be ignored, after the changes in
 \ Makefile.
+\
+\ 2025-08-24: Use Galope's `s,` (removed from Gforth).
 
 \ ==============================================================
 \ Requirements
@@ -68,6 +70,11 @@ only forth definitions
 \ From Forth Foundation Library
 
 require ffl/str.fs
+
+\ --------------------------------------------------------------
+\ From Galope
+
+require galope/s-comma.fs
 
 \ --------------------------------------------------------------
 \ From Galope (http://programandala.net/en.program.galope.html)
