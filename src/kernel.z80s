@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 20230501T1339+0200.
+; Last modified: 20250925T1041+0200.
 
 include version.z80s
 
@@ -1836,14 +1836,33 @@ far.hl:
   ; <memory.far.fsb> module of the library, so `code` words can
   ; call it.
 
-  ld e,h
-  srl e
-  srl e
-  srl e
-  srl e
-  srl e
-  srl e ; E = 0 .. 3 (bank index)
-  ld a,e
+  ; XXX OLD
+           ;  T  B
+           ; -- --
+  ; ld e,h ; 04 02
+  ; srl e  ; 08 02
+  ; srl e  ; 08 02
+  ; srl e  ; 08 02
+  ; srl e  ; 08 02
+  ; srl e  ; 08 02
+  ; srl e  ; 08 02 ; E = 0 .. 3 (bank index)
+  ; ld a,e ; 04 02
+           ; -- --
+           ; 56 16 Total
+
+  ; XXX NEW
+  ; 2025-09-13: Code improvement suggested by Matteo Vitturi
+  ; (https://groups.io/g/forth-sinclair/message/119)
+          ;  T  B
+          ; -- --
+  ld a,h  ; 04 02
+  rlca    ; 04 01
+  rlca    ; 04 01
+  and %11 ; 07 02 ; E = 0 .. 3 (bank index)
+  ld e,a  ; 04 02
+          ; -- --
+          ; 23 08 Total
+
   ld (bank_index_dfa),a ; save the bank index
   push hl
   ld hl,far_banks_dfa
@@ -12088,7 +12107,7 @@ endif
   dw dot_version_
   dw dos_,type_
   dw paren_dot_quote_
-  _string "\rBy Marcos Cruz\r(programandala.net), 2015-2021\r"
+  _string "\rBy Marcos Cruz\r(programandala.net), 2015-2025\r"
   dw exit_
 
 ; ----------------------------------------------
