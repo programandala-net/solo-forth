@@ -41,7 +41,7 @@ operating systems could be used as well).
 - One double-sided 80-track disk drive (two or three recommended,
   depending on the DOS).
 
-## Motivation, history and current status
+## Motivation, repository history and current status
 
 The motivation behind Solo Forth is double:
 
@@ -70,22 +70,31 @@ The motivation behind Solo Forth is double:
     in a RAM disk. Besides, the system is built by metacompilation, what
     makes it difficult to adapt to disk drives.
 
-The development of Solo Forth started on 2015-05-30, from the
-disassembled code of Abersoft Forth. Some ideas and code were reused
-also from the Afera library and from a previous abandoned project called
-[DZX-Forth](http://programandala.net/en.program.dzx-forth.html) (a port
-of CP/M DX-Forth to ZX Spectrum +3e).
+History of the repository:
 
-On 2016-03-13 a Git repository was created from the development backups,
-in order to preserve the evolution of the code from the start, and
-uploaded to GitHub. On 2020-12-05 the Git repository was converted to
-[Fossil](https://fossil-scm.org), keeping [GitHub as a
-mirror](http://github.com/programandala-net/solo-forth). On 2023-04-06
-the repository was converted to [Mercurial](https://mercurial-scm.org),
-enabling a better interaction with GitHub. On 2023-09-12 the Mercurial
-repository was [published on
-Sourcehut](https://hg.sr.ht/~programandala_net/solo_forth), keeping
-GitHub as a mirror.
+- 2015-05-30: The development of Solo Forth started out of the
+  disassembled code of Abersoft Forth. Some ideas and code were reused
+  also from the Afera library and from a previous abandoned project
+  called [DZX-Forth](http://programandala.net/en.program.dzx-forth.html)
+  (a port of CP/M DX-Forth to ZX Spectrum +3e).
+
+- 2016-03-13: In order to preserve the evolution of the code, a Git
+  repository was created out of the development backups and uploaded to
+  GitHub.
+
+- 2020-12-05: The Git repository was converted to
+  [Fossil](https://fossil-scm.org), keeping [GitHub as a
+  mirror](http://github.com/programandala-net/solo-forth).
+
+- 2023-04-06: The Fossil repository was converted to
+  [Mercurial](https://mercurial-scm.org), enabling a better interaction
+  with GitHub.
+
+- 2023-09-12: The Mercurial repository was [published on
+  SourceHut](https://hg.sr.ht/~programandala_net/solo_forth), keeping
+  GitHub as a mirror.
+
+Current status:
 
 Solo Forth is very stable, and it’s being used to develop two projects
 in Forth: [Nuclear Waste
